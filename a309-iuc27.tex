@@ -42,7 +42,7 @@
   \lower.5ex\hbox{\kern-.15em G}\kern-.1667em X}}$}
 
 \usepackage{fancyhdr,multicol,url}
-\usepackage[dvipdfm,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage[dvipdfm,colorlinks=true,urlcolor=blue,linkcolor=black]{hyperref}
 \usepackage[format=hang,font=small,labelfont=bf]{caption}
 
 \pagestyle{fancy}
@@ -103,9 +103,9 @@ Over the years, \TeX\ has been used with many non-English languages,
 often using combinations of custom-encoded 8-bit fonts and different input encodings and conventions.
 However, \TeX’s roots are unquestionably in Latin-script typography;
 the system originally processed 7-bit text (usually ASCII), accessing 8-bit fonts for output.
-Version~3 extended the system to support 8-bit input text,
+In 1989–90, Knuth extended the system to support 8-bit input text,
 and provided some enhancements for multilingual use,
-but support for many non-Latin and complex scripts remains a problem.
+but support for many non-Latin and complex scripts remains difficult.
 
 In addition to standard 8-bit codepages, there are ways of using \TeX’s programmability
 to allow input of additional text elements by representing them as character sequences.
@@ -136,7 +136,7 @@ In the case of complex scripts such as Devanagari, solutions based on standard \
 While such solutions can work, they may be complex to use, and fragile in how they interact with various other macro packages for document formatting.
 And trying to combine several such solutions to create a highly multilingual document, using several complex scripts simultaneously, goes far beyond what typical users can be expected to achieve.
 
-To address these issues, an extended version of \TeX\ known as \XeTeX\ has been developed. This is a Unicode-based multilingual typesetting system that works with existing “smart font” technologies to provide complex script support, within the framework of the formatting power, flexibility, and programmability of \TeX.
+To address these issues, an extended version of \TeX\ known as \XeTeX\footnote{The name is typically pronounced something like {\em zee-tech}.} has been developed. This is a Unicode-based multilingual typesetting system that works with existing “smart font” technologies to provide complex script support, within the framework of the formatting power, flexibility, and programmability of \TeX.
 
 
 \section{Examples of use}
@@ -245,6 +245,7 @@ To illustrate this, figure~\ref{fig-showbox} shows the trace output generated fo
 \end{verbatim}
 
 \footnotesize
+\hbox{\bf \XeTeX\ using an AAT font:}\vskip-20pt\null
 \begin{verbatim}
 > \box0=
 \vbox(8.0+2.0)x469.75499
@@ -264,6 +265,7 @@ To illustrate this, figure~\ref{fig-showbox} shows the trace output generated fo
 \end{minipage}\hfil
 \begin{minipage}[t]{0.5\hsize}
 \footnotesize
+\hbox{\bf \TeX\ (or \XeTeX) using a legacy font with {\tt .tfm} metrics:}\vskip-8pt\null
 \begin{verbatim}
 > \box1=
 \vbox(6.94444+1.94444)x469.75499
@@ -387,7 +389,7 @@ In principle, smart font technologies such as AAT and OpenType could implement t
 Although it would usually be possible to simulate these ligatures via macro programming, it is difficult to ensure that reprogramming widely-used text characters such as the hyphen, question mark, and quotation marks will not interfere with other levels of markup in the source document.
 Instead, \XeTeX\ provides a mechanism known as “font mappings”, whereby a mapping of Unicode characters is associated with a particular font, and applied to all strings of text being measured or rendered in that font. This is implemented using the TECkit mapping engine.
 
-Although primarily designed to convert between legacy byte encodings and Unicode, TECkit can also be used to perform transformations on a Unicode text stream, using the same mapping language; figure~\ref{fig-tex-text} shows the {\em tex-text} mapping that is provided to support normal \TeX\ conventions.
+While TECkit was primarily designed to convert between legacy byte encodings and Unicode, it can also be used to perform transformations on a Unicode text stream, using the same mapping language and text conversion library; figure~\ref{fig-tex-text} shows the {\em tex-text} mapping that is provided to support normal \TeX\ conventions.
 When associated with a standard Unicode-compliant font in \XeTeX, this has the effect of implementing the legacy \TeX\ conventions for dashes and quotes, as shown in figure~\ref{fig-mapping}, without requiring any \TeX-specific features in the smart fonts themselves.
 
 \begin{figure}[tb]
@@ -496,7 +498,7 @@ One of \TeX's traditional strengths is in mathematical typesetting. It was desig
 
 \begin{figure}[tb]
 \footnotesize
-\hrule\smallskip
+\hrule%\smallskip
 \begin{minipage}{0.55\hsize}
 \begin{verbatim}
 $$\eqalign{
@@ -536,7 +538,7 @@ $$\eqalign{
   &=\pi.\cr}$$
 \end{minipage}
 \smallskip\hrule
-\caption{An example of math typesetting, one of \TeX's strengths.}
+\caption{An example of math typesetting, one of \TeX's strengths. \XeTeX\ supports legacy \TeX\ fonts and math mode, as shown here, but does not currently extend these capabilities.}
 \label{fig-math}
 \end{figure}
 
