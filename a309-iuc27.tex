@@ -1,3 +1,4 @@
+%&program=xelatex
 \TeXXeTstate=1
 \documentclass[letterpaper,11pt]{article}
 \flushbottom
@@ -28,6 +29,8 @@
   \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\reflect{E}}\kern-.1667em \TeX}%
   \dp0=0pt\ht0=0pt\box0 }
 \fi
+
+\def\eTeX{$\varepsilon$-\TeX}
 \def\TeXgX{\TeX\lower.5ex\hbox{\kern-.15em G}\kern-.1667em X}
 
 \usepackage[format=hang,font=small,labelfont=bf]{caption}
@@ -185,7 +188,9 @@ At the time of writing, \XeTeX\ supports two such rendering systems; it is possi
 
 \subsection{Using ATSUI on Mac OS X}
 
-The first smart-font rendering system implemented in \XeTeX\ was the ATSUI\footnote{Apple Type Services for Unicode Imaging; see \url{http://developer.apple.com/intl/atsui.html}.} system under Mac OS X. The essential objects needed to render text with ATSUI are {\em text layouts} and associated {\em styles} (which in turn refer to {\em fonts} and other attributes).
+The first smart-font rendering system implemented in \XeTeX\ was the ATSUI\footnote{Apple Type Services for Unicode Imaging; see \url{http://developer.apple.com/intl/atsui.html}.} system under Mac OS X.
+ATSUI is the Mac OS X component that renders Unicode text using AAT\footnote{Apple Advanced Typography; see \url{http://developer.apple.com/fonts/TTRefMan/RM06/Chap6AATIntro.html}.} fonts.
+The essential objects needed to render text with ATSUI are {\em text layouts} and associated {\em styles} (which in turn refer to {\em fonts} and other attributes).
 
 In order for a system like ATSUI to render text correctly, it must be given complete runs of text, not individual characters; otherwise, behavior such as reordering and contextual glyph selection cannot happen. \TeX\ normally treats each character of text as an individual node in a list, with known (and fixed) dimensions. Paragraph layout consists of taking a list of such nodes, with intervening “glue” (potentially flexible space) and other items, and determining the best sequence of line-break positions and the final location of each character and other node.
 
@@ -207,6 +212,80 @@ One ATSUStyle is associated with each font face and size combination requested b
 (In addition, a number of font-related ATSUI APIs are used to enumerate the fonts available in the system, determine what layout features the fonts support, etc.)
 
 When \XeTeX\ has completed layout for a paragraph of text, therefore, it has a list of lines each containing a list of “word nodes”; each such node contains a run of Unicode text and a reference to an ATSUI style. The \TeX\ system {\em does not know} the details of the actual glyphs that will be used to render the text, or precisely where they will be positioned; only the overall dimensions and position of each word. The glyph-level detail is left entirely to the ATSUI rendering system.
+
+To illustrate this, figure~\ref{fig-showbox} shows the trace output generated for a short fragment of text set as a single-line paragraph. Using a standard \TeX\ font, the line consists of a list of character nodes, with intervening “glue” (flexible space). Each character has an associated font, and its metrics will be looked up in the corresponding \TeX\ font metric (TFM) file. Note that \TeX\ has automatically inserted some kerns between adjacent letters; this is also controlled by the TFM file for this font. In contrast, using an AAT font, the text line consists simply of a list of complete words with intervening glue; \TeX\ does not deal with the individual characters. There may be kerning between letters here too, but the \TeX\ algorithms are unaware of it; it happens automatically as ATSUI measures or renders the words, and \TeX\ knows only their overall dimensions.
+
+\begin{figure}[htb]
+\hrule\smallskip
+\begin{minipage}[t]{0.5\hsize}
+\small
+\begin{verbatim}
+\font\AATfont="Times Roman" \AATfont
+\setbox0=\vbox{The quick brown fox.}
+\showbox0
+
+\font\TeXfont=cmr10 \TeXfont
+\setbox1=\vbox{The quick brown fox.}
+\showbox1
+\end{verbatim}
+
+\footnotesize
+\begin{verbatim}
+> \box0=
+\vbox(8.0+2.0)x469.75499
+.\hbox(8.0+2.0)x469.75499, glue set 363.10948fil
+..\hbox(0.0+0.0)x20.0
+..\AATfont The
+..\glue 2.5 plus 1.66666 minus 0.83333
+..\AATfont quick
+..\glue 2.5 plus 1.66666 minus 0.83333
+..\AATfont brown
+..\glue 2.5 plus 1.66666 minus 0.83333
+..\AATfont fox.
+..\penalty 10000
+..\glue(\parfillskip) 0.0 plus 1.0fil
+..\glue(\rightskip) 0.0
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}[t]{0.5\hsize}
+\footnotesize
+\begin{verbatim}
+> \box1=
+\vbox(6.94444+1.94444)x469.75499
+.\hbox(6.94444+1.94444)x469.75499, glue set 356.6715fil
+..\hbox(0.0+0.0)x20.0
+..\TeXfont T
+..\TeXfont h
+..\TeXfont e
+..\glue 3.33333 plus 1.66666 minus 1.11111
+..\TeXfont q
+..\TeXfont u
+..\TeXfont i
+..\TeXfont c
+..\kern-0.27779
+..\TeXfont k
+..\glue 3.33333 plus 1.66666 minus 1.11111
+..\TeXfont b
+..\TeXfont r
+..\TeXfont o
+..\kern-0.27779
+..\TeXfont w
+..\TeXfont n
+..\glue 3.33333 plus 1.66666 minus 1.11111
+..\TeXfont f
+..\TeXfont o
+..\kern-0.27779
+..\TeXfont x
+..\TeXfont .
+..\penalty 10000
+..\glue(\parfillskip) 0.0 plus 1.0fil
+..\glue(\rightskip) 0.0
+\end{verbatim}
+\end{minipage}
+\smallskip\hrule
+\caption{Using tracing commands to examine \XeTeX's internal structures for text using an AAT font, compared to the same text with a standard \TeX\ font.}
+\label{fig-showbox}
+\end{figure}
 
 After document formatting is complete, the \XeTeX\ “back-end” (actually a separate process, {\tt xdv2pdf}) reads the \verb|.xdv| file that encodes the formatted document, and creates a PDF version for viewing or printing.
 To do this, it “renders” the page encoded in the \verb|.xdv| file through the Mac OS X Quartz graphics system, with a PDF file as the rendering destination.
@@ -459,6 +538,7 @@ Such a ligature is appropriate for most languages, and improves the appearance o
 and typical OpenType or AAT fonts will contain ligature rules that automatically use it wherever the sequence {\tt fi} occurs in the text stream.
 However, in Turkish it becomes a problem because the distinction between {\em i} and {\em ı} is lost. Figure~\ref{fig-turkish-bad} illustrates this issue.\footnote{Sample Turkish text from the Unicode web site, \url{http://www.unicode.org/standard/translations/turkish.html}.}
 
+\def\red{\aftergroup\resetcolor \special{color push rgb 0.5 0.0 0.0}} \def\resetcolor{\special{color pop}}
 \begin{figure}[hb]
 \hrule\smallskip
 \small
@@ -477,7 +557,6 @@ resmi yoludur.
 \end{verbatim}
 \end{minipage}\hfil
 \begin{minipage}{0.45\hsize}
-\def\red{\aftergroup\resetcolor \special{color push rgb 0.5 0.0 0.0}} \def\resetcolor{\special{color pop}}
 \font\txtfont="Adobe Garamond Pro" at 8pt
 \txtfont
 Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endüstrinin  diğer ileri gelen {\red firmaları}  Evrensel Kod Standardını desteklemektedirler. Evrensel Kod, XML, Java, ECMAScript (JavaScript), LDAP, CORBA 3.0, WML vb. gibi modern standartlar {\red tarafından} ISO/IEC 10646 uyarlanmasının  resmi yoludur.
@@ -525,27 +604,122 @@ Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endü
 \font\doulosC="Doulos SIL/AAT:Uppercase Eng alternates=Large eng with short stem" at 10pt
 \font\doulosD="Doulos SIL/AAT:Uppercase Eng alternates=Capital N with tail" at 10pt
 
-Another issue is that some Unicode characters have alternative possible glyph shapes (within a single typeface design). For example, the character U+014A {\sc latin capital letter eng} has four possible designs in the Doulos SIL typeface: {\doulosA Ŋ \doulosB Ŋ \doulosC Ŋ \doulosD Ŋ}. These are all legitimate renderings of the same Unicode character. By default, text rendered in Doulos SIL will use the first. But in some language communities, a different form may be preferred—or may even be required for readability.
+Another issue is that some Unicode characters have alternative possible glyph shapes (within a single typeface design). For example, the character U+014A {\sc latin capital letter eng} has four possible designs in the Doulos SIL typeface: {\doulosA Ŋ \doulosB Ŋ \doulosC Ŋ \doulosD Ŋ}. These are all legitimate renderings of the same Unicode character, the uppercase version of {\em eng} ({\doulosA ŋ}). By default, text rendered in Doulos SIL will use the first of these forms. But in some language communities, a different form may be preferred—or may even be required for readability.
 
 One solution to this would be to use different language systems within the OpenType tables to access the alternate {\em Eng} glyphs. In practice, however, this is more difficult to arrange than the Turkish case. This character is used in many lesser-known and little-documented languages, and so font developers cannot reasonably be expected to provide all the appropriate language system mappings.
 
-An alternative approach is through user-selectable “font features”. These are another mechanism for controlling exactly how a given font renders text. Rather than associating variant glyphs or other options with a particular language, the options can be made available as individual “features” that can be enabled or disabled as required. So the Doulos SIL font, for example, has a feature named {\em Uppercase Eng alternates}, with four possible settings, and the character U+014A can be displayed as any of the four available glyphs according to the feature setting chosen.
+An alternative approach is through user-selectable {\em font features}. These are another mechanism for controlling exactly how a given font renders text. Rather than associating variant glyphs or other options with a particular language, the options can be made available as individual “features” that can be enabled or disabled as required. So the Doulos SIL font, for example, has a feature named {\em Uppercase Eng alternates}, with four possible settings, and the character U+014A can be displayed as any of the four available glyphs according to the feature setting chosen.
+
+\XeTeX\ allows such features to be included as part of the font specification used to load a particular font for typesetting. Figure~\ref{fig-eng} shows how the same text can be typeset either with the default glyphs provided in Doulos SIL, or using alternate forms for particular characters. This mechanism enables the user to achieve culturally-appropriate rendering of the Unicode text without requiring the font developer to be aware of the proper choices of glyph variants for each language where the font may be used.
 
 \begin{figure}
-
+\hrule\smallskip
+\begin{minipage}{0.67\hsize}
+\begin{verbatim}
+\font\Doulos="Doulos SIL/AAT" at 10pt
+\font\DoulosAlt="Doulos SIL/AAT:
+  Alternate forms=Literacy alternates,
+    Small v-hook straight style;
+  Uppercase Eng alternates=Capital N with tail"
+    at 10pt
+\Doulos
+Xɔsee na Mose ɖo Ŋutitotoŋkeke la anyi, eye wòna
+wohlẽ ʋu ɖe ʋɔtrutiwo ŋu bene dɔla si atsrɔ̃
+ŋgɔgbeviwo la nagawɔ nuvevi Israel viwo ya o.\par
+\bigskip
+\DoulosAlt
+Xɔsee na Mose ɖo Ŋutitotoŋkeke la anyi, eye wòna
+wohlẽ ʋu ɖe ʋɔtrutiwo ŋu bene dɔla si atsrɔ̃
+ŋgɔgbeviwo la nagawɔ nuvevi Israel viwo ya o.\par
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}{0.33\hsize}
+\baselineskip=12pt \lineskiplimit=-100pt
+\rightskip=0pt plus 1fil
+\font\Doulos="Doulos SIL/AAT"
+    at 10pt
+\font\DoulosAlt="Doulos SIL/AAT:
+  Alternate forms=Literacy alternates,
+    Small v-hook straight style;
+  Uppercase Eng alternates=Capital N with tail"
+    at 10pt
+{
+\let\c=\char \let\p=\par \let\bs=\bigskip
+\catcode`\ʋ=\active \defʋ{{\red\c`\ʋ}}
+\catcode`\Ŋ=\active \defŊ{{\red\c`\Ŋ}}
+\catcode`\g=\active \defg{{\red\c`\g}}
+\catcode`\a=\active \defa{{\red\c`\a}}
+\Doulos
+Xɔsee na Mose ɖo Ŋutitotoŋkeke la anyi,
+eye wòna wohlẽ ʋu ɖe ʋɔtrutiwo ŋu bene
+dɔla si atsrɔ̃ ŋgɔgbeviwo la nagawɔ nuvevi
+Israel viwo ya o.\p
+\bs
+\DoulosAlt
+Xɔsee na Mose ɖo Ŋutitotoŋkeke la anyi,
+eye wòna wohlẽ ʋu ɖe ʋɔtrutiwo ŋu bene
+dɔla si atsrɔ̃ ŋgɔgbeviwo la nagawɔ nuvevi
+Israel viwo ya o.\p
+}
+\end{minipage}
+\smallskip\hrule
+\caption{Using optional font features to control the rendering of specific Unicode characters. This may be for stylistic reasons, or may be required for readability in a particular language community.}
+\label{fig-eng}
 \end{figure}
 
 \section{\XeTeX\ and other \TeX\ extensions}
 
+The \XeTeX\ project is just one of a number of extended versions of \TeX\ that have been created over the years, and it may be useful to give a brief comment on its relationship to some other projects.
+
 \subsection{\TeXgX}
 
-\subsection{e-\TeX}
+\TeXgX\footnote{See \url{http://www.sil.org/computing/texgx.html}.} is an important ancestor of \XeTeX, in that it pioneered the model of integrating the \TeX\ formatting system with a host platform's smart-font rendering technology. \TeXgX\ relied on Apple's now-obsolete QuickDraw GX graphics system for Mac OS 7–9, and was still based on 8-bit legacy encodings, not Unicode. However, it did adapt \TeX's scanning and paragraphing routines to treat entire words as units to be passed to an external text layout system, as well as extending the \verb|\font| command to load fonts from the host platform and to access optional features. These extensions have been incorporated largely unchanged into \XeTeX.
+
+\subsection{\eTeX}
+
+\eTeX\footnote{See \url{http://www.tug.org/tex-archive/systems/e-tex/v2/}.} is a widely-used extended version of \TeX\ that adds a number of new commands to the language, while retaining compatibility with the standard program. It is in fact used by many installations as the default ‘\TeX’ program, and an increasing number of macro packages assume that \eTeX\ features are available.
+
+\XeTeX\ is implemented as an extension of \eTeX, so that it benefits from the enhancements provided in that system. In particular, support for bidirectional paragraph layout, needed for languages such as Arabic and Hebrew, is inherited from \eTeX.
 
 \subsection{Omega, Aleph}
 \label{sect-omega}
 
+Omega\footnote{See \url{http://omega.enstb.org/} and \url{http://www.tex.ac.uk/cgi-bin/texfaq2html?label=omega}.} is an ambitious project that extends \TeX\ to work with 16-bit character codes and provides a mechanism of input and output filters (“Omega transformation processes”). These can perform complex transformations both as text is read from a file (to support different encodings) and between the internal character codes and font access codes.
+
+Aleph\footnote{See \url{http://www.tex.ac.uk/cgi-bin/texfaq2html?label=aleph}.}, formerly known as e-Omega, is a project that aims to merge features of Omega and \eTeX, and to provide a more stable platform than Omega, which has been undergoing major restructuring and appears to face a somewhat uncertain future.
+
+Omega (and therefore Aleph) provides a very powerful mechanism for supporting multilingual typesetting and complex scripts. However, because (like \TeX\ itself) it is intended to be platform-independent, it does not take advantage of available text systems such as ATSUI; instead, all complex script behavior must be implemented through Omega's own OTP mechanisms. This is both a strength and a weakness: a strength in that the mechanism is both powerful and portable; but a weakness in that configuring fonts (especially for complex scripts) to work with Omega is a non-trivial programming task, beyond the capabilities of many users.
+
+In contrast, one of the key ideas of \XeTeX\ is that it should {\em not} be necessary to re-implement complex script and typographic behavior that has already been defined by the developers of AAT and OpenType fonts. If a user's computer system supports a given writing system, with appropriate fonts and rendering behavior, this should be immediately usable in the typesetting system; no laborious, technical configuration procedure should be needed. This gives \XeTeX\ a major ease-of-use advantage, but comes at a price: the typesetting system is now dependent on the host platform's font technology, in a way that standard \TeX\ is not, and so documents may not be readily portable to other platforms.
+
+While \XeTeX\ does not share Omega's complex-script features, taking an entirely different approach to text rendering, it does use ideas from Omega with regard to the “widening” of character codes within the \TeX\ engine from 8 to 16 bits.
+
 \subsection{pdf\TeX}
 
+One more \TeX\ extension is worth mentioning here: pdf\TeX\ is an extended version of \TeX\ that provides the option to generate PDF output, instead of the traditional DVI that requires post-processing with a device-specific driver. It includes a number of additional commands to enhance the resulting PDF files with bookmarks, interactivity, and so on.
+
+While \XeTeX\ also generates PDF output, this is actually accomplished by generating “extended DVI” output, and then rendering this to PDF as a subsequent process. This is less efficient than pdf\TeX's direct PDF generation, and makes it more difficult to integrate some of the advanced PDF features (although to some extent, this can still be done through the traditional DVI-to-device driver model).
+
+At present, then, \XeTeX\ is entirely separate from pdf\TeX. Integration of \XeTeX's Unicode and font support with pdf\TeX's PDF generation and extended PDF features would provide an even more attractive typesetting system, but would require significant development effort; at the time of writing, no such effort is under way.
+
 \section{Future directions}
+
+This paper has discussed how Unicode and multilingual/multi-script support has been integrated into the \TeX\ system, providing users with a powerful typesetting system that handles virtually any language for which an appropriate “smart font” is available. However, \XeTeX\ should still be considered somewhat experimental, a “work in progress”, and there is considerable scope for further enhancement. A few possible directions for further work include:
+
+\begin{description}
+
+\item[Graphite support] Another smart font technology, besides AAT and OpenType, is SIL International's Graphite\footnote{See \url{http://scripts.sil.org/RenderingGraphite}.} system. This could be integrated as a third text rendering option within \XeTeX.
+
+\item[Alternate platforms] Currently, \XeTeX\ is available only on Mac OS X. It was initially developed on this platform by taking advantage of specific Mac OS X technologies (especially ATSUI for Unicode text layout, and Quartz2D for graphics/PDF rendering). However, there is considerable interest in porting to other operating systems.
+
+\item[pdf\TeX\ integration] As suggested above, it would seem ideal to merge \XeTeX's Unicode support with pdf\TeX's PDF generation.
+
+\item[Unicode math font support] This has also been mentioned above; currently, only legacy 8-bit fonts can be used for math typesetting. Fully supporting Unicode for math will probably require coordination among font developers and \TeX\ macro writers, as well as extensions to the \XeTeX\ system itself.
+
+\item[Line-breaking without spaces] Writing systems that do not use spaces between words are currently not well supported in \XeTeX. Line-breaking and paragraph layout relies on recognizing potential line break positions, primarily at spaces, and so will not work in languages such as Thai or Chinese. It is possible to work around this by use of zero-width spaces in the source text, but ideally the paragraphing algorithm should be extended to handle such writing systems correctly.
+
+\end{description}
+
+While these are offered as examples of how \XeTeX, or perhaps some future system modeled on the current project, might develop further, this does {\em not} constitute a commitment to implement any particular feature!
 
 \end{document}
