@@ -17,9 +17,8 @@
   \dp0=0pt\ht0=0pt\box0 }
 \else
 \usepackage{euler,fontspec}
-\defaultfontfeatures{Mapping=tex-text}%\setromanfont{Brioso Pro}
+\defaultfontfeatures{Mapping=tex-text}
 \setromanfont{Adobe Garamond Pro}
-%\setsansfont[Scale=0.9]{Lucida Grande}
 \setmonofont[Scale=0.8]{Andale Mono WT J}
 
 % Define the \XeTeX logo:
@@ -300,7 +299,23 @@ When associated with a standard Unicode-compliant font in \XeTeX, this has the e
 \hrule\smallskip
 \small
 \begin{verbatim}
-; TECkit mapping for TeX input conventions <-> Unicode charactersLHSName	"TeX-text"RHSName	"UNICODE"pass(Unicode)U+002D U+002D        <> U+2013 ; -- -> en dashU+002D U+002D U+002D <> U+2014 ; --- -> em dashU+0027               <> U+2019 ; ' -> right single quoteU+0027 U+0027        <> U+201D ; '' -> right double quoteU+0022                > U+201D ; " -> right double quoteU+0060               <> U+2018 ; ` -> left single quoteU+0060 U+0060        <> U+201C ; `` -> left double quoteU+0021 U+0060        <> U+00A1 ; !` -> inverted exclamU+003F U+0060        <> U+00BF ; ?` -> inverted question
+; TECkit mapping for TeX input conventions <-> Unicode characters
+LHSName	"TeX-text"
+RHSName	"UNICODE"
+
+pass(Unicode)
+U+002D U+002D        <> U+2013 ; -- -> en dash
+U+002D U+002D U+002D <> U+2014 ; --- -> em dash
+
+U+0027               <> U+2019 ; ' -> right single quote
+U+0027 U+0027        <> U+201D ; '' -> right double quote
+U+0022                > U+201D ; " -> right double quote
+
+U+0060               <> U+2018 ; ` -> left single quote
+U+0060 U+0060        <> U+201C ; `` -> left double quote
+
+U+0021 U+0060        <> U+00A1 ; !` -> inverted exclam
+U+003F U+0060        <> U+00BF ; ?` -> inverted question
 \end{verbatim}\smallskip\hrule
 \caption{The TECkit source file {\tt tex-text.map}, defining a font mapping for \XeTeX\
 that provides compatibility with the conventions of legacy \TeX\ fonts.}
@@ -503,6 +518,21 @@ Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endü
 \smallskip\hrule
 \caption{Using the Turkish language support in an OpenType font to ensure correct rendering of {\tt fi} sequences.}
 \label{fig-turkish-good}
+\end{figure}
+
+\font\doulosA="Doulos SIL/AAT:Uppercase Eng alternates=Large eng with descender" at 10pt
+\font\doulosB="Doulos SIL/AAT:Uppercase Eng alternates=Large eng on baseline" at 10pt
+\font\doulosC="Doulos SIL/AAT:Uppercase Eng alternates=Large eng with short stem" at 10pt
+\font\doulosD="Doulos SIL/AAT:Uppercase Eng alternates=Capital N with tail" at 10pt
+
+Another issue is that some Unicode characters have alternative possible glyph shapes (within a single typeface design). For example, the character U+014A {\sc latin capital letter eng} has four possible designs in the Doulos SIL typeface: {\doulosA Ŋ \doulosB Ŋ \doulosC Ŋ \doulosD Ŋ}. These are all legitimate renderings of the same Unicode character. By default, text rendered in Doulos SIL will use the first. But in some language communities, a different form may be preferred—or may even be required for readability.
+
+One solution to this would be to use different language systems within the OpenType tables to access the alternate {\em Eng} glyphs. In practice, however, this is more difficult to arrange than the Turkish case. This character is used in many lesser-known and little-documented languages, and so font developers cannot reasonably be expected to provide all the appropriate language system mappings.
+
+An alternative approach is through user-selectable “font features”. These are another mechanism for controlling exactly how a given font renders text. Rather than associating variant glyphs or other options with a particular language, the options can be made available as individual “features” that can be enabled or disabled as required. So the Doulos SIL font, for example, has a feature named {\em Uppercase Eng alternates}, with four possible settings, and the character U+014A can be displayed as any of the four available glyphs according to the feature setting chosen.
+
+\begin{figure}
+
 \end{figure}
 
 \section{\XeTeX\ and other \TeX\ extensions}
