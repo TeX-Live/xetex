@@ -22,35 +22,49 @@
 \setromanfont{Adobe Garamond Pro}
 \setmonofont[Scale=0.8]{Andale Mono WT J}
 
-% Define the \XeTeX logo:
+% adjust the TeX and LaTeX logos to look better in Adobe Garamond Pro
+\def\TeX{\leavevmode$\smash{\hbox{T\kern-.1667em\lower.5ex\hbox{E}\kern-.125em X}}$}
+\def\LaTeX{\leavevmode$\smash{\hbox{L\raise.4ex\hbox{\kern-.25em
+  \addfontfeature{LetterCase=SmallCaps}a\kern-.1em}\TeX}}$}
+
+% define the XeTeX logo
 \def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
   \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
-\def\XeTeX{\leavevmode
-  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\reflect{E}}\kern-.1667em \TeX}%
-  \dp0=0pt\ht0=0pt\box0 }
+\def\XeTeX{\leavevmode$\smash{\hbox{X\lower.5ex
+  \hbox{\kern-.125em\reflect{E}}\kern-.1667em \TeX}}$}
+  
 \fi
 
-\def\eTeX{$\varepsilon$-\TeX}
-\def\TeXgX{\TeX\lower.5ex\hbox{\kern-.15em G}\kern-.1667em X}
+\def\ConTeXt{Con\kern-.0667em\TeX t}
 
-\usepackage[format=hang,font=small,labelfont=bf]{caption}
+\def\eTeX{$\varepsilon$-\TeX}
+\def\TeXgX{\leavevmode$\smash{\hbox{\TeX
+  \lower.5ex\hbox{\kern-.15em G}\kern-.1667em X}}$}
 
 \usepackage{fancyhdr,multicol,url}
+\usepackage[dvipdfm,colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage[format=hang,font=small,labelfont=bf]{caption}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\headheight}{14pt}
 \fancyhf{}
 \fancyhead[C]{\small The Multilingual Lion: \TeX\ learns to speak Unicode}
-\fancyfoot[L]{\footnotesize 27th Internationalization and Unicode Conference}
+\fancyfoot[L]{\footnotesize 27{\addfontfeature{VerticalPosition=Superior}th}
+  Internationalization and Unicode Conference}
 \fancyfoot[C]{\footnotesize \thepage}
 \fancyfoot[R]{\footnotesize Berlin, Germany, April 2005}
 
 \frenchspacing
 \catcode`\_=12
 
-\def\texicon{\hbox to 0pt{\kern1.8cm\vbox to 0pt{\kern-1cm
-  \XeTeXpicfile "tex-icon.tiff"\vss}\hss}}
+\def\red{\aftergroup\resetcolor
+  \special{color push rgb 0.5 0.0 0.0}}
+\def\resetcolor{\special{color pop}}
+
+\font\texlogo="TeXLogo" at 96pt
+\def\texicon{\hbox to 0pt{\vbox to 0pt{\kern-1.1cm\hbox{\kern1.8cm
+  \texlogo A}\vss}\hss}}
 
 \title{The Multilingual Lion:\texicon\footnote{Why a multilingual {\em lion}?
 Because \TeX’s logo is a lion;
@@ -60,10 +74,11 @@ see Knuth’s {\em The \TeX book} (Addison Wesley: 1984) or other sources.}\\
 \author{Jonathan Kew\\SIL International}
 
 \begin{document}
+
+\tolerance=1000
+
 \maketitle
 \thispagestyle{fancy}
-
-\pretolerance=10000
 
 \begin{abstract}
 Professor Donald Knuth’s \TeX\ is a typesetting system with a wide user community, and a range of supporting packages and enhancements available for many types of publishing work. However, it dates back to the 1980s and is tightly wedded to 8-bit character data and custom-encoded fonts, making it difficult to configure \TeX\ for many complex-script languages.
@@ -93,7 +108,7 @@ and provided some enhancements for multilingual use,
 but support for many non-Latin and complex scripts remains a problem.
 
 In addition to standard 8-bit codepages, there are ways of using \TeX’s programmability
-to allow input of additional text elements as by representing them as character sequences.
+to allow input of additional text elements by representing them as character sequences.
 Some conventions are so widely used that many users think of them as a standard part of the \TeX\ program (though this is not really the case); others are associated with macro packages for particular languages; and still others are created just for specific projects.
 Figure~\ref{fig-inputconventions} shows a few examples of typical \TeX\ input conventions for non-ASCII characters.
 
@@ -304,6 +319,7 @@ The system was therefore extended by incorporating the OpenType layout engine fr
 Internally, ICU-based OpenType rendering is handled in a very different way from ATSUI rendering. With ATSUI, the output of the typesetting process includes the original Unicode strings and the appropriate font descriptors; the PDF-generating back-end then reuses ATSUI layout functions to actually render the text into the PDF destination. In the case of OpenType, however, the typesetting process retrieves the array of positioned glyphs that result from the layout operation, and records this; the back-end then merely has to draw the glyphs as specified, not repeat any of the text layout work.
 
 When the \TeX\ source calls for a particular font, \XeTeX\ looks for specific layout tables within the font (e.g., \verb|morx| for AAT, or \verb|GSUB| for OpenType) to determine which layout engine to use, and instantiates either an ATSUI style or an ICU LayoutEngine as appropriate.
+(In the event that a font supports both layout technologies, \XeTeX\ currently chooses the OpenType engine by default, but users can explicitly specify which to use.)
 The difference in the implementation of the two technologies is, however, entirely hidden from the main \TeX\ program, which simply deals with “word nodes”, forming them into paragraphs and pages once they've been measured by the appropriate smart-font engine.
 
 \subsection{Hyphenation support}
@@ -316,7 +332,7 @@ Explicit discretionary hyphens may be included in \TeX\ input, and these continu
 
 In order to reinstate hyphenation support, therefore, it was necessary to extend the hyphenation routine so as to be able to extract the text from a word node, use \TeX's pattern-based algorithm to find possible hyphenation positions within the word, and then replace the original word node with a sequence of nodes representing the (possibly) hyphenated fragments, with discretionary hyphen nodes in between.
 
-A final refinement proved necessary here: once the line-breaks have been chosen, and the lines of text are being “packaged” for justification to the desired width, any unused hyphenation points are removed and the adjacent word (fragment) nodes re-merged. This is required in order to allow rendering behavior such as character reordering and ligatures, implemented at the smart-font level, to occur across hyphenation points. With an early release of \XeTeX, a user reported that OpenType ligatures in certain words such as {\em different} would intermittently fail (appearing as {\em dif\kern0pt ferent} instead), and this turned out to be caused when automatic hyphenation came into effect and a discretionary break was inserted.
+A final refinement proved necessary here: once the line-breaks have been chosen, and the lines of text are being “packaged” for justification to the desired width, any unused hyphenation points are removed and the adjacent word (fragment) nodes re-merged. This is required in order to allow rendering behavior such as character reordering and ligatures, implemented at the smart-font level, to occur across hyphenation points. With an early release of \XeTeX, a user reported that OpenType ligatures in certain words such as {\em di{\red ff}erent} would intermittently fail (appearing as {\em di{\red f\kern0pt f}erent}, without the {\em ff} ligature). This was occurring when automatic hyphenation came into effect and a discretionary break was inserted, breaking the word node into sub-words that were being rendered separately.
 
 \section{Backward compatibility}
 
@@ -326,7 +342,7 @@ However, it soon became clear that many existing \TeX\ users,
 with no complex-script requirements,
 nevertheless found the integration with the host platform’s font management
 to be very attractive, and wished to use \XeTeX\ and native Mac OS X fonts
-with existing \TeX\ (or more commonly \LaTeX) documents.
+with existing \TeX\ (or more commonly \LaTeX\footnote{Probably the most widely-used \TeX\ macro package, offering extensive support for structured markup and many document types and style options; see \url{http://www.latex-project.org/}. This paper is an example of the use of the \LaTeX\ formatting package with \XeTeX.}) documents.
 There is a huge legacy of pre-Unicode \TeX\ documents and resources, and it is helpful for users to be able to continue working with these materials, while at the same time beginning to take advantage of the extended capabilities of \XeTeX.
 
 \subsection{Traditional \TeX\ input conventions}
@@ -344,7 +360,7 @@ With the original “pure Unicode” implementation of \XeTeX, it was impossible
 
 To enable users to process such files with \XeTeX, without requiring a separate conversion to Unicode first, more flexible input encoding support was eventually added to the system. A new command \verb|\XeTeXinputencoding| was implemented, which allows the user to request on-the-fly conversion from another character encoding into Unicode as the source text is read.
 
-The \verb|\XeTeXinputencoding| command requires one parameter, the name of the desired encoding. A number of options are supported. First, \verb|utf8| or \verb|utf16| will set the system to direct Unicode input (or \verb|auto| restores the default behavior, which is to detect the Unicode encoding form from the initial bytes of the file). The special name \verb|bytes| causes \XeTeX\ to read individual byte values as separate code units, treating them as character codes 0–255. While this is unlikely to represent the correct Unicode interpretation of the source text, it may be useful if these codes are to be processed by existing \TeX\ macros rather than used directly as text characters.
+The \verb|\XeTeXinputencoding| command requires one parameter, the name of the desired encoding. A number of options are supported. First, \verb|utf8| or \verb|utf16| will set the system to direct Unicode input; \verb|auto| restores the default behavior, which is to detect the Unicode encoding form from the initial bytes of the file. The special name \verb|bytes| causes \XeTeX\ to read individual byte values as separate code units, treating them as character codes 0–255. While this is unlikely to represent the correct Unicode interpretation of the source text, it may be useful if these codes are to be processed by existing \TeX\ macros rather than used directly as text characters.
 
 Finally, any Internet encoding name known to the Mac OS X Text Encoding Converter\footnote{A standard component of the Mac OS; see \url{http://developer.apple.com/documentation/Carbon/Reference/Text_Encodin_sion_Manager/index.html}.} may be specified.
 In this case, \XeTeX\ calls TEC to perform encoding conversion as it reads the input text.
@@ -401,6 +417,9 @@ that provides compatibility with the conventions of legacy \TeX\ fonts.}
 \label{fig-tex-text}
 \end{figure}
 
+\catcode`\•=\active
+\def•{\bgroup\red\let•=\egroup}
+
 \begin{figure}[tb]
 \hrule\smallskip
 \begin{minipage}{0.6\hsize}
@@ -409,8 +428,8 @@ that provides compatibility with the conventions of legacy \TeX\ fonts.}
 \TestA !`Typing ``quotes''---and
   dashes---the \TeX\ way!\par
 \bigskip
-\font\TestB="Times New Roman:
-  mapping=tex-text" at 9pt
+\font\TestB="Times New Roman•:
+  mapping=tex-text•" at 9pt
 \TestB !`Typing ``quotes''---and
   dashes---the \TeX\ way!\par
 \end{verbatim}
@@ -426,7 +445,7 @@ that provides compatibility with the conventions of legacy \TeX\ fonts.}
   dashes---the \TeX\ way!\par
 \end{minipage}
 \smallskip\hrule
-\caption{Using the {\em tex-text} font mapping to support legacy typing conventions.}
+\caption{Using the {\em tex-text} font mapping to support legacy typing conventions. (The source document is of course plain text; color is added for clarity here and in other figures.)}
 \label{fig-mapping}
 \end{figure}
 
@@ -445,8 +464,8 @@ While this mechanism, associating a mapping defined in terms of Unicode characte
 \font\gen="Gentium" at 9pt \gen
 \SampleText
 \bigskip
-\font\gentrans="Gentium:
-  mapping=cyr-lat-iso9" at 9pt \gentrans
+\font\gentrans="Gentium•:
+  mapping=cyr-lat-iso9•" at 9pt \gentrans
 \SampleText
 \end{centering}
 \end{verbatim}
@@ -524,7 +543,7 @@ $$\eqalign{
 Standard \TeX\ macro packages provide commands to access many hundreds of math and other technical symbols, and these are mapped to the appropriate characters in a selection of specialized fonts.
 In Unicode many such symbols now have their own codepoints, and so it should be possible to typeset such material using standard Unicode-compliant fonts, rather than the custom-encoded math and symbol fonts normally used with \TeX.
 
-However, this is not as simple as it may sound. \TeX's math typesetting features rely heavily on specialized font metric information associated with the math fonts, in addition to the glyphs themselves. This is necessary in order to provide accurate typesetting of complex constructs. Unfortunately, this means that users cannot simply tell \XeTeX\ to use a Unicode-compliant font for math; not only will the standard \TeX\ math commands access the wrong glyphs, but also, even if the \TeX\ macros were redefined to access the proper Unicode values, such fonts will still not work in math mode because of the lack of extended font metric information.
+However, this is not as simple as it may sound. \TeX's math typesetting features rely on specialized font metric information associated with the math fonts, in addition to the glyphs themselves. This is necessary to provide accurate typesetting of complex constructs. Unfortunately, this means that users cannot simply tell \XeTeX\ to use a Unicode-compliant font for math; not only will the standard \TeX\ math commands access the wrong glyphs, but also, even if the \TeX\ macros are redefined using Unicode values, such fonts will still not work in math mode because of the lack of extended font metric information.
 
 To address this issue, it will be necessary to provide these additional font metrics for any Unicode fonts that are to be used for math typesetting; and it will also be necessary to extend additional data structures in \XeTeX\ that are currently limited to 8-bit codes. It may be possible to make use of work from the Omega project (see section~\ref{sect-omega}) to facilitate this, but at the time of writing, \XeTeX\ is limited to using legacy 8-bit \TeX\ fonts for math typesetting.
 
@@ -538,7 +557,6 @@ Such a ligature is appropriate for most languages, and improves the appearance o
 and typical OpenType or AAT fonts will contain ligature rules that automatically use it wherever the sequence {\tt fi} occurs in the text stream.
 However, in Turkish it becomes a problem because the distinction between {\em i} and {\em ı} is lost. Figure~\ref{fig-turkish-bad} illustrates this issue.\footnote{Sample Turkish text from the Unicode web site, \url{http://www.unicode.org/standard/translations/turkish.html}.}
 
-\def\red{\aftergroup\resetcolor \special{color push rgb 0.5 0.0 0.0}} \def\resetcolor{\special{color pop}}
 \begin{figure}[hb]
 \hrule\smallskip
 \small
@@ -548,18 +566,23 @@ However, in Turkish it becomes a problem because the distinction between {\em i}
 \txtfont
 Apple, HP, IBM, JustSystem, Microsoft, Oracle,
 SAP, Sun, Sybase, Unisys ve endüstrinin diğer
-ileri gelen {\red firmaları} Evrensel Kod
-Standardını desteklemektedirler. Evrensel Kod,
-XML, Java, ECMAScript (JavaScript), LDAP, CORBA
-3.0, WML vb. gibi modern standartlar
-{\red tarafından} ISO/IEC 10646 uyarlanmasının
-resmi yoludur.
+ileri gelen •firmaları• Evrensel Kod Standardını
+desteklemektedirler. Evrensel Kod, XML, Java,
+ECMAScript (JavaScript), LDAP, CORBA 3.0,
+WML vb. gibi modern standartlar •tarafından•
+ISO/IEC 10646 uyarlanmasının resmi yoludur.
 \end{verbatim}
 \end{minipage}\hfil
 \begin{minipage}{0.45\hsize}
 \font\txtfont="Adobe Garamond Pro" at 8pt
 \txtfont
-Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endüstrinin  diğer ileri gelen {\red firmaları}  Evrensel Kod Standardını desteklemektedirler. Evrensel Kod, XML, Java, ECMAScript (JavaScript), LDAP, CORBA 3.0, WML vb. gibi modern standartlar {\red tarafından} ISO/IEC 10646 uyarlanmasının  resmi yoludur.
+Apple, HP, IBM, JustSystem, Microsoft, Oracle,
+SAP, Sun, Sybase, Unisys ve endüstrinin diğer
+ileri gelen •firmaları• Evrensel Kod Standardını
+desteklemektedirler. Evrensel Kod, XML, Java,
+ECMAScript (JavaScript), LDAP, CORBA 3.0,
+WML vb. gibi modern standartlar •tarafından•
+ISO/IEC 10646 uyarlanmasının resmi yoludur.
 \end{minipage}
 \smallskip\hrule
 \caption{Turkish text showing the necessity for language-specific font rendering. Note how the automatic use of the {\em fi} ligature obscures the distinction between {\em i} and {\em ı}, which are separate letters in Turkish.}
@@ -574,17 +597,16 @@ An increasing number of OpenType fonts provide a solution to this problem, in th
 \small
 \begin{minipage}{0.55\hsize}
 \begin{verbatim}
-\font\txtfont="Adobe Garamond Pro:
-  language=TUR" at 8pt
+\font\txtfont="Adobe Garamond Pro•:
+  language=TUR•" at 8pt
 \txtfont
 Apple, HP, IBM, JustSystem, Microsoft, Oracle,
 SAP, Sun, Sybase, Unisys ve endüstrinin diğer
-ileri gelen {\red firmaları} Evrensel Kod
-Standardını desteklemektedirler. Evrensel Kod,
-XML, Java, ECMAScript (JavaScript), LDAP, CORBA
-3.0, WML vb. gibi modern standartlar
-{\red tarafından} ISO/IEC 10646 uyarlanmasının
-resmi yoludur.
+ileri gelen •firmaları• Evrensel Kod Standardını
+desteklemektedirler. Evrensel Kod, XML, Java,
+ECMAScript (JavaScript), LDAP, CORBA 3.0,
+WML vb. gibi modern standartlar •tarafından•
+ISO/IEC 10646 uyarlanmasının resmi yoludur.
 \end{verbatim}
 \end{minipage}\hfil
 \begin{minipage}{0.45\hsize}
@@ -592,7 +614,13 @@ resmi yoludur.
 \font\txtfont="Adobe Garamond Pro:
   language=TUR" at 8pt
 \txtfont
-Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endüstrinin  diğer ileri gelen {\red firmaları}  Evrensel Kod Standardını desteklemektedirler. Evrensel Kod, XML, Java, ECMAScript (JavaScript), LDAP, CORBA 3.0, WML vb. gibi modern standartlar {\red tarafından} ISO/IEC 10646 uyarlanmasının  resmi yoludur.
+Apple, HP, IBM, JustSystem, Microsoft, Oracle,
+SAP, Sun, Sybase, Unisys ve endüstrinin diğer
+ileri gelen •firmaları• Evrensel Kod Standardını
+desteklemektedirler. Evrensel Kod, XML, Java,
+ECMAScript (JavaScript), LDAP, CORBA 3.0,
+WML vb. gibi modern standartlar •tarafından•
+ISO/IEC 10646 uyarlanmasının resmi yoludur.
 \end{minipage}
 \smallskip\hrule
 \caption{Using the Turkish language support in an OpenType font to ensure correct rendering of {\tt fi} sequences.}
@@ -604,23 +632,23 @@ Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endü
 \font\doulosC="Doulos SIL/AAT:Uppercase Eng alternates=Large eng with short stem" at 10pt
 \font\doulosD="Doulos SIL/AAT:Uppercase Eng alternates=Capital N with tail" at 10pt
 
-Another issue is that some Unicode characters have alternative possible glyph shapes (within a single typeface design). For example, the character U+014A {\sc latin capital letter eng} has four possible designs in the Doulos SIL typeface: {\doulosA Ŋ \doulosB Ŋ \doulosC Ŋ \doulosD Ŋ}. These are all legitimate renderings of the same Unicode character, the uppercase version of {\em eng} ({\doulosA ŋ}). By default, text rendered in Doulos SIL will use the first of these forms. But in some language communities, a different form may be preferred—or may even be required for readability.
+Another issue is that some Unicode characters have alternative possible glyph shapes (within a single typeface design). For example, the character U+014A {\sc latin capital letter eng} has four possible designs in the Doulos SIL typeface: $\smash{\hbox{\doulosA Ŋ \doulosB Ŋ \doulosC Ŋ \doulosD Ŋ}}$. These are all legitimate renderings of the same Unicode character, the uppercase version of {\em eng} ($\smash{\hbox{\doulosA ŋ}}$). By default, text rendered in Doulos SIL will use the first of these forms. But in some language communities, a different form may be preferred—or may even be required for readability.
 
 One solution to this would be to use different language systems within the OpenType tables to access the alternate {\em Eng} glyphs. In practice, however, this is more difficult to arrange than the Turkish case. This character is used in many lesser-known and little-documented languages, and so font developers cannot reasonably be expected to provide all the appropriate language system mappings.
 
 An alternative approach is through user-selectable {\em font features}. These are another mechanism for controlling exactly how a given font renders text. Rather than associating variant glyphs or other options with a particular language, the options can be made available as individual “features” that can be enabled or disabled as required. So the Doulos SIL font, for example, has a feature named {\em Uppercase Eng alternates}, with four possible settings, and the character U+014A can be displayed as any of the four available glyphs according to the feature setting chosen.
 
-\XeTeX\ allows such features to be included as part of the font specification used to load a particular font for typesetting. Figure~\ref{fig-eng} shows how the same text can be typeset either with the default glyphs provided in Doulos SIL, or using alternate forms for particular characters. This mechanism enables the user to achieve culturally-appropriate rendering of the Unicode text without requiring the font developer to be aware of the proper choices of glyph variants for each language where the font may be used.
+\XeTeX\ allows such features to be included as part of the font specification used to load a particular font for typesetting. Figure~\ref{fig-eng} shows how the same text can be typeset either with the default glyphs provided in Doulos SIL or using alternate forms for particular characters. This mechanism enables the user to achieve culturally-appropriate rendering of the Unicode text without requiring the font developer to be aware of the proper choices of glyph variants for each language where the font may be used.
 
 \begin{figure}
 \hrule\smallskip
 \begin{minipage}{0.67\hsize}
 \begin{verbatim}
 \font\Doulos="Doulos SIL/AAT" at 10pt
-\font\DoulosAlt="Doulos SIL/AAT:
+\font\DoulosAlt="Doulos SIL/AAT•:
   Alternate forms=Literacy alternates,
     Small v-hook straight style;
-  Uppercase Eng alternates=Capital N with tail"
+  Uppercase Eng alternates=Capital N with tail•"
     at 10pt
 \Doulos
 Xɔsee na Mose ɖo Ŋutitotoŋkeke la anyi, eye wòna
@@ -667,15 +695,15 @@ Israel viwo ya o.\p
 \label{fig-eng}
 \end{figure}
 
-\section{\XeTeX\ and other \TeX\ extensions}
+\section[XeTeX and other TeX extensions]{\XeTeX\ and other \TeX\ extensions}
 
 The \XeTeX\ project is just one of a number of extended versions of \TeX\ that have been created over the years, and it may be useful to give a brief comment on its relationship to some other projects.
 
-\subsection{\TeXgX}
+\subsection[TeXGX]{\TeXgX}
 
 \TeXgX\footnote{See \url{http://www.sil.org/computing/texgx.html}.} is an important ancestor of \XeTeX, in that it pioneered the model of integrating the \TeX\ formatting system with a host platform's smart-font rendering technology. \TeXgX\ relied on Apple's now-obsolete QuickDraw GX graphics system for Mac OS 7–9, and was still based on 8-bit legacy encodings, not Unicode. However, it did adapt \TeX's scanning and paragraphing routines to treat entire words as units to be passed to an external text layout system, as well as extending the \verb|\font| command to load fonts from the host platform and to access optional features. These extensions have been incorporated largely unchanged into \XeTeX.
 
-\subsection{\eTeX}
+\subsection[e-TeX]{\eTeX}
 
 \eTeX\footnote{See \url{http://www.tug.org/tex-archive/systems/e-tex/v2/}.} is a widely-used extended version of \TeX\ that adds a number of new commands to the language, while retaining compatibility with the standard program. It is in fact used by many installations as the default ‘\TeX’ program, and an increasing number of macro packages assume that \eTeX\ features are available.
 
@@ -694,9 +722,9 @@ In contrast, one of the key ideas of \XeTeX\ is that it should {\em not} be nece
 
 While \XeTeX\ does not share Omega's complex-script features, taking an entirely different approach to text rendering, it does use ideas from Omega with regard to the “widening” of character codes within the \TeX\ engine from 8 to 16 bits.
 
-\subsection{pdf\TeX}
+\subsection[pdfTeX]{pdf\TeX}
 
-One more \TeX\ extension is worth mentioning here: pdf\TeX\ is an extended version of \TeX\ that provides the option to generate PDF output, instead of the traditional DVI that requires post-processing with a device-specific driver. It includes a number of additional commands to enhance the resulting PDF files with bookmarks, interactivity, and so on.
+One more \TeX\ extension is worth mentioning here: pdf\TeX\footnote{See \url{http://www.tug.org/applications/pdftex/}.} is an extended version of \TeX\ that provides the option to generate PDF output, instead of the traditional DVI that requires post-processing with a device-specific driver. It includes a number of additional commands to enhance the resulting PDF files with bookmarks, interactivity, and so on.
 
 While \XeTeX\ also generates PDF output, this is actually accomplished by generating “extended DVI” output, and then rendering this to PDF as a subsequent process. This is less efficient than pdf\TeX's direct PDF generation, and makes it more difficult to integrate some of the advanced PDF features (although to some extent, this can still be done through the traditional DVI-to-device driver model).
 
@@ -712,7 +740,7 @@ This paper has discussed how Unicode and multilingual/multi-script support has b
 
 \item[Alternate platforms] Currently, \XeTeX\ is available only on Mac OS X. It was initially developed on this platform by taking advantage of specific Mac OS X technologies (especially ATSUI for Unicode text layout, and Quartz2D for graphics/PDF rendering). However, there is considerable interest in porting to other operating systems.
 
-\item[pdf\TeX\ integration] As suggested above, it would seem ideal to merge \XeTeX's Unicode support with pdf\TeX's PDF generation.
+\item[pdf\TeX\ integration] As suggested above, it would seem ideal to merge \XeTeX's Unicode and advanced-font-technology support with pdf\TeX's PDF generation.
 
 \item[Unicode math font support] This has also been mentioned above; currently, only legacy 8-bit fonts can be used for math typesetting. Fully supporting Unicode for math will probably require coordination among font developers and \TeX\ macro writers, as well as extensions to the \XeTeX\ system itself.
 
@@ -720,6 +748,9 @@ This paper has discussed how Unicode and multilingual/multi-script support has b
 
 \end{description}
 
-While these are offered as examples of how \XeTeX, or perhaps some future system modeled on the current project, might develop further, this does {\em not} constitute a commitment to implement any particular feature!
+While these are offered as examples of how \XeTeX, or perhaps some future system modeled on the current project, might be developed further, this does {\em not} constitute a commitment to implement any particular feature!
+
+A good forum for further suggestions, questions, contributions, and other feedback is the \XeTeX\ mailing list\footnote{See \url{http://www.tug.org/mailman/listinfo/xetex}.} created by interested users shortly after the first public release of a test version, and currently including some 130-plus users. The input of this group has been invaluable in shaping \XeTeX, particularly with regard to issues of compatibility with legacy documents and major macro packages such as \LaTeX\ and \ConTeXt\footnote{A macro package designed with the same general-purpose aims as \LaTeX, but intended to reflect more recent ideas about markup, etc.; see \url{http://www.pragma-ade.com/}.}
+I would like to thank all those who have reported bugs, helped isolate problems, asked helpful and thought-provoking questions, suggested enhancements, contributed \TeX\ macros, and encouraged and supported the \XeTeX\ project in many ways.
 
 \end{document}
