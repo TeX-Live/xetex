@@ -1,4 +1,10 @@
-\documentclass[letterpaper,10pt]{article}
+\TeXXeTstate=1
+\documentclass[letterpaper,11pt]{article}
+\flushbottom
+
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
+\renewcommand{\textfraction}{0.0}
 
 \setlength{\textwidth}{6in}
 \setlength{\textheight}{8.5in}
@@ -6,27 +12,44 @@
 \topmargin=0in
 
 \ifx\XeTeXversion\undefined
-\def\XeTeX{\leavevmode  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\hbox{E}}\kern-.1667em \TeX}%  \dp0=0pt\ht0=0pt\box0 }
+\def\XeTeX{\leavevmode
+  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\hbox{E}}\kern-.1667em \TeX}%
+  \dp0=0pt\ht0=0pt\box0 }
 \else
 \usepackage{euler,fontspec}
-\setromanfont{Brioso Pro}%\setsansfont[Scale=0.94]{Gill Sans}
+\defaultfontfeatures{Mapping=tex-text}%\setromanfont{Brioso Pro}
+\setromanfont{Adobe Garamond Pro}
+%\setsansfont[Scale=0.9]{Lucida Grande}
+\setmonofont[Scale=0.8]{Andale Mono WT J}
 
-% Define the \XeTeX logo:\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}\def\XeTeX{\leavevmode  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\reflect{E}}\kern-.1667em \TeX}%  \dp0=0pt\ht0=0pt\box0 }
+% Define the \XeTeX logo:
+\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
+  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
+\def\XeTeX{\leavevmode
+  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\reflect{E}}\kern-.1667em \TeX}%
+  \dp0=0pt\ht0=0pt\box0 }
 \fi
+\def\TeXgX{\TeX\lower.5ex\hbox{\kern-.15em G}\kern-.1667em X}
 
-\usepackage{fancyhdr,multicol}
+\usepackage[format=hang,font=small,labelfont=bf]{caption}
+
+\usepackage{fancyhdr,multicol,url}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\headheight}{14pt}
 \fancyhf{}
 \fancyhead[C]{\small The Multilingual Lion: \TeX\ learns to speak Unicode}
-\fancyfoot[L]{\small {\addfontfeature{VerticalPosition=Ordinal}27th} Internationalization and Unicode Conference}
-\fancyfoot[C]{\small \thepage}
-\fancyfoot[R]{\small Berlin, Germany, April 2005}
+\fancyfoot[L]{\footnotesize 27th Internationalization and Unicode Conference}
+\fancyfoot[C]{\footnotesize \thepage}
+\fancyfoot[R]{\footnotesize Berlin, Germany, April 2005}
 
-\title{The Multilingual Lion:\footnote{Why a multilingual {\em lion}? Because \TeX’s logo is a lion, of course;
-see Knuth’s {\em The \TeX book} or other sources.}\\
+\frenchspacing
+\catcode`\_=12
+
+\title{The Multilingual Lion:\footnote{Why a multilingual {\em lion}?
+Because \TeX’s logo is a lion;
+see Knuth’s {\em The \TeX book} (Addison Wesley: 1984) or other sources.}\\
 \TeX\ learns to speak Unicode}
 
 \author{Jonathan Kew\\SIL International}
@@ -36,7 +59,6 @@ see Knuth’s {\em The \TeX book} or other sources.}\\
 \thispagestyle{fancy}
 
 \pretolerance=10000
-\frenchspacing
 
 \begin{abstract}
 Professor Donald Knuth’s \TeX\ is a typesetting system with a wide user community, and a range of supporting packages and enhancements available for many types of publishing work. However, it dates back to the 1980s and is tightly wedded to 8-bit character data and custom-encoded fonts, making it difficult to configure \TeX\ for many complex-script languages.
@@ -49,44 +71,169 @@ Some background familiarity with \TeX\ may be helpful, but the paper’s focus w
 \end{abstract}
 
 \section{Background}
-The \TeX\ typesetting system has a 20-year history as a stable and reliable tool for producing nicely-formatted documents from marked-up source text,
+The \TeX\ typesetting system has a 20-year history as a stable and reliable tool for producing well-formatted documents from marked-up source text,
 and offers a great deal of power, flexibility and extensibility by virtue of a powerful macro language.
 The extensive user community, especially in the academic world,
 has created a large collection of supporting packages for many different types of document.
+
+For those unfamiliar with \TeX, a brief overview may be helpful. The \TeX\ processor reads a source document, recognizing characters as either text to be typeset or markup according to scanning rules and (customizable) character categories. It expands macros and executes commands (setting parameters to control the typesetting process, for example), and forms the text into paragraphs and pages. Finally, a compact representation of the typeset pages is written out to a DVI (“device independent”) file; a subsequent device driver process reads this \verb|.dvi| file and renders the pages to a specific destination such as a screen or printer.
+(In the case of \XeTeX, to be discussed below, this output format has been extended and renamed XDV, and the default behavior is to automatically run an XDV-to-PDF processor, so that the effective output format is PDF.)
+
+Over the years, \TeX\ has been used with many non-English languages,
+often using combinations of custom-encoded 8-bit fonts and different input encodings and conventions.
 However, \TeX’s roots are unquestionably in Latin-script typography;
 the system originally processed 7-bit text (usually ASCII), accessing 8-bit fonts for output.
 Version~3 extended the system to support 8-bit input text,
 and provided some enhancements for multilingual use,
-but support for non-Latin and complex scripts remains a problem.
+but support for many non-Latin and complex scripts remains a problem.
 
-Over the years, \TeX\ has been used with many non-English languages,
-using combinations of custom-encoded 8-bit fonts and different input encodings and conventions.
 In addition to standard 8-bit codepages, there are ways of using \TeX’s programmability
-to allow input of additional text elements as sequences of ASCII characters.
-For example:
-\begin{multicols}{3}
-\begin{obeylines}
-\verb|\'a| $\mapsto$ \'a
-\verb|\"u| $\mapsto$ \"u
-\verb|\aa| $\mapsto$ \aa
-\end{obeylines}
-\end{multicols}
+to allow input of additional text elements as by representing them as character sequences.
+Some conventions are so widely used that many users think of them as a standard part of the \TeX\ program (though this is not really the case); others are associated with macro packages for particular languages; and still others are created just for specific projects.
+A few examples:
+\font\dn="Devanagari MT" at 11pt
+\begin{figure}[h]
+\begin{tabular}{ccl}
+\em Source text&\em Typeset result&\em Notes\\
+\verb|\'{a}|&\'a&\verb|\'| is one of various commands to add an accent to a letter\\
+\verb|\c{c}|&\c c&an accent that attaches below the letter\\
+\verb|\aa|&\aa&special command for a specific character\\
+\verb|---|&---&implemented as a ligature in standard \TeX\ fonts\\
+\verb|\alpha|&$\alpha$&one of many symbols available in {\em math mode}\\
+\verb|{\dn acchaa}|&\dn अच्छा&requires use of a special preprocessor and custom fonts\\
+\end{tabular}
+\end{figure}
+
+While these conventions can be extended almost indefinitely, they tend to clutter the source text; and they rely on a variety of custom-encoded fonts to provide all the symbols needed.
+Unicode offers the possibility of a far simpler model for typesetting multilingual text, where each character needed is represented in the source not by some sequence of commands, but as itself.
+
+In the case of complex scripts such as Devanagari, solutions based on standard \TeX\ typically involve a custom preprocessor that performs the contextual analysis needed for proper rendering of the script, starting from some (often Romanized) input convention, and emits special \TeX\ commands to access the appropriate glyphs from custom 8-bit fonts.
+While such solutions can work, they may be complex to use, and fragile in how they interact with various other macro packages for document formatting.
+And trying to combine several such solutions to create a highly multilingual document, using several complex scripts simultaneously, goes far beyond what typical users can be expected to achieve.
+
+To address these issues, an extended version of \TeX\ known as \XeTeX\ has been developed. This is a Unicode-based multilingual typesetting system that works with existing “smart font” technologies to provide complex script support, within the framework of the formatting power, flexibility, and programmability of \TeX.
+
 
 \section{Examples of use}
 
+Before looking at what was involved in extending \TeX\ to support Unicode and smart font technologies for text rendering, I will show a few brief examples of \XeTeX\ at work. These illustrate how readily Unicode text now fits into the \TeX\ typesetting paradigm. In each case, the “raw” source (text and markup) is shown alongside the typeset result.
+
+\input{figure-sorting-a}
+\input{figure-sorting-b}
+\input{figure-biblio}
+\input{figure-scripture}
+
 \section{Extending the character set}
 
-\section{Implementing a character-glyph model}
+The first step towards Unicode support in \TeX\ is to expand the character set
+beyond the original 256-character limit.
+At the lowest level, this means changing internal data structures throughout,
+wherever characters were stored as 8-bit values.
+As Unicode scalar values may be up to U+10FFFF,
+an obvious modification would be to make “characters” 32~bits wide,
+and treat Unicode characters as the basic units of text.
+
+However, in \XeTeX\ a pragmatic decision was made to work internally with UTF-16
+as the encoding form of Unicode,
+making “characters” in the engine 16~bits wide,
+and handling supplementary-plane characters using UTF-16 surrogate pairs.
+This choice was made for a number of reasons:
+
+\begin{itemize}
+
+\item The operating-system APIs that \XeTeX\ expects to use in working with Unicode text require UTF-16, so working with this encoding form avoids the need for conversion at this interface.
+
+\item There are a number of internal tables in the \TeX\ program that are implemented as arrays indexed by character code. In standard \TeX, these arrays have 256~elements each.
+Enlarging them to 65,536 elements each, to index them by UTF-16 code values, is just about reasonable; enlarging them further, to allow direct indexing by Unicode scalar values, would make for extremely large arrays.
+To keep the memory footprint reasonable (both at runtime and for “dumped” macro collections), some kind of sparse array implementation would probably be needed, requiring significant additional development and testing, and perhaps impacting performance of key inner-loop parts of the \TeX\ system.
+
+\item These per-character arrays are used to implement character “categories”, used in parsing input text into tokens, as well as case conversions and “space factor” (a property used to modify word spacing for punctuation in Roman typography).
+In practice, it seems unlikely that there will be a great need to customize these character properties for individual supplementary-plane characters.
+They're unlikely to be wanted as escape characters or other special categories of \TeX\ input;
+need not have the “letter” property that allows them to be part of \TeX\ control sequences;
+and probably don't need to be included in automatic hyphenation patterns.
+
+\end{itemize}
+
+In view of these factors, \XeTeX\ works with UTF-16 code units, and Unicode characters beyond U+FFFF cannot be given individually-customized \TeX\ properties.
+They can still be included in documents, however, and will render correctly (given appropriate fonts) as the UTF-16 surrogate pairs will be properly passed to the font system.
+
+Another possible route would have been to use UTF-8 as the internal encoding form, retaining the existing 8-bit code units used in \TeX\ as characters.
+However, this would have made it impossible (without major revisions) to provide properties such as character category (letter, other printing character, escape, grouping delimiter, comment character, etc.), case mappings, and so on to any characters beyond the basic ASCII set; and it would also require conversion when Unicode text is to be passed to system APIs.
+Overall, therefore, UTF-16 was felt to be the most practical choice, and the appropriate \TeX\ data structures were systematically widened.
+
+\section{Implementing a character/glyph model}
+
+An important aspect of rendering Unicode text is the character/glyph model; it is assumed that the reader is familiar with this concept.
+Traditionally, \TeX\ does not have a well-developed character/glyph model. Input text is a sequence of 8-bit codes, interpreted as character tokens or other (e.g., control sequence) tokens according to the scanning rules and character categories.
+These same 8-bit codes are used as access codes for glyphs in fonts.
+It is possible to remap codes by \TeX\ macro programming,
+and the “font metrics” (\verb|.tfm|) files used by \TeX\ can include simple ligature rules
+(e.g., \verb|fi| $\mapsto$ fi), but the model is fairly rudimentary, and not adequate for script behaviors such as Arabic cursive shaping or Indic reordering.
+To support the full range of complex scripts in Unicode, a more complete character/glyph model is needed.
+
+Rather than designing a text rendering system based on the Unicode character/glyph model from scratch, it seemed desirable to leverage existing implementations,
+allowing \TeX\ to take advantage of the “smart fonts” and multilingual text rendering facilities found in modern operating systems and libraries.
+At the time of writing, \XeTeX\ supports two such rendering systems; it is possible that additional ones will be supported in future versions.
 
 \subsection{Using ATSUI on Mac OS X}
 
+The first smart-font rendering system implemented in \XeTeX\ was the ATSUI\footnote{Apple Type Services for Unicode Imaging; see \url{http://developer.apple.com/intl/atsui.html}.} system under Mac OS X. The essential objects needed to render text with ATSUI are {\em text layouts} and associated {\em styles} (which in turn refer to {\em fonts} and other attributes).
+
+In order for a system like ATSUI to render text correctly, it must be given complete runs of text, not individual characters; otherwise, behavior such as reordering and contextual glyph selection cannot happen. \TeX\ normally treats each character of text as an individual node in a list, with known (and fixed) dimensions. Paragraph layout consists of taking a list of such nodes, with intervening “glue” (potentially flexible space) and other items, and determining the best sequence of line-break positions and the final location of each character and other node.
+
+When using ATSUI for Unicode text, however, \XeTeX\ cannot treat each character (or, strictly speaking, UTF-16 code unit) as a separate node, to be measured and positioned individually.
+Instead, it collects sequences of characters that share the same font style, and calls ATSUI to measure such sequences (typically, entire words). A paragraph then consists of a list of such “word nodes”, each with its dimensions as determined by ATSUI, and intervening space and other nodes. The basic \TeX\ paragraphing algorithm applies just as well to these larger “chunks” as to traditional character nodes.
+
+During formatting, then, \XeTeX\ makes use of just a few basic ATSUI APIs, in order to measure each word (or similar fragment) of text; in particular:
+
+\begin{description}
+
+\item[ATSUCreateStyle, ATSUSetAttributes] Create an ATSUI style object, and assign appropriate text attributes.
+One ATSUStyle is associated with each font face and size combination requested by the \TeX\ document, and used whenever text in that particular style needs to be measured.
+
+\item[ATSUCreateTextLayout, ATSUSetTextPointerLocation, ATSUSetRunStyle] Create an ATSUI text layout object, and associate a string of Unicode text and a style object with it.
+
+\item[ATSUGetUnjustifiedBounds] Measure a range of text as rendered with the associated font and other attributes. This gives the \TeX\ paragraphing algorithm the measurements that it will use in laying out the text.
+
+\end{description}
+(In addition, a number of font-related ATSUI APIs are used to enumerate the fonts available in the system, determine what layout features the fonts support, etc.)
+
+When \XeTeX\ has completed layout for a paragraph of text, therefore, it has a list of lines each containing a list of “word nodes”; each such node contains a run of Unicode text and a reference to an ATSUI style. The \TeX\ system {\em does not know} the details of the actual glyphs that will be used to render the text, or precisely where they will be positioned; only the overall dimensions and position of each word. The glyph-level detail is left entirely to the ATSUI rendering system.
+
+After document formatting is complete, the \XeTeX\ “back-end” (actually a separate process, {\tt xdv2pdf}) reads the \verb|.xdv| file that encodes the formatted document, and creates a PDF version for viewing or printing.
+To do this, it “renders” the page encoded in the \verb|.xdv| file through the Mac OS X Quartz graphics system, with a PDF file as the rendering destination.
+At this point, it again uses ATSUI APIs, loading each text string into an ATSUTextLayout, assigning the proper style, and calling {\bf ATSUDrawText} to image the text into the PDF being constructed.
+
 \subsection{Using OpenType via ICU Layout}
+
+While the initial implementation of \XeTeX\ was based on Apple's ATSUI rendering system, the increasing availability of fonts with OpenType layout features led to a desire to also support this font technology.
+The system was therefore extended by incorporating the OpenType layout engine from ICU\footnote{IBM's open-source project, International Components for Unicode; see \url{http://oss.software.ibm.com/icu/}.}. (In addition to the actual layout engine, \XeTeX\ makes use of ICU's implementation of the Unicode Bidi Algorithm.) The main functions used in the typesetting process include:
+
+\begin{description}
+\item[ubidi_open, ubidi_close, ubidi_setPara, ubidi_getDirection, ubidi_countRuns, ubidi_getVisualRun] Before laying out glyphs, it is necessary to deal with bidirectional layout issues; most “chunks” \XeTeX\ needs to measure will be unidirectional, but this is not always the case. With mixed-direction text, each direction run is measured separately.
+\item[LayoutEngine::layoutChars, getGlyphs, getGlyphPositions] The ICU LayoutEngine class is used to perform the actual layout process, and retrieve the list of glyphs and positions. The resulting array of positioned glyphs is stored within the “word node” in \XeTeX's paragraph list.
+\end{description}
+
+Internally, ICU-based OpenType rendering is handled in a very different way from ATSUI rendering. With ATSUI, the output of the typesetting process includes the original Unicode strings and the appropriate font descriptors; the PDF-generating back-end then reuses ATSUI layout functions to actually render the text into the PDF destination. In the case of OpenType, however, the typesetting process retrieves the array of positioned glyphs that result from the layout operation, and records this; the back-end then merely has to draw the glyphs as specified, not repeat any of the text layout work.
+
+When the \TeX\ source calls for a particular font, \XeTeX\ looks for specific layout tables within the font (e.g., \verb|morx| for AAT, or \verb|GSUB| for OpenType) to determine which layout engine to use, and instantiates either an ATSUI style or an ICU LayoutEngine as appropriate.
+The difference in the implementation of the two technologies is, however, entirely hidden from the main \TeX\ program, which simply deals with “word nodes”, forming them into paragraphs and pages once they've been measured by the appropriate smart-font engine.
+
+\subsection{Hyphenation support}
+
+Implementing “word nodes” as “black boxes” within the main \TeX\ program made it easy to form paragraphs of such words, without extensive changes to the rest of \TeX.
+A complication arose, however, in that \TeX\ has an automatic hyphenation algorithm that comes into effect if it is unable to find satisfactory line-break positions for a paragraph.
+The hyphenation routine applies to lists of character nodes representing runs of text within a paragraph to be line-broken. But at this level, the program sees Unicode “word nodes” as indivisible, rigid chunks.
+
+Explicit discretionary hyphens may be included in \TeX\ input, and these continue to work in \XeTeX, as they become “discretionary break” nodes in the list of items making up the paragraph. The word fragments on either side, then, would become separate nodes in the list, and a line-break can occur between them. 
+
+In order to reinstate hyphenation support, therefore, it was necessary to extend the hyphenation routine so as to be able to extract the text from a word node, use \TeX's pattern-based algorithm to find possible hyphenation positions within the word, and then replace the original word node with a sequence of nodes representing the (possibly) hyphenated fragments, with discretionary hyphen nodes in between.
+
+A final refinement proved necessary here: once the line-breaks have been chosen, and the lines of text are being “packaged” for justification to the desired width, any unused hyphenation points are removed and the adjacent word (fragment) nodes re-merged. This is required in order to allow rendering behavior such as character reordering and ligatures, implemented at the smart-font level, to occur across hyphenation points. With an early release of \XeTeX, a user reported that OpenType ligatures in certain words such as {\em different} would intermittently fail (appearing as {\em dif\kern0pt ferent} instead), and this turned out to be caused when automatic hyphenation came into effect and a discretionary break was inserted.
 
 \section{Backward compatibility}
 
-\subsection{Math typesetting}
-
-\subsection{Supporting legacy source document encodings}
 The original motivation for the \XeTeX\ project was to provide a typesetting solution
 that worked with Unicode and complex scripts, via smart font technologies.
 However, it soon became clear that many existing \TeX\ users,
@@ -94,13 +241,53 @@ with no complex-script requirements,
 nevertheless found the integration with the host platform’s font management
 to be very attractive, and wished to use \XeTeX\ and native Mac OS X fonts
 with existing \TeX\ (or more commonly \LaTeX) documents.
+There is a huge legacy of pre-Unicode \TeX\ documents and resources, and it is helpful for users to be able to continue working with these materials, while at the same time beginning to take advantage of the extended capabilities of \XeTeX.
 
+\subsection{Traditional \TeX\ input conventions}
+
+Existing \TeX\ and \LaTeX\ documents often use ASCII-based sequences to represent accented and other “extended” characters not directly available in the input character set. The macro packages that implement these commands map them to known character codes in particular font encodings.
+
+To allow such documents to be typeset using standard Unicode-compliant fonts in place of the custom-encoded fonts previously used, Ross Moore (an early \XeTeX\ user) has provided a package\footnote{See the {\em utf8accents} package, available from \url{http://scripts.sil.org/xetex_related}.} for \LaTeX\ that maps several hundred such control sequences to the correct Unicode codepoints. Using this package, many existing \LaTeX\ documents that use extended Latin and other “special” characters can be typeset using Unicode fonts, without needing to actually convert the encoding of the source text.
+
+\subsection{Legacy source document encodings}
+
+As initially designed, \XeTeX\ assumed that all input text is encoded in Unicode; it would read input files as either UTF-8 or UTF-16. Existing ASCII documents, of course, are also valid UTF-8 and therefore could be used directly. This includes documents that use ASCII-based \TeX\ conventions for accents and other extended characters, as mentioned above.
+
+However, some \TeX\ users have documents encoded with 8-bit codepages such as ISO Latin-1, MacRoman, Windows Cyrillic, etc.
+With the original “pure Unicode” implementation of \XeTeX, it was impossible to process such files; they would be assumed to be UTF-8, but on encountering values $>127$, the bytes would be misinterpreted as UTF-8 sequences rather than as individual characters. (In standard \TeX, with purely byte-oriented input, such files can of course be read; and the characters can be remapped through \TeX\ macro programming, if (as often occurs) there is a mismatch between the encodings of input text and the fonts to be used.
+
+To enable users to process such files with \XeTeX, without requiring a separate conversion to Unicode first, more flexible input encoding support was eventually added to the system. A new command \verb|\XeTeXinputencoding| was implemented, which allows the user to request on-the-fly conversion from another character encoding into Unicode as the source text is read.
+
+The \verb|\XeTeXinputencoding| command requires one parameter, the name of the desired encoding. A number of options are supported. First, \verb|utf8| or \verb|utf16| will set the system to direct Unicode input (or \verb|auto| restores the default behavior, which auto-detects the encoding form). The special name \verb|bytes| causes \XeTeX\ to read individual byte values as separate code units, treating them as character codes 0–255. While this is unlikely to represent the correct Unicode interpretation of the source text, it may be useful if these codes are to be processed by existing \TeX\ macros rather than used directly as text characters.
+
+Finally, any Internet encoding name known to the Mac OS X Text Encoding Converter\footnote{A standard component of the Mac OS; see \url{http://developer.apple.com/documentation/Carbon/Reference/Text_Encodin_sion_Manager/index.html}.} may be specified.
+In this case, \XeTeX\ calls TEC to perform encoding conversion as it reads the input text.
+Just a few basic TEC APIs are sufficient for this task:
+\begin{description}
+\item[TECGetTextEncodingFromInternetName] Used by \verb|\XeTeXinputencoding| to look up the encoding name specified, and determine if it is known to the operating system.
+\item[CreateTextToUnicodeInfo] Initialize the mapping information needed by TEC to convert between a particular legacy encoding and Unicode.
+\item[ConvertFromTextToUnicode] Convert a buffer of text from the external legacy encoding into Unicode.
+\end{description}
+
+Note that although at the time of writing, \XeTeX\ relies on TEC for encoding conversion of input text,
+this may change in a future release.
+A future version will probably use either ICU or GNU {\em libiconv} functions instead of TEC.
+This would be in the interests of portability to operating systems other than Mac~OS~X.
+
+It is also possible that the input mapping support will be extended to allow the use of SIL's TECkit\footnote{Text Encoding Conversion toolkit; see \url{http://scripts.sil.org/teckit}.} to directly support custom user-defined byte encodings. This would be a fairly trivial extension to the \verb|\XeTeXinputencoding| command and the file-reading code.
 
 \subsection{Font mappings using TECkit}
+
+
+
+\subsection{Math typesetting}
+
 
 \section{Advanced font features}
 
 \section{\XeTeX\ and other \TeX\ extensions}
+
+\subsection{\TeXgX}
 
 \subsection{e-\TeX}
 
