@@ -1,0 +1,99 @@
+\documentclass[letterpaper,10pt]{article}
+
+\setlength{\textwidth}{6in}
+\setlength{\textheight}{8.5in}
+\oddsidemargin=0.25in
+\topmargin=0in
+
+\ifx\XeTeXversion\undefined
+\def\XeTeX{\leavevmode  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\hbox{E}}\kern-.1667em \TeX}%  \dp0=0pt\ht0=0pt\box0 }
+\else
+\usepackage{euler,fontspec}
+\setromanfont{Brioso Pro}%\setsansfont[Scale=0.94]{Gill Sans}
+
+% Define the \XeTeX logo:\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}\def\XeTeX{\leavevmode  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\reflect{E}}\kern-.1667em \TeX}%  \dp0=0pt\ht0=0pt\box0 }
+\fi
+
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\headheight}{14pt}
+\fancyhf{}
+\fancyhead[C]{\small The Multilingual Lion: \TeX\ learns to speak Unicode}
+\fancyfoot[L]{\small {\addfontfeature{VerticalPosition=Ordinal}27th} Internationalization and Unicode Conference}
+\fancyfoot[C]{\small \thepage}
+\fancyfoot[R]{\small Berlin, Germany, April 2005}
+
+\title{The Multilingual Lion:\footnote{Why a multilingual {\em lion}? Because \TeX’s logo is a lion, of course;
+see Knuth’s {\em The \TeX book} or other sources.}\\
+\TeX\ learns to speak Unicode}
+
+\author{Jonathan Kew\\SIL International}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\pretolerance=10000
+\frenchspacing
+
+\begin{abstract}
+Professor Donald Knuth’s \TeX\ is a typesetting system with a wide user community, and a range of supporting packages and enhancements available for many types of publishing work. However, it dates back to the 1980s and is tightly wedded to 8-bit character data and custom-encoded fonts, making it difficult to configure \TeX\ for many complex-script languages.
+
+This paper will focus on \XeTeX, a system that extends \TeX\ with direct support for modern OpenType and AAT fonts and the Unicode character set. This makes it possible to typeset almost any script and language with the same power and flexibility as \TeX\ has traditionally offered in the 8-bit, simple-script world of European languages. \XeTeX\ (currently available on Mac OS X, but possibly on other platforms in the future) integrates the \TeX\ formatting engine with technologies from both the host operating system (Apple Type Services, Text Encoding Converter) and auxiliary libraries (ICU, TECkit). Thus, it illustrates how such components can be leveraged to provide the benefits of Unicode within an existing software system.
+
+This paper should be of interest to those involved in multilingual and multiscript publishing, as well as developers seeking to enhance legacy systems to take advantage of the benefits of Unicode. The merger of legacy and Unicode-based technologies means that the benefits of many years of development in the \TeX\ world become available for document production in a much wider range of languages.
+
+Some background familiarity with \TeX\ may be helpful, but the paper’s focus will be on the integration of Unicode technologies, not on technical details of \TeX\ itself. A general awareness of encodings, complex scripts, and font technologies will be assumed.
+\end{abstract}
+
+\section{Background}
+The \TeX\ typesetting system has a 20-year history as a stable and reliable tool for producing nicely-formatted documents from marked-up source text,
+and offers a great deal of power, flexibility and extensibility by virtue of a powerful macro language.
+The extensive user community, especially in the academic world,
+has created a large collection of supporting packages for many different types of document.
+However, \TeX’s roots are unquestionably in English typography;
+the system originally processed 7-bit text (usually ASCII), accessing 8-bit fonts for output.
+Version~3, in 1990, extended the system to support 8-bit input text.
+
+\section{Examples of use}
+
+\section{Extending the character set}
+
+\section{Implementing a character-glyph model}
+
+\subsection{Using ATSUI on Mac OS X}
+
+\subsection{Using OpenType via ICU Layout}
+
+\section{Backward compatibility}
+
+\subsection{Math typesetting}
+
+\subsection{Supporting legacy source document encodings}
+The original motivation for the \XeTeX\ project was to provide a typesetting solution
+that worked with Unicode and complex scripts, via smart font technologies.
+However, it soon became clear that many existing \TeX\ users,
+with no complex-script requirements,
+nevertheless found the integration with the host platform’s font management
+to be very attractive, and wished to use \XeTeX\ and native Mac OS X fonts
+with existing \TeX\ (or more commonly \LaTeX) documents.
+
+
+\subsection{Font mappings using TECkit}
+
+\section{Advanced font features}
+
+\section{\XeTeX\ and other \TeX\ extensions}
+
+\subsection{e-\TeX}
+
+\subsection{Omega, Aleph}
+
+\subsection{pdf\TeX}
+
+\section{Future directions}
+
+\end{document}
+
