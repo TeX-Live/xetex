@@ -47,7 +47,10 @@
 \frenchspacing
 \catcode`\_=12
 
-\title{The Multilingual Lion:\footnote{Why a multilingual {\em lion}?
+\def\texicon{\hbox to 0pt{\kern1.8cm\vbox to 0pt{\kern-1cm
+  \XeTeXpicfile "tex-icon.tiff"\vss}\hss}}
+
+\title{The Multilingual Lion:\texicon\footnote{Why a multilingual {\em lion}?
 Because \TeX’s logo is a lion;
 see Knuth’s {\em The \TeX book} (Addison Wesley: 1984) or other sources.}\\
 \TeX\ learns to speak Unicode}
@@ -90,9 +93,11 @@ but support for many non-Latin and complex scripts remains a problem.
 In addition to standard 8-bit codepages, there are ways of using \TeX’s programmability
 to allow input of additional text elements as by representing them as character sequences.
 Some conventions are so widely used that many users think of them as a standard part of the \TeX\ program (though this is not really the case); others are associated with macro packages for particular languages; and still others are created just for specific projects.
-A few examples:
+Figure~\ref{fig-inputconventions} shows a few examples of typical \TeX\ input conventions for non-ASCII characters.
+
 \font\dn="Devanagari MT" at 11pt
-\begin{figure}[h]
+\begin{figure}[tb]
+\hrule\smallskip
 \begin{tabular}{ccl}
 \em Source text&\em Typeset result&\em Notes\\
 \verb|\'{a}|&\'a&\verb|\'| is one of various commands to add an accent to a letter\\
@@ -102,12 +107,15 @@ A few examples:
 \verb|\alpha|&$\alpha$&one of many symbols available in {\em math mode}\\
 \verb|{\dn acchaa}|&\dn अच्छा&requires use of a special preprocessor and custom fonts\\
 \end{tabular}
+\smallskip\hrule
+\caption{Traditional \TeX\ input conventions for non-ASCII characters in 7-bit source text.}
+\label{fig-inputconventions}
 \end{figure}
 
 While these conventions can be extended almost indefinitely, they tend to clutter the source text; and they rely on a variety of custom-encoded fonts to provide all the symbols needed.
 Unicode offers the possibility of a far simpler model for typesetting multilingual text, where each character needed is represented in the source not by some sequence of commands, but as itself.
 
-In the case of complex scripts such as Devanagari, solutions based on standard \TeX\ typically involve a custom preprocessor that performs the contextual analysis needed for proper rendering of the script, starting from some (often Romanized) input convention, and emits special \TeX\ commands to access the appropriate glyphs from custom 8-bit fonts.
+In the case of complex scripts such as Devanagari, solutions based on standard \TeX\ typically involve a custom preprocessor that performs the contextual analysis needed for proper rendering of the script, starting from some (often romanized) input convention, and emits special \TeX\ commands to access the appropriate glyphs from custom 8-bit fonts.
 While such solutions can work, they may be complex to use, and fragile in how they interact with various other macro packages for document formatting.
 And trying to combine several such solutions to create a highly multilingual document, using several complex scripts simultaneously, goes far beyond what typical users can be expected to achieve.
 
@@ -116,7 +124,7 @@ To address these issues, an extended version of \TeX\ known as \XeTeX\ has been 
 
 \section{Examples of use}
 
-Before looking at what was involved in extending \TeX\ to support Unicode and smart font technologies for text rendering, I will show a few brief examples of \XeTeX\ at work. These illustrate how readily Unicode text now fits into the \TeX\ typesetting paradigm. In each case, the “raw” source (text and markup) is shown alongside the typeset result.
+Before looking at what was involved in extending \TeX\ to support Unicode and smart font technologies for text rendering, I will show a few brief examples of \XeTeX\ at work. Figures~\ref{fig-sorting-a} to \ref{fig-scripture} illustrate how readily Unicode text now fits into the \TeX\ typesetting paradigm. In each case, the “raw” source (text and markup) is shown alongside the typeset result.
 
 \input{figure-sorting-a}
 \input{figure-sorting-b}
@@ -258,7 +266,7 @@ With the original “pure Unicode” implementation of \XeTeX, it was impossible
 
 To enable users to process such files with \XeTeX, without requiring a separate conversion to Unicode first, more flexible input encoding support was eventually added to the system. A new command \verb|\XeTeXinputencoding| was implemented, which allows the user to request on-the-fly conversion from another character encoding into Unicode as the source text is read.
 
-The \verb|\XeTeXinputencoding| command requires one parameter, the name of the desired encoding. A number of options are supported. First, \verb|utf8| or \verb|utf16| will set the system to direct Unicode input (or \verb|auto| restores the default behavior, which auto-detects the encoding form). The special name \verb|bytes| causes \XeTeX\ to read individual byte values as separate code units, treating them as character codes 0–255. While this is unlikely to represent the correct Unicode interpretation of the source text, it may be useful if these codes are to be processed by existing \TeX\ macros rather than used directly as text characters.
+The \verb|\XeTeXinputencoding| command requires one parameter, the name of the desired encoding. A number of options are supported. First, \verb|utf8| or \verb|utf16| will set the system to direct Unicode input (or \verb|auto| restores the default behavior, which is to detect the Unicode encoding form from the initial bytes of the file). The special name \verb|bytes| causes \XeTeX\ to read individual byte values as separate code units, treating them as character codes 0–255. While this is unlikely to represent the correct Unicode interpretation of the source text, it may be useful if these codes are to be processed by existing \TeX\ macros rather than used directly as text characters.
 
 Finally, any Internet encoding name known to the Mac OS X Text Encoding Converter\footnote{A standard component of the Mac OS; see \url{http://developer.apple.com/documentation/Carbon/Reference/Text_Encodin_sion_Manager/index.html}.} may be specified.
 In this case, \XeTeX\ calls TEC to perform encoding conversion as it reads the input text.
@@ -274,16 +282,228 @@ this may change in a future release.
 A future version will probably use either ICU or GNU {\em libiconv} functions instead of TEC.
 This would be in the interests of portability to operating systems other than Mac~OS~X.
 
-It is also possible that the input mapping support will be extended to allow the use of SIL's TECkit\footnote{Text Encoding Conversion toolkit; see \url{http://scripts.sil.org/teckit}.} to directly support custom user-defined byte encodings. This would be a fairly trivial extension to the \verb|\XeTeXinputencoding| command and the file-reading code.
+It is also possible that the input mapping support will be extended to allow the use of SIL's TECkit\footnote{Text Encoding Conversion toolkit; see \url{http://scripts.sil.org/teckit}.} to directly support custom user-defined byte encodings. This would involve a minor extension to the \verb|\XeTeXinputencoding| command, allowing users to specify the name of a TECkit mapping file as an alternative to the name of a standard legacy codepage.
 
 \subsection{Font mappings using TECkit}
 
+Widely-used \TeX\ keyboarding conventions such as \verb|\'{e}| $\mapsto$ ‘é’ or \verb|\pounds| $\mapsto$ ‘\pounds’ are implemented via \TeX\ macros (and therefore easily adapted for Unicode-compliant fonts, by modifying the macro definitions).
+In addition, there are a few established conventions that are implemented as ligature rules associated with standard \TeX\ fonts; these include \verb|---| $\mapsto$ ‘---’ (em-dash), \verb|?`| $\mapsto$ ‘?`’, and a few more.
+In principle, smart font technologies such as AAT and OpenType could implement these same ligatures, providing the same behavior as traditional \TeX\ fonts. But as these conventions are peculiar to the \TeX\ world, it is not realistic to expect them to be provided in mainstream, general-purpose fonts.
 
+Although it would usually be possible to simulate these ligatures via macro programming, it is difficult to ensure that reprogramming widely-used text characters such as the hyphen, question mark, and quotation marks will not interfere with other levels of markup in the source document.
+Instead, \XeTeX\ provides a mechanism known as “font mappings”, whereby a mapping of Unicode characters is associated with a particular font, and applied to all strings of text being measured or rendered in that font. This is implemented using the TECkit mapping engine.
+
+Although primarily designed to convert between legacy byte encodings and Unicode, TECkit can also be used to perform transformations on a Unicode text stream, using the same mapping language; figure~\ref{fig-tex-text} shows the {\em tex-text} mapping that is provided to support normal \TeX\ conventions.
+When associated with a standard Unicode-compliant font in \XeTeX, this has the effect of implementing the legacy \TeX\ conventions for dashes and quotes, as shown in figure~\ref{fig-mapping}, without requiring any \TeX-specific features in the smart fonts themselves.
+
+\begin{figure}[tb]
+\hrule\smallskip
+\small
+\begin{verbatim}
+; TECkit mapping for TeX input conventions <-> Unicode charactersLHSName	"TeX-text"RHSName	"UNICODE"pass(Unicode)U+002D U+002D        <> U+2013 ; -- -> en dashU+002D U+002D U+002D <> U+2014 ; --- -> em dashU+0027               <> U+2019 ; ' -> right single quoteU+0027 U+0027        <> U+201D ; '' -> right double quoteU+0022                > U+201D ; " -> right double quoteU+0060               <> U+2018 ; ` -> left single quoteU+0060 U+0060        <> U+201C ; `` -> left double quoteU+0021 U+0060        <> U+00A1 ; !` -> inverted exclamU+003F U+0060        <> U+00BF ; ?` -> inverted question
+\end{verbatim}\smallskip\hrule
+\caption{The TECkit source file {\tt tex-text.map}, defining a font mapping for \XeTeX\
+that provides compatibility with the conventions of legacy \TeX\ fonts.}
+\label{fig-tex-text}
+\end{figure}
+
+\begin{figure}[tb]
+\hrule\smallskip
+\begin{minipage}{0.6\hsize}
+\begin{verbatim}
+\font\TestA="Times New Roman" at 9pt
+\TestA !`Typing ``quotes''---and
+  dashes---the \TeX\ way!\par
+\bigskip
+\font\TestB="Times New Roman:
+  mapping=tex-text" at 9pt
+\TestB !`Typing ``quotes''---and
+  dashes---the \TeX\ way!\par
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}{0.4\hsize}
+\font\TestA="Times New Roman" at 9pt
+\TestA !`Typing ``quotes''---and
+  dashes---the \TeX\ way!\par
+\bigskip
+\font\TestB="Times New Roman:
+  mapping=tex-text" at 9pt
+\TestB !`Typing ``quotes''---and
+  dashes---the \TeX\ way!\par
+\end{minipage}
+\smallskip\hrule
+\caption{Using the {\em tex-text} font mapping to support legacy typing conventions.}
+\label{fig-mapping}
+\end{figure}
+
+While this mechanism, associating a mapping defined in terms of Unicode character sequences, was first devised in order to support legacy \TeX\ input conventions, it can also be applied in other ways. For example, figure~\ref{fig-translit} shows how it is possible to typeset a single fragment of input text in two scripts by giving different font specifications, one of which includes a transliteration mapping.
+
+\begin{figure}[tb]
+\hrule\smallskip
+\begin{minipage}{0.5\hsize}
+\begin{verbatim}
+\begin{centering}
+\def\SampleText{Unicode - это уникальный
+   код для любого символа,\\
+    независимо от платформы,\\
+    независимо от программы,\\
+    независимо от языка.\par}
+\font\gen="Gentium" at 9pt \gen
+\SampleText
+\bigskip
+\font\gentrans="Gentium:
+  mapping=cyr-lat-iso9" at 9pt \gentrans
+\SampleText
+\end{centering}
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}{0.5\hsize}
+\def\SampleText{Unicode - это уникальный
+   код для любого символа,\\
+    независимо от платформы,\\
+    независимо от программы,\\
+    независимо от языка.\par}
+\begin{centering}
+\font\gen="Gentium" at 9pt \gen
+\SampleText
+\bigskip
+\font\gentrans="Gentium:
+  mapping=cyr-lat-iso9" at 9pt \gentrans
+\SampleText
+\end{centering}
+\end{minipage}
+\smallskip\hrule
+\caption{Using a font mapping for on-the-fly transliteration while typesetting.}
+\label{fig-translit}
+\end{figure}
 
 \subsection{Math typesetting}
 
+One of \TeX's traditional strengths is in mathematical typesetting. It was designed to enable authors to readily typeset complex equations and similar displays, with precise control over details of layout and spacing, and with many aspects of math formatting handled automatically. Figure~\ref{fig-math} shows an example of \TeX\ input using math mode, alongside the typeset result.
+
+\begin{figure}[tb]
+\footnotesize
+\hrule\smallskip
+\begin{minipage}{0.55\hsize}
+\begin{verbatim}
+$$\eqalign{
+\biggl(\int_{-\infty}^\infty e^{-x^2}\,dx\biggr)^2
+&=\int_{-\infty}^\infty\int_{-\infty}^\infty
+  e^{-(x^2+y^2)}\,dx\,dy\cr
+&=\int_0^{2\pi}\int_0^\infty e^{-r^2}r\,dr\,d\theta\cr
+&=\int_0^{2\pi}\biggl(-{e^{-r^2}\over2}
+  \bigg\vert_{r=0}^{r=\infty}\,\biggr)\,d\theta\cr
+&=\pi.\cr}$$
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}{0.45\hsize}
+\catcode`@=11     % make @ like a letter
+\newdimen\jot \jot=3pt
+\newskip\z@skip \z@skip=0pt plus0pt minus0pt
+\newdimen\z@ \z@=0pt % can be used both for 0pt and 0
+\dimendef\dimen@=0
+\def\m@th{\mathsurround=\z@}
+\def\ialign{\everycr{}\tabskip\z@skip\halign} % initialized \halign
+\def\openup{\afterassignment\@penup\dimen@=}
+\def\@penup{\advance\lineskip\dimen@
+  \advance\baselineskip\dimen@
+  \advance\lineskiplimit\dimen@}
+\def\eqalign#1{\null\,\vcenter{\openup\jot\m@th
+  \ialign{\strut\hfil$\displaystyle{##}$&$\displaystyle{{}##}$\hfil
+      \crcr#1\crcr}}\,}
+\catcode`@=12   % back to nonletter category
+\catcode`\_=8
+$$\eqalign{
+ \biggl(\int_{-\infty}^\infty e^{-x^2}\,dx\biggr)^2
+  &=\int_{-\infty}^\infty\int_{-\infty}^\infty
+    e^{-(x^2+y^2)}\,dx\,dy\cr
+  &=\int_0^{2\pi}\int_0^\infty e^{-r^2}r\,dr\,d\theta\cr
+  &=\int_0^{2\pi}\biggl(-{e^{-r^2}\over2}
+    \bigg\vert_{r=0}^{r=\infty}\,\biggr)\,d\theta\cr
+  &=\pi.\cr}$$
+\end{minipage}
+\smallskip\hrule
+\caption{An example of math typesetting, one of \TeX's strengths.}
+\label{fig-math}
+\end{figure}
+
+Standard \TeX\ macro packages provide commands to access many hundreds of math and other technical symbols, and these are mapped to the appropriate characters in a selection of specialized fonts.
+In Unicode many such symbols now have their own codepoints, and so it should be possible to typeset such material using standard Unicode-compliant fonts, rather than the custom-encoded math and symbol fonts normally used with \TeX.
+
+However, this is not as simple as it may sound. \TeX's math typesetting features rely heavily on specialized font metric information associated with the math fonts, in addition to the glyphs themselves. This is necessary in order to provide accurate typesetting of complex constructs. Unfortunately, this means that users cannot simply tell \XeTeX\ to use a Unicode-compliant font for math; not only will the standard \TeX\ math commands access the wrong glyphs, but also, even if the \TeX\ macros were redefined to access the proper Unicode values, such fonts will still not work in math mode because of the lack of extended font metric information.
+
+To address this issue, it will be necessary to provide these additional font metrics for any Unicode fonts that are to be used for math typesetting; and it will also be necessary to extend additional data structures in \XeTeX\ that are currently limited to 8-bit codes. It may be possible to make use of work from the Omega project (see section~\ref{sect-omega}) to facilitate this, but at the time of writing, \XeTeX\ is limited to using legacy 8-bit \TeX\ fonts for math typesetting.
 
 \section{Advanced font features}
+
+In order to take full advantage of the multilingual support and sophisticated typographic features offered by modern font technologies, we need to go beyond merely specifying a font and rendering a sequence of Unicode characters.
+Correct rendering may depend on the language of the text, as different languages sometimes require different visual results even for the exact same Unicode characters.
+
+For example, Turkish uses both of the characters {\em i} (U+0069 {\sc latin small letter i}) and {\em ı} (U+0131 {\sc latin small letter dotless i}). But many Latin-script fonts include an {\em fi} ligature in which the dot of the {\em i} is assimilated into the top of the {\em f}.
+Such a ligature is appropriate for most languages, and improves the appearance of the rendered text;
+and typical OpenType or AAT fonts will contain ligature rules that automatically use it wherever the sequence {\tt fi} occurs in the text stream.
+However, in Turkish it becomes a problem because the distinction between {\em i} and {\em ı} is lost. Figure~\ref{fig-turkish-bad} illustrates this issue.\footnote{Sample Turkish text from the Unicode web site, \url{http://www.unicode.org/standard/translations/turkish.html}.}
+
+\begin{figure}[hb]
+\hrule\smallskip
+\small
+\begin{minipage}{0.55\hsize}
+\begin{verbatim}
+\font\txtfont="Adobe Garamond Pro" at 8pt
+\txtfont
+Apple, HP, IBM, JustSystem, Microsoft, Oracle,
+SAP, Sun, Sybase, Unisys ve endüstrinin diğer
+ileri gelen {\red firmaları} Evrensel Kod
+Standardını desteklemektedirler. Evrensel Kod,
+XML, Java, ECMAScript (JavaScript), LDAP, CORBA
+3.0, WML vb. gibi modern standartlar
+{\red tarafından} ISO/IEC 10646 uyarlanmasının
+resmi yoludur.
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}{0.45\hsize}
+\def\red{\aftergroup\resetcolor \special{color push rgb 0.5 0.0 0.0}} \def\resetcolor{\special{color pop}}
+\font\txtfont="Adobe Garamond Pro" at 8pt
+\txtfont
+Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endüstrinin  diğer ileri gelen {\red firmaları}  Evrensel Kod Standardını desteklemektedirler. Evrensel Kod, XML, Java, ECMAScript (JavaScript), LDAP, CORBA 3.0, WML vb. gibi modern standartlar {\red tarafından} ISO/IEC 10646 uyarlanmasının  resmi yoludur.
+\end{minipage}
+\smallskip\hrule
+\caption{Turkish text showing the necessity for language-specific font rendering. Note how the automatic use of the {\em fi} ligature obscures the distinction between {\em i} and {\em ı}, which are separate letters in Turkish.}
+\label{fig-turkish-bad}
+\end{figure}
+
+An increasing number of OpenType fonts provide a solution to this problem, in the form of support for multiple “language systems”. The font developer can provide tables within the font that substitute different glyphs, enable different subsets of the possible ligatures, etc., depending on the selected language.
+\XeTeX\ supports this capability by allowing a font specification in the \TeX\ document to include a language tag. If the specified language tag is supported by the font, \XeTeX\ will render the font according to those OpenType rules instead of the default behavior. Figure~\ref{fig-turkish-good} shows how the Turkish example can be corrected by adding the proper language tag to the font declaration.
+
+\begin{figure}
+\hrule\smallskip
+\small
+\begin{minipage}{0.55\hsize}
+\begin{verbatim}
+\font\txtfont="Adobe Garamond Pro:
+  language=TUR" at 8pt
+\txtfont
+Apple, HP, IBM, JustSystem, Microsoft, Oracle,
+SAP, Sun, Sybase, Unisys ve endüstrinin diğer
+ileri gelen {\red firmaları} Evrensel Kod
+Standardını desteklemektedirler. Evrensel Kod,
+XML, Java, ECMAScript (JavaScript), LDAP, CORBA
+3.0, WML vb. gibi modern standartlar
+{\red tarafından} ISO/IEC 10646 uyarlanmasının
+resmi yoludur.
+\end{verbatim}
+\end{minipage}\hfil
+\begin{minipage}{0.45\hsize}
+\def\red{\aftergroup\resetcolor \special{color push rgb 0.5 0.0 0.0}} \def\resetcolor{\special{color pop}}
+\font\txtfont="Adobe Garamond Pro:
+  language=TUR" at 8pt
+\txtfont
+Apple, HP, IBM, JustSystem, Microsoft, Oracle, SAP, Sun, Sybase, Unisys ve endüstrinin  diğer ileri gelen {\red firmaları}  Evrensel Kod Standardını desteklemektedirler. Evrensel Kod, XML, Java, ECMAScript (JavaScript), LDAP, CORBA 3.0, WML vb. gibi modern standartlar {\red tarafından} ISO/IEC 10646 uyarlanmasının  resmi yoludur.
+\end{minipage}
+\smallskip\hrule
+\caption{Using the Turkish language support in an OpenType font to ensure correct rendering of {\tt fi} sequences.}
+\label{fig-turkish-good}
+\end{figure}
 
 \section{\XeTeX\ and other \TeX\ extensions}
 
@@ -292,10 +512,10 @@ It is also possible that the input mapping support will be extended to allow the
 \subsection{e-\TeX}
 
 \subsection{Omega, Aleph}
+\label{sect-omega}
 
 \subsection{pdf\TeX}
 
 \section{Future directions}
 
 \end{document}
-
