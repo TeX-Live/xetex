@@ -14,7 +14,7 @@
 % Define the \XeTeX logo:\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}\def\XeTeX{\leavevmode  \setbox0=\hbox{X\lower.5ex\hbox{\kern-.15em\reflect{E}}\kern-.1667em \TeX}%  \dp0=0pt\ht0=0pt\box0 }
 \fi
 
-\usepackage{fancyhdr}
+\usepackage{fancyhdr,multicol}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt}
@@ -53,9 +53,24 @@ The \TeX\ typesetting system has a 20-year history as a stable and reliable tool
 and offers a great deal of power, flexibility and extensibility by virtue of a powerful macro language.
 The extensive user community, especially in the academic world,
 has created a large collection of supporting packages for many different types of document.
-However, \TeX’s roots are unquestionably in English typography;
+However, \TeX’s roots are unquestionably in Latin-script typography;
 the system originally processed 7-bit text (usually ASCII), accessing 8-bit fonts for output.
-Version~3, in 1990, extended the system to support 8-bit input text.
+Version~3 extended the system to support 8-bit input text,
+and provided some enhancements for multilingual use,
+but support for non-Latin and complex scripts remains a problem.
+
+Over the years, \TeX\ has been used with many non-English languages,
+using combinations of custom-encoded 8-bit fonts and different input encodings and conventions.
+In addition to standard 8-bit codepages, there are ways of using \TeX’s programmability
+to allow input of additional text elements as sequences of ASCII characters.
+For example:
+\begin{multicols}{3}
+\begin{obeylines}
+\verb|\'a| $\mapsto$ \'a
+\verb|\"u| $\mapsto$ \"u
+\verb|\aa| $\mapsto$ \aa
+\end{obeylines}
+\end{multicols}
 
 \section{Examples of use}
 
