@@ -1,0 +1,80 @@
+{ xetex.defines: additions for xetex }
+
+@define function getnativechar();
+@define procedure setnativechar();
+@define procedure setnativemetrics();
+@define procedure setnativeglyphmetrics();
+@define function findatsufont();
+@define function sizeof();
+@define function makefontdef();
+@define procedure fprintf();
+@define type unicodefile;
+@define function uopenin();
+@define function uopenout();
+@define procedure uclose();
+@define function dviopenout();
+@define procedure dviclose();
+@define function delcode1();
+@define procedure setdelcode1();
+@define function readcint1();
+@define procedure setcint1();
+@define procedure printchars();
+@define procedure setinputfileencoding();
+
+@define procedure memcpy();
+@define function casttoptr();
+@define function casttointeger();
+@define function glyphinfobyte();
+
+@define function atsufontget();
+@define function atsufontget1();
+@define function atsufontget2();
+@define function atsufontgetnamed();
+@define function atsufontgetnamed1();
+@define procedure atsuprintfontname();
+@define function otfontget();
+@define function otfontget1();
+@define function otfontget2();
+@define function otfontget3();
+
+@define function getencodingmodeandinfo();
+
+@define procedure linebreakstart();
+@define function linebreaknext;
+
+{ extra stuff used in picfile code }
+@define type Handle;
+@define type Ptr;
+@define type CGPoint;
+@define type CGRect;
+@define type CGAffineTransform;
+@define function deref();
+@define function cgRectWidth();
+@define function cgRectHeight();
+@define function X2Fix();
+@define function Fix2X();
+@define procedure BlockMoveData();
+@define function GetHandleSize();
+@define procedure DisposeHandle();
+@define function findpicfile();
+@define function picaliasbyte();
+@define function CGAffineTransformMake();
+@define function CGAffineTransformMakeScale();
+@define function CGAffineTransformMakeRotation();
+@define function CGAffineTransformMakeTranslation();
+@define function CGAffineTransformScale();
+@define function CGAffineTransformRotate();
+@define function CGAffineTransformTranslate();
+@define function CGAffineTransformConcat();
+@define function CGAffineTransformInvert();
+@define function CGPointMake();
+@define function CGPointApplyAffineTransform();
+@define function xcoord();
+@define function ycoord();
+@define function afield();
+@define function bfield();
+@define function cfield();
+@define function dfield();
+@define function txfield();
+@define function tyfield();
+@define function applymapping();

@@ -1,0 +1,138 @@
+#!/usr/bin/env perl
+# mk4ht                                2004-05-03-02:16
+# Copyright (C) 2003--2004              Eitan M. Gurari
+#
+# This program can redistributed and/or modified under
+# the terms of the LaTeX Project Public License
+# Distributed from CTAN archives in directory
+# macros/latex/base/lppl.txt; either version 1 of the
+# License, or (at your option) any later version.
+
+use strict;
+$^W=1; # turn warning on
+my @options = (
+ "",     "ht",        "",      "",                  "",          "",
+ "db",   "dblatex",   "latex", "xhtml,docbook",     " -cunihtf",  "",
+ "db",   "dbtex",     "tex",   "xhtml,docbook",     " -cunihtf",  "",
+ "db",   "dbtexi",    "texi",  "xhtml,docbook",     " -cunihtf",  "",
+ "db",   "dbtexexec", "texexec", "xhtml,docbook",     " -cunihtf",  "",
+ "dbm",  "dbmlatex",  "latex", "xhtml,docbook-mml", " -cunihtf",  "",
+ "dbm",  "dbmtex",    "tex",   "xhtml,docbook-mml", " -cunihtf",  "",
+ "dbm",  "dbmtexi",   "texi",  "xhtml,docbook-mml", " -cunihtf",  "",
+ "dbm",  "dbmtexexec","texexec", "xhtml,docbook-mml", " -cunihtf",  "",
+ "ht",   "htlatex",   "latex", "",                  "",          "",
+ "ht",   "httex",     "tex",   "",                  "",          "",
+ "ht",   "httexi",    "texi",  "",                  "",          "",
+ "ht",   "httexexec", "texexec",  "",                  "",          "",
+ "mz",   "mzlatex",   "latex", "xhtml,mozilla",     " -cmozhtf",  "",
+ "mz",   "mztex",     "tex",   "xhtml,mozilla",     " -cmozhtf",  "",
+ "mz",   "mztexi",    "texi",  "xhtml,mozilla",     " -cmozhtf",  "",
+ "mz",   "mztexexec", "texexec",  "xhtml,mozilla",     " -cmozhtf",  "",
+ "oo", "oolatex",   "latex",   "xhtml,ooffice", "ooffice/\! -cmozhtf",  "-coo",
+ "oo", "ootex",     "tex",     "xhtml,ooffice", "ooffice/\! -cmozhtf",  "-coo",
+ "oo", "ootexi",    "texi",    "xhtml,ooffice", "ooffice/\! -cmozhtf",  "-coo",
+ "oo", "ootexexec", "texexec", "xhtml,ooffice", "ooffice/\! -cmozhtf",  "-coo",
+ "tei",  "teilatex",  "latex", "xhtml,tei",         " -cunihtf",  "",
+ "tei",  "teitex",    "tex",   "xhtml,tei",         " -cunihtf",  "",
+ "tei",  "teitexi",   "texi",  "xhtml,tei",         " -cunihtf",  "",
+ "tei",  "teitexexec","texexec",  "xhtml,tei",         " -cunihtf",  "",
+ "teim", "teimlatex", "latex", "xhtml,tei-mml",     " -cunihtf",  "",
+ "teim", "teimtex",   "tex",   "xhtml,tei-mml",     " -cunihtf",  "",
+ "teim", "teimtexi",  "texi",  "xhtml,tei-mml",     " -cunihtf",  "",
+ "teim", "teimtexexec","texexec",  "xhtml,tei-mml",     " -cunihtf",  "",
+ "uxh",  "uxhlatex",  "latex", "xhtml,uni-html4",   " -cunihtf",  "",
+ "uxh",  "uxhtex",    "tex",   "xhtml,uni-html4",   " -cunihtf",  "",
+ "uxh",  "uxhtexi",   "texi",  "xhtml,uni-html4",   " -cunihtf",  "",
+ "uxh",  "uxhtexexec","texexec",  "xhtml,uni-html4",   " -cunihtf",  "",
+ "w",    "wlatex",    "latex", "xhtml,word",        " -csymhtf",  "",
+ "w",    "wtex",      "tex",   "xhtml,word",        " -csymhtf",  "",
+ "w",    "wtexi",     "texi",  "xhtml,word",        " -csymhtf",  "",
+ "w",    "wtexexec",  "texexec",  "xhtml,word",        " -csymhtf",  "",
+ "xh",   "xhlatex",   "latex", "xhtml",             "",          "",
+ "xh",   "xhtex",     "tex",   "xhtml",             "",          "",
+ "xh",   "xhtexi",    "texi",  "xhtml",             "",          "",
+ "xh",   "xhtexexec", "texexec",  "xhtml",             "",          "",
+ "xhm",  "xhmlatex",  "latex", "xhtml,mathml",      " -cunihtf",  "",
+ "xhm",  "xhmtex",    "tex",   "xhtml,mathml",      " -cunihtf",  "",
+ "xhm",  "xhmtexi",   "texi",  "xhtml,mathml",      " -cunihtf",  "",
+ "xhm",  "xhmtexexec","texexec",  "xhtml,mathml",      " -cunihtf",  ""
+);
+
+sub showInstrucions(){
+  print " option1:  mk4ht #1 \"#2\" \"#3\" \"#4\" \"#5\"\n";
+  print " \n";
+  print "    #1: htlatex, mzlatex, oolatex, dblatex, dbmlatex,\n";
+  print "        teilatex, teimlatex, uxhlatex, wlatex, xhlatex,\n";
+  print "        xhmlatex\n";
+  print " \n";
+  print "        also 'tex', 'texi', and 'texexec' instead of 'latex'\n";
+  print " \n";
+  print "    #2: file name\n";
+  print "    #3: optional arguments for latex/tex/texi/texexec \n";
+  print "    #4: optional arguments for tex4ht.c\n";
+  print "    #5: optional arguments for t4ht.c\n";
+  print " \n";
+  print " option2:  mk4ht ht #2 #3 \"#4\" \"#5\"\n";
+  print " \n";
+  print "    #1: ht\n";
+  print "    #2: latex, tex\n";
+  print "    #3: file name\n";
+  print "    #4: optional arguments for tex4ht.c\n";
+  print "    #5: optional arguments for t4ht.c\n";
+  print " \n";
+  print " Within the program, in column three of the options\n";
+  print " variable, the  requests for the commands \"latex\",\n";
+  print " \"tex\", etc. can be replaced with other equivalent\n";
+  print " commands (e.g., \"tex -fmt=latex\").\n";
+}
+
+print "mk4ht (2004-05-03-02:16)\n";
+if(  !@ARGV  ){
+  print "improper command\n";
+  showInstrucions(); exit(1);
+}
+my @command=("","","","","");
+my $i=0;
+my $j=0;
+my $param;
+foreach $param (@ARGV) {
+  if( $i == 0 ){
+    for( $j=1; $j<$#options; $j+=6 ){
+      if( $param eq $options[$j] ){
+         if( $options[$j-1] eq "" ){
+           $command[0] = $options[$j];
+         } else {
+           $command[0] = "ht".$options[$j+1];
+         }
+         $command[2] = $options[$j+2];
+         $command[3] = $options[$j+3];
+         $command[4] = $options[$j+4];
+         last;
+    } }
+    if( $j>$#options ){ print "improper command: $param \n";
+                        showInstrucions(); exit(1); }
+  } elsif ( $i== 1 ) {
+    $command[1] = $param;
+  } elsif ( $i== 2 ) {
+    if( $command[2] eq "" ){
+      $command[2] = $param;
+    } else {
+      $command[2] = $param. "," . $command[2];
+    }
+  } elsif ( $i== 3 ) {
+    $command[3] = $param . $command[3];
+  } else {
+    $command[4] = $param. " " .$command[4];
+  }
+  $i++;
+}
+my $commando = $command[0] . " "    . $command[1] . " \"".
+            $command[2] . "\" \"". $command[3] . "\" \"" .
+            $command[4] . "\"";
+print "$commando\n";
+my $rtrn;
+if( $rtrn = system($commando) ){
+   print "--- error --- failed to execute command\n";
+} else { exit( !$rtrn ); }
+
+

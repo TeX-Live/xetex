@@ -1,0 +1,115 @@
+# Makefile for teTeX's extra scripts - te@dbs.uni-hannover.de.
+# Public domain.
+
+ac_include ../make/paths.mk
+ac_include ../make/common.mk
+ac_include ../make/programs.mk
+
+man5dir = $(mandir)/man5
+man8dir = $(mandir)/man8
+
+SCRIPTS = \
+  allcm allneeded dvi2fax dvired fmtutil fontinst \
+  kpsetool kpsewhere ps2frag pslatex rubibtex rumakeindex \
+  texconfig texdoc texdoctk texexec texlinks updmap
+
+PDFSCRIPTS = a2ping e2pall epstopdf texi2pdf
+
+PERLWRAPPED = fdf2tan fdf2tex makempy texfind texfont texshow texutil \
+  thumbpdf pdfcrop
+
+manpgs = \
+  allcm allec allneeded dvi2fax dvired e2pall epstopdf fdf2tex fontinst \
+  kpsetool kpsewhere makempy mkocp mkofm ofm2opl opl2ofm otp2ocp outocp \
+  ovf2ovp ovp2ovf ps2frag pslatex rubibtex rumakeindex texconfig texdoc \
+  texdoctk texexec texfind texfont texi2pdf texshow texutil thumbpdf \
+  ttf2afm updmap
+
+INFOFILES= latex.info
+POOLFILES = pdfetex-pl.pool tex-pl.pool
+all: $(SCRIPTS) $(PDFSCRIPTS)
+default: all
+
+install: install-data install-exec
+check:
+
+# Auxiliary files.
+install-data:: $(INFOFILES)
+	$(SHELL) $(top_srcdir)/../mkinstalldirs $(man1dir) $(man5dir) $(man8dir) $(texpooldir) $(texmf)/doc/tetex
+	for p in $(manpgs); do \
+	  $(INSTALL_DATA) $(srcdir)/$$p.man $(man1dir)/$$p.$(manext); \
+	done
+	$(INSTALL_DATA) $(srcdir)/fmtutil.8 $(man8dir)/fmtutil.8
+	$(INSTALL_DATA) $(srcdir)/texlinks.8 $(man8dir)/texlinks.8
+	$(INSTALL_DATA) $(srcdir)/fmtutil.cnf.5 $(man5dir)/fmtutil.cnf.5
+	cd $(man1dir); rm -f allec.$(manext) texhash.$(manext) \
+	  lambda.$(manext) pdflatex.$(manext) kpsepath.$(manext) \
+	  kpsexpand.$(manext) mf-nowin.$(manext) ctangle.$(manext) \
+	  cweave.$(manext) odvicopy.$(manext) odvips.$(manext) \
+	  odvitype.$(manext)
+	cd $(man8dir); rm -f mktexfmt.8
+	ln -s allcm.$(manext) $(man1dir)/allec.$(manext)
+	ln -s mktexlsr.$(manext) $(man1dir)/texhash.$(manext)
+	ln -s omega.$(manext) $(man1dir)/lambda.$(manext)
+	ln -s pdfetex.$(manext) $(man1dir)/pdflatex.$(manext)
+	ln -s kpsetool.$(manext) $(man1dir)/kpsepath.$(manext)
+	ln -s kpsetool.$(manext) $(man1dir)/kpsexpand.$(manext)
+	ln -s mf.$(manext) $(man1dir)/mf-nowin.$(manext)
+	ln -s cweb.$(manext) $(man1dir)/ctangle.$(manext)
+	ln -s cweb.$(manext) $(man1dir)/cweave.$(manext)
+	ln -s dvicopy.$(manext) $(man1dir)/odvicopy.$(manext)
+	ln -s dvips.$(manext) $(man1dir)/odvips.$(manext)
+	ln -s dvitype.$(manext) $(man1dir)/odvitype.$(manext)
+	ln -s fmtutil.8 $(man8dir)/mktexfmt.8
+	test -r ./latex.info || cd $(srcdir) && for i in latex.info*; do \
+	  $(INSTALL_DATA) $$i $(infodir)/$$i; done
+	if $(SHELL) -c 'install-info --version' >/dev/null 2>&1; then \
+	  install-info --info-dir=$(infodir) $(infodir)/latex.info; \
+	else true; fi
+	for p in $(POOLFILES); do \
+	  $(INSTALL_DATA) $(srcdir)/$$p $(texpooldir)/$$p; \
+	done
+	for p in TETEXDOC.pdf TETEXDOC.ps TETEXDOC.dvi teTeX-FAQ; do \
+	  $(INSTALL_DATA) $(srcdir)/doc/$$p $(texmf)/doc/tetex; \
+	done
+	$(SHELL) $(top_srcdir)/../mkinstalldirs $(texmf)/texconfig $(texmf)/texconfig/g $(texmf)/texconfig/v $(texmf)/texconfig/x
+	$(INSTALL_DATA) $(srcdir)/texmf/texconfig/g/generic $(texmf)/texconfig/g
+	$(INSTALL_DATA) $(srcdir)/texmf/texconfig/v/vt100 $(texmf)/texconfig/v
+	$(INSTALL_DATA) $(srcdir)/texmf/texconfig/x/xterm $(texmf)/texconfig/x
+	$(INSTALL_DATA) $(srcdir)/texmf/texconfig/README $(texmf)/texconfig
+	$(INSTALL_DATA) $(srcdir)/texmf/texconfig/generic $(texmf)/texconfig
+
+install-exec:
+	-$(SHELL) $(srcdir)/../mkinstalldirs $(scriptdir)
+	for s in $(SCRIPTS); do \
+	  $(INSTALL_SCRIPT) $(srcdir)/$$s $(scriptdir)/$$s; \
+	done
+	if test -f $(bindir)/pdfetex; then \
+	  for s in $(PDFSCRIPTS); do \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$s $(scriptdir)/$$s; \
+	  done; \
+	  cd $(scriptdir); rm -f mptopdf; ln -s texexec mptopdf; \
+	else \
+	  true; \
+	fi
+	cd $(scriptdir); rm -f allec kpsepath kpsexpand texhash; \
+	  ln -s allcm allec; \
+	  ln -s kpsetool kpsepath; \
+	  ln -s kpsetool kpsexpand; \
+	  ln -s mktexlsr texhash
+	cd $(scriptdir); rm -f $(PERLWRAPPED); \
+	  for f in $(PERLWRAPPED); do \
+	    ln -s texexec $$f; \
+	  done
+	cd $(scriptdir); rm -f mktexfmt; ln -s fmtutil mktexfmt
+
+ac_include ../make/clean.mk
+
+config.status: $(srcdir)/configure
+	$(SHELL) $(srcdir)/configure --no-create --verbose
+
+Makefile: $(srcdir)/Makefile.in config.status
+	$(SHELL) config.status
+
+depend:
+

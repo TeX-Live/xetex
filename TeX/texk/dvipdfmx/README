@@ -1,0 +1,583 @@
+$Header: /home/cvsroot/dvipdfmx/README,v 1.14 2004/01/30 11:31:29 hirata Exp $
+
+The dvipdfmx Project
+====================
+
+Last modified: January 30, 2004
+
+
+Copyright (C) 2002 by Jin-Hwan Cho and Shunsaku Hirata,
+the dvipdfmx project team <dvipdfmx@project.ktug.or.kr>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+
+
+Contents
+--------
+
+1. Introduction
+
+2. Installation
+
+4. Features
+
+   4.1. Double-byte Encoding/Font Support
+   4.2. CID-keyed Font
+   4.3. Options for CID-keyed Font
+   4.4. Advanced Typographic Features
+   4.4. Vertical Typesetting
+   4.5. Unicode Support for Single-Byte Font
+
+5. New PDF Specials
+
+6. Fontmap Examples
+
+7. Limitations
+
+8. References
+
+
+1. Introduction
+   ------------
+
+   The dvipdfmx (formerly dvipdfm-cjk) project provides an eXtended version
+   of the dvipdfm, a DVI to PDF translator developed by Mark A. Wicks.
+
+   The primary goal of this project is to support multi-byte character
+   encodings and large character sets for East Asian languages by using
+   CID-keyed font technology. The secondary goal is to support as many
+   features as pdfTeX developed by Han The Thanh.
+
+   This project is a combined work of the dvipdfm-jpn project by Shunsaku
+   Hirata and its modified one, dvipdfm-kor, by Jin-Hwan Cho.
+
+
+2. Installation
+   -----------------------
+
+   The current snapshot of the dvipdfmx project is available at:
+
+     http://project.ktug.or.kr/dvipdfmx/snapshot/
+
+   The CVS repository for this project can be checked out through anonymous
+   (pserver) CVS with the following instruction set. When prompted for a
+   password for anonymous, simple press the Enter key.
+
+     cvs -d:pserver:anonymous@cvs.ktug.or.kr:/home/cvsroot login
+
+     cvs -d:pserver:anonymous@cvs.ktug.or.kr:/home/cvsroot co dvipdfmx
+
+
+   The kpathsea library is required to compile and install dvipdfmx in UNIX
+   or UNIX-like platforms. It is a part of common TeX distributions, for
+   example, teTeX. See `INSTALL' for more details.
+
+   In addition to the original dvipdfm, the following resources are used by
+   dvipdfmx.
+
+ 1) CMap PostScript Resources
+
+   All CJK (CID-keyed font) supporting features requires CMap resources.
+   Please install CMap resource files under the directory
+   "${TEXMF}/dvipdfm/CMap", or specify the directory containing CMap resource
+   files in the variable CMAPINPUTS in "${TEXMF}/web2c/texmf.cnf".
+
+   The directory "data/CMap" contains a few CMap files written by the dvipdfmx
+   project team. Adobe's "CMaps for PDF 1.4 CJK Fonts" are available at:
+
+     http://partners.adobe.com/asn/developer/technotes/acrobatpdf.html
+
+   Standard CMap files for CJK-languages are also available at:
+
+     ftp://ftp.oreilly.com/pub/examples/nutshell/cjkv/adobe/
+
+
+ 2) SubFont Definition Files
+
+   SubFont Definition files (.sfd) must be installed under the directory
+   "${TEXMF}/ttf2pk" or "${TEXMF}/ttf2tfm" as specified in
+   "${TEXMF}/web2c/texmf.cnf" to use the subfont related features required
+   for CJK and HLaTeX packages.
+
+
+ 3) Glyph List File
+
+   Dvipdfmx uses "glyphlist.txt" to convert PostScript glyph names to the
+   corresponding Unicode values. The "glyphlist.txt" file written by Adobe
+   is found at
+
+     http://partners.adobe.com/asn/tech/type/glyphlist.txt
+
+   You must put the "glyphlist.txt" in a directory shown by
+
+     kpsewhich --progname=dvipdfm --show-path="other text files"
+
+   Please check that kpathsearch library can find this file by "kpsewhich"
+   command as follows: 
+
+     kpsewhich --progname=dvipdfm --format="other text files" glyphlist.txt
+
+   Most features described in the section "Unicode Support For Single-Byte
+   Font" requires this file.
+
+
+4. Features
+
+4.1. Double-Byte Encoding/Font Support
+
+   Dvipdfmx uses CIDs to identify each double-byte characters internally.
+   And it uses CMap PostScript resources to convert DVI input text from
+   DVI-internal encodings to CIDs. So, you must install CMaps to use multi-
+   byte characters in dvipdfmx. The "H" and "V" CMaps are required for
+   ASCII pTeX, Uni***-UCS2-H is recommended for using CJK text with Omega.
+   If you only use UCS-2 encoding and Unicode TrueType fonts, no CMaps are
+   required. CJK-LaTeX and HLaTeX users must choose suitable one for each
+   SFD files.
+
+   At present, Omega level-0/level-1 font metric (OFM) format and JFM TeX
+   font metric format, which is an extended TeX font metric format used by
+   ASCII pTeX, are supported for double-byte TeX font metric file.
+
+   Dvipdfmx have a capability of mapping a set of single-byte (TeX) fonts
+   to a single double-byte font without relying on virtual fonts. Support
+   for CJK-LaTeX and HLaTeX packages is realized by this function. You can
+   do this mapping with SFD file. For example,
+
+     gcr@UKS@  UniKS-UCS2-H GulimChe
+
+   maps a set of single-byte fonts, gcr01, gcr02, ..., to an intermediate
+   double-byte font gcr@UKS@ (KSC subset of Unicode, UCS-2 encoding used)
+   according to the content of SFD file "UKS.sfd", and then maps it to a
+   Type0 font "GulimChe-UniKS-UCS2-H" having an Adobe-Korea1 CID-keyed font
+   "GulimChe" as a descendant CID-keyed font. (The encoding "Identity-H" is
+   actually used in the output PDF file for all Type0 font since dvipdfmx
+   convert all character codes in the input text strings to CIDs according
+   to the given CMap, UniKSC-UCS2-H in this case.)
+
+   If you have TrueType version of Monotype Times New Roman font, you can
+   also do something like
+
+     times00 Identity-H times/UCS -m <00>
+     times01 Identity-H times/UCS -m <01>
+     times02 Identity-H times/UCS -m <02>
+     ...
+
+   This example will map times00, times01, tmes02 ... fonts to a single
+   Type0 font "TimesNewRomanPSMT-Identity-H" with a descendant Unicode
+   ordering (CIDs coincides with Unicode values from BMP) CID-keyed font
+   "TimesNewRomanPSMT". In this example, all characters in times00 font
+   are first mapped to double-byte codes ranging from <0000> to <00FF>,
+   characters in times01 font are mapped to double-byte codes ranging from
+   <0100> to <01FF> (and so on), and then identity mapping is applied to
+   resulting double-byte codes. The final result is, text encoded with
+   Identity-H encoding and a Type0 font with a descendant CID-keyed font
+   "TimesNewRomanPSMT" which employs Unicode character ordering. Please
+   note that the /UCS option explicitly tells dvipdfmx to convert TrueType
+   font "Times New Roman" to a CID-keyed font with Unicode ordering.
+
+   Recent versions of dvipdfmx allows users to have an access to the
+   dvipdfmx's character code converter inside from the TeX source. You can
+   tell Dvipdfmx to do conversion of PDF strings appears in the pdf special
+   command. For this feature a new PDF special command, "pdf: tounicode"
+   was implemented. After this command, every characters in PDF outlines,
+   annotations, and document information will be converted according to
+   the given CMap file. To do this, put one of the following code in the
+   preamble of your LaTeX document source: 
+
+     \AtBeginDvi{\special{pdf:tounicode GBK-EUC-UCS2}}
+
+     \AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}
+
+     \AtBeginDvi{\special{pdf:tounicode 90ms-RKSJ-UCS2}}
+
+     \AtBeginDvi{\special{pdf:tounicode KSCms-UHC-UCS2}}
+
+   In this examples, PDF strings are converted from CJK encodings to UCS-2.
+   This feature is useful for including CJK characters in PDF outlines,
+   annotations, and document information. 
+
+
+4.1. CID-keyed Fonts
+
+   There are three kinds of CID-keyed Fonts supported by dvipdfmx.
+
+
+ 1) "Basic" CID-keyed Font
+
+   The following CID-keyd fonts are defined in "source/cid_basefont.h".
+   Those fonts can be used witout having font itself.
+
+     ---------------------------------------------------------
+     Language     CSI              Font Name
+     ---------------------------------------------------------
+     Chinese(T)   Adobe-CNS1-0     MHei-Medium-Acro
+                                   MSung-Light-Acro
+                  Adobe-CNS1-4     AdobeMingStd-Light-Acro
+     ---------------------------------------------------------
+     Chinese(S)   Adobe-GB1-2      STSong-Light-Acro
+                  Adobe-GB1-4      AdobeSongStd-Light-Acro
+     ---------------------------------------------------------
+     Japanese     Adobe-Japan1-2   HeiseiMin-W3-Acro
+                                   HeiseiKakuGo-W5-Acro
+                                   Ryumin-Light
+                                   GothicBBB-Medium
+                  Adobe-Japan1-4   KozMinPro-Regular-Acro
+                                   KozGoPro-Medium-Acro
+     ---------------------------------------------------------
+     Korean       Adobe-Korea1-0   HYGoThic-Medium-Acro
+                                   HYSMyeongJo-Medium-Acro
+                  Adobe-Korea1-2   AdobeMyungjoStd-Medium-Acro
+     ---------------------------------------------------------
+     * "-Acro" can be omited.
+
+
+   For those fonts, minimal font information required by PDF viewers are
+   available from dvipdfmx's built-in data. The built-in data does not
+   contain any glyph data required to render actual shape of each glyphs.
+   So, PDF viewers must substitute those fonts with suitable one available
+   from the system. The reproducibility of document layout opened on the
+   remote system is not always guaranteed, however, it works well for CJK
+   text if you does not use special characters in your document. Please use
+   those fonts if you are sure that all peoples that receives your documents
+   have usable fonts installed on their system. It greatly reduces size of
+   resulting PDF documents because no glyph data are embedded.
+
+   Most of those fonts are available from Adobe as a part of Acrobat Reader
+   Asian Font Packs for use with Acrobat Reader.
+
+
+ 2) CFF/OpenType Font
+
+   CFF/OpenType font (OTTO, OpenType fonts with PostScript outline) support
+   is available with few restrictions. Those fonts are embedded by default
+   when editable-, installable-, or preview & print- embedding flag is set
+   in the fsType value of OS/2 OpenType table.
+
+
+ 3) Using TrueType Font as CIDFontType2 CID-keyed Font
+
+   When a valid CMap is specified as the encoding of the fontmap record and
+   the font is mapped to a TrueType font, dvipdfmx will try to treat TrueType
+   font as a CIDFontType2 CID-keyed font. In this case, dvipdfmx requires
+   extra information to convert TrueType font to CID-keyed font.
+
+   The first one is the CIDSystemInfo (CSI). This information is specified
+   by appending /CSI immediately after the font name:
+
+     mincho UniJIS-UCS2-H ttmincho/AJ14
+
+   In this example, TrueType font "ttmincho" is converted to CID-keyed font
+   of Adobe-Japan1-4 character collection (AJ1 is a alias for Adobe-Japan1
+   that dvipdfmx recognizes and the integer 4 is the value of /Supplement).
+   It is not mandatory if you are not using Identity CMaps: dvipdfmx will
+   use CSI information available from CMaps applied to TrueType font. The
+   following map record,
+
+     mincho UniJIS-UCS2-H ttmincho
+
+   implies that CSI to be used for "ttmincho" is Adobe-Japan1-4 since the
+   CMap "UniJIS-UCS2-H" is a mappig from character codes of UCS-2 to CIDs
+   of Adobe-Japan1-4 character collection.
+   However,
+   
+     ommincho Identity-H ttmincho
+
+   does not suggest any useful information on which CSI should be used for
+   this TrueType font since Identity CMap is generic CMap that does not
+   depend on any specific character collection. For this Omega (we assume
+   ommincho is OFM file with UCS-2 encoding) example to work correctly,
+   you must modify this fontmap as follows:
+
+     ommincho Identity-H ttmincho/UCS -m <00>
+
+   Here, an another option "-m <00>" (only available in recent versions of
+   dvipdfmx) is used to convert all single-byte characters <XX> in the input
+   DVI file to double-byte characters of the form <00XX> when ommincho is
+   selected as current font. This option is necessary for DVIs generated by
+   Omega. The reason for this is, Identity CMap is double-byte to double-byte
+   code mapping while Omega freely mixes single-byte encoding and double-byte
+   encoding even when double-byte font is used. If you omit this option,
+   dvipdfmx may stop with error message like
+
+     ** ERROR ** CMap: Invalid/truncated input string.
+
+   You can omit /UCS when using one of the following SFD files; Unicode, UKS*
+   UBg5*, UBig5*, UGB*, and UJIS*. /UCS is automatically appended to the font
+   name in those cases.
+
+   The next one is ToCode mapping CMap file. This CMap resource is always
+   required when embedding a TrueType font as a CID-keyed font. (Except the
+   case that Identity-H CMap is used together with /UCS option and TrueType
+   font have a Unicode TrueType cmap table. The ToCode mapping is identity
+   in this case.)
+
+   Dvipdfmx uses a CMap resource when extracting glyph data from TrueType
+   font. This CMap describes the mapping from CID numbers to character codes
+   used in the TrueType cmap (character to glyph index mapping) table. For
+   example, in order to embed a Japanese TrueType font with Unicode encoding
+   as a Adobe-Japan1 CID-keyed font, the CMap file "Adobe-Japan1-UCS2" is
+   used which describes mapping from CID numbers of Adobe-Japan1 character
+   collection to the corresponding Unicode values.
+
+   Here is a list of required CMaps for each TrueType encodings supported
+   by dvipdfmx and for Adobe's character collections:
+
+     ----------------------------------------------------------------
+     Encoding        PID  EID   CSI            ToCode CMap
+     ----------------------------------------------------------------
+     Unicode         3    1     Adobe-GB1      Adobe-GB1-UCS2
+                                Adobe-CNS2     Adobe-CNS1-UCS2
+                                Adobe-Japan1   Adobe-Japan1-UCS2
+                                Adobe-Korea1   Adobe-Korea1-UCS2
+     ----------------------------------------------------------------
+     RPC     (WIN)   3    3     Adobe-GB1      Adobe-GB1-GBK-EUC
+             (MAC)   1   25                    Adobe-GB1-GBpc-EUC
+     ----------------------------------------------------------------
+     Big5    (WIN)   3    4     Adobe-CNS1     Adobe-CNS1-ETen-B5
+             (MAC)   1    2                    Adobe-CNS1-B5pc
+     ----------------------------------------------------------------
+     SJIS    (WIN)   3    2     Adobe-Japan1   Adobe-Japan1-90ms-RKSJ
+             (MAC)   1    1                    Adobe-Japan1-90pv-RKSJ
+     ----------------------------------------------------------------
+     Wansung (WIN)   3    5     Adobe-Korea1   Adobe-Korea1-KSCms-UHC
+             (MAC)   1    3                    Adobe-Korea1-KSCpc-EUC
+     ----------------------------------------------------------------
+     PID: Platform ID, EID: Platform-Specific Encoding ID
+
+   Those CMaps are available from Adobe. If you want to use non-standard
+   (character collections not supported by PDF-1.x) or your custom character
+   collection, you must write ToCode CMaps by yourself, and name it as
+   REGISTRY-ORDERING-ENCODING. (e.g., TeX-MathSymbol-UCS2 for TeX-MathSymbol
+   to UCS2 mapping.)
+
+
+4.2. Options for CID-keyed Font
+
+   Few options are available in dvipdfmx (for CID-keyed fonts) in addition
+   to the original dvipdfm.
+
+
+ 1) TTC Index
+
+   You can specify TrueType Collection index number with :n: option in front
+   of TrueType font name.
+
+     mincho  H :1:msmincho
+
+   In this exmaple, the option :1: tells dvipdfmx to select TrueType font #1
+   from TrueType Collection font "msmincho.ttc".
+
+
+ 2) No-embed Switch
+
+   It is possible to block embedding glyph data with the character `!'
+   in front of the font name in the font mapping file.
+
+   This feature reduces the size of the final PDF output, but the PDF file
+   may not be viewed exactly in other systems on which appropriate fonts
+   are not installed.
+
+   Use of this option is not recommended for fonts that contains unusual
+   characters (and characters having different width from default value).
+   Please note that glyph metric information is not written in the output
+   PDF file for CID fonts without embedding. Widths of all characters will
+   be same as the default value (usually 1000).
+
+   At present this feature is implemented in dvipdfmx only for CIDFonts.
+
+
+ 3) Stylistic Variants
+
+   Keywords ",Bold", ",Italic", and ",BoldItalic" can be used to create
+   synthetic bold, italic, and bolditalic style variants from other font
+   using OS/PDF viewer's function.
+
+     jbtmo@UKS@     UniKSCms-UCS2-H :0:!batang,Italic
+
+     jbtb@Unicode@  Identity-H      !batang/UCS,Bold
+
+
+   Unfortunately, availability of this feature highly depends on the
+   implementation of PDF viewers. For example, this option does not work
+   for embedded fonts in popular PDF viewers, Adobe Acrobat Reader and
+   GNU Ghostscript.
+
+   Notice that this option automatically disable font embedding. At present,
+   this feature is implemented in dvipdfmx only for CIDFonts.
+
+
+ 4) Map Option
+
+   This option can be used to map a whole single-byte code range <00>-<FF>
+   to a double-byte code range <XX00>-<XXFF>:
+
+     -m <XX>
+
+   The hexadecimal number XX must be two-bytes long (zero padded).
+   The primary purpose of this option is to handle DVI files generated by
+   Omega. The option
+
+     -m <00>
+
+   is usually required for OFM to double-byte font mapping.
+
+
+4.3. Advanced Typographic Features
+
+   Experimental support for single glyph substitution (GSUB feature vert/vrt2)
+   is available for selecting vertical version of glyphs in TrueType fonts.
+
+
+4.4. Vertical Typesetting
+
+   Dvipdfmx supports "vertical text mode" and "vertical direction mode".
+   The vertical text mode is automatically enabled when current CMap's
+   WMode is equal to 1. All double-byte characters are roated 90 degrees
+   in the counter-clockwise direction in the horizontal direction mode when
+   the current text mode is vertical. The direction mode is switched by DVI
+   command `dir' (opcode 255). The argument of dir command is an unsigned
+   byte, value 0 changes current direction mode to horizontal, and value 1
+   changes it to vertical. All horizontal boxes are rotated 90 degrees in
+   the clockwise direction in the vertical direction mode.
+
+
+4.5. Unicode Support For Single-Byte Font
+
+
+ 1) Unicode TrueType Font
+
+   Unicode TrueType fonts (TrueType font with Unicode cmap table) without
+   TrueType 'post' table version 2.0 is supported since dvipdfmx-20031125.
+   You must install glyph list file to use those fonts.
+
+
+ 2) Accessing Glyphs By Unicode Values
+
+   Access to all glyphs found in the Basic Multilingual Plane (BMP) of
+   Unicode is available via the glyph names uniXXXX in the .enc file,
+   where XXXX is a sequence of four uppercase hexadecimal digits
+   representing Unicode value of the glyph, e.g., uni1E04 (Bdotbelow),
+   uni00C1 (Aacute). This feature is only available for Unicode TrueType
+   font.
+
+
+ 3) ToUnicode CMap Support
+
+   Dvipdfmx will automatically create ToUnicode CMaps for fonts that uses
+   encodings other than the "WinAnsiEncoding", "MacRomanEncoding", and
+   "MacExpertEncoding". It uses Adobe glyph list file to create mapping
+   from character codes to Unicode values. This feature is not available
+   for PK font.
+
+
+5. New PDF Specials
+
+5.1 Character Code Conversion
+
+   \special{pdf: tounicode CMapName}
+
+
+5.2 PDF Literal Command
+
+   \special{pdf: literal [direct|reverse]}
+
+   Example: Text Rendering Mode
+
+     \newcommand{\rtext}[3][0.3]{%
+     \special{pdf: literal direct q #1 w #2 Tr}#3\special{pdf: literal Q}}
+     \rtext{1}{Stroke text} or \rtext{2}{fill-then-stroke text}.
+
+   You may use second example as a fake bold.
+
+
+5.3 Creating PDF Stream Object
+
+   You can create PDF stream object from an existing file with pdf:fstream
+   special command.
+
+     \special{pdf: fstream @objname (filename) [DICT]}
+
+   Example: File Attachment Annotation
+
+     \documentclass{article}
+     \AtBeginDvi{%
+     \special{pdf: fstream @file_source (\jobname.tex)
+        <<
+          /Type /EmbeddedFile
+          /Subtype (text/plain)
+        >>
+     }%
+     \special{pdf: object @fspec_source
+        <<
+           /Type /Filespec
+           /F (\jobname.tex)
+           /EF << /F @file_source >>
+        >>
+     }%
+     }
+     \begin{document}
+     \makebox[10pt][l]{%
+     \special{pdf: ann width 10pt height 8pt depth 2pt
+       <<
+         /Type /Annot
+         /Subtype /FileAttachment
+         /Name /PushPin
+         /C [0.8 0.4 0.4]
+         /T (Author of This Document)
+         /M (D:20031207000000)
+         /Contents (TeX source file of this document.)
+         /F 4
+         /FS @fspec_source
+       >>
+     }}
+     \end{document}
+
+   Acrobat Reader for Linux does not support FileAttachment annotation.
+
+
+6. Fontmap Examples
+   ----------------
+
+   See, file "cid-x.map".
+
+
+7. Limitations
+   -----------
+
+   See BUGS.
+
+
+8. References
+   ----------
+
+   CID-keyed fonts are core technology for supporting CJK (Chinese, Japanese,
+   and Korean) languages and other languages that requires large number of
+   characters in PDF. See, Adobe's technical notes for detailed description
+   of the CID-keyed fonts:
+
+     Technical Note #5092: CID-Keyed Font Technology Overview
+
+     Technical Specification #5014: Adobe CMap and CIDFont Files Specification
+
+     Technical Note #5099: Building CMap Files for CID-Keyed Fonts
+
+   Those documents are available at:
+
+     http://partners.adobe.com/asn/developer/technotes/main.html
+
+   The OpenType specification is available at:
+
+     http://www.microsoft.com/typography/otspec/default.htm
+

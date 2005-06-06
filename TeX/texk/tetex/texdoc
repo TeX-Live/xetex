@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# Thomas Esser, David Aspinall, Simon Wilkinson.
+# Public domain.
+#
+# Simple script to attempt to find documentation for tex files.
+# Uses kpsewhich to find a .dvi, .pdf or .ps file along the
+# 'TeX system documentation' ($TEXDOCS, default: $TEXMF/doc) search path.
+#
+# Original version by David Aspinall <da@dcs.ed.ac.uk>
+#
+# This version rewritten for use with bash 2 and teTeX under Linux by
+# Simon Wilkinson <sxw@dcs.ed.ac.uk>
+#
+# Changes for web2c-7.2 resp. teTeX-0.9 and portability fixes by
+# Thomas Esser <te@dbs.uni-hannover.de>, Jun 14 1998
+
+test -f /bin/sh5 && test -z "$RUNNING_SH5" \
+  && { UNAMES=`uname -s`; test "x$UNAMES" = xULTRIX; } 2>/dev/null \
+  && { RUNNING_SH5=true; export RUNNING_SH5; exec /bin/sh5 $0 ${1+"$@"}; }
+unset RUNNING_SH5
+
+test -f /bin/bsh && test -z "$RUNNING_BSH" \
+  && { UNAMES=`uname -s`; test "x$UNAMES" = xAIX; } 2>/dev/null \
+  && { RUNNING_BSH=true; export RUNNING_BSH; exec /bin/bsh $0 ${1+"$@"}; }
+unset RUNNING_BSH
+
+# Viewing programs, according to filename extension.  (You can
+# override or add to them by setting environment variables).
+: ${TEXDOCVIEW_dvi='xdvi %s &'}
+: ${TEXDOCVIEW_pdf='acroread %s &'}
+: ${TEXDOCVIEW_ps='(gv %s || ghostview %s) &'}
+: ${TEXDOCVIEW_html='mozilla -remote openURL'"'(%s)'"' 2>/dev/null || mozilla %s &'}
+: ${TEXDOCVIEW_txt="${PAGER-more} %s"}
+: ${TEXDOCVIEW_="${PAGER-more} %s"} # no extension, default to pager
+
+mode=viewer
+help='Usage: texdoc [OPTION]... [NAME]...
+  Search for NAME in the TeX documentation and start a viewer.
+
+  --help        show this help
+  -v		verbose mode: show viewer command
+  -l            just list all matching files. Do not start a viewer.
+  -s            search the disk. remaining arguments will be passed
+                as egrep patterns to filter the find output.'
+
+verbosemode=false
+while 
+  case $1 in
+     -s)     mode=search; shift; break;;
+     -l)     mode=list;;
+     -v)     verbosemode=true;;
+     *-help)
+             echo "$help" >&2
+             exit 1;;
+     -*)     echo "texdoc: option $1 not recognized" 1>&2;;
+      *)     break;;
+  esac
+do shift; done
+
+case $# in
+  0)
+    echo "$help" >&2
+    exit 1
+    ;;
+esac
+
+for name
+do
+  case $mode in
+    search)
+      find `kpsewhich --expand-path='$TEXMF/doc' | tr : ' '` -type f -print |
+        egrep $name
+      continue
+      ;;
+  esac
+
+  case $name in
+    texdoc)
+      man texdoc; continue;;
+  esac
+
+  found=false
+  for ext in "" .dvi .pdf .ps .txt .html; do
+
+    filename=`kpsewhich -format='TeX system documentation' $name$ext 2>/dev/null`
+    test -z "$filename" && continue
+    found=true
+
+    if test $mode = list; then
+      echo $filename
+    else
+      ext=`echo $filename | sed -n 's%.*\.\([^/]*\)$%\1%p'`
+      viewer=\$"TEXDOCVIEW_$ext"
+      viewer=`eval echo $viewer | sed -e "s|%s|$filename|g"`
+      if test -z "$viewer"
+      then 
+        echo "Don't know how to view file type $ext" 1>&2
+        echo "(matching file was $filename)" 1>&2
+      else 
+        $verbosemode && echo $viewer
+        dir=`echo "$filename" | sed 's%/[^/]*$%%'`
+        test -n "$dir" && test -d "$dir" && cd "$dir"
+        eval $viewer
+        break     # just stop after the first usable extension
+      fi
+    fi
+
+  done
+  $found || echo "Can't find documentation for \`$name'" 1>&2
+done
+exit 0

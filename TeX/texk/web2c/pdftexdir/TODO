@@ -1,0 +1,10 @@
+TODO for pdfTeX:
+- enable pdfTeX to output PDF/X-3 compliant PDF
+- allow access to the object number of the current page
+- document the sources
+- PDF 1.5
+- colorstack
+- access to the ctcm
+
+$Id: //depot/Build/source/TeX/texk/web2c/pdftexdir/TODO#9 $
+// vim: tw=79

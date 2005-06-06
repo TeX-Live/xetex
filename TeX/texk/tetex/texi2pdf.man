@@ -1,0 +1,49 @@
+.TH "texi2pdf" "1" "September 2000" "teTeX" "teTeX" 
+.PP 
+.SH "NAME" 
+texi2pdf \- create a PDF file from a Texinfo file
+.PP 
+.SH "SYNOPSIS" 
+.PP 
+\fBtexi2pdf\fP [ \fIOPTION\fP\&.\&.\&. ]  \fIFILE\fP\&.\&.\&.
+.PP 
+.SH "DESCRIPTION" 
+.PP 
+\fBtexi2pdf\fP sets the \fBTEX\fP environment variable to
+\fBpdftex\fP(1) and runs \fBtexi2dvi\fP(1), passing all options to
+\fBtexi2dvi\fP(1)\&.
+.PP 
+.SH "OPTIONS" 
+.PP 
+See \fBtexi2dvi\fP(1) for relevant options\&.
+.PP 
+.SH "ENVIRONMENT" 
+.PP 
+.IP 
+.IP "\fBTEX\fP" 
+set to \fBpdftex\fP(1) by the script
+.IP 
+.PP 
+.SH "SEE ALSO" 
+.PP 
+\fBpdftex\fP(1), \fBtexi2dvi\fP(1), \fBtexinfo\fP(5)\&.
+.PP 
+.SH "BUGS" 
+.PP 
+Problems with this script should be reported to the author or to the
+teTeX list, <tetex@dbs\&.uni-hannover\&.de> (mailing list)\&. 
+.PP 
+Problems with \fBtexi2dvi\fP(1) should be reported to Karl Berry,
+the texinfo maintainer, at <bug-texinfo@gnu\&.org> (mailing list)
+.PP 
+.SH "AUTHOR" 
+.PP 
+Written by Thomas Esser 
+<te@dbs\&.uni-hannover\&.de>\&.
+.PP 
+This manual page was written by C\&.M\&. Connelly
+<c@eskimo\&.com>, for
+the Debian GNU/Linux system\&.  It may be used by other distributions
+without contacting the author\&.  Any mistakes or omissions in the
+manual page are my fault; inquiries about or corrections to this
+manual page should be directed to me (and not to the primary author)\&.

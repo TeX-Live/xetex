@@ -1,0 +1,53 @@
+#========================================================================
+#
+# fofi library Makefile
+#
+# Copyright 1996 Derek B. Noonburg
+#
+#========================================================================
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+kpathsea_include_dir = -I../../../texk -I$(srcdir)/../../../texk
+ALLCXXFLAGS = $(CXXFLAGS) @DEFS@ -I.. -I$(srcdir)/.. -I../goo -I$(srcdir)/../goo -I. -I$(srcdir) $(kpathsea_include_dir)
+CXXFLAGS = @CXXFLAGS@
+CC = @CC@
+CXX = @CXX@
+CFLAGS = @CFLAGS@
+
+ac_include ../../texk/make/library.mk
+
+
+#------------------------------------------------------------------------
+
+.SUFFIXES:
+.SUFFIXES: .cc .c .o
+
+.cc.o:
+	$(CXX) $(ALLCXXFLAGS) -c $<
+
+FOFI_OBJS = FoFiBase.o FoFiEncodings.o FoFiTrueType.o FoFiType1.o FoFiType1C.o
+
+libfofi.a: $(FOFI_OBJS)
+	rm -f $@
+	$(AR) $(ARFLAGS) $@ $(FOFI_OBJS)
+	$(RANLIB) $@
+
+#------------------------------------------------------------------------
+
+mostlyclean clean:
+	rm -f $(FOFI_OBJS) libfofi.a
+	rm -f Makefile.bak
+
+distclean maintainer-clean extraclean: clean
+	rm -f Makefile
+
+#------------------------------------------------------------------------
+
+depend:
+	($(CXX) $(ALLCXXFLAGS) -MM $(srcdir)/*.cc; \
+	 $(CC) $(ALLCFLAGS) -MM $(srcdir)/*.c) \
+	   | sed 's|$(srcdir)|$$(srcdir)|' > $(srcdir)/depend.mk
+
+ac_include fofi/depend.mk

@@ -1,0 +1,75 @@
+2004-09-08  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* pdfxtex.mk (pdfxtexdir/pdfxtexextra.h): Spurious $(scrdir) in
+	the sed rules removed.  Reported by Martin Schröder
+	<ms@artcom-gmbh.de>.
+
+2004-08-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* pdfxtexextra.in: File was renamed; the current pdfTeX and e-TeX
+	versions are substituted from ../pdftexdir/pdftex.version and
+	../etexdir/etex.version.  Variant of code supplied by Peter
+	Breitenlohner <peb@mppmu.mpg.de>.
+
+	* pdfxtex.mk: Added rule to insert pdfTeX and e-TeX versions into
+	pdfxtexextra.h.  Variant of code supplied by Peter Breitenlohner
+	<peb@mppmu.mpg.de>.
+
+2004-08-25  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* pdfxtex.ch2: Make pdfxtex.ch2 a patch on pdfetex.ch2 along lines
+	suggested by Peter Breitenlohner.
+
+	* pdfxtex.mk: vadjust.ch moved from pdfxtexdir to pdftexdir.
+	Make pdfxtex.ch2 a patch on pdfetex.ch2 along lines suggested by
+	Peter Breitenlohner.
+	
+2004-08-17  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* pdfxtex.mk: Resurrected etex.fix, there is again a need to
+	include late-breaking changes.
+
+2004-07-29  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* pdfxtex.ch2, vadjust.ch: Somewhat rearrange handling of kern
+	and math nodes in order to reduce interference between eTeX and
+	pdfTeX change files. Somewhat disentangle preadjustments such
+	that pdfxtex.web can be built with or without hz.ch (not true
+	for pdfxtex.ch).
+
+2004-07-25  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* pdfxtex.ch2, strcmp.ch: Reorganize additional command codes for
+	convert and last_item in order to reduce interference between eTeX
+	and pdfTeX change files.
+
+2004-07-23  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* pdfxtex.ch2, tex.ch[01]: Reorganize handling of banner string
+	in order to reduce interference between eTeX, pdfTeX, and web2c
+	change files.
+
+2004-07-22  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* pdfxtex.ch2: Removed unused token types for pdfTeX's additional
+	token list parameters.
+
+2004-07-19  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* pdfxtex.ch2, tex.ch0: Reorganize handling of additional
+	token list and integer parameters and e-TeX's additional
+	penalties in order to reduce interference between eTeX, pdfTeX,
+	and web2c change files.
+
+	* pdfxtex.mk (pdfxtex.ch): Remove tex.ch2 from build rules.
+
+	* tex.ch2: Removed.
+
+2004-07-17  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* pdfxtex.mk: Rewrite build rules for pdfxtex.{web,ch},
+	remove etex.{ch0,ch1,fix}, tex.ch2, and several non-dependencies.
+
+	* pdfxtex.ch2: Adapt to eTeX changes.
+
+	* ChangeLog: New file.

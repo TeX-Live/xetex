@@ -1,0 +1,10 @@
+/* Workaround for IE unsupported position: fixed */
+
+body {
+	overflow-y: hidden
+}
+
+div.content {
+	overflow: auto;
+	height:   100%
+}

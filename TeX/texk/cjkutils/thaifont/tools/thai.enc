@@ -1,0 +1,1532 @@
+% thai.enc
+%
+%   written by Werner Lemberg <wl@gnu.org>
+%
+%   Version 0.1 2000-Aug-08
+%
+%
+% Usage instructions are at the end of this file.
+%
+%
+% This is a font encoding for Thai.  The glyph names follow the Adobe
+% Glyph List recommendations.  Since most available Thai fonts neither
+% use AGL glyph names nor follow the font encoding used here, you have
+% to use another mapping file from your Thai font to the raw TeX font.
+% In fact, this is also necessary for another reason since three
+% glyphs, namely `uni0E38' (Thai character `sara u'), `/uni0E39' (Thai
+% character `sara uu'), and `uni0E3A' (Thai character `phinthu') must
+% appear twice in the raw font mapping; the additional glyph indices
+% are 0x80, 0x81, and 0x82, respectively.  See below for further
+% explanation.
+%
+% The tricky part is implementing the ligatures.  TeX's ligature
+% mechanism only provides contextual patterns of length 2.
+% Additionally, afm2tfm's LIGKERN format doesn't allow to group glyphs
+% into various classes which makes this file rather long -- if glyph
+% classes and context patterns of length 3 were available (as it is
+% e.g. in Omega or within the OpenType font format), we would need
+% only a fraction of lines to provide all classes and patterns.
+%
+% Thai glyphs can be grouped functionally into base glyphs (which are
+% spacing glyphs) and diacritics (which have zero advance width).
+% Usually, diacritical glyphs represent either vowels or tone
+% indicators, whereas base glyphs represent consonants -- I won't go
+% into detail here; please look into the Unicode book or any
+% introduction into the Thai script for more information.
+%
+% The general composing rules are as follows:
+%
+%
+%                            T
+%         V        T         V                  T
+%   CV => C, CT => C, CVT => C, Cv => C, CvT => C
+%                                     v         v
+%
+%
+% where `C' represents a base consonant, `V' an upper vowel, `v' a
+% lower vowel, and `T' a tone mark.  The tone mark always comes last.
+%
+% Sometimes you will find documents which have first the tone mark and
+% then the vowel.  In real Thai input systems, this error will be
+% catched and fixed by reordering the characters according to the
+% TIS-620 Thai encoding standard before any output is created.  The
+% ligatures given below are not able to handle such incorrect data,
+% and you have to normalize it before using them.
+%
+% It depends on context where the diacritics are exactly positioned;
+% some base glyphs have overlong ascenders or descenders, making it
+% necessary to shift the diacritics vertically and horizontally.
+%
+% To complicate things, the Thai vowel `sara am' (TIS-620 code
+% point 0xD3, Unicode value U+0E33), which looks like the final nasal
+% sign `nikhahit' (0xED, U+0E4D) followed by the vowel `sara aa'
+% (0xD2, U+0E32), will be decomposed into these two glyphs for
+% rendering.  The difficulty is that we must position the tone mark of
+% the *previous* character properly!  Thus we have
+%
+%
+%                                   T
+%             N                     N
+%   C + SM => C + SA, C + T + SM => C + SA
+%
+%
+% A last specialty (used for Sanskrit written in Thai) is that `sara
+% aa' if it follows the independent vowel letter `ru' (0xC4, U+0E24)
+% or `lu' (0xC6, U+0E26) is replaced with the `lakkhangyao' sign
+% (0xE5, U+0E45).
+%
+%
+% To describe the patterns and rules we start with defining glyph
+% classes.
+%
+%
+%   base.normal:   Normal base glyphs without any special properties.
+%   base.desc:     Base glyphs with descender.
+%   base.desclike: These base glyphs consist of two elements which
+%                  look like a normal base glyph with a lower vowel
+%                  diacritic; the diacritic-like element will be
+%                  omitted if combined with a lower vowel.
+%   base.asc:      Base glyphs with ascender.
+%   base.indic:    The independent vowels `ru' and `lu'.
+%   base.sign:     The `lakkhangyao' sign.
+%   base.saraam:   The `sara am' vowel.
+%   base.saraaa:   The `sara aa' vowel.
+%   lower:         Lower vowel diacritics.
+%   upper.vowel:   Upper vowel diacritics.
+%   upper.sign:    The `nikhahit' final nasal sign.
+%   top:           Tone marks.
+%
+%
+% Here the glyph variant classes:
+%
+%
+%   base.descless:    The `base.desclike' glyphs without the lower
+%                     element.
+%   lower.low:        The `lower' glyphs lowered.
+%   upper.vowel.left: The `upper.vowel' glyphs moved to the left.
+%   upper.sign.left:  The `upper.sign' glyph moved to the left.
+%   top.left:         The `top' glyphs moved to the left.
+%   top.low:          The `top' glyphs lowered.
+%   top.low_left:     The `top' glyphs lowered and moved to the left.
+%
+%
+% Using the above defined glyph classes we can describe the patterns
+% for composing Thai glyphs which are quite systematic.  Patterns
+% marked with a star are identity patterns (which do nothing).
+% Nevertheless, we have to be careful to design rules which obey these
+% identity patterns also.
+%
+% Class names are abbreviated to make the table more readable; `b'
+% denotes the union of `normal', `indic', `sign', `saraam', and
+% `saraaa' subgroups of `base', and `u' is the union of `upper.vowel'
+% and `upper.sign'.
+%
+%
+%   b           l         =>   b           l                        *
+%   b              u      =>   b                  u                 *
+%   b                 t   =>   b                          t.low
+%   b           l     t   =>   b           l              t.low
+%   b              u  t   =>   b                  u       t         *
+%
+%   b.desc      l         =>   b.desc      l.low
+%   b.desc         u      =>   b.desc             u                 *
+%   b.desc            t   =>   b.desc                     t.low
+%   b.desc      l     t   =>   b.desc      l.low          t.low
+%   b.desc         u  t   =>   b.desc             u       t         *
+%
+%   b.desclike  l         =>   b.descless  l
+%   b.desclike     u      =>   b.desclike         u                 *
+%   b.desclike        t   =>   b.desclike                 t.low
+%   b.desclike  l     t   =>   b.descless  l              t.low
+%   b.desclike     u  t   =>   b.desclike         u       t         *
+%
+%   b.asc       l         =>   b.asc       l                        *
+%   b.asc          u      =>   b.asc              u.left
+%   b.asc             t   =>   b.asc                      t.low_left
+%   b.asc       l     t   =>   b.asc       l              t.low_left
+%   b.asc          u  t   =>   b.asc              u.left  t.left
+%
+%
+% Actually, the above patterns generalizes the patterns for the Thai
+% script; some combinations never occur in real writing.  I consider
+% it better to even have `illegal' combinations rendered correctly --
+% it is the job of a font to produce good typesetting and not to teach
+% how Thai is written.
+%
+% Here the special patterns for handling `sara am'.  For simplicity we
+% assume that the next pattern matching cycle starts with `sara aa',
+% which will be then handled as `base', so that the patterns above can
+% be applied.  In the following table, `b' denotes the union of the
+% `normal', `desc', and `desclike' subgroups of `base'.
+%
+%
+%   b         b.saraam   =>   b      u.sign               b.saraaa
+%   b.asc     b.saraam   =>   b.asc  u.sign.left          b.saraaa
+%
+%   b      t  b.saraam   =>   b      u.sign       t       b.saraaa
+%   b.asc  t  b.saraam   =>   b.asc  u.sign.left  t.left  b.saraaa
+%
+%
+% We are finishing the Thai patterns with the handling of the two
+% Sanskrit-specific characters.
+%
+%
+%   b.indic  b.saraaa   =>   b.indic  b.sign
+%
+%
+% Now the rules for TeX's ligature mechanism, using the above
+% notation.
+%
+% Intermezzo: A short introduction to the esoteric ligature features
+% of TeX which you probably have never seen or used anywhere else --
+% and the documentation in the METAFONTbook is very sparse.  In the
+% following examples we use the same notation as in METAFONT.
+%
+% Consider two glyphs `a' and `b'.  The normal action is to replace
+% these two glyphs with another one, `c':
+%
+%
+%   a b =: c
+%
+%
+% In addition to that, TeX provides the possibility to retain either
+% the left or the right original glyph (before resp. after the
+% ligature) or both:
+%
+%
+%   a b |=: c   a b =:| c   a b |=:| c
+%
+%
+% The first rule creates `ac', the second `cb', and the last `acb'.
+% In all three cases, the current point after appying the ligature
+% rule is still at the first glyph of the replaced glyphs, and TeX
+% simply restarts there to check ligatures (and kernings).  To advance
+% the current point to the right, append either `>' or `>>' (the
+% latter is only possible if you retain both input glyphs).  Here are
+% the remaining four ligature rules:
+%
+%
+%   a b |=:> c   a b =:|> c   a b |=:|> c   a b |=:|>> c
+%
+%
+% For Thai ligatures, we most often need `|=:' (i.e., retain the left
+% glyph and stay at the same position before applying the next ligature
+% rule).
+%
+%
+% OK, let's do it!  It is a nice puzzle to solve -- try it without
+% looking at the solution below; you will then really know how
+% ligature programs work in TeX.
+%
+% Again I use a pseudo-notation to make it more readable.  In the next
+% tables the new position after applying the ligature rule is always
+% the first output character (to make kerning possible).  As in the
+% first pattern table, `b' denotes the union of `normal', `indic',
+% `sign', `saraam', and `saraaa' subgroups of `base', and `u' is the
+% union of `upper.vowel' and `upper.sign'.
+%
+%
+%   b            t        =>   b            t.low
+%   b.desc       l        =>   b.desc       l.low
+%   b.desc       t        =>   b.desc       t.low
+%   b.desclike   l        =>   b.descless   l
+%   b.desclike   t        =>   b.desclike   t.low
+%   b.asc        l        =>   b.asc        l.left
+%   b.asc        u        =>   b.asc        u.left
+%   b.asc        t        =>   b.asc        t.low_left
+%
+%   l            t        =>   l            t.low
+%   l.low        t        =>   l.low        t.low
+%
+%   u.left       t        =>   u.left       t.left
+%
+%   l.left       t        =>   l.left       t.low_left
+%
+%
+% Now the handling of `sara am'.  As in the second pattern table, `b'
+% denotes the union of the `normal', `desc', and `desclike' subgroups
+% of `base'.
+%
+%
+%   b            b.saraam   =>   b            u.sign       b.saraam
+%   b.asc        b.saraam   =>   b.asc        u.sign.left  b.saraam
+%
+%   u.sign       b.saraam   =>   u.sign       b.saraaa
+%   u.sign.left  b.saraam   =>   u.sign.left  b.saraaa
+%
+%   t.low        b.saraam   =>   t.low        t            b.saraam
+%   t.low        t          =>   u.sign       t
+%   t            b.saraam   =>   t            b.saraaa
+%
+%   t.low_left   b.saraam   =>   t.low_left   t.left       b.saraam
+%   t.low_left   t.left     =>   u.sign.left  t.left
+%   t.left       b.saraam   =>   t.left       b.saraaa
+%
+%
+% Here the Sanskrit letters:
+%
+%
+%   b.indic      b.saraaa   =>   b.indic      b.sign
+%
+%
+% Everything fine?  No?  Then you apparently haven't tried to solve
+% it by yourself...
+%
+% Most of the rules can easily be derived by starting at the top
+% pattern walking downwards (similar to many logic puzzles), but you
+% will soon discover that the following two patterns from the first
+% table apparently contradict:
+%
+%
+%   b      l  t   =>   b      l  t.low
+%   b.asc  l  t   =>   b.asc  l  t.low_left
+%
+%
+% After applying a rule for the first two glyph classes you have to
+% handle `l t' in both cases, but depending on the previous character
+% you must either get to `t.low' or `t.low_left'.  With a context
+% pattern length of 3 this would be easy to solve, but TeX doesn't
+% have this feature.  What to do?
+%
+% We must find a possibility to distinguish the rule `b l t' from
+% `b.asc l t', i.e., to have two different `l' classes depending on
+% the previous character.  The idea is now to create an `alias class',
+% a class which behaves identically to the original one.  The glyphs
+% in this alias class are the same, but we assign different glyph
+% indices resp. glyph names to it.  Using afm2tfm, we need two
+% encoding vectors: The first maps from the Type 1 font to the raw
+% font (converting glyph names to glyph indices):
+%
+%
+%    /ps_to_raw [ ... /bar ... /bar ... ]
+%
+%
+% The second encoding vector used for the virtual font (which will
+% contain the ligatures) maps from glyph indices back to glyph names,
+% so we can finally assign different glyph names to identical glyphs:
+%
+%
+%    /raw_to_vf [ ... /bar1 ... /bar ... ]
+%
+%
+% `/bar1' and `/bar' now both access the same glyph.
+%
+% Unfortunately, afm2tfm can't do everything automatically due to some
+% built-in restrictions; we have to do some manual work (cf. the
+% installation instructions at the end of this file).  Eventually I
+% will rewrite Thai ligatures using the fontinst package, then
+% everything will be handled gracefully.
+%
+% Looking again at the rules above you will probably find out now that
+% `l.left' isn't an error but just denotes our needed alias class
+% somewhere in the lower encoding range.
+%
+%
+% After solving the problem theoretically we are going to implement
+% it.
+%
+% Here the real glyph names for the various classes.  A short Unicode
+% description of the glyphs can be found in the encoding vector almost
+% at the end of this file.  Hexadecimal values after the glyph name
+% refer to the glyph index.
+%
+% base.normal:
+%   uni0E01 % 0xA1
+%   uni0E02
+%   uni0E03
+%   uni0E04
+%   uni0E05
+%   uni0E06
+%   uni0E07
+%   uni0E08
+%   uni0E09
+%   uni0E0A
+%   uni0E0B
+%   uni0E0C
+%   uni0E11 % 0xB1
+%   uni0E12
+%   uni0E13
+%   uni0E14
+%   uni0E15
+%   uni0E16
+%   uni0E17
+%   uni0E18
+%   uni0E19
+%   uni0E1A
+%   uni0E1C % 0xBC
+%   uni0E1E % 0xBE
+%   uni0E20 % 0xC0
+%   uni0E21
+%   uni0E22
+%   uni0E23
+%   uni0E25 % 0xC5
+%   uni0E27 % 0xC7
+%   uni0E28
+%   uni0E29
+%   uni0E2A
+%   uni0E2B
+%   uni0E2D % 0xCD
+%   uni0E2E
+%   uni0E2F
+%   uni0E30
+%   uni0E40 % 0xE0
+%   uni0E41
+%
+% base.desc:
+%   uni0E0E % 0xAE
+%   uni0E0F
+%
+% base.desclike
+%   uni0E0D % 0xAD
+%   uni0E10 % 0xB0
+%
+% base.indic
+%   uni0E24 % 0xC4
+%   uni0E26 % 0xC6
+%
+% base.sign
+%   uni0E45 % 0xE5
+%
+% base.asc:
+%   uni0E1B % 0xBB
+%   uni0E1D % 0xBD
+%   uni0E1F % 0xBF
+%   uni0E2C % 0xCC
+%
+% base.saraam:
+%   uni0E33 % 0xD3
+%
+% base.saraaa:
+%   uni0E32 % 0xD2
+%
+% base.descless:
+%   uni0E0D.descless % 0x90
+%   uni0E10.descless % 0x9F
+%
+% lower:
+%   uni0E38 % 0xD8
+%   uni0E39
+%   uni0E3A
+%
+% lower.left:
+%   uni0E38.left % 0x00
+%   uni0E39.left
+%   uni0E3A.left
+%
+% lower.low:
+%   uni0E38.low % 0xFC
+%   uni0E39.low
+%   uni0E3A.low
+%
+% upper.vowel:
+%   uni0E31 % 0xD1
+%   uni0E34 % 0xD4
+%   uni0E35
+%   uni0E36
+%   uni0E37
+%   uni0E47 % 0xE7
+%   uni0E4D % 0xED
+%
+% upper.sign:
+%   uni0E4D % 0xED
+%
+% upper.vowel.left:
+%   uni0E31.left % 0x92
+%   uni0E34.left % 0x94
+%   uni0E35.left
+%   uni0E36.left
+%   uni0E37.left
+%   uni0E47.left % 0x93
+%   uni0E4D.left % 0x8F
+%
+% upper.sign.left:
+%   uni0E4D.left % 0x8F
+%
+% top:
+%   uni0E48 % 0xE8
+%   uni0E49
+%   uni0E4A
+%   uni0E4B
+%   uni0E4C
+%
+% top.left:
+%   uni0E48.left % 0x98
+%   uni0E49.left
+%   uni0E4A.left
+%   uni0E4B.left
+%   uni0E4C.left
+%
+% top.low:
+%   uni0E48.low % 0x88
+%   uni0E49.low
+%   uni0E4A.low
+%   uni0E4B.low
+%   uni0E4C.low
+%
+% top.low_left:
+%   uni0E48.low_left % 0x83
+%   uni0E49.low_left
+%   uni0E4A.low_left
+%   uni0E4B.low_left
+%   uni0E4C.low_left
+%
+%
+% Now all TeX ligature rules.  Note that afm2tfm resp. vptovf will
+% make these ligature rules much more compact as it may appear here.
+%
+%
+% Rule:  base  top   =>   base  top.low
+%
+%   LIGKERN uni0E01 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E02 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E03 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E04 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E05 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E06 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E07 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E08 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E09 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E0A uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E0B uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E0C uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E11 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E12 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E13 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E14 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E15 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E16 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E17 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E18 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E19 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E1A uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E1C uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E1E uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E20 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E21 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E22 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E23 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E24 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E25 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E26 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E27 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E28 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E29 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E2A uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E2B uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E2D uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E2E uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E2F uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E30 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E32 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E33 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E40 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E41 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E46 uni0E48 |=: uni0E48.low ;
+%
+%   LIGKERN uni0E01 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E02 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E03 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E04 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E05 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E06 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E07 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E08 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E09 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E0A uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E0B uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E0C uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E11 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E12 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E13 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E14 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E15 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E16 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E17 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E18 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E19 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E1A uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E1C uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E1E uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E20 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E21 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E22 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E23 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E24 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E25 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E26 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E27 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E28 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E29 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E2A uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E2B uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E2D uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E2E uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E2F uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E30 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E32 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E33 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E40 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E41 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E46 uni0E49 |=: uni0E49.low ;
+%
+%   LIGKERN uni0E01 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E02 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E03 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E04 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E05 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E06 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E07 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E08 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E09 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E0A uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E0B uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E0C uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E11 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E12 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E13 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E14 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E15 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E16 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E17 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E18 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E19 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E1A uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E1C uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E1E uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E20 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E21 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E22 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E23 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E24 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E25 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E26 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E27 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E28 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E29 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E2A uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E2B uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E2C uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E2D uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E2E uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E2F uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E30 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E32 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E33 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E40 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E41 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E46 uni0E4A |=: uni0E4A.low ;
+%
+%   LIGKERN uni0E01 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E02 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E03 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E04 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E05 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E06 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E07 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E08 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E09 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E0A uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E0B uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E0C uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E11 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E12 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E13 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E14 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E15 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E16 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E17 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E18 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E19 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E1A uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E1C uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E1E uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E20 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E21 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E22 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E23 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E24 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E25 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E26 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E27 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E28 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E29 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E2A uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E2B uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E2C uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E2E uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E2F uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E30 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E32 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E33 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E40 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E41 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E46 uni0E4B |=: uni0E4B.low ;
+%
+%   LIGKERN uni0E01 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E02 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E03 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E04 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E05 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E06 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E07 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E08 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E09 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E0A uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E0B uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E0C uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E11 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E12 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E13 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E14 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E15 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E16 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E17 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E18 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E19 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E1A uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E1C uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E1E uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E20 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E21 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E22 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E23 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E24 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E25 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E26 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E27 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E28 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E29 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E2A uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E2B uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E2D uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E2E uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E2F uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E30 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E32 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E33 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E40 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E41 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E46 uni0E4C |=: uni0E4C.low ;
+%
+%
+% Rule:  base.desc  lower   =>   base.desc  lower.low
+%
+%   LIGKERN uni0E0E uni0E38 |=: uni0E38.low ;
+%   LIGKERN uni0E0F uni0E38 |=: uni0E38.low ;
+%
+%   LIGKERN uni0E0E uni0E39 |=: uni0E39.low ;
+%   LIGKERN uni0E0F uni0E39 |=: uni0E39.low ;
+%
+%   LIGKERN uni0E0E uni0E3A |=: uni0E3A.low ;
+%   LIGKERN uni0E0F uni0E3A |=: uni0E3A.low ;
+%
+%
+% Rule:  base.desc  top   =>   base.desc  top.low
+%
+%   LIGKERN uni0E0E uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E0F uni0E48 |=: uni0E48.low ;
+%
+%   LIGKERN uni0E0E uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E0F uni0E49 |=: uni0E49.low ;
+%
+%   LIGKERN uni0E0E uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E0F uni0E4A |=: uni0E4A.low ;
+%
+%   LIGKERN uni0E0E uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E0F uni0E4B |=: uni0E4B.low ;
+%
+%   LIGKERN uni0E0E uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E0F uni0E4C |=: uni0E4C.low ;
+%
+%
+% Rule:  base.desclike  lower   =>   base.descless  lower
+%
+%   LIGKERN uni0E0D uni0E38 =:| uni0E0D.descless ;
+%   LIGKERN uni0E10 uni0E38 =:| uni0E10.descless ;
+%
+%   LIGKERN uni0E0D uni0E39 =:| uni0E0D.descless ;
+%   LIGKERN uni0E10 uni0E39 =:| uni0E10.descless ;
+%
+%   LIGKERN uni0E0D uni0E3A =:| uni0E0D.descless ;
+%   LIGKERN uni0E10 uni0E3A =:| uni0E10.descless ;
+%
+%
+% Rule:  base.desclike  top   =>   base.desclike  top.low
+%
+%   LIGKERN uni0E0D uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E10 uni0E48 |=: uni0E48.low ;
+%
+%   LIGKERN uni0E0D uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E10 uni0E49 |=: uni0E49.low ;
+%
+%   LIGKERN uni0E0D uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E10 uni0E4A |=: uni0E4A.low ;
+%
+%   LIGKERN uni0E0D uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E10 uni0E4B |=: uni0E4B.low ;
+%
+%   LIGKERN uni0E0D uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E10 uni0E4C |=: uni0E4C.low ;
+%
+%
+% Rule:  base.asc  lower   =>   base.asc  lower.left
+%
+%   LIGKERN uni0E1B uni0E38 |=: uni0E38.left ;
+%   LIGKERN uni0E1D uni0E38 |=: uni0E38.left ;
+%   LIGKERN uni0E1F uni0E38 |=: uni0E38.left ;
+%
+%   LIGKERN uni0E1B uni0E39 |=: uni0E39.left ;
+%   LIGKERN uni0E1D uni0E39 |=: uni0E39.left ;
+%   LIGKERN uni0E1F uni0E39 |=: uni0E39.left ;
+%
+%   LIGKERN uni0E1B uni0E3A |=: uni0E3A.left ;
+%   LIGKERN uni0E1D uni0E3A |=: uni0E3A.left ;
+%   LIGKERN uni0E1F uni0E3A |=: uni0E3A.left ;
+%
+%
+% Rule:  base.asc  upper   =>   base.asc  upper.left
+%
+%   LIGKERN uni0E1B uni0E31 |=: uni0E31.left ;
+%   LIGKERN uni0E1D uni0E31 |=: uni0E31.left ;
+%   LIGKERN uni0E1F uni0E31 |=: uni0E31.left ;
+%
+%   LIGKERN uni0E1B uni0E34 |=: uni0E34.left ;
+%   LIGKERN uni0E1D uni0E34 |=: uni0E34.left ;
+%   LIGKERN uni0E1F uni0E34 |=: uni0E34.left ;
+%
+%   LIGKERN uni0E1B uni0E35 |=: uni0E35.left ;
+%   LIGKERN uni0E1D uni0E35 |=: uni0E35.left ;
+%   LIGKERN uni0E1F uni0E35 |=: uni0E35.left ;
+%
+%   LIGKERN uni0E1B uni0E36 |=: uni0E36.left ;
+%   LIGKERN uni0E1D uni0E36 |=: uni0E36.left ;
+%   LIGKERN uni0E1F uni0E36 |=: uni0E36.left ;
+%
+%   LIGKERN uni0E1B uni0E37 |=: uni0E37.left ;
+%   LIGKERN uni0E1D uni0E37 |=: uni0E37.left ;
+%   LIGKERN uni0E1F uni0E37 |=: uni0E37.left ;
+%
+%   LIGKERN uni0E1B uni0E47 |=: uni0E47.left ;
+%   LIGKERN uni0E1D uni0E47 |=: uni0E47.left ;
+%   LIGKERN uni0E1F uni0E47 |=: uni0E47.left ;
+%
+%   LIGKERN uni0E1B uni0E4D |=: uni0E4D.left ;
+%   LIGKERN uni0E1D uni0E4D |=: uni0E4D.left ;
+%   LIGKERN uni0E1F uni0E4D |=: uni0E4D.left ;
+%
+%
+% Rule:  base.asc  top   =>   base.asc  top.low_left
+%
+%   LIGKERN uni0E1B uni0E48 |=: uni0E48.low_left ;
+%   LIGKERN uni0E1D uni0E48 |=: uni0E48.low_left ;
+%   LIGKERN uni0E1F uni0E48 |=: uni0E48.low_left ;
+%
+%   LIGKERN uni0E1B uni0E49 |=: uni0E49.low_left ;
+%   LIGKERN uni0E1D uni0E49 |=: uni0E49.low_left ;
+%   LIGKERN uni0E1F uni0E49 |=: uni0E49.low_left ;
+%
+%   LIGKERN uni0E1B uni0E4A |=: uni0E4A.low_left ;
+%   LIGKERN uni0E1D uni0E4A |=: uni0E4A.low_left ;
+%   LIGKERN uni0E1F uni0E4A |=: uni0E4A.low_left ;
+%
+%   LIGKERN uni0E1B uni0E4B |=: uni0E4B.low_left ;
+%   LIGKERN uni0E1D uni0E4B |=: uni0E4B.low_left ;
+%   LIGKERN uni0E1F uni0E4B |=: uni0E4B.low_left ;
+%
+%   LIGKERN uni0E1B uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E1D uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E1F uni0E4C |=: uni0E4C.low ;
+%
+%
+% Rule:  lower  top   =>   lower  top.low
+%
+%   LIGKERN uni0E38 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E39 uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E3A uni0E48 |=: uni0E48.low ;
+%
+%   LIGKERN uni0E38 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E39 uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E3A uni0E49 |=: uni0E49.low ;
+%
+%   LIGKERN uni0E38 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E39 uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E3A uni0E4A |=: uni0E4A.low ;
+%
+%   LIGKERN uni0E38 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E39 uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E3A uni0E4B |=: uni0E4B.low ;
+%
+%   LIGKERN uni0E38 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E39 uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E3A uni0E4C |=: uni0E4C.low ;
+%
+%
+% Rule:  lower.low  top   =>   lower.low  top.low
+%
+%   LIGKERN uni0E38.low uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E39.low uni0E48 |=: uni0E48.low ;
+%   LIGKERN uni0E3A.low uni0E48 |=: uni0E48.low ;
+%
+%   LIGKERN uni0E38.low uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E39.low uni0E49 |=: uni0E49.low ;
+%   LIGKERN uni0E3A.low uni0E49 |=: uni0E49.low ;
+%
+%   LIGKERN uni0E38.low uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E39.low uni0E4A |=: uni0E4A.low ;
+%   LIGKERN uni0E3A.low uni0E4A |=: uni0E4A.low ;
+%
+%   LIGKERN uni0E38.low uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E39.low uni0E4B |=: uni0E4B.low ;
+%   LIGKERN uni0E3A.low uni0E4B |=: uni0E4B.low ;
+%
+%   LIGKERN uni0E38.low uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E39.low uni0E4C |=: uni0E4C.low ;
+%   LIGKERN uni0E3A.low uni0E4C |=: uni0E4C.low ;
+%
+%
+% Rule:  upper.left  top   =>   upper.left  top.left
+%
+%   LIGKERN uni0E31.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E31.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E31.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E31.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E31.left uni0E4C |=: uni0E4C.left ;
+%
+%   LIGKERN uni0E34.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E34.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E34.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E34.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E34.left uni0E4C |=: uni0E4C.left ;
+%
+%   LIGKERN uni0E35.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E35.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E35.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E35.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E35.left uni0E4C |=: uni0E4C.left ;
+%
+%   LIGKERN uni0E36.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E36.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E36.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E36.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E36.left uni0E4C |=: uni0E4C.left ;
+%
+%   LIGKERN uni0E37.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E37.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E37.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E37.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E37.left uni0E4C |=: uni0E4C.left ;
+%
+%   LIGKERN uni0E47.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E47.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E47.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E47.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E47.left uni0E4C |=: uni0E4C.left ;
+%
+%   LIGKERN uni0E4D.left uni0E48 |=: uni0E48.left ;
+%   LIGKERN uni0E4D.left uni0E49 |=: uni0E49.left ;
+%   LIGKERN uni0E4D.left uni0E4A |=: uni0E4A.left ;
+%   LIGKERN uni0E4D.left uni0E4B |=: uni0E4B.left ;
+%   LIGKERN uni0E4D.left uni0E4C |=: uni0E4C.left ;
+%
+%
+% Rule:  lower.left  top   =>   lower.left  top.low_left
+%
+%   LIGKERN uni0E38.left uni0E48 |=: uni0E48.low_left ;
+%   LIGKERN uni0E39.left uni0E48 |=: uni0E48.low_left ;
+%   LIGKERN uni0E3A.left uni0E48 |=: uni0E48.low_left ;
+%
+%   LIGKERN uni0E38.left uni0E49 |=: uni0E49.low_left ;
+%   LIGKERN uni0E39.left uni0E49 |=: uni0E49.low_left ;
+%   LIGKERN uni0E3A.left uni0E49 |=: uni0E49.low_left ;
+%
+%   LIGKERN uni0E38.left uni0E4A |=: uni0E4A.low_left ;
+%   LIGKERN uni0E39.left uni0E4A |=: uni0E4A.low_left ;
+%   LIGKERN uni0E3A.left uni0E4A |=: uni0E4A.low_left ;
+%
+%   LIGKERN uni0E38.left uni0E4B |=: uni0E4B.low_left ;
+%   LIGKERN uni0E39.left uni0E4B |=: uni0E4B.low_left ;
+%   LIGKERN uni0E3A.left uni0E4B |=: uni0E4B.low_left ;
+%
+%   LIGKERN uni0E38.left uni0E4C |=: uni0E4C.low_left ;
+%   LIGKERN uni0E39.left uni0E4C |=: uni0E4C.low_left ;
+%   LIGKERN uni0E3A.left uni0E4C |=: uni0E4C.low_left ;
+%
+%
+% Rule:  base  base.saraam   =>   base *upper.sign* base.saraam
+%
+%   LIGKERN uni0E01 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E02 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E03 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E04 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E05 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E06 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E07 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E08 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E09 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E0A uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E0B uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E0C uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E0D uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E0E uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E0F uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E10 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E11 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E12 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E13 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E14 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E15 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E16 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E17 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E18 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E19 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E1A uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E1C uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E1E uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E20 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E21 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E22 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E23 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E25 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E27 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E30 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E40 uni0E33 |=:| uni0E4D ;
+%   LIGKERN uni0E41 uni0E33 |=:| uni0E4D ;
+%
+%
+% Rule: base.asc base.saraam => base.asc *upper.sign.left* base.saraam
+%
+%   LIGKERN uni0E1B uni0E33 |=:| uni0E4D.left ;
+%   LIGKERN uni0E1D uni0E33 |=:| uni0E4D.left ;
+%   LIGKERN uni0E1F uni0E33 |=:| uni0E4D.left ;
+%   LIGKERN uni0E2C uni0E33 |=:| uni0E4D.left ;
+%
+%
+% Rule:  upper.sign  base.saraam   =>   upper.sign *base.saraaa*
+%
+%   LIGKERN uni0E4D uni0E33 |=: uni0E32 ;
+%
+%
+% Rule:  upper.sign.left base.saraam => upper.sign.left *base.saraaa*
+%
+%   LIGKERN uni0E4D.left uni0E33 |=: uni0E32 ;
+%
+%
+% Rule:  top.low  base.saraam   =>  *top.low* top  base.saraam
+%
+%   LIGKERN uni0E48.low uni0E33 |=:| uni0E48
+%   LIGKERN uni0E49.low uni0E33 |=:| uni0E49
+%   LIGKERN uni0E4A.low uni0E33 |=:| uni0E4A
+%   LIGKERN uni0E4B.low uni0E33 |=:| uni0E4B
+%   LIGKERN uni0E4C.low uni0E33 |=:| uni0E4C
+%
+%
+% Rule:  top.low  top   =>   upper.sign *top*
+%
+%   LIGKERN uni0E48.low uni0E48 =:| uni0E4D
+%   LIGKERN uni0E49.low uni0E49 =:| uni0E4D
+%   LIGKERN uni0E4A.low uni0E4A =:| uni0E4D
+%   LIGKERN uni0E4B.low uni0E4B =:| uni0E4D
+%   LIGKERN uni0E4C.low uni0E4C =:| uni0E4D
+%
+%
+% Rule:  top  base.saraam   =>   top *base.saraaa*
+%
+%   LIGKERN uni0E48 uni0E33 |=: uni0E32
+%   LIGKERN uni0E49 uni0E33 |=: uni0E32
+%   LIGKERN uni0E4A uni0E33 |=: uni0E32
+%   LIGKERN uni0E4B uni0E33 |=: uni0E32
+%   LIGKERN uni0E4C uni0E33 |=: uni0E32
+%
+%
+% Rule: top.low_left base.saraam => *top.low_left* top.left base.saraam
+%
+%   LIGKERN uni0E48.low_left uni0E33 |=:| uni0E48.left
+%   LIGKERN uni0E49.low_left uni0E33 |=:| uni0E49.left
+%   LIGKERN uni0E4A.low_left uni0E33 |=:| uni0E4A.left
+%   LIGKERN uni0E4B.low_left uni0E33 |=:| uni0E4B.left
+%   LIGKERN uni0E4C.low_left uni0E33 |=:| uni0E4C.left
+%
+%
+% Rule:  top.low_left  top.left   =>   upper.left *top.left*
+%
+%   LIGKERN uni0E48.low_left uni0E48.left =:| uni0E4D.left
+%   LIGKERN uni0E49.low_left uni0E49.left =:| uni0E4D.left
+%   LIGKERN uni0E4A.low_left uni0E4A.left =:| uni0E4D.left
+%   LIGKERN uni0E4B.low_left uni0E4B.left =:| uni0E4D.left
+%   LIGKERN uni0E4C.low_left uni0E4C.left =:| uni0E4D.left
+%
+%
+% Rule:  top.left  base.saraam   =>   top.left *base.saraaa*
+%
+%   LIGKERN uni0E48.left uni0E33 |=: uni0E32
+%   LIGKERN uni0E49.left uni0E33 |=: uni0E32
+%   LIGKERN uni0E4A.left uni0E33 |=: uni0E32
+%   LIGKERN uni0E4B.left uni0E33 |=: uni0E32
+%   LIGKERN uni0E4C.left uni0E33 |=: uni0E32
+%
+%
+% Rule:  b.indic  b.saraaa   =>   b.indic *b.sign*
+%
+%   LIGKERN uni0E24 uni0E32 |=: uni0E45
+%   LIGKERN uni0E26 uni0E32 |=: uni0E45
+%
+%
+% We are almost done.  The only remaining task is to define the
+% encoding vector.  It is common for Thai fonts that input character
+% codes are identical to glyph indices where possible, and we follow
+% this standard.
+%
+% Glyph positions 0x80, 0x81, and 0x82 are used for the alias class
+% `lower.left'.
+%
+% The glyphs /uni0E2F.alt (`paiyannoi') and /uni0E5A.alt (`angkhankhu')
+% are variant forms not used in ligatures.  It is up to the used macro
+% package to give access to them.
+%
+% Of the many different LaTeX encodings, OT1 supports ASCII best (and
+% this is what most Type 1 Thai fonts have).  This has two advantages:
+% We don't need to invent a new encoding at all; switching to OT1 will
+% be sufficient.  And it will work with plain TeX also.
+%
+% We use the OT1 layout for typewriter fonts (i.e., for cmtt) with the
+% exception that /arrowup and /arrowdown are replaced with /endash and
+% /emdash, and the seldom used /dotlessj with /quotedblleft.  To
+% access these glyphs, the following ligature rules are necessary:
+%
+%   LIGKERN hyphen hyphen =: endash
+%   LIGKERN endash hyphen =: emdash
+%   LIGKERN quoteleft quoteleft =: quotedblleft ;
+%
+% The remaining ligatures.  We include them here so that users can
+% trustfully copy the created LIGTABLE without worrying about other
+% ligature entries which have been probably created by incorrect glyph
+% names.
+%
+%   LIGKERN question quoteleft =: questiondown ;
+%   LIGKERN exclam quoteleft =: exclamdown ;
+%   LIGKERN quoteright quoteright =: quotedblright ;
+
+
+/ThaiEncoding [
+%
+% OT1 encoding for cmtt (with three differences)
+%
+% 0x00 | 0
+  /Gamma
+  /Delta
+  /Theta
+  /Lambda
+  /Xi
+  /Pi
+  /Sigma
+  /Upsilon
+  /Phi
+  /Psi
+  /Omega
+  /endash        % OT1: /arrowup
+  /emdash        % OT1: /arrowdown
+  /quotesingle
+  /exclamdown
+  /questiondown
+% 0x10 | 16
+  /dotlessi
+  /quotedblleft  % OT1: /dotlessj
+  /grave
+  /acute
+  /caron
+  /breve
+  /macron
+  /ring
+  /cedilla
+  /germandbls
+  /ae
+  /oe
+  /oslash
+  /AE
+  /OE
+  /Oslash
+% 0x20 | 32
+  /.notdef
+  /exclam
+  /quotedblright
+  /numbersign
+  /dollar
+  /percent
+  /ampersand
+  /quoteright
+  /parenleft
+  /parenright
+  /asterisk
+  /plus
+  /comma
+  /hyphen
+  /period
+  /slash
+% 0x30 | 48
+  /zero
+  /one
+  /two
+  /three
+  /four
+  /five
+  /six
+  /seven
+  /eight
+  /nine
+  /colon
+  /semicolon
+  /less
+  /equal
+  /greater
+  /question
+% 0x40 | 64
+  /at
+  /A
+  /B
+  /C
+  /D
+  /E
+  /F
+  /G
+  /H
+  /I
+  /J
+  /K
+  /L
+  /M
+  /N
+  /O
+% 0x50 | 80
+  /P
+  /Q
+  /R
+  /S
+  /T
+  /U
+  /V
+  /W
+  /X
+  /Y
+  /Z
+  /bracketleft
+  /backslash
+  /bracketright
+  /circumflex
+  /underscore
+% 0x60 | 96
+  /quoteleft
+  /a
+  /b
+  /c
+  /d
+  /e
+  /f
+  /g
+  /h
+  /i
+  /j
+  /k
+  /l
+  /m
+  /n
+  /o
+% 0x70 | 112
+  /p
+  /q
+  /r
+  /s
+  /t
+  /u
+  /v
+  /w
+  /x
+  /y
+  /z
+  /braceleft
+  /bar
+  /braceright
+  /tilde
+  /dieresis
+%
+% TIS-620 encoding with glyph variants
+%
+% 0x80 | 128
+  /uni0E38.left % THAI CHARACTER SARA U
+  /uni0E39.left % THAI CHARACTER SARA UU
+  /uni0E3A.left % THAI CHARACTER PHINTHU
+  /uni0E48.low_left % THAI CHARACTER MAI EK
+  /uni0E49.low_left % THAI CHARACTER MAI THO
+  /uni0E4A.low_left % THAI CHARACTER MAI TRI
+  /uni0E4B.low_left % THAI CHARACTER MAI CHATTAWA
+  /uni0E4C.low_left % THAI CHARACTER THANTHAKHAT
+  /uni0E48.low % THAI CHARACTER MAI EK
+  /uni0E49.low % THAI CHARACTER MAI THO
+  /uni0E4A.low % THAI CHARACTER MAI TRI
+  /uni0E4B.low % THAI CHARACTER MAI CHATTAWA
+  /uni0E4C.low % THAI CHARACTER THANTHAKHAT
+  /.notdef
+  /.notdef
+  /uni0E4D.left % THAI CHARACTER NIKHAHIT
+% 0x90 | 144
+  /uni0E0D.descless % THAI CHARACTER YO YING
+  /.notdef
+  /uni0E31.left % THAI CHARACTER MAI HAN-AKAT
+  /uni0E47.left % THAI CHARACTER MAITAIKHU
+  /uni0E34.left % THAI CHARACTER SARA I
+  /uni0E35.left % THAI CHARACTER SARA II
+  /uni0E36.left % THAI CHARACTER SARA UE
+  /uni0E37.left % THAI CHARACTER SARA UEE
+  /uni0E48.left % THAI CHARACTER MAI EK
+  /uni0E49.left % THAI CHARACTER MAI THO
+  /uni0E4A.left % THAI CHARACTER MAI TRI
+  /uni0E4B.left % THAI CHARACTER MAI CHATTAWA
+  /uni0E4C.left % THAI CHARACTER THANTHAKHAT
+  /uni0E2F.alt  % THAI CHARACTER PAIYANNOI (variant form)
+  /uni0E5A.alt  % THAI CHARACTER ANGKHANKHU (variant form)
+  /uni0E10.descless % THAI CHARACTER THO THAN
+% 0xA0 | 160
+  /.notdef
+  /uni0E01 % THAI CHARACTER KO KAI
+  /uni0E02 % THAI CHARACTER KHO KHAI
+  /uni0E03 % THAI CHARACTER KHO KHUAT
+  /uni0E04 % THAI CHARACTER KHO KHWAI
+  /uni0E05 % THAI CHARACTER KHO KHON
+  /uni0E06 % THAI CHARACTER KHO RAKHANG
+  /uni0E07 % THAI CHARACTER NGO NGU
+  /uni0E08 % THAI CHARACTER CHO CHAN
+  /uni0E09 % THAI CHARACTER CHO CHING
+  /uni0E0A % THAI CHARACTER CHO CHANG
+  /uni0E0B % THAI CHARACTER SO SO
+  /uni0E0C % THAI CHARACTER CHO CHOE
+  /uni0E0D % THAI CHARACTER YO YING
+  /uni0E0E % THAI CHARACTER DO CHADA
+  /uni0E0F % THAI CHARACTER TO PATAK
+% 0xB0 | 176
+  /uni0E10 % THAI CHARACTER THO THAN
+  /uni0E11 % THAI CHARACTER THO NANGMONTHO
+  /uni0E12 % THAI CHARACTER THO PHUTHAO
+  /uni0E13 % THAI CHARACTER NO NEN
+  /uni0E14 % THAI CHARACTER DO DEK
+  /uni0E15 % THAI CHARACTER TO TAO
+  /uni0E16 % THAI CHARACTER THO THUNG
+  /uni0E17 % THAI CHARACTER THO THAHAN
+  /uni0E18 % THAI CHARACTER THO THONG
+  /uni0E19 % THAI CHARACTER NO NU
+  /uni0E1A % THAI CHARACTER BO BAIMAI
+  /uni0E1B % THAI CHARACTER PO PLA
+  /uni0E1C % THAI CHARACTER PHO PHUNG
+  /uni0E1D % THAI CHARACTER FO FA
+  /uni0E1E % THAI CHARACTER PHO PHAN
+  /uni0E1F % THAI CHARACTER FO FAN
+% 0xC0 | 192
+  /uni0E20 % THAI CHARACTER PHO SAMPHAO
+  /uni0E21 % THAI CHARACTER MO MA
+  /uni0E22 % THAI CHARACTER YO YAK
+  /uni0E23 % THAI CHARACTER RO RUA
+  /uni0E24 % THAI CHARACTER RU
+  /uni0E25 % THAI CHARACTER LO LING
+  /uni0E26 % THAI CHARACTER LU
+  /uni0E27 % THAI CHARACTER WO WAEN
+  /uni0E28 % THAI CHARACTER SO SALA
+  /uni0E29 % THAI CHARACTER SO RUSI
+  /uni0E2A % THAI CHARACTER SO SUA
+  /uni0E2B % THAI CHARACTER HO HIP
+  /uni0E2C % THAI CHARACTER LO CHULA
+  /uni0E2D % THAI CHARACTER O ANG
+  /uni0E2E % THAI CHARACTER HO NOKHUK
+  /uni0E2F % THAI CHARACTER PAIYANNOI
+% 0xD0 | 208
+  /uni0E30 % THAI CHARACTER SARA A
+  /uni0E31 % THAI CHARACTER MAI HAN-AKAT
+  /uni0E32 % THAI CHARACTER SARA AA
+  /uni0E33 % THAI CHARACTER SARA AM
+  /uni0E34 % THAI CHARACTER SARA I
+  /uni0E35 % THAI CHARACTER SARA II
+  /uni0E36 % THAI CHARACTER SARA UE
+  /uni0E37 % THAI CHARACTER SARA UEE
+  /uni0E38 % THAI CHARACTER SARA U
+  /uni0E39 % THAI CHARACTER SARA UU
+  /uni0E3A % THAI CHARACTER PHINTHU
+  /.notdef
+  /.notdef
+  /.notdef
+  /.notdef
+  /uni0E3F % THAI CURRENCY SYMBOL BAHT
+% 0xE0 | 224
+  /uni0E40 % THAI CHARACTER SARA E
+  /uni0E41 % THAI CHARACTER SARA AE
+  /uni0E42 % THAI CHARACTER SARA O
+  /uni0E43 % THAI CHARACTER SARA AI MAIMUAN
+  /uni0E44 % THAI CHARACTER SARA AI MAIMALAI
+  /uni0E45 % THAI CHARACTER LAKKHANGYAO
+  /uni0E46 % THAI CHARACTER MAIYAMOK
+  /uni0E47 % THAI CHARACTER MAITAIKHU
+  /uni0E48 % THAI CHARACTER MAI EK
+  /uni0E49 % THAI CHARACTER MAI THO
+  /uni0E4A % THAI CHARACTER MAI TRI
+  /uni0E4B % THAI CHARACTER MAI CHATTAWA
+  /uni0E4C % THAI CHARACTER THANTHAKHAT
+  /uni0E4D % THAI CHARACTER NIKHAHIT
+  /uni0E4E % THAI CHARACTER YAMAKKAN
+  /uni0E4F % THAI CHARACTER FONGMAN
+% 0xF0 | 240
+  /uni0E50 % THAI DIGIT ZERO
+  /uni0E51 % THAI DIGIT ONE
+  /uni0E52 % THAI DIGIT TWO
+  /uni0E53 % THAI DIGIT THREE
+  /uni0E54 % THAI DIGIT FOUR
+  /uni0E55 % THAI DIGIT FIVE
+  /uni0E56 % THAI DIGIT SIX
+  /uni0E57 % THAI DIGIT SEVEN
+  /uni0E58 % THAI DIGIT EIGHT
+  /uni0E59 % THAI DIGIT NINE
+  /uni0E5A % THAI CHARACTER ANGKHANKHU
+  /uni0E5B % THAI CHARACTER KHOMUT
+  /uni0E38.low % THAI CHARACTER SARA U
+  /uni0E39.low % THAI CHARACTER SARA UU
+  /uni0E3A.low % THAI CHARACTER PHINTHU
+  /.notdef
+] def
+
+
+% Installation
+% ------------
+%
+% . In case that your Thai font doesn't come with an AFM metrics file
+%   you must extract it from the font using tools like `type1afm'
+%   (from the t1lib package) or ghostscript's `ps2afm' program.
+%
+% . Set up a font encoding file for your Thai font to map the glyph
+%   names given in the AFM file to the order specified in this file.
+%   An example input encoding file which comes with this package is
+%   `dbtt.enc'.  You should also create (additional) kerning rules not
+%   contained in the AFM file, if you need or want to.
+%
+% . Execute
+%
+%     afm2tfm AFM_file -u -T enc_file -v vpl_file tfm_file > map_file
+%
+%   vpl_file and tfm_file must not be identical!  The output
+%   redirection additionally creates a map file entry for dvips.
+%
+%   Example:
+%
+%     Our Type 1 font file is called `dbtt.pfb'.  A raw fontname
+%     compliant to Karl Berry's `fontname' scheme is `fdbr8z': `f' is
+%     the foundry (`small foundry'), `db' is the type face name, `r'
+%     means the weight (`regular'), and `8z' the encoding (8bit
+%     user).  According to the fontname rules, the virtual font should
+%     be called `fdbr9z' (`8zx' becomes `9z').
+%
+%       afm2tfm dbtt.afm -u \
+%               -T dbtt.enc -v fdbr9z.vpl fdbr8z.tfm > dbtt.map
+%
+%     Fonts with `f' as supplier should go into a `public' font
+%     directory.  The typeface `db' doesn't exist in the latest
+%     fontname version (which was 27-May-1999 at the time of writing),
+%     so we can freely choose an unused name like `dbthai'.  Please
+%     consult the `fontname' standard for more information.
+%
+% . Merge `thailigs.vpl' with the LIGTABLE entry in the just created
+%   VPL file, removing all ligatures (the default ones are already set
+%   up).
+%
+% . Adjust the font dimensions.  The `SPACE' value must be larger than
+%   for a Latin font; a reasonable value is 500.  You should increase
+%   the `STRETCH' value also -- some tests have shown that 300 yields
+%   good results, but this depends on the font.  `EXTRASPACE' can be
+%   set to zero since you must always use TeX's \frenchspacing command
+%   for Thai.  All other font dimension values can stay unmodified.
+%
+%   There is nothing for free: The changed font dimensions improve
+%   spacing between Thai words, but Latin words are far too widely
+%   spaced.
+%
+% . Say
+%
+%     vptovf vpl_file
+%
+%   to get the VF file and the metrics file for it.  Example:
+%
+%     vptovf fdbr9z.vpl
+%
+%   The VPL file is no longer needed; you can regenerate it with the
+%   vftovp command if necessary.  Nevertheless I suggest to keep it
+%   until final installation since it is more verbose compared to
+%   vftovp output.
+%
+% . Edit map_file to append `<ps_font'.  Otherwise, dvips won't embed
+%   the font into an output PS file since it assumes that the font
+%   resides in the printer.  Example (splitted into two lines for
+%   readability only):
+%
+%     fdbr9z DBThaiText " dbttThaiEncoding ReEncodeFont "
+%              <dbtt.enc <dbtt.pfb
+%
+% . There are two possibilities how to make the reencoded raw Thai
+%   font known to dvips.
+%
+%   - Append the contents of map_file to `psfonts.map' (resp. the map
+%     file specified in the configuration file of dvips, `config.ps',
+%     with the `p' option).  How to do this may vary depending on the
+%     used TeX system; for example, teTeX uses a script called
+%     `updmap' to maintain `psfonts.map'.
+%
+%   - Write a small file called config.<font> (e.g. `config.dbtt'; on
+%     platforms like MS-DOS which don't support long filename
+%     extensions you can use `dbtt.cfg' instead) with the following
+%     line in it:
+%
+%       p +<map_file>
+%
+%     Example:
+%
+%       p +dbtt.map
+%
+%     Then you can use the `-P' command line option of dvips to
+%     include the reencoded font.  Example:
+%
+%       dvips -P dbtt test.dvi
+%
+% . Set up a font definition file for LaTeX.  You can use `c90dbss.fd'
+%   as a template.  It is possible that you have to experiment with
+%   the optional argument to the size function to find out the proper
+%   magnification.  Please check the LaTeX font guide `fntguide'
+%   (which comes with the base LaTeX package) for more information.
+%
+% . After testing, install the font and its support files in your TeX
+%   tree.  In the following example, `TEXMF' denotes the location of
+%   your (local) `texmf' directory (we assume a TDS-compliant TeX
+%   installation similar to teTeX).
+%
+%     dbtt.pfb      ->   TEXMF/fonts/type1/public/dbthai/
+%     dbtt.afm      ->   TEXMF/fonts/afm/public/dbthai/
+%
+%     dbtt.enc      ->   TEXMF/dvips/base/
+%     dbtt.map      ->   TEXMF/dvips/config/
+%     config.dbtt   ->   TEXMF/dvips/config/
+%
+%     fdbr8z.tfm    ->   TEXMF/fonts/tfm/public/dbthai/
+%     fdbr9z.tfm    ->   TEXMF/fonts/tfm/public/dbthai/
+%     fdbr9z.vf     ->   TEXMF/fonts/vf/public/dbthai/
+%
+%     c90dbss.fd    ->   TEXMF/tex/latex/CJK/thai/
+%
+% . Run texhash or a similar program to update the TDS database if
+%   necessary.
+%
+% . If you ever need to regenerate `thailigs.vpl', use
+%   `thaifont-dummy.afm':
+%
+%     afm2tfm thaifont-dummy.afm -u -T thai.enc -v thailigs.vpl
+%
+%   Delete everything but the LIGTABLE in `thailigs.vpl'.  The file
+%   created `thaifont-dummy.tfm' is not needed and can be deleted.
+%
+% You are done!  With plain TeX, say e.g.
+%
+%   \font\thai = fdbr9z at 16pt
+%
+% to use the font \thai.  This will typeset TIS-620 encoded Thai.
+
+% eof

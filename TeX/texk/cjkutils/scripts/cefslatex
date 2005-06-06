@@ -1,0 +1,3 @@
+#!/bin/sh
+f=`echo $1 | sed -e 's|\(.*\)\.[^/]*$|\1|'`
+cefsconv < $1 > $f.cjk && latex $f.cjk

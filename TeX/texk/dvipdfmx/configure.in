@@ -1,0 +1,66 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(src/dvipdfmx.c)
+AM_INIT_AUTOMAKE(dvipdfmx, 20031207)
+AM_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+dnl Don't bother going further if we don't have kpse installed.
+AC_ARG_WITH(kpathsea,
+[  --with-kpathsea=DIR     use kpathsea include/library files from DIR], [
+  if test -d "$withval"; then
+    CPPFLAGS="$CPPFLAGS -I$withval/include"
+    LDFLAGS="$LDFLAGS -L$withval/lib"
+  fi
+], [
+  CPPFLAGS="$CPPFLAGS -I$ac_default_prefix/include"
+  LDFLAGS="$LDFLAGS -L$ac_default_prefix/lib"
+])
+
+dnl Checks for libraries.
+AC_CHECK_LIB(kpathsea, kpse_find_file, [LIBS="-lkpathsea $LIBS"],
+  AC_MSG_ERROR([kpathsea library not found
+This version of dvipdfmx requires the kpathsea library and its headers. If
+you know where it is you might try setting the LDFLAGS environment variable
+with -L pointing to the directory containing libkpathsea.a.
+]))
+
+dnl Check whether this version of kpathsea have xbasename() instead of basename()
+AC_CHECK_LIB(kpathsea, xbasename, [AC_DEFINE(HAVE_XBASENAME)])
+
+AC_HAS_KPSE_ENC_FORMATS
+AC_HAS_KPSE_OPENTYPE_FORMAT
+
+AC_HAS_LIBPAPER
+AC_HAS_LIBPNG
+AC_HAS_ZLIB
+  
+dnl Check for functions
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h)
+
+dnl Checks for library functions.
+AC_FUNC_MEMCMP
+AC_CHECK_FUNCS(strspn)
+AC_CHECK_FUNC(system,[AC_DEFINE(HAVE_SYSTEM)])
+AC_CHECK_FUNC(getenv,[AC_DEFINE(HAVE_GETENV, 1, [Define if you have getenv().])])
+AC_CHECK_FUNC(mkstemp,[AC_DEFINE(HAVE_MKSTEMP, 1, [Define if you have mkstemp().])])
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_STRUCT_TM
+
+dnl Checks for using BIGEDIAN or LITTLEENDIAN
+AC_C_BIGENDIAN
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+
+AC_OUTPUT(Makefile data/Makefile src/Makefile)

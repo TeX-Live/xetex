@@ -1,0 +1,64 @@
+$Header: /home/cvsroot/dvipdfmx/TODO,v 1.7 2004/02/13 11:24:45 hirata Exp $
+
+TODO: The todo list for dvipdfmx
+================================
+
+Last modified: February 13, 2004
+
+
+Jin-Hwan Cho
+------------
+
+o Stylistic variants for Type1 and TrueType for non CIDFonts
+
+o No-embedding option for Type1 and TrueType for non CIDFonts
+
+
+Shunsaku Hirata
+---------------
+
+o TrueType
+
+  * Check the ulCodePageRange* in the OS/2 table. (?)
+
+  * UCS-4 cmap. OpenType GSUB.
+
+  * Rewrite.
+
+o Type 1/Type 1C (CFF)
+
+  * Ability to convert single-byte font to CID-keyed font. (useless?)
+
+o PK (Type 3)
+
+  * Better compression with JBIG2, CCITT, or Flate with predictor.(?)
+
+o CID Font
+
+  * Glyph metrics for non-embedded fonts. Should be restricted to full-width form?
+
+o CMap
+
+  * CMap embedding, especially ToUnicode CMaps.
+    Search ToUnicode CMap ENCODING-UCS2/ENCODING-UTF16 or CSI-UCS2/CSI-UTF16.
+
+o Encoding
+
+  * Reencode text (not only fonts). Remove remap option.
+
+o Unicode/Adobe glyph name
+
+  * Convert Adobe glyph name Asmall to a.sc, summationtext to summation.text, ...
+    Use Unicode value of "a" for Asmall (?, Adobe Glyph List use PUA).
+
+o OpenType Layout Feature
+
+  * GSUB:
+    Only vert/vrt2 feature is supported at present. The Script and LangSys table
+    is ignored. "smpl" and "trad" substitute support for Chinese (and Japanese).
+    "jp78", "jp83", and "jp90" variants for Japanese(?).
+    "onum", small caps, "init", "medi", "fina"(?) ...
+
+  * BASE:
+    BASE supported is required for vertical wrting to obtain x-origins of the
+    /W2 glyph metrics.

@@ -1,0 +1,22 @@
+ac_include ../make/paths.mk
+ac_include ../make/common.mk
+
+programs =
+scripts = bg5latex cef5latex ceflatex cefslatex sjislatex gbklatex bg5+latex
+
+default all:
+
+install: install-exec install-data
+uninstall: uninstall-exec uninstall-data
+install-exec: all
+	$(SHELL) $(top_srcdir)/../mkinstalldirs $(bindir)
+	for p in $(scripts); do $(INSTALL_SCRIPT) $(srcdir)/$$p $(scriptdir); done
+uninstall-exec:
+	for p in $(scripts); do $(RM) $(scriptdir)/$$p; done
+
+install-data:
+uninstall-data:
+
+ac_include ../make/clean.mk
+
+distclean::

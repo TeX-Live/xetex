@@ -1,0 +1,106 @@
+# Makefile for odvipsk -- kb@mail.tug.org. Public domain.
+version = 5.94a
+
+# Add -DDEFRES=dpi to DEFS to change the default resolution from 600.
+# Add -DSECURE if you will install dvips with special privileges.
+# Add -DNO_DEBUG to omit debugging support.
+# Add -DNO_EMTEX to omit EMTEX specials.
+# Add -DNO_HPS to omit hypertex support.
+# Add -DNO_TPIC to omit tpic support.
+# 
+# For VM/CMS or (perhaps) VMS or DOS compilation, need the corresponding
+# subdirectory from the original dvips distribution.  (Maybe dvipsk
+# won't work at all on such systems; if you have info one way or the
+# other, please let kb@cs.umb.edu know.)
+
+ac_include ../make/paths.mk
+ac_include ../make/common.mk
+ac_include ../make/programs.mk
+ac_include ../make/texi.mk
+prog_cflags = -DUNIX -DKPATHSEA -DNeedFunctionPrototypes -DOmega -DSHIFTLOWCHARS
+
+# The `t[mp]-' business is so that we don't create an empty .pro file,
+# if running squeeze fails for some reason.  A dependency on squeeze
+# fails here, so we include it below.
+.SUFFIXES: .pro .lpro
+.lpro.pro:
+	./squeeze <$< >t-$@
+	mv t-$@ $@
+prologues = tex.pro texps.pro texc.pro special.pro finclude.pro \
+            color.pro crop.pro hps.pro
+
+objects = dospecial.o dviinput.o emspecial.o fontdef.o loadfont.o       \
+dvips.o tfmload.o download.o prescan.o scanpage.o skippage.o output.o   \
+scalewidth.o dosection.o dopage.o resident.o search.o unpack.o drawPS.o \
+header.o repack.o virtualfont.o dpicheck.o finclude.o writet1.o		\
+pprescan.o papersiz.o color.o bbox.o hps.o t1part.o
+
+program = odvips
+programs = $(program)
+
+
+default all: $(programs)
+
+$(program): $(kpathsea) $(objects)
+	$(kpathsea_link) $(objects) $(LOADLIBES) 
+afm2tfm: $(kpathsea) afm2tfm.o
+	$(kpathsea_link) afm2tfm.o $(LOADLIBES) 
+# Omit LOADLIBES since no need to dynamically link with kpathsea.
+squeeze.o: squeeze.c
+	$(build_compile) -c $<
+squeeze: squeeze.o
+	$(build_link_command) squeeze.o
+
+$(prologues): squeeze
+texc.lpro: texc.script tex.lpro
+	$(SHELL) $(srcdir)/texc.script $(srcdir)/tex.lpro $@
+
+ac_include ../make/tkpathsea.mk
+
+check: all
+install: install-exec install-data
+uninstall: uninstall-exec uninstall-data
+
+install-exec: all
+	$(SHELL) $(top_srcdir)/../mkinstalldirs $(bindir) $(scriptdir)
+	for p in $(programs); do $(INSTALL_LIBTOOL_PROG) $$p $(bindir); done
+uninstall-exec:
+	for p in $(programs); do rm -f $(bindir)/$$p; done
+
+install-data:
+uninstall-data:
+
+distname = odvipsk
+program_files = *.texi *.info* *.lpro psfonts.map *.1 texc.script \
+  dvips.help $(program).aux $(program).cps dvipstst.dvi
+version_files = dvips.h afm2tfm.c dvips.c
+
+pre-dist-$(distname): INSTALL $(program).info $(program).dvi
+post-dist-$(distname):
+	ln -s `pwd`/contrib `pwd`/tex $(distdir)
+	mkdir $(distdir)/reencode; ln -s $(fontname)/*.enc $(distdir)/reencode
+	ln -s `pwd`/README.reencode $(distdir)/reencode/README
+	rm -f $(distdir)/texc.lpro
+
+ac_include ../make/dist.mk
+ac_include ../make/config.mk
+
+info: $(program).info
+dvi: $(program).dvi
+
+@MAINT@INSTALL: $(program).texi
+@MAINT@	$(MAKEINFO) -D INSTALLONLY --no-headers --no-split --no-validate \
+@MAINT@	  $(MAKEINFO_FLAGS) $< -o $@
+@MAINT@	add-info-toc $@
+@MAINT@$(program).info: dvips.help
+@MAINT@dvips.help: dvips.c
+@MAINT@	./dvips --help | sed s/@/@@/g >$@
+@MAINT@doc: info INSTALL
+
+ac_include ../make/clean.mk
+
+distclean::
+	rm -f *.pro texc.lpro
+
+ac_include ../make/rdepend.mk
+ac_include depend.mk
