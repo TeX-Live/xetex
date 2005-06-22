@@ -1,0 +1,25 @@
+/.cvsignore/1.6/Tue May 11 16:12:06 2004//Trelease-3-2
+/Makefile.in/1.49/Tue Nov  9 19:21:06 2004//Trelease-3-2
+/propsvec.c/1.1/Mon Aug 30 22:11:48 2004//Trelease-3-2
+/propsvec.h/1.1/Mon Aug 30 22:11:48 2004//Trelease-3-2
+/toolutil.c/1.14/Mon Nov  1 19:41:06 2004//Trelease-3-2
+/toolutil.dsp/1.26/Thu Nov  4 02:36:10 2004//Trelease-3-2
+/toolutil.h/1.9/Fri Dec 19 23:40:47 2003//Trelease-3-2
+/toolutil.vcproj/1.9/Mon Oct 25 23:32:50 2004//Trelease-3-2
+/ucbuf.c/1.50/Thu Sep 23 00:16:16 2004//Trelease-3-2
+/ucbuf.h/1.11/Wed Dec 24 23:21:44 2003//Trelease-3-2
+/ucm.c/1.11/Thu May 20 00:14:31 2004//Trelease-3-2
+/ucm.h/1.4/Tue Nov 11 18:47:12 2003//Trelease-3-2
+/ucmpwrit.c/1.8/Wed Sep 19 01:22:27 2001//Trelease-3-2
+/ucmpwrit.h/1.8/Fri Sep 17 04:12:13 2004//Trelease-3-2
+/ucmstate.c/1.6/Thu May 20 00:14:31 2004//Trelease-3-2
+/unewdata.c/1.16/Mon Nov  1 19:41:06 2004//Trelease-3-2
+/unewdata.h/1.8/Tue Mar 12 01:32:38 2002//Trelease-3-2
+/uoptions.c/1.4/Tue Jan 29 20:02:14 2002//Trelease-3-2
+/uoptions.h/1.7/Wed Jul 10 20:30:56 2002//Trelease-3-2
+/uparse.c/1.22/Mon Nov  1 19:41:06 2004//Trelease-3-2
+/uparse.h/1.13/Mon Nov  1 19:41:06 2004//Trelease-3-2
+/uperf.cpp/1.17/Fri Jun 18 02:00:14 2004//Trelease-3-2
+/uperf.h/1.10/Mon Nov  1 19:41:06 2004//Trelease-3-2
+/utimer.h/1.8/Thu Oct 21 06:40:36 2004//Trelease-3-2
+D

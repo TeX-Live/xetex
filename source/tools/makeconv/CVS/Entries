@@ -1,0 +1,12 @@
+/.cvsignore/1.5/Tue May 11 16:12:05 2004//Trelease-3-2
+/Makefile.in/1.47/Fri Mar 26 18:35:15 2004//Trelease-3-2
+/gencnvex.c/1.8/Wed May 19 04:01:34 2004//Trelease-3-2
+/genmbcs.c/1.27/Mon May 17 06:31:13 2004//Trelease-3-2
+/genmbcs.h/1.4/Sat Oct 25 00:23:19 2003//Trelease-3-2
+/makeconv.1.in/1.1/Thu Apr 18 03:05:42 2002//Trelease-3-2
+/makeconv.c/1.92/Thu Nov 11 23:34:58 2004//Trelease-3-2
+/makeconv.dsp/1.18/Thu Nov  4 02:36:09 2004//Trelease-3-2
+/makeconv.h/1.6/Sat Oct 25 00:23:25 2003//Trelease-3-2
+/makeconv.vcproj/1.5/Wed Mar 24 23:09:54 2004//Trelease-3-2
+/ucnvstat.c/1.8/Wed Mar 21 23:22:16 2001//Trelease-3-2
+D
