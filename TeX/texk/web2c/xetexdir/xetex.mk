@@ -2,13 +2,14 @@
 # This fragment contains the parts of the makefile that are most likely to
 # differ between releases of XeTeX.
 
-Makefile: xetexdir/xetex.mk
+Makefile: $(srcdir)/xetexdir/xetex.mk
 
 # We build etex.
 xetex = @XETEX@ xetex
 
 # Extract xetex version
 xetexdir/xetex.version: xetexdir/xetex-new.ch
+	test -d xetexdir || mkdir xetexdir
 	grep '^@d XeTeX_version_string==' $(srcdir)/xetexdir/xetex-new.ch \
 	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/xetex.version
 
@@ -21,11 +22,13 @@ xetex_ot_layout_o = ATSFontInst.o cmaps.o FontObject.o FontTableCache.o XeTeXLay
 xetex_ot_layout_cxx = ATSFontInst.cpp cmaps.cpp FontObject.cpp FontTableCache.cpp XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp # MongolianShaping.cpp
 
 ICUCFLAGS = \
-	-I/Volumes/User/icu-3.2/build/common/unicode/ \
-	-I/Volumes/User/icu-3.2/source/common/unicode/ \
-	-I/Volumes/User/icu-3.2/source/common/ \
-	-I/Volumes/User/icu-3.2/source/layout/unicode/ \
-	-I/Volumes/User/icu-3.2/source/layout/ \
+	-I../../libs/icu-3.2/common/unicode/ \
+	-I../../libs/icu-3.2/common/ \
+	-I../../../../TeX/libs/icu-3.2/source/common/unicode/ \
+	-I../../../../TeX/libs/icu-3.2/source/common/ \
+	-I../../../../TeX/libs/icu-3.2/source/layout/unicode/ \
+	-I../../../../TeX/libs/icu-3.2/source/layout/ \
+	-I../../../../TeX/libs/icu-3.2/source/ \
 	-DLE_USE_CMEMORY
 
 ATSFontInst.o: $(srcdir)/xetexdir/ATSFontInst.cpp
@@ -46,12 +49,14 @@ MongolianShaping.o: $(srcdir)/xetexdir/MongolianShaping.cpp
 xetexfontdict.o: $(srcdir)/xetexdir/xetexfontdict.cpp
 	$(CXX) $(ALL_CXXFLAGS) $(ICUCFLAGS) -c $< -o $@
 
-# System libraries we require
+# System frameworks we link with on Mac OS X
 FRAMEWORKS = -framework Carbon -framework QuickTime
 
 xetexlibs = \
 	-lTECkit -lz \
-	-lsicuucXeTeX -lsiculeXeTeX -lsicudataXeTeX
+	../../libs/icu-3.2/lib/libsicuucXeTeX.a \
+	../../libs/icu-3.2/lib/libsiculeXeTeX.a \
+	../../libs/icu-3.2/lib/libsicudataXeTeX.a
 
 # special rule for xetexmac.c as we need the ICU headers as well
 xetexmac.o: $(srcdir)/xetexdir/xetexmac.c xetexd.h

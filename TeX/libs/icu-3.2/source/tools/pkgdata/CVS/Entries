@@ -1,0 +1,16 @@
+/.cvsignore/1.5/Tue May 11 16:12:05 2004//Trelease-3-2
+/Makefile.in/1.31/Tue Nov  2 05:58:19 2004//Trelease-3-2
+/cmnmode.c/1.11/Tue Oct 19 03:15:10 2004//Trelease-3-2
+/dllmode.c/1.50/Tue Nov  2 00:27:43 2004//Trelease-3-2
+/filemode.c/1.15/Mon Nov  1 19:41:06 2004//Trelease-3-2
+/make.c/1.18/Tue Nov  2 00:27:43 2004//Trelease-3-2
+/makefile.h/1.7/Tue Nov  2 00:27:43 2004//Trelease-3-2
+/pkgdata.1.in/1.3/Fri Jul 18 00:46:04 2003//Trelease-3-2
+/pkgdata.c/1.68/Tue Nov  2 00:27:43 2004//Trelease-3-2
+/pkgdata.dsp/1.18/Thu Nov  4 02:36:09 2004//Trelease-3-2
+/pkgdata.vcproj/1.6/Wed Mar 24 23:09:55 2004//Trelease-3-2
+/pkgtypes.c/1.22/Thu Nov 11 23:34:58 2004//Trelease-3-2
+/pkgtypes.h/1.25/Tue Jul 13 08:08:17 2004//Trelease-3-2
+/sttcmode.c/1.26/Wed Nov 10 05:02:51 2004//Trelease-3-2
+/winmode.c/1.36/Tue Nov  2 00:27:43 2004//Trelease-3-2
+D

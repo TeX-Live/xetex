@@ -1,0 +1,25 @@
+/.cvsignore/1.2/Tue Jul  2 23:18:00 2002//Trelease-3-2
+/FontObject.cpp/1.3/Thu Aug  1 20:12:25 2002//Trelease-3-2
+/FontObject.h/1.3/Thu Aug  1 20:12:25 2002//Trelease-3-2
+/FontTableCache.cpp/1.1/Mon Mar  3 22:54:57 2003//Trelease-3-2
+/FontTableCache.h/1.1/Mon Mar  3 22:54:57 2003//Trelease-3-2
+/Makefile.in/1.10/Fri Jun  6 20:00:15 2003//Trelease-3-2
+/PortableFontInstance.cpp/1.11/Mon Dec  8 22:42:25 2003//Trelease-3-2
+/PortableFontInstance.h/1.7/Tue Jun  3 20:56:50 2003//Trelease-3-2
+/cmaps.cpp/1.6/Tue Jun  3 20:56:50 2003//Trelease-3-2
+/cmaps.h/1.5/Tue Jun  3 20:56:50 2003//Trelease-3-2
+/gendata.cpp/1.14/Wed May 19 23:50:15 2004//Trelease-3-2
+/gendata.dsp/1.4/Fri Jun  6 19:00:42 2003//Trelease-3-2
+/gendata.dsw/1.1/Wed Oct  3 21:48:10 2001//Trelease-3-2
+/gendata.sln/1.1/Thu May 15 20:50:58 2003//Trelease-3-2
+/gendata.vcproj/1.2/Fri Jun  6 19:00:42 2003//Trelease-3-2
+/letest.cpp/1.8/Mon Dec  8 22:42:25 2003//Trelease-3-2
+/letest.dsp/1.4/Fri Jun  6 19:00:42 2003//Trelease-3-2
+/letest.dsw/1.1/Wed Oct  3 21:48:10 2001//Trelease-3-2
+/letest.h/1.5/Tue Jun  3 20:56:50 2003//Trelease-3-2
+/letest.sln/1.1/Thu May 15 20:50:59 2003//Trelease-3-2
+/letest.vcproj/1.2/Fri Jun  6 19:00:42 2003//Trelease-3-2
+/readme.html/1.9/Tue Jun  3 20:56:50 2003//Trelease-3-2
+/sfnt.h/1.3/Thu Aug  1 20:12:25 2002//Trelease-3-2
+/testdata.cpp/1.10/Wed May 19 23:48:47 2004//Trelease-3-2
+D
