@@ -8,6 +8,8 @@ dnl We default to yes if the sources are available.
 AC_ARG_WITH(etex,
 [  --without-etex             don't compile and install e-TeX])
 
+AC_CANONICAL_SYSTEM
+
 dnl Do we compile XeTeX?
 dnl We default to yes if the sources are available.
 AC_ARG_WITH(xetex,

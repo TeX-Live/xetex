@@ -4,8 +4,35 @@
 
 Makefile: $(srcdir)/xetexdir/xetex.mk
 
+target = @target@
+target_os = @target_os@
+target_cpu = @target_cpu@
+target_vendor = @target_vendor@
+
 # We build etex.
 xetex = @XETEX@ xetex
+
+# Platform specific defines and files to be built
+#Mac
+ifeq '$(target_vendor)' 'apple'
+xetex_platform_o = xetexmac.o
+xetex_platform_layout_o = ATSFontInst.o 
+xetex_platform_layout_cxx = ATSFontInst.cpp
+
+XETEX_DEFINES = -DXETEX_MAC
+
+# System frameworks we link with on Mac OS X
+FRAMEWORKS = -framework Carbon -framework QuickTime
+else
+#Linux is linux-gnu, ought to be same defines/files for other X11 systems like BSDs
+xetex_platform_o = 
+xetex_platform_layout_o = 
+xetex_platform_layout_cxx =
+
+XETEX_DEFINES = -DXETEX_OTHER
+
+FRAMEWORKS =
+endif
 
 # Extract xetex version
 xetexdir/xetex.version: xetexdir/xetex-new.ch
@@ -15,11 +42,11 @@ xetexdir/xetex.version: xetexdir/xetex-new.ch
 
 # The C sources.
 xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
-xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o xetexmac.o xetexfontdict.o
+xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o $(xetex_platform_o) xetexfontdict.o
 
 # Layout library sources
-xetex_ot_layout_o = ATSFontInst.o cmaps.o FontObject.o FontTableCache.o XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o # MongolianShaping.o
-xetex_ot_layout_cxx = ATSFontInst.cpp cmaps.cpp FontObject.cpp FontTableCache.cpp XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp # MongolianShaping.cpp
+xetex_ot_layout_o = $(xetex_platform_layout_o) cmaps.o FontObject.o FontTableCache.o XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o # MongolianShaping.o
+xetex_ot_layout_cxx = $(xetex_platform_layout_cxx) cmaps.cpp FontObject.cpp FontTableCache.cpp XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp # MongolianShaping.cpp
 
 ICUCFLAGS = \
 	-I../../libs/icu-3.2/common/unicode/ \
@@ -32,25 +59,23 @@ ICUCFLAGS = \
 	-DLE_USE_CMEMORY
 
 ATSFontInst.o: $(srcdir)/xetexdir/ATSFontInst.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 FontObject.o: $(srcdir)/xetexdir/FontObject.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 MongolianShaping.o: $(srcdir)/xetexdir/MongolianShaping.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 xetexfontdict.o: $(srcdir)/xetexdir/xetexfontdict.cpp
-	$(CXX) $(ALL_CXXFLAGS) $(ICUCFLAGS) -c $< -o $@
+	$(CXX) $(ALL_CXXFLAGS) $(ICUCFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
-# System frameworks we link with on Mac OS X
-FRAMEWORKS = -framework Carbon -framework QuickTime
 
 xetexlibs = \
 	-lTECkit -lz \
@@ -60,7 +85,7 @@ xetexlibs = \
 
 # special rule for xetexmac.c as we need the ICU headers as well
 xetexmac.o: $(srcdir)/xetexdir/xetexmac.c xetexd.h
-	$(compile) $(ICUCFLAGS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # Making xetex.
 xetex: $(xetex_ot_layout_o) $(xetex_o)
