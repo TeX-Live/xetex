@@ -58,6 +58,8 @@ ICUCFLAGS = \
 	-I../../../../TeX/libs/icu-3.2/source/ \
 	-DLE_USE_CMEMORY
 
+TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
+
 ATSFontInst.o: $(srcdir)/xetexdir/ATSFontInst.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
@@ -78,14 +80,14 @@ xetexfontdict.o: $(srcdir)/xetexdir/xetexfontdict.cpp
 
 
 xetexlibs = \
-	-lTECkit -lz \
+	../../libs/teckit/lib/.libs/libTECkit.a -lz \
 	../../libs/icu-3.2/lib/libsicuucXeTeX.a \
 	../../libs/icu-3.2/lib/libsiculeXeTeX.a \
 	../../libs/icu-3.2/lib/libsicudataXeTeX.a
 
-# special rule for xetexmac.c as we need the ICU headers as well
+# special rule for xetexmac.c as we need the ICU and TECkit headers as well
 xetexmac.o: $(srcdir)/xetexdir/xetexmac.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # Making xetex.
 xetex: $(xetex_ot_layout_o) $(xetex_o)

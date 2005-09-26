@@ -47,6 +47,7 @@
 
 #include "xetexfontdict.h"
 
+extern char*	gettexstring(int strNumber);
 void
 setinputfileencoding(UFILE* f, int mode, int encodingData)
 {
@@ -64,7 +65,6 @@ setinputfileencoding(UFILE* f, int mode, int encodingData)
 		
 		case ICUMAPPING:
 			{
-				extern char*	gettexstring(int strNumber);
 				char*	name = gettexstring(encodingData);
 				UErrorCode	err = 0;
 				UConverter*	cnv = ucnv_open(name, &err);
@@ -217,7 +217,8 @@ linebreaknext()
 	return ubrk_next((UBreakIterator*)brkIter);
 }
 
-#include <TECkit/TECkit_Engine.h>
+//#include <TECkit/TECkit_Engine.h>
+#include "TECkit_Engine.h"
 
 #define AAT_FONT_FLAG	65535
 #define	OT_FONT_FLAG	65534
