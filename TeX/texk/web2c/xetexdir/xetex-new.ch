@@ -36,8 +36,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".94"
-@d XeTeX_version_string=='-0.94' {current \eTeX\ version}
+@d XeTeX_revision==".95"
+@d XeTeX_version_string=='-0.95' {current \eTeX\ version}
 @z
 
 @x
@@ -2605,6 +2605,38 @@ else cur_size:=script_size*((cur_style-text_style) div 2);
   until z<16;
 @y
   until z<script_size;
+@z
+
+@x
+function char_box(@!f:internal_font_number;@!c:quarterword):pointer;
+var q:four_quarters;
+@!hd:eight_bits; {|height_depth| byte}
+@!b,@!p:pointer; {the new box and its character node}
+begin q:=char_info(f)(c); hd:=height_depth(q);
+b:=new_null_box; width(b):=char_width(f)(q)+char_italic(f)(q);
+height(b):=char_height(f)(hd); depth(b):=char_depth(f)(hd);
+p:=get_avail; character(p):=c; font(p):=f; list_ptr(b):=p; char_box:=b;
+end;
+@y
+function char_box(@!f:internal_font_number;@!c:quarterword):pointer;
+var q:four_quarters;
+@!hd:eight_bits; {|height_depth| byte}
+@!b,@!p:pointer; {the new box and its character node}
+begin
+if is_native_font(f) then begin
+  b:=new_null_box;
+  p:=new_native_character(f, c);
+  list_ptr(b):=p;
+  height(b):=height(p); depth(b):=depth(p); width(b):=width(p);
+  end
+else begin
+  q:=char_info(f)(c); hd:=height_depth(q);
+  b:=new_null_box; width(b):=char_width(f)(q)+char_italic(f)(q);
+  height(b):=char_height(f)(hd); depth(b):=char_depth(f)(hd);
+  p:=get_avail; character(p):=c; font(p):=f;
+  end;
+list_ptr(b):=p; char_box:=b;
+end;
 @z
 
 @x
