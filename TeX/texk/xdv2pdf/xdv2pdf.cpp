@@ -380,8 +380,15 @@ setchar(UInt32 c, bool adv)
 static void
 do_set_glyph(UInt16 g, Fixed a)
 {
-    CGContextSetFont(graphicsContext, native_fonts[f].cgFont);
-    CGContextSetFontSize(graphicsContext, Fix2X(native_fonts[f].size) * mag_scale);
+	// NOTE that this is separate from the glyph-buffering done by setchar()
+	// as \XeTeXglyph deals with native fonts, while setchar() and bufferGlyph()
+	// are used to work with legacy TeX fonts
+	
+	if (f != cur_f) {
+		CGContextSetFont(graphicsContext, native_fonts[f].cgFont);
+		CGContextSetFontSize(graphicsContext, Fix2X(native_fonts[f].size) * mag_scale);
+		cur_f = f;
+	}
 	
 	bool	resetColor = false;
     if (textColor.override) {
