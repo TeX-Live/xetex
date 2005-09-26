@@ -520,7 +520,7 @@ open_dvi_output(FILE** fptr)
 		return open_output(fptr, "w");
 	}
 	else {
-		char*	cmd = concat("xdv2pdf -o ", nameoffile+1);
+		char*	cmd = concat3("xdv2pdf -o \"", (char*)nameoffile+1, "\"");
 		if (papersize != 0) {
 			char*	cmd2 = concat3(cmd, " -p ", papersize);
 			free(cmd);
