@@ -1,0 +1,49 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: TecKitJni - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\root\LOCALS~1\Temp\RSP16.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /Zi /Od /I "..\..\\" /I "..\..\zlib\src" /I "C:\Program Files\j2sdk_nb\j2sdk1.4.2\include" /I "C:\Program Files\j2sdk_nb\j2sdk1.4.2\include\win32" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "TECKITJNI_EXPORTS" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"E:\DocCharConvert\teckitjni\src\teckitjni.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\root\LOCALS~1\Temp\RSP16.tmp" 
+Creating temporary file "C:\DOCUME~1\root\LOCALS~1\Temp\RSP17.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:yes /pdb:"Debug/TecKitJni.pdb" /debug /machine:I386 /out:"Debug/TecKitJni.dll" /implib:"Debug/TecKitJni.lib" /pdbtype:sept 
+.\Debug\adler32.obj
+.\Debug\compress.obj
+.\Debug\crc32.obj
+.\Debug\deflate.obj
+.\Debug\Engine.obj
+.\Debug\gzio.obj
+.\Debug\infblock.obj
+.\Debug\infcodes.obj
+.\Debug\inffast.obj
+.\Debug\inflate.obj
+.\Debug\inftrees.obj
+.\Debug\infutil.obj
+.\Debug\teckitjni.obj
+.\Debug\trees.obj
+.\Debug\uncompr.obj
+.\Debug\zutil.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\root\LOCALS~1\Temp\RSP17.tmp"
+<h3>Output Window</h3>
+Compiling...
+teckitjni.cpp
+E:\DocCharConvert\teckitjni\src\teckitjni.cpp(187) : warning C4800: 'unsigned char' : forcing value to bool 'true' or 'false' (performance warning)
+Linking...
+   Creating library Debug/TecKitJni.lib and object Debug/TecKitJni.exp
+
+
+
+<h3>Results</h3>
+TecKitJni.dll - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>
