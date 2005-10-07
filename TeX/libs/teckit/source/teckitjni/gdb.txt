@@ -1,2 +1,0 @@
-directory ../../src
-set arg -char2utf8 /home/keith/projects/DocCharConvert/teckitjni/academy.tec

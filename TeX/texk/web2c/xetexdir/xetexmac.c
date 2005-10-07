@@ -45,6 +45,8 @@
 #include "unicode/ubrk.h"
 #include "unicode/ucnv.h"
 
+#include "TECkit_Engine.h"
+
 #include "xetexfontdict.h"
 
 extern char*	gettexstring(int strNumber);
@@ -216,9 +218,6 @@ linebreaknext()
 {
 	return ubrk_next((UBreakIterator*)brkIter);
 }
-
-//#include <TECkit/TECkit_Engine.h>
-#include "TECkit_Engine.h"
 
 #define AAT_FONT_FLAG	65535
 #define	OT_FONT_FLAG	65534

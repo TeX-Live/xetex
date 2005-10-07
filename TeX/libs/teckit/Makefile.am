@@ -1,3 +1,0 @@
-AUTOMAKE_OPTIONS = 1.6
-
-SUBDIRS = lib bin
