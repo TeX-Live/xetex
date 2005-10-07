@@ -1,0 +1,11 @@
+AC_INIT(configure.in)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(teckitjni, 0.1)
+
+AC_LANG_CPLUSPLUS
+
+AC_PROG_CXXCPP
+AM_PROG_LIBTOOL
+CC=CXX
+AC_OUTPUT(Makefile src/Makefile)
