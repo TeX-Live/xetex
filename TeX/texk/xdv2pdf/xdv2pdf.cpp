@@ -294,6 +294,41 @@ read_unsigned(FILE* f, int k)
 	return u;
 }
 
+static	CGRect			mediaBox;
+
+static 	CGColorSpaceRef	userColorSpace;
+static	bool sPageStarted = false;
+
+static void
+ensure_page_started()
+{
+	if (sPageStarted)
+		return;
+	
+	CGContextSaveGState(graphicsContext);
+    CGContextBeginPage(graphicsContext, &mediaBox);
+
+	static CGAffineTransform	initTextMatrix;
+	if (page_index == 1) {
+		initTextMatrix = CGContextGetTextMatrix(graphicsContext);
+		userColorSpace = 
+			(&CGColorSpaceCreateWithName) != NULL
+				? CGColorSpaceCreateWithName(kCGColorSpaceUserRGB)
+				: CGColorSpaceCreateDeviceRGB();
+	}
+	else
+		CGContextSetTextMatrix(graphicsContext, initTextMatrix);
+
+	CGContextSetFillColorSpace(graphicsContext, userColorSpace);
+
+	CGContextTranslateCTM(graphicsContext, 72.0, -72.0);
+
+    pageWd = scr2dvi * mediaBox.size.width;
+    pageHt = scr2dvi * mediaBox.size.height;
+	
+	sPageStarted = true;
+}
+
 #define MAX_BUFFERED_GLYPHS	1024
 long		gGlyphCount = 0;
 CGGlyph		gGlyphs[MAX_BUFFERED_GLYPHS];
@@ -322,6 +357,8 @@ flushGlyphs()
 void
 bufferGlyph(CGGlyph g)
 {
+	ensure_page_started();
+
 	CGPoint	curLoc;
 	curLoc.x = dvi2scr * dvi.h;
 	curLoc.y = dvi2scr * (pageHt - dvi.v);
@@ -341,6 +378,8 @@ void
 setchar(UInt32 c, bool adv)
 {
 	OSStatus	status;
+
+	ensure_page_started();
 
     if (f != cur_f) {
 		flushGlyphs();
@@ -1641,8 +1680,6 @@ do_native_font_def(FILE* xdv)
 	}
 }
 
-static	CGRect			mediaBox;
-
 static float
 readFloat(const char*& cp)
 {
@@ -1683,6 +1720,8 @@ flush_annot_box()
 static void
 doPDFspecial(const char* special)
 {
+	ensure_page_started();
+
 	if (pdfmarks == NULL) {
 		static bool firstTime = true;
 		if (firstTime) {
@@ -1940,16 +1979,42 @@ doColorSpecial(const char* s)
 			float	cmyk[4] = { 0.0, 0.0, 0.0, 1.0 };
 			if (readColorValues(s, 4, cmyk)) {
 				ATSURGBAlphaColor	c;
-	
+
+#if 1
 				c.red = (1.0 - cmyk[0]) * (1.0 - cmyk[3]);	// cmyk->rgb conversion a la ghostscript
 				c.green = (1.0 - cmyk[1]) * (1.0 - cmyk[3]);
 				c.blue = (1.0 - cmyk[2]) * (1.0 - cmyk[3]);
-	/*
+#endif
+
+#if 0
 	#define min(a,b)	((a) < (b) ? (a) : (b))
 				c.red = 1.0 - min(1.0, cmyk[0] + cmyk[3]);	// cmyk->rgb conversion a la adobe
 				c.green = 1.0 - min(1.0, cmyk[1] + cmyk[3]);
 				c.blue = 1.0 - min(1.0, cmyk[2] + cmyk[3]);
-	*/
+#endif
+
+#if 0
+// formulae from http://www.easyrgb.com/math.php
+//CMYKÊÑ> CMY
+//Where CMYK and CMY values = 0 Ö 1
+// C = ( C * ( 1 - K ) + K )
+// M = ( M * ( 1 - K ) + K )
+// Y = ( Y * ( 1 - K ) + K )
+				cmyk[0] = (cmyk[0] * (1.0 - cmyk[3]) + cmyk[3]);
+				cmyk[1] = (cmyk[1] * (1.0 - cmyk[3]) + cmyk[3]);
+				cmyk[2] = (cmyk[2] * (1.0 - cmyk[3]) + cmyk[3]);
+//
+//CMY -> RGB
+//CMY values = 0 Ö 1
+//RGB values = 0 Ö 255
+// R = ( 1 - C ) * 255
+// G = ( 1 - M ) * 255
+// B = ( 1 - Y ) * 255
+				c.red   = (1.0 - cmyk[0]);
+				c.green = (1.0 - cmyk[1]);
+				c.blue  = (1.0 - cmyk[2]);
+#endif
+
 				c.alpha = readAlphaIfPresent(s);
 				setRuleColor(c);
 				setTextColor(c);
@@ -2026,6 +2091,73 @@ doColorSpecial(const char* s)
 	}
 }
 
+static double_t
+readDimen(const char* arg)	// currently reads unsigned dimens only; no negative paper sizes!
+{
+	double_t	rval = 0.0;
+	while ((*arg >= '0') && (*arg <= '9')) {
+		rval *= 10.0;
+		rval += *arg - '0';
+		++arg;
+	}
+	if (*arg == '.') {
+		++arg;
+		double_t	frac = 10.0;
+		while ((*arg >= '0') && (*arg <= '9')) {
+			rval += (*arg - '0') / frac;
+			frac *= 10.0;
+			++arg;
+		}
+	}
+	const dimenrec*	dim = &dimenratios[0];
+	while (dim->name != 0) {
+		if (strcasecmp(arg, dim->name) == 0) {
+			rval *= dim->factor;
+			break;
+		}
+		++dim;
+	}
+	return rval;
+}
+
+static bool
+getPaperSize(const char* arg, double_t& paperWd, double_t& paperHt)
+{
+	paperHt = paperWd = 0.0;
+
+	char*   s1 = strdup(arg);
+	char*   s2 = strchr(s1, ':');
+	if (s2 != NULL)
+		*s2++ = 0;
+
+	const papersizerec*	ps = &papersizes[0];
+	while (ps->name != 0) {
+		if (strcasecmp(s1, ps->name) == 0) {
+			paperWd = ps->width;
+			paperHt = ps->height;
+			break;
+		}
+		++ps;
+	}
+	if (ps->name == 0) {
+		char*   s3 = strchr(s1, ',');
+		if (s3 != NULL) {
+			*s3++ = 0;
+			paperWd = readDimen(s1);
+			paperHt = readDimen(s3);
+		}
+	}
+	if (s2 != NULL && strcasecmp(s2, "landscape") == 0) {
+		double_t  t = paperHt;
+		paperHt = paperWd;
+		paperWd = t;
+	}
+	
+	free(s1);
+	
+	return (paperHt > 0.0) && (paperWd > 0.0);
+}
+
 static bool
 prefix_eq(const char* str, const char* prefix, const char*& remainder)
 {
@@ -2055,6 +2187,7 @@ process_one_page(FILE* xdv)
 	std::list<dvi_vars>	stack;
 	dvi_level = 0;
 
+#if 0	// defer this until we actually need to draw something, to allow page geometry specials
 	CGContextSaveGState(graphicsContext);
     CGContextBeginPage(graphicsContext, &mediaBox);
 
@@ -2074,7 +2207,8 @@ process_one_page(FILE* xdv)
 
     pageWd = scr2dvi * mediaBox.size.width;
     pageHt = scr2dvi * mediaBox.size.height;
-    
+#endif
+
     int	j = 0;
     int	count[10];
     for (i = 0; i < 10; ++i) {	// read counts
@@ -2198,9 +2332,11 @@ process_one_page(FILE* xdv)
                     }
 
                     else if (str_eq(special, "x:gsave")) {
+                        ensure_page_started();
                     	CGContextSaveGState(graphicsContext);
                     }
                     else if (str_eq(special, "x:grestore")) {
+                        ensure_page_started();
                     	CGContextRestoreGState(graphicsContext);
 						if (tex_fonts[cur_f].cgFont != NULL) {
 							CGContextSetFont(graphicsContext, tex_fonts[cur_f].cgFont);
@@ -2208,6 +2344,7 @@ process_one_page(FILE* xdv)
 						}
                     }
                     else if (prefix_eq(special, "x:scale", specialArg)) {
+                        ensure_page_started();
                     	while (*specialArg && *specialArg <= ' ')
                     		++specialArg;
                     	float	xscale = atof(specialArg);
@@ -2223,6 +2360,7 @@ process_one_page(FILE* xdv)
 						}
                     }
                     else if (prefix_eq(special, "x:rotate", specialArg)) {
+                        ensure_page_started();
                     	while (*specialArg && *specialArg <= ' ')
                     		++specialArg;
                     	float	rotation = atof(specialArg);
@@ -2231,6 +2369,7 @@ process_one_page(FILE* xdv)
 						CGContextTranslateCTM(graphicsContext, -dvi2scr * dvi.h, -dvi2scr * (pageHt - dvi.v));
                     }
                     else if (prefix_eq(special, "x:backgroundcolor", specialArg)) {
+                        ensure_page_started();
                         if (*specialArg != '=' || u < 24) {
                         	// ignore incorrect special
                         }
@@ -2303,6 +2442,26 @@ process_one_page(FILE* xdv)
 							}
 						} while (false);
                     }
+                    else if (prefix_eq(special, "x:papersize", specialArg)) {
+                    	// syntax: \special{x:papersize=a4:landscape} etc
+                    	if (*specialArg != '=') {
+                    		// ignore
+                    	}
+                    	else {
+                    		++specialArg;
+                    		double_t	paperWd, paperHt;
+                    		if (getPaperSize(specialArg, paperWd, paperHt)) {
+							    mediaBox = CGRectMake(0, 0, paperWd, paperHt);
+							    if (sPageStarted) {
+							    	fprintf(stderr, "\n### warning on page [");
+									for (i = 0; i < j; ++i)
+										fprintf(stderr, "%d.", count[i]);
+									fprintf(stderr, "%d", count[j]);
+							    	fprintf(stderr, "]: paper size \"%s\" will take effect from NEXT page ", specialArg);
+							    }
+                    		}
+                    	}
+                    }
                     
                     delete[] special;
                 }
@@ -2310,6 +2469,7 @@ process_one_page(FILE* xdv)
 			
 			case DVI_SETRULE:
 			case DVI_PUTRULE:
+				ensure_page_started();
 				ht = read_signed(xdv, 4);
 				wd = read_signed(xdv, 4);
 				if (ht > 0 && wd > 0) {
@@ -2444,29 +2604,29 @@ process_one_page(FILE* xdv)
 				break;
 			
 			case DVI_GLYPH:
-				flushGlyphs();
+				ensure_page_started();
 				u = read_unsigned(xdv, 2);
 				s = read_signed(xdv, 4);
 				do_set_glyph(u, s);
 				break;
 			
 			case DVI_NATIVE:
-				flushGlyphs();
+				ensure_page_started();
 				do_set_native(xdv);
 				break;
 			
 			case DVI_GLYPH_ARRAY:
-				flushGlyphs();
+				ensure_page_started();
 				do_glyph_array(xdv);
 				break;
 			
             case DVI_PIC_FILE:
-				flushGlyphs();
+				ensure_page_started();
                 do_pic_file(xdv, false);
                 break;
                             
             case DVI_PDF_FILE:
-				flushGlyphs();
+				ensure_page_started();
                 do_pic_file(xdv, true);
                 break;
                         
@@ -2493,10 +2653,14 @@ process_one_page(FILE* xdv)
 
 ABORT_PAGE:
     
-	CGColorSpaceRelease(userColorSpace);
+//	CGColorSpaceRelease(userColorSpace);
 
-    CGContextEndPage(graphicsContext);
-    CGContextRestoreGState(graphicsContext);
+	if (sPageStarted) {
+		CGContextEndPage(graphicsContext);
+		CGContextRestoreGState(graphicsContext);
+	}
+	
+	sPageStarted = false;
 }
 
 static void
@@ -2518,73 +2682,6 @@ process_pages(FILE* xdv)
                 exit(1);
 		}
 	}
-}
-
-static double_t
-readDimen(const char* arg)	// currently reads unsigned dimens only; no negative paper sizes!
-{
-	double_t	rval = 0.0;
-	while ((*arg >= '0') && (*arg <= '9')) {
-		rval *= 10.0;
-		rval += *arg - '0';
-		++arg;
-	}
-	if (*arg == '.') {
-		++arg;
-		double_t	frac = 10.0;
-		while ((*arg >= '0') && (*arg <= '9')) {
-			rval += (*arg - '0') / frac;
-			frac *= 10.0;
-			++arg;
-		}
-	}
-	const dimenrec*	dim = &dimenratios[0];
-	while (dim->name != 0) {
-		if (strcasecmp(arg, dim->name) == 0) {
-			rval *= dim->factor;
-			break;
-		}
-		++dim;
-	}
-	return rval;
-}
-
-static bool
-setPaperSize(const char* arg)
-{
-	pageHt = pageWd = 0.0;
-
-	char*   s1 = strdup(arg);
-	char*   s2 = strchr(s1, ':');
-	if (s2 != NULL)
-		*s2++ = 0;
-
-	const papersizerec*	ps = &papersizes[0];
-	while (ps->name != 0) {
-		if (strcasecmp(s1, ps->name) == 0) {
-			pageWd = ps->width;
-			pageHt = ps->height;
-			break;
-		}
-		++ps;
-	}
-	if (ps->name == 0) {
-		char*   s3 = strchr(s1, ',');
-		if (s3 != NULL) {
-			*s3++ = 0;
-			pageWd = readDimen(s1);
-			pageHt = readDimen(s3);
-		}
-	}
-	if (s2 != NULL && strcasecmp(s2, "landscape") == 0) {
-		double_t  t = pageHt;
-		pageHt = pageWd;
-		pageWd = t;
-	}
-	
-	free(s1);
-	
-	return (pageHt > 0.0) && (pageWd > 0.0);
 }
 
 const char* progName;
@@ -2612,6 +2709,9 @@ xdv2pdf(int argc, char** argv)
     
     progName = argv[0];
     
+	double_t	paperWd = 0.0;
+	double_t	paperHt = 0.0;
+
     int	ch;
     while ((ch = getopt(argc, argv, "o:p:m:d:hv" /*r:*/)) != -1) {
         switch (ch) {
@@ -2624,10 +2724,10 @@ xdv2pdf(int argc, char** argv)
                 break;
             
             case 'p':
-				if (!setPaperSize(optarg)) {
-                    fprintf(stderr, "*** unknown paper name: %s\n", optarg);
-                    exit(1);
-                }
+				if (!getPaperSize(optarg, paperWd, paperHt)) {
+					fprintf(stderr, "*** unknown paper name: %s\n", optarg);
+					exit(1);
+				}
                 break;
                 
             case 'm':
@@ -2648,35 +2748,33 @@ xdv2pdf(int argc, char** argv)
         }
     }
 
-    // get default paper size from printing system
-    PMRect				paperRect = { 0, 0, 792, 612 };
-	PMPrintSession		printSession;
-	PMPrintSettings		printSettings;
-	PMPageFormat		pageFormat;
-    status = PMCreateSession(&printSession);
-    if (status == noErr) {
-        status = PMCreatePrintSettings(&printSettings);
-        if (status == noErr) {
-            status = PMSessionDefaultPrintSettings(printSession, printSettings);
-            status = PMCreatePageFormat(&pageFormat);
-            if (status == noErr) {
-                status = PMSessionDefaultPageFormat(printSession, pageFormat);
-                PMGetUnadjustedPaperRect(pageFormat, &paperRect);
-                status = PMRelease(pageFormat);
-            }
-            status = PMRelease(printSettings);
-        }
-        status = PMRelease(printSession);
-    }
+	if ((paperWd == 0.0) || (paperHt == 0.0)) {
+		// get default paper size from printing system
+		PMRect				paperRect = { 0, 0, 792, 612 };
+		PMPrintSession		printSession;
+		PMPrintSettings		printSettings;
+		PMPageFormat		pageFormat;
+		status = PMCreateSession(&printSession);
+		if (status == noErr) {
+			status = PMCreatePrintSettings(&printSettings);
+			if (status == noErr) {
+				status = PMSessionDefaultPrintSettings(printSession, printSettings);
+				status = PMCreatePageFormat(&pageFormat);
+				if (status == noErr) {
+					status = PMSessionDefaultPageFormat(printSession, pageFormat);
+					PMGetUnadjustedPaperRect(pageFormat, &paperRect);
+					status = PMRelease(pageFormat);
+				}
+				status = PMRelease(printSettings);
+			}
+			status = PMRelease(printSession);
+		}
+		paperWd = paperRect.right - paperRect.left;
+		paperHt = paperRect.bottom - paperRect.top;
+	}
 
-    // modify page size if specific request passed
-    if (pageHt != 0)
-        paperRect.bottom = paperRect.top + pageHt;
-    if (pageWd != 0)
-        paperRect.right = paperRect.left + pageWd;
-    
     // set the media box for PDF generation
-    mediaBox = CGRectMake(0, 0, paperRect.right - paperRect.left, paperRect.bottom - paperRect.top);
+    mediaBox = CGRectMake(0, 0, paperWd, paperHt);
     
     argc -= optind;
     argv += optind;
@@ -2703,7 +2801,9 @@ xdv2pdf(int argc, char** argv)
 //	ByteCount				valueSize = sizeof(fallbacks);
 //	ATSUAttributeValuePtr	value = &fallbacks;
 //	status = ATSUSetLayoutControls(layout, 1, &tag, &valueSize, &value);
-	status = ATSUSetTransientFontMatching(layout, true);
+
+// this doesn't seem to be working for me....
+//	status = ATSUSetTransientFontMatching(layout, true);
 
 	FILE*	xdv;
     if (argc == 1)
