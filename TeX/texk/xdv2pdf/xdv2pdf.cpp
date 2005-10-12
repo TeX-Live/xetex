@@ -13,7 +13,7 @@
 	xdv2pdf
 	Convert xdv file from XeTeX to PDF format for viewing/printing
 
-	usage: xdv2pdf [-d debug] [-m mag] [-p papersize] [-v] xdvfile [-o pdffile]
+	usage: xdv2pdf [-d debug] [-m sMag] [-p papersize] [-v] xdvfile [-o pdffile]
 
 		-m	override magnification from xdv file
 		-v	show progress messages (page counters)
@@ -51,15 +51,12 @@
 
 #include "DVIops.h"
 
-#define aat_font_flag	0xffff
+#define AAT_FONT_FLAG	0xffff
 
-struct papersizerec {
-	const char*	name;
-	double_t	width;
-	double_t	height;	// dimensions in BP ("big" or PostScript/CG points)
-};
+#define DEFINE_GLOBALS	1
+#include "xdv2pdf_globals.h"
 
-static papersizerec	papersizes[] =
+paperSizeRec	gPaperSizes[] =
 {
 	{ "a0",		2383.937008,	3370.393701	},
 	{ "a1",		1683.779528,	2383.937008	},
@@ -117,46 +114,9 @@ static papersizerec	papersizes[] =
 	{ 0, 0, 0 }
 };
 
-struct dimenrec {
-	const char*	name;
-	double_t	factor;	// multiplier to convert to BP
-};
 
-static dimenrec dimenratios[] =
-{
-	{ "in", 72.0 },
-	{ "mm", 72.0 / 25.4 },
-	{ "cm", 72.0 / 2.54 },
-	{ "bp", 1.0 },
-	{ "pt", 72.0 / 72.27 },
-	{ "pc", 12.0 * 72.0 / 72.27 },
-	{ "dd", 1238.0 * 72.0 / 72.27 / 1157.0 },
-	{ "cc", 14856.0 * 72.0 / 72.27 / 1157.0 },
-	{ 0, 0 }
-};
-
-struct TEX_FONT {
-				TEX_FONT()
-                    : cgFont(0)
-                    , size(Long2Fix(10))
-					, charMap(NULL)
-					, hasMetrics(false)
-						{
-						}
-	CGFontRef			cgFont;
-    Fixed				size;
-	std::vector<Fixed>	widths;
-	std::vector<Fixed>	heights;
-	std::vector<Fixed>	depths;
-	std::vector<UInt16>*charMap;
-	bool				hasMetrics;
-	bool				hasMap;
-};
-
-static std::map<UInt32,TEX_FONT>	tex_fonts;
-
-struct NATIVE_FONT {
-				NATIVE_FONT()
+struct nativeFont {
+				nativeFont()
 					: atsuStyle(0)
                     , cgFont(0)
                     , size(Long2Fix(10))
@@ -170,61 +130,23 @@ struct NATIVE_FONT {
 	bool				isColored;
 };
 
-static std::map<UInt32,NATIVE_FONT>	native_fonts;
+static std::map<UInt32,nativeFont>	sNativeFonts;
 
-static ATSUTextLayout	layout;
+static ATSUTextLayout	sLayout;
 
-static double_t scr2dvi = (72.27 * 65536.0) / 72.0;
-static double_t dvi2scr = 1.0 / scr2dvi;
-
-struct dvi_vars {
-	SInt32	h;
-	SInt32	v;
-	SInt32	w;
-	SInt32	x;
-	SInt32	y;
-	SInt32	z;
-};
-static dvi_vars		dvi;
-static UInt32			f, cur_f;
 static const UInt32	kUndefinedFont = 0x80000000;
 
-static const ATSURGBAlphaColor	constBlackColor = { 0.0, 0.0, 0.0, 1.0 };
+static UInt32	sMag = 0;
 
-struct colorStateRec {
-	ATSURGBAlphaColor	color;
-	bool				override;
-};
-static std::list<colorStateRec>	textColorStack;
-static std::list<colorStateRec>	ruleColorStack;
+static bool	sVerbose = false;
 
-static colorStateRec	textColor = { { 0.0, 0.0, 0.0, 1.0 }, false };
-static colorStateRec	ruleColor = { { 0.0, 0.0, 0.0, 1.0 }, false };
-
-static double_t	pageHt = 0;
-static double_t	pageWd = 0;
-
-static UInt32	mag = 0;
-static double_t	mag_scale = 1.0;
-
-static CGContextRef		graphicsContext = 0;
-
-static long	page_index = 0;
-
-static bool	verbose = false;
-
-static CFURLRef	saveURL = 0;
-
-static FILE*	pdfmarks = NULL;
-static char		pdfmarkPath[_POSIX_PATH_MAX+1];
-
-static std::map<ATSFontRef,CGFontRef>	cg_fonts;
+static std::map<ATSFontRef,CGFontRef>	sCGFonts;
 
 static CGFontRef
 getCGFontForATSFont(ATSFontRef fontRef)
 {
-	std::map<ATSFontRef,CGFontRef>::const_iterator	i = cg_fonts.find(fontRef);
-	if (i != cg_fonts.end()) {
+	std::map<ATSFontRef,CGFontRef>::const_iterator	i = sCGFonts.find(fontRef);
+	if (i != sCGFonts.end()) {
 		return i->second;
 	}
 	CGFontRef	newFont;
@@ -234,46 +156,48 @@ getCGFontForATSFont(ATSFontRef fontRef)
 	}
 	else
 		newFont = CGFontCreateWithPlatformFont(&fontRef);
-	cg_fonts[fontRef] = newFont;
+	sCGFonts[fontRef] = newFont;
 	return newFont;
 }
 
-struct box {
-	float	llx;
-	float	lly;
-	float	urx;
-	float	ury;
-};
 
-static box	annot_box;
-static int	tag_level = -1;
-static int	dvi_level = 0;
-static bool	tracking_boxes = false;
-
-static void
-init_annot_box()
+void
+initAnnotBox()
 {
-	annot_box.llx = pageWd;
-	annot_box.lly = 0;
-	annot_box.urx = 0;
-	annot_box.ury = pageHt;
+	gAnnotBox.llx = gPageWd;
+	gAnnotBox.lly = 0;
+	gAnnotBox.urx = 0;
+	gAnnotBox.ury = gPageHt;
+}
+
+void
+flushAnnotBox()
+{
+	char	buf[200];
+	sprintf(buf, "ABOX [%f %f %f %f]",
+					kDvi2Scr * gAnnotBox.llx + 72.0,
+					kDvi2Scr * (gPageHt - gAnnotBox.lly) - 72.0,
+					kDvi2Scr * gAnnotBox.urx + 72.0,
+					kDvi2Scr * (gPageHt - gAnnotBox.ury) - 72.0);
+	doPDFspecial(buf);
+	initAnnotBox();
 }
 
 static void
-merge_box(const box& b)
+mergeBox(const box& b)
 {
-	if (b.llx < annot_box.llx)
-		annot_box.llx = b.llx;
-	if (b.lly > annot_box.lly)
-		annot_box.lly = b.lly;	// NB positive is downwards!
-	if (b.urx > annot_box.urx)
-		annot_box.urx = b.urx;
-	if (b.ury < annot_box.ury)
-		annot_box.ury = b.ury;
+	if (b.llx < gAnnotBox.llx)
+		gAnnotBox.llx = b.llx;
+	if (b.lly > gAnnotBox.lly)
+		gAnnotBox.lly = b.lly;	// NB positive is downwards!
+	if (b.urx > gAnnotBox.urx)
+		gAnnotBox.urx = b.urx;
+	if (b.ury < gAnnotBox.ury)
+		gAnnotBox.ury = b.ury;
 }
 
 long
-read_signed(FILE* f, int k)
+readSigned(FILE* f, int k)
 {
 	long	s = (long)(signed char)getc(f);
 	while (--k > 0) {
@@ -284,7 +208,7 @@ read_signed(FILE* f, int k)
 }
 
 unsigned long
-read_unsigned(FILE* f, int k)
+readUnsigned(FILE* f, int k)
 {
 	unsigned long	u = getc(f);
 	while (--k > 0) {
@@ -294,39 +218,35 @@ read_unsigned(FILE* f, int k)
 	return u;
 }
 
-static	CGRect			mediaBox;
 
-static 	CGColorSpaceRef	userColorSpace;
-static	bool sPageStarted = false;
-
-static void
-ensure_page_started()
+void
+ensurePageStarted()
 {
-	if (sPageStarted)
+	if (gPageStarted)
 		return;
 	
-	CGContextSaveGState(graphicsContext);
-    CGContextBeginPage(graphicsContext, &mediaBox);
+	CGContextSaveGState(gCtx);
+    CGContextBeginPage(gCtx, &gMediaBox);
 
-	static CGAffineTransform	initTextMatrix;
-	if (page_index == 1) {
-		initTextMatrix = CGContextGetTextMatrix(graphicsContext);
-		userColorSpace = 
+	static CGAffineTransform	sInitTextMatrix;
+	if (gPageIndex == 1) {
+		sInitTextMatrix = CGContextGetTextMatrix(gCtx);
+		gUserColorSpace = 
 			(&CGColorSpaceCreateWithName) != NULL
 				? CGColorSpaceCreateWithName(kCGColorSpaceUserRGB)
 				: CGColorSpaceCreateDeviceRGB();
 	}
 	else
-		CGContextSetTextMatrix(graphicsContext, initTextMatrix);
+		CGContextSetTextMatrix(gCtx, sInitTextMatrix);
 
-	CGContextSetFillColorSpace(graphicsContext, userColorSpace);
+	CGContextSetFillColorSpace(gCtx, gUserColorSpace);
 
-	CGContextTranslateCTM(graphicsContext, 72.0, -72.0);
+	CGContextTranslateCTM(gCtx, 72.0, -72.0);
 
-    pageWd = scr2dvi * mediaBox.size.width;
-    pageHt = scr2dvi * mediaBox.size.height;
+    gPageWd = kScr2Dvi * gMediaBox.size.width;
+    gPageHt = kScr2Dvi * gMediaBox.size.height;
 	
-	sPageStarted = true;
+	gPageStarted = true;
 }
 
 #define MAX_BUFFERED_GLYPHS	1024
@@ -340,16 +260,16 @@ void
 flushGlyphs()
 {
 	if (gGlyphCount > 0) {
-		CGContextSetTextPosition(graphicsContext, gStartLoc.x, gStartLoc.y);
+		CGContextSetTextPosition(gCtx, gStartLoc.x, gStartLoc.y);
 		gAdvances[gGlyphCount].width = 0;
 		gAdvances[gGlyphCount].height = 0;
-		if (textColor.override) {
-			CGContextSaveGState(graphicsContext);
-			CGContextSetFillColor(graphicsContext, &textColor.color.red);
+		if (gTextColor.override) {
+			CGContextSaveGState(gCtx);
+			CGContextSetFillColor(gCtx, &gTextColor.color.red);
 		}
-		CGContextShowGlyphsWithAdvances(graphicsContext, gGlyphs, gAdvances, gGlyphCount);
-		if (textColor.override)
-			CGContextRestoreGState(graphicsContext);
+		CGContextShowGlyphsWithAdvances(gCtx, gGlyphs, gAdvances, gGlyphCount);
+		if (gTextColor.override)
+			CGContextRestoreGState(gCtx);
 		gGlyphCount = 0;
 	}
 }
@@ -357,11 +277,11 @@ flushGlyphs()
 void
 bufferGlyph(CGGlyph g)
 {
-	ensure_page_started();
+	ensurePageStarted();
 
 	CGPoint	curLoc;
-	curLoc.x = dvi2scr * dvi.h;
-	curLoc.y = dvi2scr * (pageHt - dvi.v);
+	curLoc.x = kDvi2Scr * dvi.h;
+	curLoc.y = kDvi2Scr * (gPageHt - dvi.v);
 	if (gGlyphCount == 0)
 		gStartLoc = curLoc;
 	else {
@@ -375,23 +295,23 @@ bufferGlyph(CGGlyph g)
 }
 
 void
-setchar(UInt32 c, bool adv)
+setChar(UInt32 c, bool adv)
 {
 	OSStatus	status;
 
-	ensure_page_started();
+	ensurePageStarted();
 
     if (f != cur_f) {
 		flushGlyphs();
-        CGContextSetFont(graphicsContext, tex_fonts[f].cgFont);
-        CGContextSetFontSize(graphicsContext, Fix2X(tex_fonts[f].size) * mag_scale);
+        CGContextSetFont(gCtx, gTeXFonts[f].cgFont);
+        CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[f].size) * gMagScale);
         cur_f = f;
 	}
 
     CGGlyph	g;
-	if (tex_fonts[f].charMap != NULL) {
-		if (c < tex_fonts[f].charMap->size())
-			g = (*tex_fonts[f].charMap)[c];
+	if (gTeXFonts[f].charMap != NULL) {
+		if (c < gTeXFonts[f].charMap->size())
+			g = (*gTeXFonts[f].charMap)[c];
 		else
 			g = c;
 	}
@@ -401,68 +321,68 @@ setchar(UInt32 c, bool adv)
 	    
 	bufferGlyph(g);
 
-	if (tracking_boxes) {
-		if (tex_fonts[f].hasMetrics) {
+	if (gTrackingBoxes) {
+		if (gTeXFonts[f].hasMetrics) {
 			box	b = {
 				dvi.h,
-				dvi.v + tex_fonts[f].depths[c],
-				dvi.h + tex_fonts[f].widths[c],
-				dvi.v - tex_fonts[f].heights[c] };
-			merge_box(b);
+				dvi.v + gTeXFonts[f].depths[c],
+				dvi.h + gTeXFonts[f].widths[c],
+				dvi.v - gTeXFonts[f].heights[c] };
+			mergeBox(b);
 		}
 	}
 
-	if (adv && tex_fonts[f].hasMetrics)
-		dvi.h += tex_fonts[f].widths[c];
+	if (adv && gTeXFonts[f].hasMetrics)
+		dvi.h += gTeXFonts[f].widths[c];
 }
 
 static void
-do_set_glyph(UInt16 g, Fixed a)
+doSetGlyph(UInt16 g, Fixed a)
 {
-	// NOTE that this is separate from the glyph-buffering done by setchar()
-	// as \XeTeXglyph deals with native fonts, while setchar() and bufferGlyph()
+	// NOTE that this is separate from the glyph-buffering done by setChar()
+	// as \XeTeXglyph deals with native fonts, while setChar() and bufferGlyph()
 	// are used to work with legacy TeX fonts
 	
 	if (f != cur_f) {
-		CGContextSetFont(graphicsContext, native_fonts[f].cgFont);
-		CGContextSetFontSize(graphicsContext, Fix2X(native_fonts[f].size) * mag_scale);
+		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
+		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
 		cur_f = f;
 	}
 	
 	bool	resetColor = false;
-    if (textColor.override) {
-    	CGContextSaveGState(graphicsContext);
-        CGContextSetFillColor(graphicsContext, &textColor.color.red);
+    if (gTextColor.override) {
+    	CGContextSaveGState(gCtx);
+        CGContextSetFillColor(gCtx, &gTextColor.color.red);
 		resetColor = true;
 	}
-	else if (native_fonts[f].isColored) {
-    	CGContextSaveGState(graphicsContext);
-        CGContextSetFillColor(graphicsContext, &native_fonts[f].color.red);
+	else if (sNativeFonts[f].isColored) {
+    	CGContextSaveGState(gCtx);
+        CGContextSetFillColor(gCtx, &sNativeFonts[f].color.red);
        	resetColor = true;
 	}
-    CGContextShowGlyphsAtPoint(graphicsContext, dvi2scr * dvi.h, dvi2scr * (pageHt - dvi.v), &g, 1);
+    CGContextShowGlyphsAtPoint(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v), &g, 1);
     if (resetColor)
-    	CGContextRestoreGState(graphicsContext);
+    	CGContextRestoreGState(gCtx);
 
-	if (tracking_boxes) {
+	if (gTrackingBoxes) {
 		box	b = {
 			dvi.h,
-			dvi.v + (native_fonts[f].size / 3),
+			dvi.v + (sNativeFonts[f].size / 3),
 			dvi.h + a,
-			dvi.v - (2 * native_fonts[f].size / 3) };
-		merge_box(b);
+			dvi.v - (2 * sNativeFonts[f].size / 3) };
+		mergeBox(b);
 	}
 
 	dvi.h += a;
 }
 
 void
-do_set_native(FILE* xdv)
+doSetNative(FILE* xdv)
 {
 	OSStatus	status = noErr;
-	Boolean	dir = read_unsigned(xdv, 1);
-	UInt32	wid = read_unsigned(xdv, 4);
-	UInt32	len = read_unsigned(xdv, 2);
+	Boolean	dir = readUnsigned(xdv, 1);
+	UInt32	wid = readUnsigned(xdv, 4);
+	UInt32	len = readUnsigned(xdv, 2);
     
 	static UniChar*	text = 0;
     static UniCharCount	textBufLen = 0;
@@ -475,88 +395,88 @@ do_set_native(FILE* xdv)
 
 	UInt32	i;
 	for (i = 0; i < len; ++i)
-		text[i] = read_unsigned(xdv, 2);
+		text[i] = readUnsigned(xdv, 2);
 
-	if (native_fonts[f].atsuStyle != 0) {
-		status = ATSUClearLayoutCache(layout, 0);
-		status = ATSUSetTextPointerLocation(layout, &text[0], 0, len, len);
+	if (sNativeFonts[f].atsuStyle != 0) {
+		status = ATSUClearLayoutCache(sLayout, 0);
+		status = ATSUSetTextPointerLocation(sLayout, &text[0], 0, len, len);
 	
 		ATSUAttributeTag		tag[3] = { kATSULineWidthTag, kATSULineJustificationFactorTag, kATSULineDirectionTag };
 		ByteCount				valueSize[3] = { sizeof(Fixed), sizeof(Fract), sizeof(Boolean) };
 		ATSUAttributeValuePtr	value[3];
-		Fixed	scaledWid = X2Fix(dvi2scr * wid);
+		Fixed	scaledWid = X2Fix(kDvi2Scr * wid);
 		value[0] = &scaledWid;
 		Fract	just = len > 2 ? fract1 : 0;
 		value[1] = &just;
 		value[2] = &dir;
-		status = ATSUSetLayoutControls(layout, 3, &tag[0], &valueSize[0], &value[0]);
+		status = ATSUSetLayoutControls(sLayout, 3, &tag[0], &valueSize[0], &value[0]);
 	
 		ATSUStyle	tmpStyle;
-		if (textColor.override) {
+		if (gTextColor.override) {
 			ATSUAttributeTag		tag = kATSURGBAlphaColorTag;
 			ByteCount				valueSize = sizeof(ATSURGBAlphaColor);
-			ATSUAttributeValuePtr	valuePtr = &textColor.color;
-			status = ATSUCreateAndCopyStyle(native_fonts[f].atsuStyle, &tmpStyle);
+			ATSUAttributeValuePtr	valuePtr = &gTextColor.color;
+			status = ATSUCreateAndCopyStyle(sNativeFonts[f].atsuStyle, &tmpStyle);
 			status = ATSUSetAttributes(tmpStyle, 1, &tag, &valueSize, &valuePtr);
-			status = ATSUSetRunStyle(layout, tmpStyle, kATSUFromTextBeginning, kATSUToTextEnd);
+			status = ATSUSetRunStyle(sLayout, tmpStyle, kATSUFromTextBeginning, kATSUToTextEnd);
 			cur_f = kUndefinedFont;
 		}
 		else if (f != cur_f) {
-			status = ATSUSetRunStyle(layout, native_fonts[f].atsuStyle, kATSUFromTextBeginning, kATSUToTextEnd);
+			status = ATSUSetRunStyle(sLayout, sNativeFonts[f].atsuStyle, kATSUFromTextBeginning, kATSUToTextEnd);
 			cur_f = f;
 		}
 	
-		CGContextTranslateCTM(graphicsContext, dvi2scr * dvi.h, dvi2scr * (pageHt - dvi.v));
-		status = ATSUDrawText(layout, 0, len, 0, 0);
-		CGContextTranslateCTM(graphicsContext, -dvi2scr * dvi.h, -dvi2scr * (pageHt - dvi.v));
+		CGContextTranslateCTM(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v));
+		status = ATSUDrawText(sLayout, 0, len, 0, 0);
+		CGContextTranslateCTM(gCtx, -kDvi2Scr * dvi.h, -kDvi2Scr * (gPageHt - dvi.v));
 	
-		if (textColor.override)
+		if (gTextColor.override)
 			status = ATSUDisposeStyle(tmpStyle);
 
-		if (tracking_boxes) {
+		if (gTrackingBoxes) {
 			Rect	rect;
-			status = ATSUMeasureTextImage(layout, 0, len, 0, 0, &rect);
+			status = ATSUMeasureTextImage(sLayout, 0, len, 0, 0, &rect);
 			box	b = {
 				dvi.h,
-				dvi.v + scr2dvi * rect.bottom,
+				dvi.v + kScr2Dvi * rect.bottom,
 				dvi.h + wid,
-				dvi.v + scr2dvi * rect.top };
-			merge_box(b);
+				dvi.v + kScr2Dvi * rect.top };
+			mergeBox(b);
 		}
 	}
 
 	dvi.h += wid;
 }
 
-#define native_glyph_data_size	(sizeof(CGGlyph) + sizeof(CGSize))
+#define NATIVE_GLYPH_DATA_SIZE	(sizeof(CGGlyph) + sizeof(CGSize))
 static void
-do_glyph_array(FILE* xdv)
+doGlyphArray(FILE* xdv)
 {
 	static char*	glyphInfoBuf = 0;
 	static int		maxGlyphs = 0;
 
-	Fixed	wid = read_unsigned(xdv, 4);
-	int	glyphCount = read_unsigned(xdv, 2);
+	Fixed	wid = readUnsigned(xdv, 4);
+	int	glyphCount = readUnsigned(xdv, 2);
 	
 	if (glyphCount >= maxGlyphs) {
 		maxGlyphs = glyphCount + 100;
 		if (glyphInfoBuf != 0)
 			delete[] glyphInfoBuf;
-		glyphInfoBuf = new char[maxGlyphs * native_glyph_data_size];
+		glyphInfoBuf = new char[maxGlyphs * NATIVE_GLYPH_DATA_SIZE];
 	}
 	
-	fread(glyphInfoBuf, native_glyph_data_size, glyphCount, xdv);
+	fread(glyphInfoBuf, NATIVE_GLYPH_DATA_SIZE, glyphCount, xdv);
 	CGPoint*	locations = (CGPoint*)glyphInfoBuf;
 	CGGlyph*	glyphs = (CGGlyph*)(locations + glyphCount);
 	
 	if (f != cur_f) {
-		CGContextSetFont(graphicsContext, native_fonts[f].cgFont);
-		CGContextSetFontSize(graphicsContext, Fix2X(native_fonts[f].size) * mag_scale);
+		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
+		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
 		cur_f = f;
 	}
 
-	CGContextSetTextPosition(graphicsContext, dvi2scr * dvi.h + locations[0].x,
-												dvi2scr * (pageHt - dvi.v) - locations[0].y);
+	CGContextSetTextPosition(gCtx, kDvi2Scr * dvi.h + locations[0].x,
+												kDvi2Scr * (gPageHt - dvi.v) - locations[0].y);
 
 	CGSize*		advances = (CGSize*)locations;
 	for (int i = 0; i < glyphCount - 1; ++i) {
@@ -567,29 +487,29 @@ do_glyph_array(FILE* xdv)
 	advances[glyphCount-1].height = 0;
 
 	bool	resetColor = false;
-    if (textColor.override) {
-    	CGContextSaveGState(graphicsContext);
-        CGContextSetFillColor(graphicsContext, &textColor.color.red);
+    if (gTextColor.override) {
+    	CGContextSaveGState(gCtx);
+        CGContextSetFillColor(gCtx, &gTextColor.color.red);
 		resetColor = true;
 	}
-	else if (native_fonts[f].isColored) {
-    	CGContextSaveGState(graphicsContext);
-        CGContextSetFillColor(graphicsContext, &native_fonts[f].color.red);
+	else if (sNativeFonts[f].isColored) {
+    	CGContextSaveGState(gCtx);
+        CGContextSetFillColor(gCtx, &sNativeFonts[f].color.red);
 		resetColor = true;
 	}
 
-	CGContextShowGlyphsWithAdvances(graphicsContext, glyphs, advances, glyphCount);
+	CGContextShowGlyphsWithAdvances(gCtx, glyphs, advances, glyphCount);
 
 	if (resetColor)
-		CGContextRestoreGState(graphicsContext);
+		CGContextRestoreGState(gCtx);
 
-	if (tracking_boxes) {
+	if (gTrackingBoxes) {
 		box	b = {
 			dvi.h,
-			dvi.v + (native_fonts[f].size / 3),
+			dvi.v + (sNativeFonts[f].size / 3),
 			dvi.h + wid,
-			dvi.v - (2 * native_fonts[f].size / 3) };
-		merge_box(b);
+			dvi.v - (2 * sNativeFonts[f].size / 3) };
+		mergeBox(b);
 	}
 
 	dvi.h += wid;
@@ -704,29 +624,32 @@ void getBitmapData(GraphicsImportComponent gi, BitmapInfo *bi)
 }
 /* end of code from "QTtoCG" */
 
-struct imageRec { CGImageRef ref; CGRect bounds; };
-std::map<std::string,imageRec>			cgImages;
-std::map<std::string,CGPDFDocumentRef>	pdfDocs;
+struct imageRec {
+	CGImageRef	ref;
+	CGRect		bounds;
+};
+std::map<std::string,imageRec>			sCGImages;
+std::map<std::string,CGPDFDocumentRef>	sPdfDocs;
 
-void
-do_pic_file(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
+static void
+doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 {
     CGAffineTransform	t;
-    t.a = Fix2X(read_signed(xdv, 4));
-    t.b = Fix2X(read_signed(xdv, 4));
-    t.c = Fix2X(read_signed(xdv, 4));
-    t.d = Fix2X(read_signed(xdv, 4));
-    t.tx = Fix2X(read_signed(xdv, 4));
-    t.ty = Fix2X(read_signed(xdv, 4));
-	if (mag != 1000)
-		t = CGAffineTransformConcat(t, CGAffineTransformMakeScale(mag_scale, mag_scale));
+    t.a = Fix2X(readSigned(xdv, 4));
+    t.b = Fix2X(readSigned(xdv, 4));
+    t.c = Fix2X(readSigned(xdv, 4));
+    t.d = Fix2X(readSigned(xdv, 4));
+    t.tx = Fix2X(readSigned(xdv, 4));
+    t.ty = Fix2X(readSigned(xdv, 4));
+	if (sMag != 1000)
+		t = CGAffineTransformConcat(t, CGAffineTransformMakeScale(gMagScale, gMagScale));
 
-    int		p = read_signed(xdv, 2);
-    int		l = read_unsigned(xdv, 2);
+    int		p = readSigned(xdv, 2);
+    int		l = readUnsigned(xdv, 2);
     Handle	alias = NewHandle(l);
     if (alias != 0) {
         for (int i = 0; i < l; ++i)
-            (*alias)[i] = read_unsigned(xdv, 1);
+            (*alias)[i] = readUnsigned(xdv, 1);
         FSSpec	spec;
         Boolean	changed;
         OSErr	result = ResolveAlias(0, (AliasHandle)alias, &spec, &changed);
@@ -740,8 +663,8 @@ do_pic_file(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 			CGImageRef			image = NULL;
 			CGRect				bounds;
             if (isPDF) {
-                std::map<std::string,CGPDFDocumentRef>::const_iterator	i = pdfDocs.find(specString);
-				if (i != pdfDocs.end())
+                std::map<std::string,CGPDFDocumentRef>::const_iterator	i = sPdfDocs.find(specString);
+				if (i != sPdfDocs.end())
 					document = i->second;
 				else {
 					FSRef	fsRef;
@@ -749,7 +672,7 @@ do_pic_file(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 					CFURLRef	url = CFURLCreateFromFSRef(kCFAllocatorDefault, &fsRef);
 					document = CGPDFDocumentCreateWithURL(url);
 	                CFRelease(url);
-					pdfDocs[specString] = document;
+					sPdfDocs[specString] = document;
 				}
                 if (document != NULL) {
                     int	nPages = CGPDFDocumentGetNumberOfPages(document);
@@ -762,8 +685,8 @@ do_pic_file(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 
             // otherwise use GraphicsImport
             else {
-                std::map<std::string,imageRec>::const_iterator	i = cgImages.find(specString);
-            	if (i != cgImages.end()) {
+                std::map<std::string,imageRec>::const_iterator	i = sCGImages.find(specString);
+            	if (i != sCGImages.end()) {
             		image = i->second.ref;
             		bounds = i->second.bounds;
 				}
@@ -792,86 +715,26 @@ do_pic_file(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 						result = CloseComponent(gi);
              		}
 					imageRec	ir = { image, bounds };
-               		cgImages[specString] = ir;
+               		sCGImages[specString] = ir;
                	}
             }
 
-			CGContextSaveGState(graphicsContext);
+			CGContextSaveGState(gCtx);
 
-			CGContextTranslateCTM(graphicsContext, dvi2scr * dvi.h, dvi2scr * (pageHt - dvi.v));
-			CGContextConcatCTM(graphicsContext, t);
+			CGContextTranslateCTM(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v));
+			CGContextConcatCTM(gCtx, t);
 
 			if (document != NULL) {
                 bounds.origin.x = bounds.origin.y = 0.0;
-				CGContextDrawPDFDocument(graphicsContext, bounds, document, p);
+				CGContextDrawPDFDocument(gCtx, bounds, document, p);
 			}
 			else if (image != NULL)
-				CGContextDrawImage(graphicsContext, bounds, image);
+				CGContextDrawImage(gCtx, bounds, image);
 
-			CGContextRestoreGState(graphicsContext);
+			CGContextRestoreGState(gCtx);
 
         }
     }
-}
-
-static int
-readHexDigit(const char*& cp)
-{
-    if (*cp >= '0' && *cp <= '9')
-        return *cp++ - '0';
-    if (*cp >= 'A' && *cp <= 'F')
-        return *cp++ - 'A' + 10;
-    if (*cp >= 'a' && *cp <= 'f')
-        return *cp++ - 'a' + 10;
-    return 0;
-}
-
-static void
-readColorValue(const char* s, ATSURGBAlphaColor& c)
-{
-    int	x;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.red = (double)x / 255.0;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.green = (double)x / 255.0;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.blue = (double)x / 255.0;
-    c.alpha = 1.0;
-}
-
-static void
-readColorValueWithAlpha(const char* s, ATSURGBAlphaColor& c)
-{
-    int	x;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.red = (double)x / 255.0;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.green = (double)x / 255.0;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.blue = (double)x / 255.0;
-    x = 0;
-    x = readHexDigit(s);
-    x <<= 4;
-    x += readHexDigit(s);
-    c.alpha = (double)x / 255.0;
 }
 
 /* declarations of KPATHSEARCH functions we use for finding TFMs and OTFs */
@@ -884,7 +747,7 @@ extern	unsigned kpathsea_debug;
 #include "xdv_kpse_formats.h"
 
 static void
-load_metrics(struct TEX_FONT& font, UInt8* name, Fixed d, Fixed s)
+loadMetrics(struct texFont& font, UInt8* name, Fixed d, Fixed s)
 {
 	UInt8*	pathname = kpse_find_file(name, xdv_kpse_tfm_format, true);
     if (pathname) {
@@ -963,7 +826,7 @@ load_metrics(struct TEX_FONT& font, UInt8* name, Fixed d, Fixed s)
 }
 
 typedef std::vector<std::string>	encoding;
-std::map<std::string,encoding>		encodings;
+std::map<std::string,encoding>		sEncodings;
 
 class fontMapRec {
 public:
@@ -996,7 +859,7 @@ clearFontMap()
 	psFontsMap.clear();
 }
 
-static void
+void
 doPdfMapLine(const char* line, char mode)
 {
 	if (*line == '%')
@@ -1085,7 +948,7 @@ doPdfMapLine(const char* line, char mode)
 
 static bool	sMapFileLoaded = false;
 
-static void
+void
 doPdfMapFile(const char* fileName)
 {
 	char	mode = 0;
@@ -1126,7 +989,7 @@ doPdfMapFile(const char* fileName)
 			}
 			loaded = true;
 			fclose(f);
-			if (verbose)
+			if (sVerbose)
 				fprintf(stderr, "\n{fontmap: %s} ", pathname);
 		}
 		free(pathname);
@@ -1142,8 +1005,8 @@ doPdfMapFile(const char* fileName)
 static const encoding*
 getEncoding(const std::string& name)
 {
-	std::map<std::string,encoding>::iterator	i = encodings.find(name);
-	if (i == encodings.end()) {
+	std::map<std::string,encoding>::iterator	i = sEncodings.find(name);
+	if (i == sEncodings.end()) {
 		encoding	enc;
 		UInt8*	pathname = kpse_find_file((UInt8*)(name.c_str()), xdv_kpse_tex_ps_header_format, true);
 		if (pathname != NULL) {
@@ -1170,14 +1033,14 @@ getEncoding(const std::string& name)
 					else if (inVector && c != EOF)
 						str.append(1, (char)c);
 				}
-				if (verbose)
+				if (sVerbose)
 					fprintf(stderr, "\n{encoding: %s} ", pathname);
 				fclose(f);
 			}
 			free(pathname);
 		}
-		encodings[name] = enc;
-		return &(encodings[name]);
+		sEncodings[name] = enc;
+		return &(sEncodings[name]);
 	}
 
 	return &(i->second);
@@ -1496,17 +1359,17 @@ getFontRec(const std::string& name)
 }
 
 static void
-do_font_def(FILE* xdv, int k)
+doFontDef(FILE* xdv, int k)
 {
     OSStatus	status;
 
-    UInt32	f = read_unsigned(xdv, k);	// font number we're defining
-    UInt32	c = read_unsigned(xdv, 4);	// TFM checksum
-    Fixed	s = read_unsigned(xdv, 4);	// at size
-    Fixed	d = read_unsigned(xdv, 4);	// design size
+    UInt32	f = readUnsigned(xdv, k);	// font number we're defining
+    UInt32	c = readUnsigned(xdv, 4);	// TFM checksum
+    Fixed	s = readUnsigned(xdv, 4);	// at size
+    Fixed	d = readUnsigned(xdv, 4);	// design size
     
-    UInt16	alen = read_unsigned(xdv, 1);	// area length
-    UInt16	nlen = read_unsigned(xdv, 1);	// name length
+    UInt16	alen = readUnsigned(xdv, 1);	// area length
+    UInt16	nlen = readUnsigned(xdv, 1);	// name length
 
     UInt8*	name = new UInt8[alen + nlen + 2];
     if (alen > 0) {
@@ -1519,8 +1382,8 @@ do_font_def(FILE* xdv, int k)
         fread(name, 1, nlen, xdv);
     name[nlen] = 0;
 
-    TEX_FONT	font;
-    load_metrics(font, name, d, s);
+    texFont	font;
+    loadMetrics(font, name, d, s);
 
 	if (alen > 0)
 		name = name + alen + 1;	// point past the area to get the name by itself for the remaining operations
@@ -1572,7 +1435,7 @@ do_font_def(FILE* xdv, int k)
 	}
 
     font.size = s;
-    tex_fonts.insert(std::pair<const UInt32,TEX_FONT>(f, font));
+    gTeXFonts.insert(std::pair<const UInt32,texFont>(f, font));
 }
 
 inline bool operator==(const ATSURGBAlphaColor& a, const ATSURGBAlphaColor& b)
@@ -1584,20 +1447,20 @@ inline bool operator==(const ATSURGBAlphaColor& a, const ATSURGBAlphaColor& b)
 }
 
 static void
-do_native_font_def(FILE* xdv)
+doNativeFontDef(FILE* xdv)
 {
 	static ATSURGBAlphaColor	sRed = { 1.0, 0.0, 0.0, 1.0 };
 
-    UInt32	f = read_unsigned(xdv, 4);	// font ID
-    Fixed	s = read_unsigned(xdv, 4);	// size
-    if (mag != 1000)
-    	s = X2Fix(mag_scale * Fix2X(s));
-	UInt16	technologyFlag = read_unsigned(xdv, 2);
-	if (technologyFlag == aat_font_flag) {
+    UInt32	f = readUnsigned(xdv, 4);	// font ID
+    Fixed	s = readUnsigned(xdv, 4);	// size
+    if (sMag != 1000)
+    	s = X2Fix(gMagScale * Fix2X(s));
+	UInt16	technologyFlag = readUnsigned(xdv, 2);
+	if (technologyFlag == AAT_FONT_FLAG) {
 		// AAT font
 		ATSUStyle	style;
 		OSStatus	status = ATSUCreateStyle(&style);
-		int		n = read_unsigned(xdv, 2);	// number of features
+		int		n = readUnsigned(xdv, 2);	// number of features
 		if (n > 0) {
 			UInt16*	types = new UInt16[n];
 			UInt16*	selectors = new UInt16[n];
@@ -1607,7 +1470,7 @@ do_native_font_def(FILE* xdv)
 			delete[] selectors;
 			delete[] types;
 		}
-		n = read_unsigned(xdv, 2); // number of variations
+		n = readUnsigned(xdv, 2); // number of variations
 		if (n > 0) {
 			UInt32*	axes = new UInt32[n];
 			SInt32*	values = new SInt32[n];
@@ -1620,7 +1483,7 @@ do_native_font_def(FILE* xdv)
 		ATSURGBAlphaColor	rgba;
 		fread(&rgba, 1, sizeof(ATSURGBAlphaColor), xdv);
 	
-		n = read_unsigned(xdv, 2);	// name length
+		n = readUnsigned(xdv, 2);	// name length
 		char*	name = new char[n+1];
 		fread(name, 1, n, xdv);
 		name[n] = 0;
@@ -1646,20 +1509,20 @@ do_native_font_def(FILE* xdv)
 		}
 		status = ATSUSetAttributes(style, numTags, &tag[0], &valueSize[0], &value[0]);
 	
-		NATIVE_FONT	fontRec;
+		nativeFont	fontRec;
 		fontRec.atsuStyle = style;
 		fontRec.cgFont = getCGFontForATSFont(FMGetATSFontRefFromFont(fontID));
 		fontRec.size = s;
 		fontRec.color = rgba;
-		fontRec.isColored = !(rgba == constBlackColor);
-		native_fonts.insert(std::pair<const UInt32,NATIVE_FONT>(f, fontRec));
+		fontRec.isColored = !(rgba == kBlackColor);
+		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
 	}
 	else {
 		// OT font
 		ATSURGBAlphaColor	rgba;
 		fread(&rgba, 1, sizeof(ATSURGBAlphaColor), xdv);
 
-		int	n = read_unsigned(xdv, 2);	// name length
+		int	n = readUnsigned(xdv, 2);	// name length
 		char*	name = new char[n+1];
 		fread(name, 1, n, xdv);
 		name[n] = 0;
@@ -1671,559 +1534,41 @@ do_native_font_def(FILE* xdv)
 		if (fontID == kATSUInvalidFontID)
 			rgba = sRed;
 		
-		NATIVE_FONT	fontRec;
+		nativeFont	fontRec;
 		fontRec.cgFont = getCGFontForATSFont(FMGetATSFontRefFromFont(fontID));
 		fontRec.size = s;
 		fontRec.color = rgba;
-		fontRec.isColored = !(rgba == constBlackColor);
-		native_fonts.insert(std::pair<const UInt32,NATIVE_FONT>(f, fontRec));
-	}
-}
-
-static float
-readFloat(const char*& cp)
-{
-	float	result = 0.0;
-	bool	negate = false;
-	if (*cp == '-') {
-		negate = true;
-		++cp;
-	}
-	while (*cp >= '0' && *cp <= '9')
-		result = result * 10 + *cp++ - '0';
-	if (*cp == '.') {
-		++cp;
-		float	dec = 1.0;
-		while (*cp >= '0' && *cp <= '9')
-			result = result + (dec /= 10.0) * (*cp++ - '0');
-	}
-	if (negate)
-		result = -result;
-	return result;
-}
-
-static void	doPDFspecial(const char* special);
-
-static void
-flush_annot_box()
-{
-	char	buf[200];
-	sprintf(buf, "ABOX [%f %f %f %f]",
-					dvi2scr * annot_box.llx + 72.0,
-					dvi2scr * (pageHt - annot_box.lly) - 72.0,
-					dvi2scr * annot_box.urx + 72.0,
-					dvi2scr * (pageHt - annot_box.ury) - 72.0);
-	doPDFspecial(buf);
-	init_annot_box();
-}
-
-static void
-doPDFspecial(const char* special)
-{
-	ensure_page_started();
-
-	if (pdfmarks == NULL) {
-		static bool firstTime = true;
-		if (firstTime) {
-			firstTime = false;
-			CFURLRef	markURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, saveURL, CFSTR("marks"));
-			Boolean	gotPath = CFURLGetFileSystemRepresentation(markURL, true, (UInt8*)pdfmarkPath, _POSIX_PATH_MAX);
-			if (gotPath) {
-				pdfmarks = fopen(pdfmarkPath, "w");
-				if (pdfmarks == NULL)
-					fprintf(stderr, "*** unable to write to PDFmark file \"%s\"\n", pdfmarkPath);
-			}
-			else
-				fprintf(stderr, "*** unable to get pathname for PDFmark file\n");
-		}
-	}
-	if (pdfmarks != NULL) {
-		if (strncmp(special, "bann", 4) == 0) {
-			tag_level = dvi_level;
-			init_annot_box();
-			tracking_boxes = true;
-		}
-		else if (strncmp(special, "eann", 4) == 0) {
-			flush_annot_box();
-			tracking_boxes = false;
-			tag_level = -1;
-		}
-		fprintf(pdfmarks, "%d\t%f\t%f\t%s\n",
-			page_index, dvi2scr * dvi.h + 72.0, dvi2scr * (pageHt - dvi.v) - 72.0, special);
+		fontRec.isColored = !(rgba == kBlackColor);
+		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
 	}
 }
 
 static void
-pushTextColor()
-{
-	textColorStack.push_back(textColor);
-}
-
-static void
-popTextColor()
-{
-	if (textColorStack.size() == 0) {
-		fprintf(stderr, "\n*** text color stack underflow\n");
-	}
-	else {
-		textColor = textColorStack.back();
-		textColorStack.pop_back();
-	}
-}
-
-static void
-pushRuleColor()
-{
-	ruleColorStack.push_back(ruleColor);
-}
-
-static void
-popRuleColor()
-{
-	if (ruleColorStack.size() == 0) {
-		fprintf(stderr, "\n*** rule color stack underflow\n");
-	}
-	else {
-		ruleColor = ruleColorStack.back();
-		ruleColorStack.pop_back();
-	}
-}
-
-static void
-setRuleColor(const ATSURGBAlphaColor& color)
-{
-	ruleColor.color = color;
-	ruleColor.override = true;
-}
-
-static void
-resetRuleColor()
-{
-	ruleColor.color = constBlackColor;
-	ruleColor.override = false;
-}
-
-static void
-setTextColor(const ATSURGBAlphaColor& color)
-{
-	textColor.color = color;
-	textColor.override = true;
-}
-
-static void
-resetTextColor()
-{
-	textColor.color = constBlackColor;
-	textColor.override = false;
-}
-
-static bool
-readColorValues(const char*& s, int n, float* v)
-{
-	while (n-- > 0) {
-		while (*s == ' ')
-			++s;
-		if ( !( ( (*s >= '0') && (*s <= '9') )		// unless we have a digit
-				|| (*s == '.') || (*s == ',') ) )	// or decimal sign, break
-			return false;
-		float val = 0.0;
-		while ((*s >= '0') && (*s <= '9')) {
-			val = val * 10.0 + *s - '0';
-			++s;
-		}
-		if ((*s == '.') || (*s == ',')) {
-			++s;
-			float	dec = 10.0;
-			while ((*s >= '0') && (*s <= '9')) {
-				val += (*s - '0') / dec;
-				dec *= 10;
-				++s;
-			}
-		}
-		*v++ = val;
-	}
-	return true;
-}
-
-struct color_by_name {
-  char *name;
-  float cmyk[4];
-} colors_by_name[] = {
-  {"GreenYellow", {0.15, 0, 0.69, 0}},
-  {"Yellow", {0, 0, 1, 0}},
-  {"Goldenrod", {0, 0.10, 0.84, 0}},
-  {"Dandelion", {0, 0.29, 0.84, 0}},
-  {"Apricot", {0, 0.32, 0.52, 0}},
-  {"Peach", {0, 0.50, 0.70, 0}},
-  {"Melon", {0, 0.46, 0.50, 0}},
-  {"YellowOrange", {0, 0.42, 1, 0}},
-  {"Orange", {0, 0.61, 0.87, 0}},
-  {"BurntOrange", {0, 0.51, 1, 0}},
-  {"Bittersweet", {0, 0.75, 1, 0.24}},
-  {"RedOrange", {0, 0.77, 0.87, 0}},
-  {"Mahogany", {0, 0.85, 0.87, 0.35}},
-  {"Maroon", {0, 0.87, 0.68, 0.32}},
-  {"BrickRed", {0, 0.89, 0.94, 0.28}},
-  {"Red", {0, 1, 1, 0}},
-  {"OrangeRed", {0, 1, 0.50, 0}},
-  {"RubineRed", {0, 1, 0.13, 0}},
-  {"WildStrawberry", {0, 0.96, 0.39, 0}},
-  {"Salmon", {0, 0.53, 0.38, 0}},
-  {"CarnationPink", {0, 0.63, 0, 0}},
-  {"Magenta", {0, 1, 0, 0}},
-  {"VioletRed", {0, 0.81, 0, 0}},
-  {"Rhodamine", {0, 0.82, 0, 0}},
-  {"Mulberry", {0.34, 0.90, 0, 0.02}},
-  {"RedViolet", {0.07, 0.90, 0, 0.34}},
-  {"Fuchsia", {0.47, 0.91, 0, 0.08}},
-  {"Lavender", {0, 0.48, 0, 0}},
-  {"Thistle", {0.12, 0.59, 0, 0}},
-  {"Orchid", {0.32, 0.64, 0, 0}},
-  {"DarkOrchid", {0.40, 0.80, 0.20, 0}},
-  {"Purple", {0.45, 0.86, 0, 0}},
-  {"Plum", {0.50, 1, 0, 0}},
-  {"Violet", {0.79, 0.88, 0, 0}},
-  {"RoyalPurple", {0.75, 0.90, 0, 0}},
-  {"BlueViolet", {0.86, 0.91, 0, 0.04}},
-  {"Periwinkle", {0.57, 0.55, 0, 0}},
-  {"CadetBlue", {0.62, 0.57, 0.23, 0}},
-  {"CornflowerBlue", {0.65, 0.13, 0, 0}},
-  {"MidnightBlue", {0.98, 0.13, 0, 0.43}},
-  {"NavyBlue", {0.94, 0.54, 0, 0}},
-  {"RoyalBlue", {1, 0.50, 0, 0}},
-  {"Blue", {1, 1, 0, 0}},
-  {"Cerulean", {0.94, 0.11, 0, 0}},
-  {"Cyan", {1, 0, 0, 0}},
-  {"ProcessBlue", {0.96, 0, 0, 0}},
-  {"SkyBlue", {0.62, 0, 0.12, 0}},
-  {"Turquoise", {0.85, 0, 0.20, 0}},
-  {"TealBlue", {0.86, 0, 0.34, 0.02}},
-  {"Aquamarine", {0.82, 0, 0.30, 0}},
-  {"BlueGreen", {0.85, 0, 0.33, 0}},
-  {"Emerald", {1, 0, 0.50, 0}},
-  {"JungleGreen", {0.99, 0, 0.52, 0}},
-  {"SeaGreen", {0.69, 0, 0.50, 0}},
-  {"Green", {1, 0, 1, 0}},
-  {"ForestGreen", {0.91, 0, 0.88, 0.12}},
-  {"PineGreen", {0.92, 0, 0.59, 0.25}},
-  {"LimeGreen", {0.50, 0, 1, 0}},
-  {"YellowGreen", {0.44, 0, 0.74, 0}},
-  {"SpringGreen", {0.26, 0, 0.76, 0}},
-  {"OliveGreen", {0.64, 0, 0.95, 0.40}},
-  {"RawSienna", {0, 0.72, 1, 0.45}},
-  {"Sepia", {0, 0.83, 1, 0.70}},
-  {"Brown", {0, 0.81, 1, 0.60}},
-  {"Tan", {0.14, 0.42, 0.56, 0}},
-  {"Gray", {0, 0, 0, 0.50}},
-  {"Black", {0, 0, 0, 1}},
-  {"White", {0, 0, 0, 0}}
-};
-
-inline bool
-kwmatch(const char*& s, const char* k)
-{
-	while (*s == ' ')
-		++s;
-	int kwlen = strlen(k);
-	if ( (s[kwlen] == 0) || (s[kwlen] == ' ') ) {
-		if (strncmp(s, k, kwlen) == 0) {
-			s += kwlen;
-			return true;
-		}
-	}
-	return false;
-}
-
-static float
-readAlphaIfPresent(const char*& s)
-{
-	if (kwmatch(s, "alpha")) {
-		float	alpha;
-		if (readColorValues(s, 1, &alpha))
-			return alpha;
-	}
-	return 1.0;
-}
-
-static void
-doColorSpecial(const char* s)
-{
-	while (*s != 0) {
-		if (kwmatch(s, "push")) {
-			pushRuleColor();
-			pushTextColor();
-			continue;
-		}
-		
-		if (kwmatch(s, "pop")) {
-			popRuleColor();
-			popTextColor();
-			continue;
-		}
-		
-		if (kwmatch(s, "rgb")) {
-			float	rgb[3] = { 0.0, 0.0, 0.0 };
-			if (readColorValues(s, 3, rgb)) {
-				ATSURGBAlphaColor	c;
-				c.red = rgb[0];
-				c.green = rgb[1];
-				c.blue = rgb[2];
-				c.alpha = readAlphaIfPresent(s);
-				setRuleColor(c);
-				setTextColor(c);
-			}
-			break;
-		}
-		
-		if (kwmatch(s, "cmyk")) {
-			float	cmyk[4] = { 0.0, 0.0, 0.0, 1.0 };
-			if (readColorValues(s, 4, cmyk)) {
-				ATSURGBAlphaColor	c;
-
-#if 1
-				c.red = (1.0 - cmyk[0]) * (1.0 - cmyk[3]);	// cmyk->rgb conversion a la ghostscript
-				c.green = (1.0 - cmyk[1]) * (1.0 - cmyk[3]);
-				c.blue = (1.0 - cmyk[2]) * (1.0 - cmyk[3]);
-#endif
-
-#if 0
-	#define min(a,b)	((a) < (b) ? (a) : (b))
-				c.red = 1.0 - min(1.0, cmyk[0] + cmyk[3]);	// cmyk->rgb conversion a la adobe
-				c.green = 1.0 - min(1.0, cmyk[1] + cmyk[3]);
-				c.blue = 1.0 - min(1.0, cmyk[2] + cmyk[3]);
-#endif
-
-#if 0
-// formulae from http://www.easyrgb.com/math.php
-//CMYKÊÑ> CMY
-//Where CMYK and CMY values = 0 Ö 1
-// C = ( C * ( 1 - K ) + K )
-// M = ( M * ( 1 - K ) + K )
-// Y = ( Y * ( 1 - K ) + K )
-				cmyk[0] = (cmyk[0] * (1.0 - cmyk[3]) + cmyk[3]);
-				cmyk[1] = (cmyk[1] * (1.0 - cmyk[3]) + cmyk[3]);
-				cmyk[2] = (cmyk[2] * (1.0 - cmyk[3]) + cmyk[3]);
-//
-//CMY -> RGB
-//CMY values = 0 Ö 1
-//RGB values = 0 Ö 255
-// R = ( 1 - C ) * 255
-// G = ( 1 - M ) * 255
-// B = ( 1 - Y ) * 255
-				c.red   = (1.0 - cmyk[0]);
-				c.green = (1.0 - cmyk[1]);
-				c.blue  = (1.0 - cmyk[2]);
-#endif
-
-				c.alpha = readAlphaIfPresent(s);
-				setRuleColor(c);
-				setTextColor(c);
-			}
-			break;
-		}
-		
-		if (kwmatch(s, "hsb") || kwmatch(s, "hsv")) {
-			float	hsb[3] = { 0.0, 1.0, 0.0 };
-			if (readColorValues(s, 3, hsb)) {
-				CMColor	cm;
-				cm.hsv.hue = (UInt16)(hsb[0] * 65535);
-				cm.hsv.saturation = (UInt16)(hsb[1] * 65535);
-				cm.hsv.value = (UInt16)(hsb[2] * 65535);
-				CMConvertHSVToRGB(&cm, &cm, 1);
-				ATSURGBAlphaColor	c;
-				c.red = cm.rgb.red / 65535.0;
-				c.green = cm.rgb.green / 65535.0;
-				c.blue = cm.rgb.blue / 65535.0;
-				c.alpha = readAlphaIfPresent(s);
-				setRuleColor(c);
-				setTextColor(c);
-			}
-			break;
-		}
-		
-		if (kwmatch(s, "hls")) {
-			float	hls[3] = { 0.0, 1.0, 0.0 };
-			if (readColorValues(s, 3, hls)) {
-				CMColor	cm;
-				cm.hls.hue = (UInt16)(hls[0] * 65535);
-				cm.hls.lightness = (UInt16)(hls[1] * 65535);
-				cm.hls.saturation = (UInt16)(hls[2] * 65535);
-				CMConvertHLSToRGB(&cm, &cm, 1);
-				ATSURGBAlphaColor	c;
-				c.red = cm.rgb.red / 65535.0;
-				c.green = cm.rgb.green / 65535.0;
-				c.blue = cm.rgb.blue / 65535.0;
-				c.alpha = readAlphaIfPresent(s);
-				setRuleColor(c);
-				setTextColor(c);
-			}
-			break;
-		}
-		
-		if (kwmatch(s, "gray")) {
-			float	gray = 0.0;
-			if (readColorValues(s, 1, &gray)) {
-				ATSURGBAlphaColor	c;
-				c.red = gray;
-				c.green = gray;
-				c.blue = gray;
-				c.alpha = readAlphaIfPresent(s);
-				setRuleColor(c);
-				setTextColor(c);
-			}
-			break;
-		}
-		
-		const color_by_name*	nc = colors_by_name + sizeof(colors_by_name) / sizeof(color_by_name);
-		while (nc-- > colors_by_name) {
-			if (kwmatch(s, nc->name)) {
-				ATSURGBAlphaColor	c;
-				c.red = (1.0 - nc->cmyk[0]) * (1.0 - nc->cmyk[3]);
-				c.green = (1.0 - nc->cmyk[1]) * (1.0 - nc->cmyk[3]);
-				c.blue = (1.0 - nc->cmyk[2]) * (1.0 - nc->cmyk[3]);
-				c.alpha = readAlphaIfPresent(s);
-				setRuleColor(c);
-				setTextColor(c);
-				break;
-			}
-		}
-		break;		
-	}
-}
-
-static double_t
-readDimen(const char* arg)	// currently reads unsigned dimens only; no negative paper sizes!
-{
-	double_t	rval = 0.0;
-	while ((*arg >= '0') && (*arg <= '9')) {
-		rval *= 10.0;
-		rval += *arg - '0';
-		++arg;
-	}
-	if (*arg == '.') {
-		++arg;
-		double_t	frac = 10.0;
-		while ((*arg >= '0') && (*arg <= '9')) {
-			rval += (*arg - '0') / frac;
-			frac *= 10.0;
-			++arg;
-		}
-	}
-	const dimenrec*	dim = &dimenratios[0];
-	while (dim->name != 0) {
-		if (strcasecmp(arg, dim->name) == 0) {
-			rval *= dim->factor;
-			break;
-		}
-		++dim;
-	}
-	return rval;
-}
-
-static bool
-getPaperSize(const char* arg, double_t& paperWd, double_t& paperHt)
-{
-	paperHt = paperWd = 0.0;
-
-	char*   s1 = strdup(arg);
-	char*   s2 = strchr(s1, ':');
-	if (s2 != NULL)
-		*s2++ = 0;
-
-	const papersizerec*	ps = &papersizes[0];
-	while (ps->name != 0) {
-		if (strcasecmp(s1, ps->name) == 0) {
-			paperWd = ps->width;
-			paperHt = ps->height;
-			break;
-		}
-		++ps;
-	}
-	if (ps->name == 0) {
-		char*   s3 = strchr(s1, ',');
-		if (s3 != NULL) {
-			*s3++ = 0;
-			paperWd = readDimen(s1);
-			paperHt = readDimen(s3);
-		}
-	}
-	if (s2 != NULL && strcasecmp(s2, "landscape") == 0) {
-		double_t  t = paperHt;
-		paperHt = paperWd;
-		paperWd = t;
-	}
-	
-	free(s1);
-	
-	return (paperHt > 0.0) && (paperWd > 0.0);
-}
-
-static bool
-prefix_eq(const char* str, const char* prefix, const char*& remainder)
-{
-	int	len = strlen(prefix);
-	if (strncmp(str, prefix, len) == 0) {
-		remainder = str + len;
-		return true;
-	}
-	return false;
-}
-
-inline bool
-str_eq(const char* s, const char* t)
-{
-	return (strcmp(s, t) == 0);
-}
-
-static void
-process_one_page(FILE* xdv)
+processPage(FILE* xdv)
 {
 	/* enter here having just read BOP from xdv file */
-	++page_index;
+	++gPageIndex;
 
 	OSStatus		status;
 	int				i;
 
-	std::list<dvi_vars>	stack;
-	dvi_level = 0;
-
-#if 0	// defer this until we actually need to draw something, to allow page geometry specials
-	CGContextSaveGState(graphicsContext);
-    CGContextBeginPage(graphicsContext, &mediaBox);
-
-	static CGAffineTransform	initTextMatrix;
-	if (page_index == 1)
-		initTextMatrix = CGContextGetTextMatrix(graphicsContext);
-	else
-		CGContextSetTextMatrix(graphicsContext, initTextMatrix);
-
-	CGColorSpaceRef	userColorSpace = 
-		(&CGColorSpaceCreateWithName) != NULL
-			? CGColorSpaceCreateWithName(kCGColorSpaceUserRGB)
-			: CGColorSpaceCreateDeviceRGB();
-	CGContextSetFillColorSpace(graphicsContext, userColorSpace);
-
-	CGContextTranslateCTM(graphicsContext, 72.0, -72.0);
-
-    pageWd = scr2dvi * mediaBox.size.width;
-    pageHt = scr2dvi * mediaBox.size.height;
-#endif
+	std::list<dviVars>	stack;
+	gDviLevel = 0;
 
     int	j = 0;
-    int	count[10];
     for (i = 0; i < 10; ++i) {	// read counts
-		count[i] = read_signed(xdv, 4);
-        if (count[i] != 0)
+		gCounts[i] = readSigned(xdv, 4);
+        if (gCounts[i] != 0)
             j = i;
     }
-	if (verbose) {
+	if (sVerbose) {
 		fprintf(stderr, "[");
 		for (i = 0; i < j; ++i)
-			fprintf(stderr, "%d.", count[i]);
-		fprintf(stderr, "%d", count[j]);
+			fprintf(stderr, "%d.", gCounts[i]);
+		fprintf(stderr, "%d", gCounts[j]);
 	}
 
-    (void)read_unsigned(xdv, 4);	// skip prev-BOP pointer
+    (void)readUnsigned(xdv, 4);	// skip prev-BOP pointer
 	
 	cur_f = kUndefinedFont;
 	dvi.h = dvi.v = 0;
@@ -2237,11 +1582,11 @@ process_one_page(FILE* xdv)
 		SInt32	ht, wd;
 		int		k = 1;
 
-		cmd = read_unsigned(xdv, 1);
+		cmd = readUnsigned(xdv, 1);
 		switch (cmd) {
 			default:
 				if (cmd < DVI_SET1)
-					setchar(cmd, true);
+					setChar(cmd, true);
 				else if (cmd >= DVI_FNTNUM0 && cmd <= DVI_FNTNUM0 + 63)
 					f = cmd - DVI_FNTNUM0;
 				else
@@ -2262,7 +1607,7 @@ process_one_page(FILE* xdv)
 			case DVI_FNT2:
 				++k;
 			case DVI_FNT1:
-				f = read_unsigned(xdv, k);	// that's it: just set |f|
+				f = readUnsigned(xdv, k);	// that's it: just set |f|
 				break;
 
 			case DVI_XXX4:
@@ -2273,195 +1618,13 @@ process_one_page(FILE* xdv)
 				++k;
 			case DVI_XXX1:
 				flushGlyphs();
-                u = read_unsigned(xdv, k);
+                u = readUnsigned(xdv, k);
                 if (u > 0) {
                     char* special = new char[u+1];
                     fread(special, 1, u, xdv);
                     special[u] = '\0';
-                    const char* specialArg;
                     
-                    if (prefix_eq(special, "pdf:", specialArg))
-                    	doPDFspecial(specialArg);
-					
-					else if (prefix_eq(special, "color ", specialArg))
-						doColorSpecial(specialArg);
-					
-					else if (prefix_eq(special, "x:fontmapfile", specialArg))
-						doPdfMapFile(specialArg);
-					else if (prefix_eq(special, "x:fontmapline", specialArg))
-						doPdfMapLine(specialArg, 0);
-					
-					else if (str_eq(special, "x:textcolorpush"))
-						pushTextColor();
-					else if (str_eq(special, "x:textcolorpop"))
-						popTextColor();
-					else if (str_eq(special, "x:rulecolorpush"))
-						pushRuleColor();
-					else if (str_eq(special, "x:rulecolorpop"))
-						popRuleColor();
-
-                    else if (prefix_eq(special, "x:rulecolor", specialArg)) {
-                        // set rule color
-                        if (*specialArg != '=' || u < 18)
-                            // not long enough for a proper color spec, so set it to black
-                            resetRuleColor();
-                        else {
-                        	++specialArg;
-							ATSURGBAlphaColor	color;
-                        	if (u < 20)
-	                            readColorValue(specialArg, color);
-							else
-	                            readColorValueWithAlpha(specialArg, color);
-                            setRuleColor(color);
-                        }
-                    }
-
-                    else if (prefix_eq(special, "x:textcolor", specialArg)) {
-                        // set text color (overriding color of the font style)
-                        if (*specialArg != '=' || u < 18)
-                        	resetTextColor();
-                        else {
-                        	++specialArg;
-							ATSURGBAlphaColor	color;
-                        	if (u < 20)
-	                            readColorValue(specialArg, color);
-                        	else
-	                            readColorValueWithAlpha(specialArg, color);
-                            setTextColor(color);
-                        }
-                    }
-
-                    else if (str_eq(special, "x:gsave")) {
-                        ensure_page_started();
-                    	CGContextSaveGState(graphicsContext);
-                    }
-                    else if (str_eq(special, "x:grestore")) {
-                        ensure_page_started();
-                    	CGContextRestoreGState(graphicsContext);
-						if (tex_fonts[cur_f].cgFont != NULL) {
-							CGContextSetFont(graphicsContext, tex_fonts[cur_f].cgFont);
-							CGContextSetFontSize(graphicsContext, Fix2X(tex_fonts[cur_f].size) * mag_scale);
-						}
-                    }
-                    else if (prefix_eq(special, "x:scale", specialArg)) {
-                        ensure_page_started();
-                    	while (*specialArg && *specialArg <= ' ')
-                    		++specialArg;
-                    	float	xscale = atof(specialArg);
-                    	while (*specialArg && (((*specialArg >= '0') && (*specialArg <= '9')) || *specialArg == '.' || *specialArg == '-'))
-                    		++specialArg;
-                    	while (*specialArg && *specialArg <= ' ')
-                    		++specialArg;
-						float	yscale = atof(specialArg);
-						if (xscale != 0.0 && yscale != 0.0) {
-							CGContextTranslateCTM(graphicsContext, dvi2scr * dvi.h, dvi2scr * (pageHt - dvi.v));
-	                    	CGContextScaleCTM(graphicsContext, xscale, yscale);
-							CGContextTranslateCTM(graphicsContext, -dvi2scr * dvi.h, -dvi2scr * (pageHt - dvi.v));
-						}
-                    }
-                    else if (prefix_eq(special, "x:rotate", specialArg)) {
-                        ensure_page_started();
-                    	while (*specialArg && *specialArg <= ' ')
-                    		++specialArg;
-                    	float	rotation = atof(specialArg);
-						CGContextTranslateCTM(graphicsContext, dvi2scr * dvi.h, dvi2scr * (pageHt - dvi.v));
-                    	CGContextRotateCTM(graphicsContext, rotation * M_PI / 180.0);
-						CGContextTranslateCTM(graphicsContext, -dvi2scr * dvi.h, -dvi2scr * (pageHt - dvi.v));
-                    }
-                    else if (prefix_eq(special, "x:backgroundcolor", specialArg)) {
-                        ensure_page_started();
-                        if (*specialArg != '=' || u < 24) {
-                        	// ignore incorrect special
-                        }
-                        else {
-                        	++specialArg;
-                        	ATSURGBAlphaColor	bg;
-                        	if (u < 26)
-	                            readColorValue(specialArg, bg);
-	                        else
-	                            readColorValueWithAlpha(specialArg, bg);
-	                        if (bg.alpha == 0.0)
-	                        	bg.alpha = 0.0001;	// avoid an apparent Quartz bug
-							CGContextSaveGState(graphicsContext);
-                        	CGContextSetFillColor(graphicsContext, &bg.red);
-                        	CGContextTranslateCTM(graphicsContext, -72.0, 72.0);
-		                    CGContextFillRect(graphicsContext, mediaBox);
-							CGContextRestoreGState(graphicsContext);
-                       }
-                    }
-                    else if (prefix_eq(special, "x:shadow", specialArg)) {
-                    	// syntax: \special{x:shadow(x,y),b}
-                    	do {
-							CGSize	offset;
-							float	blur;
-							
-							if (*specialArg++ != '(')	break;
-							offset.width = readFloat(specialArg);
-							
-							if (*specialArg++ != ',')	break;
-							offset.height = readFloat(specialArg);
-							
-							if (*specialArg++ != ')')	break;
-							if (*specialArg++ != ',')	break;
-							blur = readFloat(specialArg);
-							
-							// NB: API only available on 10.3 and later
-							if (&CGContextSetShadow != NULL)
-								CGContextSetShadow(graphicsContext, offset, blur);
-						} while (false);
-                    }
-                    else if (prefix_eq(special, "x:colorshadow", specialArg)) {
-                    	// syntax: \special{x:colorshadow(x,y),b,c}
-                    	do {
-							CGSize				offset;
-							float				blur;
-							ATSURGBAlphaColor	color;
-							
-							if (*specialArg++ != '(')	break;
-							offset.width = readFloat(specialArg);
-							
-							if (*specialArg++ != ',')	break;
-							offset.height = readFloat(specialArg);
-							
-							if (*specialArg++ != ')')	break;
-							if (*specialArg++ != ',')	break;
-							blur = readFloat(specialArg);
-							
-							if (*specialArg++ != ',')	break;
-                            if (special + u < specialArg + 6)	break;
-                            if (special + u < specialArg + 8)
-	                            readColorValue(specialArg, color);
-	                        else
-	                       		readColorValueWithAlpha(specialArg, color);
-                            
-							// NB: APIs only available on 10.3 and later
-							if (&CGContextSetShadowWithColor != NULL) {
-								CGColorRef		colorRef = CGColorCreate(userColorSpace, &color.red);
-								CGContextSetShadowWithColor(graphicsContext, offset, blur, colorRef);
-								CGColorRelease(colorRef);
-							}
-						} while (false);
-                    }
-                    else if (prefix_eq(special, "x:papersize", specialArg)) {
-                    	// syntax: \special{x:papersize=a4:landscape} etc
-                    	if (*specialArg != '=') {
-                    		// ignore
-                    	}
-                    	else {
-                    		++specialArg;
-                    		double_t	paperWd, paperHt;
-                    		if (getPaperSize(specialArg, paperWd, paperHt)) {
-							    mediaBox = CGRectMake(0, 0, paperWd, paperHt);
-							    if (sPageStarted) {
-							    	fprintf(stderr, "\n### warning on page [");
-									for (i = 0; i < j; ++i)
-										fprintf(stderr, "%d.", count[i]);
-									fprintf(stderr, "%d", count[j]);
-							    	fprintf(stderr, "]: paper size \"%s\" will take effect from NEXT page ", specialArg);
-							    }
-                    		}
-                    	}
-                    }
+                    doSpecial(special);
                     
                     delete[] special;
                 }
@@ -2469,25 +1632,25 @@ process_one_page(FILE* xdv)
 			
 			case DVI_SETRULE:
 			case DVI_PUTRULE:
-				ensure_page_started();
-				ht = read_signed(xdv, 4);
-				wd = read_signed(xdv, 4);
+				ensurePageStarted();
+				ht = readSigned(xdv, 4);
+				wd = readSigned(xdv, 4);
 				if (ht > 0 && wd > 0) {
-					CGRect	r = CGRectMake(dvi2scr * dvi.h, dvi2scr * (pageHt - dvi.v), dvi2scr * wd, dvi2scr * ht);
-                    if (ruleColor.override) {
-                    	CGContextSaveGState(graphicsContext);
-                        CGContextSetFillColor(graphicsContext, &ruleColor.color.red);
+					CGRect	r = CGRectMake(kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v), kDvi2Scr * wd, kDvi2Scr * ht);
+                    if (gRuleColor.override) {
+                    	CGContextSaveGState(gCtx);
+                        CGContextSetFillColor(gCtx, &gRuleColor.color.red);
 					}
-                    CGContextFillRect(graphicsContext, r);
-                    if (ruleColor.override)
-                        CGContextRestoreGState(graphicsContext);
-                    if (tracking_boxes) {
+                    CGContextFillRect(gCtx, r);
+                    if (gRuleColor.override)
+                        CGContextRestoreGState(gCtx);
+                    if (gTrackingBoxes) {
 						box	b = {
 							dvi.h,
 							dvi.v,
 							dvi.h + wd,
 							dvi.v - ht };
-						merge_box(b);
+						mergeBox(b);
                     }
 				}
 				if (cmd == DVI_SETRULE)
@@ -2501,8 +1664,8 @@ process_one_page(FILE* xdv)
 			case DVI_SET2:
 				++k;
 			case DVI_SET1:
-				u = read_unsigned(xdv, k);
-				setchar(u, true);
+				u = readUnsigned(xdv, k);
+				setChar(u, true);
 				break;
 			
 			case DVI_PUT4:
@@ -2512,19 +1675,19 @@ process_one_page(FILE* xdv)
 			case DVI_PUT2:
 				++k;
 			case DVI_PUT1:
-				u = read_unsigned(xdv, k);
-				setchar(u, false);
+				u = readUnsigned(xdv, k);
+				setChar(u, false);
 				break;
 			
 			case DVI_PUSH:
 				stack.push_back(dvi);
-				++dvi_level;
+				++gDviLevel;
 				break;
 
 			case DVI_POP:
-				if (dvi_level == tag_level)
-					flush_annot_box();
-				--dvi_level;
+				if (gDviLevel == gTagLevel)
+					flushAnnotBox();
+				--gDviLevel;
 				dvi = stack.back();
 				stack.pop_back();
 				break;
@@ -2536,7 +1699,7 @@ process_one_page(FILE* xdv)
 			case DVI_RIGHT2:
 				++k;
 			case DVI_RIGHT1:
-				s = read_signed(xdv, k);
+				s = readSigned(xdv, k);
 				dvi.h += s;
 				break;
 			
@@ -2547,7 +1710,7 @@ process_one_page(FILE* xdv)
 			case DVI_DOWN2:
 				++k;
 			case DVI_DOWN1:
-				s = read_signed(xdv, k);
+				s = readSigned(xdv, k);
 				dvi.v += s;
 				break;
 			
@@ -2558,7 +1721,7 @@ process_one_page(FILE* xdv)
 			case DVI_W2:
 				++k;
 			case DVI_W1:
-				s = read_signed(xdv, k);
+				s = readSigned(xdv, k);
 				dvi.w = s;
 			case DVI_W0:
 				dvi.h += dvi.w;
@@ -2571,7 +1734,7 @@ process_one_page(FILE* xdv)
 			case DVI_X2:
 				++k;
 			case DVI_X1:
-				s = read_signed(xdv, k);
+				s = readSigned(xdv, k);
 				dvi.x = s;
 			case DVI_X0:
 				dvi.h += dvi.x;
@@ -2584,7 +1747,7 @@ process_one_page(FILE* xdv)
 			case DVI_Y2:
 				++k;
 			case DVI_Y1:
-				s = read_signed(xdv, k);
+				s = readSigned(xdv, k);
 				dvi.y = s;
 			case DVI_Y0:
 				dvi.v += dvi.y;
@@ -2597,37 +1760,37 @@ process_one_page(FILE* xdv)
 			case DVI_Z2:
 				++k;
 			case DVI_Z1:
-				s = read_signed(xdv, k);
+				s = readSigned(xdv, k);
 				dvi.z = s;
 			case DVI_Z0:
 				dvi.v += dvi.z;
 				break;
 			
 			case DVI_GLYPH:
-				ensure_page_started();
-				u = read_unsigned(xdv, 2);
-				s = read_signed(xdv, 4);
-				do_set_glyph(u, s);
+				ensurePageStarted();
+				u = readUnsigned(xdv, 2);
+				s = readSigned(xdv, 4);
+				doSetGlyph(u, s);
 				break;
 			
 			case DVI_NATIVE:
-				ensure_page_started();
-				do_set_native(xdv);
+				ensurePageStarted();
+				doSetNative(xdv);
 				break;
 			
 			case DVI_GLYPH_ARRAY:
-				ensure_page_started();
-				do_glyph_array(xdv);
+				ensurePageStarted();
+				doGlyphArray(xdv);
 				break;
 			
             case DVI_PIC_FILE:
-				ensure_page_started();
-                do_pic_file(xdv, false);
+				ensurePageStarted();
+                doPicFile(xdv, false);
                 break;
                             
             case DVI_PDF_FILE:
-				ensure_page_started();
-                do_pic_file(xdv, true);
+				ensurePageStarted();
+                doPicFile(xdv, true);
                 break;
                         
 			case DVI_FNTDEF4:
@@ -2637,41 +1800,38 @@ process_one_page(FILE* xdv)
 			case DVI_FNTDEF2:
 				++k;
 			case DVI_FNTDEF1:
-				do_font_def(xdv, k);
+				doFontDef(xdv, k);
 				break;
 				
 			case DVI_NATIVE_FONT_DEF:
-                do_native_font_def(xdv);
+                doNativeFontDef(xdv);
 				break;
 		}
 	}
 
-	if (verbose) {
-		static int	sPageIndex = 0;
-		fprintf(stderr, "]%s", (++sPageIndex % 10) == 0 ? "\n" : "");
+	if (sVerbose) {
+		fprintf(stderr, "]%s", (gPageIndex % 10) == 0 ? "\n" : "");
 	}
 
 ABORT_PAGE:
     
-//	CGColorSpaceRelease(userColorSpace);
-
-	if (sPageStarted) {
-		CGContextEndPage(graphicsContext);
-		CGContextRestoreGState(graphicsContext);
+	if (gPageStarted) {
+		CGContextEndPage(gCtx);
+		CGContextRestoreGState(gCtx);
 	}
 	
-	sPageStarted = false;
+	gPageStarted = false;
 }
 
 static void
-process_pages(FILE* xdv)
+processAllPages(FILE* xdv)
 {
-	page_index = 0;
+	gPageIndex = 0;
 	unsigned int	cmd;
-	while ((cmd = read_unsigned(xdv, 1)) != DVI_POST) {
+	while ((cmd = readUnsigned(xdv, 1)) != DVI_POST) {
 		switch (cmd) {
 			case DVI_BOP:
-				process_one_page(xdv);
+				processPage(xdv);
 				break;
 				
 			case DVI_NOP:
@@ -2688,19 +1848,15 @@ const char* progName;
 static void
 usage()
 {
-    fprintf(stderr, "usage: %s [-m mag] [-p papersize[:landscape]] [-v] [-o pdfFile] xdvFile\n", progName);
+    fprintf(stderr, "usage: %s [-m sMag] [-p papersize[:landscape]] [-v] [-o pdfFile] xdvFile\n", progName);
 	fprintf(stderr, "    papersize values: ");
-	papersizerec*	ps = &papersizes[0];
+	paperSizeRec*	ps = &gPaperSizes[0];
 	while (ps->name != 0) {
 		fprintf(stderr, "%s/", ps->name);
 		++ps;
 	}
 	fprintf(stderr, "wd,ht [in 'big' points or with explicit units]\n");
 }
-
-extern "C" {
-	int	xdv2pdf(int argc, char** argv);
-};
 
 int
 xdv2pdf(int argc, char** argv)
@@ -2709,6 +1865,13 @@ xdv2pdf(int argc, char** argv)
     
     progName = argv[0];
     
+	gMagScale = 1.0;
+	gRuleColor.color = kBlackColor;
+	gRuleColor.override = false;
+	gTextColor = gTextColor;
+
+	gTagLevel = -1;
+	
 	double_t	paperWd = 0.0;
 	double_t	paperHt = 0.0;
 
@@ -2718,7 +1881,7 @@ xdv2pdf(int argc, char** argv)
             case 'o':
                 {
                     CFStringRef	outFileName = CFStringCreateWithCString(kCFAllocatorDefault, optarg, kCFStringEncodingUTF8);
-                    saveURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, outFileName, kCFURLPOSIXPathStyle, NULL);
+                    gSaveURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, outFileName, kCFURLPOSIXPathStyle, false);
                     CFRelease(outFileName);
                 }
                 break;
@@ -2731,7 +1894,7 @@ xdv2pdf(int argc, char** argv)
                 break;
                 
             case 'm':
-            	mag = atoi(optarg);
+            	sMag = atoi(optarg);
             	break;
             
             case 'd':
@@ -2739,7 +1902,7 @@ xdv2pdf(int argc, char** argv)
             	break;
             
             case 'v':
-            	verbose = true;
+            	sVerbose = true;
             	break;
             
             case 'h':
@@ -2774,36 +1937,36 @@ xdv2pdf(int argc, char** argv)
 	}
 
     // set the media box for PDF generation
-    mediaBox = CGRectMake(0, 0, paperWd, paperHt);
+    gMediaBox = CGRectMake(0, 0, paperWd, paperHt);
     
     argc -= optind;
     argv += optind;
-    if (argc == 1 && saveURL == 0) {
+    if (argc == 1 && gSaveURL == 0) {
         CFStringRef	inFileName = CFStringCreateWithCString(kCFAllocatorDefault, argv[0], CFStringGetSystemEncoding());
-        CFURLRef	inURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, inFileName, kCFURLPOSIXPathStyle, NULL);
+        CFURLRef	inURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, inFileName, kCFURLPOSIXPathStyle, false);
         CFRelease(inFileName);
         CFURLRef	tmpURL = CFURLCreateCopyDeletingPathExtension(kCFAllocatorDefault, inURL);
         CFRelease(inURL);
-        saveURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, tmpURL, CFSTR("pdf"));
+        gSaveURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, tmpURL, CFSTR("pdf"));
         CFRelease(tmpURL);
     }
 
-    if (argc > 1 || saveURL == 0) {
+    if (argc > 1 || gSaveURL == 0) {
         usage();
         exit(1);
     }
     
-	ATSUCreateTextLayout(&layout);
+	ATSUCreateTextLayout(&sLayout);
 //	ATSUFontFallbacks fallbacks;
 //	status = ATSUCreateFontFallbacks(&fallbacks);
 //	status = ATSUSetObjFontFallbacks(fallbacks, 0, 0, /*kATSULastResortOnlyFallback*/kATSUDefaultFontFallbacks);
 //	ATSUAttributeTag		tag = kATSULineFontFallbacksTag;
 //	ByteCount				valueSize = sizeof(fallbacks);
 //	ATSUAttributeValuePtr	value = &fallbacks;
-//	status = ATSUSetLayoutControls(layout, 1, &tag, &valueSize, &value);
+//	status = ATSUSetLayoutControls(sLayout, 1, &tag, &valueSize, &value);
 
 // this doesn't seem to be working for me....
-//	status = ATSUSetTransientFontMatching(layout, true);
+//	status = ATSUSetTransientFontMatching(sLayout, true);
 
 	FILE*	xdv;
     if (argc == 1)
@@ -2813,18 +1976,18 @@ xdv2pdf(int argc, char** argv)
 
 	if (xdv != NULL) {
 		// read the preamble
-		unsigned	b = read_unsigned(xdv, 1);
+		unsigned	b = readUnsigned(xdv, 1);
 		if (b != DVI_PRE) { fprintf(stderr, "*** bad XDV file: DVI_PRE not found, b=%d\n", b); exit(1); }
-		b = read_unsigned(xdv, 1);
+		b = readUnsigned(xdv, 1);
 		if (b != 4) { fprintf(stderr, "*** bad XDV file: version=%d, expected 4\n", b); exit(1); }
-		(void)read_unsigned(xdv, 4);	// num
-		(void)read_unsigned(xdv, 4);	// den
-		if (mag == 0)
-			mag = read_unsigned(xdv, 4);	// mag
+		(void)readUnsigned(xdv, 4);	// num
+		(void)readUnsigned(xdv, 4);	// den
+		if (sMag == 0)
+			sMag = readUnsigned(xdv, 4);	// sMag
 		else
-			(void)read_unsigned(xdv, 4);
+			(void)readUnsigned(xdv, 4);
 
-		unsigned numBytes = read_unsigned(xdv, 1);	// length of output comment
+		unsigned numBytes = readUnsigned(xdv, 1);	// length of output comment
         UInt8* bytes = new UInt8[numBytes];
         fread(bytes, 1, numBytes, xdv);
 
@@ -2839,43 +2002,43 @@ xdv2pdf(int argc, char** argv)
 //        CFRelease(values[2]);
 
         // create PDF graphics context
-        graphicsContext = CGPDFContextCreateWithURL(saveURL, &mediaBox, auxInfo);
+        gCtx = CGPDFContextCreateWithURL(gSaveURL, &gMediaBox, auxInfo);
 
 		// set up the TextLayout to use this graphics context
 		ByteCount				iSize = sizeof(CGContextRef);
 		ATSUAttributeTag		iTag = kATSUCGContextTag;
-		ATSUAttributeValuePtr	iValuePtr = &graphicsContext;
-		ATSUSetLayoutControls(layout, 1, &iTag, &iSize, &iValuePtr); 
+		ATSUAttributeValuePtr	iValuePtr = &gCtx;
+		ATSUSetLayoutControls(sLayout, 1, &iTag, &iSize, &iValuePtr); 
 	
 		// handle magnification
-		if (mag != 1000) {
-			mag_scale = mag / 1000.0;
-			scr2dvi /= mag_scale;
-			dvi2scr *= mag_scale;
-			CGContextScaleCTM(graphicsContext, mag_scale, mag_scale);
+		if (sMag != 1000) {
+			gMagScale = sMag / 1000.0;
+			kScr2Dvi /= gMagScale;
+			kDvi2Scr *= gMagScale;
+			CGContextScaleCTM(gCtx, gMagScale, gMagScale);
 		}
 
 		// draw all the pages
-        process_pages(xdv);
+        processAllPages(xdv);
 
-        CGContextRelease(graphicsContext);
+        CGContextRelease(gCtx);
 
 		while (getc(xdv) != EOF)
 			;
 		fclose(xdv);
 	}
 	
-    ATSUDisposeTextLayout(layout);
+    ATSUDisposeTextLayout(sLayout);
     
-	if (pdfmarks != NULL) {
-		fclose(pdfmarks);
+	if (gPdfMarkFile != NULL) {
+		fclose(gPdfMarkFile);
 		char	pdfPath[_POSIX_PATH_MAX+1];
-		Boolean	gotPath = CFURLGetFileSystemRepresentation(saveURL, true, (UInt8*)pdfPath, _POSIX_PATH_MAX);
-		CFRelease(saveURL);
+		Boolean	gotPath = CFURLGetFileSystemRepresentation(gSaveURL, true, (UInt8*)pdfPath, _POSIX_PATH_MAX);
+		CFRelease(gSaveURL);
 #if 0
 		if (gotPath) {
 			char*	mergeMarks = "xdv2pdf_mergemarks";
-			execlp(mergeMarks, mergeMarks, pdfPath, pdfmarkPath, 0);	// should not return!
+			execlp(mergeMarks, mergeMarks, pdfPath, gPdfMarkPath, 0);	// should not return!
 			status = errno;
 		}
 		fprintf(stderr, "*** failed to run xdv2pdf_mergemarks: status = %d\n", status);
@@ -2883,7 +2046,7 @@ xdv2pdf(int argc, char** argv)
 		if (gotPath) {
 			char*	mergeMarks = "xdv2pdf_mergemarks";
 			char	cmd[_POSIX_PATH_MAX*2 + 100];
-			sprintf(cmd, "%s \"%s\" \"%s\"", mergeMarks, pdfPath, pdfmarkPath);
+			sprintf(cmd, "%s \"%s\" \"%s\"", mergeMarks, pdfPath, gPdfMarkPath);
 			status = system(cmd);
 		}
 		else
@@ -2893,7 +2056,7 @@ xdv2pdf(int argc, char** argv)
 #endif
 	}
 	else
-		CFRelease(saveURL);
+		CFRelease(gSaveURL);
 
 	return status;
 }

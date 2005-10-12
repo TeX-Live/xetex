@@ -21,7 +21,7 @@ program = xdv2pdf
 programs = $(program)
 default all: $(programs)
 
-objects=xdv2pdf_main.o xdv2pdf.o
+objects=xdv2pdf_main.o xdv2pdf.o xdv2pdf_specials.o
 
 $(objects): Makefile
 
