@@ -124,6 +124,13 @@ typedef union
 #endif
   fourquarters qqqq;
 #else /* not WORDS_BIGENDIAN */
+#ifdef XeTeX
+  struct
+  {
+    integer CINT1;
+    integer CINT;
+  } x;
+#else
   struct
   {
 #if defined (TeX) && !defined (SMALLTeX) || defined (MF) && !defined (SMALLMF) || defined (MP) && !defined (SMALLMP)
@@ -131,6 +138,7 @@ typedef union
 #endif /* big {TeX,MF,MP} */
     integer CINT;
   } u;
+#endif
 
   struct
   {
@@ -159,10 +167,17 @@ typedef union
 #endif
   fourquarters qqqq;
 #else /* not WORDS_BIGENDIAN */
+#ifdef XeTeX
+  struct
+  {
+    integer CINT;
+  } x;
+#else
   struct
   {
     integer CINT;
   } u;
+#endif
 
   struct
   {
@@ -181,15 +196,19 @@ typedef union
 #define rh v.RH
 #define lhfield	v.LH
 
+#ifdef XeTeX
+
+#define cint  x.CINT
+#define cint1 x.CINT1
+
+#else
+
 #ifndef WORDS_BIGENDIAN
 #define cint u.CINT
 #define qqqq v.QQQQ
 #endif
 
-#ifdef XeTeX
-#define cint  x.CINT
-#define cint1 x.CINT1
-#endif
+#endif /* XeTeX */
 
 #else /* Omega || eOmega || Aleph */
 
