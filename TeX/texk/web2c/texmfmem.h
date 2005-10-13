@@ -197,18 +197,17 @@ typedef union
 #define lhfield	v.LH
 
 #ifdef XeTeX
-
 #define cint  x.CINT
 #define cint1 x.CINT1
-
 #else
-
 #ifndef WORDS_BIGENDIAN
 #define cint u.CINT
+#endif
+#endif /* XeTeX */
+
+#ifndef WORDS_BIGENDIAN
 #define qqqq v.QQQQ
 #endif
-
-#endif /* XeTeX */
 
 #else /* Omega || eOmega || Aleph */
 
