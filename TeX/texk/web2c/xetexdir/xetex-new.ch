@@ -36,8 +36,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".95"
-@d XeTeX_version_string=='-0.95' {current \eTeX\ version}
+@d XeTeX_revision==".96"
+@d XeTeX_version_string=='-0.96' {current \eTeX\ version}
 @z
 
 @x

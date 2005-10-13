@@ -35,7 +35,7 @@ FRAMEWORKS =
 endif
 
 # Extract xetex version
-xetexdir/xetex.version: xetexdir/xetex-new.ch
+xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 	test -d xetexdir || mkdir xetexdir
 	grep '^@d XeTeX_version_string==' $(srcdir)/xetexdir/xetex-new.ch \
 	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/xetex.version
