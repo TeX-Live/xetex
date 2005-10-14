@@ -731,8 +731,48 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 			else if (image != NULL)
 				CGContextDrawImage(gCtx, bounds, image);
 
-			CGContextRestoreGState(gCtx);
+			if (gTrackingBoxes) {
+				// figure out the corners of the transformed and positioned image,
+				// and remember the lower left and upper right of the result
+				CGPoint	p[4];
+				p[0].x = bounds.origin.x;
+				p[0].y = bounds.origin.y;
+				p[1].x = bounds.origin.x;
+				p[1].y = bounds.origin.y + bounds.size.height;
+				p[2].x = bounds.origin.x + bounds.size.width;
+				p[2].y = bounds.origin.y + bounds.size.height;
+				p[3].x = bounds.origin.x + bounds.size.width;
+				p[3].y = bounds.origin.y;
+				
+				CGPoint	ll = { MAXFLOAT, MAXFLOAT };
+				CGPoint	ur = { -MAXFLOAT, -MAXFLOAT };
 
+				t = CGContextGetCTM(gCtx);
+				// now t is the CTM, including positioning as well as transformations of the image
+
+				for (int i = 0; i < 4; ++i) {
+					p[i] = CGPointApplyAffineTransform(p[i], t);
+					if (p[i].x < ll.x)
+						ll.x = p[i].x;
+					if (p[i].y < ll.y)
+						ll.y = p[i].y;
+					if (p[i].x > ur.x)
+						ur.x = p[i].x;
+					if (p[i].y > ur.y)
+						ur.y = p[i].y;
+				}
+				
+				// convert back to dvi space and add to the annotation area
+				box	b = {
+					(ll.x - 72.0) * kScr2Dvi,
+					gPageHt - (ur.y + 72.0) * kScr2Dvi,
+					(ur.x - 72.0) * kScr2Dvi,
+					gPageHt - (ll.y + 72.0) * kScr2Dvi
+				};
+				mergeBox(b);
+			}
+
+			CGContextRestoreGState(gCtx);
         }
     }
 }
