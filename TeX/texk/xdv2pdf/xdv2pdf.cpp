@@ -1849,6 +1849,8 @@ processPage(FILE* xdv)
 		}
 	}
 
+	ensurePageStarted();	// needed for completely blank pages!
+
 	if (sVerbose) {
 		fprintf(stderr, "]%s", (gPageIndex % 10) == 0 ? "\n" : "");
 	}
