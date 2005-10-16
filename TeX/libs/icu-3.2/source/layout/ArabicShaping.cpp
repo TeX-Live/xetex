@@ -4,6 +4,8 @@
  *
  */
 
+/* Updated for Unicode 4.1 (support Arabic Supplement block) - JK */
+
 #include "LETypes.h"
 #include "OpenTypeTables.h"
 #include "ArabicShaping.h"
@@ -22,25 +24,33 @@ enum {
 
 const ArabicShaping::ShapeType ArabicShaping::shapeTypes[] =
 {
-    _t_, _t_, _t_, _t_, _t_, _t_, _x_, _x_, _x_, _x_, _x_, _n_, _x_, _x_, _x_, _n_,   // 0x610 - 0x61f
-    _x_, _n_, _r_, _r_, _r_, _r_, _d_, _r_, _d_, _r_, _d_, _d_, _d_, _d_, _d_, _r_,   // 0x620 - 0x62f
-    _r_, _r_, _r_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _x_, _x_, _x_, _x_, _x_,   // 0x630 - 0x63f
-    _c_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _r_, _d_, _d_, _t_, _t_, _t_, _t_, _t_,   // 0x640 - 0x64f
-    _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _x_, _x_, _x_, _x_, _x_, _x_, _x_,   // 0x650 - 0x65f
-    _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _d_, _d_,   // 0x660 - 0x66f
-    _t_, _r_, _r_, _r_, _n_, _r_, _r_, _r_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x670 - 0x67f
-    _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_,   // 0x680 - 0x68f
-    _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x690 - 0x69f
-    _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x6a0 - 0x6af
-    _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x6b0 - 0x6bf
-    _r_, _d_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _d_, _r_, _d_, _r_,   // 0x6c0 - 0x6cf
-    _d_, _d_, _r_, _r_, _n_, _r_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _x_, _t_, _t_,   // 0x6d0 - 0x6df
-    _t_, _t_, _t_, _t_, _t_, _n_, _n_, _t_, _t_, _n_, _t_, _t_, _t_, _t_, _r_, _r_,   // 0x6e0 - 0x6ef
-    _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _d_, _d_, _d_, _n_, _n_, _d_    // 0x6f0 - 0x6ff
+   _t_, _t_, _t_, _t_, _t_, _t_, _x_, _x_, _x_, _x_, _x_, _n_, _x_, _x_, _x_, _n_,   // 0x610 - 0x61f
+   _x_, _n_, _r_, _r_, _r_, _r_, _d_, _r_, _d_, _r_, _d_, _d_, _d_, _d_, _d_, _r_,   // 0x620 - 0x62f
+   _r_, _r_, _r_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _x_, _x_, _x_, _x_, _x_,   // 0x630 - 0x63f
+   _c_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _r_, _d_, _d_, _t_, _t_, _t_, _t_, _t_,   // 0x640 - 0x64f
+   _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _x_,   // 0x650 - 0x65f // 0659..065e are post-Unicode-4.0 (provisional)
+   _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _d_, _d_,   // 0x660 - 0x66f
+   _t_, _r_, _r_, _r_, _n_, _r_, _r_, _r_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x670 - 0x67f
+   _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_,   // 0x680 - 0x68f
+   _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x690 - 0x69f
+   _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x6a0 - 0x6af
+   _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x6b0 - 0x6bf
+   _r_, _d_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _r_, _d_, _r_, _d_, _r_,   // 0x6c0 - 0x6cf
+   _d_, _d_, _r_, _r_, _n_, _r_, _t_, _t_, _t_, _t_, _t_, _t_, _t_, _x_, _t_, _t_,   // 0x6d0 - 0x6df
+   _t_, _t_, _t_, _t_, _t_, _n_, _n_, _t_, _t_, _n_, _t_, _t_, _t_, _t_, _r_, _r_,   // 0x6e0 - 0x6ef
+   _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _d_, _d_, _d_, _n_, _n_, _d_,   // 0x6f0 - 0x6ff
+   _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_,   // 0x700 - 0x70f // Syriac shaping not yet implemented (alaph is tricky)
+   _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_,   // 0x710 - 0x71f // Syriac
+   _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_,   // 0x720 - 0x72f // Syriac
+   _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_,   // 0x730 - 0x73f // Syriac
+   _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_,   // 0x740 - 0x74f // Syriac
+   _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _r_, _r_, _r_, _d_, _d_, _d_, _d_,   // 0x750 - 0x75f // Arabic Supplementary block, post-4.0 (provisional)
+   _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _r_, _r_, _d_, _x_, _x_,   // 0x760 - 0x76f // Arabic Supplementary
+   _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_, _x_    // 0x770 - 0x77f // Arabic Supplementary
 };
 
 /*
-    shaping array holds types for Arabic chars between 0610 and 0700
+    shaping array holds types for arabic chars between 0610 and 0780
     other values are either unshaped, or transparent if a mark or format
     code, except for format codes 200c (zero-width non-joiner) and 200d 
     (dual-width joiner) which are both unshaped and non_joining or
@@ -49,7 +59,7 @@ const ArabicShaping::ShapeType ArabicShaping::shapeTypes[] =
 ArabicShaping::ShapeType ArabicShaping::getShapeType(LEUnicode c)
 {
     if (c >= 0x0610 && c <= 0x206f) {
-        if (c < 0x0700) {
+        if (c < 0x0780) {
             return shapeTypes[c - 0x0610];
         } else if (c == 0x200c) {   // ZWNJ
             return ST_NOSHAPE_NONE;
