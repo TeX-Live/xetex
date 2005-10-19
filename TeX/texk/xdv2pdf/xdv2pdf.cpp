@@ -13,14 +13,14 @@
 	xdv2pdf
 	Convert xdv file from XeTeX to PDF format for viewing/printing
 
-	usage: xdv2pdf [-d debug] [-m sMag] [-p papersize] [-v] xdvfile [-o pdffile]
+	usage: xdv2pdf [-d debug] [-m mag] [-p papersize] [-v] xdvfile [-o pdffile]
 
 		-m	override magnification from xdv file
 		-v	show progress messages (page counters)
 		-d  set kpathsea_debug values
         -p	papersize [default: from Mac OS X printing system]
         
-        known paperSize values:
+        known papersize values:
             a0-a10
 			b0-b10
 			c0-c10
@@ -246,6 +246,8 @@ ensurePageStarted()
     gPageWd = kScr2Dvi * gMediaBox.size.width;
     gPageHt = kScr2Dvi * gMediaBox.size.height;
 	
+	cur_f = kUndefinedFont;
+	
 	gPageStarted = true;
 }
 
@@ -343,11 +345,14 @@ doSetGlyph(UInt16 g, Fixed a)
 	// as \XeTeXglyph deals with native fonts, while setChar() and bufferGlyph()
 	// are used to work with legacy TeX fonts
 	
-	if (f != cur_f) {
-		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
-		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
-		cur_f = f;
-	}
+	// flush any setchar() glyphs, as we're going to change the font
+	flushGlyphs();
+	
+	// always do this, as AAT fonts won't have set it yet
+	// (might be redundant, but this is a rare operation anyway)
+	CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
+	CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
+	cur_f = f;
 	
 	bool	resetColor = false;
     if (gTextColor.override) {
@@ -454,6 +459,8 @@ doGlyphArray(FILE* xdv)
 {
 	static char*	glyphInfoBuf = 0;
 	static int		maxGlyphs = 0;
+
+	flushGlyphs();
 
 	Fixed	wid = readUnsigned(xdv, 4);
 	int	glyphCount = readUnsigned(xdv, 2);
@@ -1522,6 +1529,15 @@ doNativeFontDef(FILE* xdv)
 		}
 		ATSURGBAlphaColor	rgba;
 		fread(&rgba, 1, sizeof(ATSURGBAlphaColor), xdv);
+		
+		n = readUnsigned(xdv, 1);	// vertical? flag
+		if (n) {
+			ATSUAttributeTag			t = kATSUVerticalCharacterTag;
+			ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
+			ByteCount					vs = sizeof(ATSUVerticalCharacterType);
+			ATSUAttributeValuePtr		v = &vert;
+			status = ATSUSetAttributes(style, 1, &t, &vs, &v);
+		}
 	
 		n = readUnsigned(xdv, 2);	// name length
 		char*	name = new char[n+1];
@@ -1890,7 +1906,7 @@ const char* progName;
 static void
 usage()
 {
-    fprintf(stderr, "usage: %s [-m sMag] [-p papersize[:landscape]] [-v] [-o pdfFile] xdvFile\n", progName);
+    fprintf(stderr, "usage: %s [-m mag] [-p papersize[:landscape]] [-v] [-o pdfFile] xdvFile\n", progName);
 	fprintf(stderr, "    papersize values: ");
 	paperSizeRec*	ps = &gPaperSizes[0];
 	while (ps->name != 0) {

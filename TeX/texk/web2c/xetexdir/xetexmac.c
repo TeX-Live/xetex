@@ -456,7 +456,7 @@ loadAATfont(ATSUFontID fontID, long scaled_size, unsigned short* name16, int nam
 
 			// scan to end of pair
 			const unsigned short*	cp2 = cp1;
-			while (*cp2 && *cp2 != ';')
+			while (*cp2 && *cp2 != ';' && *cp2 != ':')
 				++cp2;
 
 			// look for the '=' separator
@@ -599,8 +599,28 @@ loadAATfont(ATSUFontID fontID, long scaled_size, unsigned short* name16, int nam
 				
 				goto next_option;
 			}
-		
+			
 		bad_option:
+			// not a name=value pair, or not recognized.... 
+			// check for plain "vertical" before complaining
+			if (ustr_eq_str_n(cp1, "vertical", 8)) {
+				cp3 = cp2;
+				if (*cp3 == ';' || *cp3 == ':')
+					--cp3;
+				while (*cp3 == ' ' || *cp3 == '\t')
+					--cp3;
+				if (*cp3)
+					++cp3;
+				if (cp3 == cp1 + 8) {
+					ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
+					tag[0] = kATSUVerticalCharacterTag;
+					valueSize[0] = sizeof(ATSUVerticalCharacterType);
+					value[0] = &vert;
+					ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
+					goto next_option;
+				}
+			}
+		
 			fontfeaturewarning(name16, nameLen, cp1, cp2 - cp1, 0, 0);
 			
 		next_option:
@@ -1232,6 +1252,7 @@ makefontdef(long f)
 			+ 4 * variationCount
 			+ 4 * variationCount	// axes and values
 			+ 16 // ATSURGBAlphaColor float[4]
+			+ 1 // vertical?
 			+ 2	// name length
 			+ nameLength;
 	
@@ -1269,6 +1290,11 @@ makefontdef(long f)
 		ATSURGBAlphaColor*	rgba = (ATSURGBAlphaColor*)cp;
 		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), rgba, 0);
 		cp += sizeof(ATSURGBAlphaColor);
+	
+		ATSUVerticalCharacterType	vert;
+		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
+		*cp = (vert == kATSUStronglyVertical);
+		++cp;
 	
 		*(UInt16*)cp = nameLength;
 		cp += 2;
