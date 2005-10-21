@@ -12,6 +12,7 @@
 #include "XeTeXOTLayoutEngine.h"
 
 #include "ThaiLayoutEngine.h"
+#include "KhmerLayoutEngine.h"
 
 #include "LEScripts.h"
 #include "LELanguages.h"
@@ -51,6 +52,8 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
 	le_uint32   scriptCode = getScriptCode(scriptTag);
 	le_uint32   languageCode = getLanguageCode(languageTag);
 
+	le_int32	typoFlags = 3;
+
     if (gsubTable != NULL && gsubTable->coversScript(scriptTag)) {
         switch (scriptCode) {
         case bengScriptCode:
@@ -62,12 +65,15 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
         case guruScriptCode:
         case tamlScriptCode:
         case teluScriptCode:
-            result = new XeTeXIndicLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+//            result = new XeTeXIndicLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+            result = new IndicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
             break;
 
         case arabScriptCode:
+        case syrcScriptCode:
         case mongScriptCode:
-            result = new XeTeXArabicLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+//            result = new XeTeXArabicLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+            result = new ArabicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
             break;
 
         case haniScriptCode:
@@ -77,16 +83,22 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
             case zhtLanguageCode:
             case zhsLanguageCode:
                 if (gsubTable->coversScriptAndLanguage(scriptTag, languageTag, TRUE)) {
-                    result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+//                    result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+                    result = new HanOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
                     break;
                 }
 
                 // note: falling through to default case.
             default:
-                result = new XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+//                result = new XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+                result = new OpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
                 break;
             }
 
+            break;
+
+        case khmrScriptCode:
+            result = new KhmerOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
             break;
 
         default:
@@ -105,20 +117,20 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
 		case guruScriptCode:
 		case tamlScriptCode:
 		case teluScriptCode:
-			result = new IndicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode);
+			result = new IndicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags);
 			break;
 
 		case arabScriptCode:
 		case hebrScriptCode:
-			result = new UnicodeArabicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode);
+			result = new UnicodeArabicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags);
 			break;
 
 		case thaiScriptCode:
-			result = new ThaiLayoutEngine(fontInstance, scriptCode, languageCode);
+			result = new ThaiLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags);
 			break;
 
 		default:
-			result = new OpenTypeLayoutEngine(fontInstance, scriptCode, languageCode);
+			result = new OpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags);
 			break;
 		}
     }
@@ -139,7 +151,7 @@ XeTeXOTLayoutEngine::XeTeXOTLayoutEngine(
 	const LEFontInstance* fontInstance, LETag scriptTag, LETag languageTag,
 	const GlyphSubstitutionTableHeader* gsubTable,
 	const LETag* addFeatures, const LETag* removeFeatures)
-		: OpenTypeLayoutEngine(fontInstance, getScriptCode(scriptTag), getLanguageCode(languageTag), gsubTable)
+		: OpenTypeLayoutEngine(fontInstance, getScriptCode(scriptTag), getLanguageCode(languageTag), 3, gsubTable)
 {
 	fDefaultFeatures = fFeatureList;
 	fScriptTag = scriptTag;
@@ -214,6 +226,7 @@ void XeTeXOTLayoutEngine::adjustFeatures(const LETag* addTags, const LETag* remo
 	fFeatureList = newList;
 }
 
+#if 0
 /*
  * XeTeXArabicLayoutEngine
  */
@@ -301,4 +314,4 @@ void XeTeXHanLayoutEngine::adjustFeatures(const LETag* addTags, const LETag* rem
 	// FIXME!
 }
 
-
+#endif
