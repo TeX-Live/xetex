@@ -220,7 +220,7 @@ getencodingmodeandinfo(long* info)
 		return UTF8;
 	}
 	if (strcasecmp(name, "utf16") == 0) {	/* depends on host platform */
-#if WORDS_BIGENDIAN
+#ifdef WORDS_BIGENDIAN
 		return UTF16BE;
 #else
 		return UTF16LE;
@@ -465,16 +465,19 @@ findatsufont(const char* name, long scaled_size)
 	const char*	featureString = name;
 	while (*featureString && *featureString != ':')
 		++featureString;
-	void*	fontRef;
+#ifdef XETEX_MAC
+	ATSFontRef	fontRef;
+#else
+#endif
 	if (*featureString) {
 		char* buf = xmalloc(featureString - name + 1);
 		strncpy(buf, name, featureString - name);
 		buf[featureString - name] = 0;
-		fontRef = (void*)findFontByName(buf, Fix2X(scaled_size));
+		fontRef = findFontByName(buf, Fix2X(scaled_size));
 		free(buf);
 	}
 	else
-		fontRef = (void*)findFontByName(name, Fix2X(scaled_size));
+		fontRef = findFontByName(name, Fix2X(scaled_size));
 
 	if (fontRef != 0) {
 		// decide whether to use AAT or OpenType rendering with this font

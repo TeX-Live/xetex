@@ -9,6 +9,10 @@
  cpl1.0.txt included with the software.
 \****************************************************************************/
 
+#ifdef XETEX_MAC
+#include <Carbon/Carbon.h>
+#endif
+
 #include "XeTeX_ext.h"
 
 #ifdef __cplusplus

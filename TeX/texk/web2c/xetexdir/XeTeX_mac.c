@@ -20,12 +20,13 @@
 #include <Carbon/Carbon.h>
 #include <Quicktime/Quicktime.h>
 
+#include "TECkit_Engine.h"
 #include "XeTeX_ext.h"
 
 TECkit_Converter	load_mapping_file(const char* s, const char* e);
 
 
-static ATSUFontVariationAxis
+ATSUFontVariationAxis
 find_axis_by_name(ATSUFontID fontID, const char* name, int nameLength)
 {
 	ATSUFontVariationAxis	result = 0;
@@ -59,7 +60,7 @@ find_axis_by_name(ATSUFontID fontID, const char* name, int nameLength)
 	return result;
 }
 
-static ATSUFontFeatureType
+ATSUFontFeatureType
 find_feature_by_name(ATSUFontID fontID, const char* name, int nameLength)
 {
 	ATSUFontFeatureType	result = 0x0000FFFF;
@@ -94,7 +95,7 @@ find_feature_by_name(ATSUFontID fontID, const char* name, int nameLength)
 	return result;
 }
 
-static ATSUFontFeatureSelector
+ATSUFontFeatureSelector
 find_selector_by_name(ATSUFontID fontID, ATSUFontFeatureType featureType, const char* name, int nameLength)
 {
 	ATSUFontFeatureSelector	result = 0x0000FFFF;
