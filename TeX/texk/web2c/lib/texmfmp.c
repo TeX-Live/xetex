@@ -110,6 +110,8 @@
 /* The main program, etc.  */
 
 #ifdef XeTeX
+#include "xetexdir/XeTeX_ext.h"
+
 /* For Unicode encoding form interpretation... */
 static UInt32
 offsetsFromUTF8[6] =	{
