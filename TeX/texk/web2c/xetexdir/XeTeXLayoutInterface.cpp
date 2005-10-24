@@ -12,19 +12,21 @@
 #include "XeTeXLayoutInterface.h"
 
 #include "XeTeXOTLayoutEngine.h"
-#include "ATSFontInst.h"
+#include "XeTeXFontInst.h"
+#ifdef XETEX_MAC
+#include "XeTeXFontInst_Mac.h"
+#include "XeTeXFontManager_Mac.h"
+#endif
 
 #include "Features.h"
 #include "ScriptAndLanguage.h"
-
-#include "xetexfontdict.h"
 
 #include "unicode/ubidi.h"
 
 struct XeTeXLayoutEngine_rec
 {
 	LayoutEngine*	layoutEngine;
-	ATSFontInst*	fontInstance;
+	XeTeXFontInst*	font;
 	UInt32			scriptTag;
 	UInt32			languageTag;
 	UInt32*			addedFeatures;
@@ -32,50 +34,42 @@ struct XeTeXLayoutEngine_rec
 	UInt32			rgbValue;
 };
 
-ATSFontInstance createFontInstance(ATSFontRef atsFont, Fixed pointSize)
+#ifdef XETEX_MAC
+XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize)
 {
 	LEErrorCode status = LE_NO_ERROR;
-	ATSFontInst* fontInstance = new ATSFontInst(atsFont, Fix2X(pointSize), status);
+	XeTeXFontInst* font = new XeTeXFontInst_Mac(atsFont, Fix2X(pointSize), status);
 	if (LE_FAILURE(status)) {
-		delete fontInstance;
+		delete font;
 		return NULL;
 	}
-	return (ATSFontInstance)fontInstance;
+	return (XeTeXFont)font;
 }
 
-void deleteFontInstance(ATSFontInstance fontInstance)
+ATSFontRef getFontRef(XeTeXLayoutEngine engine)
 {
-	delete (ATSFontInst*)fontInstance;
+	return ((XeTeXFontInst_Mac*)(engine->font))->getATSFont();
 }
 
-void* getFontTablePtr(ATSFontInstance fontInstance, UInt32 tableTag)
+ATSFontRef findFontByName(const char* name, double_t size)
 {
-	return const_cast<void*>(((ATSFontInst*)fontInstance)->getFontTable(tableTag));
+	return (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
 }
-/*
-void printFeatures(ATSFontInstance fontInstance)
-{
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((ATSFontInst*)fontInstance)->getFontTable('GSUB');
-    ScriptListTable* scriptListTable = (ScriptListTable*)((char*)gsubTable + gsubTable->scriptListOffset);
-	FeatureListTable*	featureListTable = (FeatureListTable*)((char*)gsubTable + gsubTable->featureListOffset);
-	for (int i = 0; i < featureListTable->featureCount; ++i) {
-		UInt32  x = *(UInt32*)&featureListTable->featureRecordArray[i].featureTag;
-		fprintf(stderr, "%08X = %.4s\n", x, featureListTable->featureRecordArray[i].featureTag);
-	}
-}
-*/
+#endif
 
-void applyOpticalSize(ATSFontInstance fontInstance, Fixed opticalSize)
+void deleteFont(XeTeXFont font)
 {
-	ATSUFontID	oldFontID = FMGetFontFromATSFontRef(((ATSFontInst*)fontInstance)->getATSFont());
-	ATSUFontID	newFontID = get_optically_sized_font(oldFontID, opticalSize);
-	if (newFontID != oldFontID)
-		((ATSFontInst*)fontInstance)->setATSFont(FMGetATSFontRefFromFont(newFontID));
+	delete (XeTeXFontInst*)font;
 }
 
-UInt32 countScripts(ATSFontInstance fontInstance)
+void* getFontTablePtr(XeTeXFont font, UInt32 tableTag)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((ATSFontInst*)fontInstance)->getFontTable('GSUB');
+	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
+}
+
+UInt32 countScripts(XeTeXFont font)
+{
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
 	if (gsubTable == NULL)
 		return 0;
 
@@ -85,9 +79,9 @@ UInt32 countScripts(ATSFontInstance fontInstance)
 	return scriptCount;
 }
 
-UInt32 getIndScript(ATSFontInstance fontInstance, UInt32 index)
+UInt32 getIndScript(XeTeXFont font, UInt32 index)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((ATSFontInst*)fontInstance)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
 	if (gsubTable == NULL)
 		return 0;
 
@@ -99,9 +93,9 @@ UInt32 getIndScript(ATSFontInstance fontInstance, UInt32 index)
 	return 0;
 }
 
-UInt32 countScriptLanguages(ATSFontInstance fontInstance, UInt32 script)
+UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((ATSFontInst*)fontInstance)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
 	if (gsubTable == NULL)
 		return 0;
 	
@@ -115,9 +109,9 @@ UInt32 countScriptLanguages(ATSFontInstance fontInstance, UInt32 script)
 	return langCount;
 }
 
-UInt32 getIndScriptLanguage(ATSFontInstance fontInstance, UInt32 script, UInt32 index)
+UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((ATSFontInst*)fontInstance)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
 	if (gsubTable == NULL)
 		return 0;
 
@@ -132,12 +126,12 @@ UInt32 getIndScriptLanguage(ATSFontInstance fontInstance, UInt32 script, UInt32 
 	return 0;
 }
 
-UInt32 countFeatures(ATSFontInstance fontInstance, UInt32 script, UInt32 language)
+UInt32 countFeatures(XeTeXFont font, UInt32 script, UInt32 language)
 {
 	UInt32  total = 0;
     const GlyphLookupTableHeader* table;
 	for (int i = 0; i < 2; ++i) {
-		table = (const GlyphLookupTableHeader*)((ATSFontInst*)fontInstance)->getFontTable(i == 0 ? 'GSUB' : 'GPOS');
+		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? 'GSUB' : 'GPOS');
 		if (table != NULL) {
 			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + table->scriptListOffset);
 			const ScriptTable*  scriptTable = scriptList->findScript(script);
@@ -155,12 +149,12 @@ UInt32 countFeatures(ATSFontInstance fontInstance, UInt32 script, UInt32 languag
 	return total;
 }
 
-UInt32 getIndFeature(ATSFontInstance fontInstance, UInt32 script, UInt32 language, UInt32 index)
+UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 index)
 {
     const GlyphLookupTableHeader* table;
 	UInt16  featureIndex = 0xffff;
 	for (int i = 0; i < 2; ++i) {
-		table = (const GlyphLookupTableHeader*)((ATSFontInst*)fontInstance)->getFontTable(i == 0 ? 'GSUB' : 'GPOS');
+		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? 'GSUB' : 'GPOS');
 		if (table != NULL) {
 			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + table->scriptListOffset);
 			const ScriptTable*  scriptTable = scriptList->findScript(script);
@@ -189,36 +183,37 @@ UInt32 getIndFeature(ATSFontInstance fontInstance, UInt32 script, UInt32 languag
 	return 0;
 }
 
-float getGlyphWidth(ATSFontInstance fontInstance, UInt32 gid)
+float getGlyphWidth(XeTeXFont font, UInt32 gid)
 {
 	LEPoint	adv;
-	((ATSFontInst*)fontInstance)->getGlyphAdvance(gid, adv);
+	((XeTeXFontInst*)font)->getGlyphAdvance(gid, adv);
 	return adv.fX;
 }
 
 UInt32
-countGlyphs(ATSFontInstance fontInstance)
+countGlyphs(XeTeXFont font)
 {
-	return ((ATSFontInst*)fontInstance)->getNumGlyphs();
+	return ((XeTeXFontInst*)font)->getNumGlyphs();
 }
 
-ATSFontInstance getFontInstance(XeTeXLayoutEngine engine)
+XeTeXFont getFont(XeTeXLayoutEngine engine)
 {
-	return (ATSFontInstance)(engine->fontInstance);
+	return (XeTeXFont)(engine->font);
 }
 
-XeTeXLayoutEngine createLayoutEngine(ATSFontInstance fontInstance, UInt32 scriptTag, UInt32 languageTag,
+XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
 										UInt32* addFeatures, UInt32* removeFeatures, UInt32 rgbValue)
 {
 	LEErrorCode status = LE_NO_ERROR;
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
-	result->fontInstance = (ATSFontInst*)fontInstance;
+	result->font = (XeTeXFontInst*)font;
 	result->scriptTag = scriptTag;
 	result->languageTag = languageTag;
 	result->addedFeatures = addFeatures;
 	result->removedFeatures = removeFeatures;
 	result->rgbValue = rgbValue;
-	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((ATSFontInst*)fontInstance, scriptTag, languageTag, (LETag*)addFeatures, (LETag*)removeFeatures, status);
+	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((XeTeXFontInst*)font,
+						scriptTag, languageTag, (LETag*)addFeatures, (LETag*)removeFeatures, status);
 	if (LE_FAILURE(status) || result->layoutEngine == NULL) {
 		delete result;
 		return NULL;
@@ -229,11 +224,11 @@ XeTeXLayoutEngine createLayoutEngine(ATSFontInstance fontInstance, UInt32 script
 void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
 	delete engine->layoutEngine;
-	delete engine->fontInstance;
+	delete engine->font;
 }
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
-						Boolean rightToLeft, float x, float y, OSStatus* status)
+						Boolean rightToLeft, float x, float y, SInt32* status)
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	le_int32	glyphCount = engine->layoutEngine->layoutChars(chars, offset, count, max, rightToLeft, x, y, success);
@@ -241,21 +236,21 @@ SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt
 	return glyphCount;
 }
 
-void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[], OSStatus* status)
+void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[], SInt32* status)
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	engine->layoutEngine->getGlyphs((LEGlyphID*)glyphs, success);
 	*status = success;
 }
 
-void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], OSStatus* status)
+void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* status)
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	engine->layoutEngine->getGlyphPositions(positions, success);
 	*status = success;
 }
 
-void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, OSStatus* status)
+void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, SInt32* status)
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	engine->layoutEngine->getGlyphPosition(index, *x, *y, success);
@@ -272,20 +267,15 @@ UInt32 getLanguageTag(XeTeXLayoutEngine engine)
 	return engine->languageTag;
 }
 
-ATSFontRef getFontRef(XeTeXLayoutEngine engine)
-{
-	return engine->fontInstance->getATSFont();
-}
-
 float getPointSize(XeTeXLayoutEngine engine)
 {
-	return engine->fontInstance->getXPixelsPerEm();
+	return engine->font->getXPixelsPerEm();
 }
 
 void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent)
 {
-	*ascent = engine->fontInstance->getExactAscent();
-	*descent = engine->fontInstance->getExactDescent();
+	*ascent = engine->font->getExactAscent();
+	*descent = engine->font->getExactDescent();
 }
 
 UInt32* getAddedFeatures(XeTeXLayoutEngine engine)

@@ -9,53 +9,62 @@
  cpl1.0.txt included with the software.
 \****************************************************************************/
 
+#ifdef XETEX_MAC
 #include <Carbon/Carbon.h>
+#else
+#include "XeTeXMacTypes.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct ATSFontInstance_rec* ATSFontInstance;
+typedef struct XeTeXFont_rec* XeTeXFont;
 typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
-ATSFontInstance createFontInstance(ATSFontRef atsFont, Fixed pointSize);
+#ifdef XETEX_MAC
+extern char	gPrefEngine;
 
-void deleteFontInstance(ATSFontInstance fontInstance);
+ATSFontRef getFontRef(XeTeXLayoutEngine engine);
+XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
 
-void applyOpticalSize(ATSFontInstance fontInstance, Fixed opticalSize);
+ATSFontRef findFontByName(const char* name, double_t size);
+#else
+// appropriate functions for other platforms
+#endif
 
-void* getFontTablePtr(ATSFontInstance fontInstance, UInt32 tableTag);
+void deleteFont(XeTeXFont font);
 
-UInt32 countScripts(ATSFontInstance fontInstance);
-UInt32 getIndScript(ATSFontInstance fontInstance, UInt32 index);
-UInt32 countScriptLanguages(ATSFontInstance fontInstance, UInt32 script);
-UInt32 getIndScriptLanguage(ATSFontInstance fontInstance, UInt32 script, UInt32 index);
-UInt32 countFeatures(ATSFontInstance fontInstance, UInt32 script, UInt32 language);
-UInt32 getIndFeature(ATSFontInstance fontInstance, UInt32 script, UInt32 language, UInt32 index);
-float getGlyphWidth(ATSFontInstance fontInstance, UInt32 gid);
-UInt32 countGlyphs(ATSFontInstance fontInstance);
+void* getFontTablePtr(XeTeXFont font, UInt32 tableTag);
 
-XeTeXLayoutEngine createLayoutEngine(ATSFontInstance fontInstance, UInt32 scriptTag, UInt32 languageTag,
+UInt32 countScripts(XeTeXFont font);
+UInt32 getIndScript(XeTeXFont font, UInt32 index);
+UInt32 countScriptLanguages(XeTeXFont font, UInt32 script);
+UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index);
+UInt32 countFeatures(XeTeXFont font, UInt32 script, UInt32 language);
+UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 index);
+float getGlyphWidth(XeTeXFont font, UInt32 gid);
+UInt32 countGlyphs(XeTeXFont font);
+
+XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
 						UInt32* addFeatures, UInt32* removeFeatures, UInt32 rgbValue);
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine);
 
-ATSFontInstance getFontInstance(XeTeXLayoutEngine engine);
+XeTeXFont getFont(XeTeXLayoutEngine engine);
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
-						Boolean rightToLeft, float x, float y, OSStatus* status);
+						Boolean rightToLeft, float x, float y, SInt32* status);
 
-void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[], OSStatus* status);
+void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[], SInt32* status);
 
-void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], OSStatus* status);
+void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* status);
 
-void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, OSStatus* status);
+void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, SInt32* status);
 
 UInt32 getScriptTag(XeTeXLayoutEngine engine);
 
 UInt32 getLanguageTag(XeTeXLayoutEngine engine);
-
-ATSFontRef getFontRef(XeTeXLayoutEngine engine);
 
 float getPointSize(XeTeXLayoutEngine engine);
 

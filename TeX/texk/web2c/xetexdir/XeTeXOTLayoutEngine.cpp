@@ -154,8 +154,20 @@ XeTeXOTLayoutEngine::XeTeXOTLayoutEngine(
 		: OpenTypeLayoutEngine(fontInstance, getScriptCode(scriptTag), getLanguageCode(languageTag), 3, gsubTable)
 {
 	fDefaultFeatures = fFeatureList;
-	fScriptTag = scriptTag;
-	fLangSysTag = languageTag;
+	
+	// check the result of setScriptAndLanguageTags(), in case they were unknown to ICU
+	if (fScriptTag != scriptTag || fLangSysTag != languageTag) {
+		fScriptTag = scriptTag;
+		fLangSysTag = languageTag;
+	
+		// reset the GPOS if the tags changed
+		fGPOSTable = NULL;
+		const GlyphPositioningTableHeader *gposTable = (const GlyphPositioningTableHeader *) getFontTable('GPOS');
+		if (gposTable != NULL && gposTable->coversScriptAndLanguage(fScriptTag, fLangSysTag)) {
+			fGPOSTable = gposTable;
+		}
+	}
+
 	adjustFeatures(addFeatures, removeFeatures);
 }
 

@@ -9,18 +9,14 @@
  cpl1.0.txt included with the software.
 \****************************************************************************/
 
-/* xetexfontdict.cpp
- * Font dictionaries for XeTeX
- */
 
-#include <stdlib.h>
+#include "XeTeXFontManager_Mac.h"
 
 #include <string>
 #include <map>
 #include <vector>
 #include <algorithm>
 
-#include "xetexfontdict.h"
 #include "XeTeXLayoutInterface.h"
 
 #include "Features.h"
@@ -32,9 +28,6 @@ extern int		namelength;	/* length of the name */
 extern "C" {
 	extern void*	xmalloc(long size);	/* malloc a buffer, die on failure */
 };
-
-engineTech	preferredTech;
-
 
 typedef struct {
 	unsigned short	subFamilyID;
@@ -105,38 +98,19 @@ get_optically_sized_font(ATSUFontID fontID, double opticalSize)
 	return prev_j->fontID;
 }
 
-typedef struct {
-	unsigned short	designSize;
-	unsigned short	subFamilyID;
-	unsigned short	nameCode;
-	unsigned short	minSize;
-	unsigned short	maxSize;
-} opticalSizeRec;
-
 void
-get_optical_size_rec(ATSUFontID id, opticalSizeRec& sizeRec)
+XeTeXFontManager_Mac::getOpticalSizeRec(ATSUFontID id, opticalSizeRec& sizeRec)
 {
 	sizeRec.subFamilyID = 0;
 	XeTeXFont	font = createFont(FMGetATSFontRefFromFont(id), 655360);
 	if (font != 0) {
-		const GlyphPositioningTableHeader* gposTable = (const GlyphPositioningTableHeader*)getFontTablePtr(font, 'GPOS');
-		if (gposTable != NULL) {
-			FeatureListTable*	featureListTable = (FeatureListTable*)((char*)gposTable + gposTable->featureListOffset);
-			for (int i = 0; i < featureListTable->featureCount; ++i) {
-				UInt32  tag = *(UInt32*)&featureListTable->featureRecordArray[i].featureTag;
-				if (tag == 'size') {
-					FeatureTable*	feature = (FeatureTable*)((char*)featureListTable + featureListTable->featureRecordArray[i].featureTableOffset);
-					sizeRec = *(opticalSizeRec*)((char*)featureListTable + feature->featureParamsOffset);
-					break;
-				}
-			}
-		}
+		XeTeXFontManager::getOpticalSizeRec(font, sizeRec);
 		deleteFont(font);
 	}
 }
 
 void
-init_font_dicts()
+XeTeXFontManager_Mac::initFontDicts()
 {
 	fontDictsInitialized = true;
 
@@ -156,7 +130,7 @@ init_font_dicts()
 		char*	familyName = NULL;
 		char*	subFamilyName = NULL;
 		opticalSizeRec	sizeRec;
-		get_optical_size_rec(fontIDs[f], sizeRec);
+		getOpticalSizeRec(fontIDs[f], sizeRec);
 	
 		ItemCount	nameCount;
 		status = ATSUCountFontNames(fontIDs[f], &nameCount);
@@ -256,100 +230,43 @@ init_font_dicts()
 	// and now we can discard the opticalFamilyFromFamilyName map, we'll access the records by opticalFamilyFromFontID
 }
 
-ATSUFontID
-find_font_by_name(CFStringRef fontNameStr, double pointSize)
+void*
+XeTeXFontManager_Mac::findFont(const char* name, double_t pointSize)
+	// return value is actually an ATSFontRef
 {
 	if (fontDictsInitialized == false)
-		init_font_dicts();
+		initFontDicts();
+
+	fontSpec	spec;
+	bool	updateName = parseFontName(name, spec);
 
 	ATSUFontID	fontID = kATSUInvalidFontID;
 	
-	preferredTech = kEngineAuto;
-
-	bool	updateName = false;
-
-	FMFontStyle	reqStyle = 0;
-	CFStringRef	baseNameStr;
-	CFRange	slashRange = CFStringFind(fontNameStr, CFSTR("/"), 0);
-	if (slashRange.location != kCFNotFound) {
-		updateName = true;
-		baseNameStr = CFStringCreateWithSubstring(kCFAllocatorDefault, fontNameStr, CFRangeMake(0, slashRange.location));
-		CFIndex i;
-		CFIndex	loc = slashRange.location + 1;
-		for (i = loc; i < CFStringGetLength(fontNameStr); ++i) {
-			if ((i == loc) && (i + 3 <= CFStringGetLength(fontNameStr))) {
-				CFStringRef	str3 = CFStringCreateWithSubstring(kCFAllocatorDefault, fontNameStr, CFRangeMake(i, 3));
-				if (CFStringCompare(str3, CFSTR("AAT"), kCFCompareCaseInsensitive) == 0) {
-					preferredTech = kEngineAAT;
-					i += 2;
-					CFRelease(str3);
-					continue;
-				}
-				else if (CFStringCompare(str3, CFSTR("ICU"), kCFCompareCaseInsensitive) == 0) {
-					preferredTech = kEngineICU;
-					i += 2;
-					CFRelease(str3);
-					continue;
-				}
-			}
-			UniChar	c = CFStringGetCharacterAtIndex(fontNameStr, i);
-			if (c == 'B')
-				reqStyle |= bold;
-			else if (c == 'I')
-				reqStyle |= italic;
-			else if (c == 'S') {
-				double	reqSize = 0.0;
-				c = CFStringGetCharacterAtIndex(fontNameStr, ++i);
-				if (c == '=')
-					c = CFStringGetCharacterAtIndex(fontNameStr, ++i);
-				while ((c >= '0') && (c <= '9')) {
-					reqSize = reqSize * 10 + c - '0';
-					c = CFStringGetCharacterAtIndex(fontNameStr, ++i);
-				}
-				if (c == '.') {
-					c = CFStringGetCharacterAtIndex(fontNameStr, ++i);
-					double	dec = 1.0;
-					while ((c >= '0') && (c <= '9')) {
-						dec = dec * 10.0;
-						reqSize = reqSize + (c - '0') / dec;
-						c = CFStringGetCharacterAtIndex(fontNameStr, ++i);
-					}
-				}
-				pointSize = reqSize;
-			}
-			else if (c == '/')
-				loc = i + 1;
-		}
-	}
-	else
-		baseNameStr = CFStringCreateCopy(kCFAllocatorDefault, fontNameStr);
-
 	std::map<std::string,ATSUFontID>::iterator	entry;
-	if (const char *s = CFStringGetCStringPtr(baseNameStr, kCFStringEncodingUTF8))
-		entry = fontIDFromFullName.find(s);
-	else {
-		CFIndex length = CFStringGetLength(baseNameStr);
-		char *buffer = new char[6 * length + 1];
-		if (CFStringGetCString(baseNameStr, buffer, 6 * length + 1, kCFStringEncodingUTF8))
-			entry = fontIDFromFullName.find(buffer);
-		delete[] buffer;
-	}
+	entry = fontIDFromFullName.find(spec.name);
 	if (entry != fontIDFromFullName.end())
 		fontID = entry->second;
-
-	CFRelease(baseNameStr);
 	
-	if (reqStyle != 0) {
+	if (spec.reqBold || spec.reqItal) {
+		FMFontStyle		reqStyle = 0;
+		if (spec.reqBold)
+			reqStyle |= bold;
+		if (spec.reqItal)
+			reqStyle |= italic;
 		FMFontFamily	family; 
 		FMFontStyle		style;
 		FMGetFontFamilyInstanceFromFont(fontID, &family, &style);
 
 		FMFont	styledFontID;
-		FMGetFontFromFontFamilyInstance(family, reqStyle, &fontID, &style);
-		updateName = true;
+		FMGetFontFromFontFamilyInstance(family, reqStyle, &styledFontID, &style);
+		if (styledFontID != fontID) {
+			updateName = true;
+			fontID = styledFontID;
+		}
 	}
-	
-	if (pointSize != 0.0) {
+	if (spec.reqSize != 0.0) {
+		if (spec.reqSize > 0.0)
+			pointSize = spec.reqSize;
 		ATSUFontID	sizedFontID = get_optically_sized_font(fontID, pointSize);
 		if (sizedFontID != fontID) {
 			updateName = true;
@@ -391,7 +308,7 @@ find_font_by_name(CFStringRef fontNameStr, double pointSize)
 				styledNameStr = CFStringCreateWithCharacters(0, (UniChar*)nameBuf, nameLen / 2);
 
 			if (styledNameStr != 0) {
-				// we found a different font, so change the UTF8 name in nameoffile....
+				// change the UTF8 name in nameoffile....but preserve the feature string, if any
 				char*	cp = nameoffile + 1;
 				while (cp <= nameoffile + namelength)
 					if (*cp == ':')
@@ -418,6 +335,5 @@ find_font_by_name(CFStringRef fontNameStr, double pointSize)
 		
 	}
 
-	
-	return fontID;
+	return (void*)(FMGetATSFontRefFromFont(fontID));
 }

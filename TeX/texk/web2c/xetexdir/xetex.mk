@@ -15,9 +15,11 @@ xetex = @XETEX@ xetex
 # Platform specific defines and files to be built
 #Mac
 ifeq '$(target_vendor)' 'apple'
-xetex_platform_o = xetexmac.o
-xetex_platform_layout_o = ATSFontInst.o 
-xetex_platform_layout_cxx = ATSFontInst.cpp
+xetex_platform_o = XeTeX_mac.o # xetexmac.o
+# xetex_platform_layout_o = ATSFontInst.o 
+# xetex_platform_layout_cxx = ATSFontInst.cpp
+xetex_platform_layout_o = XeTeXFontInst_Mac.o XeTeXFontManager_Mac.o
+xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp XeTeXFontManager_Mac.cpp
 
 XETEX_DEFINES = -DXETEX_MAC
 
@@ -42,57 +44,80 @@ xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 
 # The C sources.
 xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
-xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o $(xetex_platform_o) xetexfontdict.o
+xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o XeTeX_ext.o $(xetex_platform_o)
 
 # Layout library sources
-xetex_ot_layout_o = $(xetex_platform_layout_o) cmaps.o FontObject.o FontTableCache.o XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o # MongolianShaping.o
-xetex_ot_layout_cxx = $(xetex_platform_layout_cxx) cmaps.cpp FontObject.cpp FontTableCache.cpp XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp # MongolianShaping.cpp
+xetex_ot_layout_o = XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
+		XeTeXFontInst.o cmaps.o FontObject.o FontTableCache.o \
+		XeTeXFontManager.o \
+		$(xetex_platform_layout_o) 
+xetex_ot_layout_cxx = XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp \
+		XeTeXFontInst.cpp cmaps.cpp FontObject.cpp FontTableCache.cpp \
+		XeTeXFontManager.cpp \
+		$(xetex_platform_layout_cxx)
+
+icudir = icu-release-3-4
 
 ICUCFLAGS = \
-	-I../../libs/icu-3.2/common/unicode/ \
-	-I../../libs/icu-3.2/common/ \
-	-I../../../../TeX/libs/icu-3.2/source/common/unicode/ \
-	-I../../../../TeX/libs/icu-3.2/source/common/ \
-	-I../../../../TeX/libs/icu-3.2/source/layout/unicode/ \
-	-I../../../../TeX/libs/icu-3.2/source/layout/ \
-	-I../../../../TeX/libs/icu-3.2/source/ \
+	-I../../libs/$(icudir)/common/unicode/ \
+	-I../../libs/$(icudir)/common/ \
+	-I../../../../TeX/libs/$(icudir)/source/common/unicode/ \
+	-I../../../../TeX/libs/$(icudir)/source/common/ \
+	-I../../../../TeX/libs/$(icudir)/source/layout/unicode/ \
+	-I../../../../TeX/libs/$(icudir)/source/layout/ \
+	-I../../../../TeX/libs/$(icudir)/source/ \
 	-DLE_USE_CMEMORY
 
 TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
 
-ATSFontInst.o: $(srcdir)/xetexdir/ATSFontInst.cpp
+XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp $(srcdir)/xetexdir/xetex.mk
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
-cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
-FontObject.o: $(srcdir)/xetexdir/FontObject.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
-FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
-XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
-XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
-MongolianShaping.o: $(srcdir)/xetexdir/MongolianShaping.cpp
+XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp $(srcdir)/xetexdir/xetex.mk
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
-xetexfontdict.o: $(srcdir)/xetexdir/xetexfontdict.cpp
-	$(CXX) $(ALL_CXXFLAGS) $(ICUCFLAGS) $(XETEX_DEFINES) -c $< -o $@
+XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+cmaps.o: $(srcdir)/xetexdir/cmaps.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+FontObject.o: $(srcdir)/xetexdir/FontObject.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+
+XeTeXFontManager_Mac.o: $(srcdir)/xetexdir/XeTeXFontManager_Mac.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp $(srcdir)/xetexdir/xetex.mk
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+
+# MongolianShaping.o: $(srcdir)/xetexdir/MongolianShaping.cpp $(srcdir)/xetexdir/xetex.mk
+# 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+
+#xetexfontdict.o: $(srcdir)/xetexdir/xetexfontdict.cpp
+#	$(CXX) $(ALL_CXXFLAGS) $(ICUCFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 
 xetexlibs = \
-	../../libs/teckit/lib/.libs/libTECkit.a -lz \
-	../../libs/icu-3.2/lib/libsicuucXeTeX.a \
-	../../libs/icu-3.2/lib/libsiculeXeTeX.a \
-	../../libs/icu-3.2/lib/libsicudataXeTeX.a
+	../../libs/teckit/lib/.libs/libTECkit.a \
+	../../libs/$(icudir)/lib/libsicuuc.a \
+	../../libs/$(icudir)/lib/libsicule.a \
+	../../libs/$(icudir)/lib/libsicudata.a
 
 # special rule for xetexmac.c as we need the ICU and TECkit headers as well
-xetexmac.o: $(srcdir)/xetexdir/xetexmac.c xetexd.h
+#xetexmac.o: $(srcdir)/xetexdir/xetexmac.c xetexd.h
+#	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(XETEX_DEFINES) -c $< -o $@
+
+XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
+	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(XETEX_DEFINES) -c $< -o $@
+XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
 	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
+
 # Making xetex.
-xetex: $(xetex_ot_layout_o) $(xetex_o)
+xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetexlibs)
 	$(kpathsea_cxx_link) $(xetex_o) $(xetex_ot_layout_o) $(socketlibs) $(LOADLIBES) \
-	$(xetexlibs) $(FRAMEWORKS)
+	$(xetexlibs) $(FRAMEWORKS) -lz
 
 # C file dependencies
 $(xetex_c) xetexcoerce.h xetexd.h: xetex.p $(web2c_texmf)

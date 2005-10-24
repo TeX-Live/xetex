@@ -30,8 +30,6 @@ extern "C" {
 
 	ATSUFontID	find_font_by_name(CFStringRef fontNameStr, double pointSize);
 
-	ATSUFontID	get_optically_sized_font(ATSUFontID fontID, double opticalSize);
-
 #ifdef __cplusplus
 };
 #endif
