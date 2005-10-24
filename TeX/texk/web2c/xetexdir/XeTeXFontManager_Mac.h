@@ -24,7 +24,7 @@ public:
 	virtual 					~XeTeXFontManager_Mac()
 									{ }
 
-	virtual void*				findFont(const char* fontName, double_t pointSize);
+	virtual void*				findFont(const char* fontName, double pointSize);
 //	virtual char*				getFontPSName(void* fontRef);
 	
 protected:

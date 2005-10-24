@@ -64,4 +64,6 @@
 #undef Xchr
 #define Xchr(x)		(x)
 
-#include <Carbon/Carbon.h>
+#ifdef XETEX_MAC
+#include <Carbon/Carbon.h>	/* for Mac OS X, it's handy to have the Carbon APIs available */
+#endif

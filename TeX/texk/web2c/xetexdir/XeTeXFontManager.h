@@ -22,7 +22,7 @@ public:
 	static XeTeXFontManager*	gFontManager;	// the global font manager object
 	static XeTeXFontManager*	GetFontManager();
 	
-	virtual void*				findFont(const char* fontName, double_t pointSize) = 0;
+	virtual void*				findFont(const char* fontName, double pointSize) = 0;
 //	virtual char*				getFontPSName(void* fontRef) = 0;
 
 	typedef struct {

@@ -4213,22 +4213,24 @@ end
 @<Declare procedures needed in |do_extension|@>=
 procedure load_picture(@!is_pdf:boolean);
 var
-	x_size_req,y_size_req: real;
-	check_keywords: boolean;
+{
 	alias: Handle;
 	bounds: CGRect;
-	x_size, y_size: real;
-	page: integer;
 	t, t2: CGAffineTransform;
 	corners: array[0..3] of CGPoint;
+}
+	x_size_req,y_size_req: real;
+	check_keywords: boolean;
+	x_size, y_size: real;
 	xmin,xmax,ymin,ymax: real;
 	i: small_number;
+	page: integer;
 	result: integer;
 begin
 	{ scan the filename and pack into name_of_file }
 	scan_file_name;
 	pack_cur_name;
-	
+
 	page := 0;
 	if is_pdf then begin
 		if scan_keyword("page") then begin
@@ -4238,18 +4240,18 @@ begin
 	end;
 
 	{ access the picture file and check its size }
-	result := find_pic_file(address_of(alias), address_of(bounds), is_pdf, page);
-	
+	result := false; {find_pic_file(address_of(alias), address_of(bounds), is_pdf, page);}
+{	
 	corners[0] := CGPointMake(0.0, 0.0);
 	corners[1] := CGPointMake(0.0, cgRectHeight(bounds) * 72.27 / 72.0);
 	corners[2] := CGPointMake(cgRectWidth(bounds) * 72.27 / 72.0, cgRectHeight(bounds) * 72.27 / 72.0);
 	corners[3] := CGPointMake(cgRectWidth(bounds) * 72.27 / 72.0, 0.0);
-
+}
 	x_size_req := 0.0;
 	y_size_req := 0.0;
 
 	{ look for any scaling requests for this picture }
-	t := CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+{	t := CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
 	
 	check_keywords := true;
 	while check_keywords do begin
@@ -4336,12 +4338,11 @@ begin
 		pic_transform5(tail) := X2Fix(txfield(t));
 		pic_transform6(tail) := X2Fix(tyfield(t));
 	
-		{ copy the alias into the pic_node }
 		BlockMoveData(deref(alias), address_of(mem[tail + pic_node_size]), GetHandleSize(alias));
 		DisposeHandle(alias);
 	
 	end else begin
-		
+}		
 		print_err("Unable to load picture or PDF file '");
 		print_file_name(cur_name,cur_area,cur_ext); print("'");
 		if result = -43 then begin { Mac OS file not found error }
@@ -4353,9 +4354,9 @@ begin
 				 ("it was not a recognized image format.");
 		end;
 		error;
-		
+{		
 	end;
-
+}
 end;
 
 @ @<Implement \.{\\XeTeXinputencoding}@>=

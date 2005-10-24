@@ -51,7 +51,7 @@ ATSFontRef getFontRef(XeTeXLayoutEngine engine)
 	return ((XeTeXFontInst_Mac*)(engine->font))->getATSFont();
 }
 
-ATSFontRef findFontByName(const char* name, double_t size)
+ATSFontRef findFontByName(const char* name, double size)
 {
 	return (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
 }
@@ -69,7 +69,7 @@ void* getFontTablePtr(XeTeXFont font, UInt32 tableTag)
 
 UInt32 countScripts(XeTeXFont font)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
 	if (gsubTable == NULL)
 		return 0;
 
@@ -81,7 +81,7 @@ UInt32 countScripts(XeTeXFont font)
 
 UInt32 getIndScript(XeTeXFont font, UInt32 index)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
 	if (gsubTable == NULL)
 		return 0;
 
@@ -95,7 +95,7 @@ UInt32 getIndScript(XeTeXFont font, UInt32 index)
 
 UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
 	if (gsubTable == NULL)
 		return 0;
 	
@@ -111,7 +111,7 @@ UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 
 UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable('GSUB');
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
 	if (gsubTable == NULL)
 		return 0;
 
@@ -131,7 +131,7 @@ UInt32 countFeatures(XeTeXFont font, UInt32 script, UInt32 language)
 	UInt32  total = 0;
     const GlyphLookupTableHeader* table;
 	for (int i = 0; i < 2; ++i) {
-		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? 'GSUB' : 'GPOS');
+		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? kGSUB : kGPOS);
 		if (table != NULL) {
 			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + table->scriptListOffset);
 			const ScriptTable*  scriptTable = scriptList->findScript(script);
@@ -154,7 +154,7 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
     const GlyphLookupTableHeader* table;
 	UInt16  featureIndex = 0xffff;
 	for (int i = 0; i < 2; ++i) {
-		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? 'GSUB' : 'GPOS');
+		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? kGSUB : kGPOS);
 		if (table != NULL) {
 			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + table->scriptListOffset);
 			const ScriptTable*  scriptTable = scriptList->findScript(script);
@@ -228,7 +228,7 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 }
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
-						Boolean rightToLeft, float x, float y, SInt32* status)
+						char rightToLeft, float x, float y, SInt32* status)
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	le_int32	glyphCount = engine->layoutEngine->layoutChars(chars, offset, count, max, rightToLeft, x, y, success);
@@ -291,10 +291,10 @@ UInt32* getRemovedFeatures(XeTeXLayoutEngine engine)
 int getDefaultDirection(XeTeXLayoutEngine engine)
 {
 	switch (engine->scriptTag) {
-		case 'syrc':
-		case 'thaa':
-		case 'hebr':
-		case 'arab':
+		case kArabic:
+		case kSyriac:
+		case kThaana:
+		case kHebrew:
 			return UBIDI_DEFAULT_RTL;
 	}
 	return UBIDI_DEFAULT_LTR;

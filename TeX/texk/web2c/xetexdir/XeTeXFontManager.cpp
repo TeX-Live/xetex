@@ -28,7 +28,7 @@ XeTeXFontManager::GetFontManager()
 #ifdef XETEX_MAC
 		gFontManager = new XeTeXFontManager_Mac();	// create Mac OS version
 #else
-		gFontManager = new XeTeXFontManager_FC();	// FontConfig version
+//		gFontManager = new XeTeXFontManager_FC();	// FontConfig version
 #endif
 	}
 

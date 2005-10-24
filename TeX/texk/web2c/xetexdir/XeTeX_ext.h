@@ -12,8 +12,6 @@
 #ifndef __XETEXEXT_H
 #define __XETEXEXT_H
 
-#include "TECkit_Engine.h"
-
 #define AAT_FONT_FLAG	65535
 #define	OT_FONT_FLAG	65534
 
@@ -22,15 +20,23 @@
    but otherwise we'll need these substitute definitions */
 
 #ifndef XETEX_MAC
-typedef signed char		SInt8;
+#ifndef __TECkit_Common_H__
 typedef unsigned char	UInt8;
-typedef short			SInt16;
 typedef unsigned short	UInt16;
-typedef int				SInt32;
 typedef unsigned int	UInt32;
-
 typedef UInt16			UniChar;
+#endif
+
+typedef signed char		SInt8;
+typedef short			SInt16;
+typedef int				SInt32;
+
 typedef SInt32			OSStatus;
+typedef SInt32			Fixed;
+typedef struct {
+	Fixed	x;
+	Fixed	y;
+} FixedPoint;
 #endif
 
 
@@ -64,7 +70,21 @@ typedef SInt32			OSStatus;
 #define XeTeX_feature_name	8
 #define XeTeX_selector_name	9
 
+#define kGSUB	0x47535542
+#define kGPOS	0x47504f53
 
-TECkit_Converter	load_mapping_file(const char* s, const char* e);
+#define kLatin	0x6c61746e
+#define kSyriac	0x73797263
+#define kArabic	0x61726162
+#define kThaana	0x74686161
+#define kHebrew	0x68656272
+
+/* some Mac OS X functions that we provide ourselves for other platforms */
+#ifndef XETEX_MAC
+
+double	Fix2X(Fixed f);
+Fixed	X2Fix(double d);
+
+#endif
 
 #endif

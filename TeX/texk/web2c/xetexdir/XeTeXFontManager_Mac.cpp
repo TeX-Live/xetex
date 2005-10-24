@@ -231,7 +231,7 @@ XeTeXFontManager_Mac::initFontDicts()
 }
 
 void*
-XeTeXFontManager_Mac::findFont(const char* name, double_t pointSize)
+XeTeXFontManager_Mac::findFont(const char* name, double pointSize)
 	// return value is actually an ATSFontRef
 {
 	if (fontDictsInitialized == false)

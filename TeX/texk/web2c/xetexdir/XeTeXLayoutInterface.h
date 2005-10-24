@@ -9,11 +9,7 @@
  cpl1.0.txt included with the software.
 \****************************************************************************/
 
-#ifdef XETEX_MAC
-#include <Carbon/Carbon.h>
-#else
-#include "XeTeXMacTypes.h"
-#endif
+#include "XeTeX_ext.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,15 +18,16 @@ extern "C" {
 typedef struct XeTeXFont_rec* XeTeXFont;
 typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
-#ifdef XETEX_MAC
 extern char	gPrefEngine;
 
+#ifdef XETEX_MAC
 ATSFontRef getFontRef(XeTeXLayoutEngine engine);
 XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
 
-ATSFontRef findFontByName(const char* name, double_t size);
+ATSFontRef findFontByName(const char* name, double size);
 #else
 // appropriate functions for other platforms
+XeTeXFont createFont(void* fontRef, Fixed pointSize);
 #endif
 
 void deleteFont(XeTeXFont font);
@@ -53,12 +50,12 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine);
 
 XeTeXFont getFont(XeTeXLayoutEngine engine);
 
-SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
-						Boolean rightToLeft, float x, float y, SInt32* status);
+SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16* chars, SInt32 offset, SInt32 count, SInt32 max,
+						char rightToLeft, float x, float y, SInt32* status);
 
-void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[], SInt32* status);
+void getGlyphs(XeTeXLayoutEngine engine, UInt32* glyphs, SInt32* status);
 
-void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* status);
+void getGlyphPositions(XeTeXLayoutEngine engine, float* positions, SInt32* status);
 
 void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, SInt32* status);
 
