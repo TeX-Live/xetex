@@ -36,6 +36,8 @@ XETEX_DEFINES = -DXETEX_OTHER
 FRAMEWORKS =
 endif
 
+XDEFS = $(XETEX_DEFINES)
+
 # Extract xetex version
 xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 	test -d xetexdir || mkdir xetexdir
@@ -71,25 +73,25 @@ ICUCFLAGS = \
 TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 FontObject.o: $(srcdir)/xetexdir/FontObject.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 XeTeXFontManager_Mac.o: $(srcdir)/xetexdir/XeTeXFontManager_Mac.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 
 xetexlibs = \
@@ -100,9 +102,9 @@ xetexlibs = \
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(DEFS) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(DEFS) -c $< -o $@
 
 
 # Making xetex.
