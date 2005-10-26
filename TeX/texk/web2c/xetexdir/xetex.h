@@ -23,19 +23,6 @@
 
 #define deref(p)				(*(p))
 
-#define cgRectHeight(r)			((r).size.height)
-#define cgRectWidth(r)			((r).size.width)
-
-#define xcoord(p)				p.x
-#define ycoord(p)				p.y
-
-#define afield(t)				t.a
-#define bfield(t)				t.b
-#define cfield(t)				t.c
-#define dfield(t)				t.d
-#define txfield(t)				t.tx
-#define tyfield(t)				t.ty
-
 #define findpicfile(a,b,c,d)	find_pic_file(a, b, c, d)
 
 #define picaliasbyte(p,i)		((unsigned char*)&(mem[p+pic_node_size]))[i]
@@ -67,3 +54,5 @@
 #ifdef XETEX_MAC
 #include <Carbon/Carbon.h>	/* for Mac OS X, it's handy to have the Carbon APIs available */
 #endif
+
+#include "trans.h"	/* functions for affine transform operations */

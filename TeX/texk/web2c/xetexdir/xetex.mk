@@ -46,7 +46,7 @@ xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 
 # The C sources.
 xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
-xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o XeTeX_ext.o $(xetex_platform_o)
+xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o trans.o XeTeX_ext.o $(xetex_platform_o)
 
 # Layout library sources
 xetex_ot_layout_o = XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
@@ -102,10 +102,12 @@ xetexlibs = \
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
+trans.o: $(srcdir)/xetexdir/trans.c
+	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 # Making xetex.
 xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetexlibs)

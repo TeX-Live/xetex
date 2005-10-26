@@ -4183,42 +4183,40 @@ end
 		ymin := xmin;
 		ymax := xmax;
 		for i := 0 to 3 do begin
-			if xcoord(corners[i]) < xmin then xmin := xcoord(corners[i]);
-			if xcoord(corners[i]) > xmax then xmax := xcoord(corners[i]);
-			if ycoord(corners[i]) < ymin then ymin := ycoord(corners[i]);
-			if ycoord(corners[i]) > ymax then ymax := ycoord(corners[i]);
+			if xCoord(corners[i]) < xmin then xmin := xCoord(corners[i]);
+			if xCoord(corners[i]) > xmax then xmax := xCoord(corners[i]);
+			if yCoord(corners[i]) < ymin then ymin := yCoord(corners[i]);
+			if yCoord(corners[i]) > ymax then ymax := yCoord(corners[i]);
 		end;
 	end
 
 @d update_corners==
 	for i := 0 to 3 do
-		corners[i] := CGPointApplyAffineTransform(corners[i], t2)
+		transform_point(address_of(corners[i]), address_of(t2))
 
 @d do_size_requests==begin
 	{ calculate current width and height }
 	calc_min_and_max;
 	if x_size_req = 0.0 then begin
-		t2 := CGAffineTransformMakeScale(y_size_req / (ymax - ymin), y_size_req / (ymax - ymin));
+		make_scale(address_of(t2), y_size_req / (ymax - ymin), y_size_req / (ymax - ymin));
 	end else if y_size_req = 0.0 then begin
-		t2 := CGAffineTransformMakeScale(x_size_req / (xmax - xmin), x_size_req / (xmax - xmin));
+		make_scale(address_of(t2), x_size_req / (xmax - xmin), x_size_req / (xmax - xmin));
 	end else begin
-		t2 := CGAffineTransformMakeScale(x_size_req / (xmax - xmin), y_size_req / (ymax - ymin));
+		make_scale(address_of(t2), x_size_req / (xmax - xmin), y_size_req / (ymax - ymin));
 	end;
 	update_corners;
 	x_size_req := 0.0;
 	y_size_req := 0.0;
-	t := CGAffineTransformConcat(t, t2);
+	transform_concat(address_of(t), address_of(t2));
 end
 
 @<Declare procedures needed in |do_extension|@>=
 procedure load_picture(@!is_pdf:boolean);
 var
-{
-	alias: Handle;
-	bounds: CGRect;
-	t, t2: CGAffineTransform;
-	corners: array[0..3] of CGPoint;
-}
+	pic_path: ^char;
+	bounds: real_rect;
+	t, t2: transform;
+	corners: array[0..3] of real_point;
 	x_size_req,y_size_req: real;
 	check_keywords: boolean;
 	x_size, y_size: real;
@@ -4240,41 +4238,41 @@ begin
 	end;
 
 	{ access the picture file and check its size }
-	result := false; {find_pic_file(address_of(alias), address_of(bounds), is_pdf, page);}
-{	
-	corners[0] := CGPointMake(0.0, 0.0);
-	corners[1] := CGPointMake(0.0, cgRectHeight(bounds) * 72.27 / 72.0);
-	corners[2] := CGPointMake(cgRectWidth(bounds) * 72.27 / 72.0, cgRectHeight(bounds) * 72.27 / 72.0);
-	corners[3] := CGPointMake(cgRectWidth(bounds) * 72.27 / 72.0, 0.0);
-}
+	result := find_pic_file(address_of(pic_path), address_of(bounds), is_pdf, page);
+
+	setPoint(corners[0], 0.0, 0.0);
+	setPoint(corners[1], 0.0, htField(bounds) * 72.27 / 72.0);
+	setPoint(corners[2], wdField(bounds) * 72.27 / 72.0, htField(bounds) * 72.27 / 72.0);
+	setPoint(corners[3], wdField(bounds) * 72.27 / 72.0, 0.0);
+
 	x_size_req := 0.0;
 	y_size_req := 0.0;
 
 	{ look for any scaling requests for this picture }
-{	t := CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	make_identity(address_of(t));
 	
 	check_keywords := true;
 	while check_keywords do begin
 		if scan_keyword("scaled") then begin
 			scan_int;
 			if (x_size_req = 0.0) and (y_size_req = 0.0) then begin
-				t2 := CGAffineTransformMakeScale(float(cur_val) / 1000.0, float(cur_val) / 1000.0);
+				make_scale(address_of(t2), float(cur_val) / 1000.0, float(cur_val) / 1000.0);
 				update_corners;
-				t := CGAffineTransformConcat(t, t2);
+				transform_concat(address_of(t), address_of(t2));
 			end
 		end else if scan_keyword("xscaled") then begin
 			scan_int;
 			if (x_size_req = 0.0) and (y_size_req = 0.0) then begin
-				t2 := CGAffineTransformMakeScale(float(cur_val) / 1000.0, 1.0);
+				make_scale(address_of(t2), float(cur_val) / 1000.0, 1.0);
 				update_corners;
-				t := CGAffineTransformConcat(t, t2);
+				transform_concat(address_of(t), address_of(t2));
 			end
 		end else if scan_keyword("yscaled") then begin
 			scan_int;
 			if (x_size_req = 0.0) and (y_size_req = 0.0) then begin
-				t2 := CGAffineTransformMakeScale(1.0, float(cur_val) / 1000.0);
+				make_scale(address_of(t2), 1.0, float(cur_val) / 1000.0);
 				update_corners;
-				t := CGAffineTransformConcat(t, t2);
+				transform_concat(address_of(t), address_of(t2));
 			end
 		end else if scan_keyword("width") then begin
 			scan_normal_dimen;
@@ -4303,14 +4301,14 @@ begin
 		end else if scan_keyword("rotated") then begin
 			scan_decimal;
 			if (x_size_req <> 0.0) or (y_size_req <> 0.0) then do_size_requests;
-			t2 := CGAffineTransformMakeRotation(Fix2X(cur_val) * 3.141592653589793 / 180.0);
+			make_rotation(address_of(t2), Fix2X(cur_val) * 3.141592653589793 / 180.0);
 			update_corners;
 			calc_min_and_max;
-			corners[0] := CGPointMake(xmin, ymin);
-			corners[1] := CGPointMake(xmin, ymax);
-			corners[2] := CGPointMake(xmax, ymax);
-			corners[3] := CGPointMake(xmax, ymin);
-			t := CGAffineTransformConcat(t, t2);
+			setPoint(corners[0], xmin, ymin);
+			setPoint(corners[1], xmin, ymax);
+			setPoint(corners[2], xmax, ymax);
+			setPoint(corners[3], xmax, ymin);
+			transform_concat(address_of(t), address_of(t2));
 		end else
 			check_keywords := false;
 	end;
@@ -4318,8 +4316,10 @@ begin
 	if (x_size_req <> 0.0) or (y_size_req <> 0.0) then do_size_requests;
 	
 	calc_min_and_max;
-	t := CGAffineTransformConcat(t, CGAffineTransformMakeTranslation(-xmin, -ymin));
+	make_translation(address_of(t2), -xmin, -ymin);
+	transform_concat(address_of(t), address_of(t2));
 	
+{
 	if result = 0 then begin
 
 		new_whatsit(pic_node, pic_node_size + (GetHandleSize(alias) + sizeof(memory_word) - 1) div sizeof(memory_word));
@@ -4331,12 +4331,12 @@ begin
 		height(tail) := X2Fix(ymax - ymin);
 		depth(tail) := 0;
 	
-		pic_transform1(tail) := X2Fix(afield(t));
-		pic_transform2(tail) := X2Fix(bfield(t));
-		pic_transform3(tail) := X2Fix(cfield(t));
-		pic_transform4(tail) := X2Fix(dfield(t));
-		pic_transform5(tail) := X2Fix(txfield(t));
-		pic_transform6(tail) := X2Fix(tyfield(t));
+		pic_transform1(tail) := X2Fix(aField(t));
+		pic_transform2(tail) := X2Fix(bField(t));
+		pic_transform3(tail) := X2Fix(cField(t));
+		pic_transform4(tail) := X2Fix(dField(t));
+		pic_transform5(tail) := X2Fix(xField(t));
+		pic_transform6(tail) := X2Fix(yField(t));
 	
 		BlockMoveData(deref(alias), address_of(mem[tail + pic_node_size]), GetHandleSize(alias));
 		DisposeHandle(alias);

@@ -58,9 +58,15 @@
 { extra stuff used in picfile code }
 @define type Handle;
 @define type Ptr;
+{
 @define type CGPoint;
 @define type CGRect;
 @define type CGAffineTransform;
+}
+@define type realpoint;
+@define type realrect;
+@define type transform;
+
 @define function deref();
 @define function cgRectWidth();
 @define function cgRectHeight();
@@ -71,6 +77,7 @@
 @define procedure DisposeHandle();
 @define function findpicfile();
 @define function picaliasbyte();
+{
 @define function CGAffineTransformMake();
 @define function CGAffineTransformMakeScale();
 @define function CGAffineTransformMakeRotation();
@@ -82,12 +89,24 @@
 @define function CGAffineTransformInvert();
 @define function CGPointMake();
 @define function CGPointApplyAffineTransform();
-@define function xcoord();
-@define function ycoord();
-@define function afield();
-@define function bfield();
-@define function cfield();
-@define function dfield();
-@define function txfield();
-@define function tyfield();
+}
+@define procedure makeidentity();
+@define procedure makescale();
+@define procedure maketranslation();
+@define procedure makerotation();
+@define procedure transformpoint();
+@define procedure transformconcat();
+
+@define procedure setPoint();
+
+@define function xCoord();
+@define function yCoord();
+@define function aField();
+@define function bField();
+@define function cField();
+@define function dField();
+@define function xField();
+@define function yField();
+@define function wdField();
+@define function htField();
 @define function applymapping();

@@ -439,7 +439,7 @@ find_pic_file(Handle* picFileAlias, CGRect* bounds, int isPDF, int page)
 	return result;
 }
 
-
+/*
 void
 applyrotation(int rotation, Fixed* x_size, Fixed* y_size, Fixed* x_shift, Fixed* y_shift)
 {
@@ -465,3 +465,4 @@ applyrotation(int rotation, Fixed* x_size, Fixed* y_size, Fixed* x_shift, Fixed*
 	*x_shift -= X2Fix(ll.x);
 	*y_shift -= X2Fix(ll.y);
 }
+*/
