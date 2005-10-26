@@ -453,12 +453,13 @@ doSetNative(FILE* xdv)
 	dvi.h += wid;
 }
 
-#define NATIVE_GLYPH_DATA_SIZE	(sizeof(CGGlyph) + sizeof(CGSize))
+#define NATIVE_GLYPH_DATA_SIZE	(sizeof(UInt16) + sizeof(FixedPoint))
 static void
 doGlyphArray(FILE* xdv)
 {
 	static char*	glyphInfoBuf = 0;
 	static int		maxGlyphs = 0;
+	static CGSize*	advances = 0;
 
 	flushGlyphs();
 
@@ -470,11 +471,14 @@ doGlyphArray(FILE* xdv)
 		if (glyphInfoBuf != 0)
 			delete[] glyphInfoBuf;
 		glyphInfoBuf = new char[maxGlyphs * NATIVE_GLYPH_DATA_SIZE];
+		if (advances != 0)
+			delete[] advances;
+		advances = new CGSize[maxGlyphs];
 	}
 	
 	fread(glyphInfoBuf, NATIVE_GLYPH_DATA_SIZE, glyphCount, xdv);
-	CGPoint*	locations = (CGPoint*)glyphInfoBuf;
-	CGGlyph*	glyphs = (CGGlyph*)(locations + glyphCount);
+	FixedPoint*	locations = (FixedPoint*)glyphInfoBuf;
+	UInt16*		glyphs = (UInt16*)(locations + glyphCount);
 	
 	if (f != cur_f) {
 		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
@@ -482,16 +486,15 @@ doGlyphArray(FILE* xdv)
 		cur_f = f;
 	}
 
-	CGContextSetTextPosition(gCtx, kDvi2Scr * dvi.h + locations[0].x,
-												kDvi2Scr * (gPageHt - dvi.v) - locations[0].y);
+	CGContextSetTextPosition(gCtx, kDvi2Scr * dvi.h + Fix2X(locations[0].x),
+									kDvi2Scr * (gPageHt - dvi.v) - Fix2X(locations[0].y));
 
-	CGSize*		advances = (CGSize*)locations;
 	for (int i = 0; i < glyphCount - 1; ++i) {
-		advances[i].width = locations[i+1].x - locations[i].x;
-		advances[i].height = - (locations[i+1].y - locations[i].y);
+		advances[i].width = Fix2X(locations[i+1].x - locations[i].x);
+		advances[i].height = Fix2X(locations[i].y - locations[i+1].y);
 	}
-	advances[glyphCount-1].width = 0;
-	advances[glyphCount-1].height = 0;
+	advances[glyphCount-1].width = 0.0;
+	advances[glyphCount-1].height = 0.0;
 
 	bool	resetColor = false;
     if (gTextColor.override) {
