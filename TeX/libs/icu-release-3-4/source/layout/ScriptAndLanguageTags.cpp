@@ -37,7 +37,8 @@ const LETag OpenTypeLayoutEngine::scriptTags[] = {
     kndaScriptTag, /* 'knda' (KANNADA) */
     kanaScriptTag, /* 'kana' (KATAKANA) */
     khmrScriptTag, /* 'khmr' (KHMER) */
-    laooScriptTag, /* 'laoo' (LAO) */
+/*    laooScriptTag,*/ /* 'laoo' (LAO) */
+    laooScriptTag, /* 'lao ' (LAO) */
     latnScriptTag, /* 'latn' (LATIN) */
     mlymScriptTag, /* 'mlym' (MALAYALAM) */
     mongScriptTag, /* 'mong' (MONGOLIAN) */

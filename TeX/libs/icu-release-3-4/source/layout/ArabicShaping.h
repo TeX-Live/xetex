@@ -27,7 +27,10 @@ public:
         MASK_SHAPE_RIGHT    = 1, // if this bit set, shapes to right
         MASK_SHAPE_LEFT     = 2, // if this bit set, shapes to left
         MASK_TRANSPARENT    = 4, // if this bit set, is transparent (ignore other bits)
-        MASK_NOSHAPE        = 8  // if this bit set, don't shape this char, i.e. tatweel
+        MASK_NOSHAPE        = 8, // if this bit set, don't shape this char, i.e. tatweel
+        
+        MASK_ALAPH          = 16, // if this bit set, char is Syriac ALAPH
+        MASK_DALATH_RISH    = 32  // if this bit set, char is Syriac DALATH/RISH
     };
 
     // shaping values
@@ -39,7 +42,9 @@ public:
         ST_DUAL         = MASK_SHAPE_RIGHT | MASK_SHAPE_LEFT,
         ST_TRANSPARENT  = MASK_TRANSPARENT,
         ST_NOSHAPE_DUAL = MASK_NOSHAPE | ST_DUAL,
-        ST_NOSHAPE_NONE = MASK_NOSHAPE
+        ST_NOSHAPE_NONE = MASK_NOSHAPE,
+        ST_ALAPH        = MASK_ALAPH | MASK_SHAPE_RIGHT,
+        ST_DALATH_RISH  = MASK_DALATH_RISH | MASK_SHAPE_RIGHT
     };
 
     typedef le_int32 ShapeType;
@@ -58,6 +63,7 @@ private:
     static ShapeType getShapeType(LEUnicode c);
 
     static const ShapeType shapeTypes[];
+    static const ShapeType mongolianTypes[];
 
     static void adjustTags(le_int32 outIndex, le_int32 shapeOffset, LEGlyphStorage &glyphStorage); 
 };
