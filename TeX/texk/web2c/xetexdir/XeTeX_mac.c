@@ -369,30 +369,21 @@ loadAATfont(ATSUFontID fontID, long scaled_size, const char* name, int nameLen, 
 }
 
 OSErr
-find_pic_file(Handle* picFileAlias, CGRect* bounds, int isPDF, int page)
+find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 {
-	*picFileAlias = NULL;
+	*path = NULL;
+
 	OSStatus	result = fnfErr;
     UInt8*		pic_path = kpse_find_file(nameoffile + 1, kpse_pict_format, 1);
 	CFURLRef	picFileURL = NULL;
 	if (pic_path) {
 		picFileURL = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, pic_path, strlen(pic_path), false);
-		free(pic_path);
-	}
 
-	if (picFileURL != NULL) {
-		/* get an FSRef for the URL we constructed */
-		FSRef	picFileRef;
-		CFURLGetFSRef(picFileURL, &picFileRef);
-		
-		/* make an alias record, which we'll need to return assuming we find a usable picture */
-		/* we do this up front as it is also a means of converting an FSRef to an FSSpec */
-		result = FSNewAlias(0, &picFileRef, (AliasHandle*)picFileAlias);
-		if (result == noErr) {
-			FSSpec	picFileSpec;
-			Boolean	wasChanged;
-			ResolveAlias(0, (AliasHandle)*picFileAlias, &picFileSpec, &wasChanged);
-		
+		if (picFileURL != NULL) {
+			/* get an FSRef for the URL we constructed */
+			FSRef	picFileRef;
+			CFURLGetFSRef(picFileURL, &picFileRef);
+			
 			if (isPDF) {
 				CGPDFDocumentRef	document = CGPDFDocumentCreateWithURL(picFileURL);
 				if (document != NULL) {
@@ -404,36 +395,42 @@ find_pic_file(Handle* picFileAlias, CGRect* bounds, int isPDF, int page)
 						page = 1;
 					if (page > nPages)
 						page = nPages;
-					*bounds = CGPDFDocumentGetMediaBox(document, page);
+					CGRect r = CGPDFDocumentGetMediaBox(document, page);
+					bounds->x = r.origin.x;
+					bounds->y = r.origin.y;
+					bounds->wd = r.size.width;
+					bounds->ht = r.size.height;
 					CGPDFDocumentRelease(document);
 				}
 			}
 			else {
-				/* now that we have an FSSpec for the file (if it exists), we can try to import it as a pic */
-				ComponentInstance	ci;
-				result = GetGraphicsImporterForFile(&picFileSpec, &ci);
+				/* make an FSSpec for the file, and try to import it as a pic */
+				FSSpec	picFileSpec;
+				result = FSGetCatalogInfo(&picFileRef, kFSCatInfoNone, NULL, NULL, &picFileSpec, NULL);
 				if (result == noErr) {
-					ImageDescriptionHandle	desc = NULL;
-					result = GraphicsImportGetImageDescription(ci, &desc);
-					bounds->origin.x = 0;
-					bounds->origin.y = 0;
-					bounds->size.width = (*desc)->width * 72.0 / Fix2X((*desc)->hRes);
-					bounds->size.height = (*desc)->height * 72.0 / Fix2X((*desc)->vRes);
-					DisposeHandle((Handle)desc);
-					(void)CloseComponent(ci);
+					ComponentInstance	ci;
+					result = GetGraphicsImporterForFile(&picFileSpec, &ci);
+					if (result == noErr) {
+						ImageDescriptionHandle	desc = NULL;
+						result = GraphicsImportGetImageDescription(ci, &desc);
+						bounds->x = 0;
+						bounds->y = 0;
+						bounds->wd = (*desc)->width * 72.0 / Fix2X((*desc)->hRes);
+						bounds->ht = (*desc)->height * 72.0 / Fix2X((*desc)->vRes);
+						DisposeHandle((Handle)desc);
+						(void)CloseComponent(ci);
+					}
 				}
 			}
+			
+			CFRelease(picFileURL);
 		}
-		
-		CFRelease(picFileURL);
-	}
 
-	/* if file not found or couldn't import it as a picture, toss the alias as we'll be returning an error */
-	if (result != noErr) {
-		if (*picFileAlias != 0) {
-			DisposeHandle(*picFileAlias);
-			*picFileAlias = 0;
-		}
+		/* if we couldn't import it, toss the pathname as we'll be returning an error */
+		if (result != noErr)
+			free(pic_path);
+		else
+			*path = (char*)pic_path;
 	}
 	
 	return result;

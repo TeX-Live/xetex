@@ -739,19 +739,18 @@ but then they contain a glyph ID rather than size and length fields, and there's
 @d pdf_node=43 {|subtype| in whatsits that hold PDF page references}
 @d glyph_node=44 {|subtype| in whatsits that hold glyph numbers}
 
-{Picture files are handled with nodes that include fields for the rotate and shift
-options for the picture, and an alias to the picture file itself. (Scaling is implicit
-in the final size of the picture.)
+{Picture files are handled with nodes that include fields for the transform associated
+with the picture, and a pathname for the picture file itself.
 They also have
 the |width|, |depth|, and |height| fields of a |box_node| at offsets 1-3. (|depth| will
 always be zero, as it happens.)
 
-So |pic_node_size|, which does not include any space for the picture file alias, is 7.
+So |pic_node_size|, which does not include any space for the picture file pathname, is 7.
 
 pdf_nodes are just like pic_nodes, but generate a different xdv file code.}
 
 @d pic_node_size=8 { must sync with xetex.h }
-@d pic_alias_size(#)==mem[#+4].hh.b0
+@d pic_path_length(#)==mem[#+4].hh.b0
 @d pic_page(#)==mem[#+4].hh.b1
 @d pic_unused(#)==mem[#+4].hh.rh
 @d pic_transform1(#)==mem[#+5].hh.lh
@@ -3781,7 +3780,7 @@ othercases print("whatsit?")
 @ @<Make a partial copy of the whatsit...@>=
 @y
 @ Picture nodes are tricky in that they are variable size.
-@d total_pic_node_size(#) == (pic_node_size + (pic_alias_size(#) + sizeof(memory_word) - 1) div sizeof(memory_word))
+@d total_pic_node_size(#) == (pic_node_size + (pic_path_length(#) + sizeof(memory_word) - 1) div sizeof(memory_word))
 
 @<Make a partial copy of the whatsit...@>=
 @z
@@ -4119,9 +4118,9 @@ dvi_four(pic_transform4(p));
 dvi_four(pic_transform5(p));
 dvi_four(pic_transform6(p));
 dvi_two(pic_page(p));
-dvi_two(pic_alias_size(p));
-for i:=0 to pic_alias_size(p)-1 do
-  dvi_out(pic_alias_byte(p, i));
+dvi_two(pic_path_length(p));
+for i:=0 to pic_path_length(p)-1 do
+  dvi_out(pic_path_byte(p, i));
 end;
 
 @z
@@ -4319,12 +4318,11 @@ begin
 	make_translation(address_of(t2), -xmin, -ymin);
 	transform_concat(address_of(t), address_of(t2));
 	
-{
 	if result = 0 then begin
 
-		new_whatsit(pic_node, pic_node_size + (GetHandleSize(alias) + sizeof(memory_word) - 1) div sizeof(memory_word));
+		new_whatsit(pic_node, pic_node_size + (strlen(pic_path) + sizeof(memory_word) - 1) div sizeof(memory_word));
 		if is_pdf then subtype(tail) := pdf_node;
-		pic_alias_size(tail) := GetHandleSize(alias);
+		pic_path_length(tail) := strlen(pic_path);
 		pic_page(tail) := page;
 			
 		width(tail) := X2Fix(xmax - xmin);
@@ -4338,11 +4336,11 @@ begin
 		pic_transform5(tail) := X2Fix(xField(t));
 		pic_transform6(tail) := X2Fix(yField(t));
 	
-		BlockMoveData(deref(alias), address_of(mem[tail + pic_node_size]), GetHandleSize(alias));
-		DisposeHandle(alias);
+		memcpy(address_of(mem[tail + pic_node_size]), pic_path, strlen(pic_path));
+		libc_free(pic_path);
 	
 	end else begin
-}		
+
 		print_err("Unable to load picture or PDF file '");
 		print_file_name(cur_name,cur_area,cur_ext); print("'");
 		if result = -43 then begin { Mac OS file not found error }
@@ -4354,9 +4352,9 @@ begin
 				 ("it was not a recognized image format.");
 		end;
 		error;
-{		
+
 	end;
-}
+
 end;
 
 @ @<Implement \.{\\XeTeXinputencoding}@>=

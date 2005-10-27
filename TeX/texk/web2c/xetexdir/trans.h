@@ -36,7 +36,8 @@ typedef struct {
 } realpoint;
 
 typedef struct {
-	realpoint	origin;
+	float	x;
+	float	y;
 	float	wd;
 	float	ht;
 } realrect;

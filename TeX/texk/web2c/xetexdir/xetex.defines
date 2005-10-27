@@ -56,40 +56,18 @@
 @define function linebreaknext;
 
 { extra stuff used in picfile code }
-@define type Handle;
-@define type Ptr;
-{
-@define type CGPoint;
-@define type CGRect;
-@define type CGAffineTransform;
-}
 @define type realpoint;
 @define type realrect;
 @define type transform;
 
 @define function deref();
-@define function cgRectWidth();
-@define function cgRectHeight();
+
 @define function X2Fix();
 @define function Fix2X();
-@define procedure BlockMoveData();
-@define function GetHandleSize();
-@define procedure DisposeHandle();
+
 @define function findpicfile();
-@define function picaliasbyte();
-{
-@define function CGAffineTransformMake();
-@define function CGAffineTransformMakeScale();
-@define function CGAffineTransformMakeRotation();
-@define function CGAffineTransformMakeTranslation();
-@define function CGAffineTransformScale();
-@define function CGAffineTransformRotate();
-@define function CGAffineTransformTranslate();
-@define function CGAffineTransformConcat();
-@define function CGAffineTransformInvert();
-@define function CGPointMake();
-@define function CGPointApplyAffineTransform();
-}
+@define function picpathbyte();
+
 @define procedure makeidentity();
 @define procedure makescale();
 @define procedure maketranslation();

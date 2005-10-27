@@ -25,7 +25,7 @@
 
 #define findpicfile(a,b,c,d)	find_pic_file(a, b, c, d)
 
-#define picaliasbyte(p,i)		((unsigned char*)&(mem[p+pic_node_size]))[i]
+#define picpathbyte(p,i)		((unsigned char*)&(mem[p+pic_node_size]))[i]
 
 #define dviopenout(f)			open_dvi_output(&(f))
 
