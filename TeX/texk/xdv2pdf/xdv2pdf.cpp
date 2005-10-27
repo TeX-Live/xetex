@@ -1578,8 +1578,13 @@ doNativeFontDef(FILE* xdv)
 	}
 	else {
 		// OT font
+		Fixed	color[4];
+		fread(&color[0], 4, sizeof(Fixed), xdv);
 		ATSURGBAlphaColor	rgba;
-		fread(&rgba, 1, sizeof(ATSURGBAlphaColor), xdv);
+		rgba.red = Fix2X(color[0]);
+		rgba.green = Fix2X(color[1]);
+		rgba.blue = Fix2X(color[2]);
+		rgba.alpha = Fix2X(color[3]);
 
 		int	n = readUnsigned(xdv, 2);	// name length
 		char*	name = new char[n+1];
