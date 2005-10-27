@@ -34,6 +34,16 @@ struct XeTeXLayoutEngine_rec
 	UInt32			rgbValue;
 };
 
+static inline UInt32
+SWAP(const UInt32 p)
+{
+#ifdef WORDS_BIGENDIAN
+	return p;
+#else
+	return (p >> 24) + ((p >> 8) & 0x0000ff00) + ((p << 8) & 0x00ff0000) + (p << 24);
+#endif
+}
+
 #ifdef XETEX_MAC
 XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize)
 {
@@ -73,8 +83,8 @@ UInt32 countScripts(XeTeXFont font)
 	if (gsubTable == NULL)
 		return 0;
 
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + gsubTable->scriptListOffset);
-	UInt32  scriptCount = scriptList->scriptCount;
+	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
+	UInt32  scriptCount = SWAP(scriptList->scriptCount);
 
 	return scriptCount;
 }
@@ -85,10 +95,10 @@ UInt32 getIndScript(XeTeXFont font, UInt32 index)
 	if (gsubTable == NULL)
 		return 0;
 
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + gsubTable->scriptListOffset);
+	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
 
-	if (index < scriptList->scriptCount)
-		return *(UInt32*)(scriptList->scriptRecordArray[index].tag);
+	if (index < SWAP(scriptList->scriptCount))
+		return SWAP(*(UInt32*)(SWAP(scriptList->scriptRecordArray[index].tag)));
 
 	return 0;
 }
@@ -99,12 +109,12 @@ UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 	if (gsubTable == NULL)
 		return 0;
 	
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + gsubTable->scriptListOffset);
+	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
 	const ScriptTable*  scriptTable = scriptList->findScript(script);
 	if (scriptTable == NULL)
 		return 0;
 	
-	UInt32  langCount = scriptTable->langSysCount;
+	UInt32  langCount = SWAP(scriptTable->langSysCount);
 	
 	return langCount;
 }
@@ -115,13 +125,13 @@ UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 	if (gsubTable == NULL)
 		return 0;
 
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + gsubTable->scriptListOffset);
+	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
 	const ScriptTable*  scriptTable = scriptList->findScript(script);
 	if (scriptTable == NULL)
 		return 0;
 
-	if (index < scriptTable->langSysCount)
-		return *(UInt32*)(scriptTable->langSysRecordArray[index].tag);
+	if (index < SWAP(scriptTable->langSysCount))
+		return SWAP(*(UInt32*)(SWAP(scriptTable->langSysRecordArray[index].tag)));
 
 	return 0;
 }
@@ -156,24 +166,24 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
 	for (int i = 0; i < 2; ++i) {
 		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? kGSUB : kGPOS);
 		if (table != NULL) {
-			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + table->scriptListOffset);
+			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + SWAP(table->scriptListOffset));
 			const ScriptTable*  scriptTable = scriptList->findScript(script);
 			if (scriptTable != NULL) {
 				const LangSysTable* langTable = scriptTable->findLanguage(language, (language != 0));
 				if (langTable != NULL) {
-					if (langTable->reqFeatureIndex != 0xffff)
+					if (SWAP(langTable->reqFeatureIndex) != 0xffff)
 						if (index == 0)
-							featureIndex = langTable->reqFeatureIndex;
+							featureIndex = SWAP(langTable->reqFeatureIndex);
 						else
 							index -= 1;
-					if (index < langTable->featureCount)
+					if (index < SWAP(langTable->featureCount))
 						featureIndex = langTable->featureIndexArray[index];
-					index -= langTable->featureCount;
+					index -= SWAP(langTable->featureCount);
 				}
 			}
 			if (featureIndex != 0xffff) {
 				LETag   featureTag;
-				const FeatureListTable* featureListTable = (const FeatureListTable*)((const char*)table + table->featureListOffset);
+				const FeatureListTable* featureListTable = (const FeatureListTable*)((const char*)table + SWAP(table->featureListOffset));
 				(void)featureListTable->getFeatureTable(featureIndex, &featureTag);
 				return featureTag;
 			}
