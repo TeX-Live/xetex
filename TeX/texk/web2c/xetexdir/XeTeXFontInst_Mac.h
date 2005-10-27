@@ -42,6 +42,8 @@ public:
 					{ return fATSFont; }
 	
 	void		setATSFont(ATSFontRef fontRef);
+	
+	virtual char*	getPSName();	// returns a malloced string
 };
 
 #endif

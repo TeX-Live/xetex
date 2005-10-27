@@ -41,6 +41,8 @@ public:
     virtual 		~XeTeXFontInst_FC();
 
 	virtual void	initialize(LEErrorCode &status);
+
+	virtual char*	getPSName();	// returns a malloced string
 };
 
 #endif

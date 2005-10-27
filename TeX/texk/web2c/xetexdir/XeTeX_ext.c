@@ -46,6 +46,8 @@
 
 #include "XeTeXLayoutInterface.h"
 
+#include "XeTeXswap.h"
+
 #include "unicode/ubidi.h"
 #include "unicode/ubrk.h"
 #include "unicode/ucnv.h"
@@ -652,48 +654,42 @@ makefontdef(long f)
 	}
 	else
 #endif /* XETEX_MAC */
-		if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OT_FONT_FLAG) {
 		// OT font...
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 
-		UInt32	nameLength;
-#ifdef XETEX_MAC		
-		ATSFontRef	fontRef = getFontRef(engine);
-		ATSUFindFontName(fontRef, kFontPostscriptName, kFontNoPlatform, kFontNoScript, kFontNoLanguage, 0, 0, &nameLength, 0);
-#else
-#endif
+		char*	psName = getFontPSName(engine);
+		UInt16	nameLength = strlen(psName);
 
 		// parameters after internal font ID: s[4] t[2] c[16] l[2] n[l]
 		long	fontDefLength = 0
 			+ 4 // size
 			+ 2	// font technology flag
-			+ 16 // ATSURGBAlphaColor float[4]
+			+ 16 // RGBA Fixed[4]
 			+ 2	// name length
 			+ nameLength;
 
 		fontdef = (char*)xmalloc(fontDefLength);
 		char*	cp = fontdef;
 
-		*(Fixed*)cp = X2Fix(getPointSize(engine));
+		*(Fixed*)cp = SWAP32(X2Fix(getPointSize(engine)));
 		cp += 4;
 		
-		*(UInt16*)cp = fontarea[f];
+		*(UInt16*)cp = SWAP16(fontarea[f]);
 		cp += 2;
 		
 		UInt32	rgbValue = getRgbValue(engine);
-		float	*rgba = (float*)cp;
-		*rgba++ = (rgbValue >> 24) / 255.0;
-		*rgba++ = ((rgbValue >> 16) & 0xff) / 255.0;
-		*rgba++ = ((rgbValue >> 8) & 0xff) / 255.0;
-		*rgba++ = (rgbValue & 0xff) / 255.0;
-		cp += 4 * sizeof(float);
+		Fixed	*rgba = (Fixed*)cp;
+		*rgba++ = SWAP32(X2Fix((rgbValue >> 24) / 255.0));
+		*rgba++ = SWAP32(X2Fix(((rgbValue >> 16) & 0xff) / 255.0));
+		*rgba++ = SWAP32(X2Fix(((rgbValue >> 8) & 0xff) / 255.0));
+		*rgba++ = SWAP32(X2Fix((rgbValue & 0xff) / 255.0));
+		cp = (char*)rgba;
 
-		*(UInt16*)cp = nameLength;
+		*(UInt16*)cp = SWAP16(nameLength);
 		cp += 2;
-#ifdef XETEX_MAC
-		ATSUFindFontName(fontRef, kFontPostscriptName, kFontNoPlatform, kFontNoScript, kFontNoLanguage, nameLength, cp, 0, 0);
-#else
-#endif
+		memcpy(cp, psName, nameLength);
+		free(psName);
 
 		return fontDefLength;
 	}

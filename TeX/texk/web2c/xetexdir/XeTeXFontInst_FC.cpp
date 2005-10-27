@@ -100,3 +100,19 @@ const void *XeTeXFontInst_FC::readTable(LETag tag, le_uint32 *length) const
 
     return table;
 }
+
+char* XeTeXFontInst_FC::getPSName()
+{
+	if (face == NULL)
+		return NULL;
+	
+	char*	facePSName = FT_Get_Postscript_Name(face);
+	if (facePSName == NULL)
+		return NULL;
+	
+	UInt32	length = strlen(facePSName);
+	char*	name = xmalloc(length + 1);
+	strcpy(name, facePSName);
+
+	return name;
+}

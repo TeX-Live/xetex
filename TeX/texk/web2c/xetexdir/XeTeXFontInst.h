@@ -32,6 +32,10 @@
 #include "sfnt.h"
 #include "cmaps.h"
 
+extern "C" {
+	void *xmalloc(unsigned);	// from kpathsea
+};
+
 // Abstract superclass that XeTeXOTLayoutEngine uses;
 // create specific subclasses for each supported platform
 
@@ -71,6 +75,8 @@ public:
 	virtual void initialize(LEErrorCode &status);
 
     virtual const void *getFontTable(LETag tableTag) const;
+
+	virtual char*	getPSName() = 0;
 
     virtual le_int32 getUnitsPerEM() const
     {

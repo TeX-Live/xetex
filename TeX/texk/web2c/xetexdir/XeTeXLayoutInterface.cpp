@@ -21,6 +21,8 @@
 #include "XeTeXFontManager_FC.h"
 #endif
 
+#include "XeTeXswap.h"
+
 #include "Features.h"
 #include "ScriptAndLanguage.h"
 
@@ -36,26 +38,6 @@ struct XeTeXLayoutEngine_rec
 	UInt32*			removedFeatures;
 	UInt32			rgbValue;
 };
-
-static inline UInt16
-SWAP(const UInt16 p)
-{
-#ifdef WORDS_BIGENDIAN
-	return p;
-#else
-	return (p >> 8) + (p << 8);
-#endif
-}
-
-static inline UInt32
-SWAP(const UInt32 p)
-{
-#ifdef WORDS_BIGENDIAN
-	return p;
-#else
-	return (p >> 24) + ((p >> 8) & 0x0000ff00) + ((p << 8) & 0x00ff0000) + (p << 24);
-#endif
-}
 
 #ifdef XETEX_MAC
 XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize)
@@ -239,6 +221,11 @@ XeTeXFont getFont(XeTeXLayoutEngine engine)
 	return (XeTeXFont)(engine->font);
 }
 
+char* getFontPSName(XeTeXLayoutEngine engine)
+{
+	return engine->font->getPSName();
+}
+
 XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
 										UInt32* addFeatures, UInt32* removeFeatures, UInt32 rgbValue)
 {
@@ -342,3 +329,4 @@ UInt32 getRgbValue(XeTeXLayoutEngine engine)
 {
 	return engine->rgbValue;
 }
+

@@ -19,7 +19,6 @@
 
 #include "XeTeXFontInst_Mac.h"
 
-
 XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, LEErrorCode &status)
     : XeTeXFontInst(pointSize, status)
     , fATSFont(atsFont)
@@ -83,4 +82,19 @@ const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
 	}
 
     return table;
+}
+
+char* XeTeXFontInst_Mac::getPSName()
+{
+	if (fATSFont == 0)
+		return NULL;
+	ATSUFontID	fontID = FMGetFontFromATSFontRef(fATSFont);
+	UInt32	nameLength;
+	ATSUFindFontName(fontID, kFontPostscriptName,
+			(UInt32)kFontNoPlatform, (UInt32)kFontNoScript, (UInt32)kFontNoLanguage, 0, 0, &nameLength, 0);
+	char*	name = (char*)xmalloc(nameLength + 1);
+	ATSUFindFontName(fontID, kFontPostscriptName,
+			(UInt32)kFontNoPlatform, (UInt32)kFontNoScript, (UInt32)kFontNoLanguage, nameLength, name, 0, 0);
+	name[nameLength] = 0;
+	return name;
 }
