@@ -28,12 +28,12 @@ FRAMEWORKS = -framework Carbon -framework QuickTime
 else
 #Linux is linux-gnu, ought to be same defines/files for other X11 systems like BSDs
 xetex_platform_o = 
-xetex_platform_layout_o = 
-xetex_platform_layout_cxx =
+xetex_platform_layout_o = XeTeXFontInst_FC.o XeTeXFontManager_FC.o
+xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp XeTeXFontManager_FC.cpp
 
 XETEX_DEFINES = -DXETEX_OTHER
 
-FRAMEWORKS =
+FRAMEWORKS = -lfreetype -lfontconfig
 endif
 
 XDEFS = $(XETEX_DEFINES)
@@ -70,12 +70,14 @@ ICUCFLAGS = \
 	-I../../../../TeX/libs/$(icudir)/source/ \
 	-DLE_USE_CMEMORY
 
+FTFLAGS =  -I/usr/include/freetype2/
+
 TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
@@ -92,6 +94,11 @@ XeTeXFontManager_Mac.o: $(srcdir)/xetexdir/XeTeXFontManager_Mac.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+
+XeTeXFontManager_FC.o: $(srcdir)/xetexdir/XeTeXFontManager_FC.cpp
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+XeTeXFontInst_FC.o: $(srcdir)/xetexdir/XeTeXFontInst_FC.cpp
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 
 xetexlibs = \
@@ -125,8 +132,8 @@ xetexdir/xetexextra.h: xetexdir/xetexextra.in xetexdir/xetex.version
 	  $(srcdir)/xetexdir/xetexextra.in >$@
 
 # Tangling
-xetex.p xetex.pool: otangle xetex.web # xetex.ch
-	otangle xetex.web # xetex.ch
+xetex.p xetex.pool: ./otangle xetex.web # xetex.ch
+	./otangle xetex.web # xetex.ch
 
 # Generation of the web [and ch] file.
 #   Sources for xetex.web:

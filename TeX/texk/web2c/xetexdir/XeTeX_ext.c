@@ -468,6 +468,7 @@ findatsufont(const char* name, long scaled_size)
 #ifdef XETEX_MAC
 	ATSFontRef	fontRef;
 #else
+	void* fontRef;
 #endif
 	if (*featureString) {
 		char* buf = xmalloc(featureString - name + 1);
@@ -973,6 +974,7 @@ measure_native_glyph(void* p)
 Fixed X2Fix(double d)
 {
 	Fixed rval = (int)(d * 65536.0 + 0.5);
+	return rval;
 }
 
 double Fix2X(Fixed f)
@@ -1218,4 +1220,12 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 	}
 #endif
 }
+
+#ifdef XETEX_OTHER
+int
+find_pic_file(const char* pic_path, realrect* bounds, int isPDF, int page)
+{
+	return -43;
+}
+#endif
 

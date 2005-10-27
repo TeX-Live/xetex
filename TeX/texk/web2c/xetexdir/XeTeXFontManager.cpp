@@ -14,6 +14,7 @@
 #ifdef XETEX_MAC
 #include "XeTeXFontManager_Mac.h"
 #else
+#include "XeTeXFontManager_FC.h"
 #endif
 
 #include "Features.h"
@@ -28,7 +29,7 @@ XeTeXFontManager::GetFontManager()
 #ifdef XETEX_MAC
 		gFontManager = new XeTeXFontManager_Mac();	// create Mac OS version
 #else
-//		gFontManager = new XeTeXFontManager_FC();	// FontConfig version
+		gFontManager = new XeTeXFontManager_FC();	// FontConfig version
 #endif
 	}
 

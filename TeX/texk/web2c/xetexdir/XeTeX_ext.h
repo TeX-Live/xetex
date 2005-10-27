@@ -81,10 +81,14 @@ typedef struct {
 
 /* some Mac OS X functions that we provide ourselves for other platforms */
 #ifndef XETEX_MAC
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 double	Fix2X(Fixed f);
 Fixed	X2Fix(double d);
-
+#ifdef __cplusplus
+};
+#endif
 #endif
 
 #endif

@@ -32,6 +32,7 @@ ATSFontRef findFontByName(const char* name, double size);
 #else
 // appropriate functions for other platforms
 XeTeXFont createFont(void* fontRef, Fixed pointSize);
+void* findFontByName(const char* name, double size);
 #endif
 
 void deleteFont(XeTeXFont font);

@@ -24,7 +24,7 @@
 
 #include <fontconfig/fontconfig.h>
 
-#include <freetype2/freetype/ft2build.h>
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
 class XeTeXFontInst_FC : public XeTeXFontInst

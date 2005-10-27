@@ -19,7 +19,9 @@
 
 #include "XeTeXFontInst_FC.h"
 
-#include <freetype2/freetype/tttables.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <freetype/tttables.h>
 
 static FT_Library	gLibrary = 0;
 
@@ -34,7 +36,7 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
 
 	FT_Error	err;
 	if (!gLibrary) {
-		err = FT_Init_Freetype(&gLibrary);
+		err = FT_Init_FreeType(&gLibrary);
 		if (err != 0) {
 			fprintf(stderr, "FreeType initialization failed! (%d)\n", err);
 			exit(1);
@@ -44,7 +46,7 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
 	FcChar8*	pathname = 0;
 	FcPatternGetString(pattern, FC_FILE, 0, &pathname);
 
-	err = FT_New_Face(library, pathname, 0, &face);
+	err = FT_New_Face(gLibrary, (char*)pathname, 0, &face);
 
 	if (err != 0) {
         status = LE_FONT_FILE_NOT_FOUND_ERROR;
@@ -81,15 +83,14 @@ void XeTeXFontInst_FC::initialize(LEErrorCode &status)
 
 const void *XeTeXFontInst_FC::readTable(LETag tag, le_uint32 *length) const
 {
-	FT_Error err = FT_Load_Sfnt_Table(face, tag, 0, NULL, length);
-	if (err != 0) {
-		*length = 0;
+	*length = 0;
+	FT_Error err = FT_Load_Sfnt_Table(face, tag, 0, NULL, (FT_ULong*)length);
+	if (err != 0)
 		return NULL;
-	}
 	
 	void*	table = LE_NEW_ARRAY(char, *length);
 	if (table != NULL) {
-		err = FT_Load_Sfnt_Table(face, tag, 0, table, length);
+		err = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, (FT_ULong*)length);
 		if (err != 0) {
 			*length = 0;
 			LE_DELETE_ARRAY(table);

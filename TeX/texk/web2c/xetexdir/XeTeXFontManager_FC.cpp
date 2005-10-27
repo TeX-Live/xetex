@@ -51,13 +51,13 @@ XeTeXFontManager_FC::findFont(const char* name, double pointSize)
 	FcPattern*	pat = FcPatternCreate();
 	FcValue	value;
 	value.type = FcTypeString;
-	value.u.s = spec.name;
-	FcPatternAdd(pat, FC_FULLNAME, value, FcFalse);
+	value.u.s = (const FcChar8*)spec.name.c_str();
+	FcPatternAdd(pat, FC_FAMILY, value, FcFalse);
 	FcConfigSubstitute(config, pat, FcMatchFont);
 	FcDefaultSubstitute(pat);
-	
+//FcPatternPrint(pat);
 	FcResult	result = FcResultMatch;
 	FcPattern*	match = FcFontMatch(config, pat, &result);
-
+//FcPatternPrint(match);
 	return match;
 }

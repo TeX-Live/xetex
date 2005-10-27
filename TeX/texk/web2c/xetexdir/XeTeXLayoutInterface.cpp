@@ -16,6 +16,9 @@
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
 #include "XeTeXFontManager_Mac.h"
+#else
+#include "XeTeXFontInst_FC.h"
+#include "XeTeXFontManager_FC.h"
 #endif
 
 #include "Features.h"
@@ -33,6 +36,16 @@ struct XeTeXLayoutEngine_rec
 	UInt32*			removedFeatures;
 	UInt32			rgbValue;
 };
+
+static inline UInt16
+SWAP(const UInt16 p)
+{
+#ifdef WORDS_BIGENDIAN
+	return p;
+#else
+	return (p >> 8) + (p << 8);
+#endif
+}
 
 static inline UInt32
 SWAP(const UInt32 p)
@@ -65,6 +78,22 @@ ATSFontRef findFontByName(const char* name, double size)
 {
 	return (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
 }
+#else
+XeTeXFont createFont(void* fontRef, Fixed pointSize)
+{
+	LEErrorCode status = LE_NO_ERROR;
+	XeTeXFontInst* font = new XeTeXFontInst_FC((FcPattern*)fontRef, Fix2X(pointSize), status);
+	if (LE_FAILURE(status)) {
+		delete font;
+		return NULL;
+	}
+	return (XeTeXFont)font;
+}
+
+void* findFontByName(const char* name, double size)
+{
+	return (void*)(XeTeXFontManager::GetFontManager()->findFont(name, size));
+}
 #endif
 
 void deleteFont(XeTeXFont font)
@@ -96,9 +125,8 @@ UInt32 getIndScript(XeTeXFont font, UInt32 index)
 		return 0;
 
 	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
-
 	if (index < SWAP(scriptList->scriptCount))
-		return SWAP(*(UInt32*)(SWAP(scriptList->scriptRecordArray[index].tag)));
+		return SWAP(*(UInt32*)(scriptList->scriptRecordArray[index].tag));
 
 	return 0;
 }
@@ -131,7 +159,7 @@ UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 		return 0;
 
 	if (index < SWAP(scriptTable->langSysCount))
-		return SWAP(*(UInt32*)(SWAP(scriptTable->langSysRecordArray[index].tag)));
+		return SWAP(*(UInt32*)(scriptTable->langSysRecordArray[index].tag));
 
 	return 0;
 }
