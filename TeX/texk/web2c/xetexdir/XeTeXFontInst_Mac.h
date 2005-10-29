@@ -43,7 +43,7 @@ public:
 	
 	void		setATSFont(ATSFontRef fontRef);
 	
-	virtual char*	getPSName();	// returns a malloced string
+	virtual char*	getPSName() const;	// returns a malloced string
 };
 
 #endif

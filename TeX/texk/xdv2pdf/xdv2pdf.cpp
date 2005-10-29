@@ -51,6 +51,8 @@
 
 #include "DVIops.h"
 
+#define XDV_ID	5	// current id_byte value for .xdv files from xetex
+
 #define AAT_FONT_FLAG	0xffff
 
 #define DEFINE_GLOBALS	1
@@ -656,135 +658,136 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 
     int		p = readSigned(xdv, 2);
     int		l = readUnsigned(xdv, 2);
-    Handle	alias = NewHandle(l);
-    if (alias != 0) {
-        for (int i = 0; i < l; ++i)
-            (*alias)[i] = readUnsigned(xdv, 1);
-        FSSpec	spec;
-        Boolean	changed;
-        OSErr	result = ResolveAlias(0, (AliasHandle)alias, &spec, &changed);
-        DisposeHandle(alias);
-        
-        if (result == noErr) {
-			std::string	specString((char*)&spec, sizeof(spec));	// key for our map<>s of already-used images
+    unsigned char*	pathname = new unsigned char[l + 1];
+	for (int i = 0; i < l; ++i)
+		pathname[i] = readUnsigned(xdv, 1);
+	pathname[l] = 0;
 
-            // is it a \pdffile instance?
-			CGPDFDocumentRef	document = NULL;
-			CGImageRef			image = NULL;
-			CGRect				bounds;
-            if (isPDF) {
-                std::map<std::string,CGPDFDocumentRef>::const_iterator	i = sPdfDocs.find(specString);
-				if (i != sPdfDocs.end())
-					document = i->second;
-				else {
-					FSRef	fsRef;
-					result = FSpMakeFSRef(&spec, &fsRef);
-					CFURLRef	url = CFURLCreateFromFSRef(kCFAllocatorDefault, &fsRef);
-					document = CGPDFDocumentCreateWithURL(url);
-	                CFRelease(url);
-					sPdfDocs[specString] = document;
-				}
-                if (document != NULL) {
-                    int	nPages = CGPDFDocumentGetNumberOfPages(document);
-                    if (p < 0)			p = nPages + 1 + p;
-                    if (p > nPages)		p = nPages;
-                    if (p < 1)			p = 1;
-                    bounds = CGPDFDocumentGetMediaBox(document, p);
-				}
-            }
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, pathname, l, false);
+	if (url != NULL) {
+		std::string	pathString((char*)pathname, l);	// key for our map<>s of already-used images
 
-            // otherwise use GraphicsImport
-            else {
-                std::map<std::string,imageRec>::const_iterator	i = sCGImages.find(specString);
-            	if (i != sCGImages.end()) {
-            		image = i->second.ref;
-            		bounds = i->second.bounds;
-				}
-            	else {
-					ComponentInstance	gi;
-					result = GetGraphicsImporterForFile(&spec, &gi);
-					if (result == noErr) {
-						BitmapInfo	bi;
-						readBitmapInfo(gi, &bi);
-						getBitmapData(gi, &bi);
-		
-						if (bi.cs == NULL)
-							bi.cs = CGColorSpaceCreateDeviceRGB();
-						CGDataProviderRef	provider = CGDataProviderCreateWithData(NULL, bi.data, bi.size, NULL);
-						image = CGImageCreate(bi.width, bi.height, bi.bitsPerComponent, bi.bitsPerPixel,
-												bi.bytesPerRow, bi.cs, bi.ai, provider, NULL, 0, kCGRenderingIntentDefault);
-						CGColorSpaceRelease(bi.cs);
-
-						ImageDescriptionHandle	desc = NULL;
-						result = GraphicsImportGetImageDescription(gi, &desc);
-						bounds.origin.x = 0;
-						bounds.origin.y = 0;
-						bounds.size.width = (*desc)->width * 72.0 / Fix2X((*desc)->hRes);
-						bounds.size.height = (*desc)->height * 72.0 / Fix2X((*desc)->vRes);
-						DisposeHandle((Handle)desc);
-						result = CloseComponent(gi);
-             		}
-					imageRec	ir = { image, bounds };
-               		sCGImages[specString] = ir;
-               	}
-            }
-
-			CGContextSaveGState(gCtx);
-
-			CGContextTranslateCTM(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v));
-			CGContextConcatCTM(gCtx, t);
-
+		// is it a \pdffile instance?
+		CGPDFDocumentRef	document = NULL;
+		CGImageRef			image = NULL;
+		CGRect				bounds;
+		if (isPDF) {
+			std::map<std::string,CGPDFDocumentRef>::const_iterator	i = sPdfDocs.find(pathString);
+			if (i != sPdfDocs.end())
+				document = i->second;
+			else {
+				document = CGPDFDocumentCreateWithURL(url);
+				sPdfDocs[pathString] = document;
+			}
 			if (document != NULL) {
-                bounds.origin.x = bounds.origin.y = 0.0;
-				CGContextDrawPDFDocument(gCtx, bounds, document, p);
+				int	nPages = CGPDFDocumentGetNumberOfPages(document);
+				if (p < 0)			p = nPages + 1 + p;
+				if (p > nPages)		p = nPages;
+				if (p < 1)			p = 1;
+				bounds = CGPDFDocumentGetMediaBox(document, p);
 			}
-			else if (image != NULL)
-				CGContextDrawImage(gCtx, bounds, image);
+		}
 
-			if (gTrackingBoxes) {
-				// figure out the corners of the transformed and positioned image,
-				// and remember the lower left and upper right of the result
-				CGPoint	p[4];
-				p[0].x = bounds.origin.x;
-				p[0].y = bounds.origin.y;
-				p[1].x = bounds.origin.x;
-				p[1].y = bounds.origin.y + bounds.size.height;
-				p[2].x = bounds.origin.x + bounds.size.width;
-				p[2].y = bounds.origin.y + bounds.size.height;
-				p[3].x = bounds.origin.x + bounds.size.width;
-				p[3].y = bounds.origin.y;
-				
-				CGPoint	ll = { MAXFLOAT, MAXFLOAT };
-				CGPoint	ur = { -MAXFLOAT, -MAXFLOAT };
-
-				t = CGContextGetCTM(gCtx);
-				// now t is the CTM, including positioning as well as transformations of the image
-
-				for (int i = 0; i < 4; ++i) {
-					p[i] = CGPointApplyAffineTransform(p[i], t);
-					if (p[i].x < ll.x)
-						ll.x = p[i].x;
-					if (p[i].y < ll.y)
-						ll.y = p[i].y;
-					if (p[i].x > ur.x)
-						ur.x = p[i].x;
-					if (p[i].y > ur.y)
-						ur.y = p[i].y;
+		// otherwise use GraphicsImport
+		else {
+			std::map<std::string,imageRec>::const_iterator	i = sCGImages.find(pathString);
+			if (i != sCGImages.end()) {
+				image = i->second.ref;
+				bounds = i->second.bounds;
+			}
+			else {
+				FSRef	ref;
+				if (CFURLGetFSRef(url, &ref)) {
+					FSSpec	spec;
+					if (FSGetCatalogInfo(&ref, kFSCatInfoNone, NULL, NULL, &spec, NULL) == noErr) {
+						ComponentInstance	gi;
+						OSErr	result = GetGraphicsImporterForFile(&spec, &gi);
+						if (result == noErr) {
+							BitmapInfo	bi;
+							readBitmapInfo(gi, &bi);
+							getBitmapData(gi, &bi);
+			
+							if (bi.cs == NULL)
+								bi.cs = CGColorSpaceCreateDeviceRGB();
+							CGDataProviderRef	provider = CGDataProviderCreateWithData(NULL, bi.data, bi.size, NULL);
+							image = CGImageCreate(bi.width, bi.height, bi.bitsPerComponent, bi.bitsPerPixel,
+													bi.bytesPerRow, bi.cs, bi.ai, provider, NULL, 0, kCGRenderingIntentDefault);
+							CGColorSpaceRelease(bi.cs);
+		
+							ImageDescriptionHandle	desc = NULL;
+							result = GraphicsImportGetImageDescription(gi, &desc);
+							bounds.origin.x = 0;
+							bounds.origin.y = 0;
+							bounds.size.width = (*desc)->width * 72.0 / Fix2X((*desc)->hRes);
+							bounds.size.height = (*desc)->height * 72.0 / Fix2X((*desc)->vRes);
+							DisposeHandle((Handle)desc);
+							result = CloseComponent(gi);
+						}
+						imageRec	ir = { image, bounds };
+						sCGImages[pathString] = ir;
+					}
 				}
-				
-				// convert back to dvi space and add to the annotation area
-				box	b = {
-					(ll.x - 72.0) * kScr2Dvi,
-					gPageHt - (ur.y + 72.0) * kScr2Dvi,
-					(ur.x - 72.0) * kScr2Dvi,
-					gPageHt - (ll.y + 72.0) * kScr2Dvi
-				};
-				mergeBox(b);
 			}
+		}
 
-			CGContextRestoreGState(gCtx);
-        }
-    }
+		CGContextSaveGState(gCtx);
+
+		CGContextTranslateCTM(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v));
+		CGContextConcatCTM(gCtx, t);
+
+		if (document != NULL) {
+			bounds.origin.x = bounds.origin.y = 0.0;
+			CGContextDrawPDFDocument(gCtx, bounds, document, p);
+		}
+		else if (image != NULL)
+			CGContextDrawImage(gCtx, bounds, image);
+
+		if (gTrackingBoxes) {
+			// figure out the corners of the transformed and positioned image,
+			// and remember the lower left and upper right of the result
+			CGPoint	p[4];
+			p[0].x = bounds.origin.x;
+			p[0].y = bounds.origin.y;
+			p[1].x = bounds.origin.x;
+			p[1].y = bounds.origin.y + bounds.size.height;
+			p[2].x = bounds.origin.x + bounds.size.width;
+			p[2].y = bounds.origin.y + bounds.size.height;
+			p[3].x = bounds.origin.x + bounds.size.width;
+			p[3].y = bounds.origin.y;
+			
+			CGPoint	ll = { MAXFLOAT, MAXFLOAT };
+			CGPoint	ur = { -MAXFLOAT, -MAXFLOAT };
+
+			t = CGContextGetCTM(gCtx);
+			// now t is the CTM, including positioning as well as transformations of the image
+
+			for (int i = 0; i < 4; ++i) {
+				p[i] = CGPointApplyAffineTransform(p[i], t);
+				if (p[i].x < ll.x)
+					ll.x = p[i].x;
+				if (p[i].y < ll.y)
+					ll.y = p[i].y;
+				if (p[i].x > ur.x)
+					ur.x = p[i].x;
+				if (p[i].y > ur.y)
+					ur.y = p[i].y;
+			}
+			
+			// convert back to dvi space and add to the annotation area
+			box	b = {
+				(ll.x - 72.0) * kScr2Dvi,
+				gPageHt - (ur.y + 72.0) * kScr2Dvi,
+				(ur.x - 72.0) * kScr2Dvi,
+				gPageHt - (ll.y + 72.0) * kScr2Dvi
+			};
+			mergeBox(b);
+		}
+
+		CGContextRestoreGState(gCtx);
+
+		CFRelease(url);
+	}
+	
 }
 
 /* declarations of KPATHSEARCH functions we use for finding TFMs and OTFs */
@@ -2045,7 +2048,7 @@ xdv2pdf(int argc, char** argv)
 		unsigned	b = readUnsigned(xdv, 1);
 		if (b != DVI_PRE) { fprintf(stderr, "*** bad XDV file: DVI_PRE not found, b=%d\n", b); exit(1); }
 		b = readUnsigned(xdv, 1);
-		if (b != 4) { fprintf(stderr, "*** bad XDV file: version=%d, expected 4\n", b); exit(1); }
+		if (b != XDV_ID) { fprintf(stderr, "*** bad XDV file: version=%d, expected %d\n", b, XDV_ID); exit(1); }
 		(void)readUnsigned(xdv, 4);	// num
 		(void)readUnsigned(xdv, 4);	// den
 		if (sMag == 0)

@@ -2309,11 +2309,12 @@ ec:=effective_char(false,f,qi(c));
 @x
 @d id_byte=2 {identifies the kind of \.{DVI} files described here}
 @y
-XeTeX changes the DVI version to 4,
-as we have a new DVI opcode |set_native_word| for native font text,
-and I used version 3 in an earlier extension of TeX.
+XeTeX changes the DVI version to 5,
+as we have a new DVI opcodes like |set_native_word| for native font text;
+I used version 3 in an earlier extension of TeX,
+and 4 in pre-1.0 XeTeX releases using Mac OS-specific data types.
 
-@d id_byte=4 {identifies the kind of \.{DVI} files described here}
+@d id_byte=5 {identifies the kind of \.{DVI} files described here}
 @z
 
 @x

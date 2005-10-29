@@ -12,10 +12,12 @@
 #ifndef __XeTeXswap_H
 #define __XeTeXswap_H
 
+#include "platform.h"	// ICU's platform.h defines U_IS_BIG_ENDIAN for us
+
 static inline UInt16
 SWAP16(const UInt16 p)
 {
-#ifdef WORDS_BIGENDIAN
+#if U_IS_BIG_ENDIAN
 	return p;
 #else
 	return (p >> 8) + (p << 8);
@@ -25,7 +27,7 @@ SWAP16(const UInt16 p)
 static inline UInt32
 SWAP32(const UInt32 p)
 {
-#ifdef WORDS_BIGENDIAN
+#if U_IS_BIG_ENDIAN
 	return p;
 #else
 	return (p >> 24) + ((p >> 8) & 0x0000ff00) + ((p << 8) & 0x00ff0000) + (p << 24);

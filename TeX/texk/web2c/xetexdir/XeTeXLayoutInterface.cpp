@@ -187,7 +187,7 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
 						else
 							index -= 1;
 					if (index < SWAP(langTable->featureCount))
-						featureIndex = langTable->featureIndexArray[index];
+						featureIndex = SWAP(langTable->featureIndexArray[index]);
 					index -= SWAP(langTable->featureCount);
 				}
 			}

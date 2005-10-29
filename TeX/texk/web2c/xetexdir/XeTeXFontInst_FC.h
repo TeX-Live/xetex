@@ -42,7 +42,7 @@ public:
 
 	virtual void	initialize(LEErrorCode &status);
 
-	virtual char*	getPSName();	// returns a malloced string
+	virtual char*	getPSName() const;	// returns a malloced string
 };
 
 #endif
