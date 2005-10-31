@@ -28,6 +28,8 @@
 
 #include "unicode/ubidi.h"
 
+#include <math.h>
+
 struct XeTeXLayoutEngine_rec
 {
 	LayoutEngine*	layoutEngine;

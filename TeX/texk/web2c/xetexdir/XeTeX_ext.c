@@ -1024,9 +1024,9 @@ measure_native_node(void* p)
 				realGlyphCount = 0;
 				for (i = 0; i < nGlyphs; ++i) {
 					if (glyphs[i] < 0xfffe) {
-						glyphIDs[realGlyphCount] = glyphs[i];
-						locations[realGlyphCount].x = X2Fix(positions[2*i]);
-						locations[realGlyphCount].y = X2Fix(positions[2*i+1]);
+						glyphIDs[realGlyphCount] = SWAP16(glyphs[i]);
+						locations[realGlyphCount].x = SWAP32(X2Fix(positions[2*i]));
+						locations[realGlyphCount].y = SWAP32(X2Fix(positions[2*i+1]));
 						++realGlyphCount;
 					}
 				}
