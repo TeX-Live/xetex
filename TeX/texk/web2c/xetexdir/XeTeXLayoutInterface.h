@@ -39,6 +39,8 @@ void deleteFont(XeTeXFont font);
 
 void* getFontTablePtr(XeTeXFont font, UInt32 tableTag);
 
+Fixed getSlant(XeTeXFont font);
+
 UInt32 countScripts(XeTeXFont font);
 UInt32 getIndScript(XeTeXFont font, UInt32 index);
 UInt32 countScriptLanguages(XeTeXFont font, UInt32 script);

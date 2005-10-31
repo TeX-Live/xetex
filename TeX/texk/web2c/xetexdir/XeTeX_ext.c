@@ -52,6 +52,96 @@
 #include "unicode/ubrk.h"
 #include "unicode/ucnv.h"
 
+/* 
+#include "sfnt.h"
+	doesn't work in plain C files :(
+*/
+typedef struct
+{
+    UInt32   bc;
+    UInt32   ad;
+}  BigDate;
+
+typedef struct 
+{
+    Fixed       version;
+    Fixed       fontRevision;
+    UInt32   checksumAdjustment;
+    UInt32   magicNumber;
+    UInt16   flags;
+    UInt16   unitsPerEm;
+    BigDate     created;
+    BigDate     modified;
+    SInt16    xMin;
+    SInt16    yMin;
+    SInt16    xMax;
+    SInt16    yMax;
+    SInt16    lowestRecPPEM;
+    SInt16    fontDirectionHint;
+    SInt16    indexToLocFormat;
+    SInt16    glyphDataFormat;
+} HEADTable;
+
+typedef struct
+{
+    Fixed       version;
+    UInt16   numGlyphs;
+    UInt16   maxPoints;
+    UInt16   maxContours;
+    UInt16   maxComponentPoints;
+    UInt16   maxComponentContours;
+    UInt16   maxZones;
+    UInt16   maxTwilightPoints;
+    UInt16   maxStorage;
+    UInt16   maxFunctionDefs;
+    UInt16   maxInstructionDefs;
+    UInt16   maxStackElements;
+    UInt16   maxSizeOfInstructions;
+    UInt16   maxComponentElements;
+    UInt16   maxComponentDepth;
+} MAXPTable;
+
+typedef struct
+{
+    Fixed       version;
+    SInt16    ascent;
+    SInt16    descent;
+    SInt16    lineGap;
+    UInt16   advanceWidthMax;
+    SInt16    minLeftSideBearing;
+    SInt16    minRightSideBearing;
+    SInt16    xMaxExtent;
+    SInt16    caretSlopeRise;
+    SInt16    caretSlopeRun;
+    SInt16    caretOffset;
+    SInt16    reserved1;
+    SInt16    reserved2;
+    SInt16    reserved3;
+    SInt16    reserved4;
+    SInt16    metricDataFormat;
+    UInt16   numOfLongHorMetrics;
+} HHEATable;
+
+typedef struct
+{
+	Fixed		version;
+	Fixed		italicAngle;
+	SInt16	underlinePosition;
+	UInt16	underlineThickness;
+	UInt32	isFixedPitch;
+	UInt32	minMemType42;
+	UInt32	maxMemType42;
+	UInt32	minMemType1;
+	UInt32	maxMemType1;
+} POSTTable;
+
+enum {
+    LE_HEAD_TABLE_TAG = 0x68656164UL, /**< 'head' */
+    LE_HHEA_TABLE_TAG = 0x68686561UL, /**< 'hhea' */
+    LE_MAXP_TABLE_TAG = 0x6D617870UL, /**< 'maxp' */
+    LE_POST_TABLE_TAG = 0x706F7374UL, /**< 'post' */
+};
+
 extern char*	gettexstring(int strNumber);
 void
 setinputfileencoding(UFILE* f, int mode, int encodingData)
@@ -506,6 +596,29 @@ findatsufont(const char* name, long scaled_size)
 	}
 	
 	return rval;
+}
+
+Fixed
+otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent)
+	// return value is slant (as Fixed)
+{
+	long	rval = 0;
+
+	float	a, d;
+	getAscentAndDescent(engine, &a, &d);
+	*ascent = X2Fix(a);
+	*descent = X2Fix(d);
+
+	XeTeXFont	fontInst = getFont(engine);
+	rval = getSlant(fontInst);
+
+	return rval;
+}
+
+Fixed
+otgetxheight(XeTeXLayoutEngine engine)
+{
+	return 0;
 }
 
 long
@@ -985,6 +1098,50 @@ double Fix2X(Fixed f)
 typedef void* ATSUStyle;
 #endif
 
+Fixed
+atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent)
+	// return value is slant (as Fixed)
+{
+	long	rval = 0;
+
+#ifdef XETEX_MAC
+	ATSUFontID	fontID;
+	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
+	Fixed		size;
+	ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
+
+	ByteCount	tableSize;
+	if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HEAD_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+		long	upem;
+		HEADTable*	head = xmalloc(tableSize);
+		ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HEAD_TABLE_TAG, 0, tableSize, head, 0);
+		upem = head->unitsPerEm;
+		free(head);
+		if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HHEA_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+			HHEATable*	hhea = xmalloc(tableSize);
+			ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HHEA_TABLE_TAG, 0, tableSize, hhea, 0);
+			*ascent = FixMul(size, FixDiv(hhea->ascent, upem));
+			*descent = FixMul(size, FixDiv(hhea->descent, upem));
+			free(hhea);
+		}
+	}
+	if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+		POSTTable*	post = xmalloc(tableSize);
+		ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_POST_TABLE_TAG, 0, tableSize, post, 0);
+		rval = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
+		free(post);
+	}
+#endif
+
+	return rval;
+}
+
+Fixed
+atsugetxheight(ATSUStyle style)
+{
+	return 0;
+}
+
 long
 atsufontget(int what, ATSUStyle style)
 {
@@ -999,10 +1156,10 @@ atsufontget(int what, ATSUStyle style)
 		case XeTeX_count_glyphs:
 			{
 				ByteCount	tableSize;
-				if (ATSFontGetTable(fontID, 'maxp', 0, 0, 0, &tableSize) == noErr) {
-					Byte*	table = xmalloc(tableSize);
-					ATSFontGetTable(fontID, 'maxp', 0, tableSize, table, 0);
-					rval = *(unsigned short*)(table + 4);
+				if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_MAXP_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+					MAXPTable*	table = xmalloc(tableSize);
+					ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_MAXP_TABLE_TAG, 0, tableSize, table, 0);
+					rval = table->numGlyphs;
 					free(table);
 				}
 			}

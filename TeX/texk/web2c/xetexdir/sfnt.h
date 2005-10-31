@@ -5,6 +5,8 @@
 *
 ************************************************************************/
 
+/* from ICU sample code, extended by JK for XeTeX */
+
 #ifndef __SFNT_H
 #define __SFNT_H
 
@@ -207,6 +209,19 @@ struct HMTXTable
 {
     LongHorMetric hMetrics[ANY_NUMBER];        // ANY_NUMBER = numOfLongHorMetrics from hhea table
 //  le_int16        leftSideBearing[ANY_NUMBER]; // ANY_NUMBER = numGlyphs - numOfLongHorMetrics
+};
+
+struct POSTTable
+{
+	fixed		version;
+	fixed		italicAngle;
+	le_int16	underlinePosition;
+	le_uint16	underlineThickness;
+	le_uint32	isFixedPitch;
+	le_uint32	minMemType42;
+	le_uint32	maxMemType42;
+	le_uint32	minMemType1;
+	le_uint32	maxMemType1;
 };
 
 #endif

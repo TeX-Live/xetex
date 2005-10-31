@@ -52,6 +52,9 @@ protected:
     float fDeviceScaleX;
     float fDeviceScaleY;
 
+	float fXHeight;
+	float fItalicAngle;
+
     CMAPMapper *fCMAPMapper;
 
     const HMTXTable *fHMTXTable;
@@ -142,6 +145,16 @@ public:
     float getScaleFactorY() const
     {
         return 1.0;
+    }
+
+    float getXHeight() const
+    {
+        return fXHeight;
+    }
+
+    float getItalicAngle() const
+    {
+        return fItalicAngle;
     }
 };
 

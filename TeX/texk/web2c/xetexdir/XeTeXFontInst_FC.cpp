@@ -101,7 +101,7 @@ const void *XeTeXFontInst_FC::readTable(LETag tag, le_uint32 *length) const
     return table;
 }
 
-char* XeTeXFontInst_FC::getPSName()
+char* XeTeXFontInst_FC::getPSName() const
 {
 	if (face == NULL)
 		return NULL;

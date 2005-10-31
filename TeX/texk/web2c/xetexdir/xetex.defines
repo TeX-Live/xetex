@@ -50,6 +50,12 @@
 @define function otfontget2();
 @define function otfontget3();
 
+@define function atsugetfontmetrics();
+@define function atsugetxheight();
+
+@define function otgetfontmetrics();
+@define function otgetxheight();
+
 @define function getencodingmodeandinfo();
 
 @define procedure linebreakstart();

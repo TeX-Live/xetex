@@ -84,7 +84,7 @@ const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
     return table;
 }
 
-char* XeTeXFontInst_Mac::getPSName()
+char* XeTeXFontInst_Mac::getPSName() const
 {
 	if (fATSFont == 0)
 		return NULL;

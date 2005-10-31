@@ -58,7 +58,8 @@ ATSFontRef getFontRef(XeTeXLayoutEngine engine)
 
 ATSFontRef findFontByName(const char* name, double size)
 {
-	return (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
+	ATSFontRef	rval = (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
+	return rval;
 }
 #else
 XeTeXFont createFont(void* fontRef, Fixed pointSize)
@@ -86,6 +87,11 @@ void deleteFont(XeTeXFont font)
 void* getFontTablePtr(XeTeXFont font, UInt32 tableTag)
 {
 	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
+}
+
+Fixed getSlant(XeTeXFont font)
+{
+	return X2Fix(tan(((XeTeXFontInst*)font)->getItalicAngle()));
 }
 
 UInt32 countScripts(XeTeXFont font)

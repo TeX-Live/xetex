@@ -4844,6 +4844,7 @@ var
 	font_engine: integer;	{really an ATSUStyle or XeTeXLayoutEngine, but we'll treat it as an integer}
 	actual_size: scaled;	{|s| converted to real size, if it was negative}
 	p: pointer;	{for temporary |native_char| node we'll create}
+	ascent, descent, font_slant, x_ht: scaled;
 begin
 	{ on entry here, the full name is packed into name_of_file in UTF8 form }
 
@@ -4873,8 +4874,16 @@ begin
 	font_glue[font_ptr] := null;
 	font_dsize[font_ptr] := 10 * unity;
 	font_size[font_ptr] := actual_size;
-	height_base[font_ptr] := (actual_size * 2) div 3;
-	depth_base[font_ptr]  := actual_size div 3;
+
+	if (native_font_type_flag = aat_font_flag) then
+		font_slant := atsu_get_font_metrics(font_engine, address_of(ascent), address_of(descent))
+	else
+		font_slant := ot_get_font_metrics(font_engine, address_of(ascent), address_of(descent));
+
+	x_ht := (3 * ascent) div 5;	{ arbitrary figure; need to go measure this! }
+
+	height_base[font_ptr] := ascent;
+	depth_base[font_ptr] := -descent;
 
 	font_params[font_ptr] := 7;
 	font_bc[font_ptr] := 0;
@@ -4892,7 +4901,7 @@ begin
 	s := width(p);
 	free_node(p, native_size(p));
 	
-	font_info[fmem_ptr].sc := 0;									{slant = 0}
+	font_info[fmem_ptr].sc := font_slant;
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := s;									{space = width of space character}
 	incr(fmem_ptr);
@@ -4900,7 +4909,7 @@ begin
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := s div 3;								{space_shrink = 1/3 * space}
 	incr(fmem_ptr);
-	font_info[fmem_ptr].sc := (height_base[font_ptr] * 3) div 5;	{x_height = 3/5 * ascent}
+	font_info[fmem_ptr].sc := x_ht;
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := font_size[font_ptr];					{quad = font size}
 	incr(fmem_ptr);

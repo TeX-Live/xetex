@@ -25,6 +25,12 @@
 
 #include "XeTeXFontInst.h"
 
+#ifdef XETEX_MAC
+#include <Carbon/Carbon.h>
+#endif
+
+#include "XeTeX_ext.h"
+
 #include "sfnt.h"
 
 #include <string.h>
@@ -36,6 +42,8 @@ XeTeXFontInst::XeTeXFontInst(float pointSize, LEErrorCode &status)
     , fAscent(0)
     , fDescent(0)
     , fLeading(0)
+    , fXHeight(0)
+    , fItalicAngle(0)
     , fCMAPMapper(NULL)
     , fHMTXTable(NULL)
     , fNumLongHorMetrics(0)
@@ -58,8 +66,10 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
 {
     const LETag headTag = LE_HEAD_TABLE_TAG;
     const LETag hheaTag = LE_HHEA_TABLE_TAG;
+    const LETag postTag = LE_POST_TABLE_TAG;
     const HEADTable *headTable = NULL;
     const HHEATable *hheaTable = NULL;
+    const POSTTable *postTable = NULL;
 
     // read unitsPerEm from 'head' table
     headTable = (const HEADTable *) readFontTable(headTag);
@@ -72,7 +82,7 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
     fUnitsPerEM = SWAPW(headTable->unitsPerEm);
     deleteTable(headTable);
 
-    hheaTable = (HHEATable *) readFontTable(hheaTag);
+    hheaTable = (const HHEATable *) readFontTable(hheaTag);
 
     if (hheaTable == NULL) {
         status = LE_MISSING_FONT_TABLE_ERROR;
@@ -92,6 +102,13 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
     if (fCMAPMapper == NULL) {
         status = LE_MISSING_FONT_TABLE_ERROR;
         goto error_exit;
+    }
+
+    postTable = (const POSTTable *) readFontTable(postTag);
+
+    if (postTable != NULL) {
+		fItalicAngle = Fix2X(SWAPL(postTable->italicAngle));
+		deleteTable((void*)postTable);
     }
 
     return;
