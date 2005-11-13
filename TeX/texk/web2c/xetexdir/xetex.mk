@@ -144,7 +144,8 @@ xetex_web_srcs = $(srcdir)/tex.web \
   $(srcdir)/etexdir/tex.ch1 \
   $(srcdir)/etexdir/tex.ech \
   $(srcdir)/xetexdir/xetex-new.ch \
-  $(srcdir)/xetexdir/xetex-noenc.ch
+  $(srcdir)/xetexdir/xetex-noenc.ch \
+  $(srcdir)/xetexdir/xetex-upwards.ch
 xetex.web: tie xetexdir/xetex.mk $(xetex_web_srcs)
 	$(TIE) -m xetex.web $(xetex_web_srcs)
 
