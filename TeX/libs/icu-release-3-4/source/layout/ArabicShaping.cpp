@@ -54,7 +54,7 @@ const ArabicShaping::ShapeType ArabicShaping::shapeTypes[] =
 
 const ArabicShaping::ShapeType ArabicShaping::mongolianTypes[] =
 {
-   _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _t_, _t_, _t_, _n_, _n_,   // 0x1800 - 0x180f
+   _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _t_, _t_, _t_, _t_, _n_,   // 0x1800 - 0x180f
    _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_, _n_,   // 0x1810 - 0x181f
    _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x1820 - 0x182f
    _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_, _d_,   // 0x1830 - 0x183f
