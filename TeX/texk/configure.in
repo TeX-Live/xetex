@@ -50,6 +50,7 @@ fi
 
 PKGS='
   afm2pl bibtex8 cjkutils detex devnag dtl dvi2tty dvidvi dviljk dvipdfm
+  dvipdfmx
   dvipng dvipsk gsftopk lacheck makeindexk musixflx odvipsk ps2pkm
   seetexk tetex tex4htk texlive ttf2pk tth xdv2pdf xdvik
 '
