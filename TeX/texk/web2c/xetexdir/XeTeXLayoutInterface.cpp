@@ -338,3 +338,35 @@ UInt32 getRgbValue(XeTeXLayoutEngine engine)
 	return engine->rgbValue;
 }
 
+void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth)
+{
+#ifdef XETEX_MAC
+// make an ATSUStyle and use ATSUGlyphGetCurvePaths
+	ATSUStyle	style;
+	OSStatus	status = ATSUCreateStyle(&style);
+	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
+	Fixed		size = X2Fix(getPointSize(engine));
+	ATSStyleRenderingOptions	options = kATSStyleNoHinting;
+	
+	ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
+	ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
+	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
+	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
+
+	Fixed	ht, dp;
+	GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
+	*height = Fix2X(ht);
+	*depth = Fix2X(dp);
+
+	ATSUDisposeStyle(style);
+#else
+	/* FIXME */
+	*height = 0.0;
+	*depth = 0.0;
+#endif
+}
+
+UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt16 charCode)
+{
+	return engine->font->mapCharToGlyph(charCode);
+}

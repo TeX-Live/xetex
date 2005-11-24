@@ -66,6 +66,8 @@ typedef struct {
 #define XeTeX_OT_language_code	20
 #define XeTeX_OT_feature_code	21
 
+#define XeTeX_map_char_to_glyph_code	22
+
 #define XeTeX_variation_name	7	// must match xetex.web
 #define XeTeX_feature_name	8
 #define XeTeX_selector_name	9
@@ -79,13 +81,27 @@ typedef struct {
 #define kThaana	0x74686161
 #define kHebrew	0x68656272
 
+#ifdef XETEX_MAC
+/* functions in XeTeX_mac.c */
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void InitializeLayout();
+	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, Fixed* ht, Fixed* dp);
+	int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch);
+#ifdef __cplusplus
+};
+#endif
+#endif
+
+
 /* some Mac OS X functions that we provide ourselves for other platforms */
 #ifndef XETEX_MAC
 #ifdef __cplusplus
 extern "C" {
 #endif
-double	Fix2X(Fixed f);
-Fixed	X2Fix(double d);
+	double	Fix2X(Fixed f);
+	Fixed	X2Fix(double d);
 #ifdef __cplusplus
 };
 #endif

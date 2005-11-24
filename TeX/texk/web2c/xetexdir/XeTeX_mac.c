@@ -25,6 +25,70 @@
 
 TECkit_Converter	load_mapping_file(const char* s, const char* e);
 
+ATSUTextLayout	sTextLayout = 0;
+
+void InitializeLayout()
+{
+	OSStatus	status = ATSUCreateTextLayout(&sTextLayout);
+	ATSUFontFallbacks fallbacks;
+	status = ATSUCreateFontFallbacks(&fallbacks);
+	status = ATSUSetObjFontFallbacks(fallbacks, 0, 0, kATSULastResortOnlyFallback);
+	ATSUAttributeTag		tag = kATSULineFontFallbacksTag;
+	ByteCount				valueSize = sizeof(fallbacks);
+	ATSUAttributeValuePtr	value = &fallbacks;
+	status = ATSUSetLayoutControls(sTextLayout, 1, &tag, &valueSize, &value);
+	status = ATSUSetTransientFontMatching(sTextLayout, true);
+}
+
+void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, Fixed* ht, Fixed* dp)
+{
+#define MIN_REAL_BUFFER_SIZE	20 /* 4 bytes for contour count; 4 bytes for vector count of 1st contour;
+										4 bytes for point flags; 8 bytes for 1st point */
+	*ht = 0;
+	*dp = 0;
+	ByteCount	bufferSize = 0;
+	OSStatus	status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, NULL);
+	if (bufferSize >= MIN_REAL_BUFFER_SIZE) {
+		ATSUCurvePaths*	paths = (ATSUCurvePaths*)xmalloc(bufferSize);
+		status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, paths);
+		ATSUCurvePath*	path = &(paths->contour[0]);
+		int c, n, v;
+		double	min = 65536.0, max = -65536.0;
+		for (c = 0; c < paths->contours; ++c) {
+			n = (path->vectors + 31) / 32;
+			Float32Point*	vector = (Float32Point*)((char*)path + 4 + n * 4);
+			for (v = 0; v < path->vectors; ++v) {
+				if (vector[v].y < min)
+					min = vector[v].y;
+				if (vector[v].y > max)
+					max = vector[v].y;
+			}
+			path = (ATSUCurvePath*)(vector + path->vectors);
+		}
+		if (min < 65536.0) {
+			*ht = X2Fix(-min);
+			*dp = X2Fix(max);
+		}
+		free(paths);
+	}
+}
+
+int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch)
+{
+	if (sTextLayout == 0)
+		InitializeLayout();
+
+	OSStatus	status = ATSUSetTextPointerLocation(sTextLayout, &ch, 0, 1, 1);
+	status = ATSUSetRunStyle(sTextLayout, style, 0, 1);
+	
+	ByteCount	bufferSize = sizeof(ATSUGlyphInfoArray);
+	ATSUGlyphInfoArray	info;
+	status = ATSUGetGlyphInfo(sTextLayout, 0, 1, &bufferSize, &info);
+	if (bufferSize > 0 && info.numGlyphs > 0)
+		return info.glyphs[0].glyphID;
+	else
+		return 0;
+}
 
 ATSUFontVariationAxis
 find_axis_by_name(ATSUFontID fontID, const char* name, int nameLength)
@@ -139,12 +203,14 @@ loadAATfont(ATSUFontID fontID, long scaled_size, const char* name, int nameLen, 
 		bool			colorSpecified = false;
 		unsigned long	rgbValue;
 		
-		ATSUAttributeTag		tag[2] = { kATSUFontTag, kATSUSizeTag };
-		ByteCount				valueSize[2] = { sizeof(ATSUFontID), sizeof(Fixed) };
-		ATSUAttributeValuePtr	value[2];
+		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
+		ATSUAttributeTag		tag[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
+		ByteCount				valueSize[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
+		ATSUAttributeValuePtr	value[3];
 		value[0] = &fontID;
 		value[1] = &scaled_size;
-		ATSUSetAttributes(style, 2, &tag[0], &valueSize[0], &value[0]);
+		value[2] = &options;
+		ATSUSetAttributes(style, 3, &tag[0], &valueSize[0], &value[0]);
 		
 		// FIXME: need to dynamically grow these arrays
 		UInt16*	featureTypes = (UInt16*)xmalloc(200);

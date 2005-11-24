@@ -31,7 +31,7 @@
 @define procedure setdelcode1();
 @define function readcint1();
 @define procedure setcint1();
-@define procedure printchars();
+@define procedure printutf8str();
 @define procedure setinputfileencoding();
 
 @define procedure memcpy();
@@ -49,12 +49,11 @@
 @define function otfontget1();
 @define function otfontget2();
 @define function otfontget3();
+@define function mapchartoglyph();
+@define procedure getnativecharheightdepth();
 
-@define function atsugetfontmetrics();
-@define function atsugetxheight();
-
-@define function otgetfontmetrics();
-@define function otgetxheight();
+@define procedure atsugetfontmetrics();
+@define procedure otgetfontmetrics();
 
 @define function getencodingmodeandinfo();
 

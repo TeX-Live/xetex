@@ -1523,7 +1523,7 @@ if m=math_code_base then begin
 @#
 @d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
 @#
-@d eTeX_dim=XeTeX_int+22 {first of \eTeX\ codes for dimensions}
+@d eTeX_dim=XeTeX_int+23 {first of \eTeX\ codes for dimensions}
  {changed for \XeTeX\ to make room for \XeTeX\ integers}
 @z
 
@@ -3292,10 +3292,25 @@ adjust_space_factor;@/
 @z
 
 @x
+@!a,@!h,@!x,@!w,@!delta:scaled; {heights and widths, as explained above}
+@y
+@!a,@!h,@!x,@!w,@!delta,@!d:scaled; {heights and widths, as explained above}
+@z
+
+@x
   a:=char_width(f)(char_info(f)(character(p)));@/
 @y
   if is_native_font(f) then a:=width(p)
   else a:=char_width(f)(char_info(f)(character(p)));@/
+@z
+
+@x
+if (cur_cmd=letter)or(cur_cmd=other_char)or(cur_cmd=char_given) then
+  q:=new_character(f,cur_chr)
+@y
+if (cur_cmd=letter)or(cur_cmd=other_char)or(cur_cmd=char_given) then
+  begin q:=new_character(f,cur_chr); cur_val:=cur_chr
+  end
 @z
 
 @x
@@ -3304,7 +3319,7 @@ w:=char_width(f)(i); h:=char_height(f)(height_depth(i));
 @y
 if is_native_font(f) then begin
   w:=width(q);
-  h:=height(q)
+  get_native_char_height_depth(f, cur_val, address_of(h), address_of(d))
 end else begin
   i:=char_info(f)(character(q));
   w:=char_width(f)(i); h:=char_height(f)(height_depth(i));
@@ -4425,6 +4440,8 @@ end
 @d XeTeX_OT_script_code=XeTeX_int+19
 @d XeTeX_OT_language_code=XeTeX_int+20
 @d XeTeX_OT_feature_code=XeTeX_int+21
+
+@d XeTeX_map_char_to_glyph_code=XeTeX_int+22
 @z
 
 @x
@@ -4465,6 +4482,8 @@ primitive("XeTeXOTcountfeatures",last_item,XeTeX_OT_count_features_code);
 primitive("XeTeXOTscripttag",last_item,XeTeX_OT_script_code);
 primitive("XeTeXOTlanguagetag",last_item,XeTeX_OT_language_code);
 primitive("XeTeXOTfeaturetag",last_item,XeTeX_OT_feature_code);
+
+primitive("XeTeXcharglyph", last_item, XeTeX_map_char_to_glyph_code);
 @z
 
 @x
@@ -4497,6 +4516,8 @@ XeTeX_OT_count_features_code: print_esc("XeTeXOTcountfeatures");
 XeTeX_OT_script_code: print_esc("XeTeXOTscripttag");
 XeTeX_OT_language_code: print_esc("XeTeXOTlanguagetag");
 XeTeX_OT_feature_code: print_esc("XeTeXOTfeaturetag");
+
+XeTeX_map_char_to_glyph_code: print_esc("XeTeXcharglyph");
 @z
 
 @x
@@ -4627,6 +4648,14 @@ XeTeX_OT_feature_code:
     end;
   end;
 
+XeTeX_map_char_to_glyph_code:
+  begin
+    if is_native_font(cur_font) then begin
+      scan_int; n:=cur_val; cur_val:=map_char_to_glyph(cur_font, n)
+    end else begin
+      not_native_font_error(last_item, m, cur_font); cur_val:=0
+    end
+  end;
 
 @ Slip in an extra procedure here and there....
 
@@ -4653,6 +4682,14 @@ begin
   print_err("Cannot use "); print_cmd_chr(cmd, c);
   print(" with "); print(font_name[f]);
   print("; not an OpenType Layout font");
+  error;
+end;
+
+procedure not_native_font_error(cmd, c: integer; f: integer);
+begin
+  print_err("Cannot use "); print_cmd_chr(cmd, c);
+  print(" with "); print(font_name[f]);
+  print("; not a native platform font");
   error;
 end;
 
@@ -4825,13 +4862,13 @@ begin
 	print_nl("Unknown ");
 	if setLen > 0 then begin
 		print("selector `");
-		print_chars(settingNameP, setLen);
+		print_utf8_str(settingNameP, setLen);
 		print("' for ");
 	end;
 	print("feature `");
-	print_chars(featureNameP, featLen);
+	print_utf8_str(featureNameP, featLen);
 	print("' in font `");
-	print_chars(fontNameP, nameLen);
+	print_utf8_str(fontNameP, nameLen);
 	print("'.");
 	end_diagnostic(false);
 end;
@@ -4844,7 +4881,7 @@ var
 	font_engine: integer;	{really an ATSUStyle or XeTeXLayoutEngine, but we'll treat it as an integer}
 	actual_size: scaled;	{|s| converted to real size, if it was negative}
 	p: pointer;	{for temporary |native_char| node we'll create}
-	ascent, descent, font_slant, x_ht: scaled;
+	ascent, descent, font_slant, x_ht, cap_ht: scaled;
 begin
 	{ on entry here, the full name is packed into name_of_file in UTF8 form }
 
@@ -4853,7 +4890,7 @@ begin
 	if (s < 0) then actual_size := -s * unity div 100 else actual_size := s;
 	font_engine := find_atsu_font(name_of_file + 1, actual_size);
 	if font_engine = 0 then goto done;
-	if (font_ptr = font_max) or (fmem_ptr + 7 > font_mem_size) then begin
+	if (font_ptr = font_max) or (fmem_ptr + 8 > font_mem_size) then begin
 		@<Apologize for not loading the font, |goto done|@>;
 	end;
 	
@@ -4875,17 +4912,18 @@ begin
 	font_dsize[font_ptr] := 10 * unity;
 	font_size[font_ptr] := actual_size;
 
-	if (native_font_type_flag = aat_font_flag) then
-		font_slant := atsu_get_font_metrics(font_engine, address_of(ascent), address_of(descent))
-	else
-		font_slant := ot_get_font_metrics(font_engine, address_of(ascent), address_of(descent));
-
-	x_ht := (3 * ascent) div 5;	{ arbitrary figure; need to go measure this! }
+	if (native_font_type_flag = aat_font_flag) then begin
+		atsu_get_font_metrics(font_engine, address_of(ascent), address_of(descent),
+								address_of(x_ht), address_of(cap_ht), address_of(font_slant))
+	end else begin
+		ot_get_font_metrics(font_engine, address_of(ascent), address_of(descent),
+								address_of(x_ht), address_of(cap_ht), address_of(font_slant));
+	end;
 
 	height_base[font_ptr] := ascent;
 	depth_base[font_ptr] := -descent;
 
-	font_params[font_ptr] := 7;
+	font_params[font_ptr] := 8;		{ we add an extra \fontdimen: #8 -> cap_height }
 	font_bc[font_ptr] := 0;
 	font_ec[font_ptr] := 65535;
 	font_used[font_ptr] := false;
@@ -4901,7 +4939,7 @@ begin
 	s := width(p);
 	free_node(p, native_size(p));
 	
-	font_info[fmem_ptr].sc := font_slant;
+	font_info[fmem_ptr].sc := font_slant;							{slant}
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := s;									{space = width of space character}
 	incr(fmem_ptr);
@@ -4909,11 +4947,13 @@ begin
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := s div 3;								{space_shrink = 1/3 * space}
 	incr(fmem_ptr);
-	font_info[fmem_ptr].sc := x_ht;
+	font_info[fmem_ptr].sc := x_ht;									{x_height}
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := font_size[font_ptr];					{quad = font size}
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := (s * 2) div 3;						{extra_space = 2/3 * space}
+	incr(fmem_ptr);
+	font_info[fmem_ptr].sc := cap_ht;								{cap_height}
 	incr(fmem_ptr);
 	
 	font_mapping[font_ptr] := loaded_font_mapping;

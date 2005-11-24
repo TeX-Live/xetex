@@ -83,6 +83,10 @@ int getDefaultDirection(XeTeXLayoutEngine engine);
 
 UInt32 getRgbValue(XeTeXLayoutEngine engine);
 
+void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth);
+
+UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt16 charCode);
+
 #ifdef __cplusplus
 };
 #endif

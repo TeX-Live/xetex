@@ -343,6 +343,13 @@ getencodingmodeandinfo(long* info)
 }
 
 void
+printutf8str(const unsigned char* str, int len)
+{
+	while (len-- > 0)
+		printvisiblechar(*(str++)); /* bypass utf-8 encoding done in print_char() */
+}
+
+void
 printchars(const unsigned short* str, int len)
 {
 	while (len-- > 0)
@@ -598,9 +605,8 @@ findatsufont(const char* name, long scaled_size)
 	return rval;
 }
 
-Fixed
-otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent)
-	// return value is slant (as Fixed)
+void
+otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
 {
 	long	rval = 0;
 
@@ -610,15 +616,23 @@ otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent)
 	*descent = X2Fix(d);
 
 	XeTeXFont	fontInst = getFont(engine);
-	rval = getSlant(fontInst);
+	*slant = getSlant(fontInst);
 
-	return rval;
-}
+	int	glyphID = mapCharToGlyph(engine, 'x');
+	if (glyphID != 0) {
+		getGlyphHeightDepth(engine, glyphID, &a, &d);
+		*xheight = X2Fix(a);
+	}
+	else
+		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
 
-Fixed
-otgetxheight(XeTeXLayoutEngine engine)
-{
-	return 0;
+	glyphID = mapCharToGlyph(engine, 'H');
+	if (glyphID != 0) {
+		getGlyphHeightDepth(engine, glyphID, &a, &d);
+		*capheight = X2Fix(a);
+	}
+	else
+		*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
 }
 
 long
@@ -850,6 +864,52 @@ retry:
 }
 
 void
+snap_zone(Fixed* value, Fixed snap_value, Fixed fuzz)
+{
+	Fixed	difference = *value - snap_value;
+	if (difference <= fuzz && difference >= -fuzz)
+		*value = snap_value;
+}
+
+void
+getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
+{
+#define QUAD(f)			fontinfo[6+parambase[f]].cint
+#define X_HEIGHT(f)		fontinfo[5+parambase[f]].cint
+#define CAP_HEIGHT(f)	fontinfo[8+parambase[f]].cint
+
+#ifdef XETEX_MAC
+	if (fontarea[font] == AAT_FONT_FLAG) {
+		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
+		int	gid = MapCharToGlyph_AAT(style, ch);
+		GetGlyphHeightDepth_AAT(style, gid, height, depth);
+	}
+	else
+#endif
+	if (fontarea[font] == OT_FONT_FLAG) {
+		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
+		int	gid = mapCharToGlyph(engine, ch);
+		float	ht = 0.0;
+		float	dp = 0.0;
+		getGlyphHeightDepth(engine, gid, &ht, &dp);
+		*height = X2Fix(ht);
+		*depth = X2Fix(dp);
+	}
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
+	
+	/* snap to "known" zones for baseline, x-height, cap-height if within 2% of em-size */
+	Fixed	fuzz = QUAD(font) / 50;
+	snap_zone(depth, 0, fuzz);
+	snap_zone(height, 0, fuzz);
+	snap_zone(height, X_HEIGHT(font), fuzz);
+	snap_zone(height, CAP_HEIGHT(font), fuzz);
+}
+
+
+void
 measure_native_node(void* p)
 {
 #define width_offset		1
@@ -879,20 +939,11 @@ measure_native_node(void* p)
 #ifdef XETEX_MAC
 	if (fontarea[native_font(node)] == AAT_FONT_FLAG) {
 		// we're using this font in AAT mode
-		static ATSUTextLayout	sTextLayout = 0;
 		OSStatus	status = noErr;
 		
-		if (sTextLayout == 0) {
-			status = ATSUCreateTextLayout(&sTextLayout);
-			ATSUFontFallbacks fallbacks;
-			status = ATSUCreateFontFallbacks(&fallbacks);
-			status = ATSUSetObjFontFallbacks(fallbacks, 0, 0, kATSULastResortOnlyFallback);
-			ATSUAttributeTag		tag = kATSULineFontFallbacksTag;
-			ByteCount				valueSize = sizeof(fallbacks);
-			ATSUAttributeValuePtr	value = &fallbacks;
-			status = ATSUSetLayoutControls(sTextLayout, 1, &tag, &valueSize, &value);
-			status = ATSUSetTransientFontMatching(sTextLayout, true);
-		}
+		extern ATSUTextLayout	sTextLayout;
+		if (sTextLayout == 0)
+			InitializeLayout();
 
 		status = ATSUSetTextPointerLocation(sTextLayout, txtPtr, 0, txtLen, txtLen);
 		
@@ -903,11 +954,15 @@ measure_native_node(void* p)
 		status = ATSUGetUnjustifiedBounds(sTextLayout, 0, txtLen, &before, &after, &ascent, &descent);
 	
 		width(node) = after - before;
-		depth(node) = descent;
-		height(node) = ascent;
+		if (txtLen == 1)
+			getnativecharheightdepth(native_font(node), *txtPtr, &(height(node)), &(depth(node)));
+		else {
+			depth(node) = descent;
+			height(node) = ascent;
+		}
 	}
-#endif
 	else
+#endif
 	if (fontarea[native_font(node)] == OT_FONT_FLAG) {
 		// using this font in OT Layout mode, so fontlayoutengine[native_font(node)] is actually a XeTeXLayoutEngine
 		
@@ -1038,9 +1093,13 @@ measure_native_node(void* p)
 
 		ubidi_close(pBiDi);
 		
-		getAscentAndDescent(engine, &x, &y);
-		height(node) = X2Fix(x);
-		depth(node) = X2Fix(-y);
+		if (txtLen == 1)
+			getnativecharheightdepth(native_font(node), *txtPtr, &(height(node)), &(depth(node)));
+		else {
+			getAscentAndDescent(engine, &x, &y);
+			height(node) = X2Fix(x);
+			depth(node) = X2Fix(-y);
+		}
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
@@ -1057,12 +1116,17 @@ measure_native_glyph(void* p)
 	UInt16		gid = native_glyph(node);
 	
 	long	font = native_font(node);
+
+	depth(node) = 0; /*depthbase[font];*/
+	height(node) = 0; /*heightbase[font];*/
+
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
 		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
 		ATSGlyphIdealMetrics	metrics;
 		OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
 		width(node) = X2Fix(metrics.advance.x);
+		GetGlyphHeightDepth_AAT(style, gid, &(height(node)), &(depth(node)));
 	}
 	else
 #endif
@@ -1070,13 +1134,32 @@ measure_native_glyph(void* p)
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		XeTeXFont		fontInst = getFont(engine);
 		width(node) = X2Fix(getGlyphWidth(fontInst, gid));
+		float	ht = 0.0;
+		float	dp = 0.0;
+		getGlyphHeightDepth(engine, gid, &ht, &dp);
+		height(node) = X2Fix(ht);
+		depth(node) = X2Fix(dp);
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
-	depth(node) = depthbase[font];
-	height(node) = heightbase[font];
+}
+
+int
+mapchartoglyph(int font, int ch)
+{
+#ifdef XETEX_MAC
+	if (fontarea[font] == AAT_FONT_FLAG)
+		return MapCharToGlyph_AAT((ATSUStyle)(fontlayoutengine[font]), ch);
+	else
+#endif
+	if (fontarea[font] == OT_FONT_FLAG)
+		return mapCharToGlyph((XeTeXLayoutEngine)(fontlayoutengine[font]), ch);
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
 }
 
 #ifndef XETEX_MAC
@@ -1095,15 +1178,12 @@ double Fix2X(Fixed f)
 
 /* these are here, not XeTeX_mac.c, because we need stubs on other platforms */
 #ifndef XETEX_MAC
-typedef void* ATSUStyle;
+typedef void* ATSUStyle; /* dummy declaration just so the stubs can compile */
 #endif
 
-Fixed
-atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent)
-	// return value is slant (as Fixed)
+void
+atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
 {
-	long	rval = 0;
-
 #ifdef XETEX_MAC
 	ATSUFontID	fontID;
 	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
@@ -1111,35 +1191,44 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent)
 	ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
 
 	ByteCount	tableSize;
-	if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HEAD_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
+	if (ATSFontGetTable(fontRef, LE_HEAD_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 		long	upem;
 		HEADTable*	head = xmalloc(tableSize);
-		ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HEAD_TABLE_TAG, 0, tableSize, head, 0);
+		ATSFontGetTable(fontRef, LE_HEAD_TABLE_TAG, 0, tableSize, head, 0);
 		upem = head->unitsPerEm;
 		free(head);
-		if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HHEA_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+		if (ATSFontGetTable(fontRef, LE_HHEA_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 			HHEATable*	hhea = xmalloc(tableSize);
-			ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_HHEA_TABLE_TAG, 0, tableSize, hhea, 0);
+			ATSFontGetTable(fontRef, LE_HHEA_TABLE_TAG, 0, tableSize, hhea, 0);
 			*ascent = FixMul(size, FixDiv(hhea->ascent, upem));
 			*descent = FixMul(size, FixDiv(hhea->descent, upem));
 			free(hhea);
 		}
 	}
-	if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+
+	if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 		POSTTable*	post = xmalloc(tableSize);
-		ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_POST_TABLE_TAG, 0, tableSize, post, 0);
-		rval = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
+		ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
+		*slant = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
 		free(post);
 	}
+	else
+		*slant = 0;
+
+	int	glyphID = MapCharToGlyph_AAT(style, 'x');
+	Fixed	dp;
+	if (glyphID != 0)
+		GetGlyphHeightDepth_AAT(style, glyphID, xheight, &dp);
+	else
+		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
+
+	glyphID = MapCharToGlyph_AAT(style, 'H');
+	if (glyphID != 0)
+		GetGlyphHeightDepth_AAT(style, glyphID, capheight, &dp);
+	else
+		*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
 #endif
-
-	return rval;
-}
-
-Fixed
-atsugetxheight(ATSUStyle style)
-{
-	return 0;
 }
 
 long
@@ -1156,9 +1245,10 @@ atsufontget(int what, ATSUStyle style)
 		case XeTeX_count_glyphs:
 			{
 				ByteCount	tableSize;
-				if (ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_MAXP_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+				ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
+				if (ATSFontGetTable(fontRef, LE_MAXP_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 					MAXPTable*	table = xmalloc(tableSize);
-					ATSFontGetTable(FMGetATSFontRefFromFont(fontID), LE_MAXP_TABLE_TAG, 0, tableSize, table, 0);
+					ATSFontGetTable(fontRef, LE_MAXP_TABLE_TAG, 0, tableSize, table, 0);
 					rval = table->numGlyphs;
 					free(table);
 				}
@@ -1381,4 +1471,3 @@ find_pic_file(const char* pic_path, realrect* bounds, int isPDF, int page)
 	return -43;
 }
 #endif
-
