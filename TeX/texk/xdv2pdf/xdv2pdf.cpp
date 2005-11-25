@@ -408,15 +408,15 @@ doSetNative(FILE* xdv)
 		status = ATSUClearLayoutCache(sLayout, 0);
 		status = ATSUSetTextPointerLocation(sLayout, &text[0], 0, len, len);
 	
-		ATSUAttributeTag		tag[3] = { kATSULineWidthTag, kATSULineJustificationFactorTag, kATSULineDirectionTag };
-		ByteCount				valueSize[3] = { sizeof(Fixed), sizeof(Fract), sizeof(Boolean) };
-		ATSUAttributeValuePtr	value[3];
+		ATSUAttributeTag		tags[] = { kATSULineWidthTag, kATSULineJustificationFactorTag,
+											kATSULineDirectionTag, kATSULineLayoutOptionsTag };
+		ByteCount				valueSizes[] = { sizeof(Fixed), sizeof(Fract),
+											sizeof(Boolean), sizeof(ATSLineLayoutOptions) };
 		Fixed	scaledWid = X2Fix(kDvi2Scr * wid);
-		value[0] = &scaledWid;
 		Fract	just = len > 2 ? fract1 : 0;
-		value[1] = &just;
-		value[2] = &dir;
-		status = ATSUSetLayoutControls(sLayout, 3, &tag[0], &valueSize[0], &value[0]);
+		ATSLineLayoutOptions	options = kATSLineKeepSpacesOutOfMargin;
+		ATSUAttributeValuePtr	values[] = { &scaledWid, &just, &dir, &options };
+		status = ATSUSetLayoutControls(sLayout, sizeof(tags) / sizeof(ATSUAttributeTag), tags, valueSizes, values);
 	
 		ATSUStyle	tmpStyle;
 		if (gTextColor.override) {
