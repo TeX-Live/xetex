@@ -16,8 +16,10 @@
 
 #define getnativechar(p,i)		native_node_text(p)[i]
 #define setnativechar(p,i,v)	native_node_text(p)[i] = v
-#define setnativemetrics(p)		measure_native_node(&(mem[p]))
-#define setnativeglyphmetrics(p)	measure_native_glyph(&(mem[p]))
+
+#define setnativemetrics(p)						measure_native_node(&(mem[p]), 0)
+#define setnativemetricsreturningitalcorr(p)	measure_native_node(&(mem[p]), 1)
+#define setnativeglyphmetrics(p)				measure_native_glyph(&(mem[p]))
 
 #define pic_node_size		8
 

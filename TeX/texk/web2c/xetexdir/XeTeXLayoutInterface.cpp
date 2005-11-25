@@ -341,7 +341,6 @@ UInt32 getRgbValue(XeTeXLayoutEngine engine)
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth)
 {
 #ifdef XETEX_MAC
-// make an ATSUStyle and use ATSUGlyphGetCurvePaths
 	ATSUStyle	style;
 	OSStatus	status = ATSUCreateStyle(&style);
 	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
@@ -353,10 +352,7 @@ void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height
 	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
 	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
 
-	Fixed	ht, dp;
-	GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
-	*height = Fix2X(ht);
-	*depth = Fix2X(dp);
+	GetGlyphHeightDepth_AAT(style, glyphID, height, depth);
 
 	ATSUDisposeStyle(style);
 #else
@@ -364,6 +360,31 @@ void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height
 	*height = 0.0;
 	*depth = 0.0;
 #endif
+}
+
+float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID)
+{
+	float	rval = 0.0;
+
+#ifdef XETEX_MAC
+	ATSUStyle	style;
+	OSStatus	status = ATSUCreateStyle(&style);
+	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
+	Fixed		size = X2Fix(getPointSize(engine));
+	ATSStyleRenderingOptions	options = kATSStyleNoHinting;
+	
+	ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
+	ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
+	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
+	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
+
+	rval = GetGlyphItalCorr_AAT(style, glyphID);
+
+	ATSUDisposeStyle(style);
+#else
+	/* FIXME */
+#endif
+	return rval;
 }
 
 UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt16 charCode)

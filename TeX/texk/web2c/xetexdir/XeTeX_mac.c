@@ -40,7 +40,7 @@ void InitializeLayout()
 	status = ATSUSetTransientFontMatching(sTextLayout, true);
 }
 
-void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, Fixed* ht, Fixed* dp)
+void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 {
 #define MIN_REAL_BUFFER_SIZE	20 /* 4 bytes for contour count; 4 bytes for vector count of 1st contour;
 										4 bytes for point flags; 8 bytes for 1st point */
@@ -66,11 +66,21 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, Fixed* ht, Fixed* dp)
 			path = (ATSUCurvePath*)(vector + path->vectors);
 		}
 		if (min < 65536.0) {
-			*ht = X2Fix(-min);
-			*dp = X2Fix(max);
+			*ht = -min;
+			*dp = max;
 		}
 		free(paths);
 	}
+}
+
+float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
+{
+	float	rval = 0.0;
+	ATSGlyphIdealMetrics	metrics;
+	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
+	if (metrics.otherSideBearing.x > 0.0)
+		rval = metrics.otherSideBearing.x;
+	return rval;
 }
 
 int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch)

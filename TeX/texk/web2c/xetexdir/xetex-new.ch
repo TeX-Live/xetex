@@ -3275,6 +3275,30 @@ adjust_space_factor;@/
 @z
 
 @x
+procedure append_italic_correction;
+label exit;
+var p:pointer; {|char_node| at the tail of the current list}
+@!f:internal_font_number; {the font in the |char_node|}
+begin if tail<>head then
+  begin if is_char_node(tail) then p:=tail
+  else if type(tail)=ligature_node then p:=lig_char(tail)
+  else return;
+@y
+procedure append_italic_correction;
+label exit;
+var p:pointer; {|char_node| at the tail of the current list}
+@!f:internal_font_number; {the font in the |char_node|}
+begin if tail<>head then
+  begin if is_char_node(tail) then p:=tail
+  else if type(tail)=ligature_node then p:=lig_char(tail)
+  else if (type(tail)=whatsit_node) and (subtype(tail)=native_word_node) then begin
+    tail_append(new_kern(set_native_metrics_returning_ital_corr(tail))); subtype(tail):=explicit;
+    return;
+  end
+  else return;
+@z
+
+@x
   if c>=0 then if c<256 then pre_break(tail):=new_character(cur_font,c);
 @y
   if c>=0 then if c<=biggest_char then pre_break(tail):=new_character(cur_font,c);

@@ -878,27 +878,29 @@ getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
 #define X_HEIGHT(f)		fontinfo[5+parambase[f]].cint
 #define CAP_HEIGHT(f)	fontinfo[8+parambase[f]].cint
 
+	float	ht = 0.0;
+	float	dp = 0.0;
+
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
 		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
 		int	gid = MapCharToGlyph_AAT(style, ch);
-		GetGlyphHeightDepth_AAT(style, gid, height, depth);
+		GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
 	}
 	else
 #endif
 	if (fontarea[font] == OT_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		int	gid = mapCharToGlyph(engine, ch);
-		float	ht = 0.0;
-		float	dp = 0.0;
 		getGlyphHeightDepth(engine, gid, &ht, &dp);
-		*height = X2Fix(ht);
-		*depth = X2Fix(dp);
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
+
+	*height = X2Fix(ht);
+	*depth = X2Fix(dp);
 	
 	/* snap to "known" zones for baseline, x-height, cap-height if within 2% of em-size */
 	Fixed	fuzz = QUAD(font) / 50;
@@ -908,10 +910,7 @@ getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
 	snap_zone(height, CAP_HEIGHT(font), fuzz);
 }
 
-
-void
-measure_native_node(void* p)
-{
+/* definitions used to access info in a native_word_node; must correspond with defines in xetex.web */
 #define width_offset		1
 #define depth_offset		2
 #define height_offset		3
@@ -926,6 +925,12 @@ measure_native_node(void* p)
 #define native_glyph_count(node)	node[native_glyph_info_offset].hh.v.LH
 #define native_glyph_info_ptr(node)	node[native_glyph_info_offset].hh.v.RH
 #define native_glyph_info_size		10	/* info for each glyph is location (FixedPoint) + glyph ID (UInt16) */
+
+Fixed
+measure_native_node(void* p, int want_ic)
+	/* return value is the italic correction for the last glyph, computed only if want_ic is non-zero */
+{
+	Fixed	rval = 0;
 
 	memoryword*	node = (memoryword*)p;
 	long		txtLen = native_length(node);
@@ -959,6 +964,20 @@ measure_native_node(void* p)
 		else {
 			depth(node) = descent;
 			height(node) = ascent;
+		}
+
+		if (want_ic) {
+			ByteCount	bufferSize = 0;
+			status = ATSUGetGlyphInfo(sTextLayout, 0, txtLen, &bufferSize, NULL);
+			if (bufferSize > 0) {
+				ATSUGlyphInfoArray*	info = (ATSUGlyphInfoArray*)xmalloc(bufferSize);
+				status = ATSUGetGlyphInfo(sTextLayout, 0, txtLen, &bufferSize, info);
+				if (info->numGlyphs > 0) {
+					int	gid = info->glyphs[info->numGlyphs-1].glyphID;
+					rval = X2Fix(GetGlyphItalCorr_AAT(style, gid));
+				}
+				free(info);
+			}
 		}
 	}
 	else
@@ -1042,6 +1061,9 @@ measure_native_node(void* p)
 					y = positions[2*i+1];
 				}
 				wid = x;
+
+				if (want_ic)
+					rval = X2Fix(getGlyphItalCorr(engine, glyphIDs[realGlyphCount-1]));
 			}
 
 			width(node) = X2Fix(wid);
@@ -1085,6 +1107,9 @@ measure_native_node(void* p)
 						++realGlyphCount;
 					}
 				}
+
+				if (want_ic)
+					rval = X2Fix(getGlyphItalCorr(engine, glyphIDs[realGlyphCount-1]));
 			}
 						
 			native_glyph_count(node) = realGlyphCount;
@@ -1105,6 +1130,8 @@ measure_native_node(void* p)
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
+	
+	return rval;
 }
 
 void
@@ -1117,8 +1144,8 @@ measure_native_glyph(void* p)
 	
 	long	font = native_font(node);
 
-	depth(node) = 0; /*depthbase[font];*/
-	height(node) = 0; /*heightbase[font];*/
+	float	ht = 0.0;
+	float	dp = 0.0;
 
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
@@ -1126,7 +1153,7 @@ measure_native_glyph(void* p)
 		ATSGlyphIdealMetrics	metrics;
 		OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
 		width(node) = X2Fix(metrics.advance.x);
-		GetGlyphHeightDepth_AAT(style, gid, &(height(node)), &(depth(node)));
+		GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
 	}
 	else
 #endif
@@ -1134,16 +1161,15 @@ measure_native_glyph(void* p)
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		XeTeXFont		fontInst = getFont(engine);
 		width(node) = X2Fix(getGlyphWidth(fontInst, gid));
-		float	ht = 0.0;
-		float	dp = 0.0;
 		getGlyphHeightDepth(engine, gid, &ht, &dp);
-		height(node) = X2Fix(ht);
-		depth(node) = X2Fix(dp);
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
+
+	height(node) = X2Fix(ht);
+	depth(node) = X2Fix(dp);
 }
 
 int
@@ -1217,15 +1243,19 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 		*slant = 0;
 
 	int	glyphID = MapCharToGlyph_AAT(style, 'x');
-	Fixed	dp;
-	if (glyphID != 0)
-		GetGlyphHeightDepth_AAT(style, glyphID, xheight, &dp);
+	float	ht, dp;
+	if (glyphID != 0) {
+		GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
+		*xheight = X2Fix(ht);
+	}
 	else
 		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
 
 	glyphID = MapCharToGlyph_AAT(style, 'H');
-	if (glyphID != 0)
-		GetGlyphHeightDepth_AAT(style, glyphID, capheight, &dp);
+	if (glyphID != 0) {
+		GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
+		*capheight = X2Fix(ht);
+	}
 	else
 		*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
 #endif

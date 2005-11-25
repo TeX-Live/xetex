@@ -87,8 +87,9 @@ typedef struct {
 extern "C" {
 #endif
 	void InitializeLayout();
-	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, Fixed* ht, Fixed* dp);
+	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch);
+	float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid);
 #ifdef __cplusplus
 };
 #endif
