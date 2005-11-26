@@ -73,6 +73,14 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 	}
 }
 
+void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb)
+{
+	ATSGlyphIdealMetrics	metrics;
+	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
+	*lsb = metrics.sideBearing.x;
+	*rsb = metrics.otherSideBearing.x;
+}
+
 float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
 {
 	float	rval = 0.0;

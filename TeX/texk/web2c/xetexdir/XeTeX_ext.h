@@ -88,6 +88,7 @@ extern "C" {
 #endif
 	void InitializeLayout();
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
+	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch);
 	float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid);
 #ifdef __cplusplus

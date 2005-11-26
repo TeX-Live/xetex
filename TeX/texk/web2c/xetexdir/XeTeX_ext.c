@@ -910,6 +910,33 @@ getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
 	snap_zone(height, CAP_HEIGHT(font), fuzz);
 }
 
+void
+getnativecharsidebearings(int font, int ch, Fixed* lsb, Fixed* rsb)
+{
+	float	l, r;
+
+#ifdef XETEX_MAC
+	if (fontarea[font] == AAT_FONT_FLAG) {
+		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
+		int	gid = MapCharToGlyph_AAT(style, ch);
+		GetGlyphSidebearings_AAT(style, gid, &l, &r);
+	}
+	else
+#endif
+	if (fontarea[font] == OT_FONT_FLAG) {
+		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
+		int	gid = mapCharToGlyph(engine, ch);
+		getGlyphSidebearings(engine, gid, &l, &r);
+	}
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
+
+	*lsb = X2Fix(l);
+	*rsb = X2Fix(r);
+}
+
 /* definitions used to access info in a native_word_node; must correspond with defines in xetex.web */
 #define width_offset		1
 #define depth_offset		2

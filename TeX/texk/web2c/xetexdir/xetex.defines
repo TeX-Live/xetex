@@ -52,6 +52,7 @@
 @define function otfontget3();
 @define function mapchartoglyph();
 @define procedure getnativecharheightdepth();
+@define procedure getnativecharsidebearings();
 @define function getnativeitalcorr();
 
 @define procedure atsugetfontmetrics();

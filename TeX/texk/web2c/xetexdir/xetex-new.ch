@@ -292,7 +292,7 @@ else begin
 @x
 begin pool_ptr:=0; str_ptr:=0; str_start[0]:=0;
 @y
-begin pool_ptr:=0; str_ptr:=0; str_start_macro(0):=0;
+begin pool_ptr:=0; str_ptr:=0; {str_start_macro(0):=0;}
 @z
 
 @x
@@ -3318,13 +3318,16 @@ begin if tail<>head then
 @x
 @!a,@!h,@!x,@!w,@!delta:scaled; {heights and widths, as explained above}
 @y
-@!a,@!h,@!x,@!w,@!delta,@!d:scaled; {heights and widths, as explained above}
+@!a,@!h,@!x,@!w,@!delta,@!lsb,@!rsb:scaled; {heights and widths, as explained above}
 @z
 
 @x
   a:=char_width(f)(char_info(f)(character(p)));@/
 @y
-  if is_native_font(f) then a:=width(p)
+  if is_native_font(f) then
+    begin a:=width(p);
+    if a=0 then get_native_char_sidebearings(f, cur_val, address_of(lsb), address_of(rsb))
+    end
   else a:=char_width(f)(char_info(f)(character(p)));@/
 @z
 
@@ -3343,11 +3346,19 @@ w:=char_width(f)(i); h:=char_height(f)(height_depth(i));
 @y
 if is_native_font(f) then begin
   w:=width(q);
-  get_native_char_height_depth(f, cur_val, address_of(h), address_of(d))
+  h:=height(q)
 end else begin
   i:=char_info(f)(character(q));
-  w:=char_width(f)(i); h:=char_height(f)(height_depth(i));
+  w:=char_width(f)(i); h:=char_height(f)(height_depth(i))
 end;
+@z
+
+@x
+delta:=round((w-a)/float_constant(2)+h*t-x*s);
+@y
+if is_native_font(f) and (a=0) then { special case for non-spacing marks }
+  delta:=round((w-rsb-lsb)/float_constant(2)+h*t-x*s)
+else delta:=round((w-a)/float_constant(2)+h*t-x*s);
 @z
 
 @x

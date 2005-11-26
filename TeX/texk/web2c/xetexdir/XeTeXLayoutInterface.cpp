@@ -93,7 +93,8 @@ void* getFontTablePtr(XeTeXFont font, UInt32 tableTag)
 
 Fixed getSlant(XeTeXFont font)
 {
-	return X2Fix(tan(((XeTeXFontInst*)font)->getItalicAngle()));
+	float italAngle = ((XeTeXFontInst*)font)->getItalicAngle();
+	return X2Fix(tan(-italAngle * M_PI / 180.0));
 }
 
 UInt32 countScripts(XeTeXFont font)
@@ -359,6 +360,30 @@ void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height
 	/* FIXME */
 	*height = 0.0;
 	*depth = 0.0;
+#endif
+}
+
+void getGlyphSidebearings(XeTeXLayoutEngine engine, UInt32 glyphID, float* lsb, float* rsb)
+{
+#ifdef XETEX_MAC
+	ATSUStyle	style;
+	OSStatus	status = ATSUCreateStyle(&style);
+	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
+	Fixed		size = X2Fix(getPointSize(engine));
+	ATSStyleRenderingOptions	options = kATSStyleNoHinting;
+	
+	ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
+	ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
+	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
+	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
+
+	GetGlyphSidebearings_AAT(style, glyphID, lsb, rsb);
+
+	ATSUDisposeStyle(style);
+#else
+	/* FIXME */
+	*lsb = 0.0;
+	*rsb = 0.0;
 #endif
 }
 
