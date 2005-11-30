@@ -893,8 +893,8 @@ public:
 	std::string	encName;
 	std::string	pfbName;
 
-	CGFontRef			cgFont;
-	std::vector<UInt16>*cmap;
+	CGFontRef	cgFont;
+	std::vector<UInt16>*	cmap;
 
 	bool		loaded;
 };
@@ -1102,24 +1102,39 @@ getEncoding(const std::string& name)
 static ATSFontRef
 activateFromPath(const char* pathName)
 {
+	if (sVerbose)
+		fprintf(stderr, "\n{activate %s", pathName);
+	ItemCount	count = 0;
 	FSRef		fontFileRef;
-	FSSpec		fontFileSpec;
+	bzero(&fontFileRef, sizeof(fontFileRef));
 	OSStatus	status = FSPathMakeRef((UInt8*)pathName, &fontFileRef, 0);
-	if (status == noErr)
-		status = FSGetCatalogInfo(&fontFileRef, 0, 0, 0, &fontFileSpec, 0);
 	if (status == noErr) {
-		ATSFontContainerRef containerRef;
-		status = ATSFontActivateFromFileSpecification(&fontFileSpec, kATSFontContextLocal,
-						kATSFontFormatUnspecified, 0, kATSOptionFlagsDefault, &containerRef);
-		ATSFontRef	fontRef;
-		ItemCount	count;
-		status = ATSFontFindFromContainer(containerRef, 0, 1, &fontRef, &count);
-		if ((status == noErr) && (count == 1))
-			return fontRef;
-		// failed, or container contained multiple fonts(!) -- confused
-		ATSFontDeactivate(containerRef, 0, kATSOptionFlagsDefault);
+		++count;
+		FSSpec		fontFileSpec;
+		bzero(&fontFileSpec, sizeof(fontFileSpec));
+		status = FSGetCatalogInfo(&fontFileRef, 0, 0, 0, &fontFileSpec, 0);
+		if (status == noErr) {
+			++count;
+			ATSFontContainerRef containerRef = 0;
+			status = ATSFontActivateFromFileSpecification(&fontFileSpec, kATSFontContextLocal,
+							kATSFontFormatUnspecified, 0, kATSOptionFlagsDefault, &containerRef);
+			if (status == noErr) {
+				++count;
+				ATSFontRef	fontRef;
+				status = ATSFontFindFromContainer(containerRef, 0, 1, &fontRef, &count);
+				if (status == noErr && count == 1) {
+					if (sVerbose)
+						fprintf(stderr, "}");
+					return fontRef;
+				}
+				// failed, or container contained multiple fonts(!) -- confused
+				ATSFontDeactivate(containerRef, 0, kATSOptionFlagsDefault);
+			}
+		}
 	}
-	return kATSUInvalidFontID;
+	if (sVerbose)
+		fprintf(stderr, "... failed: status=%d, count=%d}", status, count);
+	return 0;
 }
 
 struct postTable {
@@ -1144,7 +1159,13 @@ struct postTable {
 static ATSFontRef
 activatePFB(const char* pfbName)
 {
-	ATSFontRef fontRef = kATSUInvalidFontID;
+	static std::map<std::string,ATSFontRef>	sActivatedFonts;
+
+	std::map<std::string,ATSFontRef>::iterator i = sActivatedFonts.find(pfbName);
+	if (i != sActivatedFonts.end())
+		return i->second;
+
+	ATSFontRef	fontRef = 0;
 	OSStatus	status = noErr;
 
 	static int firstTime = 1;
@@ -1204,9 +1225,10 @@ activatePFB(const char* pfbName)
 		}
 	}
 	
-	if (fontRef == kATSUInvalidFontID)
+	if (fontRef == 0)
 		fprintf(stderr, "\n*** font activation failed (status=%d): %s\n", status, pfbName);
 
+	sActivatedFonts[pfbName] = fontRef;
 	return fontRef;
 }
 
@@ -1291,10 +1313,10 @@ getFontRec(const std::string& name)
 	std::map<std::string,fontMapRec>::iterator	i = psFontsMap.find(name);
 	if (i == psFontsMap.end())
 		return NULL;
-	if (i->second.loaded)
-		return &(i->second);
 
-	fontMapRec	fr = i->second;
+	fontMapRec&	fr = i->second;
+	if (fr.loaded)
+		return &fr;
 
 	ATSFontRef	fontRef = kATSUInvalidFontID;
 	// if a filename is known, try to find and activate it
@@ -1407,8 +1429,7 @@ getFontRec(const std::string& name)
 	fr.cgFont = getCGFontForATSFont(fontRef);
 	fr.loaded = true;
 	
-	psFontsMap[name] = fr;
-	return &(psFontsMap[name]);
+	return &fr;
 }
 
 static void
@@ -1911,6 +1932,8 @@ processAllPages(FILE* xdv)
                 exit(1);
 		}
 	}
+	if (sVerbose && (gPageIndex % 10) != 0)
+		fprintf(stderr, "\n");
 }
 
 const char* progName;
