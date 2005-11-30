@@ -488,6 +488,7 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 					bounds->wd = r.size.width;
 					bounds->ht = r.size.height;
 					CGPDFDocumentRelease(document);
+					result = noErr;
 				}
 			}
 			else {
