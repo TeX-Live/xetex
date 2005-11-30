@@ -60,16 +60,22 @@ CMAPMapper *CMAPMapper::createUnicodeMapper(const CMAPTable *cmap)
     for (i = 0; i < nSubtables; i += 1) {
         const CMAPEncodingSubtableHeader *esh = &cmap->encodingSubtableHeaders[i];
 
-        if (SWAPW(esh->platformID) == 3) {
-            switch (SWAPW(esh->platformSpecificID)) {
-            case 1:
-                offset1 = SWAPL(esh->encodingOffset);
-                break;
+        switch (SWAPW(esh->platformID)) {
+		case 3:	// Microsoft encodings
+			switch (SWAPW(esh->platformSpecificID)) {
+			case 1:	// Unicode (really UCS-2?)
+				offset1 = SWAPL(esh->encodingOffset);
+				break;
 
-            case 10:
-                offset10 = SWAPL(esh->encodingOffset);
-                break;
-            }
+			case 10:	// UCS-4
+				offset10 = SWAPL(esh->encodingOffset);
+				break;
+			}
+			break;
+	
+		case 0: // Apple Unicode
+			offset10 = SWAPL(esh->encodingOffset);	// we ignore the unicode version
+			break;		
         }
     }
 
