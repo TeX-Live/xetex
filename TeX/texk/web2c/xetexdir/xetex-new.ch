@@ -4889,9 +4889,10 @@ begin
 	new_native_character := p;
 end;
 
-procedure font_feature_warning(fontNameP:integer; nameLen:integer;
-	featureNameP:integer; featLen:integer;
+procedure font_feature_warning(featureNameP:integer; featLen:integer;
 	settingNameP:integer; setLen:integer);
+var
+	i: integer;
 begin
 	begin_diagnostic;
 	print_nl("Unknown ");
@@ -4903,8 +4904,29 @@ begin
 	print("feature `");
 	print_utf8_str(featureNameP, featLen);
 	print("' in font `");
-	print_utf8_str(fontNameP, nameLen);
+	i := 1;
+	while ord(name_of_file[i]) <> 0 do begin
+		print_visible_char(name_of_file[i]); { this is already UTF-8 }
+		incr(i);
+	end;
 	print("'.");
+	end_diagnostic(false);
+end;
+
+procedure font_mapping_warning(mappingNameP:integer; mappingNameLen:integer);
+var
+	i: integer;
+begin
+	begin_diagnostic;
+	print_nl("Font mapping `");
+	print_utf8_str(mappingNameP, mappingNameLen);
+	print("' for font `");
+	i := 1;
+	while ord(name_of_file[i]) <> 0 do begin
+		print_visible_char(name_of_file[i]); { this is already UTF-8 }
+		incr(i);
+	end;
+	print("' not found.");
 	end_diagnostic(false);
 end;
 
@@ -4923,15 +4945,15 @@ begin
 	load_native_font := null_font;
 
 	if (s < 0) then actual_size := -s * unity div 100 else actual_size := s;
-	font_engine := find_atsu_font(name_of_file + 1, actual_size);
+	font_engine := find_native_font(name_of_file + 1, actual_size);
 	if font_engine = 0 then goto done;
 	if (font_ptr = font_max) or (fmem_ptr + 8 > font_mem_size) then begin
 		@<Apologize for not loading the font, |goto done|@>;
 	end;
 	
-	{ we've found a valid ATSUI font, and have room }
+	{ we've found a valid ATSUI/ICU font, and have room }
 	incr(font_ptr);
-	font_area[font_ptr] := native_font_type_flag; { set by find_atsu_font to either aat_font_flag or ot_font_flag }
+	font_area[font_ptr] := native_font_type_flag; { set by find_native_font to either aat_font_flag or ot_font_flag }
 
 	{ we need the *full* name }
 	str_room(name_length);

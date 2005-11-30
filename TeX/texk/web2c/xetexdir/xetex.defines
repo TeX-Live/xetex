@@ -18,7 +18,7 @@
 @define procedure setnativemetrics();
 @define function setnativemetricsreturningitalcorr();
 @define procedure setnativeglyphmetrics();
-@define function findatsufont();
+@define function findnativefont();
 @define function sizeof();
 @define function makefontdef();
 @define procedure fprintf();

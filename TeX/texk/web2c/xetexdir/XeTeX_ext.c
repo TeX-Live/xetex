@@ -303,7 +303,7 @@ getencodingmodeandinfo(long* info)
 	 *   -> name is packed in |nameoffile| as a C string, starting at [1]
 	 * Check if it's a built-in name; if not, try to open an ICU converter by that name
 	 */
-	char*	name = nameoffile + 1;
+	char*	name = (char*)nameoffile + 1;
 	*info = 0;
 	if (strcasecmp(name, "auto") == 0) {
 		return AUTO;
@@ -364,8 +364,7 @@ load_mapping_file(const char* s, const char* e)
 	strncpy(buffer, s, e - s);
 	buffer[e - s] = 0;
 	strcat(buffer, ".tec");
-	UInt8*	mapPath = kpse_find_file(buffer, kpse_miscfonts_format, 1);
-	free(buffer);
+	char*	mapPath = kpse_find_file(buffer, kpse_miscfonts_format, 1);
 
 	if (mapPath) {
 		FILE*	mapFile = fopen(mapPath, "r");
@@ -382,6 +381,10 @@ load_mapping_file(const char* s, const char* e)
 			free(mapping);
 		}
 	}
+	else
+		fontmappingwarning(buffer, strlen(buffer));
+
+	free(buffer);
 
 	return cnv;
 }
@@ -404,7 +407,7 @@ read_tag(const char* cp)
 }
 
 static long
-loadOTfont(XeTeXFont font, const char* name, int nameLen, const char* cp1)
+loadOTfont(XeTeXFont font, const char* cp1)
 {
 	unsigned long	scriptTag = kLatin;
 	unsigned long	languageTag = 0;
@@ -423,120 +426,122 @@ loadOTfont(XeTeXFont font, const char* name, int nameLen, const char* cp1)
 	unsigned long	rgbValue = 0x000000FF;
 
 	// scan the feature string (if any)
-	while (*cp1) {
-		if ((*cp1 == ':') || (*cp1 == ';') || (*cp1 == ','))
-			++cp1;
-		while ((*cp1 == ' ') || (*cp1 == '\t'))	// skip leading whitespace
-			++cp1;
-		if (*cp1 == 0)	// break if end of string
-			break;
-
-		cp2 = cp1;
-		while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
-			++cp2;
-		
-		if (strncmp(cp1, "script", 6) == 0) {
-			cp3 = cp1 + 6;
-			if (*cp3 != '=')
-				goto bad_option;
-			scriptTag = read_tag(cp3 + 1);
-			goto next_option;
-		}
-		
-		if (strncmp(cp1, "language", 8) == 0) {
-			cp3 = cp1 + 8;
-			if (*cp3 != '=')
-				goto bad_option;
-			languageTag = read_tag(cp3 + 1);
-			goto next_option;
-		}
-		
-		if (strncmp(cp1, "mapping", 7) == 0) {
-			cp3 = cp1 + 7;
-			if (*cp3 != '=')
-				goto bad_option;
-			loadedfontmapping = (long)load_mapping_file(cp3 + 1, cp2);
-			goto next_option;
-		}
-
-		if (strncmp(cp1, "color", 5) == 0) {
-			cp3 = cp1 + 5;
-			if (*cp3 != '=')
-				goto bad_option;
-			++cp3;
-
-			rgbValue = 0;
-			unsigned	alpha = 0;
-			int i;
-			for (i = 0; i < 6; ++i) {
-				if ((*cp3 >= '0') && (*cp3 <= '9'))
-					rgbValue = (rgbValue << 4) + *cp3 - '0';
-				else if ((*cp3 >= 'A') && (*cp3 <= 'F'))
-					rgbValue = (rgbValue << 4) + *cp3 - 'A' + 10;
-				else if ((*cp3 >= 'a') && (*cp3 <= 'f'))
-					rgbValue = (rgbValue << 4) + *cp3 - 'a' + 10;
-				else
+	if (cp1 != NULL) {
+		while (*cp1) {
+			if ((*cp1 == ':') || (*cp1 == ';') || (*cp1 == ','))
+				++cp1;
+			while ((*cp1 == ' ') || (*cp1 == '\t'))	// skip leading whitespace
+				++cp1;
+			if (*cp1 == 0)	// break if end of string
+				break;
+	
+			cp2 = cp1;
+			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
+				++cp2;
+			
+			if (strncmp(cp1, "script", 6) == 0) {
+				cp3 = cp1 + 6;
+				if (*cp3 != '=')
+					goto bad_option;
+				scriptTag = read_tag(cp3 + 1);
+				goto next_option;
+			}
+			
+			if (strncmp(cp1, "language", 8) == 0) {
+				cp3 = cp1 + 8;
+				if (*cp3 != '=')
+					goto bad_option;
+				languageTag = read_tag(cp3 + 1);
+				goto next_option;
+			}
+			
+			if (strncmp(cp1, "mapping", 7) == 0) {
+				cp3 = cp1 + 7;
+				if (*cp3 != '=')
+					goto bad_option;
+				loadedfontmapping = (long)load_mapping_file(cp3 + 1, cp2);
+				goto next_option;
+			}
+	
+			if (strncmp(cp1, "color", 5) == 0) {
+				cp3 = cp1 + 5;
+				if (*cp3 != '=')
 					goto bad_option;
 				++cp3;
-			}
-			rgbValue <<= 8;
-			for (i = 0; i < 2; ++i) {
-				if ((*cp3 >= '0') && (*cp3 <= '9'))
-					alpha = (alpha << 4) + *cp3 - '0';
-				else if ((*cp3 >= 'A') && (*cp3 <= 'F'))
-					alpha = (alpha << 4) + *cp3 - 'A' + 10;
-				else if ((*cp3 >= 'a') && (*cp3 <= 'f'))
-					alpha = (alpha << 4) + *cp3 - 'a' + 10;
+	
+				rgbValue = 0;
+				unsigned	alpha = 0;
+				int i;
+				for (i = 0; i < 6; ++i) {
+					if ((*cp3 >= '0') && (*cp3 <= '9'))
+						rgbValue = (rgbValue << 4) + *cp3 - '0';
+					else if ((*cp3 >= 'A') && (*cp3 <= 'F'))
+						rgbValue = (rgbValue << 4) + *cp3 - 'A' + 10;
+					else if ((*cp3 >= 'a') && (*cp3 <= 'f'))
+						rgbValue = (rgbValue << 4) + *cp3 - 'a' + 10;
+					else
+						goto bad_option;
+					++cp3;
+				}
+				rgbValue <<= 8;
+				for (i = 0; i < 2; ++i) {
+					if ((*cp3 >= '0') && (*cp3 <= '9'))
+						alpha = (alpha << 4) + *cp3 - '0';
+					else if ((*cp3 >= 'A') && (*cp3 <= 'F'))
+						alpha = (alpha << 4) + *cp3 - 'A' + 10;
+					else if ((*cp3 >= 'a') && (*cp3 <= 'f'))
+						alpha = (alpha << 4) + *cp3 - 'a' + 10;
+					else
+						break;
+					++cp3;
+				}
+				if (i == 2)
+					rgbValue += alpha;
 				else
-					break;
-				++cp3;
+					rgbValue += 0xFF;
+				
+				goto next_option;
 			}
-			if (i == 2)
-				rgbValue += alpha;
-			else
-				rgbValue += 0xFF;
 			
-			goto next_option;
+			if (*cp1 == '+') {
+				tag = read_tag(cp1 + 1);
+				++nAdded;
+				if (nAdded == 1)
+					addFeatures = xmalloc(sizeof(unsigned long));
+				else
+					addFeatures = xrealloc(addFeatures, nAdded * sizeof(long));
+				addFeatures[nAdded-1] = tag;
+				goto next_option;
+			}
+			
+			if (*cp1 == '-') {
+				tag = read_tag(cp1 + 1);
+				++nRemoved;
+				if (nRemoved == 1)
+					removeFeatures = xmalloc(sizeof(unsigned long));
+				else
+					removeFeatures = xrealloc(removeFeatures, nRemoved * sizeof(long));
+				removeFeatures[nRemoved-1] = tag;
+				goto next_option;
+			}
+			
+		bad_option:
+			fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
+		
+		next_option:
+			cp1 = cp2;
 		}
 		
-		if (*cp1 == '+') {
-			tag = read_tag(cp1 + 1);
-			++nAdded;
-			if (nAdded == 1)
-				addFeatures = xmalloc(sizeof(unsigned long));
-			else
-				addFeatures = xrealloc(addFeatures, nAdded * sizeof(long));
-			addFeatures[nAdded-1] = tag;
-			goto next_option;
+		if (addFeatures != 0) {
+			addFeatures = realloc(addFeatures, (nAdded + 1) * sizeof(long));
+			addFeatures[nAdded] = 0;
 		}
-		
-		if (*cp1 == '-') {
-			tag = read_tag(cp1 + 1);
-			++nRemoved;
-			if (nRemoved == 1)
-				removeFeatures = xmalloc(sizeof(unsigned long));
-			else
-				removeFeatures = xrealloc(removeFeatures, nRemoved * sizeof(long));
-			removeFeatures[nRemoved-1] = tag;
-			goto next_option;
+		if (removeFeatures != 0) {
+			removeFeatures = realloc(removeFeatures, (nRemoved + 1) * sizeof(long));
+			removeFeatures[nRemoved] = 0;
 		}
-		
-	bad_option:
-		fontfeaturewarning(name, nameLen, cp1, cp2 - cp1, 0, 0);
-	
-	next_option:
-		cp1 = cp2;
 	}
 	
-	if (addFeatures != 0) {
-		addFeatures = realloc(addFeatures, (nAdded + 1) * sizeof(long));
-		addFeatures[nAdded] = 0;
-	}
-	if (removeFeatures != 0) {
-		removeFeatures = realloc(removeFeatures, (nRemoved + 1) * sizeof(long));
-		removeFeatures[nRemoved] = 0;
-	}
-
 	XeTeXLayoutEngine	engine = createLayoutEngine(font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
 	if (engine == 0) {
 		deleteFont(font);
@@ -551,56 +556,107 @@ loadOTfont(XeTeXFont font, const char* name, int nameLen, const char* cp1)
 	return (long)engine;
 }
 
+static void
+splitFontName(const char* name, const char** var, const char** feat, const char** end)
+{
+	*var = NULL;
+	*feat = NULL;
+	while (*name) {
+		if (*name == '/' && *var == NULL && *feat == NULL)
+			*var = name;
+		else if (*name == ':' && *feat == NULL)
+			*feat = name;
+		++name;
+	}
+	*end = name;
+	if (*feat == NULL)
+		*feat = name;
+	if (*var == NULL)
+		*var = *feat;
+}
+
 long
-findatsufont(const char* name, long scaled_size)
+findnativefont(const char* name, long scaled_size)
 {
 	long	rval = 0;
 	loadedfontmapping = 0;
 
-	// NOTE that findFontByName can change TeX's nameoffile, to which /name/ is a pointer!
-	name = xstrdup(name);
+	const char*	var;
+	const char*	feat;
+	const char*	end;
 
-	unsigned int	nameLen = strlen(name);
-	const char*	featureString = name;
-	while (*featureString && *featureString != ':')
-		++featureString;
-#ifdef XETEX_MAC
-	ATSFontRef	fontRef;
-#else
-	void* fontRef;
-#endif
-	if (*featureString) {
-		char* buf = xmalloc(featureString - name + 1);
-		strncpy(buf, name, featureString - name);
-		buf[featureString - name] = 0;
-		fontRef = findFontByName(buf, Fix2X(scaled_size));
-		free(buf);
+	splitFontName(name, &var, &feat, &end);
+
+	char*	nameString = xmalloc(var - name + 1);
+	strncpy(nameString, name, var - name);
+	nameString[var - name] = 0;
+
+	char*	varString = NULL;
+	if (feat > var) {
+		varString = xmalloc(feat - var);
+		strncpy(varString, var + 1, feat - var - 1);
+		varString[feat - var - 1] = 0;
 	}
-	else
-		fontRef = findFontByName(name, Fix2X(scaled_size));
+		
+	char*	featString = NULL;
+	if (end > feat) {
+		featString = xmalloc(end - feat);
+		strncpy(featString, feat + 1, end - feat - 1);
+		featString[end - feat - 1] = 0;
+	}
+	
+	PlatformFontRef	fontRef;
+	fontRef = findFontByName(nameString, varString, Fix2X(scaled_size));
+	if (varString != NULL)
+		free(varString);
 
 	if (fontRef != 0) {
+		/* update nameoffile to the full name of the font, for error messages during font loading */
+		const char*	fullName = getFullName(fontRef);
+		namelength = strlen(fullName);
+		if (featString != NULL)
+			namelength += strlen(featString) + 1;
+		free(nameoffile);
+		nameoffile = xmalloc(namelength + 2);
+		nameoffile[0] = ' ';
+		strcpy((char*)nameoffile + 1, fullName);
+
+#ifdef XETEX_MAC
 		// decide whether to use AAT or OpenType rendering with this font
-		if (gPrefEngine == 'A')
+		if (getReqEngine() == 'A')
 			goto load_aat;
-		
+#endif
+
 		XeTeXFont	font = createFont(fontRef, scaled_size);
 		if (font != 0) {
-			if (gPrefEngine == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0) {
-				rval = loadOTfont(font, name, nameLen, featureString);
-			}
+#ifdef XETEX_MAC
+			if (getReqEngine() == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0)
+#endif
+				rval = loadOTfont(font, featString);
 			if (rval == 0)
 				deleteFont(font);
 		}
+
 		if (rval == 0) {
 		load_aat:
 #ifdef XETEX_MAC
-			rval = loadAATfont(FMGetFontFromATSFontRef((ATSFontRef)fontRef), scaled_size, name, nameLen, featureString);
+			rval = loadAATfont(fontRef, scaled_size, featString);
 #else
 			;
 #endif
 		}
+
+		/* append the feature string, so that \show\fontID will give a full result */
+		if (featString != NULL) {
+			strcat((char*)nameoffile + 1, ":");
+			strcat((char*)nameoffile + 1, featString);
+		}
+	
 	}
+	
+	if (featString != NULL)
+		free(featString);
+	free(nameString);
 	
 	return rval;
 }
@@ -715,8 +771,10 @@ makefontdef(long f)
 		
 		ATSUFontID	fontID;
 		ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-		ByteCount	nameLength;
-		ATSUFindFontName(fontID, kFontPostscriptName, kFontNoPlatform, kFontNoScript, kFontNoLanguage, 0, 0, &nameLength, 0);
+
+		int	nameLength;
+		const char*	psName = getPSName(FMGetATSFontRefFromFont(fontID));
+		nameLength = strlen(psName);
 	
 		// parameters after internal font ID: s[4] t[2] nf[2] f[2nf] s[2nf] nv[2] a[4nv] v[4nv] c[16] l[2] n[l]
 		long	fontDefLength = 0
@@ -775,7 +833,7 @@ makefontdef(long f)
 	
 		*(UInt16*)cp = nameLength;
 		cp += 2;
-		ATSUFindFontName(fontID, kFontPostscriptName, kFontNoPlatform, kFontNoScript, kFontNoLanguage, nameLength, cp, 0, 0);
+		strncpy(cp, psName, nameLength);
 
 		return fontDefLength;
 	}

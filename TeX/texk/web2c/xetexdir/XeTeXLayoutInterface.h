@@ -14,6 +14,7 @@
 #endif
 
 #include "XeTeX_ext.h"
+#include "XeTeXFontMgr.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,12 +29,16 @@ extern char	gPrefEngine;
 ATSFontRef getFontRef(XeTeXLayoutEngine engine);
 XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
 
-ATSFontRef findFontByName(const char* name, double size);
+ATSFontRef findFontByName(const char* name, const char* var, double size);
 #else
 // appropriate functions for other platforms
 XeTeXFont createFont(void* fontRef, Fixed pointSize);
-void* findFontByName(const char* name, double size);
+void* findFontByName(const char* name, const char* var, double size);
 #endif
+
+char getReqEngine();
+const char* getFullName(PlatformFontRef fontRef);
+const char* getPSName(PlatformFontRef fontRef);
 
 void deleteFont(XeTeXFont font);
 

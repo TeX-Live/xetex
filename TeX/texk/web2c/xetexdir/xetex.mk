@@ -15,11 +15,11 @@ xetex = @XETEX@ xetex
 # Platform specific defines and files to be built
 #Mac
 ifeq '$(target_vendor)' 'apple'
-xetex_platform_o = XeTeX_mac.o # xetexmac.o
+xetex_platform_o = XeTeX_mac.o
 # xetex_platform_layout_o = ATSFontInst.o 
 # xetex_platform_layout_cxx = ATSFontInst.cpp
-xetex_platform_layout_o = XeTeXFontInst_Mac.o XeTeXFontManager_Mac.o
-xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp XeTeXFontManager_Mac.cpp
+xetex_platform_layout_o = XeTeXFontInst_Mac.o
+xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp
 
 XETEX_DEFINES = -DXETEX_MAC
 
@@ -28,8 +28,8 @@ FRAMEWORKS = -framework Carbon -framework QuickTime
 else
 #Linux is linux-gnu, ought to be same defines/files for other X11 systems like BSDs
 xetex_platform_o = 
-xetex_platform_layout_o = XeTeXFontInst_FC.o XeTeXFontManager_FC.o
-xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp XeTeXFontManager_FC.cpp
+xetex_platform_layout_o = XeTeXFontInst_FC.o
+xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
 
 XETEX_DEFINES = -DXETEX_OTHER
 
@@ -49,13 +49,15 @@ xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
 xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o trans.o XeTeX_ext.o $(xetex_platform_o)
 
 # Layout library sources
-xetex_ot_layout_o = XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
+xetex_ot_layout_o = \
+		XeTeXFontMgr.o \
+		XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
 		XeTeXFontInst.o cmaps.o FontObject.o FontTableCache.o \
-		XeTeXFontManager.o \
 		$(xetex_platform_layout_o) 
-xetex_ot_layout_cxx = XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp \
+xetex_ot_layout_cxx = \
+		XeTeXFontMgr.cpp \
+		XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp \
 		XeTeXFontInst.cpp cmaps.cpp FontObject.cpp FontTableCache.cpp \
-		XeTeXFontManager.cpp \
 		$(xetex_platform_layout_cxx)
 
 icudir = icu-release-3-4
@@ -78,6 +80,10 @@ XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+
+
+XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@

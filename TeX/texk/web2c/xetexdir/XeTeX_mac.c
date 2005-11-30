@@ -213,8 +213,9 @@ find_selector_by_name(ATSUFontID fontID, ATSUFontFeatureType featureType, const 
 }
 
 long
-loadAATfont(ATSUFontID fontID, long scaled_size, const char* name, int nameLen, const char* cp1)
+loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 {
+	ATSUFontID	fontID = FMGetFontFromATSFontRef(fontRef);
 	ATSUStyle	style = 0;
 	OSStatus	status = ATSUCreateStyle(&style);
 	if (status == noErr) {
@@ -230,222 +231,224 @@ loadAATfont(ATSUFontID fontID, long scaled_size, const char* name, int nameLen, 
 		value[2] = &options;
 		ATSUSetAttributes(style, 3, &tag[0], &valueSize[0], &value[0]);
 		
-		// FIXME: need to dynamically grow these arrays
-		UInt16*	featureTypes = (UInt16*)xmalloc(200);
-		UInt16*	selectorValues = (UInt16*)xmalloc(200);
-		int	numFeatures = 0;
-		
-		UInt32*	axes = (UInt32*)xmalloc(200);
-		SInt32*	values = (SInt32*)xmalloc(200);
-		int	numVariations = 0;
-		
-		// interpret features & variations following ":"
-		while (*cp1) {
-
-			// locate beginning of name=value pair
-			if (*cp1 == ':' || *cp1 == ';')	// skip over separator
-				++cp1;
-			while (*cp1 == ' ' || *cp1 == '\t')	// skip leading whitespace
-				++cp1;
-			if (*cp1 == 0)	// break if end of string
-				break;
-
-			// scan to end of pair
-			const char*	cp2 = cp1;
-			while (*cp2 && *cp2 != ';' && *cp2 != ':')
-				++cp2;
-
-			// look for the '=' separator
-			const char*	cp3 = cp1;
-			while (cp3 < cp2 && *cp3 != '=')
-				++cp3;
-			if (cp3 == cp2)
-				goto bad_option;
-
-			// now cp1 points to option name, cp3 to '=', cp2 to ';' or null
+		if (cp1 != NULL) {
+			// FIXME: need to dynamically grow these arrays
+			UInt16*	featureTypes = (UInt16*)xmalloc(200);
+			UInt16*	selectorValues = (UInt16*)xmalloc(200);
+			int	numFeatures = 0;
 			
-			// first try for a feature by this name
-			ATSUFontFeatureType	featureType;
-			featureType = find_feature_by_name(fontID, cp1, cp3 - cp1);
-			if (featureType != 0x0000FFFF) {
-				// look past the '=' separator for setting names
-				int	featLen = cp3 - cp1;
-				++cp3;
-				while (cp3 < cp2) {
-					// skip leading whitespace
-					while (*cp3 == ' ' || *cp3 == '\t')
-						++cp3;
-				
-					// possibly multiple settings...
-					int	disable = 0;
-					if (*cp3 == '!') {	// check for negation
-						disable = 1;
-						++cp3;
-					}
-					
-					// scan for end of setting name
-					const char*	cp4 = cp3;
-					while (cp4 < cp2 && *cp4 != ',')
-						++cp4;
-					
-					// now cp3 points to name, cp4 to ',' or ';' or null
-					ATSUFontFeatureSelector	selectorValue = find_selector_by_name(fontID, featureType, cp3, cp4 - cp3);
-					if (selectorValue != 0x0000FFFF) {
-						featureTypes[numFeatures] = featureType;
-						selectorValues[numFeatures] = selectorValue + disable;
-						++numFeatures;
-					}
-					else {
-						fontfeaturewarning(name, nameLen, cp1, featLen, cp3, cp4 - cp3);
-					}
-					
-					// point beyond setting name terminator
-					cp3 = cp4 + 1;
-				}
-				
-				goto next_option;
-			}
+			UInt32*	axes = (UInt32*)xmalloc(200);
+			SInt32*	values = (SInt32*)xmalloc(200);
+			int	numVariations = 0;
 			
-			// try to find a variation by this name
-			ATSUFontVariationAxis	axis;
-			axis = find_axis_by_name(fontID, cp1, cp3 - cp1);
-			if (axis != 0) {
-				// look past the '=' separator for the value
-				++cp3;
-				double	value = 0.0, decimal = 1.0;
-				bool		negate = false;
-				if (*cp3 == '-') {
+			// interpret features & variations following ":"
+			while (*cp1) {
+	
+				// locate beginning of name=value pair
+				if (*cp1 == ':' || *cp1 == ';')	// skip over separator
+					++cp1;
+				while (*cp1 == ' ' || *cp1 == '\t')	// skip leading whitespace
+					++cp1;
+				if (*cp1 == 0)	// break if end of string
+					break;
+	
+				// scan to end of pair
+				const char*	cp2 = cp1;
+				while (*cp2 && *cp2 != ';' && *cp2 != ':')
+					++cp2;
+	
+				// look for the '=' separator
+				const char*	cp3 = cp1;
+				while (cp3 < cp2 && *cp3 != '=')
 					++cp3;
-					negate = true;
-				}
-				while (cp3 < cp2) {
-					int	v = *cp3 - '0';
-					if (v >= 0 && v <= 9) {
-						if (decimal != 1.0) {
-							value += v / decimal;
-							decimal *= 10.0;
+				if (cp3 == cp2)
+					goto bad_option;
+	
+				// now cp1 points to option name, cp3 to '=', cp2 to ';' or null
+				
+				// first try for a feature by this name
+				ATSUFontFeatureType	featureType;
+				featureType = find_feature_by_name(fontID, cp1, cp3 - cp1);
+				if (featureType != 0x0000FFFF) {
+					// look past the '=' separator for setting names
+					int	featLen = cp3 - cp1;
+					++cp3;
+					while (cp3 < cp2) {
+						// skip leading whitespace
+						while (*cp3 == ' ' || *cp3 == '\t')
+							++cp3;
+					
+						// possibly multiple settings...
+						int	disable = 0;
+						if (*cp3 == '!') {	// check for negation
+							disable = 1;
+							++cp3;
 						}
-						else
-							value = value * 10.0 + v;
+						
+						// scan for end of setting name
+						const char*	cp4 = cp3;
+						while (cp4 < cp2 && *cp4 != ',')
+							++cp4;
+						
+						// now cp3 points to name, cp4 to ',' or ';' or null
+						ATSUFontFeatureSelector	selectorValue = find_selector_by_name(fontID, featureType, cp3, cp4 - cp3);
+						if (selectorValue != 0x0000FFFF) {
+							featureTypes[numFeatures] = featureType;
+							selectorValues[numFeatures] = selectorValue + disable;
+							++numFeatures;
+						}
+						else {
+							fontfeaturewarning(cp1, featLen, cp3, cp4 - cp3);
+						}
+						
+						// point beyond setting name terminator
+						cp3 = cp4 + 1;
 					}
-					else if (*cp3 == '.') {
-						if (decimal != 1.0)
-							break;
-						decimal = 10.0;
-					}
-					else
-						break;
-					++cp3;
-				}
-				if (negate)
-					value = -value;
-				axes[numVariations] = axis;
-				values[numVariations] = value * 65536.0;	//	X2Fix(value);
-				++numVariations;
-				
-				goto next_option;
-			}
-			
-			// didn't find feature or variation, try other options....
-
-			if (strncmp(cp1, "mapping", 7) == 0) {
-				cp3 = cp1 + 7;
-				if (*cp3 != '=')
-					goto bad_option;
-				loadedfontmapping = (long)load_mapping_file(cp3 + 1, cp2);
-				goto next_option;
-			}
-			
-			if (strncmp(cp1, "color", 5) == 0) {
-				cp3 = cp1 + 5;
-				if (*cp3 != '=')
-					goto bad_option;
-				++cp3;
-				rgbValue = 0;
-				unsigned	alpha = 0;
-				int i;
-				for (i = 0; i < 6; ++i) {
-					if (*cp3 >= '0' && *cp3 <= '9')
-						rgbValue = (rgbValue << 4) + *cp3 - '0';
-					else if (*cp3 >= 'A' && *cp3 <= 'F')
-						rgbValue = (rgbValue << 4) + *cp3 - 'A' + 10;
-					else if (*cp3 >= 'a' && *cp3 <= 'f')
-						rgbValue = (rgbValue << 4) + *cp3 - 'a' + 10;
-					else
-						goto bad_option;
-					++cp3;
-				}
-				rgbValue <<= 8;
-				for (i = 0; i < 2; ++i) {
-					if (*cp3 >= '0' && *cp3 <= '9')
-						alpha = (alpha << 4) + *cp3 - '0';
-					else if (*cp3 >= 'A' && *cp3 <= 'F')
-						alpha = (alpha << 4) + *cp3 - 'A' + 10;
-					else if (*cp3 >= 'a' && *cp3 <= 'f')
-						alpha = (alpha << 4) + *cp3 - 'a' + 10;
-					else
-						break;
-					++cp3;
-				}
-				if (i == 2)
-					rgbValue += alpha;
-				else
-					rgbValue += 0xFF;
-				colorSpecified = true;
-				
-				goto next_option;
-			}
-			
-		bad_option:
-			// not a name=value pair, or not recognized.... 
-			// check for plain "vertical" before complaining
-			if (strncmp(cp1, "vertical", 8) == 0) {
-				cp3 = cp2;
-				if (*cp3 == ';' || *cp3 == ':')
-					--cp3;
-				while (*cp3 == ' ' || *cp3 == '\t')
-					--cp3;
-				if (*cp3)
-					++cp3;
-				if (cp3 == cp1 + 8) {
-					ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
-					tag[0] = kATSUVerticalCharacterTag;
-					valueSize[0] = sizeof(ATSUVerticalCharacterType);
-					value[0] = &vert;
-					ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
+					
 					goto next_option;
 				}
+				
+				// try to find a variation by this name
+				ATSUFontVariationAxis	axis;
+				axis = find_axis_by_name(fontID, cp1, cp3 - cp1);
+				if (axis != 0) {
+					// look past the '=' separator for the value
+					++cp3;
+					double	value = 0.0, decimal = 1.0;
+					bool		negate = false;
+					if (*cp3 == '-') {
+						++cp3;
+						negate = true;
+					}
+					while (cp3 < cp2) {
+						int	v = *cp3 - '0';
+						if (v >= 0 && v <= 9) {
+							if (decimal != 1.0) {
+								value += v / decimal;
+								decimal *= 10.0;
+							}
+							else
+								value = value * 10.0 + v;
+						}
+						else if (*cp3 == '.') {
+							if (decimal != 1.0)
+								break;
+							decimal = 10.0;
+						}
+						else
+							break;
+						++cp3;
+					}
+					if (negate)
+						value = -value;
+					axes[numVariations] = axis;
+					values[numVariations] = value * 65536.0;	//	X2Fix(value);
+					++numVariations;
+					
+					goto next_option;
+				}
+				
+				// didn't find feature or variation, try other options....
+	
+				if (strncmp(cp1, "mapping", 7) == 0) {
+					cp3 = cp1 + 7;
+					if (*cp3 != '=')
+						goto bad_option;
+					loadedfontmapping = (long)load_mapping_file(cp3 + 1, cp2);
+					goto next_option;
+				}
+				
+				if (strncmp(cp1, "color", 5) == 0) {
+					cp3 = cp1 + 5;
+					if (*cp3 != '=')
+						goto bad_option;
+					++cp3;
+					rgbValue = 0;
+					unsigned	alpha = 0;
+					int i;
+					for (i = 0; i < 6; ++i) {
+						if (*cp3 >= '0' && *cp3 <= '9')
+							rgbValue = (rgbValue << 4) + *cp3 - '0';
+						else if (*cp3 >= 'A' && *cp3 <= 'F')
+							rgbValue = (rgbValue << 4) + *cp3 - 'A' + 10;
+						else if (*cp3 >= 'a' && *cp3 <= 'f')
+							rgbValue = (rgbValue << 4) + *cp3 - 'a' + 10;
+						else
+							goto bad_option;
+						++cp3;
+					}
+					rgbValue <<= 8;
+					for (i = 0; i < 2; ++i) {
+						if (*cp3 >= '0' && *cp3 <= '9')
+							alpha = (alpha << 4) + *cp3 - '0';
+						else if (*cp3 >= 'A' && *cp3 <= 'F')
+							alpha = (alpha << 4) + *cp3 - 'A' + 10;
+						else if (*cp3 >= 'a' && *cp3 <= 'f')
+							alpha = (alpha << 4) + *cp3 - 'a' + 10;
+						else
+							break;
+						++cp3;
+					}
+					if (i == 2)
+						rgbValue += alpha;
+					else
+						rgbValue += 0xFF;
+					colorSpecified = true;
+					
+					goto next_option;
+				}
+				
+			bad_option:
+				// not a name=value pair, or not recognized.... 
+				// check for plain "vertical" before complaining
+				if (strncmp(cp1, "vertical", 8) == 0) {
+					cp3 = cp2;
+					if (*cp3 == ';' || *cp3 == ':')
+						--cp3;
+					while (*cp3 == ' ' || *cp3 == '\t')
+						--cp3;
+					if (*cp3)
+						++cp3;
+					if (cp3 == cp1 + 8) {
+						ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
+						tag[0] = kATSUVerticalCharacterTag;
+						valueSize[0] = sizeof(ATSUVerticalCharacterType);
+						value[0] = &vert;
+						ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
+						goto next_option;
+					}
+				}
+			
+				fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
+				
+			next_option:
+				// go to next name=value pair
+				cp1 = cp2;
 			}
 		
-			fontfeaturewarning(name, nameLen, cp1, cp2 - cp1, 0, 0);
+			if (numFeatures > 0)
+				ATSUSetFontFeatures(style, numFeatures, featureTypes, selectorValues);
+	
+			if (numVariations > 0)
+				ATSUSetVariations(style, numVariations, axes, values);
+	
+			if (colorSpecified) {
+				ATSURGBAlphaColor	rgba;
+				rgba.red	= ((rgbValue & 0xFF000000) >> 24) / 255.0;
+				rgba.green	= ((rgbValue & 0x00FF0000) >> 16) / 255.0;
+				rgba.blue	= ((rgbValue & 0x0000FF00) >> 8 ) / 255.0;
+				rgba.alpha	= ((rgbValue & 0x000000FF)      ) / 255.0;
+				tag[0] = kATSURGBAlphaColorTag;
+				valueSize[0] = sizeof(ATSURGBAlphaColor);
+				value[0] = &rgba;
+				ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
+			}
 			
-		next_option:
-			// go to next name=value pair
-			cp1 = cp2;
+			free((char*)featureTypes);
+			free((char*)selectorValues);
+			free((char*)axes);
+			free((char*)values);
 		}
-		
-		if (numFeatures > 0)
-			ATSUSetFontFeatures(style, numFeatures, featureTypes, selectorValues);
-
-		if (numVariations > 0)
-			ATSUSetVariations(style, numVariations, axes, values);
-
-		if (colorSpecified) {
-			ATSURGBAlphaColor	rgba;
-			rgba.red	= ((rgbValue & 0xFF000000) >> 24) / 255.0;
-			rgba.green	= ((rgbValue & 0x00FF0000) >> 16) / 255.0;
-			rgba.blue	= ((rgbValue & 0x0000FF00) >> 8 ) / 255.0;
-			rgba.alpha	= ((rgbValue & 0x000000FF)      ) / 255.0;
-			tag[0] = kATSURGBAlphaColorTag;
-			valueSize[0] = sizeof(ATSURGBAlphaColor);
-			value[0] = &rgba;
-			ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
-		}
-		
-		free((char*)featureTypes);
-		free((char*)selectorValues);
-		free((char*)axes);
-		free((char*)values);
 	}
 
 	nativefonttypeflag = AAT_FONT_FLAG;
@@ -458,10 +461,10 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 	*path = NULL;
 
 	OSStatus	result = fnfErr;
-    UInt8*		pic_path = kpse_find_file(nameoffile + 1, kpse_pict_format, 1);
+    char*		pic_path = kpse_find_file((char*)nameoffile + 1, kpse_pict_format, 1);
 	CFURLRef	picFileURL = NULL;
 	if (pic_path) {
-		picFileURL = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, pic_path, strlen(pic_path), false);
+		picFileURL = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (UInt8*)pic_path, strlen(pic_path), false);
 
 		if (picFileURL != NULL) {
 			/* get an FSRef for the URL we constructed */
@@ -519,31 +522,3 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 	
 	return result;
 }
-
-/*
-void
-applyrotation(int rotation, Fixed* x_size, Fixed* y_size, Fixed* x_shift, Fixed* y_shift)
-{
-	CGAffineTransform	t = CGAffineTransformMakeRotation(rotation * M_PI / 180.0);
-	CGPoint	ll = CGPointMake(65536, 65536);
-	CGPoint	ur = CGPointMake(-65536, -65536);
-	int	i;
-	CGPoint	p[4];
-	p[0] = CGPointMake(0, 0);
-	p[1] = CGPointMake(Fix2X(*x_size), 0);
-	p[2] = CGPointMake(p[1].x, Fix2X(*y_size));
-	p[3] = CGPointMake(0, p[2].y);
-	for (i = 0; i < 4; ++i)
-		p[i] = CGPointApplyAffineTransform(p[i], t);
-	for (i = 0; i < 4; ++i) {
-		if (p[i].x < ll.x)	ll.x = p[i].x;
-		if (p[i].x > ur.x)	ur.x = p[i].x;
-		if (p[i].y < ll.y)	ll.y = p[i].y;
-		if (p[i].y > ur.y)	ur.y = p[i].y;
-	}
-	*x_size = X2Fix(ur.x - ll.x);
-	*y_size = X2Fix(ur.y - ll.y);
-	*x_shift -= X2Fix(ll.x);
-	*y_shift -= X2Fix(ll.y);
-}
-*/

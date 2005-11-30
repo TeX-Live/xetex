@@ -21,6 +21,8 @@
 #include "XeTeXFontManager_FC.h"
 #endif
 
+#include "XeTeXFontMgr.h"
+
 #include "XeTeXswap.h"
 
 #include "Features.h"
@@ -58,9 +60,10 @@ ATSFontRef getFontRef(XeTeXLayoutEngine engine)
 	return ((XeTeXFontInst_Mac*)(engine->font))->getATSFont();
 }
 
-ATSFontRef findFontByName(const char* name, double size)
+ATSFontRef findFontByName(const char* name, const char* var, double size)
 {
-	ATSFontRef	rval = (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
+//	ATSFontRef	rval = (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
+	ATSFontRef	rval = XeTeXFontMgr::GetFontManager()->findFont(name, var, size);
 	return rval;
 }
 #else
@@ -80,6 +83,21 @@ void* findFontByName(const char* name, double size)
 	return (void*)(XeTeXFontManager::GetFontManager()->findFont(name, size));
 }
 #endif
+
+char getReqEngine()
+{
+	return XeTeXFontMgr::GetFontManager()->getReqEngine();
+}
+
+const char* getFullName(PlatformFontRef fontRef)
+{
+	return XeTeXFontMgr::GetFontManager()->getFullName(fontRef);
+}
+
+const char* getPSName(PlatformFontRef fontRef)
+{
+	return XeTeXFontMgr::GetFontManager()->getPSName(fontRef);
+}
 
 void deleteFont(XeTeXFont font)
 {
