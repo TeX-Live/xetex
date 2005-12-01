@@ -430,6 +430,7 @@ XeTeXFontMgr::readNames(ATSUFontID fontID)
 	int			bufSize = BUFUNIT;
 	char*		buffer = new char[bufSize];
 
+	std::list<std::string>	familyNames;
 	std::list<std::string>	subFamilyNames;
 
 	for (int n = 0; n < nameCount; ++n) {
@@ -448,6 +449,7 @@ XeTeXFontMgr::readNames(ATSUFontID fontID)
 				case kFontFamilyName:
 				case kFontStyleName:
 				case kFontPostscriptName:
+				case 16:	// preferred family -- use instead of family, if present
 				case 17:	// preferred subfamily -- use instead of style, if present
 					{
 						bool	preferredName = false;
@@ -470,14 +472,23 @@ XeTeXFontMgr::readNames(ATSUFontID fontID)
 							nameStr = CFStringCreateWithCharacters(0, (UniChar*)buffer, nameLength / 2);
 						if (nameStr != 0) {
 							std::list<std::string>*	nameList = NULL;
-							if (nameCode == kFontFullName)
-								nameList = &names->fullNames;
-							else if (nameCode == kFontFamilyName)
-								nameList = &names->familyNames;
-							else if (nameCode == kFontStyleName)
-								nameList = &names->styleNames;
-							else if (nameCode == 17)
-								nameList = &subFamilyNames;
+							switch (nameCode) {
+								case kFontFullName:
+									nameList = &names->fullNames;
+									break;
+								case kFontFamilyName:
+									nameList = &names->familyNames;
+									break;
+								case kFontStyleName:
+									nameList = &names->styleNames;
+									break;
+								case 16:
+									nameList = &familyNames;
+									break;
+								case 17:
+									nameList = &subFamilyNames;
+									break;
+							}
 							
 							// extract UTF-8 form of name
 							CFIndex length = CFStringGetLength(nameStr);	// in 16-bit character units
@@ -512,6 +523,8 @@ XeTeXFontMgr::readNames(ATSUFontID fontID)
 
 	delete[] buffer;
 
+	if (familyNames.size() > 0)
+		names->familyNames = familyNames;
 	if (subFamilyNames.size() > 0)
 		names->styleNames = subFamilyNames;
 

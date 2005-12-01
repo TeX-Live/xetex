@@ -61,7 +61,6 @@ XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 la
 void deleteLayoutEngine(XeTeXLayoutEngine engine);
 
 XeTeXFont getFont(XeTeXLayoutEngine engine);
-char* getFontPSName(XeTeXLayoutEngine engine);
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16* chars, SInt32 offset, SInt32 count, SInt32 max,
 						char rightToLeft, float x, float y, SInt32* status);

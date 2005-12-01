@@ -843,7 +843,8 @@ makefontdef(long f)
 		// OT font...
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 
-		char*	psName = getFontPSName(engine);
+		const char* psName = getPSName(getFontRef(engine));
+			/* returns ptr to a string that belongs to the font - do not free! */
 		UInt16	nameLength = strlen(psName);
 
 		// parameters after internal font ID: s[4] t[2] c[16] l[2] n[l]
@@ -873,8 +874,7 @@ makefontdef(long f)
 
 		*(UInt16*)cp = SWAP16(nameLength);
 		cp += 2;
-		memcpy(cp, psName, nameLength);
-		free(psName);
+		memcpy(cp, psName, nameLength);	/* not strcpy as we don't want the null terminator! */
 
 		return fontDefLength;
 	}

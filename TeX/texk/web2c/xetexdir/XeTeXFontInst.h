@@ -79,8 +79,6 @@ public:
 
     virtual const void *getFontTable(LETag tableTag) const;
 
-	virtual char*	getPSName() const = 0;
-
     virtual le_int32 getUnitsPerEM() const
     {
         return fUnitsPerEM;

@@ -248,11 +248,6 @@ XeTeXFont getFont(XeTeXLayoutEngine engine)
 	return (XeTeXFont)(engine->font);
 }
 
-char* getFontPSName(XeTeXLayoutEngine engine)
-{
-	return engine->font->getPSName();
-}
-
 XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
 										UInt32* addFeatures, UInt32* removeFeatures, UInt32 rgbValue)
 {
