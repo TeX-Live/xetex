@@ -23,6 +23,8 @@
 #define GLOBAL	extern
 #endif
 
+#define	kUndefinedFont	0x80000000UL
+
 GLOBAL	CGContextRef	gCtx;
 
 GLOBAL	CGColorSpaceRef	gUserColorSpace;
@@ -39,7 +41,7 @@ struct dviVars {
 	SInt32	z;
 };
 GLOBAL dviVars			dvi;
-GLOBAL UInt32			f, cur_f;
+GLOBAL UInt32			f, cur_cgFont, cur_atsuiFont;
 
 GLOBAL double_t kScr2Dvi	// not quite const, actually - mag changes them
 #ifdef DEFINE_GLOBALS

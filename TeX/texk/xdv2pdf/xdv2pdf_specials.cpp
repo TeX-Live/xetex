@@ -638,9 +638,9 @@ doSpecial(const char* special)
 	else if (strMatch(special, "x:grestore")) {
 		ensurePageStarted();
 		CGContextRestoreGState(gCtx);
-		if (gTeXFonts[cur_f].cgFont != NULL) {
-			CGContextSetFont(gCtx, gTeXFonts[cur_f].cgFont);
-			CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[cur_f].size) * gMagScale);
+		if (cur_cgFont != kUndefinedFont && gTeXFonts[cur_cgFont].cgFont != NULL) {
+			CGContextSetFont(gCtx, gTeXFonts[cur_cgFont].cgFont);
+			CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[cur_cgFont].size) * gMagScale);
 		}
 	}
 	else if (prefixMatch(special, "x:scale", specialArg)) {

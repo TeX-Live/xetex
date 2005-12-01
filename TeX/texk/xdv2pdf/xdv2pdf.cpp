@@ -136,8 +136,6 @@ static std::map<UInt32,nativeFont>	sNativeFonts;
 
 static ATSUTextLayout	sLayout;
 
-static const UInt32	kUndefinedFont = 0x80000000;
-
 static UInt32	sMag = 0;
 
 static bool	sVerbose = false;
@@ -248,7 +246,8 @@ ensurePageStarted()
     gPageWd = kScr2Dvi * gMediaBox.size.width;
     gPageHt = kScr2Dvi * gMediaBox.size.height;
 	
-	cur_f = kUndefinedFont;
+	cur_cgFont = kUndefinedFont;
+	cur_atsuiFont = kUndefinedFont;
 	
 	gPageStarted = true;
 }
@@ -305,11 +304,11 @@ setChar(UInt32 c, bool adv)
 
 	ensurePageStarted();
 
-    if (f != cur_f) {
+    if (f != cur_cgFont) {
 		flushGlyphs();
         CGContextSetFont(gCtx, gTeXFonts[f].cgFont);
         CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[f].size) * gMagScale);
-        cur_f = f;
+        cur_cgFont = f;
 	}
 
     CGGlyph	g;
@@ -350,12 +349,12 @@ doSetGlyph(UInt16 g, Fixed a)
 	// flush any setchar() glyphs, as we're going to change the font
 	flushGlyphs();
 	
-	// always do this, as AAT fonts won't have set it yet
-	// (might be redundant, but this is a rare operation anyway)
-	CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
-	CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
-	cur_f = f;
-	
+	if (cur_cgFont != f) {
+		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
+		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
+		cur_cgFont = f;
+	}
+
 	bool	resetColor = false;
     if (gTextColor.override) {
     	CGContextSaveGState(gCtx);
@@ -426,11 +425,11 @@ doSetNative(FILE* xdv)
 			status = ATSUCreateAndCopyStyle(sNativeFonts[f].atsuStyle, &tmpStyle);
 			status = ATSUSetAttributes(tmpStyle, 1, &tag, &valueSize, &valuePtr);
 			status = ATSUSetRunStyle(sLayout, tmpStyle, kATSUFromTextBeginning, kATSUToTextEnd);
-			cur_f = kUndefinedFont;
+			cur_atsuiFont = kUndefinedFont;
 		}
-		else if (f != cur_f) {
+		else if (f != cur_atsuiFont) {
 			status = ATSUSetRunStyle(sLayout, sNativeFonts[f].atsuStyle, kATSUFromTextBeginning, kATSUToTextEnd);
-			cur_f = f;
+			cur_atsuiFont = f;
 		}
 	
 		CGContextTranslateCTM(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v));
@@ -482,10 +481,10 @@ doGlyphArray(FILE* xdv)
 	FixedPoint*	locations = (FixedPoint*)glyphInfoBuf;
 	UInt16*		glyphs = (UInt16*)(locations + glyphCount);
 	
-	if (f != cur_f) {
+	if (f != cur_cgFont) {
 		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
 		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
-		cur_f = f;
+		cur_cgFont = f;
 	}
 
 	CGContextSetTextPosition(gCtx, kDvi2Scr * dvi.h + Fix2X(locations[0].x),
@@ -1658,7 +1657,8 @@ processPage(FILE* xdv)
 
     (void)readUnsigned(xdv, 4);	// skip prev-BOP pointer
 	
-	cur_f = kUndefinedFont;
+	cur_cgFont = kUndefinedFont;
+	cur_atsuiFont = kUndefinedFont;
 	dvi.h = dvi.v = 0;
 	dvi.w = dvi.x = dvi.y = dvi.z = 0;
 	f = 0;
