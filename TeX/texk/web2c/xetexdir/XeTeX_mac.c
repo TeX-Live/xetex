@@ -429,14 +429,18 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 		value[2] = &options;
 		ATSUSetAttributes(style, 3, &tag[0], &valueSize[0], &value[0]);
 		
+#define FEAT_ALLOC_CHUNK	8
+#define VAR_ALLOC_CHUNK		4
+
 		if (cp1 != NULL) {
-			// FIXME: need to dynamically grow these arrays
-			UInt16*	featureTypes = (UInt16*)xmalloc(200);
-			UInt16*	selectorValues = (UInt16*)xmalloc(200);
+			int	allocFeats = FEAT_ALLOC_CHUNK;
+			UInt16*	featureTypes = (UInt16*)xmalloc(allocFeats * sizeof(UInt16));
+			UInt16*	selectorValues = (UInt16*)xmalloc(allocFeats * sizeof(UInt16));
 			int	numFeatures = 0;
 			
-			UInt32*	axes = (UInt32*)xmalloc(200);
-			SInt32*	values = (SInt32*)xmalloc(200);
+			int	allocVars = VAR_ALLOC_CHUNK;
+			UInt32*	axes = (UInt32*)xmalloc(allocVars * sizeof(UInt32));
+			SInt32*	values = (SInt32*)xmalloc(allocVars * sizeof(SInt32));
 			int	numVariations = 0;
 			
 			// interpret features & variations following ":"
@@ -491,6 +495,11 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 						// now cp3 points to name, cp4 to ',' or ';' or null
 						ATSUFontFeatureSelector	selectorValue = find_selector_by_name(fontID, featureType, cp3, cp4 - cp3);
 						if (selectorValue != 0x0000FFFF) {
+							if (numFeatures == allocFeats) {
+								allocFeats += FEAT_ALLOC_CHUNK;
+								featureTypes = xrealloc(featureTypes, allocFeats * sizeof(UInt16));
+								selectorValues = xrealloc(selectorValues, allocFeats * sizeof(UInt16));
+							}
 							featureTypes[numFeatures] = featureType;
 							selectorValues[numFeatures] = selectorValue + disable;
 							++numFeatures;
@@ -539,6 +548,11 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 					}
 					if (negate)
 						value = -value;
+					if (numVariations == allocVars) {
+						allocVars += VAR_ALLOC_CHUNK;
+						axes = xrealloc(axes, allocVars * sizeof(UInt32));
+						values = xrealloc(values, allocVars * sizeof(SInt32));
+					}
 					axes[numVariations] = axis;
 					values[numVariations] = value * 65536.0;	//	X2Fix(value);
 					++numVariations;
