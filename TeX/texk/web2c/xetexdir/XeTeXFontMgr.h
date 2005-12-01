@@ -12,13 +12,15 @@
 #ifndef __XETEX_FONT_MANAGER_H
 #define __XETEX_FONT_MANAGER_H
 
+#include "XeTeX_ext.h"
+
 #ifdef XETEX_MAC
 #include <Carbon/Carbon.h>
 typedef ATSFontRef	PlatformFontRef;
 #else
 #include <ft2build.h>
-#include FREETYPE_H
-typedef FtFace		PlatformFontRef;
+#include FT_FREETYPE_H
+typedef FT_Face		PlatformFontRef;
 #endif
 
 #ifdef __cplusplus	/* allow inclusion in plain C files just to get the typedefs above */
@@ -142,7 +144,7 @@ protected:
 #ifdef XETEX_MAC
 	NameCollection*	readNames(ATSUFontID fontID);
 #else
-	NameCollection*	readNames(FtFace face);
+	NameCollection*	readNames(FT_Face face);
 #endif
 };
 

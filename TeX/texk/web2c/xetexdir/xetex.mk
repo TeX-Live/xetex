@@ -83,7 +83,7 @@ XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
 
 
 XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
