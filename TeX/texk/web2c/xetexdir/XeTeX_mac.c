@@ -48,12 +48,12 @@ typedef struct
 	float	yMax;
 } CBData;
 
-OSStatus MyATSQuadraticClosePathCallback(void *callBackDataPtr)
+static OSStatus QuadraticClosePath(void *callBackDataPtr)
 {
 	return 0;
 }
 
-OSStatus MyATSQuadraticCurveCallback(const Float32Point *pt1, const Float32Point *controlPt, const Float32Point *pt2, void *callBackDataPtr)
+static OSStatus QuadraticCurve(const Float32Point *pt1, const Float32Point *controlPt, const Float32Point *pt2, void *callBackDataPtr)
 {
 	CBData*	data = (CBData*)callBackDataPtr;
 	
@@ -87,7 +87,7 @@ OSStatus MyATSQuadraticCurveCallback(const Float32Point *pt1, const Float32Point
 	return 0;
 }
 
-OSStatus MyATSQuadraticLineCallback(const Float32Point *pt1, const Float32Point *pt2, void *callBackDataPtr)
+static OSStatus QuadraticLine(const Float32Point *pt1, const Float32Point *pt2, void *callBackDataPtr)
 {
 	CBData*	data = (CBData*)callBackDataPtr;
 	
@@ -112,28 +112,12 @@ OSStatus MyATSQuadraticLineCallback(const Float32Point *pt1, const Float32Point 
 	return 0;
 }
 
-OSStatus MyATSQuadraticNewPathCallback(void *callBackDataPtr)
+static OSStatus QuadraticNewPath(void *callBackDataPtr)
 {
 	return 0;
 }
 
-OSStatus MyATSCubicMoveToCallback(const Float32Point *pt, void *callBackDataPtr)
-{
-	CBData*	data = (CBData*)callBackDataPtr;
-	
-	if (pt->x < data->xMin)
-		data->xMin = pt->x;
-	if (pt->x > data->xMax)
-		data->xMax = pt->x;
-	if (pt->y < data->yMin)
-		data->yMin = pt->y;
-	if (pt->y > data->yMax)
-		data->yMax = pt->y;
-
-	return 0;
-}
-
-OSStatus MyATSCubicLineToCallback(const Float32Point *pt, void *callBackDataPtr)
+static OSStatus CubicMoveTo(const Float32Point *pt, void *callBackDataPtr)
 {
 	CBData*	data = (CBData*)callBackDataPtr;
 	
@@ -149,7 +133,23 @@ OSStatus MyATSCubicLineToCallback(const Float32Point *pt, void *callBackDataPtr)
 	return 0;
 }
 
-OSStatus MyATSCubicCurveToCallback(const Float32Point *pt1, const Float32Point *pt2, const Float32Point *pt3, void *callBackDataPtr)
+static OSStatus CubicLineTo(const Float32Point *pt, void *callBackDataPtr)
+{
+	CBData*	data = (CBData*)callBackDataPtr;
+	
+	if (pt->x < data->xMin)
+		data->xMin = pt->x;
+	if (pt->x > data->xMax)
+		data->xMax = pt->x;
+	if (pt->y < data->yMin)
+		data->yMin = pt->y;
+	if (pt->y > data->yMax)
+		data->yMax = pt->y;
+
+	return 0;
+}
+
+static OSStatus CubicCurveTo(const Float32Point *pt1, const Float32Point *pt2, const Float32Point *pt3, void *callBackDataPtr)
 {
 	CBData*	data = (CBData*)callBackDataPtr;
 
@@ -183,7 +183,7 @@ OSStatus MyATSCubicCurveToCallback(const Float32Point *pt1, const Float32Point *
 	return 0;
 }
 
-OSStatus MyATSCubicClosePathCallback(void *callBackDataPtr)
+static OSStatus CubicClosePath(void *callBackDataPtr)
 {
 	return 0;
 }
@@ -235,10 +235,10 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 			static ATSCubicCurveToUPP cubicCurveToProc;
 			static ATSCubicClosePathUPP cubicClosePathProc;
 			if (cubicMoveToProc == NULL) {
-				cubicMoveToProc = NewATSCubicMoveToUPP(&MyATSCubicMoveToCallback);
-				cubicLineToProc = NewATSCubicLineToUPP(&MyATSCubicLineToCallback);
-				cubicCurveToProc = NewATSCubicCurveToUPP(&MyATSCubicCurveToCallback);
-				cubicClosePathProc = NewATSCubicClosePathUPP(&MyATSCubicClosePathCallback);
+				cubicMoveToProc = NewATSCubicMoveToUPP(&CubicMoveTo);
+				cubicLineToProc = NewATSCubicLineToUPP(&CubicLineTo);
+				cubicCurveToProc = NewATSCubicCurveToUPP(&CubicCurveTo);
+				cubicClosePathProc = NewATSCubicClosePathUPP(&CubicClosePath);
 			}
 			status = ATSUGlyphGetCubicPaths(style, gid,
 						cubicMoveToProc, cubicLineToProc, cubicCurveToProc, cubicClosePathProc, 
@@ -254,10 +254,10 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 			static ATSQuadraticCurveUPP quadraticCurveProc;
 			static ATSQuadraticClosePathUPP quadraticClosePathProc;
 			if (quadraticNewPathProc == NULL) {
-				quadraticNewPathProc = NewATSQuadraticNewPathUPP(&MyATSQuadraticNewPathCallback);
-				quadraticLineProc = NewATSQuadraticLineUPP(&MyATSQuadraticLineCallback);
-				quadraticCurveProc = NewATSQuadraticCurveUPP(&MyATSQuadraticCurveCallback);
-				quadraticClosePathProc = NewATSQuadraticClosePathUPP(&MyATSQuadraticClosePathCallback);
+				quadraticNewPathProc = NewATSQuadraticNewPathUPP(&QuadraticNewPath);
+				quadraticLineProc = NewATSQuadraticLineUPP(&QuadraticLine);
+				quadraticCurveProc = NewATSQuadraticCurveUPP(&QuadraticCurve);
+				quadraticClosePathProc = NewATSQuadraticClosePathUPP(&QuadraticClosePath);
 			}
 			status = ATSUGlyphGetQuadraticPaths(style, gid,
 						quadraticNewPathProc, quadraticLineProc, quadraticCurveProc, quadraticClosePathProc,
