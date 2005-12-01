@@ -19,7 +19,9 @@
 /* some typedefs that XeTeX uses - on Mac OS, we get these from Apple headers,
    but otherwise we'll need these substitute definitions */
 
-#ifndef XETEX_MAC
+#ifdef XETEX_MAC
+#include <Carbon/Carbon.h>
+#else
 #ifndef __TECkit_Common_H__
 typedef unsigned char	UInt8;
 typedef unsigned short	UInt16;

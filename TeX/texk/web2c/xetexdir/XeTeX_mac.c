@@ -40,16 +40,165 @@ void InitializeLayout()
 	status = ATSUSetTransientFontMatching(sTextLayout, true);
 }
 
+typedef struct
+{
+	float	xMin;
+	float	yMin;
+	float	xMax;
+	float	yMax;
+} CBData;
+
+OSStatus MyATSQuadraticClosePathCallback(void *callBackDataPtr)
+{
+	return 0;
+}
+
+OSStatus MyATSQuadraticCurveCallback(const Float32Point *pt1, const Float32Point *controlPt, const Float32Point *pt2, void *callBackDataPtr)
+{
+	CBData*	data = (CBData*)callBackDataPtr;
+	
+	if (pt1->x < data->xMin)
+		data->xMin = pt1->x;
+	if (pt1->x > data->xMax)
+		data->xMax = pt1->x;
+	if (pt1->y < data->yMin)
+		data->yMin = pt1->y;
+	if (pt1->y > data->yMax)
+		data->yMax = pt1->y;
+
+	if (pt2->x < data->xMin)
+		data->xMin = pt2->x;
+	if (pt2->x > data->xMax)
+		data->xMax = pt2->x;
+	if (pt2->y < data->yMin)
+		data->yMin = pt2->y;
+	if (pt2->y > data->yMax)
+		data->yMax = pt2->y;
+
+	if (controlPt->x < data->xMin)
+		data->xMin = controlPt->x;
+	if (controlPt->x > data->xMax)
+		data->xMax = controlPt->x;
+	if (controlPt->y < data->yMin)
+		data->yMin = controlPt->y;
+	if (controlPt->y > data->yMax)
+		data->yMax = controlPt->y;
+
+	return 0;
+}
+
+OSStatus MyATSQuadraticLineCallback(const Float32Point *pt1, const Float32Point *pt2, void *callBackDataPtr)
+{
+	CBData*	data = (CBData*)callBackDataPtr;
+	
+	if (pt1->x < data->xMin)
+		data->xMin = pt1->x;
+	if (pt1->x > data->xMax)
+		data->xMax = pt1->x;
+	if (pt1->y < data->yMin)
+		data->yMin = pt1->y;
+	if (pt1->y > data->yMax)
+		data->yMax = pt1->y;
+
+	if (pt2->x < data->xMin)
+		data->xMin = pt2->x;
+	if (pt2->x > data->xMax)
+		data->xMax = pt2->x;
+	if (pt2->y < data->yMin)
+		data->yMin = pt2->y;
+	if (pt2->y > data->yMax)
+		data->yMax = pt2->y;
+
+	return 0;
+}
+
+OSStatus MyATSQuadraticNewPathCallback(void *callBackDataPtr)
+{
+	return 0;
+}
+
+OSStatus MyATSCubicMoveToCallback(const Float32Point *pt, void *callBackDataPtr)
+{
+	CBData*	data = (CBData*)callBackDataPtr;
+	
+	if (pt->x < data->xMin)
+		data->xMin = pt->x;
+	if (pt->x > data->xMax)
+		data->xMax = pt->x;
+	if (pt->y < data->yMin)
+		data->yMin = pt->y;
+	if (pt->y > data->yMax)
+		data->yMax = pt->y;
+
+	return 0;
+}
+
+OSStatus MyATSCubicLineToCallback(const Float32Point *pt, void *callBackDataPtr)
+{
+	CBData*	data = (CBData*)callBackDataPtr;
+	
+	if (pt->x < data->xMin)
+		data->xMin = pt->x;
+	if (pt->x > data->xMax)
+		data->xMax = pt->x;
+	if (pt->y < data->yMin)
+		data->yMin = pt->y;
+	if (pt->y > data->yMax)
+		data->yMax = pt->y;
+
+	return 0;
+}
+
+OSStatus MyATSCubicCurveToCallback(const Float32Point *pt1, const Float32Point *pt2, const Float32Point *pt3, void *callBackDataPtr)
+{
+	CBData*	data = (CBData*)callBackDataPtr;
+
+	if (pt1->x < data->xMin)
+		data->xMin = pt1->x;
+	if (pt1->x > data->xMax)
+		data->xMax = pt1->x;
+	if (pt1->y < data->yMin)
+		data->yMin = pt1->y;
+	if (pt1->y > data->yMax)
+		data->yMax = pt1->y;
+
+	if (pt2->x < data->xMin)
+		data->xMin = pt2->x;
+	if (pt2->x > data->xMax)
+		data->xMax = pt2->x;
+	if (pt2->y < data->yMin)
+		data->yMin = pt2->y;
+	if (pt2->y > data->yMax)
+		data->yMax = pt2->y;
+
+	if (pt3->x < data->xMin)
+		data->xMin = pt3->x;
+	if (pt3->x > data->xMax)
+		data->xMax = pt3->x;
+	if (pt3->y < data->yMin)
+		data->yMin = pt3->y;
+	if (pt3->y > data->yMax)
+		data->yMax = pt3->y;
+
+	return 0;
+}
+
+OSStatus MyATSCubicClosePathCallback(void *callBackDataPtr)
+{
+	return 0;
+}
+
 void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 {
 #define MIN_REAL_BUFFER_SIZE	20 /* 4 bytes for contour count; 4 bytes for vector count of 1st contour;
 										4 bytes for point flags; 8 bytes for 1st point */
 	*ht = 0;
 	*dp = 0;
+#if 0
 	ByteCount	bufferSize = 0;
 	OSStatus	status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, NULL);
 	if (bufferSize >= MIN_REAL_BUFFER_SIZE) {
-		ATSUCurvePaths*	paths = (ATSUCurvePaths*)xmalloc(bufferSize);
+		ATSUCurvePaths*	paths = (ATSUCurvePaths*)xmalloc(bufferSize + 200);
 		status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, paths);
 		ATSUCurvePath*	path = &(paths->contour[0]);
 		int c, n, v;
@@ -70,6 +219,55 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 			*dp = max;
 		}
 		free(paths);
+	}
+#endif
+
+	ATSCurveType	curveType;
+	OSStatus status = ATSUGetNativeCurveType(style, &curveType);
+
+	if (status == noErr) {
+		CBData		cbData = { 65536.0, 65536.0, -65536.0, -65536.0 };
+		OSStatus	cbStatus;
+
+		if (curveType == kATSCubicCurveType) {
+			static ATSCubicMoveToUPP cubicMoveToProc;
+			static ATSCubicLineToUPP cubicLineToProc;
+			static ATSCubicCurveToUPP cubicCurveToProc;
+			static ATSCubicClosePathUPP cubicClosePathProc;
+			if (cubicMoveToProc == NULL) {
+				cubicMoveToProc = NewATSCubicMoveToUPP(&MyATSCubicMoveToCallback);
+				cubicLineToProc = NewATSCubicLineToUPP(&MyATSCubicLineToCallback);
+				cubicCurveToProc = NewATSCubicCurveToUPP(&MyATSCubicCurveToCallback);
+				cubicClosePathProc = NewATSCubicClosePathUPP(&MyATSCubicClosePathCallback);
+			}
+			status = ATSUGlyphGetCubicPaths(style, gid,
+						cubicMoveToProc, cubicLineToProc, cubicCurveToProc, cubicClosePathProc, 
+						&cbData, &cbStatus);
+			if (status == 0) {
+				*ht = -cbData.yMin;
+				*dp = cbData.yMax;
+			}
+		}
+		else {
+			static ATSQuadraticNewPathUPP quadraticNewPathProc;
+			static ATSQuadraticLineUPP quadraticLineProc;
+			static ATSQuadraticCurveUPP quadraticCurveProc;
+			static ATSQuadraticClosePathUPP quadraticClosePathProc;
+			if (quadraticNewPathProc == NULL) {
+				quadraticNewPathProc = NewATSQuadraticNewPathUPP(&MyATSQuadraticNewPathCallback);
+				quadraticLineProc = NewATSQuadraticLineUPP(&MyATSQuadraticLineCallback);
+				quadraticCurveProc = NewATSQuadraticCurveUPP(&MyATSQuadraticCurveCallback);
+				quadraticClosePathProc = NewATSQuadraticClosePathUPP(&MyATSQuadraticClosePathCallback);
+			}
+			status = ATSUGlyphGetQuadraticPaths(style, gid,
+						quadraticNewPathProc, quadraticLineProc, quadraticCurveProc, quadraticClosePathProc,
+						&cbData, &cbStatus);
+		}
+
+		if (status == 0) {
+			*ht = -cbData.yMin;
+			*dp = cbData.yMax;
+		}
 	}
 }
 
