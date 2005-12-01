@@ -1016,18 +1016,18 @@ measure_native_node(void* p, int want_ic)
 	/* return value is the italic correction for the last glyph, computed only if want_ic is non-zero */
 {
 	Fixed	rval = 0;
-
 	memoryword*	node = (memoryword*)p;
 	long		txtLen = native_length(node);
 	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
 
-	if (fontmapping[native_font(node)] != 0) {
-		txtLen = applymapping((TECkit_Converter)(fontmapping[native_font(node)]), txtPtr, txtLen);
+	unsigned	f = native_font(node);
+	if (fontmapping[f] != 0) {
+		txtLen = applymapping((TECkit_Converter)(fontmapping[f]), txtPtr, txtLen);
 		txtPtr = mappedtext;
 	}
 
 #ifdef XETEX_MAC
-	if (fontarea[native_font(node)] == AAT_FONT_FLAG) {
+	if (fontarea[f] == AAT_FONT_FLAG) {
 		// we're using this font in AAT mode
 		OSStatus	status = noErr;
 		
@@ -1044,12 +1044,6 @@ measure_native_node(void* p, int want_ic)
 		status = ATSUGetUnjustifiedBounds(sTextLayout, 0, txtLen, &before, &after, &ascent, &descent);
 	
 		width(node) = after - before;
-		if (txtLen == 1)
-			getnativecharheightdepth(native_font(node), *txtPtr, &(height(node)), &(depth(node)));
-		else {
-			depth(node) = descent;
-			height(node) = ascent;
-		}
 
 		if (want_ic) {
 			ByteCount	bufferSize = 0;
@@ -1067,10 +1061,10 @@ measure_native_node(void* p, int want_ic)
 	}
 	else
 #endif
-	if (fontarea[native_font(node)] == OT_FONT_FLAG) {
-		// using this font in OT Layout mode, so fontlayoutengine[native_font(node)] is actually a XeTeXLayoutEngine
+	if (fontarea[f] == OT_FONT_FLAG) {
+		// using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine
 		
-		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)(fontlayoutengine[native_font(node)]);
+		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)(fontlayoutengine[f]);
 
 		// need to find direction runs within the text, and call layoutChars separately for each
 
@@ -1202,20 +1196,19 @@ measure_native_node(void* p, int want_ic)
 		}
 
 		ubidi_close(pBiDi);
-		
-		if (txtLen == 1)
-			getnativecharheightdepth(native_font(node), *txtPtr, &(height(node)), &(depth(node)));
-		else {
-			getAscentAndDescent(engine, &x, &y);
-			height(node) = X2Fix(x);
-			depth(node) = X2Fix(-y);
-		}
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
 	
+	if (txtLen == 1)
+		getnativecharheightdepth(f, *txtPtr, &(height(node)), &(depth(node)));
+	else {
+		height(node) = heightbase[f];
+		depth(node) = depthbase[f];
+	}
+
 	return rval;
 }
 
@@ -1312,8 +1305,8 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 		if (ATSFontGetTable(fontRef, LE_HHEA_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 			HHEATable*	hhea = xmalloc(tableSize);
 			ATSFontGetTable(fontRef, LE_HHEA_TABLE_TAG, 0, tableSize, hhea, 0);
-			*ascent = FixMul(size, FixDiv(hhea->ascent, upem));
-			*descent = FixMul(size, FixDiv(hhea->descent, upem));
+			*ascent = X2Fix(Fix2X(size) * hhea->ascent / upem);
+			*descent = X2Fix(Fix2X(size) * hhea->descent / upem);
 			free(hhea);
 		}
 	}
@@ -1326,7 +1319,7 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 	}
 	else
 		*slant = 0;
-
+	
 	int	glyphID = MapCharToGlyph_AAT(style, 'x');
 	float	ht, dp;
 	if (glyphID != 0) {
@@ -1335,7 +1328,7 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 	}
 	else
 		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
-
+	
 	glyphID = MapCharToGlyph_AAT(style, 'H');
 	if (glyphID != 0) {
 		GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
