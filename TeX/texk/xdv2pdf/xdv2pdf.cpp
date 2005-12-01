@@ -1209,7 +1209,7 @@ activatePFB(const char* pfbName)
 
 	delete[] sfntName;
 
-	if (fontRef == kATSUInvalidFontID) {
+	if (fontRef == 0) {
 		// try removing extension (.pfb) and looking for an .otf font...
 		char*	baseName = new char[strlen(pfbName) + 1];
 		strcpy(baseName, pfbName);
@@ -1317,21 +1317,21 @@ getFontRec(const std::string& name)
 	if (fr.loaded)
 		return &fr;
 
-	ATSFontRef	fontRef = kATSUInvalidFontID;
+	ATSFontRef	fontRef = 0;
 	// if a filename is known, try to find and activate it
 
 	if (fr.pfbName.length() > 0)
 		fontRef = activatePFB(fr.pfbName.c_str());
 
 	// if no downloadable file, see if it's installed in the OS
-	if (fontRef == kATSUInvalidFontID)
+	if (fontRef == 0)
 	    fontRef = ATSFontFindFromPostScriptName(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, fr.psName.c_str(),
     	                                        CFStringGetSystemEncoding(), kCFAllocatorNull), kATSOptionFlagsDefault);
 
-	if (fontRef == kATSUInvalidFontID)
+	if (fontRef == 0)
 		fprintf(stderr, "\n*** font %s (%s: file '%s') not found\n", name.c_str(), fr.psName.c_str(), fr.pfbName.c_str());
 
-	if (fontRef != kATSUInvalidFontID) {
+	if (fontRef != 0) {
 		// if re-encoding was called for, load the encoding vector and build a new cmap
 		if (fr.encName.length() > 0) {
 			const encoding* enc = getEncoding(fr.encName);
@@ -1417,7 +1417,7 @@ getFontRec(const std::string& name)
 		}
 	}
 	
-	if (fontRef == kATSUInvalidFontID) {
+	if (fontRef == 0) {
 		fprintf(stderr, "\n*** font %s (%s) not found, will substitute Helvetica glyphs\n", name.c_str(), fr.pfbName.c_str());
 		fontRef = ATSFontFindFromPostScriptName(CFSTR("Helvetica"), kATSOptionFlagsDefault);
 		if (fr.cmap != NULL)
@@ -1485,7 +1485,7 @@ doFontDef(FILE* xdv, int k)
 		fontRef = ATSFontFindFromPostScriptName(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, (char*)name,
 												CFStringGetSystemEncoding(), kCFAllocatorNull), kATSOptionFlagsDefault);
 		UInt8*	ucname = 0;
-		if (fontRef == kATSUInvalidFontID) {
+		if (fontRef == 0) {
 			ucname = uppercasify(name);
 			fontRef = ATSFontFindFromPostScriptName(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, (char*)ucname,
 												CFStringGetSystemEncoding(), kCFAllocatorNull), kATSOptionFlagsDefault);
@@ -1494,7 +1494,7 @@ doFontDef(FILE* xdv, int k)
 		if (ucname != 0)
 			free(ucname);
 
-		if (fontRef == kATSUInvalidFontID) {
+		if (fontRef == 0) {
 			fprintf(stderr, "\n*** font %s not found in psfonts.map or host system; will substitute Helvetica glyphs\n", (char*)name);
 			fontRef = ATSFontFindFromPostScriptName(CFSTR("Helvetica"), kATSOptionFlagsDefault);
 			if (font.charMap != NULL)
