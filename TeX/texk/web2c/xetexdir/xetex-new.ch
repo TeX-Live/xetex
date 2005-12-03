@@ -795,6 +795,17 @@ end else
 @z
 
 @x
+@p procedure show_node_list(@!p:integer); {prints a node list symbolically}
+label exit;
+var n:integer; {the number of items already printed at this level}
+@y
+@p procedure show_node_list(@!p:integer); {prints a node list symbolically}
+label exit;
+var n:integer; {the number of items already printed at this level}
+i:integer; {temp index for printing chars of picfile paths}
+@z
+
+@x
 @* \[17] The table of equivalents.
 @y
 @* \[17] The table of equivalents.
@@ -2204,6 +2215,18 @@ end;
 @z
 
 @x
+@d start_font_error_message==print_err("Font "); sprint_cs(u);
+  print_char("="); print_file_name(nom,aire,"");
+@y
+@d start_font_error_message==print_err("Font "); sprint_cs(u);
+  print_char("=");
+  if file_name_quote_char=")" then print_char("(")
+  else if file_name_quote_char<>0 then print_char(file_name_quote_char);
+  print_file_name(nom,aire,cur_ext);
+  if file_name_quote_char<>0 then print_char(file_name_quote_char);
+@z
+
+@x
 else print(" not loadable: Metric (TFM) file not found");
 @y
 else print(" not loadable: Metric (TFM) file or ATSUI font not found");
@@ -3172,6 +3195,8 @@ incr(max_hyph_char);
 @y
 @!main_p:pointer; {temporary register for list manipulation}
 @!main_pp:pointer; {another temporary register for list manipulation}
+@!main_h:pointer; {temp for hyphen offset in native-font text}
+@!is_hyph:boolean; {whether the last char seen is the font's hyphenchar}
 @z
 
 @x
@@ -3180,48 +3205,96 @@ adjust_space_factor;@/
 
 { added code for native font support }
 if is_native_font(cur_font) then begin
+	main_h := 0;
+	main_f := cur_font;
+
 collect_native:
 	adjust_space_factor;
 	str_room(1);
 	append_char(cur_chr);
+	is_hyph := (cur_chr = hyphen_char[main_f]);
+	if (main_h = 0) and is_hyph then main_h := cur_length;
 
-	{ if it's a hyphen, we need to end the native_word and add a disc_node, otherwise try to extend }
-	if (mode <> hmode) or (cur_chr <> hyphen_char[cur_font]) then begin
-		get_next;
-		if (cur_cmd=letter) or (cur_cmd=other_char) or (cur_cmd=char_given) then goto collect_native;
-		x_token;
-		if (cur_cmd=letter) or (cur_cmd=other_char) or (cur_cmd=char_given) then goto collect_native;
-		if cur_cmd=char_num then begin
-			scan_char_num;
-			cur_chr:=cur_val;
-			goto collect_native;
+	{try to collect as many chars as possible in the same font}
+	get_next;
+	if (cur_cmd=letter) or (cur_cmd=other_char) or (cur_cmd=char_given) then goto collect_native;
+	x_token;
+	if (cur_cmd=letter) or (cur_cmd=other_char) or (cur_cmd=char_given) then goto collect_native;
+	if cur_cmd=char_num then begin
+		scan_char_num;
+		cur_chr:=cur_val;
+		goto collect_native;
+	end;
+
+	if (font_mapping[main_f] <> 0) then begin
+		main_k := apply_mapping(font_mapping[main_f], address_of(str_pool[str_start_macro(str_ptr)]), cur_length);
+		pool_ptr := str_start_macro(str_ptr); { flush the string, as we'll be using the mapped text instead }
+		str_room(main_k);
+		main_h := 0;
+		for main_p := 0 to main_k - 1 do begin
+			append_char(mapped_text[main_p]);
+			if (main_h = 0) and (mapped_text[main_p] = hyphen_char[main_f]) then main_h := cur_length;
 		end
 	end;
 
-	main_f := cur_font;
 	main_k := cur_length;
 	main_pp := tail;
 
-	if (not is_char_node(main_pp)) and (type(main_pp)=whatsit_node) and (subtype(main_pp)=native_word_node) and (native_font(main_pp)=main_f) then begin
+	if mode=hmode then begin
 
-		{ if |tail| is a native_word in the current font, we want to replace it with a new whatsit
-		  containing the concatenated strings from that plus the current word }
+		temp_ptr := str_start_macro(str_ptr);
+		repeat
+			if main_h = 0 then main_h := main_k;
 
-		if (XeTeX_linebreak_locale <> 0) and (XeTeX_linebreak_penalty < 10000) then begin
-			{ make a new temp string that contains the concatenated text of |tail| + the current word }
-			main_k := main_k + native_length(main_pp);
-			str_room(main_k);
+			if (not is_char_node(main_pp)) and (type(main_pp)=whatsit_node) and (subtype(main_pp)=native_word_node) and (native_font(main_pp)=main_f) then begin
+
+				{ make a new temp string that contains the concatenated text of |tail| + the current word/fragment }
+				main_k := main_h + native_length(main_pp);
+				str_room(main_k);
+				
+				temp_ptr := pool_ptr;
+				for main_p := 0 to native_length(main_pp) - 1 do
+					append_char(get_native_char(main_pp, main_p));
+				for main_p := str_start_macro(str_ptr) to temp_ptr - 1 do
+					append_char(str_pool[main_p]);
+
+				do_locale_linebreaks(temp_ptr, main_k);
+
+				pool_ptr := temp_ptr;	{ discard the temp string }
+				main_k := cur_length - main_h;	{ and set main_k to remaining length of new word }
+				temp_ptr := str_start_macro(str_ptr) + main_h;	{ pointer to remaining fragment }
+
+				main_h := 0;
+				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f]) do
+					incr(main_h);	{ look for next hyphen or end of text }
+				if (main_h < main_k) then incr(main_h);
+
+				{ flag the previous node as no longer valid }
+				free_native_glyph_info(main_pp);
+				subtype(main_pp) := deleted_native_node;
+
+			end else begin
+
+				do_locale_linebreaks(temp_ptr, main_h);	{ append fragment of current word }
+
+				temp_ptr := temp_ptr + main_h;	{ advance ptr to remaining fragment }
+				main_k := main_k - main_h;	{ decrement remaining length }
+				main_h := 0;
+				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f]) do
+					incr(main_h);	{ look for next hyphen or end of text }
+				if (main_h < main_k) then incr(main_h);
+
+			end;
 			
-			temp_ptr := pool_ptr;
-			for main_p := 0 to native_length(main_pp) - 1 do
-				append_char(get_native_char(main_pp, main_p));
-			for main_p := str_start_macro(str_ptr) to temp_ptr - 1 do
-				append_char(str_pool[main_p]);
-
-			do_locale_linebreaks(temp_ptr, main_k);
-
-		end else begin
-
+			if (main_k > 0) or is_hyph then begin
+				tail_append(new_disc);	{ add a break if we aren't at end of text (must be a hyphen),
+											or if last char in original text was a hyphen }
+			end;
+		until main_k = 0;
+		
+	end else begin
+		{ must be restricted hmode, so no need for line-breaking or discretionaries }
+		if (not is_char_node(main_pp)) and (type(main_pp)=whatsit_node) and (subtype(main_pp)=native_word_node) and (native_font(main_pp)=main_f) then begin
 			{ total string length for the new merged whatsit }
 			link(main_pp) := new_native_word_node(main_f, main_k + native_length(main_pp));
 			tail := link(main_pp);
@@ -3234,20 +3307,9 @@ collect_native:
 				set_native_char(tail, main_p + native_length(main_pp), str_pool[str_start_macro(str_ptr) + main_p]);
 			set_native_metrics(tail);
 
-		end;
-
-		{ flag the previous node as no longer valid }
-		free_native_glyph_info(main_pp);
-		subtype(main_pp) := deleted_native_node;
-
-	end else begin
-
-		main_k := cur_length;
-
-		if (XeTeX_linebreak_locale <> 0) and (main_k > 1) and (XeTeX_linebreak_penalty < 10000) then begin
-
-			do_locale_linebreaks(str_start_macro(str_ptr), main_k);
-		
+			{ flag the previous node as no longer valid }
+			free_native_glyph_info(main_pp);
+			subtype(main_pp) := deleted_native_node;
 		end else begin
 			{ package the current string into a |native_word| whatsit }
 			link(main_pp) := new_native_word_node(main_f, main_k);
@@ -3255,18 +3317,10 @@ collect_native:
 			for main_p := 0 to main_k - 1 do
 				set_native_char(tail, main_p, str_pool[str_start_macro(str_ptr) + main_p]);
 			set_native_metrics(tail);
-		end;
-
+		end
 	end;
-
-	{ flush the current string }
+	
 	pool_ptr := str_start_macro(str_ptr);
-
-	if (mode = hmode) and (cur_chr = hyphen_char[cur_font]) then begin
-		tail_append(new_disc);
-		goto big_switch;
-	end;
-
 	goto reswitch;
 end;
 { End of added code for native fonts }
@@ -3812,17 +3866,19 @@ native_word_node:begin
 	print_native_word(p);
   end;
 deleted_native_node:
-	print("[DEL]");
+	print("[DELETED]");
 glyph_node:begin
     print_esc(font_id_text(native_font(p)));
     print(" glyph#");
     print_int(native_glyph(p));
   end;
-pic_node: begin
-	print_esc("picfile...");
-  end;
-pdf_node: begin
-	print_esc("pdffile...");
+pic_node,pdf_node: begin
+	if subtype(p) = pic_node then print_esc("XeTeXpicfile")
+	else print_esc("XeTeXpdffile");
+	print(" """);
+	for i:=0 to pic_path_length(p)-1 do
+	  print_visible_char(pic_path_byte(p, i));
+	print("""");
   end;
 othercases print("whatsit?")
 @z
@@ -4071,14 +4127,18 @@ begin
 				else dvi_out(0);	{ directionality }
 				dvi_four(width(p)); { width of text }
 				len := native_length(p);
+				{ *** removed this; font mappings now applied during char collection in main loop
 				if (font_mapping[f] <> 0) then begin
 					len := apply_mapping(font_mapping[f], address_of(mem[(p) + native_node_size]), len);
 					dvi_two(len);
 					for k := 0 to len - 1 do dvi_two(mapped_text[k]);
 				end else begin
+				}
 					dvi_two(len); { length of string }
 					for k := 0 to len - 1 do dvi_two(get_native_char(p, k));
+				{ *** removed, see above ***
 				end;
+				}
 				cur_h := cur_h + width(p);
 			end
 		end;
@@ -5024,27 +5084,35 @@ var
 	offs, prevOffs, i: integer;
 	use_penalty, use_skip: boolean;
 begin
-	use_skip := XeTeX_linebreak_skip <> zero_glue;
-	use_penalty := XeTeX_linebreak_penalty <> 0 or not use_skip;
-	linebreak_start(XeTeX_linebreak_locale, address_of(str_pool[s]), len);
-	offs := 0;
-	repeat
-		prevOffs := offs;
-		offs := linebreak_next;
-		if offs > 0 then begin
-			if prevOffs <> 0 then begin
-				if use_penalty then
-					tail_append(new_penalty(XeTeX_linebreak_penalty));
-				if use_skip then
-					tail_append(new_param_glue(XeTeX_linebreak_skip_code));
+	if XeTeX_linebreak_locale = 0 then begin
+		link(tail) := new_native_word_node(main_f, len);
+		tail := link(tail);
+		for i := 0 to len - 1 do
+			set_native_char(tail, i, str_pool[s + i]);
+		set_native_metrics(tail);
+	end else begin
+		use_skip := XeTeX_linebreak_skip <> zero_glue;
+		use_penalty := XeTeX_linebreak_penalty <> 0 or not use_skip;
+		linebreak_start(XeTeX_linebreak_locale, address_of(str_pool[s]), len);
+		offs := 0;
+		repeat
+			prevOffs := offs;
+			offs := linebreak_next;
+			if offs > 0 then begin
+				if prevOffs <> 0 then begin
+					if use_penalty then
+						tail_append(new_penalty(XeTeX_linebreak_penalty));
+					if use_skip then
+						tail_append(new_param_glue(XeTeX_linebreak_skip_code));
+				end;
+				link(tail) := new_native_word_node(main_f, offs - prevOffs);
+				tail := link(tail);
+				for i := prevOffs to offs - 1 do
+					set_native_char(tail, i - prevOffs, str_pool[s + i]);
+				set_native_metrics(tail);
 			end;
-			link(tail) := new_native_word_node(main_f, offs - prevOffs);
-			tail := link(tail);
-			for i := prevOffs to offs - 1 do
-				set_native_char(tail, i - prevOffs, str_pool[s + i]);
-			set_native_metrics(tail);
-		end;
-	until offs < 0;
+		until offs < 0;
+	end
 end;
 
 @z

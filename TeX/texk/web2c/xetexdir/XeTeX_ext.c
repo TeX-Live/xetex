@@ -1021,10 +1021,13 @@ measure_native_node(void* p, int want_ic)
 	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
 
 	unsigned	f = native_font(node);
+
+#if 0	/* this is no longer used, as font mappings are applied during character collection in main_loop */
 	if (fontmapping[f] != 0) {
 		txtLen = applymapping((TECkit_Converter)(fontmapping[f]), txtPtr, txtLen);
 		txtPtr = mappedtext;
 	}
+#endif
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
