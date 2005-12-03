@@ -15,7 +15,7 @@ xetex = @XETEX@ xetex
 # Platform specific defines and files to be built
 #Mac
 ifeq '$(target_vendor)' 'apple'
-xetex_platform_o = XeTeX_mac.o
+xetex_platform_o = XeTeX_mac.o XeTeXFontMgr_Mac.o
 # xetex_platform_layout_o = ATSFontInst.o 
 # xetex_platform_layout_cxx = ATSFontInst.cpp
 xetex_platform_layout_o = XeTeXFontInst_Mac.o
@@ -27,7 +27,7 @@ XETEX_DEFINES = -DXETEX_MAC
 FRAMEWORKS = -framework Carbon -framework QuickTime
 else
 #Linux is linux-gnu, ought to be same defines/files for other X11 systems like BSDs
-xetex_platform_o = 
+xetex_platform_o = XeTeXFontMgr_Linux.o
 xetex_platform_layout_o = XeTeXFontInst_FC.o
 xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
 
@@ -84,6 +84,10 @@ XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
 
 XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+XeTeXFontMgr_Linux.o: $(srcdir)/xetexdir/XeTeXFontMgr_Linux.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
@@ -115,7 +119,7 @@ xetexlibs = \
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
 	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 

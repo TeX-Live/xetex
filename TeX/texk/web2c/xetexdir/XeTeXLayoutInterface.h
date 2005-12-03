@@ -26,15 +26,14 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 extern char	gPrefEngine;
 
 #ifdef XETEX_MAC
-ATSFontRef getFontRef(XeTeXLayoutEngine engine);
 XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
-
-ATSFontRef findFontByName(const char* name, const char* var, double size);
 #else
 // appropriate functions for other platforms
-XeTeXFont createFont(void* fontRef, Fixed pointSize);
-void* findFontByName(const char* name, const char* var, double size);
+XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize);
 #endif
+
+PlatformFontRef getFontRef(XeTeXLayoutEngine engine);
+PlatformFontRef findFontByName(const char* name, const char* var, double size);
 
 char getReqEngine();
 const char* getFullName(PlatformFontRef fontRef);

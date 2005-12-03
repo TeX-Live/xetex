@@ -2209,7 +2209,7 @@ if file_name_quote_char=0 then begin
 end;
 bad_tfm:
 if (not file_opened) and (file_name_quote_char<>0) then begin
-  @<Report that ATSUI font couldn't be found, and |goto done|@>;
+  @<Report that native font couldn't be found, and |goto done|@>;
 end;
 @<Report that the font won't be loaded@>;
 @z
@@ -2229,17 +2229,17 @@ end;
 @x
 else print(" not loadable: Metric (TFM) file not found");
 @y
-else print(" not loadable: Metric (TFM) file or ATSUI font not found");
+else print(" not loadable: Metric (TFM) file or installed font not found");
 @z
 
 @x
 @ @<Read and check...@>=
 @<Open |tfm_file| for input@>;
 @y
-@ @<Report that ATSUI font couldn't be found, and |goto done|@>=
+@ @<Report that native font couldn't be found, and |goto done|@>=
 start_font_error_message;
 @.Font x=xx not loadable...@>
-print(" not loadable: ATSUI font not found");
+print(" not loadable: installed font not found");
 help4("I wasn't able to find this font in the Mac OS,")@/
 ("so I will ignore the font specification.")@/
 ("You might try inserting a different font spec;")@/
@@ -4905,7 +4905,7 @@ exit:end;
 effective_char_info:=null_character;
 exit:end;
 
-{ additional functions for ATSUI font support }
+{ additional functions for native font support }
 
 function new_native_word_node(@!f:internal_font_number;@!n:integer):pointer;
 var
@@ -5011,7 +5011,7 @@ begin
 		@<Apologize for not loading the font, |goto done|@>;
 	end;
 	
-	{ we've found a valid ATSUI/ICU font, and have room }
+	{ we've found a valid installed font, and have room }
 	incr(font_ptr);
 	font_area[font_ptr] := native_font_type_flag; { set by find_native_font to either aat_font_flag or ot_font_flag }
 

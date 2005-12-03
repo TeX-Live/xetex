@@ -15,10 +15,8 @@
 #include "XeTeXFontInst.h"
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
-#include "XeTeXFontManager_Mac.h"
 #else
 #include "XeTeXFontInst_FC.h"
-#include "XeTeXFontManager_FC.h"
 #endif
 
 #include "XeTeXFontMgr.h"
@@ -43,34 +41,14 @@ struct XeTeXLayoutEngine_rec
 	UInt32			rgbValue;
 };
 
+XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
+{
+	LEErrorCode status = LE_NO_ERROR;
 #ifdef XETEX_MAC
-XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize)
-{
-	LEErrorCode status = LE_NO_ERROR;
-	XeTeXFontInst* font = new XeTeXFontInst_Mac(atsFont, Fix2X(pointSize), status);
-	if (LE_FAILURE(status)) {
-		delete font;
-		return NULL;
-	}
-	return (XeTeXFont)font;
-}
-
-ATSFontRef getFontRef(XeTeXLayoutEngine engine)
-{
-	return ((XeTeXFontInst_Mac*)(engine->font))->getATSFont();
-}
-
-ATSFontRef findFontByName(const char* name, const char* var, double size)
-{
-//	ATSFontRef	rval = (ATSFontRef)(XeTeXFontManager::GetFontManager()->findFont(name, size));
-	ATSFontRef	rval = XeTeXFontMgr::GetFontManager()->findFont(name, var, size);
-	return rval;
-}
+	XeTeXFontInst* font = new XeTeXFontInst_Mac((ATSFontRef)fontRef, Fix2X(pointSize), status);
 #else
-XeTeXFont createFont(void* fontRef, Fixed pointSize)
-{
-	LEErrorCode status = LE_NO_ERROR;
 	XeTeXFontInst* font = new XeTeXFontInst_FC((FcPattern*)fontRef, Fix2X(pointSize), status);
+#endif
 	if (LE_FAILURE(status)) {
 		delete font;
 		return NULL;
@@ -78,11 +56,15 @@ XeTeXFont createFont(void* fontRef, Fixed pointSize)
 	return (XeTeXFont)font;
 }
 
-void* findFontByName(const char* name, double size)
+PlatformFontRef getFontRef(XeTeXLayoutEngine engine)
 {
-	return (void*)(XeTeXFontManager::GetFontManager()->findFont(name, size));
+	return engine->font->getFontRef();
 }
-#endif
+
+PlatformFontRef findFontByName(const char* name, const char* var, double size)
+{
+	return (XeTeXFontMgr::GetFontManager()->findFont(name, var, size));
+}
 
 char getReqEngine()
 {

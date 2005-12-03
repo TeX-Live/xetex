@@ -18,9 +18,10 @@
 #include <Carbon/Carbon.h>
 typedef ATSFontRef	PlatformFontRef;
 #else
+#include <fontconfig/fontconfig.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-typedef FT_Face		PlatformFontRef;
+typedef FcPattern*	PlatformFontRef;
 #endif
 
 #ifdef __cplusplus	/* allow inclusion in plain C files just to get the typedefs above */
@@ -144,7 +145,7 @@ protected:
 #ifdef XETEX_MAC
 	NameCollection*	readNames(ATSUFontID fontID);
 #else
-	NameCollection*	readNames(FT_Face face);
+	NameCollection*	readNames(PlatformFontRef fontRef);
 #endif
 };
 

@@ -32,6 +32,8 @@
 #include "sfnt.h"
 #include "cmaps.h"
 
+#include "XeTeXFontMgr.h"
+
 extern "C" {
 	void *xmalloc(unsigned);	// from kpathsea
 };
@@ -42,6 +44,8 @@ extern "C" {
 class XeTeXFontInst : public LEFontInstance, protected FontTableCache
 {
 protected:
+	PlatformFontRef fRef;
+
     float    fPointSize;
 
     le_int32 fUnitsPerEM;
@@ -74,6 +78,9 @@ public:
     XeTeXFontInst(float pointSize, LEErrorCode &status);
 
     virtual ~XeTeXFontInst();
+
+	virtual PlatformFontRef getFontRef() const
+		{ return fRef; }
 
 	virtual void initialize(LEErrorCode &status);
 

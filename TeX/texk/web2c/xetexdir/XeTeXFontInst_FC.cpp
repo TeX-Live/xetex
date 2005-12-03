@@ -34,6 +34,8 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
         return;
     }
 
+	fRef = pattern;
+
 	FT_Error	err;
 	if (!gLibrary) {
 		err = FT_Init_FreeType(&gLibrary);
@@ -42,7 +44,7 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
 			exit(1);
 		}
 	}
-	
+		
 	FcChar8*	pathname = 0;
 	FcPatternGetString(pattern, FC_FILE, 0, &pathname);
 
