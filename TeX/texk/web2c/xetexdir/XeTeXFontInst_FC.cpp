@@ -19,9 +19,7 @@
 
 #include "XeTeXFontInst_FC.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include <freetype/tttables.h>
+#include FT_TTTABLES_H
 
 static FT_Library	gLibrary = 0;
 
@@ -34,7 +32,7 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
         return;
     }
 
-	fRef = pattern;
+	fFontRef = pattern;
 
 	FT_Error	err;
 	if (!gLibrary) {

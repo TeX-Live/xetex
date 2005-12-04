@@ -81,7 +81,6 @@ XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
-
 XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
@@ -89,10 +88,6 @@ XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp $(srcdir)/xetexdir/X
 XeTeXFontMgr_Linux.o: $(srcdir)/xetexdir/XeTeXFontMgr_Linux.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
-XeTeXFontManager.o: $(srcdir)/xetexdir/XeTeXFontManager.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 FontObject.o: $(srcdir)/xetexdir/FontObject.cpp
@@ -100,13 +95,10 @@ FontObject.o: $(srcdir)/xetexdir/FontObject.cpp
 FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
-XeTeXFontManager_Mac.o: $(srcdir)/xetexdir/XeTeXFontManager_Mac.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-
-XeTeXFontManager_FC.o: $(srcdir)/xetexdir/XeTeXFontManager_FC.cpp
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontInst_FC.o: $(srcdir)/xetexdir/XeTeXFontInst_FC.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
