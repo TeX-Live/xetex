@@ -19,20 +19,18 @@
 
 #include "XeTeXFontInst_FC.h"
 
-#include FT_TTTABLES_H
+#include <freetype/tttables.h>
 
 static FT_Library	gLibrary = 0;
 
 
 XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorCode &status)
-    : XeTeXFontInst(pointSize, status)
+    : XeTeXFontInst(pattern, pointSize, status)
     , face(0)
 {
     if (LE_FAILURE(status)) {
         return;
     }
-
-	fFontRef = pattern;
 
 	FT_Error	err;
 	if (!gLibrary) {
