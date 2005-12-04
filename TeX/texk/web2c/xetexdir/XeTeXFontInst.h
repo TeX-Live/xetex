@@ -44,7 +44,7 @@ extern "C" {
 class XeTeXFontInst : public LEFontInstance, protected FontTableCache
 {
 protected:
-	PlatformFontRef fRef;
+	PlatformFontRef fFontRef;
 
     float    fPointSize;
 
@@ -75,12 +75,12 @@ protected:
     const void *readFontTable(LETag tableTag) const;
 
 public:
-    XeTeXFontInst(float pointSize, LEErrorCode &status);
+    XeTeXFontInst(PlatformFontRef fontRef, float pointSize, LEErrorCode &status);
 
     virtual ~XeTeXFontInst();
 
 	virtual PlatformFontRef getFontRef() const
-		{ return fRef; }
+		{ return fFontRef; }
 
 	virtual void initialize(LEErrorCode &status);
 

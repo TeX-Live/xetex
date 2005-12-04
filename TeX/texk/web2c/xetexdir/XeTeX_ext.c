@@ -637,14 +637,12 @@ findnativefont(const char* name, long scaled_size)
 				deleteFont(font);
 		}
 
+#ifdef XETEX_MAC
 		if (rval == 0) {
 		load_aat:
-#ifdef XETEX_MAC
 			rval = loadAATfont(fontRef, scaled_size, featString);
-#else
-			;
-#endif
 		}
+#endif
 
 		/* append the feature string, so that \show\fontID will give a full result */
 		if (featString != NULL) {
@@ -1022,13 +1020,6 @@ measure_native_node(void* p, int want_ic)
 
 	unsigned	f = native_font(node);
 
-#if 0	/* this is no longer used, as font mappings are applied during character collection in main_loop */
-	if (fontmapping[f] != 0) {
-		txtLen = applymapping((TECkit_Converter)(fontmapping[f]), txtPtr, txtLen);
-		txtPtr = mappedtext;
-	}
-#endif
-
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
 		// we're using this font in AAT mode
@@ -1205,12 +1196,10 @@ measure_native_node(void* p, int want_ic)
 		exit(3);
 	}
 	
-	if (txtLen == 1)
-		getnativecharheightdepth(f, *txtPtr, &(height(node)), &(depth(node)));
-	else {
-		height(node) = heightbase[f];
-		depth(node) = depthbase[f];
-	}
+	/* for efficiency, height and depth are the font's ascent/descent,
+		not true values based on the actual content of the word */
+	height(node) = heightbase[f];
+	depth(node) = depthbase[f];
 
 	return rval;
 }

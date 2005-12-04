@@ -147,6 +147,8 @@ protected:
 #else
 	NameCollection*	readNames(PlatformFontRef fontRef);
 #endif
+
+	void	die(const char*s, int i) const;	/* for fatal internal errors! */
 };
 
 #endif	/* __cplusplus */

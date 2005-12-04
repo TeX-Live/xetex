@@ -36,8 +36,9 @@
 #include <string.h>
 
 
-XeTeXFontInst::XeTeXFontInst(float pointSize, LEErrorCode &status)
-    : fPointSize(pointSize)
+XeTeXFontInst::XeTeXFontInst(PlatformFontRef fontRef, float pointSize, LEErrorCode &status)
+    : fFontRef(fontRef)
+    , fPointSize(pointSize)
     , fUnitsPerEM(0)
     , fAscent(0)
     , fDescent(0)

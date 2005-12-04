@@ -27,8 +27,6 @@
 class XeTeXFontInst_Mac : public XeTeXFontInst
 {
 protected:
-    ATSFontRef	fATSFont;
-
     const void *readTable(LETag tag, le_uint32 *length) const;
 
 public:
@@ -37,11 +35,8 @@ public:
     virtual 	~XeTeXFontInst_Mac();
 
 	virtual void initialize(LEErrorCode &status);
-
-	ATSFontRef	getATSFont() const
-					{ return fATSFont; }
 	
-	void		setATSFont(ATSFontRef fontRef);
+//	void		setATSFont(ATSFontRef fontRef);
 };
 
 #endif

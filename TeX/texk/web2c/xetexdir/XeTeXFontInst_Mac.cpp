@@ -20,15 +20,9 @@
 #include "XeTeXFontInst_Mac.h"
 
 XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, LEErrorCode &status)
-    : XeTeXFontInst(pointSize, status)
-    , fATSFont(atsFont)
+    : XeTeXFontInst(atsFont, pointSize, status)
 {
     if (LE_FAILURE(status)) {
-        return;
-    }
-
-    if (fATSFont == 0) {
-        status = LE_FONT_FILE_NOT_FOUND_ERROR;
         return;
     }
 
@@ -41,7 +35,7 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 
 void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
 {
-    if (fATSFont == 0) {
+    if (fFontRef == 0) {
         status = LE_FONT_FILE_NOT_FOUND_ERROR;
         return;
     }
@@ -49,31 +43,33 @@ void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
 	XeTeXFontInst::initialize(status);
 
 	if (status != LE_NO_ERROR)
-		fATSFont = 0;
+		fFontRef = 0;
 
     return;
 }
 
+/*
 void XeTeXFontInst_Mac::setATSFont(ATSFontRef fontRef)
 {
-	fATSFont = fontRef;
+	fFontRef = fontRef;
 
 	flush();	// clear the font table cache
 
 	LEErrorCode	status = (LEErrorCode)0;
 	initialize(status);
 }
+*/
 
 const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
 {
-	OSStatus status = ATSFontGetTable(fATSFont, tag, 0, 0, 0, (ByteCount*)length);
+	OSStatus status = ATSFontGetTable(fFontRef, tag, 0, 0, 0, (ByteCount*)length);
 	if (status != noErr) {
 		*length = 0;
 		return NULL;
 	}
 	void*	table = LE_NEW_ARRAY(char, *length);
 	if (table != NULL) {
-		status = ATSFontGetTable(fATSFont, tag, 0, *length, table, (ByteCount*)length);
+		status = ATSFontGetTable(fFontRef, tag, 0, *length, table, (ByteCount*)length);
 		if (status != noErr) {
 			*length = 0;
 			LE_DELETE_ARRAY(table);

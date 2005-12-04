@@ -3400,7 +3400,8 @@ w:=char_width(f)(i); h:=char_height(f)(height_depth(i));
 @y
 if is_native_font(f) then begin
   w:=width(q);
-  h:=height(q)
+  get_native_char_height_depth(f, cur_val, address_of(h), address_of(delta))
+    {using delta as scratch space for the unneeded depth value}
 end else begin
   i:=char_info(f)(character(q));
   w:=char_width(f)(i); h:=char_height(f)(height_depth(i))
@@ -4120,27 +4121,17 @@ begin
 				dvi_two(native_glyph_count(p));
 				for k := 0 to native_glyph_count(p) * native_glyph_info_size - 1 do
 					dvi_out(glyph_info_byte(native_glyph_info_ptr(p), k));
-				cur_h := cur_h + width(p);
 			end else begin
 				dvi_out(set_native_word);
 				if cur_dir=right_to_left then dvi_out(1)
 				else dvi_out(0);	{ directionality }
 				dvi_four(width(p)); { width of text }
 				len := native_length(p);
-				{ *** removed this; font mappings now applied during char collection in main loop
-				if (font_mapping[f] <> 0) then begin
-					len := apply_mapping(font_mapping[f], address_of(mem[(p) + native_node_size]), len);
-					dvi_two(len);
-					for k := 0 to len - 1 do dvi_two(mapped_text[k]);
-				end else begin
-				}
-					dvi_two(len); { length of string }
-					for k := 0 to len - 1 do dvi_two(get_native_char(p, k));
-				{ *** removed, see above ***
-				end;
-				}
-				cur_h := cur_h + width(p);
-			end
+				{ we used to apply font mappings here, but no longer }
+				dvi_two(len); { length of string }
+				for k := 0 to len - 1 do dvi_two(get_native_char(p, k));
+			end;
+			cur_h := cur_h + width(p);
 		end;
 		
 		dvi_h := cur_h;

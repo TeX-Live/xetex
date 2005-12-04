@@ -11,13 +11,6 @@
 XeTeXFontMgr::XeTeXFontMgr*	XeTeXFontMgr::sFontManager = NULL;
 char XeTeXFontMgr::sReqEngine = 0;
 
-static void die(char*s, int i)
-{
-	fprintf(stderr, s, i);
-	fprintf(stderr, " - exiting\n");
-	exit(3);
-}
-
 XeTeXFontMgr::XeTeXFontMgr*
 XeTeXFontMgr::GetFontManager()
 {
@@ -416,3 +409,12 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 */
 	}
 }
+
+void
+XeTeXFontMgr::die(const char*s, int i) const
+{
+	fprintf(stderr, s, i);
+	fprintf(stderr, " - exiting\n");
+	exit(3);
+}
+
