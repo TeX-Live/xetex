@@ -8,7 +8,7 @@ test -d Work || mkdir Work
 cd Work
 
 # run the TeX Live configure script, omitting a couple things that have given me trouble
-../configure --prefix=/usr/local/teTeX/ --datadir=/usr/local/teTeX/share --without-omega --without-eomega --without-odvipsk --without-oxdvik
+../configure --prefix=/usr/local/teTeX/ --datadir=/usr/local/teTeX/share --without-omega --without-eomega --without-aleph --without-odvipsk --without-oxdvik
 
 # the main configure doesn't know about ICU, so configure that separately
 mkdir -p TeX/libs/icu-release-3-4
