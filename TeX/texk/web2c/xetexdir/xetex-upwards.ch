@@ -1,19 +1,19 @@
 @x
-@d XeTeX_default_input_mode_code    = 1 {input mode for newly opened files}
-@y
-@d XeTeX_upwards_code = 1 {non-zero if the main vertical list is being built upwards}
-@#
 @d XeTeX_default_input_mode_code    = 2 {input mode for newly opened files}
+@y
+@d XeTeX_upwards_code = 2 {non-zero if the main vertical list is being built upwards}
+@#
+@d XeTeX_default_input_mode_code    = 3 {input mode for newly opened files}
 @z
 
 @x
-@d XeTeX_default_input_encoding_code = 2 {str_number of encoding name if mode = ICU}
-@#
-@d eTeX_states=3 {number of \eTeX\ state variables in |eqtb|}
-@y
 @d XeTeX_default_input_encoding_code = 3 {str_number of encoding name if mode = ICU}
 @#
 @d eTeX_states=4 {number of \eTeX\ state variables in |eqtb|}
+@y
+@d XeTeX_default_input_encoding_code = 4 {str_number of encoding name if mode = ICU}
+@#
+@d eTeX_states=5 {number of \eTeX\ state variables in |eqtb|}
 @z
 
 @x { to ensure following change doesn't get applied to hlist_out() }

@@ -72,7 +72,9 @@
 @y
 @d TeXXeT_code=0 {the \TeXXeT\ feature is optional}
 @#
-@d XeTeX_default_input_mode_code    = 1 {input mode for newly opened files}
+@d XeTeX_dash_break_code			= 1 {non-zero to enable breaks after en- and em-dashes}
+@#
+@d XeTeX_default_input_mode_code    = 2 {input mode for newly opened files}
 @d XeTeX_input_mode_auto    = 0
 @d XeTeX_input_mode_utf8    = 1
 @d XeTeX_input_mode_utf16be = 2
@@ -80,9 +82,9 @@
 @d XeTeX_input_mode_raw     = 4
 @d XeTeX_input_mode_icu_mapping = 5
 @#
-@d XeTeX_default_input_encoding_code = 2 {str_number of encoding name if mode = ICU}
+@d XeTeX_default_input_encoding_code = 3 {str_number of encoding name if mode = ICU}
 @#
-@d eTeX_states=3 {number of \eTeX\ state variables in |eqtb|}
+@d eTeX_states=4 {number of \eTeX\ state variables in |eqtb|}
 @z
 
 @x
@@ -3212,7 +3214,8 @@ collect_native:
 	adjust_space_factor;
 	str_room(1);
 	append_char(cur_chr);
-	is_hyph := (cur_chr = hyphen_char[main_f]);
+	is_hyph := (cur_chr = hyphen_char[main_f])
+		or (XeTeX_dash_break_en and (cur_chr = @"2014) or (cur_chr = @"2013));
 	if (main_h = 0) and is_hyph then main_h := cur_length;
 
 	{try to collect as many chars as possible in the same font}
@@ -3233,7 +3236,9 @@ collect_native:
 		main_h := 0;
 		for main_p := 0 to main_k - 1 do begin
 			append_char(mapped_text[main_p]);
-			if (main_h = 0) and (mapped_text[main_p] = hyphen_char[main_f]) then main_h := cur_length;
+			if (main_h = 0) and ((mapped_text[main_p] = hyphen_char[main_f])
+				or (XeTeX_dash_break_en and ((mapped_text[main_p] = @"2014) or (mapped_text[main_p] = @"2013)) ) )
+			then main_h := cur_length;
 		end
 	end;
 
@@ -3265,8 +3270,10 @@ collect_native:
 				temp_ptr := str_start_macro(str_ptr) + main_h;	{ pointer to remaining fragment }
 
 				main_h := 0;
-				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f]) do
-					incr(main_h);	{ look for next hyphen or end of text }
+				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f])
+					and ( (not XeTeX_dash_break_en)
+						or ((str_pool[temp_ptr + main_h] <> @"2014) and (str_pool[temp_ptr + main_h] <> @"2013)) )
+				do incr(main_h);	{ look for next hyphen or end of text }
 				if (main_h < main_k) then incr(main_h);
 
 				{ flag the previous node as no longer valid }
@@ -3279,9 +3286,12 @@ collect_native:
 
 				temp_ptr := temp_ptr + main_h;	{ advance ptr to remaining fragment }
 				main_k := main_k - main_h;	{ decrement remaining length }
+
 				main_h := 0;
-				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f]) do
-					incr(main_h);	{ look for next hyphen or end of text }
+				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f])
+					and ( (not XeTeX_dash_break_en)
+						or ((str_pool[temp_ptr + main_h] <> @"2014) and (str_pool[temp_ptr + main_h] <> @"2013)) )
+				do incr(main_h);	{ look for next hyphen or end of text }
 				if (main_h < main_k) then incr(main_h);
 
 			end;
@@ -4826,8 +4836,18 @@ XeTeX_selector_name_code:
 @y
 @d TeXXeT_en==(TeXXeT_state>0) {is \TeXXeT\ enabled?}
 
+@d XeTeX_dash_break_state == eTeX_state(XeTeX_dash_break_code)
+@d XeTeX_dash_break_en == (XeTeX_dash_break_state>0)
+
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
+@z
+
+@x
+eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
+@y
+eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
+eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 @z
 
 @x
@@ -4836,6 +4856,9 @@ primitive("TeXXeTstate",assign_int,eTeX_state_base+TeXXeT_code);
 @y
 primitive("TeXXeTstate",assign_int,eTeX_state_base+TeXXeT_code);
 @!@:TeXXeT_state_}{\.{\\TeXXeT_state} primitive@>
+
+primitive("XeTeXdashbreakstate",assign_int,eTeX_state_base+XeTeX_dash_break_code);
+@!@:XeTeX_dash_break_state_}{\.{\\XeTeX_dash_break_state} primitive@>
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
