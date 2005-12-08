@@ -53,7 +53,10 @@
 
 #define XDV_ID	5	// current id_byte value for .xdv files from xetex
 
-#define AAT_FONT_FLAG	0xffff
+#define XDV_FLAG_FONTTYPE_ATSUI	0x0001
+#define XDV_FLAG_FONTTYPE_ICU	0x0002
+
+#define XDV_FLAG_VERTICAL		0x0100
 
 #define DEFINE_GLOBALS	1
 #include "xdv2pdf_globals.h"
@@ -1528,8 +1531,8 @@ doNativeFontDef(FILE* xdv)
     Fixed	s = readUnsigned(xdv, 4);	// size
     if (sMag != 1000)
     	s = X2Fix(gMagScale * Fix2X(s));
-	UInt16	technologyFlag = readUnsigned(xdv, 2);
-	if (technologyFlag == AAT_FONT_FLAG) {
+	UInt16	flags = readUnsigned(xdv, 2);
+	if (flags & XDV_FLAG_FONTTYPE_ATSUI) {
 		// AAT font
 		ATSUStyle	style;
 		OSStatus	status = ATSUCreateStyle(&style);
@@ -1556,8 +1559,7 @@ doNativeFontDef(FILE* xdv)
 		ATSURGBAlphaColor	rgba;
 		fread(&rgba, 1, sizeof(ATSURGBAlphaColor), xdv);
 		
-		n = readUnsigned(xdv, 1);	// vertical? flag
-		if (n) {
+		if (flags & XDV_FLAG_VERTICAL) {
 			ATSUAttributeTag			t = kATSUVerticalCharacterTag;
 			ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
 			ByteCount					vs = sizeof(ATSUVerticalCharacterType);
@@ -1599,7 +1601,7 @@ doNativeFontDef(FILE* xdv)
 		fontRec.isColored = !(rgba == kBlackColor);
 		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
 	}
-	else {
+	else if (flags & XDV_FLAG_FONTTYPE_ICU) {
 		// OT font
 		Fixed	color[4];
 		fread(&color[0], 4, sizeof(Fixed), xdv);
@@ -1627,6 +1629,10 @@ doNativeFontDef(FILE* xdv)
 		fontRec.color = rgba;
 		fontRec.isColored = !(rgba == kBlackColor);
 		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
+	}
+	else {
+		fprintf(stderr, "bad flags in native_font_def: %04x\n", flags);
+		exit(1);
 	}
 }
 

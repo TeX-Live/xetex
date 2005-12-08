@@ -754,6 +754,10 @@ otfontget3(int what, XeTeXLayoutEngine engine, long param1, long param2, long pa
 	return 0;
 }
 
+#define XDV_FLAG_FONTTYPE_ATSUI	0x0001
+#define XDV_FLAG_FONTTYPE_ICU	0x0002
+
+#define XDV_FLAG_VERTICAL		0x0100
 
 long
 makefontdef(long f)
@@ -777,7 +781,7 @@ makefontdef(long f)
 		// parameters after internal font ID: s[4] t[2] nf[2] f[2nf] s[2nf] nv[2] a[4nv] v[4nv] c[16] l[2] n[l]
 		long	fontDefLength = 0
 			+ 4 // size
-			+ 2	// font technology flag
+			+ 2	// flags
 			+ 2	// number of features
 			+ 2 * featureCount
 			+ 2 * featureCount	// features and settings
@@ -785,7 +789,6 @@ makefontdef(long f)
 			+ 4 * variationCount
 			+ 4 * variationCount	// axes and values
 			+ 16 // ATSURGBAlphaColor float[4]
-			+ 1 // vertical?
 			+ 2	// name length
 			+ nameLength;
 	
@@ -797,7 +800,13 @@ makefontdef(long f)
 		*(Fixed*)cp = size;
 		cp += 4;
 		
-		*(UInt16*)cp = fontarea[f];
+		UInt16	flags = XDV_FLAG_FONTTYPE_ATSUI;
+		ATSUVerticalCharacterType	vert;
+		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
+		if (vert == kATSUStronglyVertical)
+			flags |= XDV_FLAG_VERTICAL;
+	
+		*(UInt16*)cp = flags;
 		cp += 2;
 		
 		*(UInt16*)cp = featureCount;
@@ -824,11 +833,6 @@ makefontdef(long f)
 		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), rgba, 0);
 		cp += sizeof(ATSURGBAlphaColor);
 	
-		ATSUVerticalCharacterType	vert;
-		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
-		*cp = (vert == kATSUStronglyVertical);
-		++cp;
-	
 		*(UInt16*)cp = nameLength;
 		cp += 2;
 		strncpy(cp, psName, nameLength);
@@ -848,7 +852,7 @@ makefontdef(long f)
 		// parameters after internal font ID: s[4] t[2] c[16] l[2] n[l]
 		long	fontDefLength = 0
 			+ 4 // size
-			+ 2	// font technology flag
+			+ 2	// flags
 			+ 16 // RGBA Fixed[4]
 			+ 2	// name length
 			+ nameLength;
@@ -859,7 +863,8 @@ makefontdef(long f)
 		*(Fixed*)cp = SWAP32(X2Fix(getPointSize(engine)));
 		cp += 4;
 		
-		*(UInt16*)cp = SWAP16(fontarea[f]);
+		UInt16	flags = XDV_FLAG_FONTTYPE_ICU;
+		*(UInt16*)cp = SWAP16(flags);
 		cp += 2;
 		
 		UInt32	rgbValue = getRgbValue(engine);

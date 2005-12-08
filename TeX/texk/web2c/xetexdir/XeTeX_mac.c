@@ -445,7 +445,6 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 			
 			// interpret features & variations following ":"
 			while (*cp1) {
-	
 				// locate beginning of name=value pair
 				if (*cp1 == ':' || *cp1 == ';')	// skip over separator
 					++cp1;
