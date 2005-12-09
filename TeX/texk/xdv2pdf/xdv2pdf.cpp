@@ -57,6 +57,9 @@
 #define XDV_FLAG_FONTTYPE_ICU	0x0002
 
 #define XDV_FLAG_VERTICAL		0x0100
+#define XDV_FLAG_COLORED		0x0200
+#define XDV_FLAG_FEATURES		0x0400
+#define XDV_FLAG_VARIATIONS		0x0800
 
 #define DEFINE_GLOBALS	1
 #include "xdv2pdf_globals.h"
@@ -1522,6 +1525,17 @@ inline bool operator==(const ATSURGBAlphaColor& a, const ATSURGBAlphaColor& b)
 		&& a.alpha == b.alpha);
 }
 
+static ATSURGBAlphaColor
+makeAtsuColor(UInt32 rgba)
+{
+	ATSURGBAlphaColor	c;
+	c.red   =  (rgba >> 24)         / 255.0;
+	c.green = ((rgba >> 16) & 0xFF) / 255.0;
+	c.blue  = ((rgba >>  8) & 0xFF) / 255.0;
+	c.alpha = ( rgba        & 0xFF) / 255.0;
+	return c;
+}
+
 static void
 doNativeFontDef(FILE* xdv)
 {
@@ -1536,28 +1550,45 @@ doNativeFontDef(FILE* xdv)
 		// AAT font
 		ATSUStyle	style;
 		OSStatus	status = ATSUCreateStyle(&style);
-		int		n = readUnsigned(xdv, 2);	// number of features
-		if (n > 0) {
-			UInt16*	types = new UInt16[n];
-			UInt16*	selectors = new UInt16[n];
-			fread(types, 2, n, xdv);
-			fread(selectors, 2, n, xdv);
-			status = ATSUSetFontFeatures(style, n, types, selectors);
-			delete[] selectors;
-			delete[] types;
+
+		UInt16 n = readUnsigned(xdv, 2);	// name length
+		char*	name = new char[n+1];
+		fread(name, 1, n, xdv);
+		name[n] = 0;
+		ATSUFontID	fontID;
+		status = ATSUFindFontFromName(name, n, kFontPostscriptName,
+			kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, &fontID);
+		delete[] name;
+		
+		if (flags & XDV_FLAG_FEATURES) {
+			n = readUnsigned(xdv, 2);	// number of features
+			if (n > 0) {
+				UInt16*	types = new UInt16[n];
+				UInt16*	selectors = new UInt16[n];
+				fread(types, 2, n, xdv);
+				fread(selectors, 2, n, xdv);
+				status = ATSUSetFontFeatures(style, n, types, selectors);
+				delete[] selectors;
+				delete[] types;
+			}
 		}
-		n = readUnsigned(xdv, 2); // number of variations
-		if (n > 0) {
-			UInt32*	axes = new UInt32[n];
-			SInt32*	values = new SInt32[n];
-			fread(axes, 4, n , xdv);
-			fread(values, 4, n, xdv);
-			status = ATSUSetVariations(style, n, axes, values);
-			delete[] values;
-			delete[] axes;
+		
+		if (flags & XDV_FLAG_VARIATIONS) {
+			n = readUnsigned(xdv, 2); // number of variations
+			if (n > 0) {
+				UInt32*	axes = new UInt32[n];
+				SInt32*	values = new SInt32[n];
+				fread(axes, 4, n , xdv);
+				fread(values, 4, n, xdv);
+				status = ATSUSetVariations(style, n, axes, values);
+				delete[] values;
+				delete[] axes;
+			}
 		}
-		ATSURGBAlphaColor	rgba;
-		fread(&rgba, 1, sizeof(ATSURGBAlphaColor), xdv);
+		
+		UInt32	rgba = 0x000000FF;
+		if (flags & XDV_FLAG_COLORED)
+			rgba = readUnsigned(xdv, 4);
 		
 		if (flags & XDV_FLAG_VERTICAL) {
 			ATSUAttributeTag			t = kATSUVerticalCharacterTag;
@@ -1567,67 +1598,53 @@ doNativeFontDef(FILE* xdv)
 			status = ATSUSetAttributes(style, 1, &t, &vs, &v);
 		}
 	
-		n = readUnsigned(xdv, 2);	// name length
-		char*	name = new char[n+1];
-		fread(name, 1, n, xdv);
-		name[n] = 0;
-	
-		ATSUFontID	fontID;
-		status = ATSUFindFontFromName(name, n, kFontPostscriptName,
-			kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, &fontID);
-	
-		delete[] name;
-		
 		int numTags = 4;
+		if (fontID == kATSUInvalidFontID) {
+			rgba = 0xFF0000FF;
+			numTags--;
+		}
+		ATSURGBAlphaColor		atsuColor = makeAtsuColor(rgba);
 		ATSUAttributeTag		tag[4] = { kATSUHangingInhibitFactorTag, kATSUSizeTag, kATSURGBAlphaColorTag, kATSUFontTag };
 		ByteCount				valueSize[4] = { sizeof(Fract), sizeof(Fixed), sizeof(ATSURGBAlphaColor), sizeof(ATSUFontID) };
 		ATSUAttributeValuePtr	value[4];
 		Fract					inhibit = fract1;
 		value[0] = &inhibit;
 		value[1] = &s;
-		value[2] = &rgba;
+		value[2] = &atsuColor;
 		value[3] = &fontID;
-		if (fontID == kATSUInvalidFontID) {
-			value[2] = &sRed;
-			numTags--;
-		}
 		status = ATSUSetAttributes(style, numTags, &tag[0], &valueSize[0], &value[0]);
 	
 		nativeFont	fontRec;
 		fontRec.atsuStyle = style;
 		fontRec.cgFont = getCGFontForATSFont(FMGetATSFontRefFromFont(fontID));
 		fontRec.size = s;
-		fontRec.color = rgba;
-		fontRec.isColored = !(rgba == kBlackColor);
+		fontRec.color = atsuColor;
+		fontRec.isColored = !(rgba == 0x000000FF);
 		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
 	}
 	else if (flags & XDV_FLAG_FONTTYPE_ICU) {
 		// OT font
-		Fixed	color[4];
-		fread(&color[0], 4, sizeof(Fixed), xdv);
-		ATSURGBAlphaColor	rgba;
-		rgba.red = Fix2X(color[0]);
-		rgba.green = Fix2X(color[1]);
-		rgba.blue = Fix2X(color[2]);
-		rgba.alpha = Fix2X(color[3]);
-
 		int	n = readUnsigned(xdv, 2);	// name length
 		char*	name = new char[n+1];
 		fread(name, 1, n, xdv);
 		name[n] = 0;
+
+		UInt32	rgba = 0x000000FF;
+		if (flags & XDV_FLAG_COLORED)
+			rgba = readUnsigned(xdv, 4);
 
 		ATSUFontID	fontID;
 		OSStatus	status = ATSUFindFontFromName(name, n, kFontPostscriptName,
 			kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, &fontID);
 		
 		if (fontID == kATSUInvalidFontID)
-			rgba = sRed;
+			rgba = 0xFF0000FF;
 		
 		nativeFont	fontRec;
 		fontRec.cgFont = getCGFontForATSFont(FMGetATSFontRefFromFont(fontID));
 		fontRec.size = s;
-		fontRec.color = rgba;
-		fontRec.isColored = !(rgba == kBlackColor);
+		fontRec.color = makeAtsuColor(rgba);
+		fontRec.isColored = !(rgba == 0x000000FF);
 		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
 	}
 	else {

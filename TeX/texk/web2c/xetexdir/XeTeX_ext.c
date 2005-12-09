@@ -758,6 +758,24 @@ otfontget3(int what, XeTeXLayoutEngine engine, long param1, long param2, long pa
 #define XDV_FLAG_FONTTYPE_ICU	0x0002
 
 #define XDV_FLAG_VERTICAL		0x0100
+#define XDV_FLAG_COLORED		0x0200
+#define XDV_FLAG_FEATURES		0x0400
+#define XDV_FLAG_VARIATIONS		0x0800
+
+#ifdef XETEX_MAC
+static UInt32
+atsuColorToRGBA32(ATSURGBAlphaColor a)
+{
+	UInt32	rval = (UInt8)(a.red * 255.0 + 0.5);
+	rval <<= 8;
+	rval += (UInt8)(a.green * 255.0 + 0.5);
+	rval <<= 8;
+	rval += (UInt8)(a.blue * 255.0 + 0.5);
+	rval <<= 8;
+	rval += (UInt8)(a.alpha * 255.0 + 0.5);
+	return rval;
+}
+#endif
 
 long
 makefontdef(long f)
@@ -778,19 +796,56 @@ makefontdef(long f)
 		const char*	psName = getPSName(FMGetATSFontRefFromFont(fontID));
 		nameLength = strlen(psName);
 	
-		// parameters after internal font ID: s[4] t[2] nf[2] f[2nf] s[2nf] nv[2] a[4nv] v[4nv] c[16] l[2] n[l]
-		long	fontDefLength = 0
-			+ 4 // size
+		UInt16	flags = XDV_FLAG_FONTTYPE_ATSUI;
+
+		ATSUVerticalCharacterType	vert;
+		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
+		if (vert == kATSUStronglyVertical)
+			flags |= XDV_FLAG_VERTICAL;
+
+		ATSURGBAlphaColor	atsuColor;
+		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), &atsuColor, 0);
+		UInt32	rgba = atsuColorToRGBA32(atsuColor);
+
+		// parameters after internal font ID:
+		//	size[4]
+		//	flags[2]
+		//	len[2]
+		//	name[l]
+		//  if flags & FEATURES:
+		//		nf[2]
+		//		f[2nf]
+		//		s[2nf]
+		//	if flags & VARIATIONS:
+		//		nv[2]
+		//		a[4nv]
+		//		v[4nv]
+		//	if flags & COLORED:
+		//		c[4]
+
+		long	fontDefLength
+			= 4 // size
 			+ 2	// flags
-			+ 2	// number of features
-			+ 2 * featureCount
-			+ 2 * featureCount	// features and settings
-			+ 2	// number of variations
-			+ 4 * variationCount
-			+ 4 * variationCount	// axes and values
-			+ 16 // ATSURGBAlphaColor float[4]
 			+ 2	// name length
 			+ nameLength;
+		if (featureCount > 0) {
+			fontDefLength +=
+				  2	// number of features
+				+ 2 * featureCount
+				+ 2 * featureCount;	// features and settings
+			flags |= XDV_FLAG_FEATURES;
+		}
+		if (variationCount > 0) {
+			fontDefLength +=
+				  2	// number of variations
+				+ 4 * variationCount
+				+ 4 * variationCount;	// axes and values
+			flags |= XDV_FLAG_VARIATIONS;
+		}
+		if (rgba != 0x000000FF) {
+			fontDefLength += 4; // 32-bit RGBA value
+			flags |= XDV_FLAG_COLORED;
+		}
 	
 		fontdef = (char*)xmalloc(fontDefLength);
 		char*	cp = fontdef;
@@ -800,43 +855,41 @@ makefontdef(long f)
 		*(Fixed*)cp = size;
 		cp += 4;
 		
-		UInt16	flags = XDV_FLAG_FONTTYPE_ATSUI;
-		ATSUVerticalCharacterType	vert;
-		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
-		if (vert == kATSUStronglyVertical)
-			flags |= XDV_FLAG_VERTICAL;
-	
 		*(UInt16*)cp = flags;
 		cp += 2;
 		
-		*(UInt16*)cp = featureCount;
-		cp += 2;
-		if (featureCount > 0) {
-			ATSUGetAllFontFeatures(style, featureCount,
-									(UInt16*)(cp),
-									(UInt16*)(cp + 2 * featureCount),
-									0);
-			cp += 2 * featureCount + 2 * featureCount;
-		}
-	
-		*(UInt16*)cp = variationCount;
-		cp += 2;
-		if (variationCount > 0) {
-			ATSUGetAllFontVariations(style, variationCount,
-									(UInt32*)(cp),
-									(SInt32*)(cp + 4 * variationCount),
-									0);
-			cp += 4 * variationCount + 4 * variationCount;
-		}
-	
-		ATSURGBAlphaColor*	rgba = (ATSURGBAlphaColor*)cp;
-		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), rgba, 0);
-		cp += sizeof(ATSURGBAlphaColor);
-	
 		*(UInt16*)cp = nameLength;
 		cp += 2;
 		strncpy(cp, psName, nameLength);
+		cp += nameLength;
 
+		if (featureCount > 0) {
+			*(UInt16*)cp = featureCount;
+			cp += 2;
+			if (featureCount > 0) {
+				ATSUGetAllFontFeatures(style, featureCount,
+										(UInt16*)(cp),
+										(UInt16*)(cp + 2 * featureCount),
+										0);
+				cp += 2 * featureCount + 2 * featureCount;
+			}
+		}
+	
+		if (variationCount > 0) {
+			*(UInt16*)cp = variationCount;
+			cp += 2;
+			if (variationCount > 0) {
+				ATSUGetAllFontVariations(style, variationCount,
+										(UInt32*)(cp),
+										(SInt32*)(cp + 4 * variationCount),
+										0);
+				cp += 4 * variationCount + 4 * variationCount;
+			}
+		}
+	
+		if (rgba != 0x000000FF)
+			*(UInt32*)cp = rgba;
+	
 		return fontDefLength;
 	}
 	else
@@ -849,13 +902,17 @@ makefontdef(long f)
 			/* returns ptr to a string that belongs to the font - do not free! */
 		UInt16	nameLength = strlen(psName);
 
+		UInt32	rgbValue = getRgbValue(engine);
+
 		// parameters after internal font ID: s[4] t[2] c[16] l[2] n[l]
 		long	fontDefLength = 0
 			+ 4 // size
 			+ 2	// flags
-			+ 16 // RGBA Fixed[4]
 			+ 2	// name length
 			+ nameLength;
+
+		if (rgbValue != 0x000000FF)
+			fontDefLength += 4; // RGBA UInt32
 
 		fontdef = (char*)xmalloc(fontDefLength);
 		char*	cp = fontdef;
@@ -864,20 +921,19 @@ makefontdef(long f)
 		cp += 4;
 		
 		UInt16	flags = XDV_FLAG_FONTTYPE_ICU;
+		if (rgbValue != 0x000000FF)
+			flags |= XDV_FLAG_COLORED;
 		*(UInt16*)cp = SWAP16(flags);
 		cp += 2;
 		
-		UInt32	rgbValue = getRgbValue(engine);
-		Fixed	*rgba = (Fixed*)cp;
-		*rgba++ = SWAP32(X2Fix((rgbValue >> 24) / 255.0));
-		*rgba++ = SWAP32(X2Fix(((rgbValue >> 16) & 0xff) / 255.0));
-		*rgba++ = SWAP32(X2Fix(((rgbValue >> 8) & 0xff) / 255.0));
-		*rgba++ = SWAP32(X2Fix((rgbValue & 0xff) / 255.0));
-		cp = (char*)rgba;
-
 		*(UInt16*)cp = SWAP16(nameLength);
 		cp += 2;
 		memcpy(cp, psName, nameLength);	/* not strcpy as we don't want the null terminator! */
+
+		cp += nameLength;
+
+		if (rgbValue != 0x000000FF)
+			*(UInt32*)cp = SWAP32(rgbValue);
 
 		return fontDefLength;
 	}
