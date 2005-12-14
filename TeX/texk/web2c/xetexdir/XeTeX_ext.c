@@ -898,9 +898,16 @@ makefontdef(long f)
 		// OT font...
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 
-		const char* psName = getPSName(getFontRef(engine));
-			/* returns ptr to a string that belongs to the font - do not free! */
-		UInt16	nameLength = strlen(psName);
+		PlatformFontRef	fontRef = getFontRef(engine);
+		const char* psName;
+		const char* famName;
+		const char* styName;
+		getNames(fontRef, &psName, &famName, &styName);
+			/* returns ptrs to strings that belong to the font - do not free! */
+
+		UInt8	psLen = strlen(psName);
+		UInt8	famLen = strlen(famName);
+		UInt8	styLen = strlen(styName);
 
 		UInt32	rgbValue = getRgbValue(engine);
 
@@ -908,8 +915,8 @@ makefontdef(long f)
 		long	fontDefLength = 0
 			+ 4 // size
 			+ 2	// flags
-			+ 2	// name length
-			+ nameLength;
+			+ 3	// name lengths
+			+ psLen + famLen + styLen;
 
 		if (rgbValue != 0x000000FF)
 			fontDefLength += 4; // RGBA UInt32
@@ -926,11 +933,18 @@ makefontdef(long f)
 		*(UInt16*)cp = SWAP16(flags);
 		cp += 2;
 		
-		*(UInt16*)cp = SWAP16(nameLength);
-		cp += 2;
-		memcpy(cp, psName, nameLength);	/* not strcpy as we don't want the null terminator! */
-
-		cp += nameLength;
+		*(UInt8*)cp = psLen;
+		cp += 1;
+		*(UInt8*)cp = famLen;
+		cp += 1;
+		*(UInt8*)cp = styLen;
+		cp += 1;
+		memcpy(cp, psName, psLen);	/* not strcpy as we don't want the null terminator! */
+		cp += psLen;
+		memcpy(cp, famName, famLen);
+		cp += famLen;
+		memcpy(cp, styName, styLen);
+		cp += styLen;
 
 		if (rgbValue != 0x000000FF)
 			*(UInt32*)cp = SWAP32(rgbValue);

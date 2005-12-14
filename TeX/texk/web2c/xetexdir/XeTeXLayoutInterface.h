@@ -38,6 +38,7 @@ PlatformFontRef findFontByName(const char* name, const char* var, double size);
 char getReqEngine();
 const char* getFullName(PlatformFontRef fontRef);
 const char* getPSName(PlatformFontRef fontRef);
+void getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName);
 
 void deleteFont(XeTeXFont font);
 

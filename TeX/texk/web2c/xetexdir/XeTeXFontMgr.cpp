@@ -216,6 +216,18 @@ XeTeXFontMgr::getFullName(PlatformFontRef font) const
 		return i->second->psName->c_str();
 }
 
+void
+XeTeXFontMgr::getNames(PlatformFontRef font, const char** psName,
+	const char** famName, const char** styName) const
+{
+	std::map<PlatformFontRef,Font*>::const_iterator	i = platformRefToFont.find(font);
+	if (i == platformRefToFont.end())
+		die("internal error %d in XeTeXFontMgr", 1);
+	*psName = i->second->psName->c_str();
+	*famName = i->second->familyName->c_str();
+	*styName = i->second->styleName->c_str();
+}
+
 char
 XeTeXFontMgr::getReqEngine() const
 {
@@ -371,6 +383,16 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 
 	if (names->fullNames.size() > 0)
 		thisFont->fullName = new std::string(*(names->fullNames.begin()));
+
+	if (names->familyNames.size() > 0)
+		thisFont->familyName = new std::string(*(names->familyNames.begin()));
+	else
+		thisFont->familyName = new std::string(names->psName);
+
+	if (names->styleNames.size() > 0)
+		thisFont->styleName = new std::string(*(names->styleNames.begin()));
+	else
+		thisFont->styleName = new std::string;
 
 	for (std::list<std::string>::const_iterator i = names->familyNames.begin(); i != names->familyNames.end(); ++i) {
 		std::map<std::string,Family*>::iterator	iFam = nameToFamily.find(*i);

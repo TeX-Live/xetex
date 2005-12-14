@@ -61,6 +61,11 @@ public:
 		// return the full name of the font, suitable for use in XeTeX source
 		// without requiring style qualifiers
 
+	void							getNames(PlatformFontRef font, const char** psName,
+											const char** famName, const char** styName) const;
+		// return Postscript, family, and style names, for use in .xdv
+
+
 	char							getReqEngine() const;
 		// return the requested rendering technology for the most recent findFont
 		// or 0 if no specific technology was requested
@@ -90,7 +95,7 @@ protected:
 	class Font {
 		public:
 							Font(PlatformFontRef ref)
-								: fullName(NULL), psName(NULL), parent(NULL)
+								: fullName(NULL), psName(NULL), familyName(NULL), styleName(NULL), parent(NULL)
 								, fontRef(ref), weight(0), width(0), isBold(false), isItalic(false)
 								{ opSizeInfo.subFamilyID = 0; }
 							~Font()
@@ -98,6 +103,8 @@ protected:
 
 			std::string*	fullName;
 			std::string*	psName;
+			std::string*	familyName;	// default family and style names that should locate this font
+			std::string*	styleName;
 			Family*			parent;
 			PlatformFontRef	fontRef;
 			OpSizeRec		opSizeInfo;

@@ -1624,17 +1624,22 @@ doNativeFontDef(FILE* xdv)
 	}
 	else if (flags & XDV_FLAG_FONTTYPE_ICU) {
 		// OT font
-		int	n = readUnsigned(xdv, 2);	// name length
-		char*	name = new char[n+1];
-		fread(name, 1, n, xdv);
-		name[n] = 0;
+		int	psLen = readUnsigned(xdv, 1);	// PSName length
+		int skipLen = readUnsigned(xdv, 1);	// family name length
+		skipLen += readUnsigned(xdv, 1);	// style name length
+
+		char*	name = new char[psLen+1];
+		fread(name, 1, psLen, xdv);
+		name[psLen] = 0;
+
+        fseek(xdv, skipLen, SEEK_CUR);	// ignore the family/style names
 
 		UInt32	rgba = 0x000000FF;
 		if (flags & XDV_FLAG_COLORED)
 			rgba = readUnsigned(xdv, 4);
 
 		ATSUFontID	fontID;
-		OSStatus	status = ATSUFindFontFromName(name, n, kFontPostscriptName,
+		OSStatus	status = ATSUFindFontFromName(name, psLen, kFontPostscriptName,
 			kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, &fontID);
 		
 		if (fontID == kATSUInvalidFontID)

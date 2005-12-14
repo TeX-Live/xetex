@@ -81,6 +81,11 @@ const char* getPSName(PlatformFontRef fontRef)
 	return XeTeXFontMgr::GetFontManager()->getPSName(fontRef);
 }
 
+void getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName)
+{
+	return XeTeXFontMgr::GetFontManager()->getNames(fontRef, psName, famName, styName);
+}
+
 void deleteFont(XeTeXFont font)
 {
 	delete (XeTeXFontInst*)font;
