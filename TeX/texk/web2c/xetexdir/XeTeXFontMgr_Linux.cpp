@@ -22,8 +22,6 @@ XeTeXFontMgr_Linux::readNames(FcPattern* pat)
 	names->psName = name;
 	FT_Done_Face(face);
 
-	names->psName = 0;
-
 	index = 0;
 	while (FcPatternGetString(pat, FC_FULLNAME, index++, (FcChar8**)&name) == FcFalse)
 		appendToList(&names->fullNames, name);
@@ -62,33 +60,34 @@ XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 	}
 	
 	for (int f = 0; f < allFonts->nfont; ++f) {
-		pat = allFonts->fonts[f];
+		FcPattern*	pat = allFonts->fonts[f];
+		if (platformRefToFont.find(pat) != platformRefToFont.end())
+			continue;
 		char*	s;
-		for (int i = 0; FcPatternGetString(pat, FC_FULLNAME, i, &s) == FcTrue; ++i) {
+		for (int i = 0; FcPatternGetString(pat, FC_FULLNAME, i, (FcChar8**)&s) == FcFalse; ++i) {
 			if (name == s) {
 				NameCollection*	names = readNames(pat);
 				addToMaps(pat, names);
 				delete names;
-				break;
+				goto next_font;
 			}
 		}
-		for (int i = 0; FcPatternGetString(pat, FC_FAMILY, i, &s) == FcTrue; ++i) {
+		for (int i = 0; FcPatternGetString(pat, FC_FAMILY, i, (FcChar8**)&s) == FcFalse; ++i) {
 			if (name == s) {
 				NameCollection*	names = readNames(pat);
 				addToMaps(pat, names);
 				delete names;
-				break;
+				goto next_font;
 			}
 		}
+	next_font:
+		;
 	}
 }
 
 void
 XeTeXFontMgr_Linux::initialize()
 {
-	// initialize the nameToFont, nameToFamily, and platformRefToFont maps
-	// with all fonts available on the platform
-
 	if (FcInit() == FcFalse) {
 		fprintf(stderr, "fontconfig initialization failed!\n");
 		exit(9);

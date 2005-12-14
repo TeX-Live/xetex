@@ -281,7 +281,7 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 				UInt32  tag = SWAP(*(UInt32*)&featureListTable->featureRecordArray[i].featureTag);
 				if (tag == LE_SIZE_FEATURE_TAG) {
 					FeatureTable*	feature = (FeatureTable*)((char*)featureListTable + SWAP(featureListTable->featureRecordArray[i].featureTableOffset));
-					OpSizeRec*	pSizeRec = (OpSizeRec*)((char*)featureListTable + feature->featureParamsOffset);
+					OpSizeRec*	pSizeRec = (OpSizeRec*)((char*)featureListTable + SWAP(feature->featureParamsOffset));
 					theFont->opSizeInfo.designSize = SWAP(pSizeRec->designSize);
 					theFont->opSizeInfo.subFamilyID = SWAP(pSizeRec->subFamilyID);
 					theFont->opSizeInfo.nameCode = SWAP(pSizeRec->nameCode);

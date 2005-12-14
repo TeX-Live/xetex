@@ -18,9 +18,9 @@ class XeTeXFontMgr_Linux
 	: public XeTeXFontMgr
 {
 public:
-									XeTeXFontMgr_Mac()
+									XeTeXFontMgr_Linux()
 										{ }
-	virtual							~XeTeXFontMgr_Mac()
+	virtual							~XeTeXFontMgr_Linux()
 										{ }
 
 protected:
