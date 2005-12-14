@@ -1,4 +1,8 @@
-#include "XeTeXFontMgr.h"
+#ifdef XETEX_MAC
+#include "XeTeXFontMgr_Mac.h"
+#else
+#include "XeTeXFontMgr_Linux.h"
+#endif
 
 #include "XeTeXLayoutInterface.h"
 #include "XeTeXswap.h"
@@ -15,8 +19,12 @@ XeTeXFontMgr::XeTeXFontMgr*
 XeTeXFontMgr::GetFontManager()
 {
 	if (sFontManager == NULL) {
-		sFontManager = new XeTeXFontMgr;
-		sFontManager->buildFontMaps();
+#ifdef XETEX_MAC
+		sFontManager = new XeTeXFontMgr_Mac;
+#else
+		sFontManager = new XeTeXFontMgr_Linux;
+#endif
+		sFontManager->initialize();
 	}
 	
 	return sFontManager;
@@ -28,67 +36,76 @@ XeTeXFontMgr::findFont(const char* name, const char* variant, double ptSize)
 	std::string	nameStr(name);
 	Font*	font = NULL;
 	
-	// try full name as given
-	std::map<std::string,Font*>::iterator i = nameToFont.find(name);
-	if (i != nameToFont.end())
-		font = i->second;
-	
-	if (font == NULL) {
-		// if there's a hyphen, split there and try Family-Style
-		int	hyph = nameStr.find('-');
-		if (hyph > 0 && hyph < nameStr.length() - 1) {
-			std::string	family(nameStr.begin(), nameStr.begin() + hyph);
-			std::map<std::string,Family*>::iterator	f = nameToFamily.find(family);
-			if (f != nameToFamily.end()) {
-				std::string	style(nameStr.begin() + hyph + 1, nameStr.end());
-				i = f->second->styles->find(style);
-				if (i != f->second->styles->end())
-					font = i->second;
+	for (int pass = 0; pass < 2; ++pass) {
+		// try full name as given
+		std::map<std::string,Font*>::iterator i = nameToFont.find(nameStr);
+		if (i != nameToFont.end())
+			font = i->second;
+		
+		if (font == NULL) {
+			// if there's a hyphen, split there and try Family-Style
+			int	hyph = nameStr.find('-');
+			if (hyph > 0 && hyph < nameStr.length() - 1) {
+				std::string	family(nameStr.begin(), nameStr.begin() + hyph);
+				std::map<std::string,Family*>::iterator	f = nameToFamily.find(family);
+				if (f != nameToFamily.end()) {
+					std::string	style(nameStr.begin() + hyph + 1, nameStr.end());
+					i = f->second->styles->find(style);
+					if (i != f->second->styles->end())
+						font = i->second;
+				}
 			}
 		}
-	}
-	
-	if (font == NULL) {
-		// try as PostScript name
-		i = psNameToFont.find(name);
-		if (i != psNameToFont.end())
-			font = i->second;
-	}
-	
-	if (font == NULL) {
-		// try for the name as a family name
-		std::map<std::string,Family*>::iterator	f = nameToFamily.find(nameStr);
 		
-		if (f != nameToFamily.end()) {
-			// look for a family member with the "regular" bit set in OS/2
-			for (i = f->second->styles->begin(); i != f->second->styles->end(); ++i)
-				if (i->second->isReg) {
-					font = i->second;
-					break;
-				}
+		if (font == NULL) {
+			// try as PostScript name
+			i = psNameToFont.find(nameStr);
+			if (i != psNameToFont.end())
+				font = i->second;
+		}
+		
+		if (font == NULL) {
+			// try for the name as a family name
+			std::map<std::string,Family*>::iterator	f = nameToFamily.find(nameStr);
 			
-			if (font == NULL) {
-				// try for style "Regular", "Plain", or "Normal"
-				i = f->second->styles->find("Regular");
-				if (i != f->second->styles->end())
-					font = i->second;
-				else {
-					i = f->second->styles->find("Plain");
+			if (f != nameToFamily.end()) {
+				// look for a family member with the "regular" bit set in OS/2
+				for (i = f->second->styles->begin(); i != f->second->styles->end(); ++i)
+					if (i->second->isReg) {
+						font = i->second;
+						break;
+					}
+				
+				if (font == NULL) {
+					// try for style "Regular", "Plain", or "Normal"
+					i = f->second->styles->find("Regular");
 					if (i != f->second->styles->end())
 						font = i->second;
 					else {
-						i = f->second->styles->find("Normal");
+						i = f->second->styles->find("Plain");
 						if (i != f->second->styles->end())
 							font = i->second;
+						else {
+							i = f->second->styles->find("Normal");
+							if (i != f->second->styles->end())
+								font = i->second;
+						}
 					}
 				}
 			}
 		}
+	
+		if (font == NULL && pass == 0) {
+			// didn't find it in our caches, so do a platform search (may be relatively expensive);
+			// this will update the caches with any fonts that seem to match the name given,
+			// so that the second pass might find it
+			searchForHostPlatformFonts(nameStr);
+		}
 	}
-
+	
 	if (font == NULL)
 		return 0;
-
+	
 	Family*	parent = font->parent;
 	
 	// if there are variant requests, try to apply them

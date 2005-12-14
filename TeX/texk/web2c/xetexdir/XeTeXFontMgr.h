@@ -79,7 +79,7 @@ protected:
 	virtual							~XeTeXFontMgr()
 										{ }
 										
-	void							buildFontMaps();
+	virtual void					initialize() = 0;
 
 	class Font;
 	class Family;
@@ -148,11 +148,13 @@ protected:
 	void			appendToList(std::list<std::string>* list, const char* str);
 	void			prependToList(std::list<std::string>* list, const char* str);
 	void			addToMaps(PlatformFontRef platformFont, const NameCollection* names);
+
+	virtual void	searchForHostPlatformFonts(const std::string& name) = 0;
 	
 #ifdef XETEX_MAC
-	NameCollection*	readNames(ATSUFontID fontID);
+	virtual NameCollection*		readNames(ATSUFontID fontID) = 0;
 #else
-	NameCollection*	readNames(PlatformFontRef fontRef);
+	virtual NameCollection*		readNames(PlatformFontRef fontRef) = 0;
 #endif
 
 	void	die(const char*s, int i) const;	/* for fatal internal errors! */

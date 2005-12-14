@@ -1,10 +1,7 @@
-#include "XeTeXFontMgr.h"
-
-FT_Library	ftLib;
-
+#include "XeTeXFontMgr_Linux.h"
 
 XeTeXFontMgr::NameCollection*
-XeTeXFontMgr::readNames(FcPattern* pat)
+XeTeXFontMgr_Linux::readNames(FcPattern* pat)
 {
 	NameCollection*	names = new NameCollection;
 
@@ -23,8 +20,9 @@ XeTeXFontMgr::readNames(FcPattern* pat)
 	if (name == NULL)
 		return names;
 	names->psName = name;
-fprintf(stderr, "  psName =\"%s\"\n", name);
 	FT_Done_Face(face);
+
+	names->psName = 0;
 
 	index = 0;
 	while (FcPatternGetString(pat, FC_FULLNAME, index++, (FcChar8**)&name) == FcFalse)
@@ -49,7 +47,44 @@ fprintf(stderr, "  psName =\"%s\"\n", name);
 }
 
 void
-XeTeXFontMgr::buildFontMaps()
+XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
+{
+	static	FcFontSet*	allFonts = 0;
+	
+	if (allFonts == 0) {
+		FcPattern*		pat = FcNameParse((const FcChar8*)":outline=true");
+		FcObjectSet*	os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, FC_INDEX, FC_FULLNAME);
+	
+		allFonts = FcFontList(FcConfigGetCurrent(), pat, os);
+	
+		FcObjectSetDestroy(os);
+		FcPatternDestroy(pat);
+	}
+	
+	for (int f = 0; f < allFonts->nfont; ++f) {
+		pat = allFonts->fonts[f];
+		char*	s;
+		for (int i = 0; FcPatternGetString(pat, FC_FULLNAME, i, &s) == FcTrue; ++i) {
+			if (name == s) {
+				NameCollection*	names = readNames(pat);
+				addToMaps(pat, names);
+				delete names;
+				break;
+			}
+		}
+		for (int i = 0; FcPatternGetString(pat, FC_FAMILY, i, &s) == FcTrue; ++i) {
+			if (name == s) {
+				NameCollection*	names = readNames(pat);
+				addToMaps(pat, names);
+				delete names;
+				break;
+			}
+		}
+	}
+}
+
+void
+XeTeXFontMgr_Linux::initialize()
 {
 	// initialize the nameToFont, nameToFamily, and platformRefToFont maps
 	// with all fonts available on the platform
@@ -63,22 +98,4 @@ XeTeXFontMgr::buildFontMaps()
 		fprintf(stderr, "FreeType initialization failed!\n");
 		exit(9);
 	}
-
-	FcPattern*		pat = FcNameParse((const FcChar8*)":outline=true");
-	FcObjectSet*	os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, FC_INDEX, FC_FULLNAME);
-
-	FcFontSet*	allFonts = FcFontList(FcConfigGetCurrent(), pat, os);
-
-	FcObjectSetDestroy(os);
-	FcPatternDestroy(pat);
-
-	for (int f = 0; f < allFonts->nfont; ++f) {
-		pat = allFonts->fonts[f];
-		NameCollection*	names = readNames(pat);
-		addToMaps(pat, names);
-
-		delete names;
-	}
-	
-//	FcFontSetDestroy(allFonts);
 }

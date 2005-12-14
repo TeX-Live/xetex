@@ -1,11 +1,13 @@
-#include "XeTeXFontMgr.h"
+#include "XeTeXFontMgr_Mac.h"
 
 #ifdef XETEX_MAC // this is currently an ATSUI-based implementation
 
 XeTeXFontMgr::NameCollection*
-XeTeXFontMgr::readNames(ATSUFontID fontID)
+XeTeXFontMgr_Mac::readNames(ATSFontRef fontRef)
 {
 	NameCollection*	names = new NameCollection;
+
+	ATSUFontID	fontID = FMGetFontFromATSFontRef(fontRef);
 
 	ItemCount	nameCount;
 	OSStatus	status = ATSUCountFontNames(fontID, &nameCount);
@@ -118,32 +120,93 @@ XeTeXFontMgr::readNames(ATSUFontID fontID)
 }
 
 void
-XeTeXFontMgr::buildFontMaps()
+XeTeXFontMgr_Mac::addFamilyToCaches(ATSFontFamilyRef familyRef)
 {
-	// initialize the nameToFont, nameToFamily, and platformRefToFont maps
-	// with all fonts available on the platform
+	ATSFontFilter	filter;
+	filter.version = kATSFontFilterCurrentVersion;
+	filter.filterSelector = kATSFontFilterSelectorFontFamily;
+	filter.filter.fontFamilyFilter = familyRef;
 
-	OSStatus	status;
-	ItemCount	fontCount;
-	status = ATSUFontCount(&fontCount);
-	if (status != noErr)
-		die("ATSUFontCount failed, status=%d", status);
+	ATSFontIterator	iterator;
 
-	ATSUFontID*	fontIDs = new ATSUFontID[fontCount];
-	status = ATSUGetFontIDs(fontIDs, fontCount, &fontCount);
-	if (status != noErr)
-		die("ATSUGetFontIDs failed, status=%d", status);
+	OSStatus	status = ATSFontIteratorCreate(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
+//fprintf(stderr, "status=%d for iterator creation\n", status);
 
-	for (int f = 0; f < fontCount; ++f) {
-		PlatformFontRef	platformFont = FMGetATSFontRefFromFont(fontIDs[f]);
-		NameCollection*	names = readNames(fontIDs[f]);
-
-		addToMaps(platformFont, names);
-
+	while (status == noErr) {
+		ATSFontRef	fontRef;
+		status = ATSFontIteratorNext(iterator, &fontRef);
+		if (status == kATSIterationScopeModified) {
+			status = ATSFontIteratorReset(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
+			continue;
+		}
+		if (status != noErr)
+			break;
+		NameCollection*	names = readNames(fontRef);
+		addToMaps(fontRef, names);
 		delete names;
 	}
 
-	delete[] fontIDs;
+	status = ATSFontIteratorRelease(&iterator);
+}
+
+void
+XeTeXFontMgr_Mac::addFontAndSiblingsToCaches(ATSFontRef fontRef)
+{
+//	ATSFontFamilyRef	familyRef = ATSFontFamilyFromFont(fontRef);
+		// GRRR... this function (or equiv) doesn't exist!!!
+	
+	FMFontFamily	fontFamily;
+	FMFontStyle		style;
+	OSStatus	status = FMGetFontFamilyInstanceFromFont(FMGetFontFromATSFontRef(fontRef), &fontFamily, &style);
+	if (status == noErr)
+		addFamilyToCaches(FMGetATSFontFamilyRefFromFontFamily(fontFamily));
+}
+
+void
+XeTeXFontMgr_Mac::searchForHostPlatformFonts(const std::string& name)
+{
+	// the name might be:
+	//	FullName
+	//	Family-Style (if there's a hyphen)
+	//	PSName
+	//	Family
+	// ...so we need to try it as each of these
+
+	CFStringRef	nameStr = CFStringCreateWithCString(kCFAllocatorDefault, name.c_str(), kCFStringEncodingUTF8);
+	ATSFontRef	fontRef = ATSFontFindFromName(nameStr, kATSOptionFlagsDefault);
+	if (fontRef != kATSFontRefUnspecified) {
+		// found it, so locate the family, and add all members to the caches
+		addFontAndSiblingsToCaches(fontRef);
+		return;
+	}
+
+	int	hyph = name.find('-');
+	if (hyph > 0 && hyph < name.length() - 1) {
+		std::string			family(name.begin(), name.begin() + hyph);
+		CFStringRef			familyStr = CFStringCreateWithCString(kCFAllocatorDefault, family.c_str(), kCFStringEncodingUTF8);
+		ATSFontFamilyRef	familyRef = ATSFontFamilyFindFromName(familyStr, kATSOptionFlagsDefault);
+		if (familyRef != 0xffffffff) {
+			addFamilyToCaches(familyRef);
+			return;
+		}
+	}
+	
+	fontRef = ATSFontFindFromPostScriptName(nameStr, kATSOptionFlagsDefault);
+	if (fontRef != kATSFontRefUnspecified) {
+		addFontAndSiblingsToCaches(fontRef);
+		return;
+	}
+
+	ATSFontFamilyRef	familyRef = ATSFontFamilyFindFromName(nameStr, kATSOptionFlagsDefault);
+	if (familyRef != 0xffffffff) {
+		addFamilyToCaches(familyRef);
+		return;
+	}
+}
+
+void
+XeTeXFontMgr_Mac::initialize()
+{
 }
 
 #endif // XETEX_MAC
