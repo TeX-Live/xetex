@@ -125,17 +125,23 @@ paperSizeRec	gPaperSizes[] =
 
 struct nativeFont {
 				nativeFont()
-					: atsuStyle(0)
-                    , cgFont(0)
+                    : cgFont(0)
+                    , atsFont(0)
+					, atsuStyleH(0)
+					, atsuStyleV(0)
                     , size(Long2Fix(10))
                     , isColored(false)
+                    , isVertical(false)
 						{
 						}
-	ATSUStyle			atsuStyle;
 	CGFontRef			cgFont;
+	ATSFontRef			atsFont;
+	ATSUStyle			atsuStyleH;	// only present if isVertical is true
+	ATSUStyle			atsuStyleV;
 	Fixed				size;
 	ATSURGBAlphaColor	color;
 	bool				isColored;
+	bool				isVertical;
 };
 
 static std::map<UInt32,nativeFont>	sNativeFonts;
@@ -345,6 +351,7 @@ setChar(UInt32 c, bool adv)
 		dvi.h += gTeXFonts[f].widths[c];
 }
 
+/*
 static void
 doSetGlyph(UInt16 g, Fixed a)
 {
@@ -387,86 +394,37 @@ doSetGlyph(UInt16 g, Fixed a)
 
 	dvi.h += a;
 }
+*/
 
-void
-doSetNative(FILE* xdv)
+static FixedPoint
+getGlyphVOrg(const nativeFont& f, UInt16 gid)
 {
-	OSStatus	status = noErr;
-	Boolean	dir = readUnsigned(xdv, 1);
-	UInt32	wid = readUnsigned(xdv, 4);
-	UInt32	len = readUnsigned(xdv, 2);
-    
-	static UniChar*	text = 0;
-    static UniCharCount	textBufLen = 0;
-    if (len > textBufLen) {
-        if (text != 0)
-            delete[] text;
-        textBufLen = (len & 0xFFFFFFF0) + 32;
-        text = new UniChar[textBufLen];
-    }
-
-	UInt32	i;
-	for (i = 0; i < len; ++i)
-		text[i] = readUnsigned(xdv, 2);
-
-	if (sNativeFonts[f].atsuStyle != 0) {
-		status = ATSUClearLayoutCache(sLayout, 0);
-		status = ATSUSetTextPointerLocation(sLayout, &text[0], 0, len, len);
-	
-		ATSUAttributeTag		tags[] = { kATSULineWidthTag, kATSULineJustificationFactorTag,
-											kATSULineDirectionTag, kATSULineLayoutOptionsTag };
-		ByteCount				valueSizes[] = { sizeof(Fixed), sizeof(Fract),
-											sizeof(Boolean), sizeof(ATSLineLayoutOptions) };
-		Fixed	scaledWid = X2Fix(kDvi2Scr * wid);
-		Fract	just = len > 2 ? fract1 : 0;
-		ATSLineLayoutOptions	options = kATSLineKeepSpacesOutOfMargin;
-		ATSUAttributeValuePtr	values[] = { &scaledWid, &just, &dir, &options };
-		status = ATSUSetLayoutControls(sLayout, sizeof(tags) / sizeof(ATSUAttributeTag), tags, valueSizes, values);
-	
-		ATSUStyle	tmpStyle;
-		if (gTextColor.override) {
-			ATSUAttributeTag		tag = kATSURGBAlphaColorTag;
-			ByteCount				valueSize = sizeof(ATSURGBAlphaColor);
-			ATSUAttributeValuePtr	valuePtr = &gTextColor.color;
-			status = ATSUCreateAndCopyStyle(sNativeFonts[f].atsuStyle, &tmpStyle);
-			status = ATSUSetAttributes(tmpStyle, 1, &tag, &valueSize, &valuePtr);
-			status = ATSUSetRunStyle(sLayout, tmpStyle, kATSUFromTextBeginning, kATSUToTextEnd);
-			cur_atsuiFont = kUndefinedFont;
-		}
-		else if (f != cur_atsuiFont) {
-			status = ATSUSetRunStyle(sLayout, sNativeFonts[f].atsuStyle, kATSUFromTextBeginning, kATSUToTextEnd);
-			cur_atsuiFont = f;
-		}
-	
-		CGContextTranslateCTM(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v));
-		status = ATSUDrawText(sLayout, 0, len, 0, 0);
-		CGContextTranslateCTM(gCtx, -kDvi2Scr * dvi.h, -kDvi2Scr * (gPageHt - dvi.v));
-	
-		if (gTextColor.override)
-			status = ATSUDisposeStyle(tmpStyle);
-
-		if (gTrackingBoxes) {
-			Rect	rect;
-			status = ATSUMeasureTextImage(sLayout, 0, len, 0, 0, &rect);
-			box	b = {
-				dvi.h,
-				dvi.v + kScr2Dvi * rect.bottom,
-				dvi.h + wid,
-				dvi.v + kScr2Dvi * rect.top };
-			mergeBox(b);
-		}
-	}
-
-	dvi.h += wid;
+	FixedPoint	vorg;
+	ATSGlyphIdealMetrics	metrics;
+	OSStatus	status = ATSUGlyphGetIdealMetrics(f.atsuStyleV, 1, &gid, 0, &metrics);
+/*
+	fprintf(stderr, "\nmetrics(V) for glyph %d:  adv = (%.3f, %.3f)  sb = (%.3f, %.3f)  os = (%.3f, %.3f)\n", gid,
+			metrics.advance.x, metrics.advance.y, metrics.sideBearing.x, metrics.sideBearing.y,
+			metrics.otherSideBearing.x, metrics.otherSideBearing.y);
+*/
+	vorg.y = X2Fix(-metrics.advance.y/* - metrics.otherSideBearing.y*/);
+	status = ATSUGlyphGetIdealMetrics(f.atsuStyleH, 1, &gid, 0, &metrics);
+/*
+	fprintf(stderr, "metrics(H) for glyph %d:  adv = (%.3f, %.3f)  sb = (%.3f, %.3f)  os = (%.3f, %.3f)\n", gid,
+			metrics.advance.x, metrics.advance.y, metrics.sideBearing.x, metrics.sideBearing.y,
+			metrics.otherSideBearing.x, metrics.otherSideBearing.y);
+*/
+	vorg.x = X2Fix(metrics.advance.x / 2);
+	return vorg;
 }
 
-#define NATIVE_GLYPH_DATA_SIZE	(sizeof(UInt16) + sizeof(FixedPoint))
 static void
-doGlyphArray(FILE* xdv)
+doGlyphArray(FILE* xdv, bool yLocs)
 {
-	static char*	glyphInfoBuf = 0;
-	static int		maxGlyphs = 0;
-	static CGSize*	advances = 0;
+	static int			maxGlyphs = 0;
+	static FixedPoint*	locations = 0;
+	static CGSize*		advances = 0;
+	static UInt16*		glyphs = 0;
 
 	flushGlyphs();
 
@@ -475,33 +433,34 @@ doGlyphArray(FILE* xdv)
 	
 	if (glyphCount >= maxGlyphs) {
 		maxGlyphs = glyphCount + 100;
-		if (glyphInfoBuf != 0)
-			delete[] glyphInfoBuf;
-		glyphInfoBuf = new char[maxGlyphs * NATIVE_GLYPH_DATA_SIZE];
+		if (glyphs != 0)
+			delete[] glyphs;
+		glyphs = new UInt16[maxGlyphs];
+		if (locations != 0)
+			delete[] locations;
+		locations = new FixedPoint[maxGlyphs];
 		if (advances != 0)
 			delete[] advances;
 		advances = new CGSize[maxGlyphs];
 	}
-	
-	fread(glyphInfoBuf, NATIVE_GLYPH_DATA_SIZE, glyphCount, xdv);
-	FixedPoint*	locations = (FixedPoint*)glyphInfoBuf;
-	UInt16*		glyphs = (UInt16*)(locations + glyphCount);
-	
+
+	for (int i = 0; i < glyphCount; ++i) {
+		locations[i].x = readSigned(xdv, 4);
+		locations[i].y = yLocs ? readSigned(xdv, 4) : 0;
+	}
+	for (int i = 0; i < glyphCount; ++i)
+		glyphs[i] = readUnsigned(xdv, 2);
+		
+	static CGAffineTransform	horizontalMatrix = CGAffineTransformMakeTranslation(0, 0);
+	static CGAffineTransform	verticalMatrix = CGAffineTransformMakeRotation(90 * M_PI / 180.0);
+
 	if (f != cur_cgFont) {
 		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
 		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
+		if (!sNativeFonts[f].isVertical)
+			CGContextSetTextMatrix(gCtx, horizontalMatrix);
 		cur_cgFont = f;
 	}
-
-	CGContextSetTextPosition(gCtx, kDvi2Scr * dvi.h + Fix2X(locations[0].x),
-									kDvi2Scr * (gPageHt - dvi.v) - Fix2X(locations[0].y));
-
-	for (int i = 0; i < glyphCount - 1; ++i) {
-		advances[i].width = Fix2X(locations[i+1].x - locations[i].x);
-		advances[i].height = Fix2X(locations[i].y - locations[i+1].y);
-	}
-	advances[glyphCount-1].width = 0.0;
-	advances[glyphCount-1].height = 0.0;
 
 	bool	resetColor = false;
     if (gTextColor.override) {
@@ -514,6 +473,26 @@ doGlyphArray(FILE* xdv)
         CGContextSetFillColor(gCtx, &sNativeFonts[f].color.red);
 		resetColor = true;
 	}
+
+	if (sNativeFonts[f].isVertical) {
+		CGContextSetTextMatrix(gCtx, verticalMatrix);
+		for (int i = 0; i < glyphCount; ++i) {
+			// need to adjust position to right by VOrg.y and down by VOrg.x
+			FixedPoint	vorg = getGlyphVOrg(sNativeFonts[f], glyphs[i]);
+			locations[i].x += vorg.y;
+			locations[i].y += vorg.x;
+		}
+	}
+
+	CGContextSetTextPosition(gCtx, kDvi2Scr * dvi.h + Fix2X(locations[0].x) * 72 / 72.27,
+									kDvi2Scr * (gPageHt - dvi.v) - Fix2X(locations[0].y) * 72 / 72.27);
+
+	for (int i = 0; i < glyphCount - 1; ++i) {
+		advances[i].width = Fix2X(locations[i+1].x - locations[i].x) * 72 / 72.27;
+		advances[i].height = Fix2X(locations[i].y - locations[i+1].y) * 72 / 72.27;
+	}
+	advances[glyphCount-1].width = 0.0;
+	advances[glyphCount-1].height = 0.0;
 
 	CGContextShowGlyphsWithAdvances(gCtx, glyphs, advances, glyphCount);
 
@@ -1539,123 +1518,123 @@ makeAtsuColor(UInt32 rgba)
 static void
 doNativeFontDef(FILE* xdv)
 {
-	static ATSURGBAlphaColor	sRed = { 1.0, 0.0, 0.0, 1.0 };
-
     UInt32	f = readUnsigned(xdv, 4);	// font ID
-    Fixed	s = readUnsigned(xdv, 4);	// size
+    Fixed	s = X2Fix(Fix2X(readUnsigned(xdv, 4)) * 72 / 72.27);	// size, converted to "big" points
     if (sMag != 1000)
     	s = X2Fix(gMagScale * Fix2X(s));
 	UInt16	flags = readUnsigned(xdv, 2);
-	if (flags & XDV_FLAG_FONTTYPE_ATSUI) {
-		// AAT font
+
+	int	psLen = readUnsigned(xdv, 1);	// PSName length
+	int skipLen = readUnsigned(xdv, 1);	// family name length
+	skipLen += readUnsigned(xdv, 1);	// style name length
+
+	char*	name = new char[psLen+1];
+	fread(name, 1, psLen, xdv);
+	name[psLen] = 0;
+
+// don't use fseek, doesn't work when reading from a pipe!
+	while (skipLen-- > 0)
+		(void)readUnsigned(xdv, 1);
+
+	UInt32	rgba = 0x000000FF;
+	if (flags & XDV_FLAG_COLORED)
+		rgba = readUnsigned(xdv, 4);
+
+	CFStringRef	psNameStr = CFStringCreateWithCString(kCFAllocatorDefault, name, kCFStringEncodingMacRoman);
+	ATSFontRef	fontRef = ATSFontFindFromPostScriptName(psNameStr, kATSOptionFlagsDefault);
+	CFRelease(psNameStr);
+
+	ATSUFontID	fontID = FMGetFontFromATSFontRef(fontRef);
+	
+	if (fontID == kATSUInvalidFontID)
+		rgba = 0xFF0000FF;
+	
+	CGFontRef	cgFont = getCGFontForATSFont(fontRef);
+
+	OSStatus	status = noErr;
+
+	if (flags & XDV_FLAG_VARIATIONS) {
+		int n = readUnsigned(xdv, 2); // number of variations
+		if (n > 0) {
+			bool	applyVars = true;
+			CFStringRef*	axes = new CFStringRef[n];
+			for (int i = 0; i < n; ++i) {
+				UInt32	axis = readUnsigned(xdv, 4);
+				FontNameCode	nameCode;
+				status = ATSUGetFontVariationNameCode(fontID, axis, &nameCode);
+				ByteCount	len;
+				status = ATSUFindFontName(fontID, nameCode, kFontMacintoshPlatform, kFontRomanScript,
+											(FontLanguageCode)kFontNoLanguage, 0, NULL, &len, NULL);
+				if (status == noErr) {
+					char*	buf = new char[len + 1];
+					status = ATSUFindFontName(fontID, nameCode, kFontMacintoshPlatform, kFontRomanScript,
+												(FontLanguageCode)kFontNoLanguage, len, buf, &len, NULL);
+					buf[len] = 0;
+					axes[i] = CFStringCreateWithCString(kCFAllocatorDefault, buf, kCFStringEncodingMacRoman);
+					delete[] buf;
+				}
+				else
+					applyVars = false;
+			}
+
+			CFNumberRef*	values = new CFNumberRef[n];
+			for (int i = 0; i < n; ++i) {
+				SInt32	v = readSigned(xdv, 4);
+				Float32	f = Fix2X(v);
+				values[i] = CFNumberCreate(kCFAllocatorDefault, kCFNumberFloat32Type, &f);
+			}
+			
+			if (&CGFontCreateCopyWithVariations != NULL) {
+				CFDictionaryRef	variations = CFDictionaryCreate(kCFAllocatorDefault,
+					(const void**)axes, (const void**)values, n,
+					&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	
+				cgFont = CGFontCreateCopyWithVariations(cgFont, variations);
+				CFRelease(variations);
+			}
+			else {
+				static bool varWarningIssued = false;
+				if (!varWarningIssued) {
+					fprintf(stderr, "\nVariation fonts not supported on pre-OS X 10.4 systems\n");
+					varWarningIssued = true;
+				}
+			}
+
+			for (int i = 0; i < n; ++i) {
+				CFRelease(axes[i]);
+				CFRelease(values[i]);
+			}
+			delete[] values;
+			delete[] axes;
+		}
+	}
+
+	nativeFont	fontRec;
+	fontRec.cgFont = cgFont;
+	fontRec.atsFont = fontRef;
+	fontRec.size = s;
+	fontRec.color = makeAtsuColor(rgba);
+	fontRec.isColored = !(rgba == 0x000000FF);
+	fontRec.isVertical = (flags & XDV_FLAG_VERTICAL) != 0;
+
+	if (fontRec.isVertical) {
 		ATSUStyle	style;
-		OSStatus	status = ATSUCreateStyle(&style);
-
-		UInt16 n = readUnsigned(xdv, 2);	// name length
-		char*	name = new char[n+1];
-		fread(name, 1, n, xdv);
-		name[n] = 0;
-		ATSUFontID	fontID;
-		status = ATSUFindFontFromName(name, n, kFontPostscriptName,
-			kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, &fontID);
-		delete[] name;
-		
-		if (flags & XDV_FLAG_FEATURES) {
-			n = readUnsigned(xdv, 2);	// number of features
-			if (n > 0) {
-				UInt16*	types = new UInt16[n];
-				UInt16*	selectors = new UInt16[n];
-				fread(types, 2, n, xdv);
-				fread(selectors, 2, n, xdv);
-				status = ATSUSetFontFeatures(style, n, types, selectors);
-				delete[] selectors;
-				delete[] types;
-			}
-		}
-		
-		if (flags & XDV_FLAG_VARIATIONS) {
-			n = readUnsigned(xdv, 2); // number of variations
-			if (n > 0) {
-				UInt32*	axes = new UInt32[n];
-				SInt32*	values = new SInt32[n];
-				fread(axes, 4, n , xdv);
-				fread(values, 4, n, xdv);
-				status = ATSUSetVariations(style, n, axes, values);
-				delete[] values;
-				delete[] axes;
-			}
-		}
-		
-		UInt32	rgba = 0x000000FF;
-		if (flags & XDV_FLAG_COLORED)
-			rgba = readUnsigned(xdv, 4);
-		
-		if (flags & XDV_FLAG_VERTICAL) {
-			ATSUAttributeTag			t = kATSUVerticalCharacterTag;
-			ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
-			ByteCount					vs = sizeof(ATSUVerticalCharacterType);
-			ATSUAttributeValuePtr		v = &vert;
-			status = ATSUSetAttributes(style, 1, &t, &vs, &v);
-		}
+		status = ATSUCreateStyle(&style);
+		ATSUVerticalCharacterType	vert = kATSUStronglyHorizontal;
+		ATSUAttributeTag			tags[] = { kATSUFontTag, kATSUSizeTag, kATSUVerticalCharacterTag };
+		ByteCount					sizes[] = { sizeof(fontID), sizeof(s), sizeof(vert) };
+		ATSUAttributeValuePtr		values[] = { &fontID, &s, &vert };
+		ItemCount	numTags = sizeof(tags) / sizeof(ATSUAttributeTag);
+		status = ATSUSetAttributes(style, numTags, tags, sizes, values);
+		fontRec.atsuStyleH = style;
 	
-		int numTags = 4;
-		if (fontID == kATSUInvalidFontID) {
-			rgba = 0xFF0000FF;
-			numTags--;
-		}
-		ATSURGBAlphaColor		atsuColor = makeAtsuColor(rgba);
-		ATSUAttributeTag		tag[4] = { kATSUHangingInhibitFactorTag, kATSUSizeTag, kATSURGBAlphaColorTag, kATSUFontTag };
-		ByteCount				valueSize[4] = { sizeof(Fract), sizeof(Fixed), sizeof(ATSURGBAlphaColor), sizeof(ATSUFontID) };
-		ATSUAttributeValuePtr	value[4];
-		Fract					inhibit = fract1;
-		value[0] = &inhibit;
-		value[1] = &s;
-		value[2] = &atsuColor;
-		value[3] = &fontID;
-		status = ATSUSetAttributes(style, numTags, &tag[0], &valueSize[0], &value[0]);
-	
-		nativeFont	fontRec;
-		fontRec.atsuStyle = style;
-		fontRec.cgFont = getCGFontForATSFont(FMGetATSFontRefFromFont(fontID));
-		fontRec.size = s;
-		fontRec.color = atsuColor;
-		fontRec.isColored = !(rgba == 0x000000FF);
-		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
+		status = ATSUCreateStyle(&style);
+		vert = kATSUStronglyVertical;
+		status = ATSUSetAttributes(style, numTags, tags, sizes, values);
+		fontRec.atsuStyleV = style;
 	}
-	else if (flags & XDV_FLAG_FONTTYPE_ICU) {
-		// OT font
-		int	psLen = readUnsigned(xdv, 1);	// PSName length
-		int skipLen = readUnsigned(xdv, 1);	// family name length
-		skipLen += readUnsigned(xdv, 1);	// style name length
 
-		char*	name = new char[psLen+1];
-		fread(name, 1, psLen, xdv);
-		name[psLen] = 0;
-
-        fseek(xdv, skipLen, SEEK_CUR);	// ignore the family/style names
-
-		UInt32	rgba = 0x000000FF;
-		if (flags & XDV_FLAG_COLORED)
-			rgba = readUnsigned(xdv, 4);
-
-		ATSUFontID	fontID;
-		OSStatus	status = ATSUFindFontFromName(name, psLen, kFontPostscriptName,
-			kFontNoPlatformCode, kFontNoScriptCode, kFontNoLanguageCode, &fontID);
-		
-		if (fontID == kATSUInvalidFontID)
-			rgba = 0xFF0000FF;
-		
-		nativeFont	fontRec;
-		fontRec.cgFont = getCGFontForATSFont(FMGetATSFontRefFromFont(fontID));
-		fontRec.size = s;
-		fontRec.color = makeAtsuColor(rgba);
-		fontRec.isColored = !(rgba == 0x000000FF);
-		sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
-	}
-	else {
-		fprintf(stderr, "bad flags in native_font_def: %04x\n", flags);
-		exit(1);
-	}
+	sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
 }
 
 static void
@@ -1882,29 +1861,38 @@ processPage(FILE* xdv)
 				dvi.v += dvi.z;
 				break;
 			
+/*
 			case DVI_GLYPH:
 				ensurePageStarted();
 				u = readUnsigned(xdv, 2);
 				s = readSigned(xdv, 4);
 				doSetGlyph(u, s);
 				break;
+*/
 			
+/*
 			case DVI_NATIVE:
 				ensurePageStarted();
 				doSetNative(xdv);
 				break;
-			
-			case DVI_GLYPH_ARRAY:
+*/
+
+			case XDV_GLYPH_ARRAY:
 				ensurePageStarted();
-				doGlyphArray(xdv);
+				doGlyphArray(xdv, true);
 				break;
 			
-            case DVI_PIC_FILE:
+			case XDV_GLYPH_STRING:
+				ensurePageStarted();
+				doGlyphArray(xdv, false);
+				break;
+			
+            case XDV_PIC_FILE:
 				ensurePageStarted();
                 doPicFile(xdv, false);
                 break;
                             
-            case DVI_PDF_FILE:
+            case XDV_PDF_FILE:
 				ensurePageStarted();
                 doPicFile(xdv, true);
                 break;
@@ -1919,7 +1907,7 @@ processPage(FILE* xdv)
 				doFontDef(xdv, k);
 				break;
 				
-			case DVI_NATIVE_FONT_DEF:
+			case XDV_NATIVE_FONT_DEF:
                 doNativeFontDef(xdv);
 				break;
 		}
