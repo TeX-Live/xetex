@@ -157,8 +157,13 @@ char **argv;
 int argc;
 
 #ifdef XeTeX
-/* if the user specifies a paper size */
+/* if the user specifies a paper size or output driver program */
 static string papersize;
+#ifdef XETEX_MAC
+static string outputdriver = "xdv2pdf"; /* default for backward compatibility */
+#else
+static string outputdriver = "dvipdfmx"; /* in anticipation! */
+#endif
 #endif
 
 /* If the user overrides argv[0] with -progname.  */
@@ -522,9 +527,11 @@ open_dvi_output(FILE** fptr)
 		return open_output(fptr, "w");
 	}
 	else {
-		char*	cmd = concat3("xdv2pdf -o \"", (char*)nameoffile+1, "\"");
+		char*	cmd2 = concat(outputdriver, " -o \"");
+		char*	cmd = concat3(cmd2, (char*)nameoffile+1, "\"");
+		free(cmd2);
 		if (papersize != 0) {
-			char*	cmd2 = concat3(cmd, " -p ", papersize);
+			cmd2 = concat3(cmd, " -p ", papersize);
 			free(cmd);
 			cmd = cmd2;
 		}
@@ -955,6 +962,7 @@ static struct option long_options[]
       { "8bit",                      0, &eightbitp, 1 },
 #if defined(XeTeX)
       { "no-pdf",                 0, &nopdfoutput, 1 },
+      { "output-driver",          1, 0, 0 },
       { "papersize",              1, 0, 0 },
 #endif
 #endif /* TeX || MF || MP */
@@ -995,6 +1003,8 @@ parse_options P2C(int, argc,  string *, argv)
 #ifdef XeTeX
     } else if (ARGUMENT_IS ("papersize")) {
       papersize = optarg;
+    } else if (ARGUMENT_IS ("output-driver")) {
+      outputdriver = optarg;
 #endif
 
     } else if (ARGUMENT_IS ("progname")) {
