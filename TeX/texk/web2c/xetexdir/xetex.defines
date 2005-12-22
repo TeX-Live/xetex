@@ -17,10 +17,13 @@
 @define procedure setnativechar();
 @define procedure setnativemetrics();
 @define function setnativemetricsreturningitalcorr();
+@define procedure setjustifiednativeglyphs();
 @define procedure setnativeglyphmetrics();
 @define function findnativefont();
 @define function sizeof();
 @define function makefontdef();
+@define function makexdvglypharraydata();
+@define function xdvbufferbyte();
 @define procedure fprintf();
 @define type unicodefile;
 @define function uopenin();

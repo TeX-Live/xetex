@@ -2180,7 +2180,7 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @#
 @!font_layout_engine: ^integer; { either an ATSUStyle or a XeTeXLayoutEngine }
 @!font_mapping: ^integer; { TECkit_Converter or 0 }
-@!font_def: ^char;
+@!xdv_buffer: ^char;
 @!loaded_font_mapping: integer; { used by load_native_font to return mapping, if any }
 @!mapped_text: ^UTF16_code;
 @z
@@ -2306,29 +2306,38 @@ ec:=effective_char(false,f,qi(c));
 @x
 \yskip\noindent Commands 250--255 are undefined at the present time.
 @y
-\yskip\hang|set_native_glyph| 255 n[2] w[4].
+\yskip\hang|set_glyph_string| 254 w[4] k[2] x[4k] g[2k].
 
-\yskip\hang|set_native_word| 254 d[1] w[4] k[2] x[2k].
-
-\yskip\hang|define_native_font| 253 k[4] s[4] nf[2] f[2nf] s[2nf] nv[2] a[4nv] v[4nv] c[6] l[2] n[l].
+\yskip\hang|set_glyph_array| 253 w[4] k[2] xy[8k] g[2k]
 
 \yskip\hang|pic_file| 252 t[4][6] p[2] l[2] a[l]
 
 \yskip\hang|pdf_file| 251 t[4][6] p[2] l[2] a[l]
 
-\yskip\hang|set_glyph_array| 250 w[4] k[2] g[2k] adv[8k]
+\yskip\hang|define_native_font| 250 k[4] s[4] flags[2]
+	lenps[1] lenfam[1] lensty[1] ps[lenps] fam[lenfam] sty[lensty]
+	if (flags & COLORED):
+		rgba[4]
+	if (flags & VARIATIONS):
+		numvars[2]
+		axes[4nv]
+		values[4nv]
+	if (flags & MATRIX):
+		a[4] b[4] c[4] d[4] x[4] y[4]
+
+\yskip\noindent Command 255 is undefined at the present time (but used by pTeX).
 @z
 
 @x
 @d post_post=249 {postamble ending}
 @y
 @d post_post=249 {postamble ending}
-@d set_native_glyph=255 {show glyph by number}
-@d set_native_word=254 {native word}
-@d define_native_font=253 {define native font}
+
+@d set_glyph_string=254 {sequence of glyphs, all at the current y-position}
+@d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
 @d pic_file=252 {embed picture}
 @d pdf_file=251 {embed pdf}
-@d set_glyph_array=250
+@d define_native_font=250 {define native font}
 @z
 
 @x
@@ -2370,8 +2379,7 @@ begin
 	dvi_out(define_native_font);
 	dvi_four(f-font_base-1);
 	font_def_length := make_font_def(f);
-	for i := 0 to font_def_length - 1 do dvi_out(font_def[i]);
-	libc_free(font_def);
+	for i := 0 to font_def_length - 1 do dvi_out(xdv_buffer[i]);
 end;
 
 procedure dvi_font_def(@!f:internal_font_number);
@@ -2527,10 +2535,11 @@ done:
         link(prev_p) := q;
         for j := 0 to cur_length - 1 do
           set_native_char(q, j, str_pool[str_start_macro(str_ptr) + j]);
-        width(q) := k;
         link(q) := link(p);
         link(p) := null;
         flush_node_list(r);
+        width(q) := k;
+		set_justified_native_glyphs(q);
         p := q;
         pool_ptr := str_start_macro(str_ptr); {flush the temporary string data}
       end
@@ -4120,26 +4129,17 @@ begin
 		if f<>dvi_f then @<Change font |dvi_f| to |f|@>;
 		
 		if subtype(p) = glyph_node then begin
-			dvi_out(set_native_glyph);
-			dvi_two(native_glyph(p));
+			dvi_out(set_glyph_string);
 			dvi_four(width(p));
+			dvi_two(1); { glyph count }
+			dvi_four(0); { x-offset as fixed point }
+			dvi_two(native_glyph(p));
 			cur_h := cur_h + width(p);
 		end else begin
 			if native_glyph_info_ptr(p) <> 0 then begin
-				dvi_out(set_glyph_array);
-				dvi_four(width(p));
-				dvi_two(native_glyph_count(p));
-				for k := 0 to native_glyph_count(p) * native_glyph_info_size - 1 do
-					dvi_out(glyph_info_byte(native_glyph_info_ptr(p), k));
-			end else begin
-				dvi_out(set_native_word);
-				if cur_dir=right_to_left then dvi_out(1)
-				else dvi_out(0);	{ directionality }
-				dvi_four(width(p)); { width of text }
-				len := native_length(p);
-				{ we used to apply font mappings here, but no longer }
-				dvi_two(len); { length of string }
-				for k := 0 to len - 1 do dvi_two(get_native_char(p, k));
+				len := make_xdv_glyph_array_data(p);
+				for k := 0 to len-1 do
+					dvi_out(xdv_buffer_byte(k));
 			end;
 			cur_h := cur_h + width(p);
 		end;
@@ -4922,6 +4922,8 @@ exit:end;
 { additional functions for native font support }
 
 function new_native_word_node(@!f:internal_font_number;@!n:integer):pointer;
+	{ note that this function creates the node, but does not actually set its metrics;
+		call set_native_metrics(node) if that is required! }
 var
 	l:	integer;
 	q:	pointer;

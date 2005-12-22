@@ -32,6 +32,7 @@ XeTeXFontMgr::GetFontManager()
 
 PlatformFontRef
 XeTeXFontMgr::findFont(const char* name, const char* variant, double ptSize)
+	// ptSize is in TeX points
 {
 	std::string	nameStr(name);
 	Font*	font = NULL;
@@ -190,7 +191,7 @@ XeTeXFontMgr::findFont(const char* name, const char* variant, double ptSize)
 
 	// if there's optical size info, try to apply it
 	if (font != NULL && font->opSizeInfo.subFamilyID != 0 && ptSize != 0.0) {
-		ptSize = ptSize * 720 / 72.27;	// for comparison with decipoint values in opSizeInfo
+		ptSize = ptSize * 720 / 72.27;	// convert TeX points to PS decipoints for comparison with the opSize values
 		double	bestMismatch = fmax(font->opSizeInfo.minSize - ptSize, ptSize - font->opSizeInfo.maxSize);
 		if (bestMismatch > 0.0) {
 			Font*	bestMatch = font;

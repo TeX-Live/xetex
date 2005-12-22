@@ -74,6 +74,27 @@ typedef struct {
 #define XeTeX_feature_name	8
 #define XeTeX_selector_name	9
 
+
+/* definitions used to access info in a native_word_node; must correspond with defines in xetex-new.ch */
+#define width_offset		1
+#define depth_offset		2
+#define height_offset		3
+#define native_info_offset	4
+#define native_glyph_info_offset	5
+
+#define node_width(node)			node[width_offset].cint
+#define node_depth(node)			node[depth_offset].cint
+#define node_height(node)			node[height_offset].cint
+#define native_length(node)			node[native_info_offset].hh.v.RH
+#define native_font(node)			node[native_info_offset].hh.b1
+#define native_glyph_count(node)	node[native_glyph_info_offset].hh.v.LH
+#define native_glyph_info_ptr(node)	node[native_glyph_info_offset].hh.v.RH
+#define native_glyph_info_size		10	/* info for each glyph is location (FixedPoint) + glyph ID (UInt16) */
+
+#define XDV_GLYPH_STRING	254
+#define	XDV_GLYPH_ARRAY		253
+
+/* OT-related constants we need */
 #define kGSUB	0x47535542
 #define kGPOS	0x47504f53
 
@@ -83,12 +104,13 @@ typedef struct {
 #define kThaana	0x74686161
 #define kHebrew	0x68656272
 
+
 #ifdef XETEX_MAC
 /* functions in XeTeX_mac.c */
 #ifdef __cplusplus
 extern "C" {
 #endif
-	void InitializeLayout();
+	Fixed DoAtsuiLayout(void* node, int getItalCorr, int justify);
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch);

@@ -577,6 +577,7 @@ splitFontName(const char* name, const char** var, const char** feat, const char*
 
 long
 findnativefont(const char* name, long scaled_size)
+	// scaled_size here is in TeX points
 {
 	long	rval = 0;
 	loadedfontmapping = 0;
@@ -607,8 +608,6 @@ findnativefont(const char* name, long scaled_size)
 	
 	PlatformFontRef	fontRef;
 	fontRef = findFontByName(nameString, varString, Fix2X(scaled_size));
-	if (varString != NULL)
-		free(varString);
 
 	if (fontRef != 0) {
 		/* update nameoffile to the full name of the font, for error messages during font loading */
@@ -616,6 +615,8 @@ findnativefont(const char* name, long scaled_size)
 		namelength = strlen(fullName);
 		if (featString != NULL)
 			namelength += strlen(featString) + 1;
+		if (varString != NULL)
+			namelength += strlen(varString) + 1;
 		free(nameoffile);
 		nameoffile = xmalloc(namelength + 2);
 		nameoffile[0] = ' ';
@@ -644,16 +645,23 @@ findnativefont(const char* name, long scaled_size)
 		}
 #endif
 
-		/* append the feature string, so that \show\fontID will give a full result */
+		/* append the style and feature strings, so that \show\fontID will give a full result */
+		if (varString != NULL) {
+			strcat((char*)nameoffile + 1, "/");
+			strcat((char*)nameoffile + 1, varString);
+		}
 		if (featString != NULL) {
 			strcat((char*)nameoffile + 1, ":");
 			strcat((char*)nameoffile + 1, featString);
 		}
-	
 	}
 	
+	if (varString != NULL)
+		free(varString);
+
 	if (featString != NULL)
 		free(featString);
+
 	free(nameString);
 	
 	return rval;
@@ -777,184 +785,206 @@ atsuColorToRGBA32(ATSURGBAlphaColor a)
 }
 #endif
 
+static int	xdvBufSize = 0;
+
+int
+makeXDVGlyphArrayData(memoryword* p)
+{
+	UInt16	glyphCount = native_glyph_count(p);
+	
+	int	i = glyphCount * native_glyph_info_size + 8; /* to guarantee enough space in the buffer */
+	if (i > xdvBufSize) {
+		if (xdvbuffer != NULL)
+			free(xdvbuffer);
+		xdvBufSize = ((i / 1024) + 1) * 1024;
+		xdvbuffer = (char*)xmalloc(xdvBufSize);
+	}
+
+	void*		glyph_info = (void*)native_glyph_info_ptr(p);
+	FixedPoint*	locations = (FixedPoint*)glyph_info;
+	UInt16*		glyphIDs = (UInt16*)(locations + glyphCount);
+	
+	int	opcode = XDV_GLYPH_STRING;
+	for (i = 0; i < glyphCount; ++i)
+		if (locations[i].y != 0) {
+			opcode = XDV_GLYPH_ARRAY;
+			break;
+		}
+	
+	unsigned char*	cp = (unsigned char*)xdvbuffer;
+	*cp++ = opcode;
+	
+	Fixed	wid = node_width(p);
+	*cp++ = (wid >> 24) & 0xff;
+	*cp++ = (wid >> 16) & 0xff;
+	*cp++ = (wid >> 8) & 0xff;
+	*cp++ = wid & 0xff;
+	
+	*cp++ = (glyphCount >> 8) & 0xff;
+	*cp++ = glyphCount & 0xff;
+	
+	for (i = 0; i < glyphCount; ++i) {
+		Fixed	x = locations[i].x;
+		*cp++ = (x >> 24) & 0xff;
+		*cp++ = (x >> 16) & 0xff;
+		*cp++ = (x >> 8) & 0xff;
+		*cp++ = x & 0xff;
+		if (opcode == XDV_GLYPH_ARRAY) {
+			Fixed	y = locations[i].y;
+			*cp++ = (y >> 24) & 0xff;
+			*cp++ = (y >> 16) & 0xff;
+			*cp++ = (y >> 8) & 0xff;
+			*cp++ = y & 0xff;
+		}
+	}
+
+	for (i = 0; i < glyphCount; ++i) {
+		UInt16	g = glyphIDs[i];
+		*cp++ = (g >> 8) & 0xff;
+		*cp++ = g & 0xff;
+	}
+	
+	return ((char*)cp - xdvbuffer);
+}
+
 long
 makefontdef(long f)
 {
-#ifdef XETEX_MAC
-	if (fontarea[f] == AAT_FONT_FLAG) {
-		// AAT font
-		ATSUStyle	style = (ATSUStyle)fontlayoutengine[f];
+	PlatformFontRef	fontRef;
+
+	UInt16	flags = 0;
+	UInt32	variationCount = 0;
+	UInt32	rgba;
+	Fixed	size;
 	
-		ItemCount	featureCount, variationCount;
-		ATSUGetAllFontFeatures(style, 0, 0, 0, &featureCount);
+#ifdef XETEX_MAC
+	ATSUStyle	style = NULL;
+	if (fontarea[f] == AAT_FONT_FLAG) {
+		flags = XDV_FLAG_FONTTYPE_ATSUI;
+
+		style = (ATSUStyle)fontlayoutengine[f];
 		ATSUGetAllFontVariations(style, 0, 0, 0, &variationCount);
 		
 		ATSUFontID	fontID;
 		ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
 
-		int	nameLength;
-		const char*	psName = getPSName(FMGetATSFontRefFromFont(fontID));
-		nameLength = strlen(psName);
-	
-		UInt16	flags = XDV_FLAG_FONTTYPE_ATSUI;
+		fontRef = FMGetATSFontRefFromFont(fontID);
 
 		ATSUVerticalCharacterType	vert;
 		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
 		if (vert == kATSUStronglyVertical)
 			flags |= XDV_FLAG_VERTICAL;
-
+		
 		ATSURGBAlphaColor	atsuColor;
 		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), &atsuColor, 0);
-		UInt32	rgba = atsuColorToRGBA32(atsuColor);
+		rgba = atsuColorToRGBA32(atsuColor);
 
-		// parameters after internal font ID:
-		//	size[4]
-		//	flags[2]
-		//	len[2]
-		//	name[l]
-		//  if flags & FEATURES:
-		//		nf[2]
-		//		f[2nf]
-		//		s[2nf]
-		//	if flags & VARIATIONS:
-		//		nv[2]
-		//		a[4nv]
-		//		v[4nv]
-		//	if flags & COLORED:
-		//		c[4]
-
-		long	fontDefLength
-			= 4 // size
-			+ 2	// flags
-			+ 2	// name length
-			+ nameLength;
-		if (featureCount > 0) {
-			fontDefLength +=
-				  2	// number of features
-				+ 2 * featureCount
-				+ 2 * featureCount;	// features and settings
-			flags |= XDV_FLAG_FEATURES;
-		}
-		if (variationCount > 0) {
-			fontDefLength +=
-				  2	// number of variations
-				+ 4 * variationCount
-				+ 4 * variationCount;	// axes and values
-			flags |= XDV_FLAG_VARIATIONS;
-		}
-		if (rgba != 0x000000FF) {
-			fontDefLength += 4; // 32-bit RGBA value
-			flags |= XDV_FLAG_COLORED;
-		}
-	
-		fontdef = (char*)xmalloc(fontDefLength);
-		char*	cp = fontdef;
-	
-		Fixed	size;
 		ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
-		*(Fixed*)cp = size;
-		cp += 4;
-		
-		*(UInt16*)cp = flags;
-		cp += 2;
-		
-		*(UInt16*)cp = nameLength;
-		cp += 2;
-		strncpy(cp, psName, nameLength);
-		cp += nameLength;
-
-		if (featureCount > 0) {
-			*(UInt16*)cp = featureCount;
-			cp += 2;
-			if (featureCount > 0) {
-				ATSUGetAllFontFeatures(style, featureCount,
-										(UInt16*)(cp),
-										(UInt16*)(cp + 2 * featureCount),
-										0);
-				cp += 2 * featureCount + 2 * featureCount;
-			}
-		}
-	
-		if (variationCount > 0) {
-			*(UInt16*)cp = variationCount;
-			cp += 2;
-			if (variationCount > 0) {
-				ATSUGetAllFontVariations(style, variationCount,
-										(UInt32*)(cp),
-										(SInt32*)(cp + 4 * variationCount),
-										0);
-				cp += 4 * variationCount + 4 * variationCount;
-			}
-		}
-	
-		if (rgba != 0x000000FF)
-			*(UInt32*)cp = rgba;
-	
-		return fontDefLength;
 	}
 	else
-#endif /* XETEX_MAC */
+#endif
 	if (fontarea[f] == OT_FONT_FLAG) {
-		// OT font...
+		flags = XDV_FLAG_FONTTYPE_ICU;
+
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
+		fontRef = getFontRef(engine);
 
-		PlatformFontRef	fontRef = getFontRef(engine);
-		const char* psName;
-		const char* famName;
-		const char* styName;
-		getNames(fontRef, &psName, &famName, &styName);
-			/* returns ptrs to strings that belong to the font - do not free! */
+		rgba = getRgbValue(engine);
 
-		UInt8	psLen = strlen(psName);
-		UInt8	famLen = strlen(famName);
-		UInt8	styLen = strlen(styName);
-
-		UInt32	rgbValue = getRgbValue(engine);
-
-		// parameters after internal font ID: s[4] t[2] c[16] l[2] n[l]
-		long	fontDefLength = 0
-			+ 4 // size
-			+ 2	// flags
-			+ 3	// name lengths
-			+ psLen + famLen + styLen;
-
-		if (rgbValue != 0x000000FF)
-			fontDefLength += 4; // RGBA UInt32
-
-		fontdef = (char*)xmalloc(fontDefLength);
-		char*	cp = fontdef;
-
-		*(Fixed*)cp = SWAP32(X2Fix(getPointSize(engine)));
-		cp += 4;
-		
-		UInt16	flags = XDV_FLAG_FONTTYPE_ICU;
-		if (rgbValue != 0x000000FF)
-			flags |= XDV_FLAG_COLORED;
-		*(UInt16*)cp = SWAP16(flags);
-		cp += 2;
-		
-		*(UInt8*)cp = psLen;
-		cp += 1;
-		*(UInt8*)cp = famLen;
-		cp += 1;
-		*(UInt8*)cp = styLen;
-		cp += 1;
-		memcpy(cp, psName, psLen);	/* not strcpy as we don't want the null terminator! */
-		cp += psLen;
-		memcpy(cp, famName, famLen);
-		cp += famLen;
-		memcpy(cp, styName, styLen);
-		cp += styLen;
-
-		if (rgbValue != 0x000000FF)
-			*(UInt32*)cp = SWAP32(rgbValue);
-
-		return fontDefLength;
+		size = X2Fix(getPointSize(engine));
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
+
+	const char* psName;
+	const char* famName;
+	const char* styName;
+	getNames(fontRef, &psName, &famName, &styName);
+		/* returns ptrs to strings that belong to the font - do not free! */
+	
+	UInt8	psLen = strlen(psName);
+	UInt8	famLen = strlen(famName);
+	UInt8	styLen = strlen(styName);
+
+	// parameters after internal font ID:
+	//	size[4]
+	//	flags[2]
+	//	lp[1] lf[1] ls[1] ps[lp] fam[lf] sty[ls]
+	//	if flags & COLORED:
+	//		c[4]
+	//	if flags & VARIATIONS:
+	//		nv[2]
+	//		a[4nv]
+	//		v[4nv]
+
+	int	fontDefLength
+		= 4 // size
+		+ 2	// flags
+		+ 3	// name length
+		+ psLen + famLen + styLen;
+
+	if (rgba != 0x000000FF) {
+		fontDefLength += 4; // 32-bit RGBA value
+		flags |= XDV_FLAG_COLORED;
+	}
+
+	if (variationCount > 0) {
+		fontDefLength +=
+			  2	// number of variations
+			+ 4 * variationCount
+			+ 4 * variationCount;	// axes and values
+		flags |= XDV_FLAG_VARIATIONS;
+	}
+	
+	if (fontDefLength > xdvBufSize) {
+		if (xdvbuffer != NULL)
+			free(xdvbuffer);
+		xdvBufSize = ((fontDefLength / 1024) + 1) * 1024;
+		xdvbuffer = (char*)xmalloc(xdvBufSize);
+	}
+	char*	cp = xdvbuffer;
+	
+	*(Fixed*)cp = SWAP32(size);
+	cp += 4;
+	
+	*(UInt16*)cp = SWAP16(flags);
+	cp += 2;
+	
+	*(UInt8*)cp = psLen;
+	cp += 1;
+	*(UInt8*)cp = famLen;
+	cp += 1;
+	*(UInt8*)cp = styLen;
+	cp += 1;
+	memcpy(cp, psName, psLen);
+	cp += psLen;
+	memcpy(cp, famName, famLen);
+	cp += famLen;
+	memcpy(cp, styName, styLen);
+	cp += styLen;
+
+	if (rgba != 0x000000FF) {
+		*(UInt32*)cp = SWAP32(rgba);
+		cp += 4;
+	}
+	
+	if (variationCount > 0) {
+		*(UInt16*)cp = variationCount;
+		cp += 2;
+		if (variationCount > 0) {
+#ifdef XETEX_MAC
+			ATSUGetAllFontVariations(style, variationCount,
+									(UInt32*)(cp),
+									(SInt32*)(cp + 4 * variationCount),
+									0);
+#endif
+			cp += 4 * variationCount + 4 * variationCount;
+		}
+	}
+	
+	return fontDefLength;
 }
 
 int
@@ -1068,28 +1098,20 @@ getnativecharsidebearings(int font, int ch, Fixed* lsb, Fixed* rsb)
 	*rsb = X2Fix(r);
 }
 
-/* definitions used to access info in a native_word_node; must correspond with defines in xetex.web */
-#define width_offset		1
-#define depth_offset		2
-#define height_offset		3
-#define native_info_offset	4
-#define native_glyph_info_offset	5
 
-#define width(node)			node[width_offset].cint
-#define depth(node)			node[depth_offset].cint
-#define height(node)		node[height_offset].cint
-#define native_length(node)	node[native_info_offset].hh.v.RH
-#define native_font(node)	node[native_info_offset].hh.b1
-#define native_glyph_count(node)	node[native_glyph_info_offset].hh.v.LH
-#define native_glyph_info_ptr(node)	node[native_glyph_info_offset].hh.v.RH
-#define native_glyph_info_size		10	/* info for each glyph is location (FixedPoint) + glyph ID (UInt16) */
+void
+store_justified_native_glyphs(void* node)
+{
+#ifdef XETEX_MAC /* this is only called for fonts used via ATSUI */
+	(void)DoAtsuiLayout(node, 0, 1);
+#endif
+}
 
 Fixed
-measure_native_node(void* p, int want_ic)
+measure_native_node(memoryword*	node, int want_ic)
 	/* return value is the italic correction for the last glyph, computed only if want_ic is non-zero */
 {
 	Fixed	rval = 0;
-	memoryword*	node = (memoryword*)p;
 	long		txtLen = native_length(node);
 	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
 
@@ -1097,36 +1119,8 @@ measure_native_node(void* p, int want_ic)
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
-		// we're using this font in AAT mode
-		OSStatus	status = noErr;
-		
-		extern ATSUTextLayout	sTextLayout;
-		if (sTextLayout == 0)
-			InitializeLayout();
-
-		status = ATSUSetTextPointerLocation(sTextLayout, txtPtr, 0, txtLen, txtLen);
-		
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[native_font(node)]);
-		status = ATSUSetRunStyle(sTextLayout, style, 0, txtLen);
-	
-		Fixed		before, after, ascent, descent;
-		status = ATSUGetUnjustifiedBounds(sTextLayout, 0, txtLen, &before, &after, &ascent, &descent);
-	
-		width(node) = after - before;
-
-		if (want_ic) {
-			ByteCount	bufferSize = 0;
-			status = ATSUGetGlyphInfo(sTextLayout, 0, txtLen, &bufferSize, NULL);
-			if (bufferSize > 0) {
-				ATSUGlyphInfoArray*	info = (ATSUGlyphInfoArray*)xmalloc(bufferSize);
-				status = ATSUGetGlyphInfo(sTextLayout, 0, txtLen, &bufferSize, info);
-				if (info->numGlyphs > 0) {
-					int	gid = info->glyphs[info->numGlyphs-1].glyphID;
-					rval = X2Fix(GetGlyphItalCorr_AAT(style, gid));
-				}
-				free(info);
-			}
-		}
+		// we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle
+		rval = DoAtsuiLayout(node, 0, want_ic);
 	}
 	else
 #endif
@@ -1214,7 +1208,7 @@ measure_native_node(void* p, int want_ic)
 					rval = X2Fix(getGlyphItalCorr(engine, glyphIDs[realGlyphCount-1]));
 			}
 
-			width(node) = X2Fix(wid);
+			node_width(node) = X2Fix(wid);
 			native_glyph_count(node) = realGlyphCount;
 			native_glyph_info_ptr(node) = (long)glyph_info;
 		}
@@ -1222,7 +1216,7 @@ measure_native_node(void* p, int want_ic)
 			OSStatus	status = 0;
 			nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
 			getGlyphPosition(engine, nGlyphs, &x, &y, &status);
-			width(node) = X2Fix(x);
+			node_width(node) = X2Fix(x);
 
 			if (nGlyphs >= maxGlyphs) {
 				if (glyphs != 0) {
@@ -1249,9 +1243,9 @@ measure_native_node(void* p, int want_ic)
 				realGlyphCount = 0;
 				for (i = 0; i < nGlyphs; ++i) {
 					if (glyphs[i] < 0xfffe) {
-						glyphIDs[realGlyphCount] = SWAP16(glyphs[i]);
-						locations[realGlyphCount].x = SWAP32(X2Fix(positions[2*i]));
-						locations[realGlyphCount].y = SWAP32(X2Fix(positions[2*i+1]));
+						glyphIDs[realGlyphCount] = glyphs[i];
+						locations[realGlyphCount].x = X2Fix(positions[2*i]);
+						locations[realGlyphCount].y = X2Fix(positions[2*i+1]);
 						++realGlyphCount;
 					}
 				}
@@ -1273,8 +1267,8 @@ measure_native_node(void* p, int want_ic)
 	
 	/* for efficiency, height and depth are the font's ascent/descent,
 		not true values based on the actual content of the word */
-	height(node) = heightbase[f];
-	depth(node) = depthbase[f];
+	node_height(node) = heightbase[f];
+	node_depth(node) = depthbase[f];
 
 	return rval;
 }
@@ -1297,7 +1291,7 @@ measure_native_glyph(void* p)
 		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
 		ATSGlyphIdealMetrics	metrics;
 		OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
-		width(node) = X2Fix(metrics.advance.x);
+		node_width(node) = X2Fix(metrics.advance.x);
 		GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
 	}
 	else
@@ -1305,7 +1299,7 @@ measure_native_glyph(void* p)
 	if (fontarea[font] == OT_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		XeTeXFont		fontInst = getFont(engine);
-		width(node) = X2Fix(getGlyphWidth(fontInst, gid));
+		node_width(node) = X2Fix(getGlyphWidth(fontInst, gid));
 		getGlyphHeightDepth(engine, gid, &ht, &dp);
 	}
 	else {
@@ -1313,8 +1307,8 @@ measure_native_glyph(void* p)
 		exit(3);
 	}
 
-	height(node) = X2Fix(ht);
-	depth(node) = X2Fix(dp);
+	node_height(node) = X2Fix(ht);
+	node_depth(node) = X2Fix(dp);
 }
 
 int

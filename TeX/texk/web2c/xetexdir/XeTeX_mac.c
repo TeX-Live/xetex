@@ -23,11 +23,14 @@
 #include "TECkit_Engine.h"
 #include "XeTeX_ext.h"
 
+#include "XeTeXswap.h"
+
 TECkit_Converter	load_mapping_file(const char* s, const char* e);
 
-ATSUTextLayout	sTextLayout = 0;
+static ATSUTextLayout	sTextLayout = 0;
 
-void InitializeLayout()
+static void
+InitializeLayout()
 {
 	OSStatus	status = ATSUCreateTextLayout(&sTextLayout);
 	ATSUFontFallbacks fallbacks;
@@ -38,6 +41,101 @@ void InitializeLayout()
 	ATSUAttributeValuePtr	value = &fallbacks;
 	status = ATSUSetLayoutControls(sTextLayout, 1, &tag, &valueSize, &value);
 	status = ATSUSetTransientFontMatching(sTextLayout, true);
+}
+
+static inline Fixed
+FixedTeXtoPSPoints(Fixed pts)
+{
+	return X2Fix(Fix2X(pts) * 72.0 / 72.27);
+}
+
+static inline Fixed
+FixedPStoTeXPoints(Fixed pts)
+{
+	return X2Fix(Fix2X(pts) * 72.27 / 72.0);
+}
+
+Fixed
+DoAtsuiLayout(void* p, int getItalCorr, int justify)
+{
+	memoryword*	node = (memoryword*)p;
+
+	Fixed	rval = 0;
+
+	unsigned	f = native_font(node);
+	if (fontarea[f] != AAT_FONT_FLAG) {
+		fprintf(stderr, "internal error: do_atsui_layout called for non-ATSUI font\n");
+		exit(1);
+	}
+
+	if (sTextLayout == 0)
+		InitializeLayout();
+
+	OSStatus	status = noErr;
+	
+	long		txtLen = native_length(node);
+	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
+
+	status = ATSUSetTextPointerLocation(sTextLayout, txtPtr, 0, txtLen, txtLen);
+	
+	// we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle
+	ATSUStyle	style = (ATSUStyle)(fontlayoutengine[native_font(node)]);
+	status = ATSUSetRunStyle(sTextLayout, style, 0, txtLen);
+
+	ATSUAttributeTag		tags[] = { kATSULineWidthTag, kATSULineJustificationFactorTag };
+	ItemCount				numTags = sizeof(tags) / sizeof(ATSUAttributeTag);
+	if (justify) {
+		ByteCount				valSizes[] = { sizeof(Fixed), sizeof(Fract) };
+		Fixed					wid = FixedTeXtoPSPoints(node_width(node));
+		Fract					just = fract1;
+		ATSUAttributeValuePtr	valPtrs[] = { &wid, &just };
+		status = ATSUSetLayoutControls(sTextLayout, numTags, tags, valSizes, valPtrs);
+	}
+	
+	ItemCount	count;
+	ATSLayoutRecord*	layoutRec = NULL;
+	status = ATSUDirectGetLayoutDataArrayPtrFromTextLayout(sTextLayout, 0,
+		kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, (void*)&layoutRec, &count);
+
+	int i;
+	int	realGlyphCount = 0;
+	int lastRealGlyph = 0;
+	for (i = 0; i < count; ++i)
+		if (layoutRec[i].glyphID < 0xfffe) {
+			lastRealGlyph = i;
+			++realGlyphCount;
+		}
+
+	void*		glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
+	FixedPoint*	locations = (FixedPoint*)glyph_info;
+	UInt16*		glyphIDs = (UInt16*)(locations + realGlyphCount);
+
+	realGlyphCount = 0;
+	for (i = 0; i < count; ++i) {
+		if (layoutRec[i].glyphID < 0xfffe) {
+			glyphIDs[realGlyphCount] = SWAP16(layoutRec[i].glyphID);
+			locations[realGlyphCount].x = SWAP32(FixedPStoTeXPoints(layoutRec[i].realPos));
+			locations[realGlyphCount].y = SWAP32(0);	/* FIXME: won't handle baseline offsets */
+			++realGlyphCount;
+		}
+	}
+
+	native_glyph_count(node) = realGlyphCount;
+	native_glyph_info_ptr(node) = (long)glyph_info;
+	
+	if (getItalCorr)
+		if (realGlyphCount > 0)
+			rval = X2Fix(GetGlyphItalCorr_AAT(style, layoutRec[lastRealGlyph].glyphID));
+
+	if (!justify)
+		node_width(node) = SWAP32(FixedPStoTeXPoints(layoutRec[count-1].realPos));
+
+	ATSUDirectReleaseLayoutDataArrayPtr(NULL, kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, (void*)&layoutRec);
+
+	if (justify)
+		ATSUClearLayoutControls(sTextLayout, numTags, tags);
+
+	return rval;	
 }
 
 typedef struct
@@ -194,33 +292,6 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 										4 bytes for point flags; 8 bytes for 1st point */
 	*ht = 0;
 	*dp = 0;
-#if 0
-	ByteCount	bufferSize = 0;
-	OSStatus	status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, NULL);
-	if (bufferSize >= MIN_REAL_BUFFER_SIZE) {
-		ATSUCurvePaths*	paths = (ATSUCurvePaths*)xmalloc(bufferSize + 200);
-		status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, paths);
-		ATSUCurvePath*	path = &(paths->contour[0]);
-		int c, n, v;
-		double	min = 65536.0, max = -65536.0;
-		for (c = 0; c < paths->contours; ++c) {
-			n = (path->vectors + 31) / 32;
-			Float32Point*	vector = (Float32Point*)((char*)path + 4 + n * 4);
-			for (v = 0; v < path->vectors; ++v) {
-				if (vector[v].y < min)
-					min = vector[v].y;
-				if (vector[v].y > max)
-					max = vector[v].y;
-			}
-			path = (ATSUCurvePath*)(vector + path->vectors);
-		}
-		if (min < 65536.0) {
-			*ht = -min;
-			*dp = max;
-		}
-		free(paths);
-	}
-#endif
 
 	ATSCurveType	curveType;
 	OSStatus status = ATSUGetNativeCurveType(style, &curveType);
@@ -419,15 +490,14 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 	if (status == noErr) {
 		bool			colorSpecified = false;
 		unsigned long	rgbValue;
+		Fixed			atsuSize = FixedTeXtoPSPoints(scaled_size);
 		
 		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
-		ATSUAttributeTag		tag[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
-		ByteCount				valueSize[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
-		ATSUAttributeValuePtr	value[3];
-		value[0] = &fontID;
-		value[1] = &scaled_size;
-		value[2] = &options;
-		ATSUSetAttributes(style, 3, &tag[0], &valueSize[0], &value[0]);
+		Fract						hangInhibit = fract1;
+		ATSUAttributeTag		tags[] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag, kATSUHangingInhibitFactorTag };
+		ByteCount				sizes[] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions), sizeof(Fract) };
+		ATSUAttributeValuePtr	attrs[] = { &fontID, &atsuSize, &options, &hangInhibit };
+		ATSUSetAttributes(style, sizeof(tags) / sizeof(ATSUAttributeTag), tags, sizes, attrs);
 		
 #define FEAT_ALLOC_CHUNK	8
 #define VAR_ALLOC_CHUNK		4
@@ -622,10 +692,10 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 						++cp3;
 					if (cp3 == cp1 + 8) {
 						ATSUVerticalCharacterType	vert = kATSUStronglyVertical;
-						tag[0] = kATSUVerticalCharacterTag;
-						valueSize[0] = sizeof(ATSUVerticalCharacterType);
-						value[0] = &vert;
-						ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
+						tags[0] = kATSUVerticalCharacterTag;
+						sizes[0] = sizeof(ATSUVerticalCharacterType);
+						attrs[0] = &vert;
+						ATSUSetAttributes(style, 1, tags, sizes, attrs);
 						goto next_option;
 					}
 				}
@@ -649,10 +719,10 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 				rgba.green	= ((rgbValue & 0x00FF0000) >> 16) / 255.0;
 				rgba.blue	= ((rgbValue & 0x0000FF00) >> 8 ) / 255.0;
 				rgba.alpha	= ((rgbValue & 0x000000FF)      ) / 255.0;
-				tag[0] = kATSURGBAlphaColorTag;
-				valueSize[0] = sizeof(ATSURGBAlphaColor);
-				value[0] = &rgba;
-				ATSUSetAttributes(style, 1, &tag[0], &valueSize[0], &value[0]);
+				tags[0] = kATSURGBAlphaColorTag;
+				sizes[0] = sizeof(ATSURGBAlphaColor);
+				attrs[0] = &rgba;
+				ATSUSetAttributes(style, 1, tags, sizes, attrs);
 			}
 			
 			free((char*)featureTypes);
