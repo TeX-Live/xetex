@@ -411,6 +411,7 @@ topenin P1H(void)
 	  termin->skipNextLF = 0;
 	  termin->encodingMode = UTF8;
 	  termin->conversionData = 0;
+	  inputfile[0] = termin;
   }
 #endif
 
