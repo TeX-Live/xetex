@@ -435,12 +435,14 @@ topenin P1H(void)
 				case 0:	;
 			};
 			rval -= offsetsFromUTF8[extraBytes];
+			/* now rval is a USV; if it's >=64K, we need to put surrogates in the buffer */
 			if (rval > 0xFFFF) {
 				rval -= 0x10000;
-				termin->savedChar = 0xdc00 + rval % 0x0400;
-				rval = 0xd800 + rval / 0x0400;
+				buffer[k++] = 0xd800 + rval / 0x0400;
+				buffer[k++] = 0xdc00 + rval % 0x0400;
 			}
-			buffer[k++] = rval;
+			else
+				buffer[k++] = rval;
 		}
 #else
       char *ptr = &(argv[i][0]);
