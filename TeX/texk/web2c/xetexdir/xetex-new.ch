@@ -2165,9 +2165,9 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @!font_ec: ^eight_bits;
   {ending (largest) character code}
 @y
-@!font_bc: ^ASCII_code;
+@!font_bc: ^UTF16_code;
   {beginning (smallest) character code}
-@!font_ec: ^ASCII_code;
+@!font_ec: ^UTF16_code;
   {ending (largest) character code}
 @z
 
@@ -3733,6 +3733,14 @@ font_layout_engine:=xmalloc_array(integer, font_max);
 @z
 
 @x
+font_bc:=xmalloc_array(eight_bits, font_max);
+font_ec:=xmalloc_array(eight_bits, font_max);
+@y
+font_bc:=xmalloc_array(UTF16_code, font_max);
+font_ec:=xmalloc_array(UTF16_code, font_max);
+@z
+
+@x
 dump_int(trie_op_ptr);
 @y
 dump_int(max_hyph_char);
@@ -3785,6 +3793,14 @@ k:=biggest_lang+1;
   {Allocate and initialize font arrays}
   font_mapping:=xmalloc_array(integer, font_max);
   font_layout_engine:=xmalloc_array(integer, font_max);
+@z
+
+@x
+  font_bc:=xmalloc_array(eight_bits, font_max);
+  font_ec:=xmalloc_array(eight_bits, font_max);
+@y
+  font_bc:=xmalloc_array(UTF16_code, font_max);
+  font_ec:=xmalloc_array(UTF16_code, font_max);
 @z
 
 @x
@@ -5026,7 +5042,7 @@ begin
 	if (font_ptr = font_max) or (fmem_ptr + 8 > font_mem_size) then begin
 		@<Apologize for not loading the font, |goto done|@>;
 	end;
-	
+
 	{ we've found a valid installed font, and have room }
 	incr(font_ptr);
 	font_area[font_ptr] := native_font_type_flag; { set by find_native_font to either aat_font_flag or ot_font_flag }
