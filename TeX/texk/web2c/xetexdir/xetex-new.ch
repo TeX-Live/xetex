@@ -36,8 +36,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".99"
-@d XeTeX_version_string=='-0.99' {current \eTeX\ version}
+@d XeTeX_revision==".99a"
+@d XeTeX_version_string=='-0.99a' {current \eTeX\ version}
 @z
 
 @x
@@ -2165,9 +2165,9 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @!font_ec: ^eight_bits;
   {ending (largest) character code}
 @y
-@!font_bc: ^ASCII_code;
+@!font_bc: ^UTF16_code;
   {beginning (smallest) character code}
-@!font_ec: ^ASCII_code;
+@!font_ec: ^UTF16_code;
   {ending (largest) character code}
 @z
 
@@ -3724,6 +3724,14 @@ font_layout_engine:=xmalloc_array(integer, font_max);
 @z
 
 @x
+font_bc:=xmalloc_array(eight_bits, font_max);
+font_ec:=xmalloc_array(eight_bits, font_max);
+@y
+font_bc:=xmalloc_array(UTF16_code, font_max);
+font_ec:=xmalloc_array(UTF16_code, font_max);
+@z
+
+@x
 dump_int(trie_op_ptr);
 @y
 dump_int(max_hyph_char);
@@ -3776,6 +3784,14 @@ k:=biggest_lang+1;
   {Allocate and initialize font arrays}
   font_mapping:=xmalloc_array(integer, font_max);
   font_layout_engine:=xmalloc_array(integer, font_max);
+@z
+
+@x
+  font_bc:=xmalloc_array(eight_bits, font_max);
+  font_ec:=xmalloc_array(eight_bits, font_max);
+@y
+  font_bc:=xmalloc_array(UTF16_code, font_max);
+  font_ec:=xmalloc_array(UTF16_code, font_max);
 @z
 
 @x

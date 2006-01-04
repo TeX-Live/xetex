@@ -1085,7 +1085,7 @@ measure_native_node(void* p, int want_ic)
 			int			realGlyphCount = 0;
 			int 		i, runIndex;
 			int32_t		logicalStart, length;
-			OSStatus	status;
+			OSStatus	status = 0;
 			for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 				dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
