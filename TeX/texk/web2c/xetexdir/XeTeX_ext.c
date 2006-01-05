@@ -660,6 +660,20 @@ findnativefont(const char* name, long scaled_size)
 }
 
 void
+releasefontengine(long engine, int type_flag)
+{
+#ifdef XETEX_MAC
+	if (type_flag == AAT_FONT_FLAG) {
+		ATSUDisposeStyle((ATSUStyle)engine);
+	}
+	else
+#endif
+	if (type_flag == OT_FONT_FLAG) {
+		deleteLayoutEngine((XeTeXLayoutEngine)engine);
+	}
+}
+
+void
 otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
 {
 	long	rval = 0;

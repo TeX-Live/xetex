@@ -5029,6 +5029,8 @@ var
 	actual_size: scaled;	{|s| converted to real size, if it was negative}
 	p: pointer;	{for temporary |native_char| node we'll create}
 	ascent, descent, font_slant, x_ht, cap_ht: scaled;
+	f: internal_font_number;
+	full_name: str_number;
 begin
 	{ on entry here, the full name is packed into name_of_file in UTF8 form }
 
@@ -5037,19 +5039,31 @@ begin
 	if (s < 0) then actual_size := -s * unity div 100 else actual_size := s;
 	font_engine := find_native_font(name_of_file + 1, actual_size);
 	if font_engine = 0 then goto done;
+	
+	{ look again to see if the font is already loaded, now that we know its real name }
+	str_room(name_length);
+	for k := 1 to name_length do
+		append_char(name_of_file[k]);
+    full_name := make_string;
+    
+	for f:=font_base+1 to font_ptr do
+  		if (font_area[f] = native_font_type_flag) and (str_eq_str(font_name[f], full_name)) and (actual_size = font_size[f]) then begin
+  		    release_font_engine(font_engine, native_font_type_flag);
+  			flush_string;
+  		    load_native_font := f;
+  		    goto done;
+        end;
+	
 	if (font_ptr = font_max) or (fmem_ptr + 8 > font_mem_size) then begin
 		@<Apologize for not loading the font, |goto done|@>;
 	end;
-	
+
 	{ we've found a valid installed font, and have room }
 	incr(font_ptr);
 	font_area[font_ptr] := native_font_type_flag; { set by find_native_font to either aat_font_flag or ot_font_flag }
 
 	{ we need the *full* name }
-	str_room(name_length);
-	for k := 1 to name_length do
-		append_char(name_of_file[k]);
-	font_name[font_ptr] := make_string;
+	font_name[font_ptr] := full_name;
 	
 	font_check[font_ptr].b0 := 0;
 	font_check[font_ptr].b1 := 0;
