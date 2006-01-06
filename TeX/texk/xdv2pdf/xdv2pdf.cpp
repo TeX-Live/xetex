@@ -51,7 +51,7 @@
 
 #include "DVIops.h"
 
-#define XDV_ID	5	// current id_byte value for .xdv files from xetex
+#define XDV_ID	4	// current id_byte value for .xdv files from xetex
 
 #define AAT_FONT_FLAG	0xffff
 

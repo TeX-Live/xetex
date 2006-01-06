@@ -2334,12 +2334,11 @@ ec:=effective_char(false,f,qi(c));
 @x
 @d id_byte=2 {identifies the kind of \.{DVI} files described here}
 @y
-XeTeX changes the DVI version to 5,
-as we have a new DVI opcodes like |set_native_word| for native font text;
-I used version 3 in an earlier extension of TeX,
-and 4 in pre-1.0 XeTeX releases using Mac OS-specific data types.
+XeTeX changes the DVI version to 4,
+as we have new DVI opcodes like |set_native_word| for native font text;
+and I used version 3 in an earlier extension of TeX.
 
-@d id_byte=5 {identifies the kind of \.{DVI} files described here}
+@d id_byte=4 {identifies the kind of \.{DVI} files described here}
 @z
 
 @x
@@ -5040,14 +5039,14 @@ begin
 	font_engine := find_native_font(name_of_file + 1, actual_size);
 	if font_engine = 0 then goto done;
 	
-	{ look again to see if the font is already loaded, now that we know its real name }
+	{ look again to see if the font is already loaded, now that we know its canonical name }
 	str_room(name_length);
 	for k := 1 to name_length do
 		append_char(name_of_file[k]);
-    full_name := make_string;
+    full_name := make_string; { not slow_make_string because we'll flush it if the font was already loaded }
     
 	for f:=font_base+1 to font_ptr do
-  		if (font_area[f] = native_font_type_flag) and (str_eq_str(font_name[f], full_name)) and (actual_size = font_size[f]) then begin
+  		if (font_area[f] = native_font_type_flag) and str_eq_str(font_name[f], full_name) and (font_size[f] = actual_size) then begin
   		    release_font_engine(font_engine, native_font_type_flag);
   			flush_string;
   		    load_native_font := f;
@@ -5062,7 +5061,7 @@ begin
 	incr(font_ptr);
 	font_area[font_ptr] := native_font_type_flag; { set by find_native_font to either aat_font_flag or ot_font_flag }
 
-	{ we need the *full* name }
+	{ store the canonical name }
 	font_name[font_ptr] := full_name;
 	
 	font_check[font_ptr].b0 := 0;

@@ -194,33 +194,6 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 										4 bytes for point flags; 8 bytes for 1st point */
 	*ht = 0;
 	*dp = 0;
-#if 0
-	ByteCount	bufferSize = 0;
-	OSStatus	status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, NULL);
-	if (bufferSize >= MIN_REAL_BUFFER_SIZE) {
-		ATSUCurvePaths*	paths = (ATSUCurvePaths*)xmalloc(bufferSize + 200);
-		status = ATSUGlyphGetCurvePaths(style, gid, &bufferSize, paths);
-		ATSUCurvePath*	path = &(paths->contour[0]);
-		int c, n, v;
-		double	min = 65536.0, max = -65536.0;
-		for (c = 0; c < paths->contours; ++c) {
-			n = (path->vectors + 31) / 32;
-			Float32Point*	vector = (Float32Point*)((char*)path + 4 + n * 4);
-			for (v = 0; v < path->vectors; ++v) {
-				if (vector[v].y < min)
-					min = vector[v].y;
-				if (vector[v].y > max)
-					max = vector[v].y;
-			}
-			path = (ATSUCurvePath*)(vector + path->vectors);
-		}
-		if (min < 65536.0) {
-			*ht = -min;
-			*dp = max;
-		}
-		free(paths);
-	}
-#endif
 
 	ATSCurveType	curveType;
 	OSStatus status = ATSUGetNativeCurveType(style, &curveType);
