@@ -1330,7 +1330,7 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 #endif
 		if (metrics.italicAngle != 0.0 && fabs(metrics.italicAngle) < 0.090)
 			metrics.italicAngle *= 1000.0;	/* hack around apparent ATS bug */
-		*slant = X2Fix(tan(Fix2X( - metrics.italicAngle) * M_PI / 180.0));
+		*slant = X2Fix(tan(-metrics.italicAngle * M_PI / 180.0));
 #if 0
 	}
 #endif
