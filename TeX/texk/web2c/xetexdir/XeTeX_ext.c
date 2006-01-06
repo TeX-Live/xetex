@@ -1318,19 +1318,22 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 	*ascent = X2Fix(metrics.ascent * floatSize);
 	*descent = X2Fix(metrics.descent * floatSize);
 
+#if 0 /* we'll use the value from ATSFontGetHorizontalMetrics */
 	ByteCount	tableSize;
 	if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 		POSTTable*      post = xmalloc(tableSize);
 		ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
 		*slant = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
-//fprintf(stderr, "\n metrics.italicAngle = %f ; post->italicAngle = %f\n", metrics.italicAngle, Fix2X(post->italicAngle));
 		free(post);
 	}
 	else {
-		if (metrics.italicAngle != 0 && fabs(metrics.italicAngle) < 1.0)
-			metrics.italicAngle *= 1000;	/* hack around apparent ATS bug */
+#endif
+		if (metrics.italicAngle != 0.0 && fabs(metrics.italicAngle) < 0.090)
+			metrics.italicAngle *= 1000.0;	/* hack around apparent ATS bug */
 		*slant = X2Fix(tan(Fix2X( - metrics.italicAngle) * M_PI / 180.0));
+#if 0
 	}
+#endif
 
 	if (metrics.xHeight != 0.0) {
 		*xheight = X2Fix(metrics.xHeight * floatSize);
