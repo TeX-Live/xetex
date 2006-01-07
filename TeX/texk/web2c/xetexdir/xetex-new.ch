@@ -2180,9 +2180,13 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @#
 @!font_layout_engine: ^integer; { either an ATSUStyle or a XeTeXLayoutEngine }
 @!font_mapping: ^integer; { TECkit_Converter or 0 }
-@!xdv_buffer: ^char;
+@!font_flags: ^char; { flags:
+  0x01: font_colored
+  0x02: font_vertical }
 @!loaded_font_mapping: integer; { used by load_native_font to return mapping, if any }
-@!mapped_text: ^UTF16_code;
+@!loaded_font_flags: char; { used by load_native_font to return flags }
+@!mapped_text: ^UTF16_code; { scratch buffer used while applying font mappings }
+@!xdv_buffer: ^char; { scratch buffer used in generating XDV output }
 @z
 
 @x
@@ -2310,11 +2314,7 @@ ec:=effective_char(false,f,qi(c));
 
 \yskip\hang|set_glyph_array| 253 w[4] k[2] xy[8k] g[2k]
 
-\yskip\hang|pic_file| 252 t[4][6] p[2] l[2] a[l]
-
-\yskip\hang|pdf_file| 251 t[4][6] p[2] l[2] a[l]
-
-\yskip\hang|define_native_font| 250 k[4] s[4] flags[2]
+\yskip\hang|define_native_font| 252 k[4] s[4] flags[2]
 	lenps[1] lenfam[1] lensty[1] ps[lenps] fam[lenfam] sty[lensty]
 	if (flags & COLORED):
 		rgba[4]
@@ -2323,9 +2323,16 @@ ec:=effective_char(false,f,qi(c));
 		axes[4nv]
 		values[4nv]
 	if (flags & MATRIX):
-		a[4] b[4] c[4] d[4] x[4] y[4]
+		ta[4] tb[4] tc[4] td[4] tx[4] ty[4]
 
-\yskip\noindent Command 255 is undefined at the present time (but used by pTeX).
+\yskip\hang|pic_file| 251 flags[1] t[4][6] p[2] len[2] path[l]
+	flags = 0 for raster image, 1 for PDF
+	t is transform matrix
+	p is page # from the graphic file (0-based)
+	len is length of pathname
+	path is pathname of graphic file
+
+\yskip\noindent Commands 250 and 255 are undefined at the present time (but 255 is used by pTeX).
 @z
 
 @x
@@ -2335,16 +2342,15 @@ ec:=effective_char(false,f,qi(c));
 
 @d set_glyph_string=254 {sequence of glyphs, all at the current y-position}
 @d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
-@d pic_file=252 {embed picture}
-@d pdf_file=251 {embed pdf}
-@d define_native_font=250 {define native font}
+@d define_native_font=252 {define native font}
+@d pic_file=251 {embed picture or PDF}
 @z
 
 @x
 @d id_byte=2 {identifies the kind of \.{DVI} files described here}
 @y
 XeTeX changes the DVI version to 5,
-as we have a new DVI opcodes like |set_native_word| for native font text;
+as we have new DVI opcodes like |set_glyph_array| for native font text;
 I used version 3 in an earlier extension of TeX,
 and 4 in pre-1.0 XeTeX releases using Mac OS-specific data types.
 
@@ -3730,6 +3736,7 @@ begin {Allocate the font arrays}
 begin {Allocate the font arrays}
 font_mapping:=xmalloc_array(integer, font_max);
 font_layout_engine:=xmalloc_array(integer, font_max);
+font_flags:=xmalloc_array(char, font_max);
 @z
 
 @x
@@ -3793,6 +3800,7 @@ k:=biggest_lang+1;
   {Allocate and initialize font arrays}
   font_mapping:=xmalloc_array(integer, font_max);
   font_layout_engine:=xmalloc_array(integer, font_max);
+  font_flags:=xmalloc_array(char, font_max);
 @z
 
 @x
@@ -4235,10 +4243,11 @@ var
   i:integer;
 begin
 synch_h; synch_v;
+dvi_out(pic_file);
 if is_pdf then
-	dvi_out(pdf_file)
+	dvi_out(1)
 else
-	dvi_out(pic_file);
+	dvi_out(0);
 dvi_four(pic_transform1(p));
 dvi_four(pic_transform2(p));
 dvi_four(pic_transform3(p));
@@ -5031,6 +5040,8 @@ var
 	actual_size: scaled;	{|s| converted to real size, if it was negative}
 	p: pointer;	{for temporary |native_char| node we'll create}
 	ascent, descent, font_slant, x_ht, cap_ht: scaled;
+	f: internal_font_number;
+	full_name: str_number;
 begin
 	{ on entry here, the full name is packed into name_of_file in UTF8 form }
 
@@ -5039,6 +5050,21 @@ begin
 	if (s < 0) then actual_size := -s * unity div 100 else actual_size := s;
 	font_engine := find_native_font(name_of_file + 1, actual_size);
 	if font_engine = 0 then goto done;
+	
+	{ look again to see if the font is already loaded, now that we know its canonical name }
+	str_room(name_length);
+	for k := 1 to name_length do
+		append_char(name_of_file[k]);
+    full_name := make_string; { not slow_make_string because we'll flush it if the font was already loaded }
+    
+	for f:=font_base+1 to font_ptr do
+  		if (font_area[f] = native_font_type_flag) and str_eq_str(font_name[f], full_name) and (font_size[f] = actual_size) then begin
+  		    release_font_engine(font_engine, native_font_type_flag);
+  			flush_string;
+  		    load_native_font := f;
+  		    goto done;
+        end;
+	
 	if (font_ptr = font_max) or (fmem_ptr + 8 > font_mem_size) then begin
 		@<Apologize for not loading the font, |goto done|@>;
 	end;
@@ -5047,11 +5073,8 @@ begin
 	incr(font_ptr);
 	font_area[font_ptr] := native_font_type_flag; { set by find_native_font to either aat_font_flag or ot_font_flag }
 
-	{ we need the *full* name }
-	str_room(name_length);
-	for k := 1 to name_length do
-		append_char(name_of_file[k]);
-	font_name[font_ptr] := make_string;
+	{ store the canonical name }
+	font_name[font_ptr] := full_name;
 	
 	font_check[font_ptr].b0 := 0;
 	font_check[font_ptr].b1 := 0;
@@ -5106,6 +5129,7 @@ begin
 	incr(fmem_ptr);
 	
 	font_mapping[font_ptr] := loaded_font_mapping;
+	font_flags[font_ptr] := loaded_font_flags;
 
 	load_native_font := font_ptr;
 done:

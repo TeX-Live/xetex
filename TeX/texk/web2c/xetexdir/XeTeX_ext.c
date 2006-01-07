@@ -499,7 +499,9 @@ loadOTfont(XeTeXFont font, const char* cp1)
 					rgbValue += alpha;
 				else
 					rgbValue += 0xFF;
-				
+
+				loadedfontflags |= FONT_FLAGS_COLORED;
+
 				goto next_option;
 			}
 			
@@ -542,6 +544,9 @@ loadOTfont(XeTeXFont font, const char* cp1)
 		}
 	}
 	
+	if ((loadedfontflags & FONT_FLAGS_COLORED) == 0)
+		rgbValue = 0x000000FF;
+	
 	XeTeXLayoutEngine	engine = createLayoutEngine(font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
 	if (engine == 0) {
 		deleteFont(font);
@@ -581,6 +586,7 @@ findnativefont(const char* name, long scaled_size)
 {
 	long	rval = 0;
 	loadedfontmapping = 0;
+	loadedfontflags = 0;
 
 	const char*	var;
 	const char*	feat;
@@ -618,7 +624,7 @@ findnativefont(const char* name, long scaled_size)
 		if (varString != NULL)
 			namelength += strlen(varString) + 1;
 		free(nameoffile);
-		nameoffile = xmalloc(namelength + 2);
+		nameoffile = xmalloc(namelength + 4);
 		nameoffile[0] = ' ';
 		strcpy((char*)nameoffile + 1, fullName);
 
@@ -665,6 +671,20 @@ findnativefont(const char* name, long scaled_size)
 	free(nameString);
 	
 	return rval;
+}
+
+void
+releasefontengine(long engine, int type_flag)
+{
+#ifdef XETEX_MAC
+	if (type_flag == AAT_FONT_FLAG) {
+		ATSUDisposeStyle((ATSUStyle)engine);
+	}
+	else
+#endif
+	if (type_flag == OT_FONT_FLAG) {
+		deleteLayoutEngine((XeTeXLayoutEngine)engine);
+	}
 }
 
 void
@@ -925,7 +945,7 @@ makefontdef(long f)
 		+ 3	// name length
 		+ psLen + famLen + styLen;
 
-	if (rgba != 0x000000FF) {
+	if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
 		fontDefLength += 4; // 32-bit RGBA value
 		flags |= XDV_FLAG_COLORED;
 	}
@@ -965,7 +985,7 @@ makefontdef(long f)
 	memcpy(cp, styName, styLen);
 	cp += styLen;
 
-	if (rgba != 0x000000FF) {
+	if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
 		*(UInt32*)cp = SWAP32(rgba);
 		cp += 4;
 	}
@@ -1350,53 +1370,68 @@ void
 atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
 {
 #ifdef XETEX_MAC
+	*ascent = *descent = *xheight = *capheight = *slant = 0;
+
 	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-	Fixed		size;
-	ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
+	OSStatus	status = ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
+	if (status != noErr)
+		return;
 
-	ByteCount	tableSize;
 	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
-	if (ATSFontGetTable(fontRef, LE_HEAD_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
-		long	upem;
-		HEADTable*	head = xmalloc(tableSize);
-		ATSFontGetTable(fontRef, LE_HEAD_TABLE_TAG, 0, tableSize, head, 0);
-		upem = head->unitsPerEm;
-		free(head);
-		if (ATSFontGetTable(fontRef, LE_HHEA_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
-			HHEATable*	hhea = xmalloc(tableSize);
-			ATSFontGetTable(fontRef, LE_HHEA_TABLE_TAG, 0, tableSize, hhea, 0);
-			*ascent = X2Fix(Fix2X(size) * hhea->ascent / upem);
-			*descent = X2Fix(Fix2X(size) * hhea->descent / upem);
-			free(hhea);
-		}
-	}
 
+	Fixed		size;
+	status = ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
+	if (status != noErr)
+		return;
+	double		floatSize = Fix2X(size);
+
+	ATSFontMetrics	metrics;
+	status = ATSFontGetHorizontalMetrics(fontRef, kATSOptionFlagsDefault, &metrics);
+	if (status != noErr)
+		return;
+
+	*ascent = X2Fix(metrics.ascent * floatSize);
+	*descent = X2Fix(metrics.descent * floatSize);
+
+#if 0 /* we'll use the value from ATSFontGetHorizontalMetrics */
+	ByteCount	tableSize;
 	if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
-		POSTTable*	post = xmalloc(tableSize);
+		POSTTable*      post = xmalloc(tableSize);
 		ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
 		*slant = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
 		free(post);
 	}
-	else
-		*slant = 0;
-	
-	int	glyphID = MapCharToGlyph_AAT(style, 'x');
-	float	ht, dp;
-	if (glyphID != 0) {
-		GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
-		*xheight = X2Fix(ht);
+	else {
+#endif
+		if (metrics.italicAngle != 0.0 && fabs(metrics.italicAngle) < 0.090)
+			metrics.italicAngle *= 1000.0;	/* hack around apparent ATS bug */
+		*slant = X2Fix(tan(-metrics.italicAngle * M_PI / 180.0));
+#if 0
 	}
-	else
-		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
-	
-	glyphID = MapCharToGlyph_AAT(style, 'H');
-	if (glyphID != 0) {
-		GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
-		*capheight = X2Fix(ht);
+#endif
+
+	if (metrics.xHeight != 0.0) {
+		*xheight = X2Fix(metrics.xHeight * floatSize);
+		*capheight = X2Fix(metrics.capHeight * floatSize);
 	}
-	else
-		*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
+	else {
+		int	glyphID = MapCharToGlyph_AAT(style, 'x');
+		float	ht, dp;
+		if (glyphID != 0) {
+			GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
+			*xheight = X2Fix(ht);
+		}
+		else
+			*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
+		
+		glyphID = MapCharToGlyph_AAT(style, 'H');
+		if (glyphID != 0) {
+			GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
+			*capheight = X2Fix(ht);
+		}
+		else
+			*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
+	}
 #endif
 }
 

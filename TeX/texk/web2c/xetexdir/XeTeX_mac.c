@@ -488,7 +488,6 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 	ATSUStyle	style = 0;
 	OSStatus	status = ATSUCreateStyle(&style);
 	if (status == noErr) {
-		bool			colorSpecified = false;
 		unsigned long	rgbValue;
 		Fixed			atsuSize = FixedTeXtoPSPoints(scaled_size);
 		
@@ -674,7 +673,8 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 						rgbValue += alpha;
 					else
 						rgbValue += 0xFF;
-					colorSpecified = true;
+					
+					loadedfontflags |= FONT_FLAGS_COLORED;
 					
 					goto next_option;
 				}
@@ -713,7 +713,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 			if (numVariations > 0)
 				ATSUSetVariations(style, numVariations, axes, values);
 	
-			if (colorSpecified) {
+			if ((loadedfontflags & FONT_FLAGS_COLORED) != 0) {
 				ATSURGBAlphaColor	rgba;
 				rgba.red	= ((rgbValue & 0xFF000000) >> 24) / 255.0;
 				rgba.green	= ((rgbValue & 0x00FF0000) >> 16) / 255.0;

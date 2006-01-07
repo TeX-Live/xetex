@@ -15,6 +15,8 @@
 #define AAT_FONT_FLAG	65535
 #define	OT_FONT_FLAG	65534
 
+#define FONT_FLAGS_COLORED	0x01
+#define FONT_FLAGS_VERTICAL	0x02
 
 /* some typedefs that XeTeX uses - on Mac OS, we get these from Apple headers,
    but otherwise we'll need these substitute definitions */
