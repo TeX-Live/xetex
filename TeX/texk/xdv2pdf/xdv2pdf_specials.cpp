@@ -191,29 +191,25 @@ popRuleColor()
 static void
 setRuleColor(const ATSURGBAlphaColor& color)
 {
-	gRuleColor.color = color;
-	gRuleColor.override = true;
+	gRuleColor = color;
 }
 
 static void
 resetRuleColor()
 {
-	gRuleColor.color = kBlackColor;
-	gRuleColor.override = false;
+	gRuleColor = kBlackColor;
 }
 
 static void
 setTextColor(const ATSURGBAlphaColor& color)
 {
-	gTextColor.color = color;
-	gTextColor.override = true;
+	gTextColor = color;
 }
 
 static void
 resetTextColor()
 {
-	gTextColor.color = kBlackColor;
-	gTextColor.override = false;
+	gTextColor = kBlackColor;
 }
 
 static bool

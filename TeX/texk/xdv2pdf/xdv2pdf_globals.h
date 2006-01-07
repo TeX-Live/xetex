@@ -41,7 +41,7 @@ struct dviVars {
 	SInt32	z;
 };
 GLOBAL dviVars			dvi;
-GLOBAL UInt32			f, cur_cgFont, cur_atsuiFont;
+GLOBAL UInt32			f, cur_cgFont;
 
 GLOBAL double_t kScr2Dvi	// not quite const, actually - mag changes them
 #ifdef DEFINE_GLOBALS
@@ -56,15 +56,13 @@ GLOBAL double_t kDvi2Scr
 
 const ATSURGBAlphaColor	kBlackColor = { 0.0, 0.0, 0.0, 1.0 };
 
-struct colorStateRec {
-	ATSURGBAlphaColor	color;
-	bool				override;
-};
-GLOBAL std::list<colorStateRec>	gTextColorStack;
-GLOBAL std::list<colorStateRec>	gRuleColorStack;
+GLOBAL std::list<ATSURGBAlphaColor>	gTextColorStack;
+GLOBAL std::list<ATSURGBAlphaColor>	gRuleColorStack;
 
-GLOBAL colorStateRec	gTextColor;
-GLOBAL colorStateRec	gRuleColor;
+GLOBAL ATSURGBAlphaColor	gTextColor;
+GLOBAL ATSURGBAlphaColor	gRuleColor;
+
+GLOBAL ATSURGBAlphaColor	gCurrentColor;
 
 struct texFont {
 				texFont()

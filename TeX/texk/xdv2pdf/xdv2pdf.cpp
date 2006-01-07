@@ -122,6 +122,8 @@ paperSizeRec	gPaperSizes[] =
 	{ 0, 0, 0 }
 };
 
+static CGAffineTransform	horizontalMatrix = { 1.0,  0.0,  0.0,  1.0,  0.0,  0.0 };
+static CGAffineTransform	verticalMatrix   = { 0.0,  1.0, -1.0,  0.0,  0.0,  0.0 };
 
 struct nativeFont {
 				nativeFont()
@@ -145,8 +147,6 @@ struct nativeFont {
 };
 
 static std::map<UInt32,nativeFont>	sNativeFonts;
-
-static ATSUTextLayout	sLayout;
 
 static UInt32	sMag = 0;
 
@@ -231,6 +231,24 @@ readUnsigned(FILE* f, int k)
 }
 
 
+static void
+setColor(const ATSURGBAlphaColor& color, bool force = false)
+{
+	if (   color.red   != gCurrentColor.red
+		|| color.green != gCurrentColor.green
+		|| color.blue  != gCurrentColor.blue
+		|| color.alpha != gCurrentColor.alpha
+		|| force)
+		CGContextSetFillColor(gCtx, &color.red);
+	gCurrentColor = color;
+}
+
+static double
+radians(double degrees)
+{
+	return degrees / 180.0 * M_PI;
+}
+
 void
 ensurePageStarted()
 {
@@ -252,6 +270,7 @@ ensurePageStarted()
 		CGContextSetTextMatrix(gCtx, sInitTextMatrix);
 
 	CGContextSetFillColorSpace(gCtx, gUserColorSpace);
+	setColor(kBlackColor, true);
 
 	CGContextTranslateCTM(gCtx, 72.0, -72.0);
 
@@ -259,7 +278,6 @@ ensurePageStarted()
     gPageHt = kScr2Dvi * gMediaBox.size.height;
 	
 	cur_cgFont = kUndefinedFont;
-	cur_atsuiFont = kUndefinedFont;
 	
 	gPageStarted = true;
 }
@@ -278,13 +296,13 @@ flushGlyphs()
 		CGContextSetTextPosition(gCtx, gStartLoc.x, gStartLoc.y);
 		gAdvances[gGlyphCount].width = 0;
 		gAdvances[gGlyphCount].height = 0;
-		if (gTextColor.override) {
-			CGContextSaveGState(gCtx);
-			CGContextSetFillColor(gCtx, &gTextColor.color.red);
-		}
+
+		if (sNativeFonts[cur_cgFont].isColored)
+			setColor(sNativeFonts[cur_cgFont].color);
+		else
+			setColor(gTextColor);
 		CGContextShowGlyphsWithAdvances(gCtx, gGlyphs, gAdvances, gGlyphCount);
-		if (gTextColor.override)
-			CGContextRestoreGState(gCtx);
+
 		gGlyphCount = 0;
 	}
 }
@@ -320,6 +338,7 @@ setChar(UInt32 c, bool adv)
 		flushGlyphs();
         CGContextSetFont(gCtx, gTeXFonts[f].cgFont);
         CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[f].size) * gMagScale);
+		CGContextSetTextMatrix(gCtx, horizontalMatrix);
         cur_cgFont = f;
 	}
 
@@ -351,50 +370,6 @@ setChar(UInt32 c, bool adv)
 		dvi.h += gTeXFonts[f].widths[c];
 }
 
-/*
-static void
-doSetGlyph(UInt16 g, Fixed a)
-{
-	// NOTE that this is separate from the glyph-buffering done by setChar()
-	// as \XeTeXglyph deals with native fonts, while setChar() and bufferGlyph()
-	// are used to work with legacy TeX fonts
-	
-	// flush any setchar() glyphs, as we're going to change the font
-	flushGlyphs();
-	
-	if (cur_cgFont != f) {
-		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
-		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
-		cur_cgFont = f;
-	}
-
-	bool	resetColor = false;
-    if (gTextColor.override) {
-    	CGContextSaveGState(gCtx);
-        CGContextSetFillColor(gCtx, &gTextColor.color.red);
-		resetColor = true;
-	}
-	else if (sNativeFonts[f].isColored) {
-    	CGContextSaveGState(gCtx);
-        CGContextSetFillColor(gCtx, &sNativeFonts[f].color.red);
-       	resetColor = true;
-	}
-    CGContextShowGlyphsAtPoint(gCtx, kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v), &g, 1);
-    if (resetColor)
-    	CGContextRestoreGState(gCtx);
-
-	if (gTrackingBoxes) {
-		box	b = {
-			dvi.h,
-			dvi.v + (sNativeFonts[f].size / 3),
-			dvi.h + a,
-			dvi.v - (2 * sNativeFonts[f].size / 3) };
-		mergeBox(b);
-	}
-
-	dvi.h += a;
-}
-*/
 
 static FixedPoint
 getGlyphVOrg(const nativeFont& f, UInt16 gid)
@@ -450,32 +425,21 @@ doGlyphArray(FILE* xdv, bool yLocs)
 	}
 	for (int i = 0; i < glyphCount; ++i)
 		glyphs[i] = readUnsigned(xdv, 2);
-		
-	static CGAffineTransform	horizontalMatrix = CGAffineTransformMakeTranslation(0, 0);
-	static CGAffineTransform	verticalMatrix = CGAffineTransformMakeRotation(90 * M_PI / 180.0);
-
+	
 	if (f != cur_cgFont) {
 		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
 		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
-		if (!sNativeFonts[f].isVertical)
-			CGContextSetTextMatrix(gCtx, horizontalMatrix);
+		CGContextSetTextMatrix(gCtx, sNativeFonts[f].isVertical
+										? verticalMatrix : horizontalMatrix);
 		cur_cgFont = f;
 	}
 
-	bool	resetColor = false;
-    if (gTextColor.override) {
-    	CGContextSaveGState(gCtx);
-        CGContextSetFillColor(gCtx, &gTextColor.color.red);
-		resetColor = true;
-	}
-	else if (sNativeFonts[f].isColored) {
-    	CGContextSaveGState(gCtx);
-        CGContextSetFillColor(gCtx, &sNativeFonts[f].color.red);
-		resetColor = true;
-	}
+	if (sNativeFonts[f].isColored)
+        setColor(sNativeFonts[f].color);
+	else
+        setColor(gTextColor);
 
 	if (sNativeFonts[f].isVertical) {
-		CGContextSetTextMatrix(gCtx, verticalMatrix);
 		for (int i = 0; i < glyphCount; ++i) {
 			// need to adjust position to right by VOrg.y and down by VOrg.x
 			FixedPoint	vorg = getGlyphVOrg(sNativeFonts[f], glyphs[i]);
@@ -495,9 +459,6 @@ doGlyphArray(FILE* xdv, bool yLocs)
 	advances[glyphCount-1].height = 0.0;
 
 	CGContextShowGlyphsWithAdvances(gCtx, glyphs, advances, glyphCount);
-
-	if (resetColor)
-		CGContextRestoreGState(gCtx);
 
 	if (gTrackingBoxes) {
 		box	b = {
@@ -1532,7 +1493,7 @@ doNativeFontDef(FILE* xdv)
 	fread(name, 1, psLen, xdv);
 	name[psLen] = 0;
 
-// don't use fseek, doesn't work when reading from a pipe!
+	// don't use fseek, doesn't work when reading from a pipe!
 	while (skipLen-- > 0)
 		(void)readUnsigned(xdv, 1);
 
@@ -1614,7 +1575,7 @@ doNativeFontDef(FILE* xdv)
 	fontRec.atsFont = fontRef;
 	fontRec.size = s;
 	fontRec.color = makeAtsuColor(rgba);
-	fontRec.isColored = !(rgba == 0x000000FF);
+	fontRec.isColored = (flags & XDV_FLAG_COLORED) != 0;
 	fontRec.isVertical = (flags & XDV_FLAG_VERTICAL) != 0;
 
 	if (fontRec.isVertical) {
@@ -1665,7 +1626,6 @@ processPage(FILE* xdv)
     (void)readUnsigned(xdv, 4);	// skip prev-BOP pointer
 	
 	cur_cgFont = kUndefinedFont;
-	cur_atsuiFont = kUndefinedFont;
 	dvi.h = dvi.v = 0;
 	dvi.w = dvi.x = dvi.y = dvi.z = 0;
 	f = 0;
@@ -1732,13 +1692,8 @@ processPage(FILE* xdv)
 				wd = readSigned(xdv, 4);
 				if (ht > 0 && wd > 0) {
 					CGRect	r = CGRectMake(kDvi2Scr * dvi.h, kDvi2Scr * (gPageHt - dvi.v), kDvi2Scr * wd, kDvi2Scr * ht);
-                    if (gRuleColor.override) {
-                    	CGContextSaveGState(gCtx);
-                        CGContextSetFillColor(gCtx, &gRuleColor.color.red);
-					}
+					setColor(gRuleColor);
                     CGContextFillRect(gCtx, r);
-                    if (gRuleColor.override)
-                        CGContextRestoreGState(gCtx);
                     if (gTrackingBoxes) {
 						box	b = {
 							dvi.h,
@@ -1861,22 +1816,6 @@ processPage(FILE* xdv)
 				dvi.v += dvi.z;
 				break;
 			
-/*
-			case DVI_GLYPH:
-				ensurePageStarted();
-				u = readUnsigned(xdv, 2);
-				s = readSigned(xdv, 4);
-				doSetGlyph(u, s);
-				break;
-*/
-			
-/*
-			case DVI_NATIVE:
-				ensurePageStarted();
-				doSetNative(xdv);
-				break;
-*/
-
 			case XDV_GLYPH_ARRAY:
 				ensurePageStarted();
 				doGlyphArray(xdv, true);
@@ -1889,14 +1828,10 @@ processPage(FILE* xdv)
 			
             case XDV_PIC_FILE:
 				ensurePageStarted();
-                doPicFile(xdv, false);
+				k = readUnsigned(xdv, 1);	/* flag = 1 for PDF mode, 0 for QuickTime raster */
+                doPicFile(xdv, (k == 1));
                 break;
                             
-            case XDV_PDF_FILE:
-				ensurePageStarted();
-                doPicFile(xdv, true);
-                break;
-                        
 			case DVI_FNTDEF4:
 				++k;
 			case DVI_FNTDEF3:
@@ -1974,9 +1909,8 @@ xdv2pdf(int argc, char** argv)
     progName = argv[0];
     
 	gMagScale = 1.0;
-	gRuleColor.color = kBlackColor;
-	gRuleColor.override = false;
-	gTextColor = gTextColor;
+	gRuleColor = kBlackColor;
+	gTextColor = gRuleColor;
 
 	gTagLevel = -1;
 	
@@ -2064,18 +1998,6 @@ xdv2pdf(int argc, char** argv)
         exit(1);
     }
     
-	ATSUCreateTextLayout(&sLayout);
-//	ATSUFontFallbacks fallbacks;
-//	status = ATSUCreateFontFallbacks(&fallbacks);
-//	status = ATSUSetObjFontFallbacks(fallbacks, 0, 0, /*kATSULastResortOnlyFallback*/kATSUDefaultFontFallbacks);
-//	ATSUAttributeTag		tag = kATSULineFontFallbacksTag;
-//	ByteCount				valueSize = sizeof(fallbacks);
-//	ATSUAttributeValuePtr	value = &fallbacks;
-//	status = ATSUSetLayoutControls(sLayout, 1, &tag, &valueSize, &value);
-
-// this doesn't seem to be working for me....
-//	status = ATSUSetTransientFontMatching(sLayout, true);
-
 	FILE*	xdv;
     if (argc == 1)
         xdv = fopen(argv[0], "r");
@@ -2112,12 +2034,6 @@ xdv2pdf(int argc, char** argv)
         // create PDF graphics context
         gCtx = CGPDFContextCreateWithURL(gSaveURL, &gMediaBox, auxInfo);
 
-		// set up the TextLayout to use this graphics context
-		ByteCount				iSize = sizeof(CGContextRef);
-		ATSUAttributeTag		iTag = kATSUCGContextTag;
-		ATSUAttributeValuePtr	iValuePtr = &gCtx;
-		ATSUSetLayoutControls(sLayout, 1, &iTag, &iSize, &iValuePtr); 
-	
 		// handle magnification
 		if (sMag != 1000) {
 			gMagScale = sMag / 1000.0;
@@ -2136,8 +2052,6 @@ xdv2pdf(int argc, char** argv)
 		fclose(xdv);
 	}
 	
-    ATSUDisposeTextLayout(sLayout);
-    
 	if (gPdfMarkFile != NULL) {
 		fclose(gPdfMarkFile);
 		char	pdfPath[_POSIX_PATH_MAX+1];

@@ -71,11 +71,7 @@
 #define DVI_POSTPOST      249
 #define DVI_TRAILER       223
 
-//#define DVI_GLYPH			255
-
-//#define DVI_NATIVE			254
 #define XDV_GLYPH_STRING	254
 #define XDV_GLYPH_ARRAY		253
-#define XDV_PIC_FILE		252
-#define XDV_PDF_FILE		251
-#define XDV_NATIVE_FONT_DEF	250
+#define XDV_NATIVE_FONT_DEF	252
+#define XDV_PIC_FILE		251
