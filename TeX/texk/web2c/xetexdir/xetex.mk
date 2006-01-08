@@ -60,16 +60,16 @@ xetex_ot_layout_cxx = \
 		XeTeXFontInst.cpp cmaps.cpp FontObject.cpp FontTableCache.cpp \
 		$(xetex_platform_layout_cxx)
 
-icudir = icu-release-3-4
+icudir = icu-release-3-4-source
 
 ICUCFLAGS = \
-	-I../../libs/$(icudir)/common/unicode/ \
-	-I../../libs/$(icudir)/common/ \
-	-I../../../../TeX/libs/$(icudir)/source/common/unicode/ \
-	-I../../../../TeX/libs/$(icudir)/source/common/ \
-	-I../../../../TeX/libs/$(icudir)/source/layout/unicode/ \
-	-I../../../../TeX/libs/$(icudir)/source/layout/ \
-	-I../../../../TeX/libs/$(icudir)/source/ \
+	-I../../libs/$(icudir)/common/unicode \
+	-I../../libs/$(icudir)/common \
+	-I../../../../TeX/libs/$(icudir)/common/unicode \
+	-I../../../../TeX/libs/$(icudir)/common \
+	-I../../../../TeX/libs/$(icudir)/layout/unicode \
+	-I../../../../TeX/libs/$(icudir)/layout \
+	-I../../../../TeX/libs/$(icudir) \
 	-DLE_USE_CMEMORY
 
 FTFLAGS =  -I/usr/include/freetype2/
@@ -104,10 +104,18 @@ XeTeXFontInst_FC.o: $(srcdir)/xetexdir/XeTeXFontInst_FC.cpp
 
 
 xetexlibs = \
-	../../libs/teckit/lib/.libs/libTECkit.a \
 	../../libs/$(icudir)/lib/libsicuuc.a \
 	../../libs/$(icudir)/lib/libsicule.a \
-	../../libs/$(icudir)/lib/libsicudata.a
+	../../libs/$(icudir)/lib/libsicudata.a \
+	../../libs/teckit/lib/.libs/libTECkit.a
+
+../../libs/$(icudir)/lib/libsicuuc.a \
+../../libs/$(icudir)/lib/libsicule.a \
+../../libs/$(icudir)/lib/libsicudata.a:
+	(cd ../../libs/$(icudir) ; make)
+
+../../libs/teckit/lib/.libs/libTECkit.a:
+	(cd ../../libs/teckit ; make)
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h

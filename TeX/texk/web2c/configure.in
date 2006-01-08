@@ -191,7 +191,8 @@ fi
 # Check whether C++ compiler works.  Prevent exit if it doesn't.
 if test "x$with_pdftex"  = xyes ||
    test "x$with_pdfetex" = xyes ||
-   test "x$with_pdfxtex" = xyes
+   test "x$with_pdfxtex" = xyes ||
+   test "x$with_xetex" = xyes
 then
   # First test whether the compiler works in a subshell, and if so,
   # do it again in the main shell so we see the result.

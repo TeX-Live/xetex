@@ -1,7 +1,0 @@
-test ! -f Makefile || make clean 
-rm -rf Work
-find . -name config.cache -print -exec rm -f {} \;
-H=`pwd`
-mkdir Work; cd Work
-../configure --prefix=$H --datadir=$H &&
-make world 

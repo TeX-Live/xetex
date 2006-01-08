@@ -1,31 +1,54 @@
 #!/bin/sh
 
-# How I'm currently setting things up to build XeTeX....
+CWD=`pwd`
 
 # create the Work subtree where we'll actually build stuff
 
 test -d Work || mkdir Work
 cd Work
 
-# run the TeX Live configure script, omitting a couple things that have given me trouble
-../configure --prefix=/usr/local/teTeX/ --datadir=/usr/local/teTeX/share --without-omega --without-eomega --without-aleph --without-odvipsk --without-oxdvik
+# try to figure out where the user's teTeX is, and complain if we can't find it...
+KPSEWHICH=`which kpsewhich`
+if [ ! -e "${KPSEWHICH}" ]; then
+	echo "### No kpsewhich found -- are you sure you have teTeX installed?"
+	exit 1
+fi
+HYPHEN=`kpsewhich hyphen.tex`
+if [ "${HYPHEN}x" == "x" ]; then
+	echo "### hyphen.tex not found -- are you sure you have teTeX installed?"
+	exit 1
+fi
 
-# the main configure doesn't know about ICU, so configure that separately
-mkdir -p TeX/libs/icu-release-3-4
+PREFIX=`echo ${KPSEWHICH} | sed -e 's!/bin/.*!/!;'`
+DATADIR=`echo ${HYPHEN} | sed -e 's!/texmf.*!/!;'`
+
+# run the TeX Live configure script
+echo "### running TeX Live configure script as:"
+echo "../configure --prefix=${PREFIX} --datadir=${DATADIR}"
+../configure --prefix=${PREFIX} --datadir=${DATADIR}
+
+# we need different configure options for ICU
+echo "### configuring the ICU library"
+mkdir -p TeX/libs/icu-release-3-4-source
 (
-	cd TeX/libs/icu-release-3-4
-	../../../../TeX/libs/icu-release-3-4/source/configure --enable-static --disable-shared
-	# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available - hoping for 10.2 compatibility :)
-	perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' common/unicode/platform.h
+	cd TeX/libs/icu-release-3-4-source
+	../../../../TeX/libs/icu-release-3-4-source/configure --enable-static --disable-shared
+	if [ "`uname`" == "Darwin" ]; then
+		# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available - hoping for 10.2 compatibility :)
+		perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' common/unicode/platform.h
+	fi
 )
 
-# similarly, configure TECkit separately
+# also configure TECkit separately for now
+echo "### configuring the TECkit library"
 mkdir -p TeX/libs/teckit
-(cd TeX/libs/teckit; ../../../../TeX/libs/teckit/configure)
+(
+	cd TeX/libs/teckit
+	../../../../TeX/libs/teckit/configure
+)
 
 # To build:
-# "make" in Work/libs/icu-release-3-4
-# "make" in Work/libs/teckit
+# "make" in Work/TeX/libs/icu-release-3-4
+# "make" in Work/TeX/libs/teckit
 # "make xetex" in Work/TeX/texk/web2c
-# "make xdv2pdf" in Work/TeX/texk/xdv2pdf
-
+# on Mac OS X only: "make xdv2pdf" in Work/TeX/texk/xdv2pdf

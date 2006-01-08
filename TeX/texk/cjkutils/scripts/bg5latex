@@ -1,3 +1,0 @@
-#!/bin/sh
-f=`echo $1 | sed -e 's|\(.*\)\.[^/]*$|\1|'`
-bg5conv < $1 > $f.cjk && latex $f.cjk

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Top-level script to compile xetex (and xdv2pdf on OS X)
+# from the source tree as found in Subversion
+
+# do some cleanup if needed
+test ! -f Makefile || make clean
+rm -rf Work
+find . -name config.cache -print -exec rm -f {} \;
+
+# run the configure script, which will create a Work subtree
+(./runConfigure.sh)
+
+# this should make ICU and TECkit along the way, if xetex.mk works
+(cd Work/TeX/texk/web2c && make xetex)
+PRODUCTS=Work/TeX/texk/web2c/xetex
+
+# xdv2pdf is for Mac OS X only, don't try to build on Linux
+if [ "`uname`" == "Darwin" ]; then
+	(cd Work/TeX/texk/xdv2pdf && make xdv2pdf)
+	PRODUCTS="${PRODUCTS} Work/TeX/texk/xdv2pdf/xdv2pdf"
+fi
+
+ls -l ${PRODUCTS}
