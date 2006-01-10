@@ -607,8 +607,6 @@ findnativefont(const char* name, long scaled_size)
 	
 	PlatformFontRef	fontRef;
 	fontRef = findFontByName(nameString, varString, Fix2X(scaled_size));
-	if (varString != NULL)
-		free(varString);
 
 	if (fontRef != 0) {
 		/* update nameoffile to the full name of the font, for error messages during font loading */
@@ -616,6 +614,8 @@ findnativefont(const char* name, long scaled_size)
 		namelength = strlen(fullName);
 		if (featString != NULL)
 			namelength += strlen(featString) + 1;
+		if (varString != NULL)
+			namelength += strlen(varString) + 1;
 		free(nameoffile);
 		nameoffile = xmalloc(namelength + 2);
 		nameoffile[0] = ' ';
@@ -644,16 +644,23 @@ findnativefont(const char* name, long scaled_size)
 		}
 #endif
 
-		/* append the feature string, so that \show\fontID will give a full result */
+		/* append the style and feature strings, so that \show\fontID will give a full result */
+		if (varString != NULL) {
+			strcat((char*)nameoffile + 1, "/");
+			strcat((char*)nameoffile + 1, varString);
+		}
 		if (featString != NULL) {
 			strcat((char*)nameoffile + 1, ":");
 			strcat((char*)nameoffile + 1, featString);
 		}
-	
 	}
 	
+	if (varString != NULL)
+		free(varString);
+
 	if (featString != NULL)
 		free(featString);
+
 	free(nameString);
 	
 	return rval;
