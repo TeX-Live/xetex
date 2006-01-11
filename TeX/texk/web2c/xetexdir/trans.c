@@ -52,7 +52,7 @@ void maketranslation(transform* t, double dx, double dy)
 	t->y = dy;
 #endif
 }
-
+#include <stdio.h>
 void makerotation(transform* t, double a)
 {
 #ifdef XETEX_MAC

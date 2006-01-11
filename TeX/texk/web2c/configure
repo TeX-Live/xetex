@@ -4986,10 +4986,10 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"Makefile doc/Makefile lib/Makefile man/Makefile mpware/Makefile 
-          web2c/Makefile window/Makefile
+CONFIG_FILES=\${CONFIG_FILES-"Makefile doc/Makefile lib/Makefile  
+          web2c/Makefile 
           $libpdfmakefile $libpdfemakefile $libpdfxmakefile
-          $omegafontsmakefile $otpsmakefile fmtutil.cnf:fmtutil.in"}
+          fmtutil.cnf:fmtutil.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

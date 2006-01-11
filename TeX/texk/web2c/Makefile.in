@@ -1200,7 +1200,8 @@ installcheck:
 
 # 
 # Cleaning.
-all_subdirs = doc lib man mpware web2c window $(omegafonts) $(otps) $(pdftexdir) $(pdfetexdir) $(pdfxtexdir)
+# all_subdirs = doc lib man mpware web2c window $(omegafonts) $(otps) $(pdftexdir) $(pdfetexdir) $(pdfxtexdir)
+all_subdirs = doc lib web2c $(pdftexdir) $(pdfetexdir) $(pdfxtexdir)
 
 # Having a multiple-target rule with the subdir loop fails because of
 # the dependencies introduced by clean.mk.  Yet, we want the

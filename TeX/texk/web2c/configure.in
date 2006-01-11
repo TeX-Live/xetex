@@ -408,9 +408,9 @@ KPSE_CROSS_PATH_PROG(OTANGLE, otangle, ./otangle)
 fi
 
 dnl Generate `Makefile's, `config.status', and our header file.
-AC_OUTPUT(Makefile doc/Makefile lib/Makefile man/Makefile mpware/Makefile 
-          web2c/Makefile window/Makefile
+AC_OUTPUT(Makefile doc/Makefile lib/Makefile 
+          web2c/Makefile 
           $libpdfmakefile $libpdfemakefile $libpdfxmakefile
-          $omegafontsmakefile $otpsmakefile fmtutil.cnf:fmtutil.in)
+          fmtutil.cnf:fmtutil.in)
 dnl Update stamp-auto, since we just remade `c-auto.h'.
 date >stamp-auto

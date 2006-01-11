@@ -21,9 +21,9 @@
 #include <Carbon/Carbon.h>
 #endif
 
-#include "TECkit_Engine.h"
-
 #include "XeTeX_ext.h"
+
+#include "TECkit_Engine.h"
 
 #include <kpathsea/c-ctype.h>
 #include <kpathsea/line.h>
@@ -1669,9 +1669,55 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 }
 
 #ifdef XETEX_OTHER
+#include <wand/magick-wand.h>
 int
-find_pic_file(const char* pic_path, realrect* bounds, int isPDF, int page)
+find_pic_file(char** path, realrect* bounds, int isPDF, int page)
+		/* FIXME: not yet handling /page/ parameter or PDFs properly */
 {
-	return -43;
+	int					err = -1;
+    MagickBooleanType	status;
+    MagickWand			*wand;
+    ResolutionType		units;
+    double				xRes, yRes;
+    char*				pic_path = kpse_find_file((char*)nameoffile + 1, kpse_pict_format, 1);
+
+	*path = NULL;
+
+    wand = NewMagickWand();
+    status = MagickPingImage(wand, pic_path);
+    if (status == MagickTrue) {
+        status = MagickGetImageResolution(wand, &xRes, &yRes);
+		if (status == MagickTrue) {
+			bounds->x = bounds->y = 0;
+			units = MagickGetImageUnits(wand);
+			switch (units) {
+				default:
+					/* treat unknown as 72 pixels per inch horiz, and proportionately vertical */
+					bounds->wd = MagickGetImageWidth(wand);
+					if (xRes != 0.0 && yRes != 0.0)
+						bounds->ht = MagickGetImageHeight(wand) * xRes / yRes;
+					else
+						bounds->ht = MagickGetImageHeight(wand);
+					break;
+				case PixelsPerInchResolution:
+					bounds->wd = MagickGetImageWidth(wand) * 72.0 / xRes;
+					bounds->ht = MagickGetImageHeight(wand) * 72.0 / yRes;
+					break;
+				case PixelsPerCentimeterResolution:
+					bounds->wd = MagickGetImageWidth(wand) * 72.0 / (xRes * 2.54);
+					bounds->ht = MagickGetImageHeight(wand) * 72.0 / (yRes * 2.54);
+					break;
+			}
+			err = 0;
+		}
+    }
+    wand = DestroyMagickWand(wand);
+
+	if (err != 0)
+		free(pic_path);
+	else
+		*path = pic_path;
+
+	return err;
 }
 #endif

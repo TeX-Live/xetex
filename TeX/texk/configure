@@ -6636,6 +6636,10 @@ PKGS='
   seetexk tetex tex4htk texlive ttf2pk tth xdv2pdf xdvik
 '
 
+PKGS='
+  xdv2pdf
+'
+
 ESUBDIRS=
 for pkg in $PKGS; do
   if eval "test \"x`echo '$with_'${pkg}`\" != xno"; then

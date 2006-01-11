@@ -13,11 +13,9 @@ target_vendor = @target_vendor@
 xetex = @XETEX@ xetex
 
 # Platform specific defines and files to be built
-#Mac
-ifeq '$(target_vendor)' 'apple'
+ifeq '$(target_vendor)' 'apple' # or should we be testing target_os???
+
 xetex_platform_o = XeTeX_mac.o XeTeXFontMgr_Mac.o
-# xetex_platform_layout_o = ATSFontInst.o 
-# xetex_platform_layout_cxx = ATSFontInst.cpp
 xetex_platform_layout_o = XeTeXFontInst_Mac.o
 xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp
 
@@ -25,7 +23,9 @@ XETEX_DEFINES = -DXETEX_MAC
 
 # System frameworks we link with on Mac OS X
 FRAMEWORKS = -framework Carbon -framework QuickTime
-else
+
+else # not apple, currently assume a Linux-like system with X11, etc... no W32 option yet
+
 #Linux is linux-gnu, ought to be same defines/files for other X11 systems like BSDs
 xetex_platform_o = XeTeXFontMgr_Linux.o
 xetex_platform_layout_o = XeTeXFontInst_FC.o
@@ -33,7 +33,9 @@ xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
 
 XETEX_DEFINES = -DXETEX_OTHER
 
-FRAMEWORKS = -lfreetype -lfontconfig
+# assumes FreeType, FontConfig, ImageMagick are available
+FRAMEWORKS = -lfreetype -lfontconfig `Wand-config  --ldflags --libs`
+
 endif
 
 XDEFS = $(XETEX_DEFINES)
@@ -75,6 +77,7 @@ ICUCFLAGS = \
 FTFLAGS =  -I/usr/include/freetype2/
 
 TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
+XCFLAGS = $(TECkitFLAGS) # actually, we need this for most compiles
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
