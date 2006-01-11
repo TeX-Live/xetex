@@ -37,5 +37,6 @@ COLLATION_EMPTY_SOURCE =
 
 
 # Ordinary resources
-COLLATION_SOURCE = $(COLLATION_EMPTY_SOURCE)
+COLLATION_SOURCE = $(COLLATION_EMPTY_SOURCE) \
+	en.txt # not needed for xetex, but MinGW can't handle empty list
 

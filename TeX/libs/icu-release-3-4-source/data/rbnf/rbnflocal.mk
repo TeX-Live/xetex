@@ -30,7 +30,7 @@ RBNF_ALIAS_SOURCE =
 
 
 # Please try to keep this list in alphabetical order
-RBNF_SOURCE = \
+RBNF_SOURCE = en.txt # none needed for xetex, but MinGW can't handle empty list
 
 
 #These are not in use yet
