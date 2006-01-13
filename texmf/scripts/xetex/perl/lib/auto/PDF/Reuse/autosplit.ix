@@ -1,0 +1,122 @@
+# Index created by AutoSplit for blib/lib/PDF/Reuse.pm
+#    (file acts as timestamp)
+package PDF::Reuse;
+sub prLink 
+;
+sub mergeLinks 
+;
+sub prStrWidth  
+;
+sub prBookmark 
+;
+sub ordnaBookmarks 
+;
+sub descend 
+;
+sub prInitVars 
+;
+sub prImage 
+;
+sub prMbox 
+;
+sub prField 
+;
+sub prBar 
+;
+sub prExtract 
+;
+sub prDoc 
+;
+sub prDocForm 
+;
+sub calcMatrix 
+;
+sub fillTheForm 
+;
+sub prJpeg 
+;
+sub checkContentStream 
+;
+sub prGraphState 
+;
+sub findBarFont ();
+sub createCharProcs ();
+sub prCid 
+;
+sub prIdType 
+;
+sub prId 
+;
+sub prJs 
+;
+sub prInit 
+;
+sub prVers 
+;
+sub prDocDir 
+;
+sub prLogDir 
+;
+sub prLog 
+;
+sub prGetLogBuffer 
+;
+sub findDir 
+;
+sub prTouchUp 
+;
+sub prCompress 
+;
+sub prep 
+;
+sub xRefs 
+;
+sub crossrefObj 
+;
+sub xrefSection 
+;
+sub getObject 
+;
+sub getKnown 
+;
+sub unZipPrepare 
+;
+sub getPage 
+;
+sub xform 
+;
+sub kolla 
+;
+sub byggForm 
+;
+sub getImage 
+;
+sub AcroFormsEtc 
+;
+sub extractName 
+;
+sub extractObject 
+;
+sub analysera 
+;
+sub sidAnalys 
+;
+sub translate 
+;
+sub behandlaNames 
+;
+sub quickxform 
+;
+sub skrivKedja 
+;
+sub skrivJS 
+;
+sub inkludera 
+;
+sub defLadda 
+;
+sub defInit 
+;
+sub errLog 
+;
+1;
