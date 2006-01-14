@@ -114,6 +114,10 @@ le_int32 LEGlyphStorage::allocatePositions(LEErrorCode &success)
         return -1;
     }
 
+    if (fPositions != NULL) {
+        LE_DELETE_ARRAY(fPositions);
+    }
+
     fPositions = LE_NEW_ARRAY(float, 2 * (fGlyphCount + 1));
 
     if (fPositions == NULL) {
