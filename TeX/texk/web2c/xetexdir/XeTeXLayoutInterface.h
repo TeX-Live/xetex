@@ -33,7 +33,7 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize);
 #endif
 
 PlatformFontRef getFontRef(XeTeXLayoutEngine engine);
-PlatformFontRef findFontByName(const char* name, const char* var, double size);
+PlatformFontRef findFontByName(const char* name, char* var, double size);
 
 char getReqEngine();
 const char* getFullName(PlatformFontRef fontRef);

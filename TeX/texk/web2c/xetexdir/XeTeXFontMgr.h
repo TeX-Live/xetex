@@ -37,7 +37,7 @@ public:
 	static XeTeXFontMgr*			GetFontManager();
 		// returns the global fontmanager (creating it if necessary)
 
-	PlatformFontRef					findFont(const char* name, const char* variant, double ptSize);
+	PlatformFontRef					findFont(const char* name, char* variant, double ptSize);
 		// 1st arg is name as specified by user (C string, UTF-8)
 		// 2nd is /B/I/AAT/ICU[/USP]/S=## qualifiers
 		// 1. try name given as "full name"
@@ -49,10 +49,10 @@ public:
 		// SIDE EFFECT: sets sReqEngine to 'A' or 'I' [or 'U'] if appropriate,
 		//   else clears it to 0
 
-		// ???
-		// SIDE EFFECT: may update TeX variables /nameoffile/ and /namelength/,
+		// SIDE EFFECT: updates TeX variables /nameoffile/ and /namelength/,
 		//   to match the actual font found
-		// ???
+
+		// SIDE EFFECT: edits /variant/ string in-place removing /B or /I
 		
 	const char*						getPSName(PlatformFontRef font) const;
 		// return PostScript name of a font, suitable for use in the .xdv file

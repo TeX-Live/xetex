@@ -562,7 +562,7 @@ loadOTfont(XeTeXFont font, const char* cp1)
 }
 
 static void
-splitFontName(const char* name, const char** var, const char** feat, const char** end)
+splitFontName(char* name, char** var, char** feat, char** end)
 {
 	*var = NULL;
 	*feat = NULL;
@@ -581,16 +581,16 @@ splitFontName(const char* name, const char** var, const char** feat, const char*
 }
 
 long
-findnativefont(const char* name, long scaled_size)
+findnativefont(char* name, long scaled_size)
 	// scaled_size here is in TeX points
 {
 	long	rval = 0;
 	loadedfontmapping = 0;
 	loadedfontflags = 0;
 
-	const char*	var;
-	const char*	feat;
-	const char*	end;
+	char*	var;	/* not const char* because findFontByName edits it */
+	char*	feat;
+	char*	end;
 
 	splitFontName(name, &var, &feat, &end);
 
@@ -624,7 +624,7 @@ findnativefont(const char* name, long scaled_size)
 		if (varString != NULL)
 			namelength += strlen(varString) + 1;
 		free(nameoffile);
-		nameoffile = xmalloc(namelength + 4);
+		nameoffile = xmalloc(namelength + 4); /* +2 would be correct: initial space, final NUL */
 		nameoffile[0] = ' ';
 		strcpy((char*)nameoffile + 1, fullName);
 
@@ -652,14 +652,15 @@ findnativefont(const char* name, long scaled_size)
 #endif
 
 		/* append the style and feature strings, so that \show\fontID will give a full result */
-		if (varString != NULL) {
+		if (varString != NULL && *varString != 0) {
 			strcat((char*)nameoffile + 1, "/");
 			strcat((char*)nameoffile + 1, varString);
 		}
-		if (featString != NULL) {
+		if (featString != NULL && *featString != 0) {
 			strcat((char*)nameoffile + 1, ":");
 			strcat((char*)nameoffile + 1, featString);
 		}
+		namelength = strlen((char*)nameoffile + 1);
 	}
 	
 	if (varString != NULL)

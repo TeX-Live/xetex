@@ -31,8 +31,9 @@ XeTeXFontMgr::GetFontManager()
 }
 
 PlatformFontRef
-XeTeXFontMgr::findFont(const char* name, const char* variant, double ptSize)
+XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 	// ptSize is in TeX points
+	// "variant" string will be shortened (in-place) by removal of /B and /I if present
 {
 	std::string	nameStr(name);
 	Font*	font = NULL;
@@ -110,40 +111,58 @@ XeTeXFontMgr::findFont(const char* name, const char* variant, double ptSize)
 	Family*	parent = font->parent;
 	
 	// if there are variant requests, try to apply them
+	// and delete B or I codes from the string
 	sReqEngine = 0;
 	bool	reqBold = false;
 	bool	reqItal = false;
 	if (font != NULL && variant != NULL) {
-		const char* cp = variant;
+		std::string	varString;
+		char* cp = variant;
 		while (*cp) {
 			if (strncmp(cp, "AAT", 3) == 0) {
 				sReqEngine = 'A';
 				cp += 3;
-				continue;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append("AAT");
+				goto skip_to_slash;
 			}
 			if (strncmp(cp, "ICU", 3) == 0) {
 				sReqEngine = 'I';
 				cp += 3;
-				continue;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append("ICU");
+				goto skip_to_slash;
 			}
 /*
 			if (strncmp(cp, "USP", 3) == 0) {
 				sReqEngine = 'U';
 				cp += 3;
-				continue;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append("USP");
+				goto skip_to_slash;
 			}
-			if (strncmp(cp, "Pango", 5) == 0) {
+			if (strncmp(cp, "PAN", 5) == 0) {
 				sReqEngine = 'P';
-				cp += 5;
-				continue;
+				cp += 3;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append("PAN");
+				goto skip_to_slash;
 			}
-			if (strncmp(cp, "Graphite", 8) == 0) {
+			if (strncmp(cp, "GRA", 8) == 0) {
 				sReqEngine = 'G';
-				cp += 8;
-				continue;
+				cp += 3;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append("GRA");
+				goto skip_to_slash;
 			}
 */
 			if (*cp == 'S') {
+				char*	start = cp;
 				++cp;
 				if (*cp == '=')
 					++cp;
@@ -161,15 +180,35 @@ XeTeXFontMgr::findFont(const char* name, const char* variant, double ptSize)
 						++cp;
 					}
 				}
-				continue;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append(start, cp);
+				goto skip_to_slash;
 			}
-			if (*cp == 'B')
-				reqBold = true;
-			else if (*cp == 'I')
-				reqItal = true;
-			++cp;
+			
+			/* if the code is "B" or "I", we skip putting it in varString */
+			while (1) {
+				if (*cp == 'B') {
+					reqBold = true;
+					++cp;
+					continue;
+				}
+				if (*cp == 'I') {
+					reqItal = true;
+					++cp;
+					continue;
+				}
+				break;
+			}
+			
+		skip_to_slash:
+			while (*cp && *cp != '/')
+				++cp;
+			if (*cp == '/')
+				++cp;
 		}
-
+		strcpy(variant, varString.c_str());
+		
 		if (reqItal && !font->isItalic) {
 			// look for an italic version with same boldness
 			Font*	bestMatch = NULL;

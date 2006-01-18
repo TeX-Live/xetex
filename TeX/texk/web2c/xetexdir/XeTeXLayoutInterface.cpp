@@ -61,7 +61,7 @@ PlatformFontRef getFontRef(XeTeXLayoutEngine engine)
 	return engine->font->getFontRef();
 }
 
-PlatformFontRef findFontByName(const char* name, const char* var, double size)
+PlatformFontRef findFontByName(const char* name, char* var, double size)
 {
 	return (XeTeXFontMgr::GetFontManager()->findFont(name, var, size));
 }
