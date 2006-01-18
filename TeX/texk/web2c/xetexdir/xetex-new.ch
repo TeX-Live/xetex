@@ -2862,7 +2862,8 @@ restart:
 for l := 0 to native_length(ha)-1 do begin
   c := get_native_char(ha, l);
   set_lc_code(c);
-  if (hc[0] = 0) or (hc[0] > max_hyph_char) then begin
+  if (hc[0] = 0) {or (hc[0] > max_hyph_char) -- no, there can be letters > max_hyph_char in the word}
+  then begin
     if (hn > 0) then begin
       { we've got some letters, and now found a non-letter, so break off the tail of the |native_word|
         and link it after this node, and goto done3 }
