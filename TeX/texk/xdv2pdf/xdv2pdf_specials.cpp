@@ -634,10 +634,7 @@ doSpecial(const char* special)
 	else if (strMatch(special, "x:grestore")) {
 		ensurePageStarted();
 		CGContextRestoreGState(gCtx);
-		if (cur_cgFont != kUndefinedFont && gTeXFonts[cur_cgFont].cgFont != NULL) {
-			CGContextSetFont(gCtx, gTeXFonts[cur_cgFont].cgFont);
-			CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[cur_cgFont].size) * gMagScale);
-		}
+		cur_cgFont = kUndefinedFont;
 	}
 	else if (prefixMatch(special, "x:scale", specialArg)) {
 		ensurePageStarted();
