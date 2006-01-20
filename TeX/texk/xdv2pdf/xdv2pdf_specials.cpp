@@ -634,6 +634,7 @@ doSpecial(const char* special)
 	else if (strMatch(special, "x:grestore")) {
 		ensurePageStarted();
 		CGContextRestoreGState(gCtx);
+		setColor(gCurrentColor, true);
 		cur_cgFont = kUndefinedFont;
 	}
 	else if (prefixMatch(special, "x:scale", specialArg)) {

@@ -231,7 +231,7 @@ readUnsigned(FILE* f, int k)
 }
 
 
-static void
+void
 setColor(const ATSURGBAlphaColor& color, bool force = false)
 {
 	if (   color.red   != gCurrentColor.red

@@ -127,6 +127,7 @@ void	doSpecial(const char* special);
 
 
 void	ensurePageStarted();
+void	setColor(const ATSURGBAlphaColor& color, bool force);
 void	doPdfMapLine(const char* line, char mode);
 void	doPdfMapFile(const char* fileName);
 
