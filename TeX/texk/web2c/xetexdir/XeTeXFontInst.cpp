@@ -90,9 +90,9 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
         goto error_exit;
     }
 
-    fAscent  = yUnitsToPoints((float) SWAPW(hheaTable->ascent));
-    fDescent = yUnitsToPoints((float) SWAPW(hheaTable->descent));
-    fLeading = yUnitsToPoints((float) SWAPW(hheaTable->lineGap));
+    fAscent  = yUnitsToPoints((float)(le_int16)SWAPW(hheaTable->ascent));
+    fDescent = yUnitsToPoints((float)(le_int16)SWAPW(hheaTable->descent));
+    fLeading = yUnitsToPoints((float)(le_int16)SWAPW(hheaTable->lineGap));
 
     fNumLongHorMetrics = SWAPW(hheaTable->numOfLongHorMetrics);
 
