@@ -377,7 +377,13 @@ load_mapping_file(const char* s, const char* e)
 			fread(mapping, 1, mappingSize, mapFile);
 			fclose(mapFile);
 			TECkit_Status	status = TECkit_CreateConverter(mapping, mappingSize,
-											true, kForm_UTF16BE, kForm_UTF16BE, &cnv);
+											true,
+#ifdef WORDS_BIGENDIAN
+											kForm_UTF16BE, kForm_UTF16BE,
+#else
+											kForm_UTF16LE, kForm_UTF16LE,
+#fi
+											&cnv);
 			free(mapping);
 		}
 	}
