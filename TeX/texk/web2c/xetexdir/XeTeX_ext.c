@@ -382,7 +382,7 @@ load_mapping_file(const char* s, const char* e)
 											kForm_UTF16BE, kForm_UTF16BE,
 #else
 											kForm_UTF16LE, kForm_UTF16LE,
-#fi
+#endif
 											&cnv);
 			free(mapping);
 		}
