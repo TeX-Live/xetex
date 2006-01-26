@@ -33,6 +33,7 @@ xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
 
 XETEX_DEFINES = -DXETEX_OTHER
 
+# FIXME: this should be handled through configure
 # assumes FreeType, FontConfig, ImageMagick are available
 FRAMEWORKS = -lfreetype -lfontconfig `Wand-config  --ldflags --libs`
 
@@ -74,6 +75,7 @@ ICUCFLAGS = \
 	-I../../../../TeX/libs/$(icudir) \
 	-DLE_USE_CMEMORY
 
+# FIXME: this should be handled through configure
 FTFLAGS =  -I/usr/include/freetype2/
 
 TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
@@ -296,17 +298,6 @@ xelatex.fmt: xetex
 	$(dumpenv) $(MAKE) progname=xelatex files="latex.ltx" prereq-check
 	$(dumpenv) ./xetex --progname=xelatex --jobname=xelatex --ini \*\\input latex.ltx </dev/null
 
-#latex.fmt: etex
-#	$(dumpenv) $(MAKE) progname=latex files="latex.ltx" prereq-check
-#	$(dumpenv) ./etex --progname=latex --jobname=latex --ini \*\\input latex.ltx </dev/null
-
-#ctex.fmt: etex
-#	$(dumpenv) $(MAKE) progname=ctex files="plain.tex cmr10.tfm" prereq-check
-#	$(dumpenv) ./etex --progname=ctex --jobname=ctex --ini \\input plain \\dump </dev/null
-
-#olatex.fmt: etex
-#	$(dumpenv) $(MAKE) progname=olatex files="latex.ltx" prereq-check
-#	$(dumpenv) ./etex --progname=olatex --progname=olatex --ini \\input latex.ltx </dev/null
 
 # Install
 install-xetex: install-xetex-exec install-xetex-data

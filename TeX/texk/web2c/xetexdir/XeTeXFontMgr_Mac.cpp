@@ -122,31 +122,62 @@ XeTeXFontMgr_Mac::readNames(ATSFontRef fontRef)
 void
 XeTeXFontMgr_Mac::addFamilyToCaches(ATSFontFamilyRef familyRef)
 {
+#if 1
+/* This doesn't work.... the documentation is confused and the API is broken.
+   So we end up caching all the fonts of all families on first access. Yuck.
+
 	ATSFontFilter	filter;
 	filter.version = kATSFontFilterCurrentVersion;
 	filter.filterSelector = kATSFontFilterSelectorFontFamily;
 	filter.filter.fontFamilyFilter = familyRef;
-
+*/
 	ATSFontIterator	iterator;
-
 	OSStatus	status = ATSFontIteratorCreate(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
-//fprintf(stderr, "status=%d for iterator creation\n", status);
-
-	while (status == noErr) {
-		ATSFontRef	fontRef;
-		status = ATSFontIteratorNext(iterator, &fontRef);
-		if (status == kATSIterationScopeModified) {
-			status = ATSFontIteratorReset(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
-			continue;
+	if (status == noErr) {
+		while (status == noErr) {
+			ATSFontRef	fontRef;
+			status = ATSFontIteratorNext(iterator, &fontRef);
+			if (status == kATSIterationScopeModified) {
+				status = ATSFontIteratorReset(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
+				if (status == noErr)
+					continue;
+			}
+			if (status != noErr)
+				break;
+			NameCollection*	names = readNames(fontRef);
+			addToMaps(fontRef, names);
+			delete names;
 		}
-		if (status != noErr)
-			break;
-		NameCollection*	names = readNames(fontRef);
-		addToMaps(fontRef, names);
-		delete names;
+		status = ATSFontIteratorRelease(&iterator);
 	}
-
-	status = ATSFontIteratorRelease(&iterator);
+#else
+/* unfortunately, this much faster version only works for FOND-based families */
+	FMFontFamily	fam = FMGetFontFamilyFromATSFontFamilyRef(familyRef);
+	FMFontFamilyInstanceIterator	iter;
+	OSStatus status = FMCreateFontFamilyInstanceIterator(fam, &iter); 
+	if (status == noErr) {
+		while (1) {
+			FMFont		font;
+			FMFontStyle	style;
+			FMFontSize	size;
+			status = FMGetNextFontFamilyInstance(&iter, &font, &style, &size);
+/*
+			if (status == kFMIteratorScopeModified) {
+				status = FMResetFontFamilyInstanceIterator(fam, &iter);
+				if (status == noErr)
+					continue;
+			}
+*/
+			if (status != noErr)
+				break;
+			ATSFontRef	fontRef = FMGetATSFontRefFromFont(font);
+			NameCollection*	names = readNames(fontRef);
+			addToMaps(fontRef, names);
+			delete names;
+		}
+		status = FMDisposeFontFamilyInstanceIterator(&iter);
+	}
+#endif
 }
 
 void
