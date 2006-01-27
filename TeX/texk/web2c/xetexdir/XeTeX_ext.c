@@ -957,6 +957,7 @@ makefontdef(long f)
 		flags |= XDV_FLAG_COLORED;
 	}
 
+#ifdef XETEX_MAC
 	if (variationCount > 0) {
 		fontDefLength +=
 			  2	// number of variations
@@ -964,6 +965,7 @@ makefontdef(long f)
 			+ 4 * variationCount;	// axes and values
 		flags |= XDV_FLAG_VARIATIONS;
 	}
+#endif
 	
 	if (fontDefLength > xdvBufSize) {
 		if (xdvbuffer != NULL)
@@ -997,19 +999,27 @@ makefontdef(long f)
 		cp += 4;
 	}
 	
+#ifdef XETEX_MAC
 	if (variationCount > 0) {
-		*(UInt16*)cp = variationCount;
+		*(UInt16*)cp = SWAP16(variationCount);
 		cp += 2;
 		if (variationCount > 0) {
-#ifdef XETEX_MAC
 			ATSUGetAllFontVariations(style, variationCount,
 									(UInt32*)(cp),
 									(SInt32*)(cp + 4 * variationCount),
 									0);
-#endif
-			cp += 4 * variationCount + 4 * variationCount;
+			while (variationCount > 0) {
+				/* (potentially) swap two 32-bit values per variation setting,
+				   and advance cp past them all */
+				*(UInt32*)(cp) = SWAP32(*(UInt32*)(cp));
+				cp += 4;
+				*(UInt32*)(cp) = SWAP32(*(UInt32*)(cp));
+				cp += 4;
+				--variationCount;
+			}
 		}
 	}
+#endif
 	
 	return fontDefLength;
 }
@@ -1460,7 +1470,7 @@ atsufontget(int what, ATSUStyle style)
 				if (ATSFontGetTable(fontRef, LE_MAXP_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 					MAXPTable*	table = xmalloc(tableSize);
 					ATSFontGetTable(fontRef, LE_MAXP_TABLE_TAG, 0, tableSize, table, 0);
-					rval = table->numGlyphs;
+					rval = SWAP16(table->numGlyphs);
 					free(table);
 				}
 			}

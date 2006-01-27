@@ -113,9 +113,9 @@ DoAtsuiLayout(void* p, int getItalCorr, int justify)
 	realGlyphCount = 0;
 	for (i = 0; i < count; ++i) {
 		if (layoutRec[i].glyphID < 0xfffe) {
-			glyphIDs[realGlyphCount] = SWAP16(layoutRec[i].glyphID);
-			locations[realGlyphCount].x = SWAP32(FixedPStoTeXPoints(layoutRec[i].realPos));
-			locations[realGlyphCount].y = SWAP32(0);	/* FIXME: won't handle baseline offsets */
+			glyphIDs[realGlyphCount] = layoutRec[i].glyphID;
+			locations[realGlyphCount].x = FixedPStoTeXPoints(layoutRec[i].realPos);
+			locations[realGlyphCount].y = 0;	/* FIXME: won't handle baseline offsets */
 			++realGlyphCount;
 		}
 	}
@@ -128,7 +128,7 @@ DoAtsuiLayout(void* p, int getItalCorr, int justify)
 			rval = X2Fix(GetGlyphItalCorr_AAT(style, layoutRec[lastRealGlyph].glyphID));
 
 	if (!justify)
-		node_width(node) = SWAP32(FixedPStoTeXPoints(layoutRec[count-1].realPos));
+		node_width(node) = FixedPStoTeXPoints(layoutRec[count-1].realPos);
 
 	ATSUDirectReleaseLayoutDataArrayPtr(NULL, kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, (void*)&layoutRec);
 
