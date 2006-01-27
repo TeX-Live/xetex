@@ -63,3 +63,6 @@
 
 /* Define if you have the z library (-lz).  */
 #undef HAVE_LIBZ
+
+/* Define if the target architecture is big-endian */
+#undef WORDS_BIGENDIAN

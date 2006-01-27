@@ -40,6 +40,8 @@
 #define MAC_OS_X_VERSION_MIN_REQUIRED	1020
 #define MAC_OS_X_VERSION_MAX_ALLOWED	1030
 
+#include "config.h"
+
 #include <ApplicationServices/ApplicationServices.h>
 #include <Quicktime/Quicktime.h>
 #include <string>
@@ -172,6 +174,64 @@ getCGFontForATSFont(ATSFontRef fontRef)
 	return newFont;
 }
 
+inline UInt32
+SWAP(UInt32 v)
+{
+#ifdef WORDS_BIGENDIAN
+	return v;
+#else
+	return (v << 24)
+		+ ((v << 8) & 0x00FF0000)
+		+ ((v >> 8) & 0x0000FF00)
+		+ (v >> 24);
+#endif
+}
+
+inline SInt32
+SWAP(SInt32 v)
+{
+#ifdef WORDS_BIGENDIAN
+	return v;
+#else
+	return (v << 24)
+		+ ((v << 8) & 0x00FF0000)
+		+ ((v >> 8) & 0x0000FF00)
+		+ ((v >> 24) & 0x000000FF);
+#endif
+}
+
+inline UInt16
+SWAP(UInt16 v)
+{
+#ifdef WORDS_BIGENDIAN
+	return v;
+#else
+	return (v << 8) + (v >> 8);
+#endif
+}
+
+inline SInt16
+SWAP(SInt16 v)
+{
+#ifdef WORDS_BIGENDIAN
+	return v;
+#else
+	return (v << 8) + ((v >> 8) & 0xFF);
+#endif
+}
+
+/* precaution, just in case we apply these to byte-sized values! */
+inline UInt8
+SWAP(UInt8 v)
+{
+	return v;
+}
+
+inline SInt8
+SWAP(SInt8 v)
+{
+	return v;
+}
 
 void
 initAnnotBox()
@@ -753,7 +813,9 @@ loadMetrics(struct texFont& font, UInt8* name, Fixed d, Fixed s)
         if (tfmFile != 0) {
             enum { lf = 0, lh, bc, ec, nw, nh, nd, ni, nl, nk, ne, np };
             SInt16	directory[12];
-            fread(&directory[0], 2, 12, tfmFile);
+//            fread(&directory[0], 2, 12, tfmFile);
+			for (int i = 0; i < 12; ++i)
+				directory[i] = readSigned(tfmFile, 2);
             fseek(tfmFile, directory[lh] * 4, SEEK_CUR);
             int	nChars = directory[ec] - directory[bc] + 1;
             double_t	factor = Fix2X(d) / 16.0;
@@ -767,13 +829,25 @@ loadMetrics(struct texFont& font, UInt8* name, Fixed d, Fixed s)
                     UInt8	remainder;
                 };
                 s_charinfo*	charInfo = new s_charinfo[nChars];
-                fread(&charInfo[0], 4, nChars, tfmFile);
+//                fread(&charInfo[0], 4, nChars, tfmFile);
+				for (int i = 0; i < nChars; ++i) {
+					charInfo[i].widthIndex = readUnsigned(tfmFile, 1);
+					charInfo[i].heightDepth = readUnsigned(tfmFile, 1);
+					charInfo[i].italicIndex = readUnsigned(tfmFile, 1);
+					charInfo[i].remainder = readUnsigned(tfmFile, 1);
+				}
                 Fixed*	widths = new Fixed[directory[nw]];
-                fread(&widths[0], 4, directory[nw], tfmFile);
+//                fread(&widths[0], 4, directory[nw], tfmFile);
+				for (int i = 0; i < directory[nw]; ++i)
+					widths[i] = readSigned(tfmFile, 4);
                 Fixed*	heights = new Fixed[directory[nh]];
-                fread(&heights[0], 4, directory[nh], tfmFile);
+//                fread(&heights[0], 4, directory[nh], tfmFile);
+				for (int i = 0; i < directory[nh]; ++i)
+					heights[i] = readSigned(tfmFile, 4);
                 Fixed*	depths = new Fixed[directory[nd]];
-                fread(&depths[0], 4, directory[nd], tfmFile);
+//                fread(&depths[0], 4, directory[nd], tfmFile);
+                for (int i = 0; i < directory[nd]; ++i)
+                	depths[i] = readSigned(tfmFile, 4);
                 
                 font.widths.reserve(directory[ec] + 1);
                 font.heights.reserve(directory[ec] + 1);
@@ -1216,26 +1290,26 @@ readMacRomanCmap(ATSFontRef fontRef)
 		int	subtable = 0;
 		cmap = new std::vector<UInt16>;
 		cmap->reserve(256);
-		while (subtable < h->numSubtables) {
-			if ((sh->platform == 1) && (sh->encoding == 0)) {
-				struct format0*	f0 = (struct format0*)(buffer + sh->offset);
-				if (f0->format == 0) {
+		while (subtable < SWAP(h->numSubtables)) {
+			if ((SWAP(sh->platform) == 1) && (SWAP(sh->encoding) == 0)) {
+				struct format0*	f0 = (struct format0*)(buffer + SWAP(sh->offset));
+				if (SWAP(f0->format) == 0) {
 					for (int ch = 0; ch < 256; ++ch) {
-						cmap->push_back(f0->glyphIndex[ch]);
+						cmap->push_back(SWAP(f0->glyphIndex[ch]));
 					}
 				}
-				else if (f0->format == 6) {
+				else if (SWAP(f0->format) == 6) {
 					struct format6*	f6 = (struct format6*)f0;
 					for (int ch = 0; ch < 256; ++ch) {
-						if ((ch < f6->firstCode) || (ch >= f6->firstCode + f6->entryCount))
+						if ((ch < SWAP(f6->firstCode)) || (ch >= SWAP(f6->firstCode) + SWAP(f6->entryCount)))
 							cmap->push_back(0);
 						else
-							cmap->push_back(f6->glyphIndex[ch - f6->firstCode]);
+							cmap->push_back(SWAP(f6->glyphIndex[ch - SWAP(f6->firstCode)]));
 					}
 				}
 				else {
 					// unsupported cmap subtable format
-					fprintf(stderr, "\n*** unsupported 'cmap' subtable format (%d)\n", f0->format);
+					fprintf(stderr, "\n*** unsupported 'cmap' subtable format (%d)\n", SWAP(f0->format));
 				}
 				break;
 			}
@@ -1290,7 +1364,7 @@ getFontRec(const std::string& name)
 					postTable*	p = (postTable*)&buffer[0];
 					std::map<std::string,UInt16>	name2gid;
 					UInt16	g = 0;
-					switch (p->format) {
+					switch (SWAP(p->format)) {
 						case 0x00010000:
 							{
 								char*	cp;
@@ -1304,7 +1378,7 @@ getFontRec(const std::string& name)
 						case 0x00020000:
 							{
 								UInt16*	n = (UInt16*)(p + 1);
-								UInt16	numGlyphs = *n++;
+								UInt16	numGlyphs = SWAP(*n++);
 								UInt8*	ps = (UInt8*)(n + numGlyphs);
 								std::vector<std::string>	newNames;
 								while (ps < buffer + size) {
@@ -1312,10 +1386,10 @@ getFontRec(const std::string& name)
 									ps += *ps + 1;
 								}
 								for (g = 0; g < numGlyphs; ++g) {
-									if (*n < 258)
-										name2gid[appleGlyphNames[*n]] = g;
+									if (SWAP(*n) < 258)
+										name2gid[appleGlyphNames[SWAP(*n)]] = g;
 									else
-										name2gid[newNames[*n - 258]] = g;
+										name2gid[newNames[SWAP(*n) - 258]] = g;
 									++n;
 								}
 							}
