@@ -11,6 +11,8 @@
 
 // \special{} support for xdv2pdf
 
+#define MAC_OS_X_VERSION_MIN_REQUIRED	1020
+
 #include <ApplicationServices/ApplicationServices.h>
 
 #include "xdv2pdf_globals.h"
@@ -729,7 +731,7 @@ doSpecial(const char* special)
 				readColorValueWithAlpha(specialArg, color);
 			
 			// NB: APIs only available on 10.3 and later
-			if (&CGContextSetShadowWithColor != NULL) {
+			if (&CGContextSetShadowWithColor != NULL && &CGColorCreate != NULL) {
 				CGColorRef		colorRef = CGColorCreate(gUserColorSpace, &color.red);
 				CGContextSetShadowWithColor(gCtx, offset, blur, colorRef);
 				CGColorRelease(colorRef);

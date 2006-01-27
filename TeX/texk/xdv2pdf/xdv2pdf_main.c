@@ -16,6 +16,8 @@
 	Written in plain C for easier linkage to kpathsea library
 */
 
+#define MAC_OS_X_VERSION_MIN_REQUIRED	1020
+
 #include <kpathsea/config.h>
 
 #include <kpathsea/c-fopen.h>

@@ -38,12 +38,12 @@
 */
 
 #define MAC_OS_X_VERSION_MIN_REQUIRED	1020
-#define MAC_OS_X_VERSION_MAX_ALLOWED	1030
 
 #include "config.h"
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <Quicktime/Quicktime.h>
+
 #include <string>
 #include <vector>
 #include <list>
@@ -343,11 +343,25 @@ ensurePageStarted()
 }
 
 #define MAX_BUFFERED_GLYPHS	1024
-long		gGlyphCount = 0;
+int			gGlyphCount = 0;
 CGGlyph		gGlyphs[MAX_BUFFERED_GLYPHS];
 CGSize		gAdvances[MAX_BUFFERED_GLYPHS];
 CGPoint		gStartLoc;
 CGPoint		gPrevLoc;
+
+static void
+myShowGlyphsWithAdvances(CGContextRef c, const CGGlyph* glyphs, const CGSize* advances, int count)
+{
+	CGPoint	loc = CGContextGetTextPosition(c);
+	while (count > 0) {
+		CGContextShowGlyphsAtPoint(c, loc.x, loc.y, glyphs, 1);
+		loc.x += advances->width;
+		loc.y += advances->height;
+		++advances;
+		++glyphs;
+		--count;
+	}
+}
 
 void
 flushGlyphs()
@@ -361,7 +375,10 @@ flushGlyphs()
 			setColor(sNativeFonts[cur_cgFont].color);
 		else
 			setColor(gTextColor);
-		CGContextShowGlyphsWithAdvances(gCtx, gGlyphs, gAdvances, gGlyphCount);
+		if (&CGContextShowGlyphsWithAdvances != NULL)
+			CGContextShowGlyphsWithAdvances(gCtx, gGlyphs, gAdvances, gGlyphCount);
+		else
+			myShowGlyphsWithAdvances(gCtx, gGlyphs, gAdvances, gGlyphCount);
 
 		gGlyphCount = 0;
 	}
@@ -518,7 +535,10 @@ doGlyphArray(FILE* xdv, bool yLocs)
 	advances[glyphCount-1].width = 0.0;
 	advances[glyphCount-1].height = 0.0;
 
-	CGContextShowGlyphsWithAdvances(gCtx, glyphs, advances, glyphCount);
+	if (&CGContextShowGlyphsWithAdvances != NULL)
+		CGContextShowGlyphsWithAdvances(gCtx, glyphs, advances, glyphCount);
+	else
+		myShowGlyphsWithAdvances(gCtx, glyphs, advances, glyphCount);
 
 	if (gTrackingBoxes) {
 		box	b = {
