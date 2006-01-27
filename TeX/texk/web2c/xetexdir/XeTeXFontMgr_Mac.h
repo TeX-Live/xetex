@@ -26,6 +26,7 @@ public:
 protected:
 										
 	virtual void					initialize();
+	virtual void					terminate();
 
 	virtual void					searchForHostPlatformFonts(const std::string& name);
 	

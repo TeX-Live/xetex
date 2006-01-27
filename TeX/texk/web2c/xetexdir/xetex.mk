@@ -22,7 +22,7 @@ xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp
 XETEX_DEFINES = -DXETEX_MAC
 
 # System frameworks we link with on Mac OS X
-FRAMEWORKS = -framework Carbon -framework QuickTime
+FRAMEWORKS = -framework Carbon -framework Cocoa -framework QuickTime
 
 else # not apple, currently assume a Linux-like system with X11, etc... no W32 option yet
 
@@ -88,10 +88,14 @@ XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
 
 XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontMgr_Linux.o: $(srcdir)/xetexdir/XeTeXFontMgr_Linux.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+
+# Changed this for the Cocoa version of the Mac font manager
+# XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+#	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.mm $(srcdir)/xetexdir/XeTeXFontMgr.h
+	gcc -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@

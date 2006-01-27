@@ -30,6 +30,17 @@ XeTeXFontMgr::GetFontManager()
 	return sFontManager;
 }
 
+void
+XeTeXFontMgr::Terminate()
+{
+	if (sFontManager != NULL) {
+		sFontManager->terminate();
+		// we don't actually deallocate the manager, just ask it to clean up
+		// any auxiliary data such as the cocoa pool or freetype/fontconfig stuff
+		// as we still need to access font names after this is called
+	}
+}
+
 PlatformFontRef
 XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 	// ptSize is in TeX points
@@ -279,7 +290,7 @@ XeTeXFontMgr::getNames(PlatformFontRef font, const char** psName,
 {
 	std::map<PlatformFontRef,Font*>::const_iterator	i = platformRefToFont.find(font);
 	if (i == platformRefToFont.end())
-		die("internal error %d in XeTeXFontMgr", 1);
+		die("internal error %d in XeTeXFontMgr", 3);
 	*psName = i->second->psName->c_str();
 	*famName = i->second->familyName->c_str();
 	*styName = i->second->styleName->c_str();
@@ -495,5 +506,10 @@ XeTeXFontMgr::die(const char*s, int i) const
 	fprintf(stderr, s, i);
 	fprintf(stderr, " - exiting\n");
 	exit(3);
+}
+
+void
+XeTeXFontMgr::terminate()
+{
 }
 

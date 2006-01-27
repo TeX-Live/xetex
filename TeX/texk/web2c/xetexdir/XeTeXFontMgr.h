@@ -36,6 +36,8 @@ class XeTeXFontMgr
 public:
 	static XeTeXFontMgr*			GetFontManager();
 		// returns the global fontmanager (creating it if necessary)
+	static void						Terminate();
+		// clean up (may be required if using the cocoa implementation)
 
 	PlatformFontRef					findFont(const char* name, char* variant, double ptSize);
 		// 1st arg is name as specified by user (C string, UTF-8)
@@ -80,6 +82,7 @@ protected:
 										{ }
 										
 	virtual void					initialize() = 0;
+	virtual void					terminate();
 
 	class Font;
 	class Family;

@@ -25,6 +25,8 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
 extern char	gPrefEngine;
 
+void terminatefontmanager();
+
 #ifdef XETEX_MAC
 XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
 #else

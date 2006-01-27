@@ -38,6 +38,7 @@
 @define procedure setcint1();
 @define procedure printutf8str();
 @define procedure setinputfileencoding();
+@define procedure terminatefontmanager;
 
 @define procedure memcpy();
 @define function casttoptr();

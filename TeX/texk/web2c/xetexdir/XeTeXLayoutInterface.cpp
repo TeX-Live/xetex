@@ -41,6 +41,11 @@ struct XeTeXLayoutEngine_rec
 	UInt32			rgbValue;
 };
 
+void terminatefontmanager()
+{
+	XeTeXFontMgr::Terminate();
+}
+
 XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 {
 	LEErrorCode status = LE_NO_ERROR;
