@@ -1157,7 +1157,7 @@ measure_native_node(memoryword*	node, int want_ic)
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
 		// we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle
-		rval = DoAtsuiLayout(node, 0, want_ic);
+		rval = DoAtsuiLayout(node, want_ic, 0);
 	}
 	else
 #endif
