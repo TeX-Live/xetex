@@ -144,7 +144,7 @@ typedef struct
 	float	yMin;
 	float	xMax;
 	float	yMax;
-} CBData;
+} GlyphBBox;
 
 static OSStatus QuadraticClosePath(void *callBackDataPtr)
 {
@@ -153,7 +153,7 @@ static OSStatus QuadraticClosePath(void *callBackDataPtr)
 
 static OSStatus QuadraticCurve(const Float32Point *pt1, const Float32Point *controlPt, const Float32Point *pt2, void *callBackDataPtr)
 {
-	CBData*	data = (CBData*)callBackDataPtr;
+	GlyphBBox*	data = (GlyphBBox*)callBackDataPtr;
 	
 	if (pt1->x < data->xMin)
 		data->xMin = pt1->x;
@@ -187,7 +187,7 @@ static OSStatus QuadraticCurve(const Float32Point *pt1, const Float32Point *cont
 
 static OSStatus QuadraticLine(const Float32Point *pt1, const Float32Point *pt2, void *callBackDataPtr)
 {
-	CBData*	data = (CBData*)callBackDataPtr;
+	GlyphBBox*	data = (GlyphBBox*)callBackDataPtr;
 	
 	if (pt1->x < data->xMin)
 		data->xMin = pt1->x;
@@ -217,7 +217,7 @@ static OSStatus QuadraticNewPath(void *callBackDataPtr)
 
 static OSStatus CubicMoveTo(const Float32Point *pt, void *callBackDataPtr)
 {
-	CBData*	data = (CBData*)callBackDataPtr;
+	GlyphBBox*	data = (GlyphBBox*)callBackDataPtr;
 	
 	if (pt->x < data->xMin)
 		data->xMin = pt->x;
@@ -233,7 +233,7 @@ static OSStatus CubicMoveTo(const Float32Point *pt, void *callBackDataPtr)
 
 static OSStatus CubicLineTo(const Float32Point *pt, void *callBackDataPtr)
 {
-	CBData*	data = (CBData*)callBackDataPtr;
+	GlyphBBox*	data = (GlyphBBox*)callBackDataPtr;
 	
 	if (pt->x < data->xMin)
 		data->xMin = pt->x;
@@ -249,7 +249,7 @@ static OSStatus CubicLineTo(const Float32Point *pt, void *callBackDataPtr)
 
 static OSStatus CubicCurveTo(const Float32Point *pt1, const Float32Point *pt2, const Float32Point *pt3, void *callBackDataPtr)
 {
-	CBData*	data = (CBData*)callBackDataPtr;
+	GlyphBBox*	data = (GlyphBBox*)callBackDataPtr;
 
 	if (pt1->x < data->xMin)
 		data->xMin = pt1->x;
@@ -286,18 +286,18 @@ static OSStatus CubicClosePath(void *callBackDataPtr)
 	return 0;
 }
 
-void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
+static void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
 {
-#define MIN_REAL_BUFFER_SIZE	20 /* 4 bytes for contour count; 4 bytes for vector count of 1st contour;
-										4 bytes for point flags; 8 bytes for 1st point */
-	*ht = 0;
-	*dp = 0;
-
 	ATSCurveType	curveType;
-	OSStatus status = ATSUGetNativeCurveType(style, &curveType);
+	OSStatus		status;
 
+	bbox->xMin = 65536.0;
+	bbox->yMin = 65536.0;
+	bbox->xMax = -65536.0;
+	bbox->yMax = -65536.0;
+
+	status = ATSUGetNativeCurveType(style, &curveType);
 	if (status == noErr) {
-		CBData		cbData = { 65536.0, 65536.0, -65536.0, -65536.0 };
 		OSStatus	cbStatus;
 
 		if (curveType == kATSCubicCurveType) {
@@ -313,11 +313,7 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 			}
 			status = ATSUGlyphGetCubicPaths(style, gid,
 						cubicMoveToProc, cubicLineToProc, cubicCurveToProc, cubicClosePathProc, 
-						&cbData, &cbStatus);
-			if (status == 0) {
-				*ht = -cbData.yMin;
-				*dp = cbData.yMax;
-			}
+						bbox, &cbStatus);
 		}
 		else {
 			static ATSQuadraticNewPathUPP quadraticNewPathProc;
@@ -332,22 +328,37 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 			}
 			status = ATSUGlyphGetQuadraticPaths(style, gid,
 						quadraticNewPathProc, quadraticLineProc, quadraticCurveProc, quadraticClosePathProc,
-						&cbData, &cbStatus);
-		}
-
-		if (status == 0) {
-			*ht = -cbData.yMin;
-			*dp = cbData.yMax;
+						bbox, &cbStatus);
 		}
 	}
+
+	if (status != noErr || bbox->xMin == 65536.0)
+		bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0;
+}
+
+void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
+{
+	GlyphBBox	bbox;
+	
+	GetGlyphBBox_AAT(style, gid, &bbox);
+
+	*ht = -bbox.yMin;
+	*dp = bbox.yMax;
 }
 
 void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb)
 {
 	ATSGlyphIdealMetrics	metrics;
 	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
+#if 0
 	*lsb = metrics.sideBearing.x;
 	*rsb = metrics.otherSideBearing.x;
+#else
+	GlyphBBox	bbox;
+	GetGlyphBBox_AAT(style, gid, &bbox);
+	*lsb = bbox.xMin;
+	*rsb = bbox.xMax - metrics.advance.x;
+#endif
 }
 
 float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
@@ -355,8 +366,16 @@ float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
 	float	rval = 0.0;
 	ATSGlyphIdealMetrics	metrics;
 	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
+#if 0
+	/* this doesn't seem to work for OT/CFF fonts */
 	if (metrics.otherSideBearing.x > 0.0)
 		rval = metrics.otherSideBearing.x;
+#else
+	GlyphBBox	bbox;
+	GetGlyphBBox_AAT(style, gid, &bbox);
+	if (bbox.xMax > metrics.advance.x)
+		rval = bbox.xMax - metrics.advance.x;
+#endif
 	return rval;
 }
 

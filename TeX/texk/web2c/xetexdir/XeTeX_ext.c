@@ -1410,22 +1410,22 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 	*ascent = X2Fix(metrics.ascent * floatSize);
 	*descent = X2Fix(metrics.descent * floatSize);
 
-#if 0 /* we'll use the value from ATSFontGetHorizontalMetrics */
-	ByteCount	tableSize;
-	if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
-		POSTTable*      post = xmalloc(tableSize);
-		ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
-		*slant = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
-		free(post);
-	}
-	else {
-#endif
-		if (metrics.italicAngle != 0.0 && fabs(metrics.italicAngle) < 0.090)
+	if (metrics.italicAngle != 0.0) {
+		if (fabs(metrics.italicAngle) < 0.090)
 			metrics.italicAngle *= 1000.0;	/* hack around apparent ATS bug */
 		*slant = X2Fix(tan(-metrics.italicAngle * M_PI / 180.0));
-#if 0
 	}
-#endif
+	else {
+		/* try to get a (possibly synthetic) POST table, as ATSFontGetHorizontalMetrics
+		   doesn't seem to return this value for OT/CFF fonts */
+		ByteCount	tableSize;
+		if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+			POSTTable*      post = xmalloc(tableSize);
+			ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
+			*slant = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
+			free(post);
+		}
+	}
 
 	if (metrics.xHeight != 0.0) {
 		*xheight = X2Fix(metrics.xHeight * floatSize);
