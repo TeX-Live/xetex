@@ -1571,6 +1571,18 @@ makeAtsuColor(UInt32 rgba)
 }
 
 static void
+variationWarning()
+{
+	static bool	alreadyWarned = false;
+	if (alreadyWarned)
+		return;
+	fprintf(stderr, "\n"
+					"## xdv2pdf: AAT variation axes/multiple master fonts not supported on this system\n"
+					"## (at least Mac OS X 10.4 is required)\n");
+	alreadyWarned = true;
+}
+
+static void
 doNativeFontDef(FILE* xdv)
 {
     UInt32	f = readUnsigned(xdv, 4);	// font ID
@@ -1647,13 +1659,8 @@ doNativeFontDef(FILE* xdv)
 				cgFont = CGFontCreateCopyWithVariations(cgFont, variations);
 				CFRelease(variations);
 			}
-			else {
-				static bool varWarningIssued = false;
-				if (!varWarningIssued) {
-					fprintf(stderr, "\nVariation fonts not supported on pre-OS X 10.4 systems\n");
-					varWarningIssued = true;
-				}
-			}
+			else
+				variationWarning();
 
 			for (int i = 0; i < n; ++i) {
 				CFRelease(axes[i]);

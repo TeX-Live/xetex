@@ -572,6 +572,18 @@ strMatch(const char* s, const char* t)
 	return (strcmp(s, t) == 0);
 }
 
+static void
+shadowWarning()
+{
+	static bool	alreadyWarned = false;
+	if (alreadyWarned)
+		return;
+	fprintf(stderr, "\n"
+					"## xdv2pdf: CoreGraphics shadow effects not supported on this system\n"
+					"## (at least Mac OS X 10.3 is required)\n");
+	alreadyWarned = true;
+}
+
 void
 doSpecial(const char* special)
 {
@@ -704,6 +716,8 @@ doSpecial(const char* special)
 			// NB: API only available on 10.3 and later
 			if (&CGContextSetShadow != NULL)
 				CGContextSetShadow(gCtx, offset, blur);
+			else
+				shadowWarning();
 		} while (false);
 	}
 	else if (prefixMatch(special, "x:colorshadow", specialArg)) {
@@ -736,6 +750,8 @@ doSpecial(const char* special)
 				CGContextSetShadowWithColor(gCtx, offset, blur, colorRef);
 				CGColorRelease(colorRef);
 			}
+			else
+				shadowWarning();
 		} while (false);
 	}
 	else if (prefixMatch(special, "x:papersize", specialArg) || prefixMatch(special, "papersize", specialArg)) {
