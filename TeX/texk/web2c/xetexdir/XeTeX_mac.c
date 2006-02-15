@@ -43,16 +43,28 @@ InitializeLayout()
 	status = ATSUSetTransientFontMatching(sTextLayout, true);
 }
 
+static inline double
+TeXtoPSPoints(double pts)
+{
+	return pts * 72.0 / 72.27;
+}
+
+static inline double
+PStoTeXPoints(double pts)
+{
+	return pts * 72.27 / 72.0;
+}
+
 static inline Fixed
 FixedTeXtoPSPoints(Fixed pts)
 {
-	return X2Fix(Fix2X(pts) * 72.0 / 72.27);
+	return X2Fix(TeXtoPSPoints(Fix2X(pts)));
 }
 
 static inline Fixed
 FixedPStoTeXPoints(Fixed pts)
 {
-	return X2Fix(Fix2X(pts) * 72.27 / 72.0);
+	return X2Fix(PStoTeXPoints(Fix2X(pts)));
 }
 
 Fixed
@@ -287,6 +299,7 @@ static OSStatus CubicClosePath(void *callBackDataPtr)
 }
 
 static void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
+	/* returns glyph bounding box in Quartz points */
 {
 	ATSCurveType	curveType;
 	OSStatus		status;
@@ -337,16 +350,18 @@ static void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
 }
 
 void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
+	/* returns TeX points */
 {
 	GlyphBBox	bbox;
 	
 	GetGlyphBBox_AAT(style, gid, &bbox);
 
-	*ht = -bbox.yMin;
-	*dp = bbox.yMax;
+	*ht = PStoTeXPoints(-bbox.yMin);
+	*dp = PStoTeXPoints(bbox.yMax);
 }
 
 void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb)
+	/* returns TeX points */
 {
 	ATSGlyphIdealMetrics	metrics;
 	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
@@ -356,8 +371,8 @@ void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rs
 #else
 	GlyphBBox	bbox;
 	GetGlyphBBox_AAT(style, gid, &bbox);
-	*lsb = bbox.xMin;
-	*rsb = bbox.xMax - metrics.advance.x;
+	*lsb = PStoTeXPoints(bbox.xMin);
+	*rsb = PStoTeXPoints(bbox.xMax - metrics.advance.x);
 #endif
 }
 
@@ -374,7 +389,7 @@ float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
 	GlyphBBox	bbox;
 	GetGlyphBBox_AAT(style, gid, &bbox);
 	if (bbox.xMax > metrics.advance.x)
-		rval = bbox.xMax - metrics.advance.x;
+		rval = PStoTeXPoints(bbox.xMax - metrics.advance.x);
 #endif
 	return rval;
 }

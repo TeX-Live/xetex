@@ -715,13 +715,13 @@ otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent, Fixed*
 	else
 		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
 
-	glyphID = mapCharToGlyph(engine, 'H');
+	glyphID = mapCharToGlyph(engine, 'X');
 	if (glyphID != 0) {
 		getGlyphHeightDepth(engine, glyphID, &a, &d);
 		*capheight = X2Fix(a);
 	}
 	else
-		*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
+		*capheight = *ascent; // arbitrary figure if there's no 'X' in the font
 }
 
 long
@@ -1328,7 +1328,8 @@ measure_native_glyph(void* p)
 		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
 		ATSGlyphIdealMetrics	metrics;
 		OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
-		node_width(node) = X2Fix(metrics.advance.x);
+			/* returns values in Quartz points, so we need to convert to TeX points */
+		node_width(node) = X2Fix(metrics.advance.x * 72.27 / 72.0);
 		GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
 	}
 	else
@@ -1400,7 +1401,8 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 	status = ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
 	if (status != noErr)
 		return;
-	double		floatSize = Fix2X(size);
+	/* size from the ATSUStyle is in Quartz points; convert to TeX points here */
+	double		floatSize = Fix2X(size) * 72.27 / 72.0;
 
 	ATSFontMetrics	metrics;
 	status = ATSFontGetHorizontalMetrics(fontRef, kATSOptionFlagsDefault, &metrics);
@@ -1427,7 +1429,8 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 		}
 	}
 
-	if (metrics.xHeight != 0.0) {
+	if (0 && metrics.xHeight != 0.0) {
+		/* currently not using this, as the values from ATS don't seem quite what I'd expect */
 		*xheight = X2Fix(metrics.xHeight * floatSize);
 		*capheight = X2Fix(metrics.capHeight * floatSize);
 	}
@@ -1441,13 +1444,13 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 		else
 			*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
 		
-		glyphID = MapCharToGlyph_AAT(style, 'H');
+		glyphID = MapCharToGlyph_AAT(style, 'X');
 		if (glyphID != 0) {
 			GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
 			*capheight = X2Fix(ht);
 		}
 		else
-			*capheight = *ascent; // arbitrary figure if there's no 'H' in the font
+			*capheight = *ascent; // arbitrary figure if there's no 'X' in the font
 	}
 #endif
 }

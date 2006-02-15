@@ -39,6 +39,9 @@ struct XeTeXLayoutEngine_rec
 	UInt32*			addedFeatures;
 	UInt32*			removedFeatures;
 	UInt32			rgbValue;
+#ifdef XETEX_MAC
+	ATSUStyle		style;
+#endif
 };
 
 void terminatefontmanager()
@@ -257,6 +260,26 @@ XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 la
 		delete result;
 		return NULL;
 	}
+
+#ifdef XETEX_MAC
+	ATSUStyle	style;
+	if (ATSUCreateStyle(&style) == noErr) {
+		ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(result));
+		Fixed		size = X2Fix(getPointSize(result) * 72.0 / 72.27); /* convert TeX to Quartz points */
+		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
+		ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
+		ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
+		ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
+		ATSUSetAttributes(style, 3, tags, valueSizes, values);
+		result->style = style;
+	}
+	else {
+		delete result->layoutEngine;
+		delete result;
+		return NULL;
+	}
+#endif
+
 	return result;
 }
 
@@ -347,20 +370,7 @@ UInt32 getRgbValue(XeTeXLayoutEngine engine)
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth)
 {
 #ifdef XETEX_MAC
-	ATSUStyle	style;
-	OSStatus	status = ATSUCreateStyle(&style);
-	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
-	Fixed		size = X2Fix(getPointSize(engine));
-	ATSStyleRenderingOptions	options = kATSStyleNoHinting;
-	
-	ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
-	ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
-	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
-	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
-
-	GetGlyphHeightDepth_AAT(style, glyphID, height, depth);
-
-	ATSUDisposeStyle(style);
+	GetGlyphHeightDepth_AAT(engine->style, glyphID, height, depth);
 #else
 	/* FIXME */
 	*height = 0.0;
@@ -371,20 +381,7 @@ void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height
 void getGlyphSidebearings(XeTeXLayoutEngine engine, UInt32 glyphID, float* lsb, float* rsb)
 {
 #ifdef XETEX_MAC
-	ATSUStyle	style;
-	OSStatus	status = ATSUCreateStyle(&style);
-	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
-	Fixed		size = X2Fix(getPointSize(engine));
-	ATSStyleRenderingOptions	options = kATSStyleNoHinting;
-	
-	ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
-	ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
-	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
-	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
-
-	GetGlyphSidebearings_AAT(style, glyphID, lsb, rsb);
-
-	ATSUDisposeStyle(style);
+	GetGlyphSidebearings_AAT(engine->style, glyphID, lsb, rsb);
 #else
 	/* FIXME */
 	*lsb = 0.0;
@@ -397,23 +394,11 @@ float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID)
 	float	rval = 0.0;
 
 #ifdef XETEX_MAC
-	ATSUStyle	style;
-	OSStatus	status = ATSUCreateStyle(&style);
-	ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(engine));
-	Fixed		size = X2Fix(getPointSize(engine));
-	ATSStyleRenderingOptions	options = kATSStyleNoHinting;
-	
-	ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
-	ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
-	ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
-	status = ATSUSetAttributes(style, 3, tags, valueSizes, values);
-
-	rval = GetGlyphItalCorr_AAT(style, glyphID);
-
-	ATSUDisposeStyle(style);
+	rval = GetGlyphItalCorr_AAT(engine->style, glyphID);
 #else
 	/* FIXME */
 #endif
+
 	return rval;
 }
 
