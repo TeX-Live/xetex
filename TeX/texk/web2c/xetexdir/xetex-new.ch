@@ -2888,12 +2888,12 @@ end;
   q := new_native_word_node(hf, native_length(ha) - l);
   for i := l to native_length(ha) - 1 do
     set_native_char(q, i - l, get_native_char(ha, i));
-  set_native_metrics(q);
+  set_native_metrics(q, XeTeX_use_glyph_metrics);
   link(q) := link(ha);
   link(ha) := q;
   { truncate text in node |ha| }
   native_length(ha) := l;
-  set_native_metrics(ha);
+  set_native_metrics(ha, XeTeX_use_glyph_metrics);
 
 @ @<Local variables for line breaking@>=
 l: integer;
@@ -2992,7 +2992,7 @@ for j := l_hyf to hn - r_hyf do begin
 	q := new_native_word_node(hf, j - hyphen_passed);
 	for i := 0 to j - hyphen_passed - 1 do
 	  set_native_char(q, i, get_native_char(ha, i + hyphen_passed));
-	set_native_metrics(q);
+	set_native_metrics(q, XeTeX_use_glyph_metrics);
 	link(s) := q; { append the new node }
 	s := q;
 	
@@ -3011,7 +3011,7 @@ hn := native_length(ha); { ensure trailing punctuation is not lost! }
 q := new_native_word_node(hf, hn - hyphen_passed);
 for i := 0 to hn - hyphen_passed - 1 do
   set_native_char(q, i, get_native_char(ha, i + hyphen_passed));
-set_native_metrics(q);
+set_native_metrics(q, XeTeX_use_glyph_metrics);
 link(s) := q; { append the new node }
 s := q;
 
@@ -3331,7 +3331,7 @@ collect_native:
 			{ append the new text }
 			for main_p := 0 to main_k - 1 do
 				set_native_char(tail, main_p + native_length(main_pp), str_pool[str_start_macro(str_ptr) + main_p]);
-			set_native_metrics(tail);
+			set_native_metrics(tail, XeTeX_use_glyph_metrics);
 
 			{ flag the previous node as no longer valid }
 			free_native_glyph_info(main_pp);
@@ -3342,7 +3342,7 @@ collect_native:
 			tail := link(main_pp);
 			for main_p := 0 to main_k - 1 do
 				set_native_char(tail, main_p, str_pool[str_start_macro(str_ptr) + main_p]);
-			set_native_metrics(tail);
+			set_native_metrics(tail, XeTeX_use_glyph_metrics);
 		end
 	end;
 	
@@ -4037,7 +4037,7 @@ begin
 	
 				flush_node_list(p); { delete the fragments }
 				p := link(q); { update p to point to the new node }
-				set_native_metrics(p); { and measure it (i.e., re-do the OT layout) }
+				set_native_metrics(p, XeTeX_use_glyph_metrics); { and measure it (i.e., re-do the OT layout) }
 			end;
 			
 			{ now incorporate the native_word node measurements into the box we're packing }
@@ -4987,7 +4987,7 @@ begin
 	native_glyph_info_ptr(p) := 0;
 
 	set_native_char(p, 0, c);
-	set_native_metrics(p);
+	set_native_metrics(p, XeTeX_use_glyph_metrics);
 	
 	new_native_character := p;
 end;
@@ -5147,7 +5147,7 @@ begin
 		tail := link(tail);
 		for i := 0 to len - 1 do
 			set_native_char(tail, i, str_pool[s + i]);
-		set_native_metrics(tail);
+		set_native_metrics(tail, XeTeX_use_glyph_metrics);
 	end else begin
 		use_skip := XeTeX_linebreak_skip <> zero_glue;
 		use_penalty := XeTeX_linebreak_penalty <> 0 or not use_skip;
@@ -5167,7 +5167,7 @@ begin
 				tail := link(tail);
 				for i := prevOffs to offs - 1 do
 					set_native_char(tail, i - prevOffs, str_pool[s + i]);
-				set_native_metrics(tail);
+				set_native_metrics(tail, XeTeX_use_glyph_metrics);
 			end;
 		until offs < 0;
 	end

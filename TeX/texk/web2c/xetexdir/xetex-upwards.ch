@@ -1,9 +1,14 @@
+{ This file implements the experimental feature \XeTeXupwardsmode.
+  It also adds the state variable \XeTeXuseglyphmetrics, for use
+  from xetex-new.ch }
+
 @x
 @d XeTeX_default_input_mode_code    = 2 {input mode for newly opened files}
 @y
 @d XeTeX_upwards_code = 2 {non-zero if the main vertical list is being built upwards}
+@d XeTeX_use_glyph_metrics_code = 3 {non-zero to use exact glyph height/depth}
 @#
-@d XeTeX_default_input_mode_code    = 3 {input mode for newly opened files}
+@d XeTeX_default_input_mode_code    = 4 {input mode for newly opened files}
 @z
 
 @x
@@ -11,9 +16,9 @@
 @#
 @d eTeX_states=4 {number of \eTeX\ state variables in |eqtb|}
 @y
-@d XeTeX_default_input_encoding_code = 4 {str_number of encoding name if mode = ICU}
+@d XeTeX_default_input_encoding_code = 5 {str_number of encoding name if mode = ICU}
 @#
-@d eTeX_states=5 {number of \eTeX\ state variables in |eqtb|}
+@d eTeX_states=6 {number of \eTeX\ state variables in |eqtb|}
 @z
 
 @x { to ensure following change doesn't get applied to hlist_out() }
@@ -178,6 +183,9 @@ pop_nest; box_end(saved(0));
 
 @d XeTeX_upwards_state==eTeX_state(XeTeX_upwards_code)
 @d XeTeX_upwards==(XeTeX_upwards_state>0)
+
+@d XeTeX_use_glyph_metrics_state==eTeX_state(XeTeX_use_glyph_metrics_code)
+@d XeTeX_use_glyph_metrics==(XeTeX_use_glyph_metrics_state>0)
 @z
 
 @x
@@ -185,6 +193,7 @@ eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 @y
 eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 eTeX_state_code+XeTeX_upwards_code:print_esc("XeTeXupwardsmode");
+eTeX_state_code+XeTeX_use_glyph_metrics_code:print_esc("XeTeXuseglyphmetrics");
 @z
 
 @x
@@ -195,4 +204,6 @@ primitive("TeXXeTstate",assign_int,eTeX_state_base+TeXXeT_code);
 @!@:TeXXeT_state_}{\.{\\TeXXeT_state} primitive@>
 primitive("XeTeXupwardsmode",assign_int,eTeX_state_base+XeTeX_upwards_code);
 @!@:XeTeX_upwards_mode_}{\.{\\XeTeX_upwards_mode} primitive@>
+primitive("XeTeXuseglyphmetrics",assign_int,eTeX_state_base+XeTeX_use_glyph_metrics_code);
+@!@:XeTeX_use_glyph_metrics_}{\.{\\XeTeX_use_glyph_metrics} primitive@>
 @z

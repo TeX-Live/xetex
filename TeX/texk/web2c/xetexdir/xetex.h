@@ -17,8 +17,11 @@
 #define getnativechar(p,i)		native_node_text(p)[i]
 #define setnativechar(p,i,v)	native_node_text(p)[i] = v
 
-#define setnativemetrics(p)						measure_native_node(&(mem[p]), 0)
-#define setnativemetricsreturningitalcorr(p)	measure_native_node(&(mem[p]), 1)
+/* p is native_word node; g is XeTeX_use_glyph_metrics flag */
+#define setnativemetrics(p,g)					measure_native_node(&(mem[p]), g, 0)
+
+#define setnativemetricsreturningitalcorr(p)	measure_native_node(&(mem[p]), 0, 1)
+
 #define setnativeglyphmetrics(p)				measure_native_glyph(&(mem[p]))
 #define setjustifiednativeglyphs(p)				store_justified_native_glyphs(&(mem[p]))
 

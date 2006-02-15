@@ -1145,7 +1145,7 @@ store_justified_native_glyphs(void* node)
 }
 
 Fixed
-measure_native_node(memoryword*	node, int want_ic)
+measure_native_node(memoryword*	node, int use_glyph_metrics, int want_ic)
 	/* return value is the italic correction for the last glyph, computed only if want_ic is non-zero */
 {
 	Fixed	rval = 0;
@@ -1168,12 +1168,16 @@ measure_native_node(memoryword*	node, int want_ic)
 
 		// need to find direction runs within the text, and call layoutChars separately for each
 
-		long nGlyphs;
+		int		nGlyphs;
 		float	x, y;
 		void*	glyph_info = 0;
 		static	float*	positions = 0;
 		static	UInt32*	glyphs = 0;
 		static	long	maxGlyphs = 0;
+
+		FixedPoint*	locations;
+		UInt16*		glyphIDs;
+		int			realGlyphCount = 0;
 
 		UBiDi*	pBiDi = ubidi_open();
 		
@@ -1188,7 +1192,6 @@ measure_native_node(memoryword*	node, int want_ic)
 			int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
 			double		wid = 0;
 			long		totalGlyphs = 0;
-			int			realGlyphCount = 0;
 			int 		i, runIndex;
 			int32_t		logicalStart, length;
 			OSStatus	status = 0;
@@ -1215,8 +1218,8 @@ measure_native_node(memoryword*	node, int want_ic)
 			
 			if (realGlyphCount > 0) {
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
-				FixedPoint*	locations = (FixedPoint*)glyph_info;
-				UInt16*		glyphIDs = (UInt16*)(locations + realGlyphCount);
+				locations = (FixedPoint*)glyph_info;
+				glyphIDs = (UInt16*)(locations + realGlyphCount);
 				realGlyphCount = 0;
 				
 				double	x = 0.0, y = 0.0;
@@ -1268,15 +1271,14 @@ measure_native_node(memoryword*	node, int want_ic)
 			getGlyphPositions(engine, positions, &status);
 
 			int i;
-			int	realGlyphCount = 0;
 			for (i = 0; i < nGlyphs; ++i)
 				if (glyphs[i] < 0xfffe)
 					++realGlyphCount;
 
 			if (realGlyphCount > 0) {
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
-				FixedPoint*	locations = (FixedPoint*)glyph_info;
-				UInt16*		glyphIDs = (UInt16*)(locations + realGlyphCount);
+				locations = (FixedPoint*)glyph_info;
+				glyphIDs = (UInt16*)(locations + realGlyphCount);
 				realGlyphCount = 0;
 				for (i = 0; i < nGlyphs; ++i) {
 					if (glyphs[i] < 0xfffe) {
@@ -1302,10 +1304,38 @@ measure_native_node(memoryword*	node, int want_ic)
 		exit(3);
 	}
 	
-	/* for efficiency, height and depth are the font's ascent/descent,
-		not true values based on the actual content of the word */
-	node_height(node) = heightbase[f];
-	node_depth(node) = depthbase[f];
+	if (use_glyph_metrics == 0 || native_glyph_count(node) == 0) {
+		/* for efficiency, height and depth are the font's ascent/descent,
+			not true values based on the actual content of the word,
+			unless use_glyph_metrics is non-zero */
+		node_height(node) = heightbase[f];
+		node_depth(node) = depthbase[f];
+	}
+	else {
+		/* this iterates over the glyph data whether it comes from ATSUI or ICU layout */
+		FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
+		UInt16*		glyphIDs = (UInt16*)(locations + native_glyph_count(node));
+		float	yMin = 65536.0;
+		float	yMax = -65536.0;
+		int	i;
+		for (i = 0; i < native_glyph_count(node); ++i) {
+			float	ht, dp;
+			float	y = Fix2X(-locations[i].y);	/* NB negative is upwards in locations[].y! */
+#ifdef XETEX_MAC
+			if (fontarea[f] == AAT_FONT_FLAG)
+				GetGlyphHeightDepth_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[i], &ht, &dp);
+			else
+#endif
+			if (fontarea[f] == OT_FONT_FLAG)
+				getGlyphHeightDepth((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[i], &ht, &dp);
+			if (y + ht > yMax)
+				yMax = y + ht;
+			if (y - dp < yMin)
+				yMin = y - dp;
+		}
+		node_height(node) = X2Fix(yMax);
+		node_depth(node) = -X2Fix(yMin);
+	}
 
 	return rval;
 }
