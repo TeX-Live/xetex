@@ -67,12 +67,10 @@ FixedPStoTeXPoints(Fixed pts)
 	return X2Fix(PStoTeXPoints(Fix2X(pts)));
 }
 
-Fixed
-DoAtsuiLayout(void* p, int getItalCorr, int justify)
+void
+DoAtsuiLayout(void* p, int justify)
 {
 	memoryword*	node = (memoryword*)p;
-
-	Fixed	rval = 0;
 
 	unsigned	f = native_font(node);
 	if (fontarea[f] != AAT_FONT_FLAG) {
@@ -135,10 +133,6 @@ DoAtsuiLayout(void* p, int getItalCorr, int justify)
 	native_glyph_count(node) = realGlyphCount;
 	native_glyph_info_ptr(node) = (long)glyph_info;
 	
-	if (getItalCorr)
-		if (realGlyphCount > 0)
-			rval = X2Fix(GetGlyphItalCorr_AAT(style, layoutRec[lastRealGlyph].glyphID));
-
 	if (!justify)
 		node_width(node) = FixedPStoTeXPoints(layoutRec[count-1].realPos);
 
@@ -146,8 +140,6 @@ DoAtsuiLayout(void* p, int getItalCorr, int justify)
 
 	if (justify)
 		ATSUClearLayoutControls(sTextLayout, numTags, tags);
-
-	return rval;	
 }
 
 typedef struct

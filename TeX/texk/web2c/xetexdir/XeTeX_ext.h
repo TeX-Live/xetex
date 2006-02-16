@@ -93,6 +93,8 @@ typedef struct {
 #define native_glyph_info_ptr(node)	node[native_glyph_info_offset].hh.v.RH
 #define native_glyph_info_size		10	/* info for each glyph is location (FixedPoint) + glyph ID (UInt16) */
 
+#define native_glyph(p)		native_length(p)	/* glyph ID field in a glyph_node */
+
 #define XDV_GLYPH_STRING	254
 #define	XDV_GLYPH_ARRAY		253
 
@@ -112,7 +114,7 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-	Fixed DoAtsuiLayout(void* node, int getItalCorr, int justify);
+	void DoAtsuiLayout(void* node, int justify);
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch);

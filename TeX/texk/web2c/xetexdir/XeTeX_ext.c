@@ -1140,24 +1140,22 @@ void
 store_justified_native_glyphs(void* node)
 {
 #ifdef XETEX_MAC /* this is only called for fonts used via ATSUI */
-	(void)DoAtsuiLayout(node, 0, 1);
+	(void)DoAtsuiLayout(node, 1);
 #endif
 }
 
-Fixed
-measure_native_node(memoryword*	node, int use_glyph_metrics, int want_ic)
-	/* return value is the italic correction for the last glyph, computed only if want_ic is non-zero */
+void
+measure_native_node(memoryword*	node, int use_glyph_metrics)
 {
-	Fixed	rval = 0;
-	long		txtLen = native_length(node);
+	int				txtLen = native_length(node);
 	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
 
-	unsigned	f = native_font(node);
+	unsigned		f = native_font(node);
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
 		// we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle
-		rval = DoAtsuiLayout(node, want_ic, 0);
+		DoAtsuiLayout(node, 0);
 	}
 	else
 #endif
@@ -1243,9 +1241,6 @@ measure_native_node(memoryword*	node, int use_glyph_metrics, int want_ic)
 					y = positions[2*i+1];
 				}
 				wid = x;
-
-				if (want_ic)
-					rval = X2Fix(getGlyphItalCorr(engine, glyphIDs[realGlyphCount-1]));
 			}
 
 			node_width(node) = X2Fix(wid);
@@ -1288,9 +1283,6 @@ measure_native_node(memoryword*	node, int use_glyph_metrics, int want_ic)
 						++realGlyphCount;
 					}
 				}
-
-				if (want_ic)
-					rval = X2Fix(getGlyphItalCorr(engine, glyphIDs[realGlyphCount-1]));
 			}
 						
 			native_glyph_count(node) = realGlyphCount;
@@ -1336,47 +1328,86 @@ measure_native_node(memoryword*	node, int use_glyph_metrics, int want_ic)
 		node_height(node) = X2Fix(yMax);
 		node_depth(node) = -X2Fix(yMin);
 	}
+}
 
-	return rval;
+Fixed
+get_native_ital_corr(memoryword* node)
+{
+	unsigned	f = native_font(node);
+	unsigned	n = native_glyph_count(node);
+	if (n > 0) {
+		FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
+		UInt16*		glyphIDs = (UInt16*)(locations + n);
+
+#ifdef XETEX_MAC
+		if (fontarea[f] == AAT_FONT_FLAG)
+			return X2Fix(GetGlyphItalCorr_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[n-1]));
+#endif
+		if (fontarea[f] == OT_FONT_FLAG)
+			return X2Fix(getGlyphItalCorr((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[n-1]));
+	}
+
+	return 0;
+}
+
+
+Fixed
+get_native_glyph_ital_corr(memoryword* node)
+{
+	UInt16		gid = native_glyph(node);
+	unsigned	f = native_font(node);
+
+#ifdef XETEX_MAC
+	if (fontarea[f] == AAT_FONT_FLAG)
+		return X2Fix(GetGlyphItalCorr_AAT((ATSUStyle)(fontlayoutengine[f]), gid));
+#endif
+	if (fontarea[f] == OT_FONT_FLAG)
+		return X2Fix(getGlyphItalCorr((XeTeXLayoutEngine)(fontlayoutengine[f]), gid));
+
+	return 0;	/* can't actually happen */
 }
 
 void
-measure_native_glyph(void* p)
+measure_native_glyph(memoryword* node, int use_glyph_metrics)
 {
-#define native_glyph(node)	native_length(node)
-
-	memoryword*	node = (memoryword*)p;
 	UInt16		gid = native_glyph(node);
-	
-	long	font = native_font(node);
+	unsigned	f = native_font(node);
 
 	float	ht = 0.0;
 	float	dp = 0.0;
 
 #ifdef XETEX_MAC
-	if (fontarea[font] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
+	if (fontarea[f] == AAT_FONT_FLAG) {
+		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[f]);
 		ATSGlyphIdealMetrics	metrics;
 		OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
 			/* returns values in Quartz points, so we need to convert to TeX points */
 		node_width(node) = X2Fix(metrics.advance.x * 72.27 / 72.0);
-		GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
+		if (use_glyph_metrics)
+			GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
 	}
 	else
 #endif
-	if (fontarea[font] == OT_FONT_FLAG) {
-		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
+	if (fontarea[f] == OT_FONT_FLAG) {
+		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		XeTeXFont		fontInst = getFont(engine);
 		node_width(node) = X2Fix(getGlyphWidth(fontInst, gid));
-		getGlyphHeightDepth(engine, gid, &ht, &dp);
+		if (use_glyph_metrics)
+			getGlyphHeightDepth(engine, gid, &ht, &dp);
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
 		exit(3);
 	}
 
-	node_height(node) = X2Fix(ht);
-	node_depth(node) = X2Fix(dp);
+	if (use_glyph_metrics) {
+		node_height(node) = X2Fix(ht);
+		node_depth(node) = X2Fix(dp);
+	}
+	else {
+		node_height(node) = heightbase[f];
+		node_depth(node) = depthbase[f];
+	}
 }
 
 int

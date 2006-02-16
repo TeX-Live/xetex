@@ -16,7 +16,6 @@
 @define function getnativechar();
 @define procedure setnativechar();
 @define procedure setnativemetrics();
-@define function setnativemetricsreturningitalcorr();
 @define procedure setjustifiednativeglyphs();
 @define procedure setnativeglyphmetrics();
 @define function findnativefont();
@@ -58,7 +57,8 @@
 @define function mapchartoglyph();
 @define procedure getnativecharheightdepth();
 @define procedure getnativecharsidebearings();
-@define function getnativeitalcorr();
+@define function getnativeitaliccorrection();
+@define function getnativeglyphitaliccorrection();
 
 @define procedure atsugetfontmetrics();
 @define procedure otgetfontmetrics();

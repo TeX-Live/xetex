@@ -3371,8 +3371,13 @@ var p:pointer; {|char_node| at the tail of the current list}
 begin if tail<>head then
   begin if is_char_node(tail) then p:=tail
   else if type(tail)=ligature_node then p:=lig_char(tail)
-  else if (type(tail)=whatsit_node) and (subtype(tail)=native_word_node) then begin
-    tail_append(new_kern(set_native_metrics_returning_ital_corr(tail))); subtype(tail):=explicit;
+  else if (type(tail)=whatsit_node) then begin
+    if (subtype(tail)=native_word_node) then begin
+      tail_append(new_kern(get_native_italic_correction(tail))); subtype(tail):=explicit;
+    end
+    else if (subtype(tail)=glyph_node) then begin
+      tail_append(new_kern(get_native_glyph_italic_correction(tail))); subtype(tail):=explicit;
+    end;
     return;
   end
   else return;
@@ -4302,7 +4307,7 @@ begin
    end;
    native_font(tail):=cur_font;
    native_glyph(tail):=cur_val;
-   set_native_glyph_metrics(tail);
+   set_native_glyph_metrics(tail, XeTeX_use_glyph_metrics);
   end else begin
    print_err("Invalid use of \XeTeXglyph");
    help2("The \XeTeXglyph command can only be used with AAT or OT fonts,")

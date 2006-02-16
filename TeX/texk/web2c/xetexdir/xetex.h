@@ -18,12 +18,14 @@
 #define setnativechar(p,i,v)	native_node_text(p)[i] = v
 
 /* p is native_word node; g is XeTeX_use_glyph_metrics flag */
-#define setnativemetrics(p,g)					measure_native_node(&(mem[p]), g, 0)
+#define setnativemetrics(p,g)					measure_native_node(&(mem[p]), g)
 
-#define setnativemetricsreturningitalcorr(p)	measure_native_node(&(mem[p]), 0, 1)
+#define setnativeglyphmetrics(p,g)				measure_native_glyph(&(mem[p]), g)
 
-#define setnativeglyphmetrics(p)				measure_native_glyph(&(mem[p]))
 #define setjustifiednativeglyphs(p)				store_justified_native_glyphs(&(mem[p]))
+
+#define getnativeitaliccorrection(p)			get_native_ital_corr(&(mem[p]))
+#define getnativeglyphitaliccorrection(p)		get_native_glyph_ital_corr(&(mem[p]))
 
 #define makexdvglypharraydata(p)				makeXDVGlyphArrayData(&(mem[p]))
 #define xdvbufferbyte(i)						xdvbuffer[i]
