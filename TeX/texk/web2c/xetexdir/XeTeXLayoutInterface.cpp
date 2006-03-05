@@ -110,25 +110,44 @@ Fixed getSlant(XeTeXFont font)
 	return X2Fix(tan(-italAngle * M_PI / 180.0));
 }
 
+static const ScriptListTable*
+getLargerScriptListTable(XeTeXFont font)
+{
+	const ScriptListTable* scriptListSub = NULL;
+	const ScriptListTable* scriptListPos = NULL;
+	
+    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
+	UInt32	scriptCountSub = 0;
+	if (gsubTable != NULL) {
+		scriptListSub = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
+		scriptCountSub = SWAP(scriptListSub->scriptCount);
+	}
+
+    const GlyphPositioningTableHeader* gposTable = (const GlyphPositioningTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGPOS);
+	UInt32	scriptCountPos = 0;
+	if (gposTable != NULL) {
+		scriptListPos = (const ScriptListTable*)((const char*)gposTable + SWAP(gposTable->scriptListOffset));
+		scriptCountPos = SWAP(scriptListPos->scriptCount);
+	}
+
+	return scriptCountPos > scriptCountSub ? scriptListPos : scriptListSub;
+}
+
 UInt32 countScripts(XeTeXFont font)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
-	if (gsubTable == NULL)
+	const ScriptListTable*	scriptList = getLargerScriptListTable(font);
+	if (scriptList == NULL)
 		return 0;
 
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
-	UInt32  scriptCount = SWAP(scriptList->scriptCount);
-
-	return scriptCount;
+	return SWAP(scriptList->scriptCount);
 }
 
 UInt32 getIndScript(XeTeXFont font, UInt32 index)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
-	if (gsubTable == NULL)
+	const ScriptListTable* scriptList = getLargerScriptListTable(font);
+	if (scriptList == NULL)
 		return 0;
 
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
 	if (index < SWAP(scriptList->scriptCount))
 		return SWAP(*(UInt32*)(scriptList->scriptRecordArray[index].tag));
 
@@ -137,11 +156,10 @@ UInt32 getIndScript(XeTeXFont font, UInt32 index)
 
 UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
-	if (gsubTable == NULL)
+	const ScriptListTable* scriptList = getLargerScriptListTable(font);
+	if (scriptList == NULL)
 		return 0;
-	
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
+
 	const ScriptTable*  scriptTable = scriptList->findScript(script);
 	if (scriptTable == NULL)
 		return 0;
@@ -153,11 +171,10 @@ UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 
 UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 {
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
-	if (gsubTable == NULL)
+	const ScriptListTable* scriptList = getLargerScriptListTable(font);
+	if (scriptList == NULL)
 		return 0;
 
-	const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
 	const ScriptTable*  scriptTable = scriptList->findScript(script);
 	if (scriptTable == NULL)
 		return 0;
@@ -254,6 +271,9 @@ XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 la
 	result->addedFeatures = addFeatures;
 	result->removedFeatures = removeFeatures;
 	result->rgbValue = rgbValue;
+#ifdef XETEX_MAC
+	result->style = NULL;
+#endif
 	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((XeTeXFontInst*)font,
 						scriptTag, languageTag, (LETag*)addFeatures, (LETag*)removeFeatures, status);
 	if (LE_FAILURE(status) || result->layoutEngine == NULL) {
@@ -285,6 +305,10 @@ XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 la
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
+#ifdef XETEX_MAC
+	if (engine->style != NULL)
+		ATSUDisposeStyle(engine->style);
+#endif
 	delete engine->layoutEngine;
 	delete engine->font;
 }
@@ -372,9 +396,7 @@ void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height
 #ifdef XETEX_MAC
 	GetGlyphHeightDepth_AAT(engine->style, glyphID, height, depth);
 #else
-	/* FIXME */
-	*height = 0.0;
-	*depth = 0.0;
+	engine->font->getGlyphHeightDepth(glyphID, height, depth);
 #endif
 }
 
@@ -383,9 +405,7 @@ void getGlyphSidebearings(XeTeXLayoutEngine engine, UInt32 glyphID, float* lsb, 
 #ifdef XETEX_MAC
 	GetGlyphSidebearings_AAT(engine->style, glyphID, lsb, rsb);
 #else
-	/* FIXME */
-	*lsb = 0.0;
-	*rsb = 0.0;
+	engine->font->getGlyphSidebearings(glyphID, lsb, rsb);
 #endif
 }
 
@@ -396,7 +416,7 @@ float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID)
 #ifdef XETEX_MAC
 	rval = GetGlyphItalCorr_AAT(engine->style, glyphID);
 #else
-	/* FIXME */
+	rval = engine->font->getGlyphItalCorr(glyphID);
 #endif
 
 	return rval;

@@ -19,7 +19,9 @@
 
 #include "XeTeXFontInst_FC.h"
 
-#include <freetype/tttables.h>
+#include FT_TRUETYPE_TABLES_H
+#include FT_TYPE1_TABLES_H
+#include FT_GLYPH_H
 
 static FT_Library	gLibrary = 0;
 
@@ -27,6 +29,7 @@ static FT_Library	gLibrary = 0;
 XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorCode &status)
     : XeTeXFontInst(pattern, pointSize, status)
     , face(0)
+    , fFreeTypeOnly(false)
 {
     if (LE_FAILURE(status)) {
         return;
@@ -71,9 +74,22 @@ void XeTeXFontInst_FC::initialize(LEErrorCode &status)
 
 	XeTeXFontInst::initialize(status);
 
-	if (status != LE_NO_ERROR) {
-		FT_Done_Face(face);
-		face = 0;
+	if (LE_FAILURE(status)) {
+		/* font can ONLY be used via FreeType APIs, not direct table access */
+		fFreeTypeOnly = true;
+		status = LE_NO_ERROR;
+		
+		/* fill in fields that XeTeXFontInst::initialize failed to get for us */
+		fUnitsPerEM = face->units_per_EM;
+		fAscent = yUnitsToPoints(face->ascender);
+		fDescent = yUnitsToPoints(face->descender);
+//		fLeading = ;
+		fItalicAngle = 0;
+		PS_FontInfoRec	font_info;
+		if (FT_Get_PS_Font_Info(face, &font_info) == 0) {
+			// will return error if it wasn't a PS font
+			fItalicAngle = font_info.italic_angle;
+		}
 	}
 	
     return;
@@ -113,4 +129,58 @@ char* XeTeXFontInst_FC::getPSName() const
 	strcpy(name, facePSName);
 
 	return name;
+}
+
+void
+XeTeXFontInst_FC::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
+{
+	bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0.0;
+
+	FT_Error	err = FT_Load_Glyph(face, gid, FT_LOAD_NO_SCALE);
+	if (err != 0)
+		return;
+    
+    FT_Glyph	glyph;
+    err = FT_Get_Glyph(face->glyph, &glyph);
+	if (err == 0) {	    
+		FT_BBox	ft_bbox;
+		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_UNSCALED, &ft_bbox);
+		bbox->xMin = ft_bbox.xMin * fPointSize / fUnitsPerEM;
+		bbox->yMin = ft_bbox.yMin * fPointSize / fUnitsPerEM;
+		bbox->xMax = ft_bbox.xMax * fPointSize / fUnitsPerEM;
+		bbox->yMax = ft_bbox.yMax * fPointSize / fUnitsPerEM;
+		FT_Done_Glyph(glyph);
+	}
+}
+
+LEGlyphID
+XeTeXFontInst_FC::mapCharToGlyph(LEUnicode32 ch) const
+{
+	if (!fFreeTypeOnly)
+		return XeTeXFontInst::mapCharToGlyph(ch);
+
+	return FT_Get_Char_Index(face, ch);
+}
+
+le_uint16
+XeTeXFontInst_FC::getNumGlyphs() const
+{
+	return face->num_glyphs;
+}
+
+void
+XeTeXFontInst_FC::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
+{
+	if (!fFreeTypeOnly)
+		XeTeXFontInst::getGlyphAdvance(glyph, advance);
+	else {
+		FT_Error	err = FT_Load_Glyph(face, glyph, FT_LOAD_NO_SCALE);
+		if (err != 0) {
+			advance.fX = advance.fY = 0;
+		}
+		else {
+			advance.fX = face->glyph->linearHoriAdvance * fPointSize / fUnitsPerEM;
+			advance.fY = face->glyph->linearVertAdvance * fPointSize / fUnitsPerEM;
+		}
+	}
 }

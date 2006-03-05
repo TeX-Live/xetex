@@ -75,6 +75,13 @@ protected:
     const void *readFontTable(LETag tableTag) const;
 
 public:
+	typedef struct {
+		float	xMin;
+		float	yMin;
+		float	xMax;
+		float	yMax;
+	} GlyphBBox;
+
     XeTeXFontInst(PlatformFontRef fontRef, float pointSize, LEErrorCode &status);
 
     virtual ~XeTeXFontInst();
@@ -131,6 +138,12 @@ public:
     virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
 
     virtual le_bool getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &point) const;
+
+	virtual void getGlyphBounds(LEGlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
+
+	void getGlyphHeightDepth(LEGlyphID glyph, float *ht, float* dp);	
+	void getGlyphSidebearings(LEGlyphID glyph, float* lsb, float* rsb);
+	float getGlyphItalCorr(LEGlyphID glyph);
 
     float getXPixelsPerEm() const
     {

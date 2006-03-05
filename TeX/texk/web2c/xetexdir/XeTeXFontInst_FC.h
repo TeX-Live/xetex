@@ -34,7 +34,8 @@ protected:
     const void *	readTable(LETag tag, le_uint32 *length) const;
 
 	FT_Face			face;
-
+	bool			fFreeTypeOnly;
+	
 public:
     				XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorCode &status);
 
@@ -43,6 +44,13 @@ public:
 	virtual void	initialize(LEErrorCode &status);
 
 	virtual char*	getPSName() const;	// returns a malloced string
+
+	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
+
+	// overrides of XeTeXFontInst methods, in case it's not an sfnt
+	virtual le_uint16 getNumGlyphs() const;
+    virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
+    virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const;
 };
 
 #endif

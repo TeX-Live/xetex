@@ -194,3 +194,43 @@ le_bool XeTeXFontInst::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPo
 {
     return FALSE;
 }
+
+void
+XeTeXFontInst::getGlyphHeightDepth(LEGlyphID gid, float* ht, float* dp)
+{
+	GlyphBBox	bbox;
+	getGlyphBounds(gid, &bbox);
+	
+	*ht = bbox.yMax;
+	*dp = -bbox.yMin;
+}
+
+void
+XeTeXFontInst::getGlyphSidebearings(LEGlyphID gid, float* lsb, float* rsb)
+{
+	LEPoint	adv;
+	getGlyphAdvance(gid, adv);
+
+	GlyphBBox	bbox;
+	getGlyphBounds(gid, &bbox);
+
+	*lsb = bbox.xMin;
+	*rsb = bbox.xMax - adv.fX;
+}
+
+float
+XeTeXFontInst::getGlyphItalCorr(LEGlyphID gid)
+{
+	float	rval = 0.0;
+
+	LEPoint	adv;
+	getGlyphAdvance(gid, adv);
+
+	GlyphBBox	bbox;
+	getGlyphBounds(gid, &bbox);
+	
+	if (bbox.xMax > adv.fX)
+		rval = bbox.xMax - adv.fX;
+	
+	return rval;
+}

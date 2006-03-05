@@ -552,7 +552,7 @@ loadOTfont(XeTeXFont font, const char* cp1)
 	
 	if ((loadedfontflags & FONT_FLAGS_COLORED) == 0)
 		rgbValue = 0x000000FF;
-	
+
 	XeTeXLayoutEngine	engine = createLayoutEngine(font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
 	if (engine == 0) {
 		deleteFont(font);
