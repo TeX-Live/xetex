@@ -1553,8 +1553,22 @@ if (cur_val<0)or(cur_val>biggest_reg) then
 @z
 
 @x
+procedure scan_char_num;
+begin scan_int;
 if (cur_val<0)or(cur_val>255) then
 @y
+procedure scan_usv_num;
+begin scan_int;
+if (cur_val<0)or(cur_val>@"10FFFF) then
+  begin print_err("Bad USV code");
+@.Bad character code@>
+  help2("A Unicode Scalar Value must be between 0 and ""10FFFF.")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
+  end;
+end;
+
+procedure scan_char_num;
+begin scan_int;
 if (cur_val<0)or(cur_val>biggest_char) then
 @z
 
@@ -3209,6 +3223,12 @@ incr(max_hyph_char);
 @z
 
 @x
+hmode+char_num: begin scan_char_num; cur_chr:=cur_val; goto main_loop;@+end;
+@y
+hmode+char_num: begin scan_usv_num; cur_chr:=cur_val; goto main_loop;@+end;
+@z
+
+@x
 @!main_p:pointer; {temporary register for list manipulation}
 @y
 @!main_p:pointer; {temporary register for list manipulation}
@@ -3228,8 +3248,14 @@ if is_native_font(cur_font) then begin
 
 collect_native:
 	adjust_space_factor;
-	str_room(1);
-	append_char(cur_chr);
+	if (cur_chr > @"FFFF) then begin
+		str_room(2);
+		append_char((cur_chr - @"10000) div 1024 + @"D800);
+		append_char((cur_chr - @"10000) mod 1024 + @"DC00);
+	end else begin
+		str_room(1);
+		append_char(cur_chr);
+	end;
 	is_hyph := (cur_chr = hyphen_char[main_f])
 		or (XeTeX_dash_break_en and (cur_chr = @"2014) or (cur_chr = @"2013));
 	if (main_h = 0) and is_hyph then main_h := cur_length;
@@ -3240,7 +3266,7 @@ collect_native:
 	x_token;
 	if (cur_cmd=letter) or (cur_cmd=other_char) or (cur_cmd=char_given) then goto collect_native;
 	if cur_cmd=char_num then begin
-		scan_char_num;
+		scan_usv_num;
 		cur_chr:=cur_val;
 		goto collect_native;
 	end;
@@ -3578,6 +3604,12 @@ else fam(accent_chr(tail)):=(cur_val div @"10000) mod @"100;
 else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,256);
 @y
 else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
+@z
+
+@x
+  char_def_code: begin scan_char_num; define(p,char_given,cur_val);
+@y
+  char_def_code: begin scan_usv_num; define(p,char_given,cur_val);
 @z
 
 @x

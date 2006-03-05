@@ -117,7 +117,7 @@ extern "C" {
 	void DoAtsuiLayout(void* node, int justify);
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
-	int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch);
+	int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch);
 	float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid);
 #ifdef __cplusplus
 };

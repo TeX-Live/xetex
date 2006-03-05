@@ -1411,8 +1411,10 @@ measure_native_glyph(memoryword* node, int use_glyph_metrics)
 }
 
 int
-mapchartoglyph(int font, int ch)
+mapchartoglyph(int font, unsigned int ch)
 {
+	if (ch > 0x10ffff || ((ch >= 0xd800) && (ch <= 0xdfff)))
+		return 0;
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG)
 		return MapCharToGlyph_AAT((ATSUStyle)(fontlayoutengine[font]), ch);

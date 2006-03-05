@@ -402,7 +402,7 @@ float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID)
 	return rval;
 }
 
-UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt16 charCode)
+UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt32 charCode)
 {
 	return engine->font->mapCharToGlyph(charCode);
 }

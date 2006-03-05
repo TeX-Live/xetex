@@ -386,17 +386,29 @@ float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
 	return rval;
 }
 
-int MapCharToGlyph_AAT(ATSUStyle style, UniChar ch)
+int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch)
 {
+	UniChar	txt[2];
+	int		len = 1;
+	
 	if (sTextLayout == 0)
 		InitializeLayout();
 
-	OSStatus	status = ATSUSetTextPointerLocation(sTextLayout, &ch, 0, 1, 1);
-	status = ATSUSetRunStyle(sTextLayout, style, 0, 1);
+	if (ch > 0xffff) {
+		ch -= 0x10000;
+		txt[0] = 0xd800 + ch / 1024;
+		txt[1] = 0xdc00 + ch % 1024;
+		len = 2;
+	}
+	else
+		txt[0] = ch;
+
+	OSStatus	status = ATSUSetTextPointerLocation(sTextLayout, &txt[0], 0, len, len);
+	status = ATSUSetRunStyle(sTextLayout, style, 0, len);
 	
 	ByteCount	bufferSize = sizeof(ATSUGlyphInfoArray);
 	ATSUGlyphInfoArray	info;
-	status = ATSUGetGlyphInfo(sTextLayout, 0, 1, &bufferSize, &info);
+	status = ATSUGetGlyphInfo(sTextLayout, 0, len, &bufferSize, &info);
 	if (bufferSize > 0 && info.numGlyphs > 0)
 		return info.glyphs[0].glyphID;
 	else

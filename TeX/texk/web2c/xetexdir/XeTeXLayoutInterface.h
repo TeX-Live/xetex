@@ -95,7 +95,7 @@ void getGlyphSidebearings(XeTeXLayoutEngine engine, UInt32 glyphID, float* lsb, 
 
 float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID);
 
-UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt16 charCode);
+UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt32 charCode);
 
 #ifdef __cplusplus
 };
