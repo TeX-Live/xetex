@@ -108,6 +108,13 @@ typedef struct {
 #define kThaana	0x74686161
 #define kHebrew	0x68656272
 
+typedef struct
+{
+	float	xMin;
+	float	yMin;
+	float	xMax;
+	float	yMax;
+} GlyphBBox;
 
 #ifdef XETEX_MAC
 /* functions in XeTeX_mac.c */
@@ -115,6 +122,7 @@ typedef struct {
 extern "C" {
 #endif
 	void DoAtsuiLayout(void* node, int justify);
+	void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox);
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch);

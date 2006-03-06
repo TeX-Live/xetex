@@ -18,9 +18,11 @@
 
 
 #include "XeTeXFontInst_Mac.h"
+#include "XeTeX_ext.h"
 
 XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, LEErrorCode &status)
     : XeTeXFontInst(atsFont, pointSize, status)
+    , fStyle(0)
 {
     if (LE_FAILURE(status)) {
         return;
@@ -31,6 +33,8 @@ XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, LEErro
 
 XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 {
+	if (fStyle != 0)
+		ATSUDisposeStyle(fStyle);
 }
 
 void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
@@ -45,20 +49,22 @@ void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
 	if (status != LE_NO_ERROR)
 		fFontRef = 0;
 
+	if (ATSUCreateStyle(&fStyle) == noErr) {
+		ATSUFontID	font = FMGetFontFromATSFontRef(fFontRef);
+		Fixed		size = X2Fix(fPointSize * 72.0 / 72.27); /* convert TeX to Quartz points */
+		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
+		ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
+		ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
+		ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
+		ATSUSetAttributes(fStyle, 3, tags, valueSizes, values);
+	}
+	else {
+		status = LE_FONT_FILE_NOT_FOUND_ERROR;
+		fFontRef = 0;
+	}
+	
     return;
 }
-
-/*
-void XeTeXFontInst_Mac::setATSFont(ATSFontRef fontRef)
-{
-	fFontRef = fontRef;
-
-	flush();	// clear the font table cache
-
-	LEErrorCode	status = (LEErrorCode)0;
-	initialize(status);
-}
-*/
 
 const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
 {
@@ -78,4 +84,16 @@ const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
 	}
 
     return table;
+}
+
+void XeTeXFontInst_Mac::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
+{
+	GetGlyphBBox_AAT(fStyle, gid, bbox);
+	
+	/* convert Quartz to TeX points and flip y-axis */
+	float	tmp = bbox->yMin;
+	bbox->yMin = -bbox->yMax * 72.27 / 72.0;
+	bbox->yMax = -tmp * 72.27 / 72.0;
+	bbox->xMin *= 72.27 / 72.0;
+	bbox->xMax *= 72.27 / 72.0;
 }

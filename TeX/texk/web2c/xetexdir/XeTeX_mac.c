@@ -142,14 +142,6 @@ DoAtsuiLayout(void* p, int justify)
 		ATSUClearLayoutControls(sTextLayout, numTags, tags);
 }
 
-typedef struct
-{
-	float	xMin;
-	float	yMin;
-	float	xMax;
-	float	yMax;
-} GlyphBBox;
-
 static OSStatus QuadraticClosePath(void *callBackDataPtr)
 {
 	return 0;
@@ -290,7 +282,7 @@ static OSStatus CubicClosePath(void *callBackDataPtr)
 	return 0;
 }
 
-static void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
+void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
 	/* returns glyph bounding box in Quartz points */
 {
 	ATSCurveType	curveType;

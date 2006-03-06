@@ -39,9 +39,6 @@ struct XeTeXLayoutEngine_rec
 	UInt32*			addedFeatures;
 	UInt32*			removedFeatures;
 	UInt32			rgbValue;
-#ifdef XETEX_MAC
-	ATSUStyle		style;
-#endif
 };
 
 void terminatefontmanager()
@@ -271,9 +268,6 @@ XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 la
 	result->addedFeatures = addFeatures;
 	result->removedFeatures = removeFeatures;
 	result->rgbValue = rgbValue;
-#ifdef XETEX_MAC
-	result->style = NULL;
-#endif
 	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((XeTeXFontInst*)font,
 						scriptTag, languageTag, (LETag*)addFeatures, (LETag*)removeFeatures, status);
 	if (LE_FAILURE(status) || result->layoutEngine == NULL) {
@@ -281,34 +275,11 @@ XeTeXLayoutEngine createLayoutEngine(XeTeXFont font, UInt32 scriptTag, UInt32 la
 		return NULL;
 	}
 
-#ifdef XETEX_MAC
-	ATSUStyle	style;
-	if (ATSUCreateStyle(&style) == noErr) {
-		ATSUFontID	font = FMGetFontFromATSFontRef(getFontRef(result));
-		Fixed		size = X2Fix(getPointSize(result) * 72.0 / 72.27); /* convert TeX to Quartz points */
-		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
-		ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
-		ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };
-		ATSUAttributeValuePtr	values[3] = { &font, &size, &options };
-		ATSUSetAttributes(style, 3, tags, valueSizes, values);
-		result->style = style;
-	}
-	else {
-		delete result->layoutEngine;
-		delete result;
-		return NULL;
-	}
-#endif
-
 	return result;
 }
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
-#ifdef XETEX_MAC
-	if (engine->style != NULL)
-		ATSUDisposeStyle(engine->style);
-#endif
 	delete engine->layoutEngine;
 	delete engine->font;
 }
@@ -393,33 +364,17 @@ UInt32 getRgbValue(XeTeXLayoutEngine engine)
 
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth)
 {
-#ifdef XETEX_MAC
-	GetGlyphHeightDepth_AAT(engine->style, glyphID, height, depth);
-#else
 	engine->font->getGlyphHeightDepth(glyphID, height, depth);
-#endif
 }
 
 void getGlyphSidebearings(XeTeXLayoutEngine engine, UInt32 glyphID, float* lsb, float* rsb)
 {
-#ifdef XETEX_MAC
-	GetGlyphSidebearings_AAT(engine->style, glyphID, lsb, rsb);
-#else
 	engine->font->getGlyphSidebearings(glyphID, lsb, rsb);
-#endif
 }
 
 float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID)
 {
-	float	rval = 0.0;
-
-#ifdef XETEX_MAC
-	rval = GetGlyphItalCorr_AAT(engine->style, glyphID);
-#else
-	rval = engine->font->getGlyphItalCorr(glyphID);
-#endif
-
-	return rval;
+	return engine->font->getGlyphItalCorr(glyphID);
 }
 
 UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt32 charCode)

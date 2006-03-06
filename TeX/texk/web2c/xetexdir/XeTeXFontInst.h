@@ -33,6 +33,7 @@
 #include "cmaps.h"
 
 #include "XeTeXFontMgr.h"
+#include "XeTeX_ext.h"
 
 extern "C" {
 	void *xmalloc(unsigned);	// from kpathsea
@@ -75,13 +76,6 @@ protected:
     const void *readFontTable(LETag tableTag) const;
 
 public:
-	typedef struct {
-		float	xMin;
-		float	yMin;
-		float	xMax;
-		float	yMax;
-	} GlyphBBox;
-
     XeTeXFontInst(PlatformFontRef fontRef, float pointSize, LEErrorCode &status);
 
     virtual ~XeTeXFontInst();
