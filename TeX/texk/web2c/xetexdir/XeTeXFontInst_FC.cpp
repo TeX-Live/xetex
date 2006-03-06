@@ -179,8 +179,8 @@ XeTeXFontInst_FC::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 			advance.fX = advance.fY = 0;
 		}
 		else {
-			advance.fX = face->glyph->linearHoriAdvance * fPointSize / fUnitsPerEM;
-			advance.fY = face->glyph->linearVertAdvance * fPointSize / fUnitsPerEM;
+			advance.fX = face->glyph->metrics.horiAdvance * fPointSize / fUnitsPerEM;
+			advance.fY = face->glyph->metrics.vertAdvance * fPointSize / fUnitsPerEM;
 		}
 	}
 }
