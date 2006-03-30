@@ -25,6 +25,9 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
 extern char	gPrefEngine;
 
+int getCachedGlyphBBox(UInt16 fontID, UInt16 glyphID, GlyphBBox* bbox);
+void cacheGlyphBBox(UInt16 fontID, UInt16 glyphID, const GlyphBBox* bbox);
+
 void terminatefontmanager();
 
 #ifdef XETEX_MAC
@@ -88,6 +91,8 @@ UInt32* getRemovedFeatures(XeTeXLayoutEngine engine);
 int getDefaultDirection(XeTeXLayoutEngine engine);
 
 UInt32 getRgbValue(XeTeXLayoutEngine engine);
+
+void getGlyphBounds(XeTeXLayoutEngine engine, UInt32 glyphID, GlyphBBox* bbox);
 
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth);
 

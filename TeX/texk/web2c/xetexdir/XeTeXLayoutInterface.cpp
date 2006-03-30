@@ -41,6 +41,35 @@ struct XeTeXLayoutEngine_rec
 	UInt32			rgbValue;
 };
 
+/*******************************************************************/
+/* Glyph bounding box cache to speed up \XeTeXuseglyphmetrics mode */
+/*******************************************************************/
+#include <map>
+
+// key is combined value representing (font_id << 16) + glyph
+// value is glyph bounding box in TeX points
+static std::map<UInt32,GlyphBBox>	sGlyphBoxes;
+
+int
+getCachedGlyphBBox(UInt16 fontID, UInt16 glyphID, GlyphBBox* bbox)
+{
+	UInt32	key = ((UInt32)fontID << 16) + glyphID;
+	std::map<UInt32,GlyphBBox>::const_iterator i = sGlyphBoxes.find(key);
+	if (i == sGlyphBoxes.end()) {
+		return 0;
+	}
+	*bbox = i->second;
+	return 1;
+}
+
+void
+cacheGlyphBBox(UInt16 fontID, UInt16 glyphID, const GlyphBBox* bbox)
+{
+	UInt32	key = ((UInt32)fontID << 16) + glyphID;
+	sGlyphBoxes[key] = *bbox;
+}
+/*******************************************************************/
+
 void terminatefontmanager()
 {
 	XeTeXFontMgr::Terminate();
@@ -360,6 +389,11 @@ int getDefaultDirection(XeTeXLayoutEngine engine)
 UInt32 getRgbValue(XeTeXLayoutEngine engine)
 {
 	return engine->rgbValue;
+}
+
+void getGlyphBounds(XeTeXLayoutEngine engine, UInt32 glyphID, GlyphBBox* bbox)
+{
+	engine->font->getGlyphBounds(glyphID, bbox);
 }
 
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth)

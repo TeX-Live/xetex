@@ -1313,13 +1313,23 @@ measure_native_node(memoryword*	node, int use_glyph_metrics)
 		for (i = 0; i < native_glyph_count(node); ++i) {
 			float	ht, dp;
 			float	y = Fix2X(-locations[i].y);	/* NB negative is upwards in locations[].y! */
+
+			GlyphBBox	bbox;
+			if (getCachedGlyphBBox(f, glyphIDs[i], &bbox) == 0) {
 #ifdef XETEX_MAC
-			if (fontarea[f] == AAT_FONT_FLAG)
-				GetGlyphHeightDepth_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[i], &ht, &dp);
-			else
+				if (fontarea[f] == AAT_FONT_FLAG)
+					GetGlyphBBox_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[i], &bbox);
+				else
 #endif
-			if (fontarea[f] == OT_FONT_FLAG)
-				getGlyphHeightDepth((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[i], &ht, &dp);
+				if (fontarea[f] == OT_FONT_FLAG)
+					getGlyphBounds((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[i], &bbox);
+				
+				cacheGlyphBBox(f, glyphIDs[i], &bbox);
+			}
+
+			ht = bbox.yMax;
+			dp = -bbox.yMin;
+
 			if (y + ht > yMax)
 				yMax = y + ht;
 			if (y - dp < yMin)

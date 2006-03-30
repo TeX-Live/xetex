@@ -283,7 +283,7 @@ static OSStatus CubicClosePath(void *callBackDataPtr)
 }
 
 void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
-	/* returns glyph bounding box in Quartz points */
+	/* returns glyph bounding box in TeX points */
 {
 	ATSCurveType	curveType;
 	OSStatus		status;
@@ -331,6 +331,14 @@ void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
 
 	if (status != noErr || bbox->xMin == 65536.0)
 		bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0;
+	else {
+		// convert PS to TeX points and flip y-axis
+		float	tmp = bbox->yMin;
+		bbox->yMin = -bbox->yMax * 72.27 / 72.0;
+		bbox->yMax = -tmp * 72.27 / 72.0;
+		bbox->xMin *= 72.27 / 72.0;
+		bbox->xMax *= 72.27 / 72.0;
+	}
 }
 
 void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
@@ -340,8 +348,8 @@ void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 	
 	GetGlyphBBox_AAT(style, gid, &bbox);
 
-	*ht = PStoTeXPoints(-bbox.yMin);
-	*dp = PStoTeXPoints(bbox.yMax);
+	*ht = bbox.yMax;
+	*dp = -bbox.yMin;
 }
 
 void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb)
@@ -355,8 +363,8 @@ void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rs
 #else
 	GlyphBBox	bbox;
 	GetGlyphBBox_AAT(style, gid, &bbox);
-	*lsb = PStoTeXPoints(bbox.xMin);
-	*rsb = PStoTeXPoints(bbox.xMax - metrics.advance.x);
+	*lsb = bbox.xMin;
+	*rsb = bbox.xMax - PStoTeXPoints(metrics.advance.x);
 #endif
 }
 
@@ -373,7 +381,7 @@ float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
 	GlyphBBox	bbox;
 	GetGlyphBBox_AAT(style, gid, &bbox);
 	if (bbox.xMax > metrics.advance.x)
-		rval = PStoTeXPoints(bbox.xMax - metrics.advance.x);
+		rval = bbox.xMax - PStoTeXPoints(metrics.advance.x);
 #endif
 	return rval;
 }

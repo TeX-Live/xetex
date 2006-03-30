@@ -89,11 +89,4 @@ const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
 void XeTeXFontInst_Mac::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
 {
 	GetGlyphBBox_AAT(fStyle, gid, bbox);
-	
-	/* convert Quartz to TeX points and flip y-axis */
-	float	tmp = bbox->yMin;
-	bbox->yMin = -bbox->yMax * 72.27 / 72.0;
-	bbox->yMax = -tmp * 72.27 / 72.0;
-	bbox->xMin *= 72.27 / 72.0;
-	bbox->xMax *= 72.27 / 72.0;
 }
