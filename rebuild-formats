@@ -2,6 +2,8 @@
 
 # script to create initial xetex and xelatex formats, after installation
 
+set -o xtrace
+
 # ensure our entries are present in fmtutil.cnf
 fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
 if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
