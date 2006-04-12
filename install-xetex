@@ -50,8 +50,17 @@ fi
 # copy our texmf additions into the local texmf tree
 texmflocal=`kpsewhich --var-value TEXMFLOCAL`
 mkdir -p ${texmflocal}
-cp -pRf texmf/* ${texmflocal}/
-find texmf -print | sed -e "s@^texmf@${texmflocal}@" >> ${filelist}
+if [ -d texmf/.svn ]; then
+	# if we're installing from a Subversion WC, make a copy and clean it up
+	# (don't rely on svn export here in case svn isn't in the current PATH)
+	cp -pRf texmf Work/texmf-nosvn
+	find -d Work/texmf-nosvn -name ".svn" -exec rm -rf {} \;
+	cp -pRf Work/texmf-nosvn/* ${texmflocal}/
+	rm -r Work/texmf-nosvn
+else
+	cp -pRf texmf/* ${texmflocal}/
+fi
+find texmf -print | fgrep -v /.svn | sed -e "s@^texmf@${texmflocal}@" >> ${filelist}
 
 # copy the pool file to /web2c under TEXMFLOCAL
 cp -pf Work/TeX/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
