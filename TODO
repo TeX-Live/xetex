@@ -1,0 +1,26 @@
+** BUGS to investigate:
+
+- native-word hyphenation doesn't always reassemble words fully - e.g., Noori diacritic problem
+
+- error message when using \XeTeXcharglyph with a non-native font
+
+
+** FEATURES to consider:
+
+- \ifXeTeXnativefont\f
+
+- \ifXeTeXfontexists "name"
+
+- \XeTeXfont\f = "name" [style "S"] [using ENGINE] [features "featurestring"] [at SIZE]
+- \XeTeXfontname\f
+
+- \XeTeXadjustfeatures "featurestring"
+
+- \XeTeXmathchar, \XeTeXmathcode, etc
+
+- vertical mode for OpenType/ICU fonts
+
+- ability to adjust the font matrix (provides stretch, slant, baseline adjust, etc)
+
+- tracking and kerning overrides
+

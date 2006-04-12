@@ -8,8 +8,10 @@ test ! -f Makefile || make clean
 rm -rf Work
 find . -name config.cache -print -exec rm -f {} \;
 
+find . -name configure -exec chmod +x {} \;
+
 # run the configure script, which will create a Work subtree
-(./runConfigure.sh)
+sh ./runConfigure.sh
 
 # this should make ICU and TECkit along the way, if xetex.mk works
 (cd Work/TeX/texk/web2c && make xetex)
@@ -17,8 +19,8 @@ PRODUCTS=Work/TeX/texk/web2c/xetex
 
 # xdv2pdf is for Mac OS X only, don't try to build on Linux
 if [ "`uname`" == "Darwin" ]; then
-	(cd Work/TeX/texk/xdv2pdf && make xdv2pdf)
-	PRODUCTS="${PRODUCTS} Work/TeX/texk/xdv2pdf/xdv2pdf"
+	(cd Work/TeX/texk/xdv2pdf && make all)
+	PRODUCTS="${PRODUCTS} Work/TeX/texk/xdv2pdf/xdv2pdf Work/TeX/texk/xdv2pdf/T1Wrap"
 fi
 
 ls -l ${PRODUCTS}
