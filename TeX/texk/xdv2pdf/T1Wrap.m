@@ -5,6 +5,28 @@
 
 #import <unistd.h> // for getopt()
 
+#include "config.h"
+
+static inline UInt16
+SWAP16(UInt16 v)
+{
+#ifdef WORDS_BIGENDIAN
+	return v;
+#else
+	return (v >> 8) | (v << 8);
+#endif
+}
+
+static inline UInt32
+SWAP32(UInt32 v)
+{
+#ifdef WORDS_BIGENDIAN
+	return v;
+#else
+	return (v >> 24) | ((v >> 8) & 0x0000FF00) | ((v << 8) & 0x00FF0000) | (v << 24);
+#endif
+}
+
 static NSString *T1WrapExceptionName = @"T1WrapException";
 
 /* typ1 Table  */
@@ -203,13 +225,13 @@ NSData *digestPfbForSfnt(NSString *pfbPath, typ1Header *t1h)
   
   // fill the table header
   
-  t1h->version = 0x00010000;
-  t1h->flags = 0; 
-  t1h->glyphCount = 130; /* number of elements of CharStrings array/dict */
-  t1h->totalLength = asciiSize+binSize;
-  t1h->asciiLength = asciiSize;
-  t1h->binaryLength = binSize;
-  t1h->subrMaxLength = -1;
+  t1h->version = SWAP32(0x00010000);
+  t1h->flags = SWAP16(0); 
+  t1h->glyphCount = SWAP16(130); /* number of elements of CharStrings array/dict */
+  t1h->totalLength = SWAP32(asciiSize+binSize);
+  t1h->asciiLength = SWAP32(asciiSize);
+  t1h->binaryLength = SWAP32(binSize);
+  t1h->subrMaxLength = SWAP32(-1);
   
   // pad the data to long boundary
   {
@@ -237,7 +259,7 @@ unsigned long calcTableChecksum(register unsigned long *table, unsigned long len
   register unsigned long sum = 0L;
   register unsigned long *endptr = table+((length+3) & ~3) / sizeof(long);
   while (table < endptr)
-	sum += *table++;
+	sum += SWAP32(*table++);
   return sum;
 }
 
@@ -281,7 +303,7 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
   
   int glyphCount = [charStrings count]-1; // subtract 1 for the [KEY ORDER] key added by the pseudo-interpreter
   
-  t1h->glyphCount = glyphCount;
+  t1h->glyphCount = SWAP16(glyphCount);
   
   NSMutableData *type1TableData = [NSMutableData dataWithCapacity:sizeof(typ1Header)+[type1Data length]];
   [type1TableData appendBytes:t1h length:sizeof(typ1Header)];
@@ -306,13 +328,13 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
   unsigned HFMXTableSize = sizeof(HFMXHeader);
   HFMXHeader *hh = calloc(1,HFMXTableSize);
   
-  hh->Version = 0x00010000;
-  hh->Ascent = [(NSNumber*)[(NSArray*)[(NSArray*)[fontDict objectForKey:@"/FontBBox"] objectAtIndex:1] objectAtIndex:3] intValue];
-  hh->Descent = -[(NSNumber*)[(NSArray*)[(NSArray*)[fontDict objectForKey:@"/FontBBox"] objectAtIndex:1] objectAtIndex:1] intValue];
-  hh->LineGap = 0;
-  hh->CaretSlopeRise = 1; 
-  hh->CaretSlopeRun = 0;
-  hh->CaretOffset = 0;
+  hh->Version = SWAP32(0x00010000);
+  hh->Ascent = SWAP16([(NSNumber*)[(NSArray*)[(NSArray*)[fontDict objectForKey:@"/FontBBox"] objectAtIndex:1] objectAtIndex:3] intValue]);
+  hh->Descent = SWAP16(-[(NSNumber*)[(NSArray*)[(NSArray*)[fontDict objectForKey:@"/FontBBox"] objectAtIndex:1] objectAtIndex:1] intValue]);
+  hh->LineGap = SWAP16(0);
+  hh->CaretSlopeRise = SWAP16(1); 
+  hh->CaretSlopeRun = SWAP16(0);
+  hh->CaretOffset = SWAP16(0);
   
   totalSize += HFMXTableSize;
   
@@ -364,18 +386,18 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
   
   sfntNameRecord rec;
   int nameRecords = 0;
-  rec.platformID = kFontMacintoshPlatform;
-  rec.scriptID = kFontRomanScript;
-  rec.languageID = kFontEnglishLanguage;
+  rec.platformID = SWAP16(kFontMacintoshPlatform);
+  rec.scriptID = SWAP16(kFontRomanScript);
+  rec.languageID = SWAP16(kFontEnglishLanguage);
 
   NSEnumerator *nameIdEn = [nameIdArray objectEnumerator];
   NSEnumerator *stringsEn = [stringsArray objectEnumerator];
   NSNumber *nameIdObj;
   while ((nameIdObj = [nameIdEn nextObject]) && (string = [stringsEn nextObject]))
   {
-	rec.nameID = [nameIdObj intValue];
-	rec.length = [string length];
-	rec.offset = [nameStrings length];
+	rec.nameID = SWAP16([nameIdObj intValue]);
+	rec.length = SWAP16([string length]);
+	rec.offset = SWAP16([nameStrings length]);
 	[nameStrings appendBytes:[string cString] length:[string cStringLength]];
 	[nameRecs appendBytes:&rec length:sizeof(sfntNameRecord)];
 	nameRecords++;
@@ -387,9 +409,9 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
 										
   
   sfntNameHeader nameh;
-  nameh.format = 0;
-  nameh.count = nameRecords;
-  nameh.stringOffset = sizeof_sfntNameHeader + [nameRecs length];
+  nameh.format = SWAP16(0);
+  nameh.count = SWAP16(nameRecords);
+  nameh.stringOffset = SWAP16(sizeof_sfntNameHeader + [nameRecs length]);
   
   NSMutableData *nameTable = [NSMutableData dataWithCapacity:nameTableSize];
   [nameTable appendBytes:&nameh length:sizeof_sfntNameHeader];
@@ -403,13 +425,13 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
   
   unsigned fdscTableSize = four_align(sizeof_sfntDescriptorHeader+sizeof(sfntFontDescriptor)*2);
   sfntDescriptorHeader *dh = calloc(1,fdscTableSize);							
-  dh->version = 0x00010000;
-  dh->descriptorCount = 2;
+  dh->version = SWAP32(0x00010000);
+  dh->descriptorCount = SWAP32(2);
 	/* FIXME: could try to infer better values from known font names like "bold", "condensed", etc */
-  dh->descriptor[0].name = 0x77647468;  /* wdth */
-  dh->descriptor[0].value = 0x00010000; /* +1.0 */
-  dh->descriptor[1].name = 0x77676874;  /* wght */
-  dh->descriptor[1].value = 0x00010000; /* +1.0 */
+  dh->descriptor[0].name = SWAP32(0x77647468);  /* wdth */
+  dh->descriptor[0].value = SWAP32(0x00010000); /* +1.0 */
+  dh->descriptor[1].name = SWAP32(0x77676874);  /* wght */
+  dh->descriptor[1].value = SWAP32(0x00010000); /* +1.0 */
   
   totalSize += fdscTableSize;
   
@@ -427,15 +449,15 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
 	sfntCMapSubHeader6 *cmapsh = (sfntCMapSubHeader6*)(((char*)cmaph)+12);
 	UInt16 *glyphIndexArray = (UInt16*)(((char*)cmaph)+12+sizeof_sfntCMapSubHeader6);
 	cmaph->version = 0;
-	cmaph->numTables = 1;
-	cmaph->encoding[0].platformID = kFontMacintoshPlatform;
-	cmaph->encoding[0].scriptID = kFontRomanScript;
-	cmaph->encoding[0].offset = 12;
-	cmapsh->format = 6;
-	cmapsh->length = 10+256*2;
-	cmapsh->languageID = 0;
-	cmapsh->firstCode = 0;
-	cmapsh->entryCount = 256;
+	cmaph->numTables = SWAP16(1);
+	cmaph->encoding[0].platformID = SWAP16(kFontMacintoshPlatform);
+	cmaph->encoding[0].scriptID = SWAP16(kFontRomanScript);
+	cmaph->encoding[0].offset = SWAP32(12);
+	cmapsh->format = SWAP16(6);
+	cmapsh->length = SWAP16(10+256*2);
+	cmapsh->languageID = SWAP16(0);
+	cmapsh->firstCode = SWAP16(0);
+	cmapsh->entryCount = SWAP16(256);
 	{
 	  int i;
 	  NSString *name;
@@ -444,7 +466,7 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
 		  name = [encoding objectAtIndex:i];
 		  if ([name isEqualToString:@" <NULL> "]) name = @"/.notdef";		  
 		} else name = @"/.notdef";		
-		glyphIndexArray[i] = [glyphNames indexOfObject:name];
+		glyphIndexArray[i] = SWAP16([glyphNames indexOfObject:name]);
 	  }
 	}
   } else {
@@ -454,13 +476,13 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
 	sfntCMapSubHeader *cmapsh = (sfntCMapSubHeader*)(((char*)cmaph)+12);
 	UInt8 *glyphIndexArray = (UInt8*)(((char*)cmaph)+12+sizeof_sfntCMapSubHeader);
 	cmaph->version = 0;
-	cmaph->numTables = 1;
-	cmaph->encoding[0].platformID = kFontMacintoshPlatform;
-	cmaph->encoding[0].scriptID = kFontRomanScript;
-	cmaph->encoding[0].offset = 12;
-	cmapsh->format = 0;
-	cmapsh->length = 6+256;
-	cmapsh->languageID = 0;
+	cmaph->numTables = SWAP16(1);
+	cmaph->encoding[0].platformID = SWAP16(kFontMacintoshPlatform);
+	cmaph->encoding[0].scriptID = SWAP16(kFontRomanScript);
+	cmaph->encoding[0].offset = SWAP32(12);
+	cmapsh->format = SWAP16(0);
+	cmapsh->length = SWAP16(6+256);
+	cmapsh->languageID = SWAP16(0);
 	{
 	  int i;
 	  NSString *name;
@@ -526,9 +548,9 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
 		if ([string characterAtIndex:0]=='/') string = [string substringFromIndex:1];
 		unsigned index = [appleGlyphNames indexOfObject:string];
 		if (index != NSNotFound) {
-		  postTableGlyphArray[nGlyphs] = index;
+		  postTableGlyphArray[nGlyphs] = SWAP16(index);
 		} else {
-		  postTableGlyphArray[nGlyphs] = 258+(nStrings++);
+		  postTableGlyphArray[nGlyphs] = SWAP16(258+(nStrings++));
 		  char strLength = [string cStringLength];
 		  [postTableStrings appendBytes:&strLength length:1];
 		  [postTableStrings appendBytes:[string cString] length:strLength];
@@ -539,11 +561,11 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
 
 	
   sfntPostHeader ph;
-  ph.version = 0x00020000;
-  ph.italicAngle = 0;
-  ph.underlinePosition = [(NSNumber*)[fontInfo objectForKey:@"/UnderlinePosition"] intValue];
-  ph.underlineThickness = [(NSNumber*)[fontInfo objectForKey:@"/UnderlineThickness"] intValue];
-  ph.isFixedPitch = ([(NSNumber*)[fontInfo objectForKey:@"/isFixedPitch"] intValue] ? 1 : 0);
+  ph.version = SWAP32(0x00020000);
+  ph.italicAngle = SWAP32(0);
+  ph.underlinePosition = SWAP16([(NSNumber*)[fontInfo objectForKey:@"/UnderlinePosition"] intValue]);
+  ph.underlineThickness = SWAP16([(NSNumber*)[fontInfo objectForKey:@"/UnderlineThickness"] intValue]);
+  ph.isFixedPitch = SWAP16(([(NSNumber*)[fontInfo objectForKey:@"/isFixedPitch"] intValue] ? 1 : 0));
   ph.reserved = 0;
   ph.minMemType42 = 0;
   ph.maxMemType42 = 0;
@@ -553,7 +575,9 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
   
   NSMutableData *postTable = [NSMutableData dataWithCapacity:100];
   [postTable appendBytes:&ph length:sizeof_sfntPostHeader];
+  nGlyphs = SWAP16(nGlyphs);
   [postTable appendBytes:&nGlyphs length:sizeof(UInt16)];
+  nGlyphs = SWAP16(nGlyphs);
   [postTable appendBytes:postTableGlyphArray length:sizeof(UInt16)*nGlyphs];
   [postTable appendData:postTableStrings];
   [postTable increaseLengthBy:(4-([postTable length] % 4)) % 4]; // pad with zeros
@@ -565,10 +589,10 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
   unsigned sfntDirectorySize = sizeof_sfntDirectory+sizeof(sfntDirectoryEntry)*6;
   sfntDirectory *dir = calloc(1,sfntDirectorySize);
   fillTag(&(dir->format),"typ1");
-  dir->numOffsets = 6; /* number of tables */
-  dir->searchRange = 4*16; /* (max pow 2 <= numOffsets)*16 */
-  dir->entrySelector = 2;/* log2(max pow 2 <= numOffsets) */
-  dir->rangeShift = 32;  /* numOffsets*16-searchRange*/
+  dir->numOffsets = SWAP16(6); /* number of tables */
+  dir->searchRange = SWAP16(4*16); /* (max pow 2 <= numOffsets)*16 */
+  dir->entrySelector = SWAP16(2);/* log2(max pow 2 <= numOffsets) */
+  dir->rangeShift = SWAP16(32);  /* numOffsets*16-searchRange*/
 	
   unsigned totalOffset = sfntDirectorySize;
 
@@ -576,40 +600,40 @@ NSData *wrapPfb(NSString *fontPath, BOOL omitType1Data)
      but we want to put the TYP1 table last because we optionally omit the data
 	 (but still include the table header) */
 	
-  dir->table[0].tableTag = HFMXTableTag;
-  dir->table[0].checkSum = calcTableChecksum((void*)hh,HFMXTableSize);
-  dir->table[0].offset = totalOffset;
-  dir->table[0].length = HFMXTableSize;
-  totalOffset += dir->table[0].length;
+  dir->table[0].tableTag = SWAP32(HFMXTableTag);
+  dir->table[0].checkSum = SWAP32(calcTableChecksum((void*)hh,HFMXTableSize));
+  dir->table[0].offset = SWAP32(totalOffset);
+  dir->table[0].length = SWAP32(HFMXTableSize);
+  totalOffset += SWAP32(dir->table[0].length);
 		
-  dir->table[2].tableTag = cmapFontTableTag;
-  dir->table[2].checkSum = calcTableChecksum((void*)cmaph,cmapTableSize);
-  dir->table[2].offset = totalOffset;
-  dir->table[2].length = cmapTableSize;
-  totalOffset += dir->table[2].length;
+  dir->table[2].tableTag = SWAP32(cmapFontTableTag);
+  dir->table[2].checkSum = SWAP32(calcTableChecksum((void*)cmaph,cmapTableSize));
+  dir->table[2].offset = SWAP32(totalOffset);
+  dir->table[2].length = SWAP32(cmapTableSize);
+  totalOffset += SWAP32(dir->table[2].length);
 	
-  dir->table[3].tableTag = descriptorFontTableTag;
-  dir->table[3].checkSum = calcTableChecksum((void*)dh,fdscTableSize);
-  dir->table[3].offset = totalOffset;
-  dir->table[3].length = fdscTableSize;
-  totalOffset += dir->table[3].length;
+  dir->table[3].tableTag = SWAP32(descriptorFontTableTag);
+  dir->table[3].checkSum = SWAP32(calcTableChecksum((void*)dh,fdscTableSize));
+  dir->table[3].offset = SWAP32(totalOffset);
+  dir->table[3].length = SWAP32(fdscTableSize);
+  totalOffset += SWAP32(dir->table[3].length);
 	
-  dir->table[4].tableTag = nameFontTableTag;
-  dir->table[4].checkSum = calcTableChecksum((void*)[nameTable bytes], [nameTable length]);
-  dir->table[4].offset = totalOffset;
-  dir->table[4].length = [nameTable length];
-  totalOffset += dir->table[4].length;
+  dir->table[4].tableTag = SWAP32(nameFontTableTag);
+  dir->table[4].checkSum = SWAP32(calcTableChecksum((void*)[nameTable bytes], [nameTable length]));
+  dir->table[4].offset = SWAP32(totalOffset);
+  dir->table[4].length = SWAP32([nameTable length]);
+  totalOffset += SWAP32(dir->table[4].length);
 	
-  dir->table[5].tableTag = postTableTag;
-  dir->table[5].checkSum = calcTableChecksum((void*)[postTable bytes],[postTable length]);
-  dir->table[5].offset = totalOffset;
-  dir->table[5].length = [postTable length];
-  totalOffset += dir->table[5].length;
+  dir->table[5].tableTag = SWAP32(postTableTag);
+  dir->table[5].checkSum = SWAP32(calcTableChecksum((void*)[postTable bytes],[postTable length]));
+  dir->table[5].offset = SWAP32(totalOffset);
+  dir->table[5].length = SWAP32([postTable length]);
+  totalOffset += SWAP32(dir->table[5].length);
   
-  dir->table[1].tableTag = typ1TableTag;
-  dir->table[1].checkSum = calcTableChecksum((void*)[type1TableData bytes],[type1TableData length]);
-  dir->table[1].offset = totalOffset;
-  dir->table[1].length = [type1TableData length];
+  dir->table[1].tableTag = SWAP32(typ1TableTag);
+  dir->table[1].checkSum = SWAP32(calcTableChecksum((void*)[type1TableData bytes],[type1TableData length]));
+  dir->table[1].offset = SWAP32(totalOffset);
+  dir->table[1].length = SWAP32([type1TableData length]);
 //  totalOffset += dir->table[0].length;
 
   NSMutableData *sfntData = [NSMutableData dataWithCapacity:totalSize];
