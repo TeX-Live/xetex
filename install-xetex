@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# FIXME: this should all be replaced by "make install" eventually,
+# as part of proper integration with the TeX Live build
+
+# script to install xetex (and xdv2pdf on OS X)
+# from the binaries created by build-xetex
+
+# this is intended for the Linux version; on OS X, we build installer packages
+
+# to be run from the top level dir of the xetex tree, after ./build-xetex
+
+if [ -f xetex-installed-files ]; then rm xetex-installed-files; fi
+
+if [ ! -e Work/TeX/texk/web2c/xetex ]; then
+	echo "### error: xetex binary has not been built"
+	exit 100
+fi
+
+# find the existing tex binary, possibly following a symlink
+texbin=`which tex`
+if [ ! -x "${texbin}" ]; then
+	echo "### error: existing tex binary couldn't be found"
+	exit 100
+fi
+if [ -L ${texbin} ]; then
+	texbin=`readlink ${texbin}`
+fi
+texbindir=`dirname ${texbin}`
+
+# copy the xetex binary to the same dir as standard tex
+cp -pf Work/TeX/texk/web2c/xetex ${texbindir}/xetex
+echo ${texbindir}/xetex >> xetex-installed-files
+if [ -e Work/TeX/texk/xdv2pdf/xdv2pdf ]; then
+	programs="xdv2pdf T1Wrap"
+	for f in ${programs}; do
+		cp -pf Work/TeX/texk/xdv2pdf/${f} ${texbindir}/${f}
+		echo ${texbindir}/${f} >> xetex-installed-files
+	done
+	# the mergemarks script is in the original source dir, not under Work
+	cp -pf TeX/texk/xdv2pdf/xdv2pdf_mergemarks ${texbindir}/xdv2pdf_mergemarks
+	chmod +x ${texbindir}/xdv2pdf_mergemarks
+	echo ${texbindir}/xdv2pdf_mergemarks >> xetex-installed-files
+fi
+
+# copy our texmf additions into the local texmf tree
+texmflocal=`kpsewhich --var-value TEXMFLOCAL`
+mkdir -p ${texmflocal}
+cp -pRf texmf/* ${texmflocal}/
+find texmf -print | sed -e "s@^texmf@${texmflocal}@" >> xetex-installed-files
+
+# copy the pool file to /web2c under TEXMFLOCAL
+cp -pf Work/TeX/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
+echo ${texmflocal}/web2c/xetex.pool >> xetex-installed-files
+
+# update kpathsearch databases because we've installed a bunch of stuff
+texhash ${texmflocal}
+
+# this will build the format files on the current system;
+# for packaged binary installations, must repeat this on the target
+./rebuild-formats
