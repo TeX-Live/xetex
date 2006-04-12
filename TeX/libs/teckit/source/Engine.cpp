@@ -13,6 +13,7 @@ Description:
 -------------------------------------------------------------------------*/
 
 /*
+	2006-01-12	jk	remove multi-char constants, use kTableType_XXX from TECkit_Format.h
 	2005-07-19	jk	revised to use WORDS_BIGENDIAN conditional, config.h
 	2005-05-06	jk	patched match() to forget matches within groups if we backtrack out
 	2004-03-19	jk	rewrote match() to fix group/repeat bugs and be more efficient
@@ -1376,18 +1377,18 @@ Converter::Converter(const Byte* inTable, UInt32 inTableSize, bool inForward,
 			const TableHeader*	t = (const TableHeader*)(table + READ(tableBase[i]));
 			Stage*	p = 0;
 			switch (READ(t->type)) {
-				case 'B->B':
-				case 'B->U':
-				case 'U->U':
-				case 'U->B':
+				case kTableType_BB:
+				case kTableType_BU:
+				case kTableType_UU:
+				case kTableType_UB:
 					p = new Pass(t, this);
 					normForm = 0;
 					break;
-				case 'NFC ':
+				case kTableType_NFC:
 					p = new Normalizer(true);
 					normForm = kForm_NFC;
 					break;
-				case 'NFD ':
+				case kTableType_NFD:
 					p = new Normalizer(false);
 					normForm = kForm_NFD;
 					break;

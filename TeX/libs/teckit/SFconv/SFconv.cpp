@@ -69,7 +69,7 @@ const char*				defaultMarkerChars	= "abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOP
 
 map<string,TECkit_Converter>	converters;
 
-enum {
+enum dir_enum {
 	kDirection_Unspecified = 0,
 	kDirection_8_U,
 	kDirection_U_8
@@ -92,10 +92,10 @@ Utf8ToString(const char* s)
 {
 	int	len = strlen(s);
 	UniChar*	buf = new UniChar[len];
-	Byte*		sourceStart = (Byte*)s;
+	const Byte*	sourceStart = (Byte*)s;
 	UniChar*	targetStart = buf;
-	int	status = ConvertUTF8toUTF16(&sourceStart, sourceStart + len, &targetStart, targetStart + len);
-	if (status != ok) {
+	int	status = ConvertUTF8toUTF16(&sourceStart, sourceStart + len, &targetStart, targetStart + len, lenientConversion);
+	if (status != conversionOK) {
 		fprintf(stderr, "error %d converting UTF-8 to UTF-16\n", status);
 		exit(1);
 	}
@@ -744,7 +744,7 @@ main(
 		
 	bool	cmdLineErr = (argc < 2);
 	
-	char	unicodeFormat = platformUTF16;
+	char	unicodeFormat = kForm_UTF8;
 	
 	int		normForm = 0;
 	

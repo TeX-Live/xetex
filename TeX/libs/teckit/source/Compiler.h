@@ -332,7 +332,7 @@ protected:
 };
 
 struct CharName {
-	unsigned long	usv;
+	unsigned int	usv;
 	const char*		name;
 };
 extern CharName	gUnicodeNames[];

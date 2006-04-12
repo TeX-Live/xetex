@@ -21,7 +21,7 @@ plan tests => $numtests;
 
 foreach $k (keys %tests)
 {
-    $enc = Encode::TECkit->new("../test/$k");
+    $enc = Encode::TECkit->new("../../test/$k");
     ok ($enc);
     foreach $t (@{$tests{$k}})
     {

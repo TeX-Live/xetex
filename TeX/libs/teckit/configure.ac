@@ -79,6 +79,6 @@ if test "$enable_profilefn" = yes; then
 fi
 
 
-AC_CONFIG_FILES([ Makefile lib/Makefile bin/Makefile])
+AC_CONFIG_FILES([ Makefile lib/Makefile bin/Makefile docs/Makefile test/Makefile])
 
 AC_OUTPUT

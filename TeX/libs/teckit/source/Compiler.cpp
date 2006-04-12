@@ -13,6 +13,8 @@ Description:
 -------------------------------------------------------------------------*/
 
 /*
+	2006-01-12	jk			removed multi-char constants, use FOUR_CHAR_CODE to define UInt32 values instead
+							(no functional change, just to avoid compiler warnings)
     2005-07-07  jk  2.1.5   changed to use WORDS_BIGENDIAN rather than TARGET_RT_BIG_ENDIAN
     2005-06-20  jk  2.1.4   added lhsDefault/rhsDefault attributes to <pass> elem in xml output
 	23-May-2005		changes for 64-bit compilation, from Ulrik P
@@ -71,19 +73,32 @@ const UInt32 kSurrogateLowEnd		= 0xDFFFUL;
 const UInt32 byteMask				= 0x000000BFUL;
 const UInt32 byteMark				= 0x00000080UL;
 
+#define FOUR_CHAR_CODE(a,b,c,d)	(UInt32)((a << 24) + (b << 16) + (c << 8) + d)
+
+const UInt32 kCode_Byte	= FOUR_CHAR_CODE('B','y','t','e');
+const UInt32 kCode_BU	= FOUR_CHAR_CODE('B','-','>','U');
+const UInt32 kCode_UB	= FOUR_CHAR_CODE('U','-','>','B');
+const UInt32 kCode_Unic	= FOUR_CHAR_CODE('U','n','i','c');
+const UInt32 kCode_NFCf	= FOUR_CHAR_CODE('N','F','C','f');
+const UInt32 kCode_NFCr	= FOUR_CHAR_CODE('N','F','C','r');
+const UInt32 kCode_NFC	= FOUR_CHAR_CODE('N','F','C',' ');
+const UInt32 kCode_NFDf	= FOUR_CHAR_CODE('N','F','D','f');
+const UInt32 kCode_NFDr	= FOUR_CHAR_CODE('N','F','D','r');
+const UInt32 kCode_NFD	= FOUR_CHAR_CODE('N','F','D',' ');
+
 Compiler::Keyword
 Compiler::keywords[] = {
 	{ "Pass",				tok_Pass,		0						},
-	{ "Byte",				tok_PassType,	'Byte'					},
-	{ "Byte_Unicode",		tok_PassType,	'B->U'					},
-	{ "Unicode_Byte",		tok_PassType,	'U->B'					},
-	{ "Unicode",			tok_PassType,	'Unic'					},
-	{ "NFC_fwd",			tok_PassType,	'NFCf'					},
-	{ "NFC_rev",			tok_PassType,	'NFCr'					},
-	{ "NFC",				tok_PassType,	'NFC '					},
-	{ "NFD_fwd",			tok_PassType,	'NFDf'					},
-	{ "NFD_rev",			tok_PassType,	'NFDr'					},
-	{ "NFD",				tok_PassType,	'NFD '					},
+	{ "Byte",				tok_PassType,	kCode_Byte				},
+	{ "Byte_Unicode",		tok_PassType,	kCode_BU					},
+	{ "Unicode_Byte",		tok_PassType,	kCode_UB					},
+	{ "Unicode",			tok_PassType,	kCode_Unic				},
+	{ "NFC_fwd",			tok_PassType,	kCode_NFCf				},
+	{ "NFC_rev",			tok_PassType,	kCode_NFCr				},
+	{ "NFC",				tok_PassType,	kCode_NFC				},
+	{ "NFD_fwd",			tok_PassType,	kCode_NFDf				},
+	{ "NFD_rev",			tok_PassType,	kCode_NFDr				},
+	{ "NFD",				tok_PassType,	kCode_NFD				},
 	{ "Class",				tok_Class,		0						},
 	{ "ByteClass",			tok_Class,		'B'						},
 	{ "UniClass",			tok_Class,		'U'						},
@@ -620,8 +635,8 @@ Compiler::Compiler(const char* txt, UInt32 len, char inForm, bool cmp, bool genX
 						}
 						if (generateXML) {
 							// create an XML representation of the rule and append to currentPass.xmlRules/xmlContexts
-							bool	sourceUni = (currentPass.passType == 'U->B') || (currentPass.passType == 'Unic');
-							bool	targetUni = (currentPass.passType == 'B->U') || (currentPass.passType == 'Unic');
+							bool	sourceUni = (currentPass.passType == kCode_UB) || (currentPass.passType == kCode_Unic);
+							bool	targetUni = (currentPass.passType == kCode_BU) || (currentPass.passType == kCode_Unic);
 
 							string	xmlRule;
 							xmlRule += "<a";
@@ -979,7 +994,7 @@ Compiler::Compiler(const char* txt, UInt32 len, char inForm, bool cmp, bool genX
 			
 			case tok_Default:
 				StartDefaultPass();
-				if (currentPass.passType != 'B->U' && currentPass.passType != 'U->B') {
+				if (currentPass.passType != kCode_BU && currentPass.passType != kCode_UB) {
 					Error("defaults are only used in Byte_Unicode and Unicode_Byte passes");
 					break;
 				}
@@ -1026,9 +1041,9 @@ Compiler::Compiler(const char* txt, UInt32 len, char inForm, bool cmp, bool genX
 				StartDefaultPass();
 				classLine = lineNumber;
 				if (tok.val == 0) {
-					if (currentPass.passType == 'Byte')
+					if (currentPass.passType == kCode_Byte)
 						classType = 'B';
-					else if (currentPass.passType == 'Unic')
+					else if (currentPass.passType == kCode_Unic)
 						classType = 'U';
 					else {
 						Error("must use ByteClass or UniClass to define classes in this pass");
@@ -1037,9 +1052,9 @@ Compiler::Compiler(const char* txt, UInt32 len, char inForm, bool cmp, bool genX
 				}
 				else {
 					classType = tok.val;
-					if (classType == 'B' && currentPass.passType == 'Unic')
+					if (classType == 'B' && currentPass.passType == kCode_Unic)
 						Error("can't use ByteClass in this pass");
-					else if (classType == 'U' && currentPass.passType == 'Byte')
+					else if (classType == 'U' && currentPass.passType == kCode_Byte)
 						Error("can't use UniClass in this pass");
 				}
 				{
@@ -1464,7 +1479,7 @@ Compiler::FinishPass()
 	if (currentPass.passType == 0)
 		return;
 
-	if ((currentPass.passType & 0xFFFF0000) == ('NF__' & 0xFFFF0000)) {
+	if ((currentPass.passType & 0xFFFF0000) == (FOUR_CHAR_CODE('N','F','_','_') & 0xFFFF0000)) {
 		while (errorCount == 0) {
 			if (fwdTables.size() == 0)
 				lhsFlags |= kFlags_Unicode;
@@ -1475,7 +1490,8 @@ Compiler::FinishPass()
 				}
 			}
 			rhsFlags |= kFlags_Unicode;
-			string	normTable((currentPass.passType & 0x0000FF00) == ('__C_' & 0x0000FF00) ? "NFC " : "NFD ");
+			string	normTable((currentPass.passType & 0x0000FF00) == (FOUR_CHAR_CODE('_','_','C','_') & 0x0000FF00) 
+								? "NFC " : "NFD ");
 			if ((currentPass.passType & 0x000000FF) != 'r')
 				fwdTables.push_back(normTable);
 			if ((currentPass.passType & 0x000000FF) != 'f')
@@ -1499,8 +1515,8 @@ Compiler::FinishPass()
 	else {
 		while (errorCount == 0) {
 			// not really a loop; just so we can use 'break' to exit early
-			bool	sourceUni = (currentPass.passType == 'U->B') || (currentPass.passType == 'Unic');
-			bool	targetUni = (currentPass.passType == 'B->U') || (currentPass.passType == 'Unic');
+			bool	sourceUni = (currentPass.passType == kCode_UB) || (currentPass.passType == kCode_Unic);
+			bool	targetUni = (currentPass.passType == kCode_BU) || (currentPass.passType == kCode_Unic);
 
 			if (generateXML) {
 				// pass header
@@ -1659,6 +1675,8 @@ Compiler::IDlookup(const char* str, UInt32 len)
 	}
 
 	// didn't find the identifier as a keyword; try as a Unicode char name
+	// NOTE: the names are now sorted (by Unicode name), so we could use a binary
+	//  search here if anyone complains about compilation time when using names :)
 	const CharName	*c = &gUnicodeNames[0];
 	while (c->name != 0)
 		if (unicodeNameCompare(c->name, str, len) == 0) {
@@ -2067,13 +2085,13 @@ Compiler::Error(const char* msg, const char* s, UInt32 line)
 void
 Compiler::StartDefaultPass()
 {
-	if ((currentPass.passType & 0xFFFF0000) == ('NF__' & 0xFFFF0000)) {
+	if ((currentPass.passType & 0xFFFF0000) == (FOUR_CHAR_CODE('N','F','_','_') & 0xFFFF0000)) {
 		Error("normalization pass cannot contain any other rules");
-		currentPass.passType = 'Unic';
+		currentPass.passType = kCode_Unic;
 	}
 	if (currentPass.passType == 0) {
 		currentPass.clear();	// should already be clear!
-		currentPass.passType = 'B->U';
+		currentPass.passType = kCode_BU;
 		currentPass.setLineNo(lineNumber);
 	}
 }
@@ -2115,10 +2133,10 @@ Compiler::charLimit()
 		case inRHSString:
 		case inRHSPreContext:
 		case inRHSPostContext:
-			limit = (currentPass.passType == 'B->U' || currentPass.passType == 'Unic' ? 0x10ffff : 0xff);
+			limit = (currentPass.passType == kCode_BU || currentPass.passType == kCode_Unic ? 0x10ffff : 0xff);
 			break;
 		default:
-			limit = (currentPass.passType == 'U->B' || currentPass.passType == 'Unic' ? 0x10ffff : 0xff);
+			limit = (currentPass.passType == kCode_UB || currentPass.passType == kCode_Unic ? 0x10ffff : 0xff);
 			break;
 	}
 	return limit;
@@ -2180,11 +2198,11 @@ Compiler::AppendClass(const string& className, bool negate)
 		case inRHSString:
 		case inRHSPreContext:
 		case inRHSPostContext:
-			classNames = (currentPass.passType == 'Byte' || currentPass.passType == 'U->B')
+			classNames = (currentPass.passType == kCode_Byte || currentPass.passType == kCode_UB)
 							? &currentPass.byteClassNames : &currentPass.uniClassNames;
 			break;
 		default:
-			classNames = (currentPass.passType == 'Byte' || currentPass.passType == 'B->U')
+			classNames = (currentPass.passType == kCode_Byte || currentPass.passType == kCode_BU)
 							? &currentPass.byteClassNames : &currentPass.uniClassNames;
 			break;
 	}

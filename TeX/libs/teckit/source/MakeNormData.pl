@@ -140,11 +140,11 @@ foreach $plane (0 .. 16) {
 	substr($planeMapR, $plane, 1) = pack('C', $pageMapRIndex{$pageMapR});
 }
 
-print "UInt8 ccPlaneMap[] = {";
+print "const UInt8 ccPlaneMap[] = {";
 print join(',', map { sprintf("%d", $_) } unpack('C*', $planeMapCC));
 print "};\n\n";
 
-print "UInt8 ccPageMaps[][256] = {\n";
+print "const UInt8 ccPageMaps[][256] = {\n";
 foreach (@pageMapCC) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('C*', $_));
@@ -152,7 +152,7 @@ foreach (@pageMapCC) {
 }
 print "};\n\n";
 
-print "UInt8 ccCharClass[][256] = {\n";
+print "const UInt8 ccCharClass[][256] = {\n";
 foreach (@charCC) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('C*', $_));
@@ -160,11 +160,11 @@ foreach (@charCC) {
 }
 print "};\n\n";
 
-print "UInt8 dcPlaneMap[] = {";
+print "const UInt8 dcPlaneMap[] = {";
 print join(',', map { sprintf("%d", $_) } unpack('C*', $planeMapDecomp));
 print "};\n\n";
 
-print "UInt8 dcPageMaps[][256] = {\n";
+print "const UInt8 dcPageMaps[][256] = {\n";
 foreach (@pageMapDecomp) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('C*', $_));
@@ -172,7 +172,7 @@ foreach (@pageMapDecomp) {
 }
 print "};\n\n";
 
-print "UInt16 dcCharIndex[][256] = {\n";
+print "const UInt16 dcCharIndex[][256] = {\n";
 foreach (@decomps) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('n*', $_));
@@ -180,7 +180,7 @@ foreach (@decomps) {
 }
 print "};\n\n";
 
-print "UInt32 dcDecomposition[][2] = {\n";
+print "const UInt32 dcDecomposition[][2] = {\n";
 print "\t{0xFFFF,0xFFFF},\n";
 foreach (@decompositions) {
 	print "\t{";
@@ -194,15 +194,15 @@ foreach (@decompositions) {
 }
 print "};\n\n";
 
-print "UInt8 cLPlaneMap[] = {";
+print "const UInt8 cLPlaneMap[] = {";
 print join(',', map { sprintf("%d", $_) } unpack ('C*', $planeMapL));
 print "};\n\n";
 
-print "UInt8 cRPlaneMap[] = {";
+print "const UInt8 cRPlaneMap[] = {";
 print join(',', map { sprintf("%d", $_) } unpack ('C*', $planeMapL));
 print "};\n\n";
 
-print "UInt8 cLPageMaps[][256] = {\n";
+print "const UInt8 cLPageMaps[][256] = {\n";
 foreach (@pageMapL) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('C*', $_));
@@ -210,7 +210,7 @@ foreach (@pageMapL) {
 }
 print "};\n\n";
 
-print "UInt8 cRPageMaps[][256] = {\n";
+print "const UInt8 cRPageMaps[][256] = {\n";
 foreach (@pageMapR) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('C*', $_));
@@ -218,7 +218,7 @@ foreach (@pageMapR) {
 }
 print "};\n\n";
 
-print "UInt16 cLCharIndex[][256] = {\n";
+print "const UInt16 cLCharIndex[][256] = {\n";
 foreach (@lefts) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('n*', $_));
@@ -226,7 +226,7 @@ foreach (@lefts) {
 }
 print "};\n\n";
 
-print "UInt8 cRCharIndex[][256] = {\n";
+print "const UInt8 cRCharIndex[][256] = {\n";
 foreach (@rights) {
 	print "\t{";
 	print join(',', map { sprintf("%d", $_) } unpack('n*', $_));
@@ -234,7 +234,7 @@ foreach (@rights) {
 }
 print "};\n\n";
 
-print "UInt16 cComposites[" . (1 + scalar keys %lIndex) . "][" . (1 + scalar keys %rIndex) . "] = {\n";
+print "const UInt16 cComposites[" . (1 + scalar keys %lIndex) . "][" . (1 + scalar keys %rIndex) . "] = {\n";
 for $l (0 .. scalar keys %lIndex) {
 	print "\t{";
 	print join(',', map { sprintf("0x%04X", $cmp{$l}{$_}) } (0 .. scalar keys %rIndex));

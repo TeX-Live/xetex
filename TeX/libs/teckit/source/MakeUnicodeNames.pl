@@ -2,15 +2,6 @@
 
 # make name list for teckit compiler from UnicodeData.txt
 
-print << '__END__';
-struct CharName {
-	unsigned long	usv;
-	const char*		name;
-};
-
-CharName	gUnicodeNames[] = {
-__END__
-
 open FH, "<UnicodeData.txt" or die;
 while (<FH>) {
 	chomp;
@@ -20,9 +11,23 @@ while (<FH>) {
 
 	next if $un =~ /</;
 	
-	print "{0x$uc,\"$un\"},\n";
+	push @names, [ $uc, $un ];
 }
 close FH;
+
+print << '__END__';
+struct CharName {
+	unsigned int	usv;
+	const char*		name;
+};
+
+CharName	gUnicodeNames[] = {
+__END__
+
+# sort the names so that we can use binary search
+foreach (sort { $a->[1] cmp $b->[1] } @names) {
+	print "{0x$_->[0],\"$_->[1]\"},\n";
+}
 
 print << '__END__';
 {0,0}

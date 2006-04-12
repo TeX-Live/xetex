@@ -13,7 +13,7 @@ $c_ext = '.cpp';
 $o_ext = ($^O =~ m/win32/o) ? '.obj' : '.o';
 push(@ExtUtils::MakeMaker::Overridable, qw(pm_to_blib)) if ($^O eq 'MSWin32');
 
-$define = '-I.. "-I../Public-headers" -I../zlib/include';
+$define = '-I.. "-I../Public-headers" -I../zlib/include -I../..';
 $lddlflags = $Config{'lddlflags'};
 if ($Config{'byteorder'} eq '4321')
 { $define .= ' -DTARGET_RT_BIG_ENDIAN'; }
@@ -42,6 +42,7 @@ elsif ($^O eq 'linux' || $^O eq 'darwin')
     $ldfrom = $objects;
     $ldfrom =~ s{\.\./}{}og;
     $extras{LDFROM} = $ldfrom;
+    $define .= " -DHAVE_CONFIG_H";
     $libs = '-lstdc++ -lz';
 #    $lddlflags .= ' ' . join(' ', map {"-L$_"} split(' ', $Config{'libsdirs'}));
 }

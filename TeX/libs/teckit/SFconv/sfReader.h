@@ -125,10 +125,10 @@ sfReader<UniChar>::get()
 				case 0:	;
 			};
 			ch -= offsetsFromUTF8[extraBytes];
-			if (ch <= kMaximumUCS2) {
+			if (ch <= UNI_MAX_BMP) {
 				t1 = ch;
-			} else if (ch > kMaximumUTF16) {
-				t1 = kReplacementCharacter;
+			} else if (ch > UNI_MAX_UTF16) {
+				t1 = UNI_REPLACEMENT_CHAR;
 			} else {
 				ch -= halfBase;
 				t1 = (ch >> halfShift) + kSurrogateHighStart;
