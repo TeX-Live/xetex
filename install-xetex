@@ -49,12 +49,18 @@ fi
 
 # copy our texmf additions into the local texmf tree
 texmflocal=`kpsewhich --var-value TEXMFLOCAL`
+if [ "x${texmflocal}" == "x" ]; then
+	# if --var-value didn't work, try to find the definition in the texmf.cnf file
+	CNF=`kpsewhich texmf.cnf`
+	texmflocal=`sed -rne "s/^[ \t]*TEXMFLOCAL[ \t]*=[ \t]*(\/[^ \t]+).*/\1/p" ${CNF}`
+fi
+
 mkdir -p ${texmflocal}
 if [ -d texmf/.svn ]; then
 	# if we're installing from a Subversion WC, make a copy and clean it up
 	# (don't rely on svn export here in case svn isn't in the current PATH)
 	cp -pRf texmf Work/texmf-nosvn
-	find -d Work/texmf-nosvn -name ".svn" -or -name ".DS*" -exec rm -rf {} \;
+	find Work/texmf-nosvn -depth -name ".svn" -or -name ".DS*" -exec rm -rf {} \;
 	cp -pRf Work/texmf-nosvn/* ${texmflocal}/
 	rm -r Work/texmf-nosvn
 else
