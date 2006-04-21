@@ -63,6 +63,7 @@ fi
 find texmf -type f -and -not -path "*/.*" -print | sed -e "s@^texmf@${texmflocal}@" >> ${filelist}
 
 # copy the pool file to /web2c under TEXMFLOCAL
+mkdir -p ${texmflocal}/web2c
 cp -pf Work/TeX/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
 echo ${texmflocal}/web2c/xetex.pool >> ${filelist}
 
