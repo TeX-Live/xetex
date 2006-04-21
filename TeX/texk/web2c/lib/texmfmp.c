@@ -160,9 +160,9 @@ int argc;
 /* if the user specifies a paper size or output driver program */
 static string papersize;
 #ifdef XETEX_MAC
-static string outputdriver = "xdv2pdf"; /* default for backward compatibility */
+static string outputdriver = "xdv2pdf"; /* default for backward compatibility on Mac OS X */
 #else
-static string outputdriver = "dvipdfmx"; /* in anticipation! */
+static string outputdriver = "xdvipdfmx"; /* for linux version with preliminary dvipdfmx-based driver */
 #endif
 #endif
 
