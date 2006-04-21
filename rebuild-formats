@@ -27,6 +27,9 @@ texbindir=`dirname ${texbin}`
 # (normal usage may rely on a symlink, which doesn't yet exist)
 PATH=${texbindir}:$PATH
 
+# patch fmtutil from teTeX 2.x so it doesn't confuse xetex with an etex engine
+patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` < fmtutil.tetex-2.patch
+
 # use system-wide setup if available
 fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
 
