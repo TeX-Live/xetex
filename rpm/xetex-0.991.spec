@@ -22,19 +22,14 @@ Requires: tetex >= 3.0
 Requires: te_latex >= 3.0
 
 # we also need fontconfig, freetype2 and ImageMagick libraries
-Requires: fontconfig
-Requires: freetype2
-Requires: ImageMagick
+Requires: fontconfig, freetype2, ImageMagick
 
 # finally, we need the xdvipdfmx driver to be present
 Requires: xdvipdfmx
 
 # to build, we need flex, bison, and various -devel packages...
-BuildRequires: flex
-BuildRequires: bison
-BuildRequires: fontconfig-devel
-BuildRequires: freetype2-devel
-BuildRequires: ImageMagick-devel
+BuildRequires: flex, bison
+BuildRequires: fontconfig-devel, freetype2-devel, ImageMagick-devel
 
 %description
 XeTeX extends the TeX typesetting system (and macro packages
@@ -81,7 +76,44 @@ texhash
 %post
 
 # we build the format files here, to get language config of the target system
-sh ./rebuild-formats
+# this is similar to the rebuild-formats script in the xetex tarball,
+# but that doesn't get installed from the rpm package
+# ensure our entries are present in fmtutil.cnf
+
+fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
+if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
+	cat >> ${fmtutil_cnf} <<-__EOT__;
+
+	# XeTeX formats
+	xetex	xetex	-	*xetex.ini
+	xelatex	xetex	language.dat	*xelatex.ini
+
+	__EOT__
+fi
+
+# find the existing tex binary, possibly following a symlink
+texbin=`which tex`
+if [ -L ${texbin} ]; then
+	texbin=`readlink -f ${texbin}`
+fi
+texbindir=`dirname ${texbin}`
+
+# ensure ${texbindir} is in the PATH so that fmtutil can find new xetex
+# (normal usage may rely on a symlink, which doesn't yet exist)
+PATH=${texbindir}:$PATH
+
+# use system-wide setup if available
+fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
+
+formats="xetex xelatex"
+for f in ${formats}; do
+# enable our entries if necessary (in case of pre-existing disabled ones)
+	${fmtutil} --enablefmt ${f}
+	${fmtutil} --byfmt ${f}
+done
+
+# create symlinks for the newly-built formats
+texlinks --silent
 
 # # # # # # # # # #
 # REMOVAL
@@ -90,7 +122,7 @@ sh ./rebuild-formats
 %postun
 
 # after uninstalling, remove format files and disable entries in fmtutil.cnf
-formats=xetex xelatex
+formats="xetex xelatex"
 fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
 for f in formats; do
 	fmt=`kpsewhich --progname=xetex ${f}.fmt`
