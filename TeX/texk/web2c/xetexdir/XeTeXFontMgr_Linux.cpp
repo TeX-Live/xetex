@@ -51,7 +51,7 @@ XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 	
 	if (allFonts == 0) {
 		FcPattern*		pat = FcNameParse((const FcChar8*)":outline=true");
-		FcObjectSet*	os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, FC_INDEX, FC_FULLNAME);
+		FcObjectSet*	os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, FC_INDEX, FC_FULLNAME, NULL);
 	
 		allFonts = FcFontList(FcConfigGetCurrent(), pat, os);
 	

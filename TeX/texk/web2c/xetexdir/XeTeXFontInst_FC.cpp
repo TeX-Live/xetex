@@ -104,7 +104,9 @@ const void *XeTeXFontInst_FC::readTable(LETag tag, le_uint32 *length) const
 	
 	void*	table = LE_NEW_ARRAY(char, *length);
 	if (table != NULL) {
-		err = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, (FT_ULong*)length);
+		FT_ULong	tmp;
+		err = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, &tmp);
+		*length = tmp;
 		if (err != 0) {
 			*length = 0;
 			LE_DELETE_ARRAY(table);
