@@ -80,6 +80,9 @@ texhash
 # but that doesn't get installed from the rpm package
 # ensure our entries are present in fmtutil.cnf
 
+# first, ensure ls-R files include our additions
+texhash
+
 fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
 if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
 	cat >> ${fmtutil_cnf} <<-__EOT__;
