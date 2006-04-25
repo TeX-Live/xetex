@@ -3,7 +3,7 @@
 #
 # see: dh_installdeb(1)
 
-set -e
+# set -e
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -25,7 +25,7 @@ case "$1" in
 	# ensure our entries are present in fmtutil.cnf
 	fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
 	if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
-	        cat >> ${fmtutil_cnf} <<-__EOT__
+	        cat >> ${fmtutil_cnf} <<'__EOT__'
 
 # XeTeX formats
 xetex   xetex   -       *xetex.ini
@@ -37,7 +37,7 @@ __EOT__
 	# use system-wide setup if available
 	fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
 
-	patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` <<-__EOT__ || true
+	patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` <<'__EOT__' || true
 *** /usr/bin/fmtutil    2006-04-12 10:57:49.000000000 +0100
 --- fmtutil     2006-04-21 16:41:22.000000000 +0100
 ***************

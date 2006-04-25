@@ -3,7 +3,7 @@
 #
 # see: dh_installdeb(1)
 
-set -e
+# set -e
 
 # summary of how this script can be called:
 #        * <postrm> `remove'
@@ -22,19 +22,23 @@ case "$1" in
        purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
 
 	formats="xetex xelatex"
-	fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
-	for f in formats; do
-	        fmt=`kpsewhich --progname=xetex ${f}.fmt`
-	        if [ "x${fmt}" != "x" ]; then rm ${fmt}; fi
-	        if [ "x${fmtutil}" != "x" ]; then ${fmtutil} --disablefmt ${f}; fi
+	fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil` || fmtutil=""
+	kpsewhich=`type -p kpsewhich` || kpsewhich=""
+	for f in ${formats}; do
+		if [ "x${kpsewhich}" != "x" ]; then
+			fmt=`${kpsewhich} --progname=xetex ${f}.fmt`
+			if [ "x${fmt}" != "x" ]; then rm ${fmt}; fi
+		fi
+		if [ "x${fmtutil}" != "x" ]; then
+			${fmtutil} --disablefmt ${f} || true
+		fi
 	done
 
-	exit 0
         ;;
 
     *)
         echo "postrm called with unknown argument \`$1'" >&2
-        exit 1
+        exit 0
 
 esac
 

@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: xetex
 Architecture: any
-Depends: tetex-base, xdvipdfmx, ${shlibs:Depends}
+Depends: tetex-base, tetex-bin, xdvipdfmx, ${shlibs:Depends}
 Description: An extension of TeX with Unicode and OpenType support
  XeTeX extends the TeX typesetting system (and macro packages
  such as LaTeX and ConTeXt) to have native support for the
