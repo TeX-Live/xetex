@@ -20,6 +20,8 @@ set -e
 case "$1" in
     configure)
 
+	texhash
+
 	# ensure our entries are present in fmtutil.cnf
 	fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
 	if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
@@ -35,7 +37,7 @@ __EOT__
 	# use system-wide setup if available
 	fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
 
-	patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` <<-__EOT__
+	patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` <<-__EOT__ || true
 *** /usr/bin/fmtutil    2006-04-12 10:57:49.000000000 +0100
 --- fmtutil     2006-04-21 16:41:22.000000000 +0100
 ***************
