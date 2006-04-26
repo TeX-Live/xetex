@@ -12,8 +12,10 @@
 %% 
 %%   License information appended.
 %% 
+%% This copy patched at line 938 by JK - v. 1.9 -> 1.9a
+%% 
 \ProvidesPackage{fontspec}
-  [2006/02/15 v1.9 Advanced font selection for XeLaTeX]
+  [2006/04/26 v1.9a Advanced font selection for XeLaTeX]
 
 \unless\ifdefined\XeTeXversion
   \@latex@error{^^J
@@ -933,7 +935,7 @@
     \DeclareMathSymbol{:}{\mathrel}  {legacymaths}{58}
     \DeclareMathSymbol{;}{\mathpunct}{legacymaths}{59}
     \DeclareMathSymbol{?}{\mathclose}{legacymaths}{63}
-    \ifzf@math@lucida
+    \ifzf@math@lucida\else % missing \else added, JK 2006-04-26
       \DeclareMathSymbol{0}{\mathalpha}{legacymaths}{`0}
       \DeclareMathSymbol{1}{\mathalpha}{legacymaths}{`1}
       \DeclareMathSymbol{2}{\mathalpha}{legacymaths}{`2}
