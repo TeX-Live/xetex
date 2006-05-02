@@ -31,6 +31,8 @@
 #include <kpathsea/variable.h>
 #include <kpathsea/absolute.h>
 
+#include <math.h> /* for fabs() */
+
 #include <time.h> /* For `struct tm'.  */
 #if defined (HAVE_SYS_TIME_H)
 #include <sys/time.h>
