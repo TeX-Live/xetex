@@ -175,7 +175,7 @@ UInt32 getIndScript(XeTeXFont font, UInt32 index)
 		return 0;
 
 	if (index < SWAP(scriptList->scriptCount))
-		return SWAP(*(UInt32*)(scriptList->scriptRecordArray[index].tag));
+		return SWAPT(scriptList->scriptRecordArray[index].tag);
 
 	return 0;
 }
@@ -206,7 +206,7 @@ UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 		return 0;
 
 	if (index < SWAP(scriptTable->langSysCount))
-		return SWAP(*(UInt32*)(scriptTable->langSysRecordArray[index].tag));
+		return SWAPT(scriptTable->langSysRecordArray[index].tag);
 
 	return 0;
 }

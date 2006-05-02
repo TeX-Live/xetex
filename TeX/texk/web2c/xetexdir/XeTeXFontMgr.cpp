@@ -329,7 +329,7 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 		if (gposTable != NULL) {
 			FeatureListTable*	featureListTable = (FeatureListTable*)((char*)gposTable + SWAP(gposTable->featureListOffset));
 			for (int i = 0; i < SWAP(featureListTable->featureCount); ++i) {
-				UInt32  tag = SWAP(*(UInt32*)&featureListTable->featureRecordArray[i].featureTag);
+				UInt32  tag = SWAPT(featureListTable->featureRecordArray[i].featureTag);
 				if (tag == LE_SIZE_FEATURE_TAG) {
 					FeatureTable*	feature = (FeatureTable*)((char*)featureListTable + SWAP(featureListTable->featureRecordArray[i].featureTableOffset));
 					OpSizeRec*	pSizeRec = (OpSizeRec*)((char*)featureListTable + SWAP(feature->featureParamsOffset));

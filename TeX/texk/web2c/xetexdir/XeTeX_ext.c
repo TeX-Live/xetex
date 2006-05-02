@@ -1100,8 +1100,8 @@ getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
 	*height = X2Fix(ht);
 	*depth = X2Fix(dp);
 	
-	/* snap to "known" zones for baseline, x-height, cap-height if within 2% of em-size */
-	Fixed	fuzz = QUAD(font) / 50;
+	/* snap to "known" zones for baseline, x-height, cap-height if within 4% of em-size */
+	Fixed	fuzz = QUAD(font) / 25;
 	snap_zone(depth, 0, fuzz);
 	snap_zone(height, 0, fuzz);
 	snap_zone(height, X_HEIGHT(font), fuzz);
