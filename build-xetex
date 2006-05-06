@@ -11,7 +11,7 @@ find . -name config.cache -print -exec rm -f {} \;
 find . -name configure -exec chmod +x {} \;
 
 # run the configure script, which will create a Work subtree
-sh ./runConfigure.sh
+bash ./runConfigure.sh
 
 # this should make ICU and TECkit along the way, if xetex.mk works
 (cd Work/TeX/texk/web2c && make xetex)
