@@ -7,7 +7,8 @@
 #include <kpathsea/tex-make.h> /* for kpse_make_tex_discard_errors */
 
 #ifdef XeTeX
-/* added typedef for unicodefile, as it is not in cpascal.h */
+/* added typedefs for unicodefile and voidpointer */
+#define XETEX_UNICODE_FILE_DEFINED	1
 typedef struct {
 	FILE*	f;
 	long	savedChar;
@@ -16,6 +17,8 @@ typedef struct {
 	void*	conversionData;
 } UFILE;
 typedef UFILE* unicodefile;
+
+typedef void* voidpointer;
 #endif
 
 /* If we have these macros, use them, as they provide a better guide to

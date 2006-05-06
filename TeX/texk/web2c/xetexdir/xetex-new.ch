@@ -2192,12 +2192,12 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @!font_false_bchar: ^nine_bits;
   {|font_bchar| if it doesn't exist in the font, otherwise |non_char|}
 @#
-@!font_layout_engine: ^integer; { either an ATSUStyle or a XeTeXLayoutEngine }
-@!font_mapping: ^integer; { TECkit_Converter or 0 }
+@!font_layout_engine: ^void_pointer; { either an ATSUStyle or a XeTeXLayoutEngine }
+@!font_mapping: ^void_pointer; { TECkit_Converter or 0 }
 @!font_flags: ^char; { flags:
   0x01: font_colored
   0x02: font_vertical }
-@!loaded_font_mapping: integer; { used by load_native_font to return mapping, if any }
+@!loaded_font_mapping: void_pointer; { used by load_native_font to return mapping, if any }
 @!loaded_font_flags: char; { used by load_native_font to return flags }
 @!mapped_text: ^UTF16_code; { scratch buffer used while applying font mappings }
 @!xdv_buffer: ^char; { scratch buffer used in generating XDV output }
@@ -5029,8 +5029,8 @@ begin
 	new_native_character := p;
 end;
 
-procedure font_feature_warning(featureNameP:integer; featLen:integer;
-	settingNameP:integer; setLen:integer);
+procedure font_feature_warning(featureNameP:void_pointer; featLen:integer;
+	settingNameP:void_pointer; setLen:integer);
 var
 	i: integer;
 begin
@@ -5053,7 +5053,7 @@ begin
 	end_diagnostic(false);
 end;
 
-procedure font_mapping_warning(mappingNameP:integer; mappingNameLen:integer);
+procedure font_mapping_warning(mappingNameP:void_pointer; mappingNameLen:integer);
 var
 	i: integer;
 begin
@@ -5075,7 +5075,7 @@ label
 	done;
 var
 	k: integer;
-	font_engine: integer;	{really an ATSUStyle or XeTeXLayoutEngine, but we'll treat it as an integer}
+	font_engine: void_pointer;	{really an ATSUStyle or XeTeXLayoutEngine}
 	actual_size: scaled;	{|s| converted to real size, if it was negative}
 	p: pointer;	{for temporary |native_char| node we'll create}
 	ascent, descent, font_slant, x_ht, cap_ht: scaled;

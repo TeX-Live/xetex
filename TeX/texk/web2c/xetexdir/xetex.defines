@@ -13,6 +13,7 @@
 
 { xetex.defines: additions for xetex }
 
+@define type voidpointer;
 @define function getnativechar();
 @define procedure setnativechar();
 @define procedure setnativemetrics();

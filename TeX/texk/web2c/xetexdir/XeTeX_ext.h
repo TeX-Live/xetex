@@ -12,6 +12,10 @@
 #ifndef __XETEXEXT_H
 #define __XETEXEXT_H
 
+#ifndef XETEX_UNICODE_FILE_DEFINED
+typedef struct UFILE* unicodefile;
+#endif
+
 #define AAT_FONT_FLAG	65535
 #define	OT_FONT_FLAG	65534
 
@@ -116,20 +120,49 @@ typedef struct
 	float	yMax;
 } GlyphBBox;
 
-#ifdef XETEX_MAC
-/* functions in XeTeX_mac.c */
 #ifdef __cplusplus
 extern "C" {
 #endif
+	void setinputfileencoding(unicodefile f, int mode, int encodingData);
+	void uclose(unicodefile f);
+	int input_line_icu(unicodefile f);
+	void linebreakstart(int localeStrNum, const UniChar* text, int textLength);
+	int linebreaknext();
+	long getencodingmodeandinfo(long* info);
+	void printutf8str(const unsigned char* str, int len);
+	void printchars(const unsigned short* str, int len);
+	void* load_mapping_file(const char* s, const char* e);
+	void* findnativefont(unsigned char* name, long scaled_size);
+	void releasefontengine(void* engine, int type_flag);
+	void otgetfontmetrics(void* engine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant);
+	long otfontget(int what, void* engine);
+	long otfontget1(int what, void* engine, long param);
+	long otfontget2(int what, void* engine, long param1, long param2);
+	long otfontget3(int what, void* engine, long param1, long param2, long param3);
+	int makeXDVGlyphArrayData(void* p);
+	long makefontdef(long f);
+	int applymapping(void* cnv, const UniChar* txtPtr, int txtLen);
+	void getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth);
+	void getnativecharsidebearings(int font, int ch, Fixed* lsb, Fixed* rsb);
+	void store_justified_native_glyphs(void* node);
+	void measure_native_node(void* node, int use_glyph_metrics);
+	Fixed get_native_ital_corr(void* node);
+	Fixed get_native_glyph_ital_corr(void* node);
+	void measure_native_glyph(void* node, int use_glyph_metrics);
+	int mapchartoglyph(int font, unsigned int ch);
+
+#ifdef XETEX_MAC
+/* functions in XeTeX_mac.c */
+	void* loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1);
 	void DoAtsuiLayout(void* node, int justify);
 	void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox);
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch);
 	float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid);
+#endif
 #ifdef __cplusplus
 };
-#endif
 #endif
 
 

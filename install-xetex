@@ -60,7 +60,7 @@ if [ -d texmf/.svn ]; then
 	# if we're installing from a Subversion WC, make a copy and clean it up
 	# (don't rely on svn export here in case svn isn't in the current PATH)
 	cp -pRf texmf Work/texmf-nosvn
-	find Work/texmf-nosvn -depth -name ".svn" -or -name ".DS*" -exec rm -rf {} \;
+	find Work/texmf-nosvn -depth \( -name ".svn" -or -name ".DS*" \) -exec rm -rf {} \;
 	cp -pRf Work/texmf-nosvn/* ${texmflocal}/
 	rm -r Work/texmf-nosvn
 else

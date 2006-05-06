@@ -179,6 +179,7 @@ setinputfileencoding(UFILE* f, int mode, int encodingData)
 	}
 }
 
+void
 uclose(UFILE* f)
 {
 	if (f != 0) {
@@ -358,7 +359,7 @@ printchars(const unsigned short* str, int len)
 		printchar(*(str++));
 }
 
-TECkit_Converter
+void*
 load_mapping_file(const char* s, const char* e)
 {
 	TECkit_Converter	cnv = 0;
@@ -397,10 +398,10 @@ load_mapping_file(const char* s, const char* e)
 	return cnv;
 }
 
-static unsigned long
+static UInt32
 read_tag(const char* cp)
 {
-	unsigned long	tag = 0;
+	UInt32	tag = 0;
 	int i;
 	for (i = 0; i < 4; ++i) {
 		tag <<= 8;
@@ -414,14 +415,14 @@ read_tag(const char* cp)
 	return tag;
 }
 
-static long
+static void*
 loadOTfont(XeTeXFont font, const char* cp1)
 {
-	unsigned long	scriptTag = kLatin;
-	unsigned long	languageTag = 0;
+	UInt32	scriptTag = kLatin;
+	UInt32	languageTag = 0;
 	
-	unsigned long*	addFeatures = 0;
-	unsigned long*	removeFeatures = 0;
+	UInt32*	addFeatures = 0;
+	UInt32*	removeFeatures = 0;
 	
 	int	nAdded = 0;
 	int nRemoved = 0;
@@ -429,9 +430,9 @@ loadOTfont(XeTeXFont font, const char* cp1)
 	const char*	cp2;
 	const char*	cp3;
 
-	unsigned long	tag;
+	UInt32	tag;
 
-	unsigned long	rgbValue = 0x000000FF;
+	UInt32	rgbValue = 0x000000FF;
 
 	// scan the feature string (if any)
 	if (cp1 != NULL) {
@@ -467,7 +468,7 @@ loadOTfont(XeTeXFont font, const char* cp1)
 				cp3 = cp1 + 7;
 				if (*cp3 != '=')
 					goto bad_option;
-				loadedfontmapping = (long)load_mapping_file(cp3 + 1, cp2);
+				loadedfontmapping = load_mapping_file(cp3 + 1, cp2);
 				goto next_option;
 			}
 	
@@ -517,9 +518,9 @@ loadOTfont(XeTeXFont font, const char* cp1)
 				tag = read_tag(cp1 + 1);
 				++nAdded;
 				if (nAdded == 1)
-					addFeatures = xmalloc(sizeof(unsigned long));
+					addFeatures = xmalloc(sizeof(UInt32));
 				else
-					addFeatures = xrealloc(addFeatures, nAdded * sizeof(long));
+					addFeatures = xrealloc(addFeatures, nAdded * sizeof(UInt32));
 				addFeatures[nAdded-1] = tag;
 				goto next_option;
 			}
@@ -528,9 +529,9 @@ loadOTfont(XeTeXFont font, const char* cp1)
 				tag = read_tag(cp1 + 1);
 				++nRemoved;
 				if (nRemoved == 1)
-					removeFeatures = xmalloc(sizeof(unsigned long));
+					removeFeatures = xmalloc(sizeof(UInt32));
 				else
-					removeFeatures = xrealloc(removeFeatures, nRemoved * sizeof(long));
+					removeFeatures = xrealloc(removeFeatures, nRemoved * sizeof(UInt32));
 				removeFeatures[nRemoved-1] = tag;
 				goto next_option;
 			}
@@ -543,11 +544,11 @@ loadOTfont(XeTeXFont font, const char* cp1)
 		}
 		
 		if (addFeatures != 0) {
-			addFeatures = realloc(addFeatures, (nAdded + 1) * sizeof(long));
+			addFeatures = realloc(addFeatures, (nAdded + 1) * sizeof(UInt32));
 			addFeatures[nAdded] = 0;
 		}
 		if (removeFeatures != 0) {
-			removeFeatures = realloc(removeFeatures, (nRemoved + 1) * sizeof(long));
+			removeFeatures = realloc(removeFeatures, (nRemoved + 1) * sizeof(UInt32));
 			removeFeatures[nRemoved] = 0;
 		}
 	}
@@ -566,7 +567,7 @@ loadOTfont(XeTeXFont font, const char* cp1)
 	else
 		nativefonttypeflag = OT_FONT_FLAG;
 
-	return (long)engine;
+	return engine;
 }
 
 static void
@@ -588,11 +589,12 @@ splitFontName(char* name, char** var, char** feat, char** end)
 		*var = *feat;
 }
 
-long
-findnativefont(char* name, long scaled_size)
+void*
+findnativefont(unsigned char* uname, long scaled_size)
 	// scaled_size here is in TeX points
 {
-	long	rval = 0;
+	char*	name = (char*)uname;
+	void*	rval = 0;
 	loadedfontmapping = 0;
 	loadedfontflags = 0;
 
@@ -683,7 +685,7 @@ findnativefont(char* name, long scaled_size)
 }
 
 void
-releasefontengine(long engine, int type_flag)
+releasefontengine(void* engine, int type_flag)
 {
 #ifdef XETEX_MAC
 	if (type_flag == AAT_FONT_FLAG) {
@@ -697,8 +699,9 @@ releasefontengine(long engine, int type_flag)
 }
 
 void
-otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
+otgetfontmetrics(void* pEngine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
 {
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	long	rval = 0;
 
 	float	a, d;
@@ -727,8 +730,9 @@ otgetfontmetrics(XeTeXLayoutEngine engine, Fixed* ascent, Fixed* descent, Fixed*
 }
 
 long
-otfontget(int what, XeTeXLayoutEngine engine)
+otfontget(int what, void* pEngine)
 {
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
 	switch (what) {
 		case XeTeX_count_glyphs:
@@ -744,8 +748,9 @@ otfontget(int what, XeTeXLayoutEngine engine)
 
 
 long
-otfontget1(int what, XeTeXLayoutEngine engine, long param)
+otfontget1(int what, void* pEngine, long param)
 {
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
 	switch (what) {
 		case XeTeX_OT_count_languages:
@@ -761,8 +766,9 @@ otfontget1(int what, XeTeXLayoutEngine engine, long param)
 
 
 long
-otfontget2(int what, XeTeXLayoutEngine engine, long param1, long param2)
+otfontget2(int what, void* pEngine, long param1, long param2)
 {
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
 	switch (what) {
 		case XeTeX_OT_language_code:
@@ -779,8 +785,9 @@ otfontget2(int what, XeTeXLayoutEngine engine, long param1, long param2)
 
 
 long
-otfontget3(int what, XeTeXLayoutEngine engine, long param1, long param2, long param3)
+otfontget3(int what, void* pEngine, long param1, long param2, long param3)
 {
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
 	switch (what) {
 		case XeTeX_OT_feature_code:
@@ -817,8 +824,10 @@ atsuColorToRGBA32(ATSURGBAlphaColor a)
 static int	xdvBufSize = 0;
 
 int
-makeXDVGlyphArrayData(memoryword* p)
+makeXDVGlyphArrayData(void* pNode)
 {
+	memoryword* p = pNode;
+	
 	UInt16	glyphCount = native_glyph_count(p);
 	
 	int	i = glyphCount * native_glyph_info_size + 8; /* to guarantee enough space in the buffer */
@@ -1027,8 +1036,9 @@ makefontdef(long f)
 }
 
 int
-applymapping(TECkit_Converter cnv, const UniChar* txtPtr, int txtLen)
+applymapping(void* pCnv, const UniChar* txtPtr, int txtLen)
 {
+	TECkit_Converter cnv = (TECkit_Converter)pCnv;
 	UInt32	inUsed, outUsed;
 	TECkit_Status	status;
 	static UInt32	outLength = 0;
@@ -1063,7 +1073,7 @@ retry:
 	}
 }
 
-void
+static void
 snap_zone(Fixed* value, Fixed snap_value, Fixed fuzz)
 {
 	Fixed	difference = *value - snap_value;
@@ -1147,8 +1157,9 @@ store_justified_native_glyphs(void* node)
 }
 
 void
-measure_native_node(memoryword*	node, int use_glyph_metrics)
+measure_native_node(void* pNode, int use_glyph_metrics)
 {
+	memoryword*		node = (memoryword*)pNode;
 	int				txtLen = native_length(node);
 	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
 
@@ -1343,8 +1354,9 @@ measure_native_node(memoryword*	node, int use_glyph_metrics)
 }
 
 Fixed
-get_native_ital_corr(memoryword* node)
+get_native_ital_corr(void* pNode)
 {
+	memoryword*	node = pNode;
 	unsigned	f = native_font(node);
 	unsigned	n = native_glyph_count(node);
 	if (n > 0) {
@@ -1364,8 +1376,9 @@ get_native_ital_corr(memoryword* node)
 
 
 Fixed
-get_native_glyph_ital_corr(memoryword* node)
+get_native_glyph_ital_corr(void* pNode)
 {
+	memoryword* node = pNode;
 	UInt16		gid = native_glyph(node);
 	unsigned	f = native_font(node);
 
@@ -1380,8 +1393,9 @@ get_native_glyph_ital_corr(memoryword* node)
 }
 
 void
-measure_native_glyph(memoryword* node, int use_glyph_metrics)
+measure_native_glyph(void* pNode, int use_glyph_metrics)
 {
+	memoryword* node = pNode;
 	UInt16		gid = native_glyph(node);
 	unsigned	f = native_font(node);
 

@@ -25,8 +25,6 @@
 
 #include "XeTeXswap.h"
 
-TECkit_Converter	load_mapping_file(const char* s, const char* e);
-
 static ATSUTextLayout	sTextLayout = 0;
 
 static void
@@ -519,15 +517,15 @@ find_selector_by_name(ATSUFontID fontID, ATSUFontFeatureType featureType, const 
 	return result;
 }
 
-long
+void*
 loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 {
 	ATSUFontID	fontID = FMGetFontFromATSFontRef(fontRef);
 	ATSUStyle	style = 0;
 	OSStatus	status = ATSUCreateStyle(&style);
 	if (status == noErr) {
-		unsigned long	rgbValue;
-		Fixed			atsuSize = FixedTeXtoPSPoints(scaled_size);
+		UInt32	rgbValue;
+		Fixed	atsuSize = FixedTeXtoPSPoints(scaled_size);
 		
 		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
 		Fract						hangInhibit = fract1;
@@ -672,7 +670,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 					cp3 = cp1 + 7;
 					if (*cp3 != '=')
 						goto bad_option;
-					loadedfontmapping = (long)load_mapping_file(cp3 + 1, cp2);
+					loadedfontmapping = load_mapping_file(cp3 + 1, cp2);
 					goto next_option;
 				}
 				
@@ -771,7 +769,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 	}
 
 	nativefonttypeflag = AAT_FONT_FLAG;
-	return (long)style;
+	return style;
 }
 
 OSErr
