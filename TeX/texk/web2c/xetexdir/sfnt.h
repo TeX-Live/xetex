@@ -99,7 +99,8 @@ struct CMAPFormat6Encoding : CMAPEncodingSubtable
 
 struct CMAPEncodingSubtable32
 {
-    le_uint32   format;
+    le_uint16   format;
+    le_uint16   reserved;
     le_uint32   length;
     le_uint32   language;
 };

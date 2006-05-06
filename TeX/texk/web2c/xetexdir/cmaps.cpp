@@ -80,8 +80,7 @@ CMAPMapper *CMAPMapper::createUnicodeMapper(const CMAPTable *cmap)
     }
 
 
-    if (offset10 != 0)
-    {
+    if (offset10 != 0) {
         subtable = (const CMAPEncodingSubtable *) ((const char *) cmap + offset10);
     } else if (offset1 != 0) {
         subtable = (const CMAPEncodingSubtable *) ((const char *) cmap + offset1);

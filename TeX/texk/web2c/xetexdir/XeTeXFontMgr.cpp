@@ -15,6 +15,11 @@
 XeTeXFontMgr::XeTeXFontMgr*	XeTeXFontMgr::sFontManager = NULL;
 char XeTeXFontMgr::sReqEngine = 0;
 
+double my_fmax(double x, double y)
+{
+    return (x > y) ? x : y;
+}
+
 XeTeXFontMgr::XeTeXFontMgr*
 XeTeXFontMgr::GetFontManager()
 {
@@ -242,13 +247,13 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 	// if there's optical size info, try to apply it
 	if (font != NULL && font->opSizeInfo.subFamilyID != 0 && ptSize != 0.0) {
 		ptSize = ptSize * 720 / 72.27;	// convert TeX points to PS decipoints for comparison with the opSize values
-		double	bestMismatch = fmax(font->opSizeInfo.minSize - ptSize, ptSize - font->opSizeInfo.maxSize);
+		double	bestMismatch = my_fmax(font->opSizeInfo.minSize - ptSize, ptSize - font->opSizeInfo.maxSize);
 		if (bestMismatch > 0.0) {
 			Font*	bestMatch = font;
 			for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i) {
 				if (i->second->opSizeInfo.subFamilyID != font->opSizeInfo.subFamilyID)
 					continue;
-				double	mismatch = fmax(i->second->opSizeInfo.minSize - ptSize, ptSize - i->second->opSizeInfo.maxSize);
+				double	mismatch = my_fmax(i->second->opSizeInfo.minSize - ptSize, ptSize - i->second->opSizeInfo.maxSize);
 				if (mismatch < bestMismatch) {
 					bestMatch = i->second;
 					bestMismatch = mismatch;

@@ -55,12 +55,12 @@ xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o trans.o XeTeX_ext.o
 xetex_ot_layout_o = \
 		XeTeXFontMgr.o \
 		XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
-		XeTeXFontInst.o cmaps.o FontObject.o FontTableCache.o \
+		XeTeXFontInst.o cmaps.o FontTableCache.o \
 		$(xetex_platform_layout_o) 
 xetex_ot_layout_cxx = \
 		XeTeXFontMgr.cpp \
 		XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp \
-		XeTeXFontInst.cpp cmaps.cpp FontObject.cpp FontTableCache.cpp \
+		XeTeXFontInst.cpp cmaps.cpp FontTableCache.cpp \
 		$(xetex_platform_layout_cxx)
 
 icudir = icu-release-3-4-source
@@ -98,8 +98,6 @@ XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.mm $(srcdir)/xetexdir/Xe
 	gcc -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-FontObject.o: $(srcdir)/xetexdir/FontObject.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
