@@ -1820,7 +1820,10 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 			err = 0;
 		}
     }
-    wand = DestroyMagickWand(wand);
+
+    /* current API returns wand, but formerly returned void;
+       we don't need the result, and this allows XeTeX to build with older libraries */
+    (void)DestroyMagickWand(wand);
 
 	if (err != 0)
 		free(pic_path);
