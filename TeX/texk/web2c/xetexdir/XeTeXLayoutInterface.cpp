@@ -218,12 +218,12 @@ UInt32 countFeatures(XeTeXFont font, UInt32 script, UInt32 language)
 	for (int i = 0; i < 2; ++i) {
 		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? kGSUB : kGPOS);
 		if (table != NULL) {
-			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + table->scriptListOffset);
+			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + SWAP(table->scriptListOffset));
 			const ScriptTable*  scriptTable = scriptList->findScript(script);
 			if (scriptTable != NULL) {
 				const LangSysTable* langTable = scriptTable->findLanguage(language, (language != 0));
 				if (langTable != NULL) {
-					total += langTable->featureCount;
+					total += SWAP(langTable->featureCount);
 					if (langTable->reqFeatureIndex != 0xffff)
 						total += 1;
 				}
