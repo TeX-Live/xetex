@@ -134,7 +134,7 @@ extern "C" {
 	void* load_mapping_file(const char* s, const char* e);
 	void* findnativefont(unsigned char* name, long scaled_size);
 	void releasefontengine(void* engine, int type_flag);
-	void otgetfontmetrics(void* engine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant);
+	void otgetfontmetrics(void* engine, scaled* ascent, scaled* descent, scaled* xheight, scaled* capheight, scaled* slant);
 	long otfontget(int what, void* engine);
 	long otfontget1(int what, void* engine, long param);
 	long otfontget2(int what, void* engine, long param1, long param2);
@@ -142,8 +142,8 @@ extern "C" {
 	int makeXDVGlyphArrayData(void* p);
 	long makefontdef(long f);
 	int applymapping(void* cnv, const UniChar* txtPtr, int txtLen);
-	void getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth);
-	void getnativecharsidebearings(int font, int ch, Fixed* lsb, Fixed* rsb);
+	void getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth);
+	void getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb);
 	void store_justified_native_glyphs(void* node);
 	void measure_native_node(void* node, int use_glyph_metrics);
 	Fixed get_native_ital_corr(void* node);

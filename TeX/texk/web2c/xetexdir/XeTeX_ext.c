@@ -699,7 +699,7 @@ releasefontengine(void* engine, int type_flag)
 }
 
 void
-otgetfontmetrics(void* pEngine, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
+otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight, scaled* capheight, scaled* slant)
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	long	rval = 0;
@@ -1074,15 +1074,15 @@ retry:
 }
 
 static void
-snap_zone(Fixed* value, Fixed snap_value, Fixed fuzz)
+snap_zone(scaled* value, scaled snap_value, scaled fuzz)
 {
-	Fixed	difference = *value - snap_value;
+	scaled	difference = *value - snap_value;
 	if (difference <= fuzz && difference >= -fuzz)
 		*value = snap_value;
 }
 
 void
-getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
+getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth)
 {
 #define QUAD(f)			fontinfo[6+parambase[f]].cint
 #define X_HEIGHT(f)		fontinfo[5+parambase[f]].cint
@@ -1121,7 +1121,7 @@ getnativecharheightdepth(int font, int ch, Fixed* height, Fixed* depth)
 }
 
 void
-getnativecharsidebearings(int font, int ch, Fixed* lsb, Fixed* rsb)
+getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb)
 {
 	float	l, r;
 
