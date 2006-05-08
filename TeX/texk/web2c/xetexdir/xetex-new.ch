@@ -3772,8 +3772,8 @@ undump_checked_things(0, pool_ptr, str_start_macro(too_big_char), str_ptr+1-too_
 begin {Allocate the font arrays}
 @y
 begin {Allocate the font arrays}
-font_mapping:=xmalloc_array(integer, font_max);
-font_layout_engine:=xmalloc_array(integer, font_max);
+font_mapping:=xmalloc_array(void_pointer, font_max);
+font_layout_engine:=xmalloc_array(void_pointer, font_max);
 font_flags:=xmalloc_array(char, font_max);
 @z
 
@@ -3836,8 +3836,8 @@ k:=biggest_lang+1;
   {Allocate and initialize font arrays}
 @y
   {Allocate and initialize font arrays}
-  font_mapping:=xmalloc_array(integer, font_max);
-  font_layout_engine:=xmalloc_array(integer, font_max);
+  font_mapping:=xmalloc_array(void_pointer, font_max);
+  font_layout_engine:=xmalloc_array(void_pointer, font_max);
   font_flags:=xmalloc_array(char, font_max);
 @z
 
