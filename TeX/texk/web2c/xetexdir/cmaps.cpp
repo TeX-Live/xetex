@@ -14,6 +14,9 @@
 #define SWAPU16(code) ((LEUnicode16) SWAPW(code))
 #define SWAPU32(code) ((LEUnicode32) SWAPL(code))
 
+// read a 32-bit value that might only be 16-bit-aligned in memory
+#define READ_LONG(code) (le_uint32)((SWAPW(*(le_uint16*)&code) << 16) + SWAPW(*(((le_uint16*)&code) + 1)))
+
 //
 // Finds the high bit by binary searching
 // through the bits in value.
@@ -64,17 +67,17 @@ CMAPMapper *CMAPMapper::createUnicodeMapper(const CMAPTable *cmap)
 		case 3:	// Microsoft encodings
 			switch (SWAPW(esh->platformSpecificID)) {
 			case 1:	// Unicode (really UCS-2?)
-				offset1 = SWAPL(esh->encodingOffset);
+				offset1 = READ_LONG(esh->encodingOffset);
 				break;
 
 			case 10:	// UCS-4
-				offset10 = SWAPL(esh->encodingOffset);
+				offset10 = READ_LONG(esh->encodingOffset);
 				break;
 			}
 			break;
 	
 		case 0: // Apple Unicode
-			offset10 = SWAPL(esh->encodingOffset);	// we ignore the unicode version
+			offset10 = READ_LONG(esh->encodingOffset);	// we ignore the unicode version
 			break;		
         }
     }
@@ -96,7 +99,7 @@ CMAPMapper *CMAPMapper::createUnicodeMapper(const CMAPTable *cmap)
     {
         const CMAPFormat12Encoding *encoding = (const CMAPFormat12Encoding *) subtable;
 
-        return new CMAPGroupMapper(cmap, encoding->groups, SWAPL(encoding->nGroups));
+        return new CMAPGroupMapper(cmap, encoding->groups, READ_LONG(encoding->nGroups));
     }
 
     default:
@@ -179,20 +182,20 @@ LEGlyphID CMAPGroupMapper::unicodeToGlyph(LEUnicode32 unicode32) const
     le_int32 probe = fPower;
     le_int32 range = 0;
 
-    if (SWAPU32(fGroups[fRangeOffset].startCharCode) <= unicode32) {
+    if (READ_LONG(fGroups[fRangeOffset].startCharCode) <= unicode32) {
         range = fRangeOffset;
     }
 
     while (probe > (1 << 0)) {
         probe >>= 1;
 
-        if (SWAPU32(fGroups[range + probe].startCharCode) <= unicode32) {
+        if (READ_LONG(fGroups[range + probe].startCharCode) <= unicode32) {
             range += probe;
         }
     }
 
-    if (SWAPU32(fGroups[range].startCharCode) <= unicode32 && SWAPU32(fGroups[range].endCharCode) >= unicode32) {
-        return (LEGlyphID) (SWAPU32(fGroups[range].startGlyphCode) + unicode32 - SWAPU32(fGroups[range].startCharCode));
+    if (READ_LONG(fGroups[range].startCharCode) <= unicode32 && READ_LONG(fGroups[range].endCharCode) >= unicode32) {
+        return (LEGlyphID) (READ_LONG(fGroups[range].startGlyphCode) + unicode32 - READ_LONG(fGroups[range].startCharCode));
     }
 
     return 0;
