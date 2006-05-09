@@ -12,6 +12,15 @@
 #ifndef __XETEXEXT_H
 #define __XETEXEXT_H
 
+#ifdef __cplusplus
+extern "C" { /* config.h pulls in function declarations from kpathsea, etc
+				that we don't want to be declared with C++ linkage here */
+#endif
+#include "../config.h" /* need this to define INTEGER_TYPE and Web's 'integer' */
+#ifdef __cplusplus
+};
+#endif
+
 #ifndef XETEX_UNICODE_FILE_DEFINED
 typedef struct UFILE* unicodefile;
 #endif
@@ -134,7 +143,12 @@ extern "C" {
 	void* load_mapping_file(const char* s, const char* e);
 	void* findnativefont(unsigned char* name, long scaled_size);
 	void releasefontengine(void* engine, int type_flag);
-	void otgetfontmetrics(void* engine, scaled* ascent, scaled* descent, scaled* xheight, scaled* capheight, scaled* slant);
+
+	/* 'integer' params here are really TeX 'scaled' values, but that typedef isn't available every place this is included */
+	void otgetfontmetrics(void* engine, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant);
+	void getnativecharheightdepth(int font, int ch, integer* height, integer* depth);
+	void getnativecharsidebearings(int font, int ch, integer* lsb, integer* rsb);
+
 	long otfontget(int what, void* engine);
 	long otfontget1(int what, void* engine, long param);
 	long otfontget2(int what, void* engine, long param1, long param2);
@@ -142,8 +156,6 @@ extern "C" {
 	int makeXDVGlyphArrayData(void* p);
 	long makefontdef(long f);
 	int applymapping(void* cnv, const UniChar* txtPtr, int txtLen);
-	void getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth);
-	void getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb);
 	void store_justified_native_glyphs(void* node);
 	void measure_native_node(void* node, int use_glyph_metrics);
 	Fixed get_native_ital_corr(void* node);

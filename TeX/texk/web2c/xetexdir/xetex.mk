@@ -73,13 +73,15 @@ ICUCFLAGS = \
 	-I../../../../TeX/libs/$(icudir)/layout/unicode \
 	-I../../../../TeX/libs/$(icudir)/layout \
 	-I../../../../TeX/libs/$(icudir) \
-	-DLE_USE_CMEMORY
+	-DLE_USE_CMEMORY \
+	-I. -I..
 
 # FIXME: this should be handled through configure
 FTFLAGS =  -I/usr/include/freetype2/
 
 TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
-XCFLAGS = $(TECkitFLAGS) # actually, we need this for most compiles
+
+XCFLAGS = -I. -I.. $(TECkitFLAGS) # we need this for many of our compiles
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@

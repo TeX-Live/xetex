@@ -698,6 +698,7 @@ releasefontengine(void* engine, int type_flag)
 	}
 }
 
+/* params are given as 'integer' in the header file, but are really TeX scaled integers */
 void
 otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight, scaled* capheight, scaled* slant)
 {
