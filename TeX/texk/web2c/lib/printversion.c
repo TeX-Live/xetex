@@ -38,7 +38,7 @@ printversionandexit P3C(const_string, banner,
   puts (kpathsea_version_string);
 
   if (copyright_holder) {
-    printf ("Copyright (C) 1997-2004 %s.\n", copyright_holder);
+    printf ("Copyright (C) 1997-2006 %s.\n", copyright_holder);
     if (!author)
       author = copyright_holder;
   }

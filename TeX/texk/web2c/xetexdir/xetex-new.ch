@@ -36,8 +36,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".991"
-@d XeTeX_version_string=='-0.991' {current \eTeX\ version}
+@d XeTeX_revision==".992"
+@d XeTeX_version_string=='-0.992' {current \eTeX\ version}
 @z
 
 @x
@@ -182,6 +182,7 @@ system libraries.
 @!halt_on_error_p:c_int_type; {stop at first error}
 @!quoted_filename:boolean; {current filename is quoted}
 @y
+@!eight_bit_p:c_int_type; {make all characters printable by default}
 @!halt_on_error_p:c_int_type; {stop at first error}
 @z
 
@@ -439,7 +440,8 @@ exit:end;
 Control sequence names, file names and string constructed with
 \.{\\string} might contain |ASCII_code| values that can't
 be printed using |print_visible_char|.  These characters will be printed
-in three- or four-symbol form like `\.{\^\^A}' or `\.{\^\^e4}'.
+in three- or four-symbol form like `\.{\^\^A}' or `\.{\^\^e4}',
+unless the -8bit option is enabled.
 Output that goes to the terminal and/or log file is treated differently
 when it comes to determining whether a character is printable.
 
@@ -449,8 +451,7 @@ when it comes to determining whether a character is printable.
 @<Basic printing...@>=
 procedure print_char(@!s:ASCII_code); {prints a single character}
 label exit;
-var k:ASCII_code;
-  @!l:0..255; {small indices or counters}
+var l: small_number;
 begin if selector>pseudo then {"printing" to a new string, don't encode chars}
   begin print_visible_char(s); return;
   end;
@@ -458,15 +459,21 @@ if @<Character |s| is the current new-line character@> then
  if selector<pseudo then
   begin print_ln; return;
   end;
-if s < 32 then begin
+if (s < 32) and (eight_bit_p = 0) then begin
 	{ control char: ^^X }
 	print_visible_char("^"); print_visible_char("^"); print_visible_char(s+64);
-end else if s < 127 then begin
+end else if s < 127 then
 	{ printable ASCII }
-	print_visible_char(s);
-end else if s = 127 then begin
-	{ DEL: ^^? }
-	print_visible_char("^"); print_visible_char("^"); print_visible_char(s-64);
+	print_visible_char(s)
+else if (s = 127) then begin
+	{ DEL }
+	if (eight_bit_p = 0) then begin
+		print_visible_char("^"); print_visible_char("^"); print_visible_char("?")
+	end else
+		print_visible_char(s)
+end else if (s < @"A0) and (eight_bit_p = 0) then begin { C1 controls: ^^xx }
+	print_visible_char("^"); print_visible_char("^");
+	print_lc_hex((s mod @"100) div @"10); print_lc_hex(s mod @"10);
 end else begin
 	{ char >= 128: encode as UTF8 }
 	if s<@"800 then begin
@@ -525,7 +532,6 @@ procedure print(@!s:integer); {prints string |s|}
 label exit;
 var j:pool_pointer; {current character code position}
 @!nl:integer; {new-line character to restore}
-@!l:integer; {for printing 16-bit characters}
 begin if s>=str_ptr then s:="???" {this can't happen}
 @.???@>
 else if s<biggest_char then
@@ -539,19 +545,7 @@ else if s<biggest_char then
         end;
     nl:=new_line_char;
     new_line_char:=-1;
-    if s<@"20 then begin { C0 controls: ^^X }
-      print_char("^"); print_char("^"); print_char(s+64);
-      end
-    else if s<@"7F then { printable ASCII }
-      print_char(s)
-    else if s=@"7F then begin { DEL: ^^? }
-      print_char("^"); print_char("^"); print_char("?");
-      end
-    else if s<@"A0 then begin { C1 controls: ^^xx }
-      print_char(@"5E); print_char(@"5E);
-      print_lc_hex((s mod @"100) div @"10); print_lc_hex(s mod @"10);
-      end
-    else print_char(s); { printable Unicode >= 0xA0 }
+    print_char(s);
     new_line_char:=nl;
     return;
     end;

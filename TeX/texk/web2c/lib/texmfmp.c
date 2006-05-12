@@ -200,8 +200,8 @@ static void parse_options P2H(int, string *);
 /* Try to figure out if we have been given a filename. */
 static string get_input_file_name P1H(void);
 
-#if defined(Omega) || defined(eOmega) || defined(Aleph) || defined(XeTeX)
-/* Declare this for Omega family and XeTeX, so they can parse the -8bit option,
+#if defined(Omega) || defined(eOmega) || defined(Aleph)
+/* Declare this for Omega family, so they can parse the -8bit option,
  * even though it is a no-op for them.
  */
 static int eightbitp;

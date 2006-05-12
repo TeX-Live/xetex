@@ -561,7 +561,7 @@ const_string XETEXHELP[] = {
     "                          the XDV file. WHERE is a comma-separated value",
     "                          list: cr display hbox math par parend vbox",
     "-translate-file=TCXNAME (ignored)",
-    "-8bit                   (ignored)",
+    "-8bit                   make all characters printable, don't use ^^X sequences",
     "-help                   display this help and exit",
     "-version                output version information and exit",
     NULL
