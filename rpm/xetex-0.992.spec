@@ -84,6 +84,30 @@ texhash
 # first, ensure ls-R files include our additions
 texhash
 
+# modify texmf.cnf if necessary to put LOCAL before MAIN
+patch -N -r /tmp/texmfpatch.rej -p0 `kpsewhich texmf.cnf` <<'__EOT__';
+*** /usr/share/texmf/web2c/texmf.cnf    2006-02-28 10:10:59.000000000 +0000
+--- texmf.cnf   2006-05-12 13:44:10.000000000 +0100
+***************
+*** 111,117 ****
+  %
+  % For texconfig to work properly, TEXMFCONGIG and TEXMFVAR should be named
+  % explicitly and before all other trees.
+! TEXMF = {$TEXMFHOME,!!$TEXMFSYSCONFIG,!!$TEXMFSYSVAR,!!$TEXMFMAIN,!!$TEXMFLOCAL,!!$TEXMFDIST}
+
+  % The system trees.  These are the trees that are shared by all the users.
+  SYSTEXMF = $TEXMFSYSCONFIG;$TEXMFSYSVAR;$TEXMFMAIN;$TEXMFLOCAL;$TEXMFDIST
+--- 111,117 ----
+  %
+  % For texconfig to work properly, TEXMFCONGIG and TEXMFVAR should be named
+  % explicitly and before all other trees.
+! TEXMF = {$TEXMFHOME,!!$TEXMFSYSCONFIG,!!$TEXMFSYSVAR,!!$TEXMFLOCAL,!!$TEXMFMAIN,!!$TEXMFDIST}
+
+  % The system trees.  These are the trees that are shared by all the users.
+  SYSTEXMF = $TEXMFSYSCONFIG;$TEXMFSYSVAR;$TEXMFMAIN;$TEXMFLOCAL;$TEXMFDIST
+__EOT__
+
+# ensure our formats are listed in fmtutil.cnf
 fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
 if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
 	cat >> ${fmtutil_cnf} <<-__EOT__;
