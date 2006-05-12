@@ -15,9 +15,12 @@
 XeTeXFontMgr::XeTeXFontMgr*	XeTeXFontMgr::sFontManager = NULL;
 char XeTeXFontMgr::sReqEngine = 0;
 
-double my_fmax(double x, double y)
+/* use our own fmax function because it seems to be missing on certain platforms
+   (solaris2.9, at least) */
+static inline double
+my_fmax(double x, double y)
 {
-    return (x > y) ? x : y;
+	return (x > y) ? x : y;
 }
 
 XeTeXFontMgr::XeTeXFontMgr*
