@@ -58,31 +58,6 @@
 #include "sfnt.h"
 	doesn't work in plain C files :(
 */
-typedef struct
-{
-    UInt32   bc;
-    UInt32   ad;
-}  BigDate;
-
-typedef struct 
-{
-    Fixed       version;
-    Fixed       fontRevision;
-    UInt32   checksumAdjustment;
-    UInt32   magicNumber;
-    UInt16   flags;
-    UInt16   unitsPerEm;
-    BigDate     created;
-    BigDate     modified;
-    SInt16    xMin;
-    SInt16    yMin;
-    SInt16    xMax;
-    SInt16    yMax;
-    SInt16    lowestRecPPEM;
-    SInt16    fontDirectionHint;
-    SInt16    indexToLocFormat;
-    SInt16    glyphDataFormat;
-} HEADTable;
 
 typedef struct
 {
@@ -105,27 +80,6 @@ typedef struct
 
 typedef struct
 {
-    Fixed       version;
-    SInt16    ascent;
-    SInt16    descent;
-    SInt16    lineGap;
-    UInt16   advanceWidthMax;
-    SInt16    minLeftSideBearing;
-    SInt16    minRightSideBearing;
-    SInt16    xMaxExtent;
-    SInt16    caretSlopeRise;
-    SInt16    caretSlopeRun;
-    SInt16    caretOffset;
-    SInt16    reserved1;
-    SInt16    reserved2;
-    SInt16    reserved3;
-    SInt16    reserved4;
-    SInt16    metricDataFormat;
-    UInt16   numOfLongHorMetrics;
-} HHEATable;
-
-typedef struct
-{
 	Fixed		version;
 	Fixed		italicAngle;
 	SInt16	underlinePosition;
@@ -138,8 +92,6 @@ typedef struct
 } POSTTable;
 
 enum {
-    LE_HEAD_TABLE_TAG = 0x68656164UL, /**< 'head' */
-    LE_HHEA_TABLE_TAG = 0x68686561UL, /**< 'hhea' */
     LE_MAXP_TABLE_TAG = 0x6D617870UL, /**< 'maxp' */
     LE_POST_TABLE_TAG = 0x706F7374UL, /**< 'post' */
 };

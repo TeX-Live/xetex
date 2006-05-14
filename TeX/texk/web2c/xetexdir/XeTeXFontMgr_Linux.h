@@ -27,6 +27,7 @@ protected:
 										
 	virtual void					initialize();
 
+	virtual void					getOpSizeRecAndStyleFlags(Font* theFont);
 	virtual void					searchForHostPlatformFonts(const std::string& name);
 	
 	virtual NameCollection*			readNames(FcPattern* pat);

@@ -10,6 +10,8 @@
 #include "Features.h"
 #include "GlyphPositioningTables.h"
 
+#include "sfnt.h"
+
 #include <math.h>
 
 XeTeXFontMgr::XeTeXFontMgr*	XeTeXFontMgr::sFontManager = NULL;
@@ -60,63 +62,71 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 	for (int pass = 0; pass < 2; ++pass) {
 		// try full name as given
 		std::map<std::string,Font*>::iterator i = nameToFont.find(nameStr);
-		if (i != nameToFont.end())
+		if (i != nameToFont.end()) {
 			font = i->second;
-		
-		if (font == NULL) {
-			// if there's a hyphen, split there and try Family-Style
-			int	hyph = nameStr.find('-');
-			if (hyph > 0 && hyph < nameStr.length() - 1) {
-				std::string	family(nameStr.begin(), nameStr.begin() + hyph);
-				std::map<std::string,Family*>::iterator	f = nameToFamily.find(family);
-				if (f != nameToFamily.end()) {
-					std::string	style(nameStr.begin() + hyph + 1, nameStr.end());
-					i = f->second->styles->find(style);
-					if (i != f->second->styles->end())
-						font = i->second;
+			break;
+		}
+
+		// if there's a hyphen, split there and try Family-Style
+		int	hyph = nameStr.find('-');
+		if (hyph > 0 && hyph < nameStr.length() - 1) {
+			std::string	family(nameStr.begin(), nameStr.begin() + hyph);
+			std::map<std::string,Family*>::iterator	f = nameToFamily.find(family);
+			if (f != nameToFamily.end()) {
+				std::string	style(nameStr.begin() + hyph + 1, nameStr.end());
+				i = f->second->styles->find(style);
+				if (i != f->second->styles->end()) {
+					font = i->second;
+					break;
 				}
 			}
 		}
 		
-		if (font == NULL) {
-			// try as PostScript name
-			i = psNameToFont.find(nameStr);
-			if (i != psNameToFont.end())
-				font = i->second;
+		// try as PostScript name
+		i = psNameToFont.find(nameStr);
+		if (i != psNameToFont.end()) {
+			font = i->second;
+			break;
 		}
 		
-		if (font == NULL) {
-			// try for the name as a family name
-			std::map<std::string,Family*>::iterator	f = nameToFamily.find(nameStr);
+		// try for the name as a family name
+		std::map<std::string,Family*>::iterator	f = nameToFamily.find(nameStr);
+		
+		if (f != nameToFamily.end()) {
+			// look for a family member with the "regular" bit set in OS/2
+			for (i = f->second->styles->begin(); i != f->second->styles->end(); ++i)
+				if (i->second->isReg) {
+					font = i->second;
+					break;
+				}
 			
-			if (f != nameToFamily.end()) {
-				// look for a family member with the "regular" bit set in OS/2
-				for (i = f->second->styles->begin(); i != f->second->styles->end(); ++i)
-					if (i->second->isReg) {
-						font = i->second;
-						break;
-					}
-				
-				if (font == NULL) {
-					// try for style "Regular", "Plain", or "Normal"
-					i = f->second->styles->find("Regular");
+			if (font == NULL) {
+				// try for style "Regular", "Plain", or "Normal"
+				i = f->second->styles->find("Regular");
+				if (i != f->second->styles->end())
+					font = i->second;
+				else {
+					i = f->second->styles->find("Plain");
 					if (i != f->second->styles->end())
 						font = i->second;
 					else {
-						i = f->second->styles->find("Plain");
+						i = f->second->styles->find("Normal");
 						if (i != f->second->styles->end())
 							font = i->second;
-						else {
-							i = f->second->styles->find("Normal");
-							if (i != f->second->styles->end())
-								font = i->second;
-						}
 					}
 				}
 			}
+			
+			if (font == NULL) {
+				// look through the family for the (weight, width, slant) nearest to (80, 100, 0)
+				font = bestMatchFromFamily(f->second, 80, 100, 0);
+			}
+			
+			if (font != NULL)
+				break;
 		}
 	
-		if (font == NULL && pass == 0) {
+		if (pass == 0) {
 			// didn't find it in our caches, so do a platform search (may be relatively expensive);
 			// this will update the caches with any fonts that seem to match the name given,
 			// so that the second pass might find it
@@ -228,23 +238,34 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 		}
 		strcpy(variant, varString.c_str());
 		
-		if (reqItal && !font->isItalic) {
-			// look for an italic version with same boldness
-			Font*	bestMatch = NULL;
-			for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i)
-				if (i->second->isItalic)
-					if (bestMatch == NULL || weightAndWidthDiff(i->second, font) < weightAndWidthDiff(bestMatch, font))
-						bestMatch = i->second;
+		if (reqItal) {
+			// try for a face with more slant
+			Font*	bestMatch = bestMatchFromFamily(parent, font->weight, font->width, labs(font->slant) + 300);
+			if (bestMatch == font && !font->isItalic) {
+				// maybe slant values weren't present; try the style bits as a fallback
+				bestMatch = NULL;
+				for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i)
+					if (i->second->isItalic)
+						if (bestMatch == NULL || weightAndWidthDiff(i->second, font) < weightAndWidthDiff(bestMatch, font))
+							bestMatch = i->second;
+			}
 			if (bestMatch != NULL)
 				font = bestMatch;
 		}
-		if (reqBold && !font->isBold)
-			// look for a version with same italicness but more boldness
-			for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i)
-				if (i->second->isItalic == font->isItalic && i->second->isBold) {
-					font = i->second;
-					break;
+
+		if (reqBold) {
+			// try for more boldness, with the same width and slant
+			Font* bestMatch = bestMatchFromFamily(parent, font->weight + 300, font->width, font->slant);
+			if (bestMatch == font && !font->isBold) {
+				for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i) {
+					if (i->second->isItalic == font->isItalic && i->second->isBold) {
+						bestMatch = i->second;
+						break;
+					}
 				}
+			}
+			font = bestMatch;
+		}
 	}
 
 	// if there's optical size info, try to apply it
@@ -328,6 +349,26 @@ XeTeXFontMgr::weightAndWidthDiff(const Font* a, const Font* b) const
 	return labs(a->weight - b->weight) + widDiff;
 }
 
+int
+XeTeXFontMgr::styleDiff(const Font* a, int wt, int wd, int slant) const
+{
+	int	widDiff = labs(a->width - wd);
+	if (widDiff < 10)
+		widDiff *= 50;
+	
+	return labs(labs(a->slant) - labs(slant)) * 10 + labs(a->weight - wt) + widDiff;
+}
+
+XeTeXFontMgr::Font*
+XeTeXFontMgr::bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) const
+{
+	Font*	bestMatch = NULL;
+	for (std::map<std::string,Font*>::iterator s = fam->styles->begin(); s != fam->styles->end(); ++s)
+		if (bestMatch == NULL || styleDiff(s->second, wt, wd, slant) < styleDiff(bestMatch, wt, wd, slant))
+			bestMatch = s->second;
+	return bestMatch;
+}
+
 void
 XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 {
@@ -351,31 +392,6 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 			}
 		}
 
-		struct OS2TableHeader {
-			UInt16	version;
-			SInt16	xAvgCharWidth;
-			UInt16	usWeightClass;
-			UInt16	usWidthClass;
-			SInt16	fsType;
-			SInt16	ySubscriptXSize;
-			SInt16	ySubscriptYSize;
-			SInt16	ySubscriptXOffset;
-			SInt16	ySubscriptYOffset;
-			SInt16	ySuperscriptXSize;
-			SInt16	ySuperscriptYSize;
-			SInt16	ySuperscriptXOffset;
-			SInt16	ySuperscriptYOffset;
-			SInt16	yStrikeoutSize;
-			SInt16	yStrikeoutPosition;
-			SInt16	sFamilyClass;
-			UInt8	panose[10];
-			UInt8	ulCharRange[16];	// spec'd as 4 longs, but do this to keep structure packed
-			SInt8	achVendID[4];
-			UInt16	fsSelection;
-			UInt16	fsFirstCharIndex;
-			UInt16	fsLastCharIndex;
-		};
-
 		const OS2TableHeader* os2Table = (const OS2TableHeader*)getFontTablePtr(font, LE_OS_2_TABLE_TAG);
 		if (os2Table != NULL) {
 			theFont->weight = SWAP(os2Table->usWeightClass);
@@ -386,33 +402,18 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 			theFont->isItalic = (sel & (1 << 0)) != 0;
 		}
 
-		struct HeadTable {
-			Fixed	version;
-			Fixed	fontRevision;
-			UInt32	checkSumAdjustment;
-			UInt32	magicNumber;
-			UInt16	flags;
-			UInt16	unitsPerEm;
-			UInt32	created[2];		// actually LONGDATETIME values
-			UInt32	modified[2];
-			SInt16	xMin;
-			SInt16	yMin;
-			SInt16	xMax;
-			SInt16	yMax;
-			UInt16	macStyle;
-			UInt16	lowestRecPPEM;
-			SInt16	fontDirectionHint;
-			SInt16	indexToLocFormat;
-			SInt16	glyphDataFormat;
-		};
-		
-		const HeadTable* headTable = (const HeadTable*)getFontTablePtr(font, LE_HEAD_TABLE_TAG);
+		const HEADTable* headTable = (const HEADTable*)getFontTablePtr(font, LE_HEAD_TABLE_TAG);
 		if (headTable != NULL) {
 			UInt16	ms = SWAP(headTable->macStyle);
 			if ((ms & (1 << 0)) != 0)
 				theFont->isBold = true;
 			if ((ms & (1 << 1)) != 0)
 				theFont->isItalic = true;
+		}
+
+		const POSTTable* postTable = (const POSTTable*)getFontTablePtr(font, LE_POST_TABLE_TAG);
+		if (postTable != NULL) {
+			theFont->slant = (int)(1000 * (tan(Fix2X(-SWAP(postTable->italicAngle)) * M_PI / 180.0)));
 		}
 
 		deleteFont(font);

@@ -98,8 +98,10 @@ protected:
 	class Font {
 		public:
 							Font(PlatformFontRef ref)
-								: fullName(NULL), psName(NULL), familyName(NULL), styleName(NULL), parent(NULL)
-								, fontRef(ref), weight(0), width(0), isBold(false), isItalic(false)
+								: fullName(NULL), psName(NULL), familyName(NULL), styleName(NULL)
+								, parent(NULL)
+								, fontRef(ref), weight(0), width(0), slant(0)
+								, isReg(false), isBold(false), isItalic(false)
 								{ opSizeInfo.subFamilyID = 0; }
 							~Font()
 								{ delete fullName; delete psName; }
@@ -113,6 +115,7 @@ protected:
 			OpSizeRec		opSizeInfo;
 			UInt16			weight;
 			UInt16			width;
+			SInt16			slant;
 			bool			isReg;
 			bool			isBold;
 			bool			isItalic;
@@ -147,11 +150,13 @@ protected:
 	std::map<std::string,Font*>					psNameToFont;					// maps PS name (as used in .xdv) to font record
 
 	int				weightAndWidthDiff(const Font* a, const Font* b) const;
-	void			getOpSizeRecAndStyleFlags(Font* theFont);
+	int				styleDiff(const Font* a, int wt, int wd, int slant) const;
+	Font*			bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) const;
 	void			appendToList(std::list<std::string>* list, const char* str);
 	void			prependToList(std::list<std::string>* list, const char* str);
 	void			addToMaps(PlatformFontRef platformFont, const NameCollection* names);
 
+	virtual void	getOpSizeRecAndStyleFlags(Font* theFont);
 	virtual void	searchForHostPlatformFonts(const std::string& name) = 0;
 	
 #ifdef XETEX_MAC

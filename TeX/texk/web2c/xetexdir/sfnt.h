@@ -154,7 +154,8 @@ struct HEADTable
     le_int16    yMin;
     le_int16    xMax;
     le_int16    yMax;
-    le_int16    lowestRecPPEM;
+	le_uint16	macStyle;
+    le_uint16   lowestRecPPEM;
     le_int16    fontDirectionHint;
     le_int16    indexToLocFormat;
     le_int16    glyphDataFormat;
@@ -223,6 +224,31 @@ struct POSTTable
 	le_uint32	maxMemType42;
 	le_uint32	minMemType1;
 	le_uint32	maxMemType1;
+};
+
+struct OS2TableHeader {
+	le_uint16	version;
+	le_int16	xAvgCharWidth;
+	le_uint16	usWeightClass;
+	le_uint16	usWidthClass;
+	le_int16	fsType;
+	le_int16	ySubscriptXSize;
+	le_int16	ySubscriptYSize;
+	le_int16	ySubscriptXOffset;
+	le_int16	ySubscriptYOffset;
+	le_int16	ySuperscriptXSize;
+	le_int16	ySuperscriptYSize;
+	le_int16	ySuperscriptXOffset;
+	le_int16	ySuperscriptYOffset;
+	le_int16	yStrikeoutSize;
+	le_int16	yStrikeoutPosition;
+	le_int16	sFamilyClass;
+	le_uint8	panose[10];
+	le_uint8	ulCharRange[16];	// spec'd as 4 longs, but do this to keep structure packed
+	le_int8	achVendID[4];
+	le_uint16	fsSelection;
+	le_uint16	fsFirstCharIndex;
+	le_uint16	fsLastCharIndex;
 };
 
 #endif

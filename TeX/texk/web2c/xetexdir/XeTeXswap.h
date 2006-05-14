@@ -46,6 +46,18 @@ SWAP(UInt32 p)
 {
 	return SWAP32(p);
 }
+
+static inline SInt16
+SWAP(SInt16 p)
+{
+	return (SInt16)SWAP16((UInt16)p);
+}
+
+static inline SInt32
+SWAP(SInt32 p)
+{
+	return (SInt32)SWAP32((UInt32)p);
+}
 #endif
 
 #endif
