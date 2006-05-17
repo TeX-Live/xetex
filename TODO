@@ -4,19 +4,25 @@
 
 - error message when using \XeTeXcharglyph with a non-native font
 
+- font style identification in complex families (LM)
+
 
 ** FEATURES to consider:
 
-- \ifXeTeXnativefont\f
+- \ifXeTeXfont\f
 
 - \ifXeTeXfontexists "name"
 
 - \XeTeXfont\f = "name" [style "S"] [using ENGINE] [features "featurestring"] [at SIZE]
 - \XeTeXfontname\f
 
-- \XeTeXadjustfeatures "featurestring"
+- \XeTeXadjustfeatures "featurestring" (does this modify the font identifier globally? locally?)
 
 - \XeTeXmathchar, \XeTeXmathcode, etc
+
+- \XeTeXglyphindex <name> (to look up index of named glyph in current font, -1 if absent)
+
+- make \tracinglostchars report missing Unicode chars in native fonts
 
 - vertical mode for OpenType/ICU fonts
 
@@ -24,3 +30,15 @@
 
 - tracking and kerning overrides
 
+- mechanism to load supplementary OT tables
+
+- read AFM files if available with PFBs, and apply kerning
+
+- Pango and/or Graphite as alternative renderers
+
+- support one-of-many OT lookups (needs extension to feature syntax, and low-level support in ICU)
+
+- update to latest ICU release
+  - must check support for Syriac, Arabic supplement, Mongolian, Lao bug-fix
+
+- \pdfsavepos, \pdflastxpos, \pdflastypos
