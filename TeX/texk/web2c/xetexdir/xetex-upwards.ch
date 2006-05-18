@@ -177,6 +177,16 @@ pop_nest; box_end(saved(0));
 @z
 
 @x
+@ @<Dump the \eTeX\ state@>=
+dump_int(eTeX_mode);
+for j:=0 to eTeX_states-1 do eTeX_state(j):=0; {disable all enhancements}
+@y
+@ @<Dump the \eTeX\ state@>=
+dump_int(eTeX_mode);
+{ in a deliberate change from e-TeX, we allow non-zero state variables to be dumped }
+@z
+
+@x
 @d TeXXeT_en==(TeXXeT_state>0) {is \TeXXeT\ enabled?}
 @y
 @d TeXXeT_en==(TeXXeT_state>0) {is \TeXXeT\ enabled?}
@@ -207,3 +217,4 @@ primitive("XeTeXupwardsmode",assign_int,eTeX_state_base+XeTeX_upwards_code);
 primitive("XeTeXuseglyphmetrics",assign_int,eTeX_state_base+XeTeX_use_glyph_metrics_code);
 @!@:XeTeX_use_glyph_metrics_}{\.{\\XeTeX_use_glyph_metrics} primitive@>
 @z
+
