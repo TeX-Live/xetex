@@ -1068,7 +1068,7 @@ doPdfMapFile(const char* fileName)
 		return;
 
 	bool	loaded = false;
-	UInt8*	pathname = kpse_find_file((UInt8*)fileName, xdv_kpse_dvips_config_format, true);
+	UInt8*	pathname = kpse_find_file((UInt8*)fileName, /*xdv_kpse_dvips_config_format*/ xdv_kpse_font_map_format, true);
 	if (pathname) {
 		FILE*	f = fopen((char*)pathname, "r");
 		if (f != NULL) {

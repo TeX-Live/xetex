@@ -54,7 +54,8 @@ extern int	xdv2pdf(int argc, char** argv);
 #define TFM_ENVS "TFMFONTS", "TEXFONTS"
 #define CNF_ENVS "TEXMFCNF"
 #define DB_ENVS "TEXMFDBS"
-#define DVIPS_CONFIG_ENVS "TEXCONFIG"
+/*#define DVIPS_CONFIG_ENVS "TEXCONFIG"*/
+#define FONTMAP_ENVS "TEXFONTMAPS", "TEXFONTS"
 #define TEX_PS_HEADER_ENVS "TEXPSHEADERS", "PSHEADERS"
 #define TYPE1_ENVS "T1FONTS", "T1INPUTS", "TEXFONTS", TEX_PS_HEADER_ENVS
 
@@ -211,8 +212,15 @@ main(int argc, char** argv)
 	FMT_INFO.suffix_search_only = true;
 	SUFFIXES (".tfm");
 
+/*
     format = xdv_kpse_dvips_config_format;
 	INIT_FORMAT ("dvips config", DEFAULT_TEXCONFIG, DVIPS_CONFIG_ENVS);
+	FMT_INFO.binmode = true;
+	FMT_INFO.suffix_search_only = true;
+	SUFFIXES (".map");
+*/
+    format = xdv_kpse_font_map_format;
+	INIT_FORMAT ("map", DEFAULT_TEXFONTMAPS, FONTMAP_ENVS);
 	FMT_INFO.binmode = true;
 	FMT_INFO.suffix_search_only = true;
 	SUFFIXES (".map");
