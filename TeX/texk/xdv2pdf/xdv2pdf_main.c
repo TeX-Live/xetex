@@ -54,9 +54,10 @@ extern int	xdv2pdf(int argc, char** argv);
 #define TFM_ENVS "TFMFONTS", "TEXFONTS"
 #define CNF_ENVS "TEXMFCNF"
 #define DB_ENVS "TEXMFDBS"
-/*#define DVIPS_CONFIG_ENVS "TEXCONFIG"*/
-#define FONTMAP_ENVS "TEXFONTMAPS", "TEXFONTS"
+#define DVIPS_CONFIG_ENVS "TEXCONFIG"
+#define FONTMAP_ENVS "TEXFONTMAPS", "TEXFONTS", DVIPS_CONFIG_ENVS /* try TEXCONFIG for teTeX 2 */
 #define TEX_PS_HEADER_ENVS "TEXPSHEADERS", "PSHEADERS"
+#define ENC_ENVS "ENCFONTS", "TEXFONTS", TEX_PS_HEADER_ENVS
 #define TYPE1_ENVS "T1FONTS", "T1INPUTS", "TEXFONTS", TEX_PS_HEADER_ENVS
 
 #define FMT_INFO kpse_format_info[format]
@@ -212,22 +213,13 @@ main(int argc, char** argv)
 	FMT_INFO.suffix_search_only = true;
 	SUFFIXES (".tfm");
 
-/*
-    format = xdv_kpse_dvips_config_format;
-	INIT_FORMAT ("dvips config", DEFAULT_TEXCONFIG, DVIPS_CONFIG_ENVS);
-	FMT_INFO.binmode = true;
-	FMT_INFO.suffix_search_only = true;
-	SUFFIXES (".map");
-*/
     format = xdv_kpse_font_map_format;
 	INIT_FORMAT ("map", DEFAULT_TEXFONTMAPS, FONTMAP_ENVS);
-	FMT_INFO.binmode = true;
 	FMT_INFO.suffix_search_only = true;
 	SUFFIXES (".map");
 
-	format = xdv_kpse_tex_ps_header_format;
-	INIT_FORMAT ("PostScript header", DEFAULT_TEXPSHEADERS, TEX_PS_HEADER_ENVS);
-	FMT_INFO.binmode = true;
+    format = xdv_kpse_enc_format;
+	INIT_FORMAT ("enc files", DEFAULT_ENCFONTS, ENC_ENVS);
 	FMT_INFO.suffix_search_only = true;
 	SUFFIXES (".enc");
 

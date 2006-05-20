@@ -143,7 +143,7 @@ struct nativeFont {
 	ATSUStyle			atsuStyleH;	// only present if isVertical is true
 	ATSUStyle			atsuStyleV;
 	Fixed				size;
-	ATSURGBAlphaColor	color;
+	CGColorRef			color;
 	bool				isColored;
 	bool				isVertical;
 };
@@ -292,18 +292,14 @@ readUnsigned(FILE* f, int k)
 
 
 void
-setColor(const ATSURGBAlphaColor& color, bool force = false)
+setColor(CGColorRef color, bool force = false)
 {
-	if (   color.red   != gCurrentColor.red
-		|| color.green != gCurrentColor.green
-		|| color.blue  != gCurrentColor.blue
-		|| color.alpha != gCurrentColor.alpha
-		|| force)
-		CGContextSetFillColor(gCtx, &color.red);
+	if (force || !gCurrentColor || !CGColorEqualToColor(color, gCurrentColor))
+		CGContextSetFillColorWithColor(gCtx, color);
 	gCurrentColor = color;
 }
 
-static double
+inline double
 radians(double degrees)
 {
 	return degrees / 180.0 * M_PI;
@@ -321,16 +317,11 @@ ensurePageStarted()
 	static CGAffineTransform	sInitTextMatrix;
 	if (gPageIndex == 1) {
 		sInitTextMatrix = CGContextGetTextMatrix(gCtx);
-		gUserColorSpace = 
-			(&CGColorSpaceCreateWithName) != NULL
-				? CGColorSpaceCreateWithName(kCGColorSpaceUserRGB)
-				: CGColorSpaceCreateDeviceRGB();
 	}
 	else
 		CGContextSetTextMatrix(gCtx, sInitTextMatrix);
 
-	CGContextSetFillColorSpace(gCtx, gUserColorSpace);
-	setColor(kBlackColor, true);
+	gCurrentColor = NULL; /* ensure color will get set by first drawing op */
 
 	CGContextTranslateCTM(gCtx, 72.0, -72.0);
 
@@ -833,7 +824,6 @@ loadMetrics(struct texFont& font, UInt8* name, Fixed d, Fixed s)
         if (tfmFile != 0) {
             enum { lf = 0, lh, bc, ec, nw, nh, nd, ni, nl, nk, ne, np };
             SInt16	directory[12];
-//            fread(&directory[0], 2, 12, tfmFile);
 			for (int i = 0; i < 12; ++i)
 				directory[i] = readSigned(tfmFile, 2);
             fseek(tfmFile, directory[lh] * 4, SEEK_CUR);
@@ -849,7 +839,6 @@ loadMetrics(struct texFont& font, UInt8* name, Fixed d, Fixed s)
                     UInt8	remainder;
                 };
                 s_charinfo*	charInfo = new s_charinfo[nChars];
-//                fread(&charInfo[0], 4, nChars, tfmFile);
 				for (int i = 0; i < nChars; ++i) {
 					charInfo[i].widthIndex = readUnsigned(tfmFile, 1);
 					charInfo[i].heightDepth = readUnsigned(tfmFile, 1);
@@ -857,15 +846,12 @@ loadMetrics(struct texFont& font, UInt8* name, Fixed d, Fixed s)
 					charInfo[i].remainder = readUnsigned(tfmFile, 1);
 				}
                 Fixed*	widths = new Fixed[directory[nw]];
-//                fread(&widths[0], 4, directory[nw], tfmFile);
 				for (int i = 0; i < directory[nw]; ++i)
 					widths[i] = readSigned(tfmFile, 4);
                 Fixed*	heights = new Fixed[directory[nh]];
-//                fread(&heights[0], 4, directory[nh], tfmFile);
 				for (int i = 0; i < directory[nh]; ++i)
 					heights[i] = readSigned(tfmFile, 4);
                 Fixed*	depths = new Fixed[directory[nd]];
-//                fread(&depths[0], 4, directory[nd], tfmFile);
                 for (int i = 0; i < directory[nd]; ++i)
                 	depths[i] = readSigned(tfmFile, 4);
                 
@@ -1068,7 +1054,7 @@ doPdfMapFile(const char* fileName)
 		return;
 
 	bool	loaded = false;
-	UInt8*	pathname = kpse_find_file((UInt8*)fileName, /*xdv_kpse_dvips_config_format*/ xdv_kpse_font_map_format, true);
+	UInt8*	pathname = kpse_find_file((UInt8*)fileName, xdv_kpse_font_map_format, true);
 	if (pathname) {
 		FILE*	f = fopen((char*)pathname, "r");
 		if (f != NULL) {
@@ -1100,7 +1086,7 @@ getEncoding(const std::string& name)
 	std::map<std::string,encoding>::iterator	i = sEncodings.find(name);
 	if (i == sEncodings.end()) {
 		encoding	enc;
-		UInt8*	pathname = kpse_find_file((UInt8*)(name.c_str()), xdv_kpse_tex_ps_header_format, true);
+		UInt8*	pathname = kpse_find_file((UInt8*)(name.c_str()), xdv_kpse_enc_format, true);
 		if (pathname != NULL) {
 			FILE*	f = fopen((char*)pathname, "r");
 			if (f != NULL) {
@@ -1551,25 +1537,6 @@ doFontDef(FILE* xdv, int k)
     gTeXFonts.insert(std::pair<const UInt32,texFont>(f, font));
 }
 
-inline bool operator==(const ATSURGBAlphaColor& a, const ATSURGBAlphaColor& b)
-{
-	return (a.red == b.red
-		&& a.green == b.green
-		&& a.blue == b.blue
-		&& a.alpha == b.alpha);
-}
-
-static ATSURGBAlphaColor
-makeAtsuColor(UInt32 rgba)
-{
-	ATSURGBAlphaColor	c;
-	c.red   =  (rgba >> 24)         / 255.0;
-	c.green = ((rgba >> 16) & 0xFF) / 255.0;
-	c.blue  = ((rgba >>  8) & 0xFF) / 255.0;
-	c.alpha = ( rgba        & 0xFF) / 255.0;
-	return c;
-}
-
 static void
 variationWarning()
 {
@@ -1675,9 +1642,18 @@ doNativeFontDef(FILE* xdv)
 	fontRec.cgFont = cgFont;
 	fontRec.atsFont = fontRef;
 	fontRec.size = s;
-	fontRec.color = makeAtsuColor(rgba);
 	fontRec.isColored = (flags & XDV_FLAG_COLORED) != 0;
 	fontRec.isVertical = (flags & XDV_FLAG_VERTICAL) != 0;
+	if (fontRec.isColored) {
+		float	values[4];
+		values[0] =  (rgba >> 24)         / 255.0;
+		values[1] = ((rgba >> 16) & 0xFF) / 255.0;
+		values[2] = ((rgba >>  8) & 0xFF) / 255.0;
+		values[3] = ( rgba        & 0xFF) / 255.0;
+		fontRec.color = CGColorCreate(gRGBColorSpace, values);
+	}
+	else
+		fontRec.color = NULL;
 
 	if (fontRec.isVertical) {
 		ATSUStyle	style;
@@ -1968,6 +1944,13 @@ ABORT_PAGE:
 static void
 processAllPages(FILE* xdv)
 {
+	// initialize some global variables that we use as CG "constants"
+	gRGBColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	gCMYKColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericCMYK);
+	gGrayColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+	const float black[2] = { 0.0, 1.0 };
+	kBlackColor = CGColorCreate(gGrayColorSpace, black);
+
 	gPageIndex = 0;
 	unsigned int	cmd;
 	while ((cmd = readUnsigned(xdv, 1)) != DVI_POST) {

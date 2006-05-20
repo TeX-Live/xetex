@@ -27,7 +27,9 @@
 
 GLOBAL	CGContextRef	gCtx;
 
-GLOBAL	CGColorSpaceRef	gUserColorSpace;
+GLOBAL	CGColorSpaceRef	gRGBColorSpace;
+GLOBAL	CGColorSpaceRef	gCMYKColorSpace;
+GLOBAL	CGColorSpaceRef	gGrayColorSpace;
 
 GLOBAL	bool 		gPageStarted;
 GLOBAL	CGRect		gMediaBox;
@@ -54,15 +56,15 @@ GLOBAL double_t kDvi2Scr
 #endif
 	;
 
-const ATSURGBAlphaColor	kBlackColor = { 0.0, 0.0, 0.0, 1.0 };
+GLOBAL CGColorRef	kBlackColor;
 
-GLOBAL std::list<ATSURGBAlphaColor>	gTextColorStack;
-GLOBAL std::list<ATSURGBAlphaColor>	gRuleColorStack;
+GLOBAL std::list<CGColorRef>	gTextColorStack;
+GLOBAL std::list<CGColorRef>	gRuleColorStack;
 
-GLOBAL ATSURGBAlphaColor	gTextColor;
-GLOBAL ATSURGBAlphaColor	gRuleColor;
+GLOBAL CGColorRef	gTextColor;
+GLOBAL CGColorRef	gRuleColor;
 
-GLOBAL ATSURGBAlphaColor	gCurrentColor;
+GLOBAL CGColorRef	gCurrentColor;
 
 struct texFont {
 				texFont()
@@ -127,7 +129,7 @@ void	doSpecial(const char* special);
 
 
 void	ensurePageStarted();
-void	setColor(const ATSURGBAlphaColor& color, bool force);
+void	setColor(CGColorRef color, bool force);
 void	doPdfMapLine(const char* line, char mode);
 void	doPdfMapFile(const char* fileName);
 

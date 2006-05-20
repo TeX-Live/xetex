@@ -48,52 +48,49 @@ readHexDigit(const char*& cp)
     return 0;
 }
 
-static void
-readColorValue(const char* s, ATSURGBAlphaColor& c)
+static CGColorRef
+readColorValue(const char* s)
 {
+	float components[4];
     int	x;
-    x = 0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.red = (double)x / 255.0;
-    x = 0;
+    components[0] = x / 255.0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.green = (double)x / 255.0;
-    x = 0;
+	components[1] = x / 255.0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.blue = (double)x / 255.0;
-    c.alpha = 1.0;
+	components[2] = x / 255.0;
+	components[3] = 1.0;
+	return CGColorCreate(gRGBColorSpace, components);
 }
 
-static void
-readColorValueWithAlpha(const char* s, ATSURGBAlphaColor& c)
+static CGColorRef
+readColorValueWithAlpha(const char* s)
 {
+	float components[4];
     int	x;
-    x = 0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.red = (double)x / 255.0;
-    x = 0;
+    components[0] = x / 255.0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.green = (double)x / 255.0;
-    x = 0;
+	components[1] = x / 255.0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.blue = (double)x / 255.0;
-    x = 0;
+	components[2] = x / 255.0;
     x = readHexDigit(s);
     x <<= 4;
     x += readHexDigit(s);
-    c.alpha = (double)x / 255.0;
+	components[3] = x / 255.0;
+	return CGColorCreate(gRGBColorSpace, components);
 }
 
 static float
@@ -191,7 +188,7 @@ popRuleColor()
 }
 
 static void
-setRuleColor(const ATSURGBAlphaColor& color)
+setRuleColor(CGColorRef color)
 {
 	gRuleColor = color;
 }
@@ -203,7 +200,7 @@ resetRuleColor()
 }
 
 static void
-setTextColor(const ATSURGBAlphaColor& color)
+setTextColor(CGColorRef color)
 {
 	gTextColor = color;
 }
@@ -359,13 +356,10 @@ doColorSpecial(const char* s)
 		}
 		
 		if (kwmatch(s, "rgb")) {
-			float	rgb[3] = { 0.0, 0.0, 0.0 };
-			if (readColorValues(s, 3, rgb)) {
-				ATSURGBAlphaColor	c;
-				c.red = rgb[0];
-				c.green = rgb[1];
-				c.blue = rgb[2];
-				c.alpha = readAlphaIfPresent(s);
+			float	rgba[4];
+			if (readColorValues(s, 3, rgba)) {
+				rgba[3] = readAlphaIfPresent(s);
+				CGColorRef	c = CGColorCreate(gRGBColorSpace, rgba);
 				setRuleColor(c);
 				setTextColor(c);
 			}
@@ -373,46 +367,10 @@ doColorSpecial(const char* s)
 		}
 		
 		if (kwmatch(s, "cmyk")) {
-			float	cmyk[4] = { 0.0, 0.0, 0.0, 1.0 };
-			if (readColorValues(s, 4, cmyk)) {
-				ATSURGBAlphaColor	c;
-
-#if 1
-				c.red = (1.0 - cmyk[0]) * (1.0 - cmyk[3]);	// cmyk->rgb conversion a la ghostscript
-				c.green = (1.0 - cmyk[1]) * (1.0 - cmyk[3]);
-				c.blue = (1.0 - cmyk[2]) * (1.0 - cmyk[3]);
-#endif
-
-#if 0
-	#define min(a,b)	((a) < (b) ? (a) : (b))
-				c.red = 1.0 - min(1.0, cmyk[0] + cmyk[3]);	// cmyk->rgb conversion a la adobe
-				c.green = 1.0 - min(1.0, cmyk[1] + cmyk[3]);
-				c.blue = 1.0 - min(1.0, cmyk[2] + cmyk[3]);
-#endif
-
-#if 0
-// formulae from http://www.easyrgb.com/math.php
-//CMYKÊÑ> CMY
-//Where CMYK and CMY values = 0 Ö 1
-// C = ( C * ( 1 - K ) + K )
-// M = ( M * ( 1 - K ) + K )
-// Y = ( Y * ( 1 - K ) + K )
-				cmyk[0] = (cmyk[0] * (1.0 - cmyk[3]) + cmyk[3]);
-				cmyk[1] = (cmyk[1] * (1.0 - cmyk[3]) + cmyk[3]);
-				cmyk[2] = (cmyk[2] * (1.0 - cmyk[3]) + cmyk[3]);
-//
-//CMY -> RGB
-//CMY values = 0 Ö 1
-//RGB values = 0 Ö 255
-// R = ( 1 - C ) * 255
-// G = ( 1 - M ) * 255
-// B = ( 1 - Y ) * 255
-				c.red   = (1.0 - cmyk[0]);
-				c.green = (1.0 - cmyk[1]);
-				c.blue  = (1.0 - cmyk[2]);
-#endif
-
-				c.alpha = readAlphaIfPresent(s);
+			float	cmyka[5];
+			if (readColorValues(s, 4, cmyka)) {
+				cmyka[4] = readAlphaIfPresent(s);
+				CGColorRef	c = CGColorCreate(gCMYKColorSpace, cmyka);
 				setRuleColor(c);
 				setTextColor(c);
 			}
@@ -420,18 +378,19 @@ doColorSpecial(const char* s)
 		}
 		
 		if (kwmatch(s, "hsb") || kwmatch(s, "hsv")) {
-			float	hsb[3] = { 0.0, 1.0, 0.0 };
+			float	hsb[3];
 			if (readColorValues(s, 3, hsb)) {
 				CMColor	cm;
 				cm.hsv.hue = (UInt16)(hsb[0] * 65535);
 				cm.hsv.saturation = (UInt16)(hsb[1] * 65535);
 				cm.hsv.value = (UInt16)(hsb[2] * 65535);
 				CMConvertHSVToRGB(&cm, &cm, 1);
-				ATSURGBAlphaColor	c;
-				c.red = cm.rgb.red / 65535.0;
-				c.green = cm.rgb.green / 65535.0;
-				c.blue = cm.rgb.blue / 65535.0;
-				c.alpha = readAlphaIfPresent(s);
+				float	rgba[4];
+				rgba[0] = cm.rgb.red / 65535.0;
+				rgba[1] = cm.rgb.green / 65535.0;
+				rgba[2] = cm.rgb.blue / 65535.0;
+				rgba[3] = readAlphaIfPresent(s);
+				CGColorRef	c = CGColorCreate(gRGBColorSpace, rgba);
 				setRuleColor(c);
 				setTextColor(c);
 			}
@@ -439,18 +398,19 @@ doColorSpecial(const char* s)
 		}
 		
 		if (kwmatch(s, "hls")) {
-			float	hls[3] = { 0.0, 1.0, 0.0 };
+			float	hls[3];
 			if (readColorValues(s, 3, hls)) {
 				CMColor	cm;
 				cm.hls.hue = (UInt16)(hls[0] * 65535);
 				cm.hls.lightness = (UInt16)(hls[1] * 65535);
 				cm.hls.saturation = (UInt16)(hls[2] * 65535);
 				CMConvertHLSToRGB(&cm, &cm, 1);
-				ATSURGBAlphaColor	c;
-				c.red = cm.rgb.red / 65535.0;
-				c.green = cm.rgb.green / 65535.0;
-				c.blue = cm.rgb.blue / 65535.0;
-				c.alpha = readAlphaIfPresent(s);
+				float	rgba[4];
+				rgba[0] = cm.rgb.red / 65535.0;
+				rgba[1] = cm.rgb.green / 65535.0;
+				rgba[2] = cm.rgb.blue / 65535.0;
+				rgba[3] = readAlphaIfPresent(s);
+				CGColorRef	c = CGColorCreate(gRGBColorSpace, rgba);
 				setRuleColor(c);
 				setTextColor(c);
 			}
@@ -458,13 +418,10 @@ doColorSpecial(const char* s)
 		}
 		
 		if (kwmatch(s, "gray")) {
-			float	gray = 0.0;
-			if (readColorValues(s, 1, &gray)) {
-				ATSURGBAlphaColor	c;
-				c.red = gray;
-				c.green = gray;
-				c.blue = gray;
-				c.alpha = readAlphaIfPresent(s);
+			float	gray[2];
+			if (readColorValues(s, 1, gray)) {
+				gray[1] = readAlphaIfPresent(s);
+				CGColorRef	c = CGColorCreate(gGrayColorSpace, gray);
 				setRuleColor(c);
 				setTextColor(c);
 			}
@@ -474,11 +431,13 @@ doColorSpecial(const char* s)
 		const namedColor*	nc = colorsByName + sizeof(colorsByName) / sizeof(namedColor);
 		while (nc-- > colorsByName) {
 			if (kwmatch(s, nc->name)) {
-				ATSURGBAlphaColor	c;
-				c.red = (1.0 - nc->cmyk[0]) * (1.0 - nc->cmyk[3]);
-				c.green = (1.0 - nc->cmyk[1]) * (1.0 - nc->cmyk[3]);
-				c.blue = (1.0 - nc->cmyk[2]) * (1.0 - nc->cmyk[3]);
-				c.alpha = readAlphaIfPresent(s);
+				float	cmyka[5];
+				cmyka[0] = nc->cmyk[0];
+				cmyka[1] = nc->cmyk[1];
+				cmyka[2] = nc->cmyk[2];
+				cmyka[3] = nc->cmyk[3];
+				cmyka[4] = readAlphaIfPresent(s);
+				CGColorRef	c = CGColorCreate(gCMYKColorSpace, cmyka);
 				setRuleColor(c);
 				setTextColor(c);
 				break;
@@ -617,11 +576,11 @@ doSpecial(const char* special)
 			resetRuleColor();
 		else {
 			++specialArg;
-			ATSURGBAlphaColor	color;
+			CGColorRef	color;
 			if (u < 20)
-				readColorValue(specialArg, color);
+				color = readColorValue(specialArg);
 			else
-				readColorValueWithAlpha(specialArg, color);
+				color = readColorValueWithAlpha(specialArg);
 			setRuleColor(color);
 		}
 	}
@@ -632,11 +591,11 @@ doSpecial(const char* special)
 			resetTextColor();
 		else {
 			++specialArg;
-			ATSURGBAlphaColor	color;
+			CGColorRef	color;
 			if (u < 20)
-				readColorValue(specialArg, color);
+				color = readColorValue(specialArg);
 			else
-				readColorValueWithAlpha(specialArg, color);
+				color = readColorValueWithAlpha(specialArg);
 			setTextColor(color);
 		}
 	}
@@ -683,15 +642,15 @@ doSpecial(const char* special)
 		}
 		else {
 			++specialArg;
-			ATSURGBAlphaColor	bg;
+			CGColorRef	bg;
 			if (u < 26)
-				readColorValue(specialArg, bg);
+				bg = readColorValue(specialArg);
 			else
-				readColorValueWithAlpha(specialArg, bg);
-			if (bg.alpha == 0.0)
-				bg.alpha = 0.0001;	// avoid an apparent Quartz bug
+				bg = readColorValueWithAlpha(specialArg);
+//			if (bg.alpha == 0.0)
+//				bg.alpha = 0.0001;	// avoid an apparent Quartz bug
 			CGContextSaveGState(gCtx);
-			CGContextSetFillColor(gCtx, &bg.red);
+			CGContextSetFillColorWithColor(gCtx, bg);
 			CGContextTranslateCTM(gCtx, -72.0, 72.0);
 			CGContextFillRect(gCtx, gMediaBox);
 			CGContextRestoreGState(gCtx);
@@ -723,9 +682,9 @@ doSpecial(const char* special)
 	else if (prefixMatch(special, "x:colorshadow", specialArg)) {
 		// syntax: \special{x:colorshadow(x,y),b,c}
 		do {
-			CGSize				offset;
-			float				blur;
-			ATSURGBAlphaColor	color;
+			CGSize		offset;
+			float		blur;
+			CGColorRef	color;
 			
 			if (*specialArg++ != '(')	break;
 			offset.width = readFloat(specialArg);
@@ -740,18 +699,17 @@ doSpecial(const char* special)
 			if (*specialArg++ != ',')	break;
 			if (special + u < specialArg + 6)	break;
 			if (special + u < specialArg + 8)
-				readColorValue(specialArg, color);
+				color = readColorValue(specialArg);
 			else
-				readColorValueWithAlpha(specialArg, color);
+				color = readColorValueWithAlpha(specialArg);
 			
 			// NB: APIs only available on 10.3 and later
-			if (&CGContextSetShadowWithColor != NULL && &CGColorCreate != NULL) {
-				CGColorRef		colorRef = CGColorCreate(gUserColorSpace, &color.red);
-				CGContextSetShadowWithColor(gCtx, offset, blur, colorRef);
-				CGColorRelease(colorRef);
+			if (&CGContextSetShadowWithColor != NULL) {
+				CGContextSetShadowWithColor(gCtx, offset, blur, color);
 			}
 			else
 				shadowWarning();
+			CGColorRelease(color);
 		} while (false);
 	}
 	else if (prefixMatch(special, "x:papersize", specialArg) || prefixMatch(special, "papersize", specialArg)) {
