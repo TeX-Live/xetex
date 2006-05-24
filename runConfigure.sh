@@ -33,10 +33,10 @@ echo "../configure --prefix=${PREFIX} --datadir=${DATADIR}"
 
 # we need different configure options for ICU
 echo "### configuring the ICU library"
-mkdir -p TeX/libs/icu-release-3-4-source
+mkdir -p libs/icu-xetex
 (
-	cd TeX/libs/icu-release-3-4-source
-	../../../../TeX/libs/icu-release-3-4-source/configure --enable-static --disable-shared
+	cd libs/icu-xetex
+	../../../libs/icu-xetex/configure --enable-static --disable-shared
 	if [ "`uname`" == "Darwin" ]; then
 		# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available - hoping for 10.2 compatibility :)
 		perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' common/unicode/platform.h
@@ -45,14 +45,12 @@ mkdir -p TeX/libs/icu-release-3-4-source
 
 # also configure TECkit separately for now
 echo "### configuring the TECkit library"
-mkdir -p TeX/libs/teckit
+mkdir -p libs/teckit
 (
-	cd TeX/libs/teckit
-	../../../../TeX/libs/teckit/configure
+	cd libs/teckit
+	../../../libs/teckit/configure
 )
 
 # To build:
-# "make" in Work/TeX/libs/icu-release-3-4-source
-# "make" in Work/TeX/libs/teckit
-# "make xetex" in Work/TeX/texk/web2c
-# on Mac OS X only: "make xdv2pdf" in Work/TeX/texk/xdv2pdf
+# "make xetex" in Work/texk/web2c
+# on Mac OS X only: "make xdv2pdf" in Work/texk/xdv2pdf

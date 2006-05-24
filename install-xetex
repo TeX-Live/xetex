@@ -16,7 +16,7 @@ filelist=Work/xetex-installed-files
 
 if [ -f ${filelist} ]; then rm ${filelist}; fi
 
-if [ ! -e Work/TeX/texk/web2c/xetex ]; then
+if [ ! -e Work/texk/web2c/xetex ]; then
 	echo "### error: xetex binary has not been built"
 	exit 100
 fi
@@ -33,16 +33,16 @@ fi
 texbindir=`dirname ${texbin}`
 
 # copy the xetex binary to the same dir as standard tex
-cp -pf Work/TeX/texk/web2c/xetex ${texbindir}/xetex
+cp -pf Work/texk/web2c/xetex ${texbindir}/xetex
 echo ${texbindir}/xetex >> ${filelist}
-if [ -e Work/TeX/texk/xdv2pdf/xdv2pdf ]; then
+if [ -e Work/texk/xdv2pdf/xdv2pdf ]; then
 	programs="xdv2pdf T1Wrap"
 	for f in ${programs}; do
-		cp -pf Work/TeX/texk/xdv2pdf/${f} ${texbindir}/${f}
+		cp -pf Work/texk/xdv2pdf/${f} ${texbindir}/${f}
 		echo ${texbindir}/${f} >> ${filelist}
 	done
 	# the mergemarks script is in the original source dir, not under Work
-	cp -pf TeX/texk/xdv2pdf/xdv2pdf_mergemarks ${texbindir}/xdv2pdf_mergemarks
+	cp -pf texk/xdv2pdf/xdv2pdf_mergemarks ${texbindir}/xdv2pdf_mergemarks
 	chmod +x ${texbindir}/xdv2pdf_mergemarks
 	echo ${texbindir}/xdv2pdf_mergemarks >> ${filelist}
 fi
@@ -70,7 +70,7 @@ find texmf -type f -and -not -path "*/.*" -print | sed -e "s@^texmf@${texmflocal
 
 # copy the pool file to /web2c under TEXMFLOCAL
 mkdir -p ${texmflocal}/web2c
-cp -pf Work/TeX/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
+cp -pf Work/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
 echo ${texmflocal}/web2c/xetex.pool >> ${filelist}
 
 # update kpathsearch databases because we've installed a bunch of stuff

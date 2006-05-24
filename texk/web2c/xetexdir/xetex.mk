@@ -49,7 +49,22 @@ xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 
 # The C sources.
 xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
-xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o trans.o XeTeX_ext.o $(xetex_platform_o)
+xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o
+xetex_add_o = trans.o XeTeX_ext.o $(xetex_platform_o)
+
+# these compilations require the path to TECkit headers;
+# just setting it in XCFLAGS doesn't seem to work when we're called
+# recursively from "make world" etc
+xetexini.o: xetexini.c
+	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetex0.o: xetex0.c
+	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetex1.o: xetex1.c
+	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetex2.o: xetex2.c
+	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetexextra.o: xetexextra.c
+	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 # Layout library sources
 xetex_ot_layout_o = \
@@ -63,25 +78,23 @@ xetex_ot_layout_cxx = \
 		XeTeXFontInst.cpp cmaps.cpp FontTableCache.cpp \
 		$(xetex_platform_layout_cxx)
 
-icudir = icu-release-3-4-source
+icudir = icu-xetex
 
 ICUCFLAGS = \
 	-I../../libs/$(icudir)/common/unicode \
 	-I../../libs/$(icudir)/common \
-	-I../../../../TeX/libs/$(icudir)/common/unicode \
-	-I../../../../TeX/libs/$(icudir)/common \
-	-I../../../../TeX/libs/$(icudir)/layout/unicode \
-	-I../../../../TeX/libs/$(icudir)/layout \
-	-I../../../../TeX/libs/$(icudir) \
+	-I../../../libs/$(icudir)/common/unicode \
+	-I../../../libs/$(icudir)/common \
+	-I../../../libs/$(icudir)/layout/unicode \
+	-I../../../libs/$(icudir)/layout \
+	-I../../../libs/$(icudir) \
 	-DLE_USE_CMEMORY \
 	-I. -I..
 
 # FIXME: this should be handled through configure
 FTFLAGS =  -I/usr/include/freetype2/
 
-TECkitFLAGS = -I../../../../TeX/libs/teckit/source/Public-headers/
-
-XCFLAGS = -I. -I.. $(TECkitFLAGS) # we need this for many of our compiles
+TECkitFLAGS = -I../../../libs/teckit/source/Public-headers/
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
@@ -121,10 +134,10 @@ xetexlibs = \
 ../../libs/$(icudir)/lib/libsicuuc.a \
 ../../libs/$(icudir)/lib/libsicule.a \
 ../../libs/$(icudir)/lib/libsicudata.a:
-	(cd ../../libs/$(icudir) ; make)
+	(cd ../../libs/$(icudir) ; $(MAKE))
 
 ../../libs/teckit/lib/.libs/libTECkit.a:
-	(cd ../../libs/teckit ; make)
+	(cd ../../libs/teckit ; $(MAKE))
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
@@ -136,8 +149,8 @@ trans.o: $(srcdir)/xetexdir/trans.c
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 # Making xetex.
-xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetexlibs)
-	$(kpathsea_cxx_link) $(xetex_o) $(xetex_ot_layout_o) $(socketlibs) $(LOADLIBES) \
+xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetex_add_o) $(xetexlibs)
+	$(kpathsea_cxx_link) $(xetex_o) $(xetex_add_o) $(xetex_ot_layout_o) $(socketlibs) $(LOADLIBES) \
 	$(xetexlibs) $(FRAMEWORKS) -lz
 
 # C file dependencies
