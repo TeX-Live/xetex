@@ -546,7 +546,7 @@ const_string XETEXHELP[] = {
 #ifdef XETEX_MAC
                              "xdv2pdf"
 #else
-                             "dvipdfmx"
+                             "xdvipdfmx"
 #endif
                              ,
     "-no-pdf                 generate XDV (extended DVI) output rather than PDF",
