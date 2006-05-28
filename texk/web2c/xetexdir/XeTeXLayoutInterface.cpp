@@ -117,7 +117,7 @@ const char* getPSName(PlatformFontRef fontRef)
 
 void getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName)
 {
-	return XeTeXFontMgr::GetFontManager()->getNames(fontRef, psName, famName, styName);
+	XeTeXFontMgr::GetFontManager()->getNames(fontRef, psName, famName, styName);
 }
 
 void deleteFont(XeTeXFont font)
@@ -129,6 +129,13 @@ void* getFontTablePtr(XeTeXFont font, UInt32 tableTag)
 {
 	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
 }
+
+/* apparently M_PI isn't defined by <math.h> under VC++ */
+#ifdef WIN32
+#ifndef M_PI
+#define M_PI 3.1415926535898
+#endif
+#endif
 
 Fixed getSlant(XeTeXFont font)
 {

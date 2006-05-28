@@ -14,7 +14,7 @@
 
 #include <math.h>
 
-XeTeXFontMgr::XeTeXFontMgr*	XeTeXFontMgr::sFontManager = NULL;
+XeTeXFontMgr*	XeTeXFontMgr::sFontManager = NULL;
 char XeTeXFontMgr::sReqEngine = 0;
 
 /* use our own fmax function because it seems to be missing on certain platforms
@@ -25,7 +25,7 @@ my_fmax(double x, double y)
 	return (x > y) ? x : y;
 }
 
-XeTeXFontMgr::XeTeXFontMgr*
+XeTeXFontMgr*
 XeTeXFontMgr::GetFontManager()
 {
 	if (sFontManager == NULL) {
@@ -471,7 +471,8 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 	else
 		thisFont->styleName = new std::string;
 
-	for (std::list<std::string>::const_iterator i = names->familyNames.begin(); i != names->familyNames.end(); ++i) {
+	std::list<std::string>::const_iterator i;
+	for (i = names->familyNames.begin(); i != names->familyNames.end(); ++i) {
 		std::map<std::string,Family*>::iterator	iFam = nameToFamily.find(*i);
 		Family*	family;
 		if (iFam == nameToFamily.end()) {
@@ -497,7 +498,7 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 		}
 	}
 	
-	for (std::list<std::string>::const_iterator i = names->fullNames.begin(); i != names->fullNames.end(); ++i) {
+	for (i = names->fullNames.begin(); i != names->fullNames.end(); ++i) {
 		std::map<std::string,Font*>::iterator iFont = nameToFont.find(*i);
 		if (iFont == nameToFont.end())
 			nameToFont[*i] = thisFont;

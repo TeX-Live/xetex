@@ -147,8 +147,11 @@ input_line_icu(UFILE* f)
 {
 static char* byteBuffer = NULL;
 
-	UInt32	bytesRead = 0;
-	int i;
+	UInt32		bytesRead = 0;
+	int			i;
+	UConverter*	cnv;
+	long		outLen;
+	UErrorCode	errorCode = 0;
 
 	if (byteBuffer == NULL)
 		byteBuffer = xmalloc(bufsize + 1);
@@ -182,9 +185,7 @@ static char* byteBuffer = NULL;
 		f->skipNextLF = 1;
 	
 	/* now apply the mapping to turn external bytes into Unicode characters in buffer */
-	UConverter*	cnv = (UConverter*)(f->conversionData);
-	long		outLen;
-	UErrorCode	errorCode = 0;
+	cnv = (UConverter*)(f->conversionData);
 	outLen = ucnv_toUChars(cnv, &buffer[first], (bufsize - first), byteBuffer, bytesRead, &errorCode);
 	if (errorCode != 0) {
 		fprintf(stderr, "! Unicode conversion failed: error code = %d\n", (int)errorCode);
@@ -258,6 +259,8 @@ getencodingmodeandinfo(long* info)
 	 *   -> name is packed in |nameoffile| as a C string, starting at [1]
 	 * Check if it's a built-in name; if not, try to open an ICU converter by that name
 	 */
+	UErrorCode	err = 0;
+	UConverter*	cnv;
 	char*	name = (char*)nameoffile + 1;
 	*info = 0;
 	if (strcasecmp(name, "auto") == 0) {
@@ -284,8 +287,7 @@ getencodingmodeandinfo(long* info)
 	}
 	
 	/* try for an ICU converter */
-	UErrorCode	err = 0;
-	UConverter*	cnv = ucnv_open(name, &err);
+	cnv = ucnv_open(name, &err);
 	if (cnv == NULL) {
 		fprintf(stderr, "! unknown encoding \"%s\"; reading as raw bytes\n", name);
 		return RAW;
@@ -314,24 +316,28 @@ printchars(const unsigned short* str, int len)
 void*
 load_mapping_file(const char* s, const char* e)
 {
+	char*	mapPath;
 	TECkit_Converter	cnv = 0;
 	char*	buffer = xmalloc(e - s + 5);
 	strncpy(buffer, s, e - s);
 	buffer[e - s] = 0;
 	strcat(buffer, ".tec");
-	char*	mapPath = kpse_find_file(buffer, kpse_miscfonts_format, 1);
+	mapPath = kpse_find_file(buffer, kpse_miscfonts_format, 1);
 
 	if (mapPath) {
 		FILE*	mapFile = fopen(mapPath, "r");
 		free(mapPath);
 		if (mapFile) {
+			UInt32	mappingSize;
+			Byte*	mapping;
+			TECkit_Status	status;
 			fseek(mapFile, 0, SEEK_END);
-			UInt32	mappingSize = ftell(mapFile);
+			mappingSize = ftell(mapFile);
 			fseek(mapFile, 0, SEEK_SET);
-			Byte*	mapping = xmalloc(mappingSize);
+			mapping = xmalloc(mappingSize);
 			fread(mapping, 1, mappingSize, mapFile);
 			fclose(mapFile);
-			TECkit_Status	status = TECkit_CreateConverter(mapping, mappingSize,
+			status = TECkit_CreateConverter(mapping, mappingSize,
 											true,
 #ifdef WORDS_BIGENDIAN
 											kForm_UTF16BE, kForm_UTF16BE,
@@ -370,6 +376,7 @@ read_tag(const char* cp)
 static void*
 loadOTfont(XeTeXFont font, const char* cp1)
 {
+	XeTeXLayoutEngine   engine;
 	UInt32	scriptTag = kLatin;
 	UInt32	languageTag = 0;
 	
@@ -425,14 +432,14 @@ loadOTfont(XeTeXFont font, const char* cp1)
 			}
 	
 			if (strncmp(cp1, "color", 5) == 0) {
+				unsigned	alpha = 0;
+				int i;
 				cp3 = cp1 + 5;
 				if (*cp3 != '=')
 					goto bad_option;
 				++cp3;
-	
+
 				rgbValue = 0;
-				unsigned	alpha = 0;
-				int i;
 				for (i = 0; i < 6; ++i) {
 					if ((*cp3 >= '0') && (*cp3 <= '9'))
 						rgbValue = (rgbValue << 4) + *cp3 - '0';
@@ -508,7 +515,7 @@ loadOTfont(XeTeXFont font, const char* cp1)
 	if ((loadedfontflags & FONT_FLAGS_COLORED) == 0)
 		rgbValue = 0x000000FF;
 
-	XeTeXLayoutEngine	engine = createLayoutEngine(font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
+	engine = createLayoutEngine(font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
 	if (engine == 0) {
 		deleteFont(font);
 		if (addFeatures)
@@ -545,36 +552,37 @@ void*
 findnativefont(unsigned char* uname, long scaled_size)
 	// scaled_size here is in TeX points
 {
-	char*	name = (char*)uname;
 	void*	rval = 0;
-	loadedfontmapping = 0;
-	loadedfontflags = 0;
-
-	char*	var;	/* not const char* because findFontByName edits it */
+	int loadedfontmapping = 0;
+	int loadedfontflags = 0;
+	char*	nameString;
+	char*	var;
 	char*	feat;
 	char*	end;
+	char*	name = (char*)uname;
+	char*	varString = NULL;
+	char*	featString = NULL;
+	PlatformFontRef	fontRef;
+	XeTeXFont	font;
 
 	splitFontName(name, &var, &feat, &end);
 
-	char*	nameString = xmalloc(var - name + 1);
+	nameString = xmalloc(var - name + 1);
 	strncpy(nameString, name, var - name);
 	nameString[var - name] = 0;
 
-	char*	varString = NULL;
 	if (feat > var) {
 		varString = xmalloc(feat - var);
 		strncpy(varString, var + 1, feat - var - 1);
 		varString[feat - var - 1] = 0;
 	}
 		
-	char*	featString = NULL;
 	if (end > feat) {
 		featString = xmalloc(end - feat);
 		strncpy(featString, feat + 1, end - feat - 1);
 		featString[end - feat - 1] = 0;
 	}
 	
-	PlatformFontRef	fontRef;
 	fontRef = findFontByName(nameString, varString, Fix2X(scaled_size));
 
 	if (fontRef != 0) {
@@ -596,7 +604,7 @@ findnativefont(unsigned char* uname, long scaled_size)
 			goto load_aat;
 #endif
 
-		XeTeXFont	font = createFont(fontRef, scaled_size);
+		font = createFont(fontRef, scaled_size);
 		if (font != 0) {
 #ifdef XETEX_MAC
 			if (getReqEngine() == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0)
@@ -656,16 +664,16 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	long	rval = 0;
-
 	float	a, d;
+	int		glyphID;
+
 	getAscentAndDescent(engine, &a, &d);
 	*ascent = X2Fix(a);
 	*descent = X2Fix(d);
 
-	XeTeXFont	fontInst = getFont(engine);
-	*slant = getSlant(fontInst);
+	*slant = getSlant(getFont(engine));
 
-	int	glyphID = mapCharToGlyph(engine, 'x');
+	glyphID = mapCharToGlyph(engine, 'x');
 	if (glyphID != 0) {
 		getGlyphHeightDepth(engine, glyphID, &a, &d);
 		*xheight = X2Fix(a);
@@ -779,9 +787,14 @@ static int	xdvBufSize = 0;
 int
 makeXDVGlyphArrayData(void* pNode)
 {
+	unsigned char*	cp;
+	UInt16*		glyphIDs;
 	memoryword* p = pNode;
-	
-	UInt16	glyphCount = native_glyph_count(p);
+	void*		glyph_info;
+	FixedPoint*	locations;
+	int			opcode;
+	Fixed		wid;
+	UInt16		glyphCount = native_glyph_count(p);
 	
 	int	i = glyphCount * native_glyph_info_size + 8; /* to guarantee enough space in the buffer */
 	if (i > xdvBufSize) {
@@ -791,21 +804,21 @@ makeXDVGlyphArrayData(void* pNode)
 		xdvbuffer = (char*)xmalloc(xdvBufSize);
 	}
 
-	void*		glyph_info = (void*)native_glyph_info_ptr(p);
-	FixedPoint*	locations = (FixedPoint*)glyph_info;
-	UInt16*		glyphIDs = (UInt16*)(locations + glyphCount);
+	glyph_info = (void*)native_glyph_info_ptr(p);
+	locations = (FixedPoint*)glyph_info;
+	glyphIDs = (UInt16*)(locations + glyphCount);
 	
-	int	opcode = XDV_GLYPH_STRING;
+	opcode = XDV_GLYPH_STRING;
 	for (i = 0; i < glyphCount; ++i)
 		if (locations[i].y != 0) {
 			opcode = XDV_GLYPH_ARRAY;
 			break;
 		}
 	
-	unsigned char*	cp = (unsigned char*)xdvbuffer;
+	cp = (unsigned char*)xdvbuffer;
 	*cp++ = opcode;
 	
-	Fixed	wid = node_width(p);
+	wid = node_width(p);
 	*cp++ = (wid >> 24) & 0xff;
 	*cp++ = (wid >> 16) & 0xff;
 	*cp++ = (wid >> 8) & 0xff;
@@ -847,7 +860,15 @@ makefontdef(long f)
 	UInt32	variationCount = 0;
 	UInt32	rgba;
 	Fixed	size;
-	
+	const	char* psName;
+	const	char* famName;
+	const	char* styName;
+	UInt8	psLen;
+	UInt8	famLen;
+	UInt8	styLen;
+	int		fontDefLength;
+	char*	cp;
+
 #ifdef XETEX_MAC
 	ATSUStyle	style = NULL;
 	if (fontarea[f] == AAT_FONT_FLAG) {
@@ -875,9 +896,10 @@ makefontdef(long f)
 	else
 #endif
 	if (fontarea[f] == OT_FONT_FLAG) {
+		XeTeXLayoutEngine	engine;
 		flags = XDV_FLAG_FONTTYPE_ICU;
 
-		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
+		engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		fontRef = getFontRef(engine);
 
 		rgba = getRgbValue(engine);
@@ -889,15 +911,12 @@ makefontdef(long f)
 		exit(3);
 	}
 
-	const char* psName;
-	const char* famName;
-	const char* styName;
 	getNames(fontRef, &psName, &famName, &styName);
 		/* returns ptrs to strings that belong to the font - do not free! */
 	
-	UInt8	psLen = strlen(psName);
-	UInt8	famLen = strlen(famName);
-	UInt8	styLen = strlen(styName);
+	psLen = strlen(psName);
+	famLen = strlen(famName);
+	styLen = strlen(styName);
 
 	// parameters after internal font ID:
 	//	size[4]
@@ -910,7 +929,7 @@ makefontdef(long f)
 	//		a[4nv]
 	//		v[4nv]
 
-	int	fontDefLength
+	fontDefLength
 		= 4 // size
 		+ 2	// flags
 		+ 3	// name length
@@ -937,7 +956,7 @@ makefontdef(long f)
 		xdvBufSize = ((fontDefLength / 1024) + 1) * 1024;
 		xdvbuffer = (char*)xmalloc(xdvBufSize);
 	}
-	char*	cp = xdvbuffer;
+	cp = xdvbuffer;
 	
 	*(Fixed*)cp = SWAP32(size);
 	cp += 4;
@@ -1043,6 +1062,7 @@ getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth)
 
 	float	ht = 0.0;
 	float	dp = 0.0;
+	Fixed	fuzz;
 
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
@@ -1066,7 +1086,7 @@ getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth)
 	*depth = X2Fix(dp);
 	
 	/* snap to "known" zones for baseline, x-height, cap-height if within 4% of em-size */
-	Fixed	fuzz = QUAD(font) / 25;
+	fuzz = QUAD(font) / 25;
 	snap_zone(depth, 0, fuzz);
 	snap_zone(height, 0, fuzz);
 	snap_zone(height, X_HEIGHT(font), fuzz);
@@ -1133,6 +1153,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		// need to find direction runs within the text, and call layoutChars separately for each
 
 		int		nGlyphs;
+		UBiDiDirection	dir;
 		float	x, y;
 		void*	glyph_info = 0;
 		static	float*	positions = 0;
@@ -1148,7 +1169,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		UErrorCode	errorCode = (UErrorCode)0;
 		ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
 		
-		UBiDiDirection	dir = ubidi_getDirection(pBiDi);
+		dir = ubidi_getDirection(pBiDi);
 		if (dir == UBIDI_MIXED) {
 			// we actually do the layout twice here, once to count glyphs and then again to get them;
 			// which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
@@ -1181,12 +1202,13 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			}
 			
 			if (realGlyphCount > 0) {
+				double	x, y;
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
 				glyphIDs = (UInt16*)(locations + realGlyphCount);
 				realGlyphCount = 0;
 				
-				double	x = 0.0, y = 0.0;
+				x = y = 0.0;
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
@@ -1214,6 +1236,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			native_glyph_info_ptr(node) = (long)glyph_info;
 		}
 		else {
+			int i;
 			OSStatus	status = 0;
 			nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
 			getGlyphPosition(engine, nGlyphs, &x, &y, &status);
@@ -1231,7 +1254,6 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			getGlyphs(engine, glyphs, &status);
 			getGlyphPositions(engine, positions, &status);
 
-			int i;
 			for (i = 0; i < nGlyphs; ++i)
 				if (glyphs[i] < 0xfffe)
 					++realGlyphCount;

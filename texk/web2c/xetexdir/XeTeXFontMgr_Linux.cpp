@@ -90,7 +90,8 @@ XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 		if (platformRefToFont.find(pat) != platformRefToFont.end())
 			continue;
 		char*	s;
-		for (int i = 0; FcPatternGetString(pat, FC_FULLNAME, i, (FcChar8**)&s) == FcFalse; ++i) {
+		int	i;
+		for (i = 0; FcPatternGetString(pat, FC_FULLNAME, i, (FcChar8**)&s) == FcFalse; ++i) {
 			if (name == s) {
 				NameCollection*	names = readNames(pat);
 				addToMaps(pat, names);
@@ -99,7 +100,7 @@ XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 			}
 		}
 		
-		for (int i = 0; FcPatternGetString(pat, FC_FAMILY, i, (FcChar8**)&s) == FcFalse; ++i) {
+		for (i = 0; FcPatternGetString(pat, FC_FAMILY, i, (FcChar8**)&s) == FcFalse; ++i) {
 			if (name == s || (hyph && famName == s)) {
 				NameCollection*	names = readNames(pat);
 				addToMaps(pat, names);
