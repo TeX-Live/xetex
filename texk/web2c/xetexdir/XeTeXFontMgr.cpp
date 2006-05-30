@@ -404,7 +404,7 @@ XeTeXFontMgr::styleDiff(const Font* a, int wt, int wd, int slant) const
 	if (widDiff < 10)
 		widDiff *= 200;
 	
-	return labs(labs(a->slant) - labs(slant)) * 10 + labs(a->weight - wt) + widDiff;
+	return labs(labs(a->slant) - labs(slant)) * 2 + labs(a->weight - wt) + widDiff;
 }
 
 XeTeXFontMgr::Font*
