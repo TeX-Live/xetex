@@ -11,10 +11,10 @@ cd Work
 PREFIX=/usr/local/teTeX
 DATADIR=/usr/local/teTeX/share
 
-# try to figure out where the user's teTeX is, and complain if we can't find it...
+# try to figure out where the user's TeX is, and complain if we can't find it...
 KPSEWHICH=`which kpsewhich`
 if [ ! -e "${KPSEWHICH}" ]; then
-	echo "### No kpsewhich found -- are you sure you have teTeX installed?"
+	echo "### No kpsewhich found -- are you sure you have TeX installed?"
 else
 	PREFIX=`echo ${KPSEWHICH} | sed -e 's!/bin/.*!/!;'`
 	HYPHEN=`kpsewhich hyphen.tex`

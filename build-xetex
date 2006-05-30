@@ -14,11 +14,11 @@ find . -name configure -exec chmod +x {} \;
 bash ./runConfigure.sh
 
 # this should make ICU and TECkit along the way, if xetex.mk works
-(cd Work/texk/web2c && make xetex)
+(cd Work/texk/web2c && make web2cdir=`dirname \`kpsewhich texmf.cnf\`` xetex)
 PRODUCTS=Work/texk/web2c/xetex
 
 # xdv2pdf is for Mac OS X only, don't try to build on Linux
-if [ "`uname`" == "Darwin" ]; then
+if [ "`uname`" = "Darwin" ]; then
 	(cd Work/texk/xdv2pdf && make all)
 	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
 fi
