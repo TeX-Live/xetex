@@ -36,8 +36,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".992"
-@d XeTeX_version_string=='-0.992' {current \eTeX\ version}
+@d XeTeX_revision==".993"
+@d XeTeX_version_string=='-0.993' {current \eTeX\ version}
 @z
 
 @x
@@ -2287,10 +2287,28 @@ if b_open_in(tfm_file) then begin
   file_opened:=true
 @z
 
-@x
+@x we have to move this before new_native_character
+@ When \TeX\ wants to typeset a character that doesn't exist, the
+character node is not created; thus the output routine can assume
+that characters exist when it sees them. The following procedure
+prints a warning message unless the user has suppressed it.
+
 @p procedure char_warning(@!f:internal_font_number;@!c:eight_bits);
+var old_setting: integer; {saved value of |tracing_online|}
+begin if tracing_lost_chars>0 then
+ begin old_setting:=tracing_online;
+ if eTeX_ex and(tracing_lost_chars>1) then tracing_online:=1;
+  begin begin_diagnostic;
+  print_nl("Missing character: There is no ");
+@.Missing character@>
+  print_ASCII(c); print(" in font ");
+  slow_print(font_name[f]); print_char("!"); end_diagnostic(false);
+  end;
+ tracing_online:=old_setting;
+ end;
+end;
 @y
-@p procedure char_warning(@!f:internal_font_number;@!c:ASCII_code);
+@ Procedure |char_warning| has been moved in the source.
 @z
 
 @x
@@ -3275,6 +3293,22 @@ collect_native:
 			if (main_h = 0) and ((mapped_text[main_p] = hyphen_char[main_f])
 				or (XeTeX_dash_break_en and ((mapped_text[main_p] = @"2014) or (mapped_text[main_p] = @"2013)) ) )
 			then main_h := cur_length;
+		end
+	end;
+
+	if tracing_lost_chars > 0 then begin
+		temp_ptr := str_start_macro(str_ptr);
+		main_p := temp_ptr + cur_length;
+		while (temp_ptr < main_p) do begin
+			main_k := str_pool[temp_ptr];
+			incr(temp_ptr);
+			if (main_k >= @"D800) and (main_k < @"DC00) then begin
+				main_k := @"10000 + (main_k - @"D800) * 1024;
+				main_k := main_k + str_pool[temp_ptr] - @"DC00;
+				incr(temp_ptr);
+			end;
+			if map_char_to_glyph(main_f, main_k) = 0 then
+				char_warning(main_f, main_k);
 		end
 	end;
 
@@ -4977,7 +5011,55 @@ exit:end;
 effective_char_info:=null_character;
 exit:end;
 
+{ the following procedure has been moved so that new_native_character can call it }
+
+procedure char_warning(@!f:internal_font_number;@!c:integer);
+var old_setting: integer; {saved value of |tracing_online|}
+begin if tracing_lost_chars>0 then
+ begin old_setting:=tracing_online;
+ if eTeX_ex and(tracing_lost_chars>1) then tracing_online:=1;
+  begin begin_diagnostic;
+  print_nl("Missing character: There is no ");
+@.Missing character@>
+  if c < @"10000 then print_ASCII(c)
+  else begin { non-Plane 0 Unicodes can't be sent through print_ASCII }
+    print("character number ");
+    print_hex(c);
+  end;
+  print(" in font ");
+  slow_print(font_name[f]); print_char("!"); end_diagnostic(false);
+  end;
+ tracing_online:=old_setting;
+ end;
+end;
+
 { additional functions for native font support }
+
+function new_native_character(@!f:internal_font_number;@!c:ASCII_code):pointer;
+var
+	p:	pointer;
+begin
+	if tracing_lost_chars > 0 then
+		if map_char_to_glyph(f, c) = 0 then begin
+			char_warning(f, c);
+		end;
+
+	p := get_node(native_node_size + 1);
+	type(p) := whatsit_node;
+	subtype(p) := native_word_node;
+	
+	native_size(p) := native_node_size + 1;
+	native_font(p) := f;
+	native_length(p) := 1;
+	
+	native_glyph_count(p) := 0;
+	native_glyph_info_ptr(p) := 0;
+
+	set_native_char(p, 0, c);
+	set_native_metrics(p, XeTeX_use_glyph_metrics);
+	
+	new_native_character := p;
+end;
 
 function new_native_word_node(@!f:internal_font_number;@!n:integer):pointer;
 	{ note that this function creates the node, but does not actually set its metrics;
@@ -5000,27 +5082,6 @@ begin
 	native_glyph_info_ptr(q) := 0;
 
 	new_native_word_node := q;
-end;
-
-function new_native_character(@!f:internal_font_number;@!c:ASCII_code):pointer;
-var
-	p:	pointer;
-begin
-	p := get_node(native_node_size + 1);
-	type(p) := whatsit_node;
-	subtype(p) := native_word_node;
-	
-	native_size(p) := native_node_size + 1;
-	native_font(p) := f;
-	native_length(p) := 1;
-	
-	native_glyph_count(p) := 0;
-	native_glyph_info_ptr(p) := 0;
-
-	set_native_char(p, 0, c);
-	set_native_metrics(p, XeTeX_use_glyph_metrics);
-	
-	new_native_character := p;
 end;
 
 procedure font_feature_warning(featureNameP:void_pointer; featLen:integer;
