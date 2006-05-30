@@ -422,3 +422,69 @@ UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt32 charCode)
 {
 	return engine->font->mapCharToGlyph(charCode);
 }
+
+#include "appleGlyphNames.c"
+
+int
+findGlyphInPostTable(const char* buffer, int tableSize, const char* glyphName)
+{
+	const postTable* p = (const postTable*)buffer;
+	UInt16	g = 0;
+	switch (SWAP(p->format)) {
+		case 0x00010000:
+			{
+				char*	cp;
+				while ((cp = appleGlyphNames[g]) != 0) {
+					if (strcmp(glyphName, cp) == 0)
+						return g;
+					++g;
+				}
+			}
+			break;
+		
+		case 0x00020000:
+			{
+				const UInt16*	n = (UInt16*)(p + 1);
+				UInt16	numGlyphs = SWAP(*n++);
+				const UInt8*	ps = (const UInt8*)(n + numGlyphs);
+				std::vector<std::string>	newNames;
+				while (ps < (const UInt8*)buffer + tableSize) {
+					newNames.push_back(std::string((char*)ps + 1, *ps));
+					ps += *ps + 1;
+				}
+				for (g = 0; g < numGlyphs; ++g) {
+					if (SWAP(*n) < 258) {
+						if (strcmp(appleGlyphNames[SWAP(*n)], glyphName) == 0)
+							return g;
+					}
+					else {
+						if (strcmp(newNames[SWAP(*n) - 258].c_str(), glyphName) == 0)
+							return g;
+					}
+					++n;
+				}
+			}
+			break;
+		
+		case 0x00028000:
+			break;
+		
+		case 0x00030000:
+			// TODO: see if it's a CFF OpenType font, and if so, get the glyph names from the CFF data
+			break;
+		
+		case 0x00040000:
+			break;
+		
+		default:
+			break;
+	}
+
+	return 0;
+}
+
+int
+mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName)
+{
+	return engine->font->mapGlyphToIndex(glyphName);
+}

@@ -102,6 +102,10 @@ float getGlyphItalCorr(XeTeXLayoutEngine engine, UInt32 glyphID);
 
 UInt32 mapCharToGlyph(XeTeXLayoutEngine engine, UInt32 charCode);
 
+int	mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName);
+
+int	findGlyphInPostTable(const char* p, int tableSize, const char* glyphName);
+
 #ifdef __cplusplus
 };
 #endif

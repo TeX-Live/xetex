@@ -20,9 +20,9 @@
 
 - \XeTeXmathchar, \XeTeXmathcode, etc
 
-- \XeTeXglyphindex <name> (to look up index of named glyph in current font, -1 if absent)
++ \XeTeXglyphindex <name> (to look up index of named glyph in current font, 0 if absent)
 
-- make \tracinglostchars report missing Unicode chars in native fonts
++ make \tracinglostchars report missing Unicode chars in native fonts
 
 - vertical mode for OpenType/ICU fonts
 

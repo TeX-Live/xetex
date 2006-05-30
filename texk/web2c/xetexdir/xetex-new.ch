@@ -1530,7 +1530,7 @@ if m=math_code_base then begin
 @#
 @d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
 @#
-@d eTeX_dim=XeTeX_int+23 {first of \eTeX\ codes for dimensions}
+@d eTeX_dim=XeTeX_int+24 {first of \eTeX\ codes for dimensions}
  {changed for \XeTeX\ to make room for \XeTeX\ integers}
 @z
 
@@ -4630,6 +4630,8 @@ end
 @d XeTeX_OT_feature_code=XeTeX_int+21
 
 @d XeTeX_map_char_to_glyph_code=XeTeX_int+22
+@d XeTeX_glyph_index_code=XeTeX_int+23
+{ remember to update eTeX_dim when new items are added here }
 @z
 
 @x
@@ -4672,6 +4674,7 @@ primitive("XeTeXOTlanguagetag",last_item,XeTeX_OT_language_code);
 primitive("XeTeXOTfeaturetag",last_item,XeTeX_OT_feature_code);
 
 primitive("XeTeXcharglyph", last_item, XeTeX_map_char_to_glyph_code);
+primitive("XeTeXglyphindex", last_item, XeTeX_glyph_index_code);
 @z
 
 @x
@@ -4706,6 +4709,7 @@ XeTeX_OT_language_code: print_esc("XeTeXOTlanguagetag");
 XeTeX_OT_feature_code: print_esc("XeTeXOTfeaturetag");
 
 XeTeX_map_char_to_glyph_code: print_esc("XeTeXcharglyph");
+XeTeX_glyph_index_code: print_esc("XeTeXglyphindex");
 @z
 
 @x
@@ -4840,6 +4844,16 @@ XeTeX_map_char_to_glyph_code:
   begin
     if is_native_font(cur_font) then begin
       scan_int; n:=cur_val; cur_val:=map_char_to_glyph(cur_font, n)
+    end else begin
+      not_native_font_error(last_item, m, cur_font); cur_val:=0
+    end
+  end;
+
+XeTeX_glyph_index_code:
+  begin
+    if is_native_font(cur_font) then begin
+      scan_and_pack_name;
+      cur_val:=map_glyph_to_index(cur_font)
     end else begin
       not_native_font_error(last_item, m, cur_font); cur_val:=0
     end

@@ -24,6 +24,7 @@
 #include "layout/LESwaps.h"
 
 #include "XeTeXFontInst.h"
+#include "XeTeXLayoutInterface.h"
 
 #ifdef XETEX_MAC
 #include <Carbon/Carbon.h>
@@ -135,6 +136,11 @@ const void *XeTeXFontInst::readFontTable(LETag tableTag) const
     return readTable(tableTag, &len);
 }
 
+const void *XeTeXFontInst::readFontTable(LETag tableTag, le_uint32& len) const
+{
+    return readTable(tableTag, &len);
+}
+
 CMAPMapper *XeTeXFontInst::findUnicodeMapper()
 {
     LETag cmapTag = LE_CMAP_TABLE_TAG;
@@ -233,4 +239,13 @@ XeTeXFontInst::getGlyphItalCorr(LEGlyphID gid)
 		rval = bbox.xMax - adv.fX;
 	
 	return rval;
+}
+
+LEGlyphID
+XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
+	/* default implementation, may be overridden (e.g. by Freetype-based XeTeXFontInst_ */
+{
+    le_uint32	len;
+    const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
+	return findGlyphInPostTable(p, len, glyphName);
 }

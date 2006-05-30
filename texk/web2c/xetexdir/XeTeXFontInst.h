@@ -74,6 +74,7 @@ protected:
     CMAPMapper *findUnicodeMapper();
 
     const void *readFontTable(LETag tableTag) const;
+    const void *readFontTable(LETag tableTag, le_uint32& len) const;
 
 public:
     XeTeXFontInst(PlatformFontRef fontRef, float pointSize, LEErrorCode &status);
@@ -126,6 +127,8 @@ public:
     {
         return fCMAPMapper->unicodeToGlyph(ch);
     }
+    
+    virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
 
 	virtual le_uint16 getNumGlyphs() const;
 

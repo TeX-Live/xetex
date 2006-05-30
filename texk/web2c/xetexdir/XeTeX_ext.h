@@ -135,6 +135,23 @@ typedef struct {
 #define kThaana	0x74686161
 #define kHebrew	0x68656272
 
+
+struct postTable {
+	Fixed	format;
+	Fixed	italicAngle;
+	SInt16	underlinePosition;
+	SInt16	underlineThickness;
+	UInt16	isFixedPitch;
+	UInt16	reserved;
+	UInt32	minMemType42;
+	UInt32	maxMemType42;
+	UInt32	minMemType1;
+	UInt32	maxMemType1;
+};
+
+#define kPost	0x706f7374
+
+
 typedef struct
 {
 	float	xMin;
@@ -176,6 +193,7 @@ extern "C" {
 	Fixed get_native_glyph_ital_corr(void* node);
 	void measure_native_glyph(void* node, int use_glyph_metrics);
 	int mapchartoglyph(int font, unsigned int ch);
+	int mapglyphtoindex(int font);
 
 #ifdef XETEX_MAC
 /* functions in XeTeX_mac.c */
@@ -185,6 +203,7 @@ extern "C" {
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch);
+	int MapGlyphToIndex_AAT(ATSUStyle style, const char* glyphName);
 	float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid);
 #endif
 #ifdef __cplusplus

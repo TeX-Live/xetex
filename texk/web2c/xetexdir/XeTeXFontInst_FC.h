@@ -51,6 +51,7 @@ public:
 	virtual le_uint16 getNumGlyphs() const;
     virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
     virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const;
+    virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
 };
 
 #endif

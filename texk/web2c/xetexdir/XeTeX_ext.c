@@ -1429,6 +1429,23 @@ mapchartoglyph(int font, unsigned int ch)
 	}
 }
 
+int
+mapglyphtoindex(int font)
+	/* glyph name is at nameoffile+1 */
+{
+#ifdef XETEX_MAC
+	if (fontarea[font] == AAT_FONT_FLAG)
+		return MapGlyphToIndex_AAT((ATSUStyle)(fontlayoutengine[font]), (const char*)nameoffile + 1);
+	else
+#endif
+	if (fontarea[font] == OT_FONT_FLAG)
+		return mapGlyphToIndex((XeTeXLayoutEngine)(fontlayoutengine[font]), (const char*)nameoffile + 1);
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
+}
+
 #ifndef XETEX_MAC
 Fixed X2Fix(double d)
 {

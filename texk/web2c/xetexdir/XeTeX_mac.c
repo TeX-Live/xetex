@@ -413,6 +413,31 @@ int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch)
 		return 0;
 }
 
+int MapGlyphToIndex_AAT(ATSUStyle style, const char* glyphName)
+{
+	ATSUFontID	fontID;
+	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
+
+	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
+
+	ByteCount	length;
+	OSStatus status = ATSFontGetTable(fontRef, kPost, 0, 0, 0, &length);
+	if (status != noErr)
+		return 0;
+
+	void*	table = xmalloc(length);
+	status = ATSFontGetTable(fontRef, kPost, 0, length, table, &length);
+	if (status != noErr) {
+		free(table);
+		return 0;
+	}
+	
+	int	rval = findGlyphInPostTable(table, length, glyphName);
+	free(table);
+
+	return rval;
+}
+
 ATSUFontVariationAxis
 find_axis_by_name(ATSUFontID fontID, const char* name, int nameLength)
 {
