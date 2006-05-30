@@ -189,5 +189,8 @@ XeTeXFontInst_FC::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 LEGlyphID
 XeTeXFontInst_FC::mapGlyphToIndex(const char* glyphName) const
 {
-	return FT_Get_Name_Index(face, const_cast<char*>(glyphName));
+	LEGlyphID	rval = FT_Get_Name_Index(face, const_cast<char*>(glyphName));
+	if (rval == 0)
+		rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
+	return rval;
 }
