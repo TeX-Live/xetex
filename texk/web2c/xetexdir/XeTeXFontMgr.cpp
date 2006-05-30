@@ -238,16 +238,49 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 		}
 		strcpy(variant, varString.c_str());
 		
+		std::map<std::string,Font*>::iterator i;
 		if (reqItal) {
-			// try for a face with more slant
-			Font*	bestMatch = bestMatchFromFamily(parent, font->weight, font->width, labs(font->slant) + 300);
-			if (bestMatch == font && !font->isItalic) {
+			Font*	bestMatch = font;
+			if (font->slant < parent->maxSlant)
+				// try for a face with more slant
+				bestMatch = bestMatchFromFamily(parent, font->weight, font->width, parent->maxSlant);
+
+			if (bestMatch == font && font->slant > parent->minSlant)
+				// maybe the slant is negated, or maybe this was something like "Times-Italic/I"
+				bestMatch = bestMatchFromFamily(parent, font->weight, font->width, parent->minSlant);
+
+			if (parent->minWeight == parent->maxWeight && bestMatch->isBold != font->isBold) {
+				// try again using the bold flag, as we can't trust weight values
+				Font*	newBest = NULL;
+				for (i = parent->styles->begin(); i != parent->styles->end(); ++i) {
+					if (i->second->isBold == font->isBold) {
+						if (newBest == NULL && i->second->isItalic != font->isItalic) {
+							newBest = i->second;
+							break;
+						}
+					}
+				}
+				if (newBest != NULL)
+					bestMatch = newBest;
+			}
+
+			if (bestMatch == font) {
 				// maybe slant values weren't present; try the style bits as a fallback
 				bestMatch = NULL;
-				for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i)
-					if (i->second->isItalic)
-						if (bestMatch == NULL || weightAndWidthDiff(i->second, font) < weightAndWidthDiff(bestMatch, font))
-							bestMatch = i->second;
+				for (i = parent->styles->begin(); i != parent->styles->end(); ++i)
+					if (i->second->isItalic == !font->isItalic)
+						if (parent->minWeight != parent->maxWeight) {
+							// weight info was available, so try to match that
+							if (bestMatch == NULL || weightAndWidthDiff(i->second, font) < weightAndWidthDiff(bestMatch, font))
+								bestMatch = i->second;
+						}
+						else {
+							// no weight info, so try matching style bits
+							if (bestMatch == NULL && i->second->isBold == font->isBold) {
+								bestMatch = i->second;
+								break;	// found a match, no need to look further as we can't distinguish!
+							}
+						}
 			}
 			if (bestMatch != NULL)
 				font = bestMatch;
@@ -255,9 +288,24 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 
 		if (reqBold) {
 			// try for more boldness, with the same width and slant
-			Font* bestMatch = bestMatchFromFamily(parent, font->weight + 300, font->width, font->slant);
+			Font*	bestMatch = font;
+			if (font->weight < parent->maxWeight) {
+				bestMatch = bestMatchFromFamily(parent, parent->maxWeight, font->width, font->slant);
+				if (parent->minSlant == parent->maxSlant) {
+					// double-check the italic flag, as we can't trust slant values
+					Font*	newBest = NULL;
+					for (i = parent->styles->begin(); i != parent->styles->end(); ++i) {
+						if (i->second->isItalic == font->isItalic) {
+							if (newBest == NULL || weightAndWidthDiff(i->second, bestMatch) < weightAndWidthDiff(newBest, bestMatch))
+								newBest = i->second;
+						}
+					}
+					if (newBest != NULL)
+						bestMatch = newBest;
+				}
+			}
 			if (bestMatch == font && !font->isBold) {
-				for (std::map<std::string,Font*>::iterator i = parent->styles->begin(); i != parent->styles->end(); ++i) {
+				for (i = parent->styles->begin(); i != parent->styles->end(); ++i) {
 					if (i->second->isItalic == font->isItalic && i->second->isBold) {
 						bestMatch = i->second;
 						break;
@@ -354,7 +402,7 @@ XeTeXFontMgr::styleDiff(const Font* a, int wt, int wd, int slant) const
 {
 	int	widDiff = labs(a->width - wd);
 	if (widDiff < 10)
-		widDiff *= 50;
+		widDiff *= 200;
 	
 	return labs(labs(a->slant) - labs(slant)) * 10 + labs(a->weight - wt) + widDiff;
 }
@@ -415,7 +463,6 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 		if (postTable != NULL) {
 			theFont->slant = (int)(1000 * (tan(Fix2X(-SWAP(postTable->italicAngle)) * M_PI / 180.0)));
 		}
-
 		deleteFont(font);
 	}
 }
@@ -478,13 +525,32 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 		if (iFam == nameToFamily.end()) {
 			family = new Family;
 			nameToFamily[*i] = family;
+			family->minWeight = thisFont->weight;
+			family->maxWeight = thisFont->weight;
+			family->minWidth = thisFont->width;
+			family->maxWidth = thisFont->width;
+			family->minSlant = thisFont->slant;
+			family->maxSlant = thisFont->slant;
 		}
-		else
+		else {
 			family = iFam->second;
-		
+			if (thisFont->weight < family->minWeight)
+				family->minWeight = thisFont->weight;
+			if (thisFont->weight > family->maxWeight)
+				family->maxWeight = thisFont->weight;
+			if (thisFont->width < family->minWidth)
+				family->minWidth = thisFont->width;
+			if (thisFont->width > family->maxWidth)
+				family->maxWidth = thisFont->width;
+			if (thisFont->slant < family->minSlant)
+				family->minSlant = thisFont->slant;
+			if (thisFont->slant > family->maxSlant)
+				family->maxSlant = thisFont->slant;
+		}
+
 		if (thisFont->parent == NULL)
 			thisFont->parent = family;
-		
+				
 		// ensure all style names in the family point to thisFont
 		for (std::list<std::string>::const_iterator j = names->styleNames.begin(); j != names->styleNames.end(); ++j) {
 			std::map<std::string,Font*>::iterator iFont = family->styles->find(*j);

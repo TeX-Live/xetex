@@ -124,6 +124,9 @@ protected:
 	class Family {
 		public:
 											Family()
+												: minWeight(0), maxWeight(0)
+												, minWidth(0), maxWidth(0)
+												, minSlant(0), maxSlant(0)
 												{
 													styles = new std::map<std::string,Font*>;
 												}
@@ -133,6 +136,12 @@ protected:
 												}
 
 			std::map<std::string,Font*>*	styles;
+			UInt16							minWeight;
+			UInt16							maxWeight;
+			UInt16							minWidth;
+			UInt16							maxWidth;
+			SInt16							minSlant;
+			SInt16							maxSlant;
 	};
 
 	class NameCollection {
