@@ -469,6 +469,7 @@ Compiler::Compiler(const char* txt, UInt32 len, char inForm, bool cmp, bool genX
 {
 	compiledTable = 0;
 	compiledSize = 0;
+	usedExtStringRules = false;
 
 	textPtr = (const unsigned char*)txt;
 	textEnd = textPtr + len;
@@ -1300,7 +1301,7 @@ Compiler::Compiler(const char* txt, UInt32 len, char inForm, bool cmp, bool genX
 			// assemble the complete compiled file
 			FileHeader	fh;
 			WRITE(fh.type, kMagicNumber);
-			WRITE(fh.version, kCurrentFileVersion);
+			WRITE(fh.version, usedExtStringRules ? kCurrentFileVersion : kFileVersion2_1);
 			WRITE(fh.headerLength, 0);	// to be filled in later, once names and table counts are known
 			WRITE(fh.formFlagsLHS, lhsFlags);
 			WRITE(fh.formFlagsRHS, rhsFlags);
@@ -2698,7 +2699,7 @@ Compiler::sortRules(vector<Rule>& rules)
 		int	maxPost = calcMaxLen(i->postContext.begin(), i->postContext.end());
 		if (maxMatch + maxPre + maxPost > 255)
 			Error("rule too long", 0, i->lineNumber);
-		i->sortKey = (maxMatch << 16) + maxPre + maxPost;
+		i->sortKey = (maxMatch << 8) + maxPre + maxPost;
 		if (maxMatch > buildVars.maxMatch)
 			buildVars.maxMatch = maxMatch;
 		if (maxPre > buildVars.maxPre)
@@ -2717,10 +2718,24 @@ Compiler::sortRules(vector<Rule>& rules)
 	sort(rules.begin(), rules.end(), ruleKeyComp);
 #else
 	// std library /sort/ crashes in Project Builder version, so do a bubble sort ourselves instead
+/*
 	for (vector<Rule>::iterator a = rules.begin(); a != rules.end(); ++a)
 		for (vector<Rule>::iterator b = rules.end() - 1; b != a; --b)
 			if (ruleKeyComp(*(b - 1), *b) > 0)
 				swap(*b, *(b - 1));
+*/
+	// bubble-sorting the actual rules is really expensive; create an index and sort that instead
+	vector<UInt32>	ruleIndex;
+	for (UInt32 i = 0; i < rules.size(); ++i)
+		ruleIndex.push_back(i);
+	for (vector<UInt32>::iterator a = ruleIndex.begin(); a != ruleIndex.end(); ++a)
+		for (vector<UInt32>::iterator b = ruleIndex.end() - 1; b != a; --b)
+			if (ruleKeyComp(rules[*(b - 1)], rules[*b]) > 0)
+				swap(*b, *(b - 1));
+	vector<Rule>	sortedRules;
+	for (vector<UInt32>::iterator s = ruleIndex.begin(); s != ruleIndex.end(); ++s)
+		sortedRules.push_back(rules[*s]);
+	rules = sortedRules;
 #endif
 }
 
@@ -3036,8 +3051,12 @@ Compiler::buildTable(vector<Rule>& rules, bool fromUni, bool toUni, string& tabl
 							addToCharMap(j->val, charToIndex[j->val]);
 						}
 						index = charToIndex[j->val];
-						if (rulesForIndex[index].size() == 0 || rulesForIndex[index].back() != i)
+						if (rulesForIndex[index].size() == 0 || rulesForIndex[index].back() != i) {
 							rulesForIndex[index].push_back(i);
+							if (rulesForIndex[index].size() == 0x3ff) {
+								Error("too many matches with same initial character", 0, rules[i].lineNumber);
+							}
+						}
 						break;
 					
 					case kMatchElem_Type_Class:
@@ -3290,8 +3309,15 @@ Compiler::buildTable(vector<Rule>& rules, bool fromUni, bool toUni, string& tabl
 		}
 #endif		
 		// set the Lookup fields
-		WRITE(lookup[i].rules.type, kLookupType_StringRules);
-		WRITE(lookup[i].rules.ruleCount, rulesForIndex[i].size());
+		if (rulesForIndex[i].size() > 255) {
+			WRITE(lookup[i].rules.type, kLookupType_ExtStringRules + (rulesForIndex[i].size() >> 8));
+			WRITE(lookup[i].rules.ruleCount, rulesForIndex[i].size() & 0xff);
+			usedExtStringRules = true;
+		}
+		else {
+			WRITE(lookup[i].rules.type, kLookupType_StringRules);
+			WRITE(lookup[i].rules.ruleCount, rulesForIndex[i].size());
+		}
 		WRITE(lookup[i].rules.ruleIndex, stringRuleLists.size());
 		
 		// construct the rule list

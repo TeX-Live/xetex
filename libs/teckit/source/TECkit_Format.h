@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------
-Copyright (C) 2002 SIL International. All rights reserved.
+Copyright (C) 2002-2006 SIL International. All rights reserved.
 
 Distributable under the terms of either the Common Public License or the
 GNU Lesser General Public License, as specified in the LICENSING.txt file.
@@ -10,6 +10,8 @@ Last reviewed: Not yet.
 
 Description:
     Definitions used in the TECkit binary table format
+
+	2006-06-02	jk	added support for extended string rules (>255 per initial char)
 -------------------------------------------------------------------------*/
 
 #ifndef __TECkit_Format_H__
@@ -20,9 +22,12 @@ Description:
 #define kMagicNumber			0x714d6170	/* 'qMap' */
 #define kMagicNumberCmp			0x7a516d70	/* 'zQmp' */
 
-#define kCurrentFileVersion		0x00020001
+#define kFileVersion2_1			0x00020001	/* version before tables with ExtStringRules */
+#define kCurrentFileVersion		0x00030000	/* current version */
 
-#define kCurrentTableVersion	0x00020000
+#define kTableVersion2			0x00020000
+#define kCurrentTableVersion	0x00030000	/* actually, the engine doesn't check this,
+												it only looks at the file version */
 
 struct NameRec {
 	UInt16	nameID;
@@ -113,6 +118,10 @@ typedef union Lookup			Lookup;
 #define kLookupType_StringRules		0xff
 #define kLookupType_IllegalDBCS		0xfe
 #define kLookupType_Unmapped		0xfd
+
+#define kLookupType_RuleTypeMask		0xc0
+#define kLookupType_ExtStringRules		0x80
+#define kLookupType_ExtRuleCountMask	0x3f
 
 /*
 	/rules.ruleOffset/ points to an array of /rules.ruleCount/ UInt32 values which are the offsets

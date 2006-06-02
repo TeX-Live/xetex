@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------
-Copyright (C) 2002-2004 SIL International. All rights reserved.
+Copyright (C) 2002-2006 SIL International. All rights reserved.
 
 Distributable under the terms of either the Common Public License or the
 GNU Lesser General Public License, as specified in the LICENSING.txt file.
@@ -13,6 +13,7 @@ Description:
 
 Changes:
 
+	2006-06-02	jk	added support for extended string rules (>255 per initial char)
 	24-May-2005		change from Ulrik to work around MS VC++ 6 issues
 	21-May-2005		changes based on Ulrik Petersen's patch for MS VC++ 6
 
@@ -124,6 +125,7 @@ protected:
 	char		inputForm;
 	bool		errorState;
 	bool		generateXML;
+	bool		usedExtStringRules;
 
 	// used in compiling passes
 	enum {
@@ -161,17 +163,18 @@ protected:
 								, preContext(pre)
 								, postContext(post)
 								, replaceStr(rep)
-								, sortKey(0)
 								, lineNumber(line)
 								, offset(kInvalidRuleOffset)
+								, sortKey(0)
 							{ }
 		vector<Item>	matchStr;
 		vector<Item>	preContext;
 		vector<Item>	postContext;
 		vector<Item>	replaceStr;
-		UInt32			sortKey;
 		UInt32			lineNumber;
 		UInt32			offset;	// offset of the packed form in the StringRuleData block
+		UInt16			sortKey;
+		UInt16			reserved;
 	};
 	
 	struct CurrRule {
