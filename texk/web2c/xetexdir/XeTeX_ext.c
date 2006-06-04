@@ -553,8 +553,6 @@ findnativefont(unsigned char* uname, long scaled_size)
 	// scaled_size here is in TeX points
 {
 	void*	rval = 0;
-	int loadedfontmapping = 0;
-	int loadedfontflags = 0;
 	char*	nameString;
 	char*	var;
 	char*	feat;
@@ -564,6 +562,9 @@ findnativefont(unsigned char* uname, long scaled_size)
 	char*	featString = NULL;
 	PlatformFontRef	fontRef;
 	XeTeXFont	font;
+
+	loadedfontmapping = NULL;
+	loadedfontflags = 0;
 
 	splitFontName(name, &var, &feat, &end);
 
