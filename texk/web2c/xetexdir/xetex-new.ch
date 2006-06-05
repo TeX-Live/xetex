@@ -36,8 +36,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".993"
-@d XeTeX_version_string=='-0.993' {current \eTeX\ version}
+@d XeTeX_revision==".994"
+@d XeTeX_version_string=='-0.994' {current \eTeX\ version}
 @z
 
 @x
@@ -1065,6 +1065,16 @@ here, and the |number_regs| \.{\\dimen} registers.
 @z
 
 @x
+@d emergency_stretch_code=20 {reduces badnesses on final pass of line-breaking}
+@d dimen_pars=21 {total number of dimension parameters}
+@y
+@d emergency_stretch_code=20 {reduces badnesses on final pass of line-breaking}
+@d pdf_page_width_code=21 {page width of the PDF output}
+@d pdf_page_height_code=22 {page height of the PDF output}
+@d dimen_pars=23 {total number of dimension parameters}
+@z
+
+@x
 @d scaled_base=dimen_base+dimen_pars
   {table of 256 user-defined \.{\\dimen} registers}
 @d eqtb_size=scaled_base+255 {largest subscript of |eqtb|}
@@ -1072,6 +1082,35 @@ here, and the |number_regs| \.{\\dimen} registers.
 @d scaled_base=dimen_base+dimen_pars
   {table of |number_regs| user-defined \.{\\dimen} registers}
 @d eqtb_size=scaled_base+biggest_reg {largest subscript of |eqtb|}
+@z
+
+@x
+@d emergency_stretch==dimen_par(emergency_stretch_code)
+@y
+@d emergency_stretch==dimen_par(emergency_stretch_code)
+@d pdf_page_width    == dimen_par(pdf_page_width_code)
+@d pdf_page_height   == dimen_par(pdf_page_height_code)
+@z
+
+@x
+emergency_stretch_code:print_esc("emergencystretch");
+@y
+emergency_stretch_code:print_esc("emergencystretch");
+pdf_page_width_code:    print_esc("pdfpagewidth");
+pdf_page_height_code:   print_esc("pdfpageheight");
+@z
+
+@x
+primitive("emergencystretch",assign_dimen,dimen_base+emergency_stretch_code);@/
+@!@:emergency_stretch_}{\.{\\emergencystretch} primitive@>
+@y
+primitive("emergencystretch",assign_dimen,dimen_base+emergency_stretch_code);@/
+@!@:emergency_stretch_}{\.{\\emergencystretch} primitive@>
+
+primitive("pdfpagewidth",assign_dimen,dimen_base+pdf_page_width_code);@/
+@!@:pdf_page_width_}{\.{\\pdfpagewidth} primitive@>
+primitive("pdfpageheight",assign_dimen,dimen_base+pdf_page_height_code);@/
+@!@:pdf_page_height_}{\.{\\pdfpageheight} primitive@>
 @z
 
 @x
@@ -1530,7 +1569,7 @@ if m=math_code_base then begin
 @#
 @d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
 @#
-@d eTeX_dim=XeTeX_int+24 {first of \eTeX\ codes for dimensions}
+@d eTeX_dim=XeTeX_int+27 {first of \eTeX\ codes for dimensions}
  {changed for \XeTeX\ to make room for \XeTeX\ integers}
 @z
 
@@ -2446,6 +2485,15 @@ for k:=str_start_macro(font_name[f]) to str_start_macro(font_name[f]+1)-1 do
 @z
 
 @x
+@ @<Initialize variables as |ship_out| begins@>=
+dvi_h:=0; dvi_v:=0; cur_h:=h_offset; dvi_f:=null_font;
+@y
+@ @<Initialize variables as |ship_out| begins@>=
+dvi_h:=0; dvi_v:=0; cur_h:=h_offset; dvi_f:=null_font;
+@<Calculate page dimensions and margins@>;
+@z
+
+@x
   print(" TeX output "); print_int(year); print_char(".");
 @y
   print(" XeTeX output "); print_int(year); print_char(".");
@@ -2587,6 +2635,23 @@ while (q <> null) and (not is_char_node(q))
     q := link(q)
 
 @ We ought to give special care to the efficiency of one part of |hlist_out|,
+@z
+
+@x
+dvi_four(last_bop); last_bop:=page_loc;
+@y
+dvi_four(last_bop); last_bop:=page_loc;
+if (pdf_page_width > 0) and (pdf_page_height > 0) then begin
+  { generate a papersize \special at start of page }
+  old_setting:=selector; selector:=new_string;
+  print("papersize ");
+  print_scaled(pdf_page_width); print("pt"); print(",");
+  print_scaled(pdf_page_height); print("pt");
+  selector:=old_setting;
+  dvi_out(xxx1); dvi_out(cur_length);
+  for s:=str_start_macro(str_ptr) to pool_ptr-1 do dvi_out(so(str_pool[s]));
+  pool_ptr:=str_start_macro(str_ptr); {erase the string}
+end;
 @z
 
 @x
@@ -3896,6 +3961,9 @@ k:=biggest_lang+1;
 @y
 @d set_language_code=5 {command modifier for \.{\\setlanguage}}
 
+@d pdftex_first_extension_code = 6
+@d pdf_save_pos_node           == pdftex_first_extension_code + 0
+
 @d pic_file_code=41 { command modifier for \.{\\XeTeXpicfile}, skipping codes pdfTeX might use }
 @d pdf_file_code=42 { command modifier for \.{\\XeTeXpdffile} }
 @d glyph_code=43 { command modifier for \.{\\XeTeXglyph} }
@@ -3917,6 +3985,8 @@ primitive("XeTeXpicfile",extension,pic_file_code);@/
 primitive("XeTeXpdffile",extension,pdf_file_code);@/
 primitive("XeTeXglyph",extension,glyph_code);@/
 primitive("XeTeXlinebreaklocale", extension, XeTeX_linebreak_locale_extension_code);@/
+
+primitive("pdfsavepos",extension,pdf_save_pos_node);@/
 @z
 
 @x
@@ -3927,6 +3997,8 @@ primitive("XeTeXlinebreaklocale", extension, XeTeX_linebreak_locale_extension_co
   pdf_file_code:print_esc("XeTeXpdffile");
   glyph_code:print_esc("XeTeXglyph");
   XeTeX_linebreak_locale_extension_code:print_esc("XeTeXlinebreaklocale");
+
+  pdf_save_pos_node: print_esc("pdfsavepos");
 @z
 
 @x
@@ -3939,6 +4011,8 @@ glyph_code:@<Implement \.{\\XeTeXglyph}@>;
 XeTeX_input_encoding_extension_code:@<Implement \.{\\XeTeXinputencoding}@>;
 XeTeX_default_encoding_extension_code:@<Implement \.{\\XeTeXdefaultencoding}@>;
 XeTeX_linebreak_locale_extension_code:@<Implement \.{\\XeTeXlinebreaklocale}@>;
+
+pdf_save_pos_node: @<Implement \.{\\pdfsavepos}@>;
 @z
 
 @x
@@ -3990,6 +4064,7 @@ pic_node,pdf_node: begin
 	  print_visible_char(pic_path_byte(p, i));
 	print("""");
   end;
+pdf_save_pos_node: print_esc("pdfsavepos");
 othercases print("whatsit?")
 @z
 
@@ -4021,6 +4096,8 @@ glyph_node: begin r:=get_node(glyph_node_size);
 pic_node,pdf_node: begin words:=total_pic_node_size(p);
   r:=get_node(words);
   end;
+pdf_save_pos_node:
+    r := get_node(small_node_size);
 othercases confusion("ext2")
 @z
 
@@ -4031,6 +4108,8 @@ native_word_node: begin free_native_glyph_info(p); free_node(p,native_size(p)); 
 deleted_native_node: free_node(p,native_size(p));
 glyph_node: free_node(p,glyph_node_size);
 pic_node,pdf_node: free_node(p,total_pic_node_size(p));
+pdf_save_pos_node:
+    free_node(p, small_node_size);
 othercases confusion("ext3")
 @z
 
@@ -4195,14 +4274,22 @@ out_what(p)
 @y
 @ @<Output the whatsit node |p| in a vlist@>=
 begin
-	if (subtype(p) = pic_node) or (subtype(p) = pdf_node) then begin
-  		save_h:=dvi_h; save_v:=dvi_v;
+	case subtype(p) of
+	pic_node, pdf_node: begin
+		save_h:=dvi_h; save_v:=dvi_v;
 		cur_v:=cur_v+height(p);
 		pic_out(p, subtype(p) = pdf_node);
 		dvi_h:=save_h; dvi_v:=save_v;
 		cur_v:=save_v+depth(p); cur_h:=left_edge;
-	end else
+	end;
+	
+	pdf_save_pos_node:
+		@<Save current position to |pdf_last_x_pos|, |pdf_last_y_pos|@>;
+	
+	othercases
 		out_what(p)
+	
+	endcases
 end
 @z
 
@@ -4210,9 +4297,34 @@ end
 @ @<Output the whatsit node |p| in an hlist@>=
 out_what(p)
 @y
+@ @<Save current position to |pdf_last_x_pos|, |pdf_last_y_pos|@>=
+begin
+    pdf_last_x_pos := cur_h + cur_h_offset;
+	pdf_last_y_pos := cur_page_height - cur_v - cur_v_offset
+end
+
+@ @<Calculate page dimensions and margins@>=
+cur_h_offset := h_offset + (unity * 7227) / 100;
+cur_v_offset := v_offset + (unity * 7227) / 100;
+if pdf_page_width <> 0 then
+    cur_page_width := pdf_page_width
+else
+    cur_page_width := width(p) + 2*cur_h_offset;
+if pdf_page_height <> 0 then
+    cur_page_height := pdf_page_height
+else
+    cur_page_height := height(p) + depth(p) + 2*cur_v_offset
+
+@ @<Glob...@>=
+@!cur_page_width: scaled; {width of page being shipped}
+@!cur_page_height: scaled; {height of page being shipped}
+@!cur_h_offset: scaled; {horizontal offset of page being shipped}
+@!cur_v_offset: scaled; {vertical offset of page being shipped}
+
 @ @<Output the whatsit node |p| in an hlist@>=
 begin
-	if (subtype(p) = native_word_node) or (subtype(p) = glyph_node) then begin
+	case subtype(p) of
+	native_word_node, glyph_node: begin
 		{ synch DVI state to TeX state }
 		synch_h; synch_v;
 		f := native_font(p);
@@ -4235,19 +4347,25 @@ begin
 		end;
 		
 		dvi_h := cur_h;
-		
-	end else begin
-		if (subtype(p) = pic_node) or (subtype(p) = pdf_node) then begin
-			save_h:=dvi_h; save_v:=dvi_v;
-			cur_v:=base_line;
-			edge:=cur_h+width(p);
-			if cur_dir=right_to_left then cur_h:=edge;
-			pic_out(p, subtype(p) = pdf_node);
-			dvi_h:=save_h; dvi_v:=save_v;
-			cur_h:=edge; cur_v:=base_line;
-		end else
-			out_what(p);
-	end
+	end;
+	
+	pic_node, pdf_node: begin
+		save_h:=dvi_h; save_v:=dvi_v;
+		cur_v:=base_line;
+		edge:=cur_h+width(p);
+		if cur_dir=right_to_left then cur_h:=edge;
+		pic_out(p, subtype(p) = pdf_node);
+		dvi_h:=save_h; dvi_v:=save_v;
+		cur_h:=edge; cur_v:=base_line;
+	end;
+	
+	pdf_save_pos_node:
+		@<Save current position to |pdf_last_x_pos|, |pdf_last_y_pos|@>;
+	
+	othercases
+		out_what(p)
+	
+	endcases
 end
 @z
 
@@ -4594,6 +4712,15 @@ begin
 	else XeTeX_linebreak_locale := cur_name; { we ignore the area and extension! }
 end
 
+@ @<Glob...@>=
+@!pdf_last_x_pos: integer;
+@!pdf_last_y_pos: integer;
+
+@ @<Implement \.{\\pdfsavepos}@>=
+begin
+    new_whatsit(pdf_save_pos_node, small_node_size);
+end
+
 @z
 
 @x
@@ -4631,6 +4758,10 @@ end
 
 @d XeTeX_map_char_to_glyph_code=XeTeX_int+22
 @d XeTeX_glyph_index_code=XeTeX_int+23
+@d XeTeX_font_type_code=XeTeX_int+24
+
+@d pdf_last_x_pos_code        = XeTeX_int+25
+@d pdf_last_y_pos_code        = XeTeX_int+26
 { remember to update eTeX_dim when new items are added here }
 @z
 
@@ -4675,6 +4806,11 @@ primitive("XeTeXOTfeaturetag",last_item,XeTeX_OT_feature_code);
 
 primitive("XeTeXcharglyph", last_item, XeTeX_map_char_to_glyph_code);
 primitive("XeTeXglyphindex", last_item, XeTeX_glyph_index_code);
+
+primitive("XeTeXfonttype", last_item, XeTeX_font_type_code);
+
+primitive("pdflastxpos",last_item,pdf_last_x_pos_code);
+primitive("pdflastypos",last_item,pdf_last_y_pos_code);
 @z
 
 @x
@@ -4710,6 +4846,11 @@ XeTeX_OT_feature_code: print_esc("XeTeXOTfeaturetag");
 
 XeTeX_map_char_to_glyph_code: print_esc("XeTeXcharglyph");
 XeTeX_glyph_index_code: print_esc("XeTeXglyphindex");
+
+XeTeX_font_type_code: print_esc("XeTeXfonttype");
+
+  pdf_last_x_pos_code:  print_esc("pdflastxpos");
+  pdf_last_y_pos_code:  print_esc("pdflastypos");
 @z
 
 @x
@@ -4858,6 +4999,19 @@ XeTeX_glyph_index_code:
       not_native_font_error(last_item, m, cur_font); cur_val:=0
     end
   end;
+
+XeTeX_font_type_code:
+  begin
+    scan_font_ident; n:=cur_val;
+    if is_atsu_font(n) then cur_val:=1
+    else begin
+      if is_ot_font(n) then cur_val:=2
+      else cur_val:=0
+    end
+  end;
+
+  pdf_last_x_pos_code:  cur_val := pdf_last_x_pos;
+  pdf_last_y_pos_code:  cur_val := pdf_last_y_pos;
 
 @ Slip in an extra procedure here and there....
 

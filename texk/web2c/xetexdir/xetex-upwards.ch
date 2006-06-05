@@ -97,14 +97,8 @@ if upwards then cur_v:=cur_v-rule_ht else cur_v:=cur_v+rule_ht;
 @z
 
 @x
-dvi_out(bop);
-for k:=0 to 9 do dvi_four(count(k));
-dvi_four(last_bop); last_bop:=page_loc;
 cur_v:=height(p)+v_offset; temp_ptr:=p;
 @y
-dvi_out(bop);
-for k:=0 to 9 do dvi_four(count(k));
-dvi_four(last_bop); last_bop:=page_loc;
 cur_v:=height(p)+v_offset; { does this need changing for upwards mode ???? }
 temp_ptr:=p;
 @z
