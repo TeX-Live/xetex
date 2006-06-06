@@ -1755,19 +1755,6 @@ swap_items P3C(char *, p,  int, nitems,  int, size)
         }
       break;
 
-    case 12: /* 12-byte items happen in XeTeX (not sure if they're portable, though!) */
-      while (nitems--)
-        {
-          SWAP (p[0], p[11]);
-          SWAP (p[1], p[10]);
-          SWAP (p[2], p[9]);
-          SWAP (p[3], p[8]);
-          SWAP (p[4], p[7]);
-          SWAP (p[5], p[6]);
-          p += size;
-        }
-      break;
-
     case 8:
       while (nitems--)
         {
