@@ -142,9 +142,11 @@ typedef union
 
   struct
   {
+#ifndef XeTeX
 #if defined (TeX) && !defined (SMALLTeX) || defined (MF) && !defined (SMALLMF) || defined (MP) && !defined (SMALLMP)
     halfword junk;
 #endif /* big {TeX,MF,MP} */
+#endif
     fourquarters QQQQ;
   } v;
 #endif /* not WORDS_BIGENDIAN */
@@ -170,6 +172,7 @@ typedef union
 #ifdef XeTeX
   struct
   {
+    halfword junk;
     integer CINT;
   } x;
 #else
