@@ -118,21 +118,29 @@ DoAtsuiLayout(void* p, int justify)
 	FixedPoint*	locations = (FixedPoint*)glyph_info;
 	UInt16*		glyphIDs = (UInt16*)(locations + realGlyphCount);
 
+	Fixed		lsUnit = justify ? 0 : fontletterspace[f];
+	Fixed		lsDelta = 0;
+
 	realGlyphCount = 0;
 	for (i = 0; i < count; ++i) {
 		if (layoutRec[i].glyphID < 0xfffe) {
+			if ((layoutRec[i].flags & kATSGlyphInfoIsAttachment) && (lsDelta != 0))
+				lsDelta -= lsUnit;
 			glyphIDs[realGlyphCount] = layoutRec[i].glyphID;
-			locations[realGlyphCount].x = FixedPStoTeXPoints(layoutRec[i].realPos);
 			locations[realGlyphCount].y = 0;	/* FIXME: won't handle baseline offsets */
+			locations[realGlyphCount].x = FixedPStoTeXPoints(layoutRec[i].realPos) + lsDelta;
+			lsDelta += lsUnit;
 			++realGlyphCount;
 		}
 	}
+	if (lsDelta != 0)
+		lsDelta -= lsUnit;
 
 	native_glyph_count(node) = realGlyphCount;
 	native_glyph_info_ptr(node) = (long)glyph_info;
 	
 	if (!justify)
-		node_width(node) = FixedPStoTeXPoints(layoutRec[count-1].realPos);
+		node_width(node) = FixedPStoTeXPoints(layoutRec[count-1].realPos) + lsDelta;
 
 	ATSUDirectReleaseLayoutDataArrayPtr(NULL, kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, (void*)&layoutRec);
 
@@ -550,6 +558,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 	OSStatus	status = ATSUCreateStyle(&style);
 	if (status == noErr) {
 		UInt32	rgbValue;
+		Fixed	tracking = 0x80000000;
 		Fixed	atsuSize = FixedTeXtoPSPoints(scaled_size);
 		
 		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
@@ -740,6 +749,76 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 					goto next_option;
 				}
 				
+				if (strncmp(cp1, "tracking", 8) == 0) {
+					cp3 = cp1 + 8;
+					if (*cp3 != '=')
+						goto bad_option;
+					++cp3;
+
+					int		sign = 1;
+					if (*cp3 == '-') {
+						sign = -1;
+						++cp3;
+					}
+					else if (*cp3 == '+') {
+						++cp3;
+					}
+
+					double	val = 0.0;
+					while (*cp3 >= '0' && *cp3 <= '9') {
+						val = val * 10.0 + *cp3 - '0';
+						++cp3;
+					}
+					if (*cp3 == '.' || *cp3 == ',') {
+						++cp3;
+						double	dec = 10.0;
+						while (*cp3 >= '0' && *cp3 <= '9') {
+							val = val + (*cp3 - '0') / dec;
+							++cp3;
+							dec = dec * 10.0;
+						}
+					}
+					
+					tracking = sign * X2Fix(val);
+					
+					goto next_option;
+				}
+				
+				if (strncmp(cp1, "letterspace", 11) == 0) {
+					cp3 = cp1 + 11;
+					if (*cp3 != '=')
+						goto bad_option;
+					++cp3;
+
+					int		sign = 1;
+					if (*cp3 == '-') {
+						sign = -1;
+						++cp3;
+					}
+					else if (*cp3 == '+') {
+						++cp3;
+					}
+
+					double	val = 0.0;
+					while (*cp3 >= '0' && *cp3 <= '9') {
+						val = val * 10.0 + *cp3 - '0';
+						++cp3;
+					}
+					if (*cp3 == '.' || *cp3 == ',') {
+						++cp3;
+						double	dec = 10.0;
+						while (*cp3 >= '0' && *cp3 <= '9') {
+							val = val + (*cp3 - '0') / dec;
+							++cp3;
+							dec = dec * 10.0;
+						}
+					}
+					
+					loadedfontletterspace = sign * (val / 100.0) * scaled_size;
+					
+					goto next_option;
+				}
+				
 			bad_option:
 				// not a name=value pair, or not recognized.... 
 				// check for plain "vertical" before complaining
@@ -783,6 +862,13 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 				tags[0] = kATSURGBAlphaColorTag;
 				sizes[0] = sizeof(ATSURGBAlphaColor);
 				attrs[0] = &rgba;
+				ATSUSetAttributes(style, 1, tags, sizes, attrs);
+			}
+			
+			if (tracking != 0x80000000) {
+				tags[0] = kATSUTrackingTag;
+				sizes[0] = sizeof(Fixed);
+				attrs[0] = &tracking;
 				ATSUSetAttributes(style, 1, tags, sizes, attrs);
 			}
 			

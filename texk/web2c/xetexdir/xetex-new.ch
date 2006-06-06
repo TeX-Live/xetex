@@ -2230,8 +2230,10 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @!font_flags: ^char; { flags:
   0x01: font_colored
   0x02: font_vertical }
+@!font_letter_space: ^scaled; { letterspacing to be applied to the font }
 @!loaded_font_mapping: void_pointer; { used by load_native_font to return mapping, if any }
 @!loaded_font_flags: char; { used by load_native_font to return flags }
+@!loaded_font_letter_space: scaled;
 @!mapped_text: ^UTF16_code; { scratch buffer used while applying font mappings }
 @!xdv_buffer: ^char; { scratch buffer used in generating XDV output }
 @z
@@ -2551,7 +2553,8 @@ p := list_ptr(this_box);
 prev_p := this_box+list_offset;
 while p<>null do begin
   if link(p) <> null then begin {not worth looking ahead at the end}
-    if is_native_word_node(p) and (font_area[native_font(p)] = aat_font_flag) then begin
+    if is_native_word_node(p) and (font_area[native_font(p)] = aat_font_flag)
+        and (font_letter_space[native_font(p)] = 0) then begin
       {got a word in an AAT font, might be the start of a run}
       r := p; {|r| is start of possible run}
       k := native_length(r);
@@ -3868,6 +3871,7 @@ begin {Allocate the font arrays}
 font_mapping:=xmalloc_array(void_pointer, font_max);
 font_layout_engine:=xmalloc_array(void_pointer, font_max);
 font_flags:=xmalloc_array(char, font_max);
+font_letter_space:=xmalloc_array(scaled, font_max);
 @z
 
 @x
@@ -3932,6 +3936,7 @@ k:=biggest_lang+1;
   font_mapping:=xmalloc_array(void_pointer, font_max);
   font_layout_engine:=xmalloc_array(void_pointer, font_max);
   font_flags:=xmalloc_array(char, font_max);
+  font_letter_space:=xmalloc_array(scaled, font_max);
 @z
 
 @x
@@ -5367,10 +5372,11 @@ begin
 	
 	font_layout_engine[font_ptr] := font_engine;
 	font_mapping[font_ptr] := 0; { don't use the mapping, if any, when measuring space here }
+	font_letter_space[font_ptr] := loaded_font_letter_space;
 	
 	{measure the width of the space character and set up font parameters}
 	p := new_native_character(font_ptr, " ");
-	s := width(p);
+	s := width(p) + loaded_font_letter_space;
 	free_node(p, native_size(p));
 	
 	font_info[fmem_ptr].sc := font_slant;							{slant}

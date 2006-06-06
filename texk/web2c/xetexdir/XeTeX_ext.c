@@ -374,7 +374,7 @@ read_tag(const char* cp)
 }
 
 static void*
-loadOTfont(XeTeXFont font, const char* cp1)
+loadOTfont(XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
 	XeTeXLayoutEngine   engine;
 	UInt32	scriptTag = kLatin;
@@ -470,6 +470,42 @@ loadOTfont(XeTeXFont font, const char* cp1)
 
 				loadedfontflags |= FONT_FLAGS_COLORED;
 
+				goto next_option;
+			}
+
+			if (strncmp(cp1, "letterspace", 11) == 0) {
+				int		sign = 1;
+				double	val = 0.0;
+
+				cp3 = cp1 + 11;
+				if (*cp3 != '=')
+					goto bad_option;
+				++cp3;
+
+				if (*cp3 == '-') {
+					sign = -1;
+					++cp3;
+				}
+				else if (*cp3 == '+') {
+					++cp3;
+				}
+
+				while (*cp3 >= '0' && *cp3 <= '9') {
+					val = val * 10.0 + *cp3 - '0';
+					++cp3;
+				}
+				if (*cp3 == '.' || *cp3 == ',') {
+					double	dec = 10.0;
+					++cp3;
+					while (*cp3 >= '0' && *cp3 <= '9') {
+						val = val + (*cp3 - '0') / dec;
+						++cp3;
+						dec = dec * 10.0;
+					}
+				}
+				
+				loadedfontletterspace = sign * (val / 100.0) * scaled_size;
+				
 				goto next_option;
 			}
 			
@@ -610,7 +646,7 @@ findnativefont(unsigned char* uname, long scaled_size)
 #ifdef XETEX_MAC
 			if (getReqEngine() == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0)
 #endif
-				rval = loadOTfont(font, featString);
+				rval = loadOTfont(font, scaled_size, featString);
 			if (rval == 0)
 				deleteFont(font);
 		}
@@ -1279,6 +1315,22 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		}
 
 		ubidi_close(pBiDi);
+		
+		if (fontletterspace[f] != 0) {
+			Fixed	lsDelta = 0;
+			Fixed	lsUnit = fontletterspace[f];
+			int i;
+			for (i = 0; i < realGlyphCount; ++i) {
+				if (getGlyphWidth(getFont(engine), glyphIDs[i]) == 0 && lsDelta != 0)
+					lsDelta -= lsUnit;
+				locations[i].x += lsDelta;
+				lsDelta += lsUnit;
+			}
+			if (lsDelta != 0) {
+				lsDelta -= lsUnit;
+				node_width(node) += lsDelta;
+			}
+		}
 	}
 	else {
 		fprintf(stderr, "\n! Internal error: bad native font flag\n");
