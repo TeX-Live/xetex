@@ -9,7 +9,7 @@
 
 ** FEATURES to consider:
 
-- \ifXeTeXfont\f
++ \ifXeTeXfont\f -- implemented \XeTeXfonttype\f instead
 
 - \ifXeTeXfontexists "name"
 
@@ -28,7 +28,9 @@
 
 - ability to adjust the font matrix (provides stretch, slant, baseline adjust, etc)
 
-- tracking and kerning overrides
++ tracking (AAT-only, with font table support) and letterspace (any native font) features
+
+- kerning overrides
 
 - mechanism to load supplementary OT tables
 
@@ -41,4 +43,4 @@
 - update to latest ICU release
   - must check support for Syriac, Arabic supplement, Mongolian, Lao bug-fix
 
-- \pdfsavepos, \pdflastxpos, \pdflastypos
++ \pdfsavepos, \pdflastxpos, \pdflastypos (also \pdfpagewidth, \pdfpageheight)
