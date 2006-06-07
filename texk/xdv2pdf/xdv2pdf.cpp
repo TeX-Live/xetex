@@ -37,7 +37,11 @@
 	also permissible to omit xdvfile but specify pdffile; then input is from stdin
 */
 
-#define MAC_OS_X_VERSION_MIN_REQUIRED	1020
+#ifdef __POWERPC__
+#define MAC_OS_X_VERSION_MIN_REQUIRED	MAC_OS_X_VERSION_10_2
+#else
+#define MAC_OS_X_VERSION_MIN_REQUIRED	MAC_OS_X_VERSION_10_4
+#endif
 
 #include "config.h"
 
@@ -1941,13 +1945,94 @@ ABORT_PAGE:
 	gPageStarted = false;
 }
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
+/* From Apple Technical Q&A 1396, Listing 2 */
+static CGColorSpaceRef
+CreateICCColorSpaceFromPathToProfile(const char* iccProfilePath)
+{
+	CMProfileRef      iccProfile = (CMProfileRef)0;
+	CGColorSpaceRef   iccColorSpace = NULL;
+	CMProfileLocation loc;
+
+	// Specify that the location of the profile will be a POSIX path to the profile.
+	loc.locType = cmPathBasedProfile;
+
+	// Make sure the path is not larger then the buffer
+	if (strlen(iccProfilePath) > sizeof(loc.u.pathLoc.path))
+		return NULL;
+
+	// Copy the path the profile into the CMProfileLocation structure
+	strcpy(loc.u.pathLoc.path, iccProfilePath);
+
+	// Open the profile
+	if (CMOpenProfile(&iccProfile, &loc) != noErr) {
+		iccProfile = (CMProfileRef)0;
+		return NULL;
+	}
+
+	// Create the ColorSpace with the open profile.
+	iccColorSpace = CGColorSpaceCreateWithPlatformColorSpace(iccProfile);
+
+	// Close the profile now that we have what we need from it.
+	CMCloseProfile(iccProfile);
+
+	return iccColorSpace;
+}
+
+static CGColorSpaceRef
+CreateColorSpaceFromSystemICCProfileName(CFStringRef profileName)
+{
+	FSRef pathToProfilesFolder;
+	FSRef pathToProfile;
+
+	// Find the Systems Color Sync Profiles folder
+	if (FSFindFolder(kOnSystemDisk, kColorSyncProfilesFolderType,
+					kDontCreateFolder, &pathToProfilesFolder) == noErr) {
+
+		// Make a UniChar string of the profile name
+		UniChar uniBuffer[sizeof(CMPathLocation)];
+		CFStringGetCharacters(profileName, CFRangeMake(0, CFStringGetLength(profileName)), uniBuffer);
+
+		// Create a FSRef to the profile in the Systems Color Sync Profile folder
+		if (FSMakeFSRefUnicode(&pathToProfilesFolder, CFStringGetLength(profileName), uniBuffer,
+								kUnicodeUTF8Format, &pathToProfile) == noErr) {
+			char path[sizeof(CMPathLocation)];
+
+			// Write the posix path to the profile into our path buffer from the FSRef
+			if (FSRefMakePath(&pathToProfile, (UInt8*)path, sizeof(CMPathLocation)) == noErr)
+				return CreateICCColorSpaceFromPathToProfile(path);
+		}
+	}
+
+	return NULL;
+}
+/* end of Apple Q&A code */
+#endif
+
 static void
 processAllPages(FILE* xdv)
 {
 	// initialize some global variables that we use as CG "constants"
-	gRGBColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-	gCMYKColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericCMYK);
-	gGrayColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
+	if (&kCGColorSpaceGenericRGB != NULL) {
+#endif
+		gRGBColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+		gCMYKColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericCMYK);
+		gGrayColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
+	}
+	else {
+		gRGBColorSpace = CreateColorSpaceFromSystemICCProfileName(CFSTR("Generic RGB Profile.icc"));
+		gCMYKColorSpace = CreateColorSpaceFromSystemICCProfileName(CFSTR("Generic CMYK Profile.icc"));
+		gGrayColorSpace = CreateColorSpaceFromSystemICCProfileName(CFSTR("Generic Gray Profile.icc"));
+	}
+#endif
+
+	if (gRGBColorSpace == NULL || gCMYKColorSpace == NULL || gGrayColorSpace == NULL) {
+		fprintf(stderr, "\n*** unable to initialize color spaces.... something's badly broken\n");
+		exit(1);
+	}
+	
 	const float black[2] = { 0.0, 1.0 };
 	kBlackColor = CGColorCreate(gGrayColorSpace, black);
 
