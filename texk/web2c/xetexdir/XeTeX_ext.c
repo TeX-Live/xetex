@@ -601,6 +601,7 @@ findnativefont(unsigned char* uname, long scaled_size)
 
 	loadedfontmapping = NULL;
 	loadedfontflags = 0;
+	loadedfontletterspace = 0;
 
 	splitFontName(name, &var, &feat, &end);
 
