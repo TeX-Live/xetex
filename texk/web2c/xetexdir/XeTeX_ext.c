@@ -1394,10 +1394,12 @@ get_native_ital_corr(void* pNode)
 
 #ifdef XETEX_MAC
 		if (fontarea[f] == AAT_FONT_FLAG)
-			return X2Fix(GetGlyphItalCorr_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[n-1]));
+			return X2Fix(GetGlyphItalCorr_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[n-1]))
+					+ fontletterspace[f];
 #endif
 		if (fontarea[f] == OT_FONT_FLAG)
-			return X2Fix(getGlyphItalCorr((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[n-1]));
+			return X2Fix(getGlyphItalCorr((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[n-1]))
+					+ fontletterspace[f];
 	}
 
 	return 0;
