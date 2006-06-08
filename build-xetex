@@ -10,6 +10,9 @@ find . -name config.cache -print -exec rm -f {} \;
 
 find . -name configure -exec chmod +x {} \;
 
+# fix up symlink possibly lost in ViewVC's tarball generation :(
+test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-4-source libs/icu-xetex
+
 # run the configure script, which will create a Work subtree
 bash ./runConfigure.sh
 
