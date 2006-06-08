@@ -1,0 +1,12 @@
+*** /usr/bin/fmtutil	2006-04-12 10:57:49.000000000 +0100
+--- fmtutil	2006-04-21 16:41:22.000000000 +0100
+***************
+*** 493,498 ****
+--- 493,499 ----
+    inifile=`echo $lastarg | sed 's%^\*%%'`
+  
+    case "$engine" in
++     xetex)  fmtfile="$format.fmt"; kpsefmt=tex;;
+      *etex)  fmtfile="$format.efmt"; kpsefmt=tex;;
+      omega)  fmtfile="$format.oft";  kpsefmt=tex;;
+      eomega) fmtfile="$format.eoft"; kpsefmt=tex;;

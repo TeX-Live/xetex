@@ -1,0 +1,43 @@
+: ${with_etex=no}
+export with_etex
+
+: ${with_pdftex=no}
+export with_pdftex
+
+: ${enable_shared=no}
+export enable_shared
+
+: ${enable_fmtutil=yes}
+export enable_fmtutil
+
+: ${with_mktexfmt_default=yes}
+export with_mktexfmt_default
+
+: ${enable_multiplatform=yes}
+if test "x$enable_multiplatform" = xyes \
+  && test "x$bindir" = 'x${exec_prefix}/bin'
+then
+  bindir="$bindir/$host";
+  ac_configure_args="$ac_configure_args --bindir=$bindir"
+fi
+test "${enable_nls+set}" = set || { enable_nls=no; export enable_nls; }
+
+AC_PREFIX_DEFAULT(/usr/local/teTeX)
+if test "x$prefix" = xNONE; then
+  prefix=$ac_default_prefix
+  ac_configure_args="$ac_configure_args --prefix=$ac_default_prefix"
+fi
+
+enable_ipc=yes; export enable_ipc
+case "$target" in
+  *nextstep3*|*NEXTSTEP*)
+     with_xdvik=no; with_oxdvik=no
+     with_nextwin=yes; with_ps=dps
+     export with_xdvik with_oxdvik with_nextwin with_ps;;
+esac
+
+test "$no_x" = yes || {
+  : ${with_mf_nowin=yes}
+  : ${with_x=yes}
+  export with_mf_nowin with_x
+}

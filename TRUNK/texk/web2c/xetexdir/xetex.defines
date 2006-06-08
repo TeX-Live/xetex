@@ -1,0 +1,105 @@
+{
+/****************************************************************************\
+ Part of the XeTeX typesetting system
+ copyright (c) 1994-2005 by SIL International
+ written by Jonathan Kew
+
+ This software is distributed under the terms of the Common Public License,
+ version 1.0.
+ For details, see <http://www.opensource.org/licenses/cpl1.0.php> or the file
+ cpl1.0.txt included with the software.
+\****************************************************************************/
+}
+
+{ xetex.defines: additions for xetex }
+
+@define type voidpointer;
+@define function getnativechar();
+@define procedure setnativechar();
+@define procedure setnativemetrics();
+@define procedure setjustifiednativeglyphs();
+@define procedure setnativeglyphmetrics();
+@define function findnativefont();
+@define procedure releasefontengine();
+@define function sizeof();
+@define function makefontdef();
+@define function makexdvglypharraydata();
+@define function xdvbufferbyte();
+@define procedure fprintf();
+@define type unicodefile;
+@define function uopenin();
+@define function uopenout();
+@define procedure uclose();
+@define function dviopenout();
+@define procedure dviclose();
+@define function delcode1();
+@define procedure setdelcode1();
+@define function readcint1();
+@define procedure setcint1();
+@define procedure printutf8str();
+@define procedure setinputfileencoding();
+@define procedure terminatefontmanager;
+
+@define procedure memcpy();
+@define function casttoptr();
+@define function casttointeger();
+@define function glyphinfobyte();
+
+@define function atsufontget();
+@define function atsufontget1();
+@define function atsufontget2();
+@define function atsufontgetnamed();
+@define function atsufontgetnamed1();
+@define procedure atsuprintfontname();
+@define function otfontget();
+@define function otfontget1();
+@define function otfontget2();
+@define function otfontget3();
+@define function mapchartoglyph();
+@define function mapglyphtoindex();
+@define procedure getnativecharheightdepth();
+@define procedure getnativecharsidebearings();
+@define function getnativeitaliccorrection();
+@define function getnativeglyphitaliccorrection();
+
+@define procedure atsugetfontmetrics();
+@define procedure otgetfontmetrics();
+
+@define function getencodingmodeandinfo();
+
+@define procedure linebreakstart();
+@define function linebreaknext;
+
+{ extra stuff used in picfile code }
+@define type realpoint;
+@define type realrect;
+@define type transform;
+
+@define function deref();
+
+@define function X2Fix();
+@define function Fix2X();
+
+@define function findpicfile();
+@define function picpathbyte();
+
+@define procedure makeidentity();
+@define procedure makescale();
+@define procedure maketranslation();
+@define procedure makerotation();
+@define procedure transformpoint();
+@define procedure transformconcat();
+
+@define procedure setPoint();
+
+@define function xCoord();
+@define function yCoord();
+@define function aField();
+@define function bField();
+@define function cField();
+@define function dField();
+@define function xField();
+@define function yField();
+@define function wdField();
+@define function htField();
+@define function applymapping();

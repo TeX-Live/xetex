@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Top-level script to compile xetex (and xdv2pdf on OS X)
+# from the source tree as found in Subversion
+
+# do some cleanup if needed
+test ! -f Makefile || make clean
+rm -rf Work
+find . -name config.cache -print -exec rm -f {} \;
+
+find . -name configure -exec chmod +x {} \;
+
+# fix up symlink possibly lost in ViewVC's tarball generation :(
+test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-4-source libs/icu-xetex
+
+# run the configure script, which will create a Work subtree
+bash ./runConfigure.sh
+
+# this should make ICU and TECkit along the way, if xetex.mk works
+(cd Work/texk/web2c && make web2cdir=`dirname \`kpsewhich texmf.cnf\`` xetex)
+PRODUCTS=Work/texk/web2c/xetex
+
+# xdv2pdf is for Mac OS X only, don't try to build on Linux
+if [ "`uname`" = "Darwin" ]; then
+	(cd Work/texk/xdv2pdf && make all)
+	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
+fi
+
+ls -l ${PRODUCTS}

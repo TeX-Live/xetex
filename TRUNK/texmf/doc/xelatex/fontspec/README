@@ -1,0 +1,42 @@
+--------------------------
+THE FONTSPEC PACKAGE v1.8a
+
+The fontspec package only works with XeTeX, a unicode capable TeX-variant for Mac OS X. It provides an automatic and unified interface for loading fonts in LaTeX. XeTeX allows a direct interface to system-installed fonts, so no manual font installation is required.
+
+This package also provides access to the large number of font features available with AAT and OpenType fonts, including upper and lower case numbers, proportional and monospaced numbers, swash letters, vulgar fractions, ligature control, and many others.
+
+It also provides an interface to set the XeTeX font mappings, font colour, and relative font scaling.
+
+------------------------
+SUMMARY OF USER COMMANDS
+
+Font families may be selected individually with the command
+   \fontspec[<font options>]{<font name>}
+
+Commands for selecting fonts efficiently can be created with
+   \newfontinstance\yourfontselectingcommandname[<font options>]{<font name>}
+
+Default document fonts are selected with 
+   \setromanfont[<font options>]{<font name>}
+   \setsansfont[<font options>]{<font name>}
+   \setmonofont[<font options>]{<font name>}
+
+Fonts to be used in maths are defined with 
+   \setmathrm[<font options>]{<font name>}
+   \setmathsf[<font options>]{<font name>}
+   \setmathtt[<font options>]{<font name>}
+   \setboldmathrm[<font options>]{<font name>}
+
+Features to be used for every subsequently defined font are specified with
+   \defaultfontfeatures{<default font options>}
+
+Features may be added to the font currently in use with
+   \addfontfeatures{<font options to add>}
+
+Features not provided for out of the box may be defined with
+   \newfontfeature{<feature tag>}{<feature activation string>}
+   \newfeaturecode{<feature tag>}{<feature code>}{<selector code>}
+
+--------------
+Will Robertson
+2005

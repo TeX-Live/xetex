@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# script to create initial xetex and xelatex formats, after installation
+
+set -o xtrace
+
+# ensure our entries are present in fmtutil.cnf
+fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
+if [ "`fgrep -c xetex ${fmtutil_cnf}`" == "0" ]; then
+	cat >> ${fmtutil_cnf} <<-__EOT__;
+
+	# XeTeX formats
+	xetex	xetex	-	*xetex.ini
+	xelatex	xetex	language.dat	*xelatex.ini
+	
+	__EOT__
+fi
+
+# find the existing tex binary, possibly following a symlink
+texbin=`which tex`
+if [ -L ${texbin} ]; then
+	texbin=`readlink ${texbin}`
+fi
+texbindir=`dirname ${texbin}`
+
+# ensure ${texbindir} is in the PATH so that fmtutil can find new xetex
+# (normal usage may rely on a symlink, which doesn't yet exist)
+PATH=${texbindir}:$PATH
+
+# patch fmtutil from teTeX 2.x so it doesn't confuse xetex with an etex engine
+patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` < fmtutil.tetex-2.patch
+
+# use system-wide setup if available
+fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
+
+formats="xetex xelatex"
+for f in ${formats}; do
+# enable our entries if necessary (in case of pre-existing disabled ones)
+	${fmtutil} --enablefmt ${f}
+	${fmtutil} --byfmt ${f}
+done
+
+# create symlinks for the newly-built formats
+texlinks --silent

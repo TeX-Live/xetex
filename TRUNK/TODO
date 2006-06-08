@@ -1,0 +1,46 @@
+** BUGS to investigate:
+
+- native-word hyphenation doesn't always reassemble words fully - e.g., Noori diacritic problem
+
+- error message when using \XeTeXcharglyph with a non-native font
+
+- font style identification in complex families (LM)
+
+
+** FEATURES to consider:
+
++ \ifXeTeXfont\f -- implemented \XeTeXfonttype\f instead
+
+- \ifXeTeXfontexists "name"
+
+- \XeTeXfont\f = "name" [style "S"] [using ENGINE] [features "featurestring"] [at SIZE]
+- \XeTeXfontname\f
+
+- \XeTeXadjustfeatures "featurestring" (does this modify the font identifier globally? locally?)
+
+- \XeTeXmathchar, \XeTeXmathcode, etc
+
++ \XeTeXglyphindex <name> (to look up index of named glyph in current font, 0 if absent)
+
++ make \tracinglostchars report missing Unicode chars in native fonts
+
+- vertical mode for OpenType/ICU fonts
+
+- ability to adjust the font matrix (provides stretch, slant, baseline adjust, etc)
+
++ tracking (AAT-only, with font table support) and letterspace (any native font) features
+
+- kerning overrides
+
+- mechanism to load supplementary OT tables
+
+- read AFM files if available with PFBs, and apply kerning
+
+- Pango and/or Graphite as alternative renderers
+
+- support one-of-many OT lookups (needs extension to feature syntax, and low-level support in ICU)
+
+- update to latest ICU release
+  - must check support for Syriac, Arabic supplement, Mongolian, Lao bug-fix
+
++ \pdfsavepos, \pdflastxpos, \pdflastypos (also \pdfpagewidth, \pdfpageheight)

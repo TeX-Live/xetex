@@ -1,0 +1,54 @@
+AC_INIT(EXTRA.LIB)
+
+AC_CONFIG_AUX_DIR(../config)
+AC_SET_MAKE
+AC_PROG_CC
+AC_CANONICAL_SYSTEM
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_LN_S
+AC_FUNC_ALLOCA
+AC_PROG_RANLIB
+AM_MAINTAINER_MODE
+
+sinclude(../texk/kpathsea/withenable.ac)
+sinclude(t1lib/withenable.ac)
+sinclude(t1lib/t1lib.ac)
+sinclude(ncurses/withenable.ac)
+sinclude(ncurses/ncurses.ac)
+sinclude(libpng/withenable.ac)
+sinclude(libpng/libpng.ac)
+sinclude(zlib/withenable.ac)
+sinclude(zlib/zlib.ac)
+sinclude(freetype/withenable.ac)
+sinclude(freetype/freetype.ac)
+
+# The following line helps, e.g. for ncurses which properly detects the
+# system's terminfo definitions if configured without explicit --prefix.
+# ac_configure_args=`echo "$ac_configure_args" | sed 's@--prefix=[[^ ]]*@@'`
+
+subconfigures=
+test "x$needs_libt1" != xno && test "$using_system_t1lib"  != yes \
+  && subconfigures="$subconfigures t1lib type1"
+test "x$needs_ncurses" != xno && test "$using_system_ncurses"  != yes \
+  && subconfigures="$subconfigures ncurses"
+test "x$needs_libxpdf" != xno \
+  && subconfigures="$subconfigures xpdf"
+test "x$needs_freetype" != xno \
+  && subconfigures="$subconfigures freetype"
+test "x$needs_gd" != xno \
+  && subconfigures="$subconfigures gd"
+
+outfiles=
+test "x$needs_pnglib" != xno && test "$using_system_pnglib"  != yes \
+  && outfiles="$outfiles libpng/Makefile"
+test "x$needs_zlib" != xno && test "$using_system_zlib"  != yes \
+  && outfiles="$outfiles zlib/Makefile"
+
+# create md5 directory  when building outside the srcdir:
+if test -d $srcdir/md5; then
+  test -d md5 || mkdir md5
+fi
+
+AC_CONFIG_SUBDIRS($subconfigures)
+AC_OUTPUT($outfiles)

@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# FIXME: this should all be replaced by "make install" eventually,
+# as part of proper integration with the TeX Live build
+
+# script to install xetex (and xdv2pdf on OS X)
+# from the binaries created by build-xetex
+
+# this is intended for the Linux version; on OS X, we build installer packages
+
+# to be run from the top level dir of the xetex tree, after ./build-xetex
+
+set -o xtrace
+
+filelist=Work/xetex-installed-files
+
+if [ -f ${filelist} ]; then rm ${filelist}; fi
+
+if [ ! -e Work/texk/web2c/xetex ]; then
+	echo "### error: xetex binary has not been built"
+	exit 100
+fi
+
+# find the existing tex binary, possibly following a symlink
+texbin=`which tex`
+if [ ! -x "${texbin}" ]; then
+	echo "### error: existing tex binary couldn't be found"
+	exit 100
+fi
+if [ -L ${texbin} ]; then
+	texbin=`readlink ${texbin}`
+fi
+texbindir=`dirname ${texbin}`
+
+# copy the xetex binary to the same dir as standard tex
+cp -pf Work/texk/web2c/xetex ${texbindir}/xetex
+echo ${texbindir}/xetex >> ${filelist}
+if [ -e Work/texk/xdv2pdf/xdv2pdf ]; then
+	programs="xdv2pdf T1Wrap"
+	for f in ${programs}; do
+		cp -pf Work/texk/xdv2pdf/${f} ${texbindir}/${f}
+		echo ${texbindir}/${f} >> ${filelist}
+	done
+	# the mergemarks script is in the original source dir, not under Work
+	cp -pf texk/xdv2pdf/xdv2pdf_mergemarks ${texbindir}/xdv2pdf_mergemarks
+	chmod +x ${texbindir}/xdv2pdf_mergemarks
+	echo ${texbindir}/xdv2pdf_mergemarks >> ${filelist}
+fi
+
+# copy our texmf additions into the local texmf tree
+texmflocal=`kpsewhich --var-value TEXMFLOCAL`
+if [ "x${texmflocal}" == "x" ]; then
+	# if --var-value didn't work, try to find the definition in the texmf.cnf file
+	CNF=`kpsewhich texmf.cnf`
+	texmflocal=`sed -rne "s/^[ \t]*TEXMFLOCAL[ \t]*=[ \t]*(\/[^ \t]+).*/\1/p" ${CNF}`
+fi
+
+mkdir -p ${texmflocal}
+if [ -d texmf/.svn ]; then
+	# if we're installing from a Subversion WC, make a copy and clean it up
+	# (don't rely on svn export here in case svn isn't in the current PATH)
+	cp -pRf texmf Work/texmf-nosvn
+	find Work/texmf-nosvn -depth \( -name ".svn" -or -name ".DS*" \) -exec rm -rf {} \;
+	cp -pRf Work/texmf-nosvn/* ${texmflocal}/
+	rm -r Work/texmf-nosvn
+else
+	cp -pRf texmf/* ${texmflocal}/
+fi
+find texmf -type f -and -not -path "*/.*" -print | sed -e "s@^texmf@${texmflocal}@" >> ${filelist}
+
+# copy the pool file to /web2c under TEXMFLOCAL
+mkdir -p ${texmflocal}/web2c
+cp -pf Work/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
+echo ${texmflocal}/web2c/xetex.pool >> ${filelist}
+
+# update kpathsearch databases because we've installed a bunch of stuff
+texhash ${texmflocal}
+
+# this will build the format files on the system where this script is run;
+# for packaged binary installations, we must repeat this on the target
+sh ./rebuild-formats
