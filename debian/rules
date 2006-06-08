@@ -58,14 +58,14 @@ install: build
 	# Add here commands to install the package into debian/xetex.
 	# $(MAKE) install DESTDIR=$(CURDIR)/debian/xetex
 	# install the binary...
-	cp Work/TeX/texk/web2c/xetex $(CURDIR)/debian/xetex/usr/bin/xetex
+	cp Work/texk/web2c/xetex $(CURDIR)/debian/xetex/usr/bin/xetex
 
 	# install xetex texmf tree
 	cp -pRf texmf $(CURDIR)/debian/xetex/usr/local/share
 
 	# add the pool file from xetex compilation
 	mkdir -p $(CURDIR)/debian/xetex/usr/local/share/texmf/web2c
-	cp Work/TeX/texk/web2c/xetex.pool $(CURDIR)/debian/xetex/usr/local/share/texmf/web2c
+	cp Work/texk/web2c/xetex.pool $(CURDIR)/debian/xetex/usr/local/share/texmf/web2c
 
 # Build architecture-independent files here.
 binary-indep: build install

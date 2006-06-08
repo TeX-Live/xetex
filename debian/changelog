@@ -1,3 +1,9 @@
+xetex (0.994a-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Jonathan Kew <jonathan_kew@sil.org>  Thu,  8 Jun 2006 14:20:51 +0100
+
 xetex (0.992-1) unstable; urgency=low
 
   * New upstream release
