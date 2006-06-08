@@ -5,7 +5,7 @@
 Summary: An extension of TeX (and LaTeX/ConTeXt) with Unicode and OpenType support
 Name: xetex
 Icon: xetex.xpm
-Version: 0.992
+Version: 0.994a
 Release: 1
 License: CPL
 Group: Productivity/Publishing/TeX/Base
@@ -30,7 +30,7 @@ Requires: xdvipdfmx
 
 # to build, we need flex, bison, and various -devel packages...
 BuildRequires: flex, bison
-BuildRequires: fontconfig-devel, freetype2-devel, ImageMagick-devel, zlib-devel
+BuildRequires: fontconfig-devel >= 2.3, freetype2-devel, ImageMagick-devel, zlib-devel
 
 %description
 XeTeX extends the TeX typesetting system (and macro packages
