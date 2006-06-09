@@ -1,22 +1,13 @@
-dnl Included by web2c and xdvik to handle --with-x-toolkit.
+dnl Included by web2c and xdvik to handle the obsolete --with-x-toolkit option.
 
-# This defines --with-x implicitly (which is why we use that package
-# name below), so put it here, so it comes first in the --help output.
-# This reads best.
-
-# Remember to add AC_PATH_XTRA when actually using X.
-
-AC_ARG_WITH(x-toolkit,
-  [  --with-x-toolkit=KIT    use a toolkit (KIT=no/yes/xt/athena)],
-[	  case "${withval}" in
-	    y | ye | yes )	val=yes ;;
-	    x | xt )		val=xt  ;;
-	    n | no )		val=no  ;;
-	    a | at | ath | athe | athena ) val=athena ;;
-	    * )
-AC_MSG_WARN([unknown --with-x-toolkit argument \`$withval'; using yes.])
-              val=yes;;
-	  esac
-	  with_x_toolkit=$val
+AC_ARG_WITH([x-toolkit],
+[  --with-x-toolkit=KIT    OBSOLETE: use --with-mf-x-toolkit and/or
+                          --with-xdvi-x-toolkit instead.],
+[
+    AC_MSG_WARN(dnl
+[the --with-x-toolkit option is obsolete; please use --with-mf-x-toolkit
+and/or --with-xdvi-x-toolkit instead. (Assuming default toolkit.)])
+    with_xdvi_x_toolkit=yes
+    with_mf_x_toolkit=yes
 ])
-
+dnl Included by web2c and xdvik to handle --with-x-toolkit.

@@ -1,3 +1,15 @@
+2005-08-03  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tex.ech: Implement -etex switch.
+
+2004-12-19  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* etex.mk (etexextra.c): Depends on etexdir/etexextra.h.
+
+	* etex.mk (etex-check): Add TEXMFCNF=../kpathsea to the mltex
+	test, so the right files are found when the installation is not
+	yet done.  From Peter Breitenlohner <peb@mppmu.mpg.de>.
+
 2004-10-12  Peter Breitenlohner <peb@mppmu.mpg.de>
 
 	* etex.ch: Fixed a bug in the revised glue rounding code
@@ -22,8 +34,8 @@
 
 2004-08-26  Peter Breitenlohner <peb@mppmu.mpg.de>
 
-	* etex.mk: etex.mk (etrip): Use etex with "--progname=einitex
-	--ini" or "--progname=etex".
+	* etex.mk (etrip): Use etex with "--progname=einitex --ini" or
+	"--progname=etex".
 
 2004-08-26  Olaf Weber  <olaf@infovore.xs4all.nl>
 

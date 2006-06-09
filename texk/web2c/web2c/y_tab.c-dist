@@ -528,29 +528,29 @@ static const unsigned short yyrline[] =
      268,   270,   270,   272,   272,   274,   274,   276,   276,   278,
      278,   280,   280,   282,   282,   284,   284,   286,   286,   288,
      288,   290,   290,   292,   292,   294,   299,   298,   302,   306,
-     322,   341,   344,   345,   348,   349,   353,   355,   362,   353,
-     379,   380,   384,   420,   424,   427,   429,   433,   440,   447,
-     456,   468,   482,   486,   487,   491,   498,   513,   514,   518,
-     520,   530,   534,   533,   539,   540,   544,   546,   544,   564,
-     567,   568,   571,   583,   597,   596,   602,   604,   608,   609,
-     613,   621,   613,   629,   630,   633,   647,   661,   677,   680,
-     679,   692,   693,   696,   698,   703,   707,   706,   723,   722,
-     739,   745,   744,   756,   757,   761,   761,   777,   777,   778,
-     778,   782,   783,   786,   790,   801,   807,   789,   814,   824,
-     829,   813,   836,   837,   840,   843,   847,   846,   852,   853,
-     856,   857,   861,   869,   871,   875,   876,   877,   878,   879,
-     884,   883,   887,   886,   892,   891,   902,   908,   910,   914,
-     915,   919,   918,   922,   940,   942,   946,   948,   947,   952,
-     954,   954,   956,   956,   958,   958,   960,   960,   962,   962,
-     964,   964,   966,   966,   968,   968,   970,   970,   972,   972,
-     974,   974,   976,   976,   978,   978,   981,   980,   984,   989,
-     990,   992,   998,   997,  1001,  1002,  1003,  1006,  1005,  1011,
-    1011,  1016,  1017,  1017,  1022,  1023,  1028,  1029,  1032,  1034,
-    1041,  1040,  1045,  1059,  1062,  1063,  1064,  1067,  1068,  1071,
-    1072,  1076,  1078,  1075,  1083,  1082,  1088,  1090,  1087,  1097,
-    1098,  1101,  1105,  1106,  1109,  1114,  1118,  1119,  1122,  1123,
-    1124,  1128,  1132,  1127,  1137,  1139,  1136,  1147,  1156,  1162,
-    1146,  1196,  1201,  1203,  1200,  1213,  1215,  1212
+     312,   321,   324,   325,   328,   329,   333,   335,   342,   333,
+     359,   360,   364,   400,   404,   407,   409,   413,   420,   427,
+     436,   448,   462,   466,   467,   471,   478,   493,   494,   498,
+     500,   510,   514,   513,   519,   520,   524,   526,   524,   544,
+     547,   548,   551,   563,   577,   576,   582,   584,   588,   589,
+     593,   601,   593,   609,   610,   613,   627,   641,   657,   660,
+     659,   672,   673,   676,   678,   683,   687,   686,   703,   702,
+     719,   725,   724,   736,   737,   741,   741,   757,   757,   758,
+     758,   762,   763,   766,   770,   781,   787,   769,   794,   804,
+     809,   793,   816,   817,   820,   823,   827,   826,   832,   833,
+     836,   837,   841,   849,   851,   855,   856,   857,   858,   859,
+     864,   863,   867,   866,   872,   871,   882,   888,   890,   894,
+     895,   899,   898,   902,   920,   922,   926,   928,   927,   932,
+     934,   934,   936,   936,   938,   938,   940,   940,   942,   942,
+     944,   944,   946,   946,   948,   948,   950,   950,   952,   952,
+     954,   954,   956,   956,   958,   958,   961,   960,   964,   969,
+     970,   972,   978,   977,   981,   982,   983,   986,   985,   991,
+     991,   996,   997,   997,  1002,  1003,  1008,  1009,  1012,  1014,
+    1021,  1020,  1025,  1039,  1042,  1043,  1044,  1047,  1048,  1051,
+    1052,  1056,  1058,  1055,  1063,  1062,  1068,  1070,  1067,  1077,
+    1078,  1081,  1085,  1086,  1089,  1094,  1098,  1099,  1102,  1103,
+    1104,  1108,  1112,  1107,  1117,  1119,  1116,  1127,  1136,  1142,
+    1126,  1176,  1181,  1183,  1180,  1193,  1195,  1192
 };
 #endif
 
@@ -2049,53 +2049,33 @@ yyreduce:
   case 79:
 #line 307 "./web2c.y"
     { 
-              int i, j; char s[132];
-              j = 1;
-              s[0] = '"';
-              for (i=1; yytext[i-1] != 0; i++) {
-                if (yytext[i] == '\\' || yytext[i] == '"')
-                  s[j++] = '\\';
-                else if (yytext[i] == '\'')
-                  i++;
-                s[j++] = yytext[i];
-              }
-              s[j-1] = '"';
-              s[j] = 0;
+              char s[132];
+              get_string_literal(s);
               my_output (s);
             }
     break;
 
   case 80:
-#line 323 "./web2c.y"
+#line 313 "./web2c.y"
     { 
               char s[5];
-              s[0]='\'';
-              if (yytext[1] == '\\' || yytext[1] == '\'') {
-                s[1] = '\\';
-                s[2] = yytext[1];
-                s[3] = '\'';
-                s[4] = 0;
-              } else {
-                s[1] = yytext[1];
-                s[2] = '\'';
-                s[3] = 0;
-              }
+              get_single_char(s);
               my_output (s);
             }
     break;
 
   case 81:
-#line 341 "./web2c.y"
+#line 321 "./web2c.y"
     { my_output (last_id); }
     break;
 
   case 86:
-#line 353 "./web2c.y"
+#line 333 "./web2c.y"
     { my_output ("typedef"); }
     break;
 
   case 87:
-#line 355 "./web2c.y"
+#line 335 "./web2c.y"
     { 
             ii = add_to_table(last_id);
             sym_table[ii].typ = type_id_tok;
@@ -2105,7 +2085,7 @@ yyreduce:
     break;
 
   case 88:
-#line 362 "./web2c.y"
+#line 342 "./web2c.y"
     {
             array_bounds[0] = 0;
             array_offset[0] = 0;
@@ -2113,7 +2093,7 @@ yyreduce:
     break;
 
   case 89:
-#line 367 "./web2c.y"
+#line 347 "./web2c.y"
     { 
             if (*array_offset) {
               yyerror ("Cannot typedef arrays with offsets");
@@ -2126,7 +2106,7 @@ yyreduce:
     break;
 
   case 92:
-#line 385 "./web2c.y"
+#line 365 "./web2c.y"
     {
               if (last_type >= 0)
                 {
@@ -2165,7 +2145,7 @@ yyreduce:
     break;
 
   case 97:
-#line 434 "./web2c.y"
+#line 414 "./web2c.y"
     {
               lower_bound = upper_bound;
               lower_sym = upper_sym;
@@ -2175,7 +2155,7 @@ yyreduce:
     break;
 
   case 98:
-#line 441 "./web2c.y"
+#line 421 "./web2c.y"
     { 
               lower_bound = upper_bound;
               lower_sym = upper_sym;
@@ -2185,7 +2165,7 @@ yyreduce:
     break;
 
   case 99:
-#line 448 "./web2c.y"
+#line 428 "./web2c.y"
     { /* We've changed some constants into dynamic variables.
 	         To avoid changing all the subrange decls, just use integer.
 	         This does not work for arrays, for which we check later.  */
@@ -2197,7 +2177,7 @@ yyreduce:
     break;
 
   case 100:
-#line 457 "./web2c.y"
+#line 437 "./web2c.y"
     { /* Same as var_id_tok, to avoid changing type definitions.
 	         Should keep track of the variables we use in this way
 	         and make sure they're all eventually defined.  */
@@ -2209,7 +2189,7 @@ yyreduce:
     break;
 
   case 101:
-#line 469 "./web2c.y"
+#line 449 "./web2c.y"
     {
             if (last_type >= 0) {
            sym_table[last_type].var_not_needed = sym_table[l_s].var_not_needed;
@@ -2223,28 +2203,28 @@ yyreduce:
     break;
 
   case 102:
-#line 483 "./web2c.y"
+#line 463 "./web2c.y"
     { if (last_type >= 0)
 	        sym_table[last_type].var_not_needed = true;
             }
     break;
 
   case 104:
-#line 488 "./web2c.y"
+#line 468 "./web2c.y"
     { if (last_type >= 0)
 	        sym_table[last_type].var_not_needed = true;
             }
     break;
 
   case 105:
-#line 492 "./web2c.y"
+#line 472 "./web2c.y"
     { if (last_type >= 0)
 	        sym_table[last_type].var_not_needed = true;
             }
     break;
 
   case 106:
-#line 499 "./web2c.y"
+#line 479 "./web2c.y"
     {
             if (last_type >= 0) {
               sym_table[last_type].var_not_needed = sym_table[l_s].var_not_needed;
@@ -2259,12 +2239,12 @@ yyreduce:
     break;
 
   case 109:
-#line 519 "./web2c.y"
+#line 499 "./web2c.y"
     { compute_array_bounds(); }
     break;
 
   case 110:
-#line 521 "./web2c.y"
+#line 501 "./web2c.y"
     { 
               lower_bound = sym_table[l_s].val;
               lower_sym = sym_table[l_s].val_sym;
@@ -2275,22 +2255,22 @@ yyreduce:
     break;
 
   case 112:
-#line 534 "./web2c.y"
+#line 514 "./web2c.y"
     { my_output ("struct"); my_output ("{"); indent++; }
     break;
 
   case 113:
-#line 536 "./web2c.y"
+#line 516 "./web2c.y"
     { indent--; my_output ("}"); semicolon(); }
     break;
 
   case 116:
-#line 544 "./web2c.y"
+#line 524 "./web2c.y"
     { field_list[0] = 0; }
     break;
 
   case 117:
-#line 546 "./web2c.y"
+#line 526 "./web2c.y"
     {
 				  /*array_bounds[0] = 0;
 				  array_offset[0] = 0;*/
@@ -2298,7 +2278,7 @@ yyreduce:
     break;
 
   case 118:
-#line 551 "./web2c.y"
+#line 531 "./web2c.y"
     { int i=0, j; char ltemp[80];
 				  while(field_list[i++] == '!') {
 					j = 0;
@@ -2315,7 +2295,7 @@ yyreduce:
     break;
 
   case 122:
-#line 572 "./web2c.y"
+#line 552 "./web2c.y"
     { int i=0, j=0;
 				  while (field_list[i] == '!')
 					while(field_list[i++]);
@@ -2330,7 +2310,7 @@ yyreduce:
     break;
 
   case 123:
-#line 584 "./web2c.y"
+#line 564 "./web2c.y"
     { int i=0, j=0;
 				  while (field_list[i] == '!')
 					while(field_list[i++]);
@@ -2343,17 +2323,17 @@ yyreduce:
     break;
 
   case 124:
-#line 597 "./web2c.y"
+#line 577 "./web2c.y"
     { my_output ("text /* of "); }
     break;
 
   case 125:
-#line 599 "./web2c.y"
+#line 579 "./web2c.y"
     { my_output ("*/"); }
     break;
 
   case 130:
-#line 613 "./web2c.y"
+#line 593 "./web2c.y"
     { 
             var_list[0] = 0;
             array_bounds[0] = 0;
@@ -2364,7 +2344,7 @@ yyreduce:
     break;
 
   case 131:
-#line 621 "./web2c.y"
+#line 601 "./web2c.y"
     {
             array_bounds[0] = 0;	
             array_offset[0] = 0;
@@ -2372,12 +2352,12 @@ yyreduce:
     break;
 
   case 132:
-#line 626 "./web2c.y"
+#line 606 "./web2c.y"
     { fixup_var_list(); }
     break;
 
   case 135:
-#line 634 "./web2c.y"
+#line 614 "./web2c.y"
     { int i=0, j=0;
 				  ii = add_to_table(last_id);
 				  sym_table[ii].typ = var_id_tok;
@@ -2394,7 +2374,7 @@ yyreduce:
     break;
 
   case 136:
-#line 648 "./web2c.y"
+#line 628 "./web2c.y"
     { int i=0, j=0;
 				  ii = add_to_table(last_id);
 	  			  sym_table[ii].typ = var_id_tok;
@@ -2411,7 +2391,7 @@ yyreduce:
     break;
 
   case 137:
-#line 662 "./web2c.y"
+#line 642 "./web2c.y"
     { int i=0, j=0;
 				  ii = add_to_table(last_id);
 	  			  sym_table[ii].typ = var_id_tok;
@@ -2428,7 +2408,7 @@ yyreduce:
     break;
 
   case 139:
-#line 680 "./web2c.y"
+#line 660 "./web2c.y"
     { my_output ("void mainbody() {");
 		  indent++;
 		  new_line ();
@@ -2436,7 +2416,7 @@ yyreduce:
     break;
 
   case 140:
-#line 685 "./web2c.y"
+#line 665 "./web2c.y"
     { indent--;
                   my_output ("}");
                   new_line ();
@@ -2444,17 +2424,17 @@ yyreduce:
     break;
 
   case 143:
-#line 697 "./web2c.y"
+#line 677 "./web2c.y"
     { new_line(); remove_locals(); }
     break;
 
   case 144:
-#line 699 "./web2c.y"
+#line 679 "./web2c.y"
     { new_line(); remove_locals(); }
     break;
 
   case 146:
-#line 707 "./web2c.y"
+#line 687 "./web2c.y"
     { ii = add_to_table(last_id);
 	      if (debug)
 	        fprintf(stderr, "%3d Procedure %s\n", pf_count++, last_id);
@@ -2469,14 +2449,14 @@ yyreduce:
     break;
 
   case 147:
-#line 719 "./web2c.y"
+#line 699 "./web2c.y"
     { strcpy(fn_return_type, "void");
 	      do_proc_args();
 	      gen_function_head(); }
     break;
 
   case 148:
-#line 723 "./web2c.y"
+#line 703 "./web2c.y"
     { ii = l_s; 
 	      if (debug)
 	        fprintf(stderr, "%3d Procedure %s\n", pf_count++, last_id);
@@ -2487,7 +2467,7 @@ yyreduce:
     break;
 
   case 149:
-#line 731 "./web2c.y"
+#line 711 "./web2c.y"
     { strcpy(fn_return_type, "void");
 	      do_proc_args();
 	      gen_function_head();
@@ -2495,7 +2475,7 @@ yyreduce:
     break;
 
   case 150:
-#line 739 "./web2c.y"
+#line 719 "./web2c.y"
     {
               strcpy (z_id, last_id);
 	      mark ();
@@ -2504,7 +2484,7 @@ yyreduce:
     break;
 
   case 151:
-#line 745 "./web2c.y"
+#line 725 "./web2c.y"
     { sprintf (z_id, "z%s", last_id);
 	      ids_paramed = 0;
 	      if (sym_table[ii].typ == proc_id_tok)
@@ -2516,12 +2496,12 @@ yyreduce:
     break;
 
   case 155:
-#line 761 "./web2c.y"
+#line 741 "./web2c.y"
     { ids_typed = ids_paramed; }
     break;
 
   case 156:
-#line 763 "./web2c.y"
+#line 743 "./web2c.y"
     { int i, need_var;
 	      i = search_table(last_id);
 	      need_var = !sym_table[i].var_not_needed;
@@ -2537,17 +2517,17 @@ yyreduce:
     break;
 
   case 157:
-#line 777 "./web2c.y"
+#line 757 "./web2c.y"
     {var_formals = 0; }
     break;
 
   case 159:
-#line 778 "./web2c.y"
+#line 758 "./web2c.y"
     {var_formals = 1; }
     break;
 
   case 164:
-#line 790 "./web2c.y"
+#line 770 "./web2c.y"
     { 
               orig_out = out;
               out = 0;
@@ -2561,7 +2541,7 @@ yyreduce:
     break;
 
   case 165:
-#line 801 "./web2c.y"
+#line 781 "./web2c.y"
     { 
               normal();
               array_bounds[0] = 0;
@@ -2570,16 +2550,16 @@ yyreduce:
     break;
 
   case 166:
-#line 807 "./web2c.y"
+#line 787 "./web2c.y"
     { 
-              strcpy(fn_return_type, yytext);
+              get_result_type(fn_return_type);
               do_proc_args();
               gen_function_head();
             }
     break;
 
   case 168:
-#line 814 "./web2c.y"
+#line 794 "./web2c.y"
     { 
               orig_out = out;
               out = 0;
@@ -2592,7 +2572,7 @@ yyreduce:
     break;
 
   case 169:
-#line 824 "./web2c.y"
+#line 804 "./web2c.y"
     { normal();
               array_bounds[0] = 0;
               array_offset[0] = 0;
@@ -2600,25 +2580,25 @@ yyreduce:
     break;
 
   case 170:
-#line 829 "./web2c.y"
-    { strcpy(fn_return_type, yytext);
+#line 809 "./web2c.y"
+    { get_result_type(fn_return_type);
               do_proc_args();
               gen_function_head();
             }
     break;
 
   case 176:
-#line 847 "./web2c.y"
+#line 827 "./web2c.y"
     { my_output ("{"); indent++; new_line(); }
     break;
 
   case 177:
-#line 849 "./web2c.y"
+#line 829 "./web2c.y"
     { indent--; my_output ("}"); new_line(); }
     break;
 
   case 182:
-#line 862 "./web2c.y"
+#line 842 "./web2c.y"
     {if (!doreturn(temp)) {
 				      sprintf(safe_string, "lab%s:", temp);
 				    my_output (safe_string);
@@ -2627,32 +2607,32 @@ yyreduce:
     break;
 
   case 183:
-#line 870 "./web2c.y"
+#line 850 "./web2c.y"
     { semicolon(); }
     break;
 
   case 184:
-#line 872 "./web2c.y"
+#line 852 "./web2c.y"
     { semicolon(); }
     break;
 
   case 189:
-#line 880 "./web2c.y"
+#line 860 "./web2c.y"
     { my_output ("break"); }
     break;
 
   case 190:
-#line 884 "./web2c.y"
+#line 864 "./web2c.y"
     { my_output ("="); }
     break;
 
   case 192:
-#line 887 "./web2c.y"
+#line 867 "./web2c.y"
     { my_output ("Result ="); }
     break;
 
   case 194:
-#line 892 "./web2c.y"
+#line 872 "./web2c.y"
     { if (strcmp(last_id, "mem") == 0)
 					uses_mem = 1;
 				  else if (strcmp(last_id, "eqtb") == 0)
@@ -2665,34 +2645,34 @@ yyreduce:
     break;
 
   case 196:
-#line 903 "./web2c.y"
+#line 883 "./web2c.y"
     { if (sym_table[l_s].var_formal)
 					putchar('*');
 				  my_output (last_id); yyval = ex_32; }
     break;
 
   case 197:
-#line 909 "./web2c.y"
+#line 889 "./web2c.y"
     { yyval = ex_32; }
     break;
 
   case 198:
-#line 911 "./web2c.y"
+#line 891 "./web2c.y"
     { yyval = ex_32; }
     break;
 
   case 201:
-#line 919 "./web2c.y"
+#line 899 "./web2c.y"
     { my_output ("["); }
     break;
 
   case 202:
-#line 921 "./web2c.y"
+#line 901 "./web2c.y"
     { my_output ("]"); }
     break;
 
   case 203:
-#line 923 "./web2c.y"
+#line 903 "./web2c.y"
     {if (tex || mf) {
 				   if (strcmp(last_id, "int")==0)
 					my_output (".cint");
@@ -2713,227 +2693,227 @@ yyreduce:
     break;
 
   case 204:
-#line 941 "./web2c.y"
+#line 921 "./web2c.y"
     { my_output (".hh.b0"); }
     break;
 
   case 205:
-#line 943 "./web2c.y"
+#line 923 "./web2c.y"
     { my_output (".hh.b1"); }
     break;
 
   case 207:
-#line 948 "./web2c.y"
+#line 928 "./web2c.y"
     { my_output ("]["); }
     break;
 
   case 209:
-#line 953 "./web2c.y"
+#line 933 "./web2c.y"
     { yyval = yyvsp[0]; }
     break;
 
   case 210:
-#line 954 "./web2c.y"
+#line 934 "./web2c.y"
     { my_output ("+"); }
     break;
 
   case 211:
-#line 955 "./web2c.y"
+#line 935 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 212:
-#line 956 "./web2c.y"
+#line 936 "./web2c.y"
     { my_output ("-"); }
     break;
 
   case 213:
-#line 957 "./web2c.y"
+#line 937 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 214:
-#line 958 "./web2c.y"
+#line 938 "./web2c.y"
     { my_output ("*"); }
     break;
 
   case 215:
-#line 959 "./web2c.y"
+#line 939 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 216:
-#line 960 "./web2c.y"
+#line 940 "./web2c.y"
     { my_output ("/"); }
     break;
 
   case 217:
-#line 961 "./web2c.y"
+#line 941 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 218:
-#line 962 "./web2c.y"
+#line 942 "./web2c.y"
     { my_output ("=="); }
     break;
 
   case 219:
-#line 963 "./web2c.y"
+#line 943 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 220:
-#line 964 "./web2c.y"
+#line 944 "./web2c.y"
     { my_output ("!="); }
     break;
 
   case 221:
-#line 965 "./web2c.y"
+#line 945 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 222:
-#line 966 "./web2c.y"
+#line 946 "./web2c.y"
     { my_output ("%"); }
     break;
 
   case 223:
-#line 967 "./web2c.y"
+#line 947 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 224:
-#line 968 "./web2c.y"
+#line 948 "./web2c.y"
     { my_output ("<"); }
     break;
 
   case 225:
-#line 969 "./web2c.y"
+#line 949 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 226:
-#line 970 "./web2c.y"
+#line 950 "./web2c.y"
     { my_output (">"); }
     break;
 
   case 227:
-#line 971 "./web2c.y"
+#line 951 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 228:
-#line 972 "./web2c.y"
+#line 952 "./web2c.y"
     { my_output ("<="); }
     break;
 
   case 229:
-#line 973 "./web2c.y"
+#line 953 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 230:
-#line 974 "./web2c.y"
+#line 954 "./web2c.y"
     { my_output (">="); }
     break;
 
   case 231:
-#line 975 "./web2c.y"
+#line 955 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 232:
-#line 976 "./web2c.y"
+#line 956 "./web2c.y"
     { my_output ("&&"); }
     break;
 
   case 233:
-#line 977 "./web2c.y"
+#line 957 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 234:
-#line 978 "./web2c.y"
+#line 958 "./web2c.y"
     { my_output ("||"); }
     break;
 
   case 235:
-#line 979 "./web2c.y"
+#line 959 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); }
     break;
 
   case 236:
-#line 981 "./web2c.y"
+#line 961 "./web2c.y"
     { my_output ("/ ((double)"); }
     break;
 
   case 237:
-#line 983 "./web2c.y"
+#line 963 "./web2c.y"
     { yyval = max (yyvsp[-3], yyvsp[0]); my_output (")"); }
     break;
 
   case 238:
-#line 985 "./web2c.y"
+#line 965 "./web2c.y"
     { yyval = yyvsp[0]; }
     break;
 
   case 240:
-#line 991 "./web2c.y"
+#line 971 "./web2c.y"
     { my_output ("- (integer)"); }
     break;
 
   case 241:
-#line 993 "./web2c.y"
+#line 973 "./web2c.y"
     { my_output ("!"); }
     break;
 
   case 242:
-#line 998 "./web2c.y"
+#line 978 "./web2c.y"
     { my_output ("("); }
     break;
 
   case 243:
-#line 1000 "./web2c.y"
+#line 980 "./web2c.y"
     { my_output (")"); yyval = yyvsp[-3]; }
     break;
 
   case 246:
-#line 1004 "./web2c.y"
+#line 984 "./web2c.y"
     { my_output (last_id); my_output ("()"); }
     break;
 
   case 247:
-#line 1006 "./web2c.y"
+#line 986 "./web2c.y"
     { my_output (last_id); }
     break;
 
   case 249:
-#line 1011 "./web2c.y"
+#line 991 "./web2c.y"
     { my_output ("("); }
     break;
 
   case 250:
-#line 1012 "./web2c.y"
+#line 992 "./web2c.y"
     { my_output (")"); }
     break;
 
   case 252:
-#line 1017 "./web2c.y"
+#line 997 "./web2c.y"
     { my_output (","); }
     break;
 
   case 255:
-#line 1024 "./web2c.y"
+#line 1004 "./web2c.y"
     { my_output (last_id); }
     break;
 
   case 258:
-#line 1033 "./web2c.y"
+#line 1013 "./web2c.y"
     { my_output (last_id); my_output ("()"); }
     break;
 
   case 259:
-#line 1035 "./web2c.y"
+#line 1015 "./web2c.y"
     { my_output (last_id);
 				  ii = add_to_table(last_id);
 	  			  sym_table[ii].typ = proc_id_tok;
@@ -2942,12 +2922,12 @@ yyreduce:
     break;
 
   case 260:
-#line 1041 "./web2c.y"
+#line 1021 "./web2c.y"
     { my_output (last_id); }
     break;
 
   case 262:
-#line 1046 "./web2c.y"
+#line 1026 "./web2c.y"
     {if (doreturn(temp)) {
 				    if (strcmp(fn_return_type,"void"))
 					my_output ("return Result");
@@ -2962,44 +2942,44 @@ yyreduce:
     break;
 
   case 271:
-#line 1076 "./web2c.y"
+#line 1056 "./web2c.y"
     { my_output ("if"); my_output ("("); }
     break;
 
   case 272:
-#line 1078 "./web2c.y"
+#line 1058 "./web2c.y"
     { my_output (")"); new_line (); }
     break;
 
   case 274:
-#line 1083 "./web2c.y"
+#line 1063 "./web2c.y"
     { my_output ("else"); }
     break;
 
   case 276:
-#line 1088 "./web2c.y"
+#line 1068 "./web2c.y"
     { my_output ("switch"); my_output ("("); }
     break;
 
   case 277:
-#line 1090 "./web2c.y"
+#line 1070 "./web2c.y"
     { my_output (")"); new_line();
 				  my_output ("{"); indent++;
 				}
     break;
 
   case 278:
-#line 1094 "./web2c.y"
+#line 1074 "./web2c.y"
     { indent--; my_output ("}"); new_line(); }
     break;
 
   case 281:
-#line 1102 "./web2c.y"
+#line 1082 "./web2c.y"
     { my_output ("break"); semicolon(); }
     break;
 
   case 284:
-#line 1110 "./web2c.y"
+#line 1090 "./web2c.y"
     { my_output ("case"); 
 				  my_output (temp);
 				  my_output (":"); new_line();
@@ -3007,41 +2987,41 @@ yyreduce:
     break;
 
   case 285:
-#line 1115 "./web2c.y"
+#line 1095 "./web2c.y"
     { my_output ("default:"); new_line(); }
     break;
 
   case 291:
-#line 1128 "./web2c.y"
+#line 1108 "./web2c.y"
     { my_output ("while");
 				  my_output ("(");
 				}
     break;
 
   case 292:
-#line 1132 "./web2c.y"
+#line 1112 "./web2c.y"
     { my_output (")"); }
     break;
 
   case 294:
-#line 1137 "./web2c.y"
+#line 1117 "./web2c.y"
     { my_output ("do"); my_output ("{"); indent++; }
     break;
 
   case 295:
-#line 1139 "./web2c.y"
+#line 1119 "./web2c.y"
     { indent--; my_output ("}"); 
 				  my_output ("while"); my_output ("( ! (");
 				}
     break;
 
   case 296:
-#line 1143 "./web2c.y"
+#line 1123 "./web2c.y"
     { my_output (") )"); }
     break;
 
   case 297:
-#line 1147 "./web2c.y"
+#line 1127 "./web2c.y"
     {
 				  my_output ("{");
 				  my_output ("register");
@@ -3053,7 +3033,7 @@ yyreduce:
     break;
 
   case 298:
-#line 1156 "./web2c.y"
+#line 1136 "./web2c.y"
     { if (strict_for)
 					my_output ("for_begin");
 				  else
@@ -3062,7 +3042,7 @@ yyreduce:
     break;
 
   case 299:
-#line 1162 "./web2c.y"
+#line 1142 "./web2c.y"
     { my_output ("; if (");
 				  if (strict_for) my_output ("for_begin");
 				  else my_output (control_var);
@@ -3082,7 +3062,7 @@ yyreduce:
     break;
 
   case 300:
-#line 1179 "./web2c.y"
+#line 1159 "./web2c.y"
     {
 				  char *top = strrchr (for_stack, '#');
 				  indent--;
@@ -3101,17 +3081,17 @@ yyreduce:
     break;
 
   case 301:
-#line 1197 "./web2c.y"
+#line 1177 "./web2c.y"
     { strcpy(control_var, last_id); }
     break;
 
   case 302:
-#line 1201 "./web2c.y"
+#line 1181 "./web2c.y"
     { my_output (";"); }
     break;
 
   case 303:
-#line 1203 "./web2c.y"
+#line 1183 "./web2c.y"
     { 
 				  strcpy(relation, "<=");
 				  my_output ("for_end");
@@ -3119,7 +3099,7 @@ yyreduce:
     break;
 
   case 304:
-#line 1208 "./web2c.y"
+#line 1188 "./web2c.y"
     { 
 				  sprintf(for_stack + strlen(for_stack),
 				    "#%s++ < for_end", control_var);
@@ -3127,12 +3107,12 @@ yyreduce:
     break;
 
   case 305:
-#line 1213 "./web2c.y"
+#line 1193 "./web2c.y"
     { my_output (";"); }
     break;
 
   case 306:
-#line 1215 "./web2c.y"
+#line 1195 "./web2c.y"
     {
 				  strcpy(relation, ">=");
 				  my_output ("for_end");
@@ -3140,7 +3120,7 @@ yyreduce:
     break;
 
   case 307:
-#line 1220 "./web2c.y"
+#line 1200 "./web2c.y"
     { 
 				  sprintf(for_stack + strlen(for_stack),
 				    "#%s-- > for_end", control_var);
@@ -3151,7 +3131,7 @@ yyreduce:
     }
 
 /* Line 999 of yacc.c.  */
-#line 3155 "y.tab.c"
+#line 3135 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3345,7 +3325,7 @@ yyreturn:
 }
 
 
-#line 1225 "./web2c.y"
+#line 1205 "./web2c.y"
 
 
 static void

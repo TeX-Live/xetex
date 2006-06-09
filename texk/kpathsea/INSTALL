@@ -1,42 +1,42 @@
 Contents:
 
-Installation
-  Simple installation
-  Custom installation
-    Disk space
-    Kpathsea application distributions
-    Changing search paths
-      Default path features
-      Default path generation
-    Running `configure'
-      `configure' shells
-      `configure' options
-      `configure' environment
-      `configure' scenarios
-      Shared library
-    Running `make'
-    Installing files
-    Cleaning up
-    Filename database generation
-    `mktex' scripts
-      `mktex' configuration
-      `mktex' script names
-      `mktex' script arguments
-    Installation testing
-  Security
+1 Installation
+  1.1 Simple installation
+  1.2 Custom installation
+    1.2.1 Disk space
+    1.2.2 Kpathsea application distributions
+    1.2.3 Changing search paths
+      1.2.3.1 Default path features
+      1.2.3.2 Default path generation
+    1.2.4 Running `configure'
+      1.2.4.1 `configure' shells
+      1.2.4.2 `configure' options
+      1.2.4.3 `configure' environment
+      1.2.4.4 `configure' scenarios
+      1.2.4.5 Shared library
+    1.2.5 Running `make'
+    1.2.6 Installing files
+    1.2.7 Cleaning up
+    1.2.8 Filename database generation
+    1.2.9 `mktex' scripts
+      1.2.9.1 `mktex' configuration
+      1.2.9.2 `mktex' script names
+      1.2.9.3 `mktex' script arguments
+    1.2.10 Installation testing
+  1.3 Security
 
 
-Installation
-************
+1 Installation
+**************
 
-  The procedure for Kpathsea (and Web2c, etc.) configuration and
+The procedure for Kpathsea (and Web2c, etc.) configuration and
 installation follows.  If you encounter trouble, see *Note Common
 problems::, a copy of which is in the file `kpathsea/BUGS'.
 
-Simple installation
-===================
+1.1 Simple installation
+=======================
 
-  Installing TeX and friends for the first time can be a daunting
+Installing TeX and friends for the first time can be a daunting
 experience.  Thus, you may prefer to skip this whole thing and just get
 precompiled executables: see *Note unixtex.ftp::.
 
@@ -56,10 +56,10 @@ everything is to be installed.
      *Note Disk space::.
 
   2. Retrieve these distribution archives:
-    <ftp://ftp.tug.org/tex/texk.tar.gz>
+    `ftp://ftp.tug.org/tex/texk.tar.gz'
           These are the sources, which you will be compiling.
 
-    <ftp://ftp.tug.org/tex/texklib.tar.gz>
+    `ftp://ftp.tug.org/tex/texklib.tar.gz'
           This is a basic set of input files.  You should unpack it in
           the directory `/usr/local/share'; doing so will create a
           `texmf' subdirectory there.
@@ -114,10 +114,10 @@ everything is to be installed.
      files to preview/print the documents.  *Note Installation
      testing::.
 
-Custom installation
-===================
+1.2 Custom installation
+=======================
 
-  Most sites need to modify the default installation procedure in some
+Most sites need to modify the default installation procedure in some
 way, perhaps merely changing the prefix from `/usr/local', perhaps
 adding extra compiler or loader options to work around `configure'
 bugs.  This section explains how to override default choices.  For
@@ -137,10 +137,10 @@ itself supports Amiga, DOS, OS/2, and VMS.
   Following are the same steps as in the previous section (which
 describes the simplest installation), but with much more detail.
 
-Disk space
-----------
+1.2.1 Disk space
+----------------
 
-  Here is a table showing the disk space needed for each distribution
+Here is a table showing the disk space needed for each distribution
 (described in the next section).  The `(totals)' line reflects the
 `texk' source distribution and `texklib'; the individual distributions
 don't enter into it.  Sizes are in megabytes.  All numbers are
@@ -156,10 +156,10 @@ texk           7.5       32.1       95.3       33.5
 texklib        6.3       15.0       -          15.0
 (totals)       14.6      47.1       95.3       48.5
 
-Kpathsea application distributions
-----------------------------------
+1.2.2 Kpathsea application distributions
+----------------------------------------
 
-  The archive <ftp://ftp.tug.org/tex/texk.tar.gz> contains all of the
+The archive `ftp://ftp.tug.org/tex/texk.tar.gz' contains all of the
 Kpathsea applications I maintain, and the library itself.  For example,
 since NeXT does not generally support X11, you'd probably want to skip
 `xdvik' (or simply remove it after unpacking `texk.tar.gz'.  If you are
@@ -180,15 +180,16 @@ not interested in all of them, you can also retrieve them separately:
 `xdvik.tar.gz'
      DVI previewing under the X window system.
 
+
   If you want to use the Babel LaTeX package for support of non-English
 typesetting, you may need to retrieve additional files.  See the file
 `install.txt' in the Babel distribution.
 
-Changing search paths
----------------------
+1.2.3 Changing search paths
+---------------------------
 
-  If the search paths for your installation differ from the standard
-TeX directory structure (*note Introduction: (tds)Top.), edit the file
+If the search paths for your installation differ from the standard TeX
+directory structure (*note Introduction: (tds)Top.), edit the file
 `kpathsea/texmf.in' as desired, before running `configure'.  For
 example, if you have all your fonts or macros in one big directory.
 
@@ -206,10 +207,10 @@ default paths be incorrect.  Usually there is no harm in doing this.
 
   The section below explains default generation in more detail.
 
-Default path features
-.....................
+1.2.3.1 Default path features
+.............................
 
-  The purpose of having all the different files described in the section
+The purpose of having all the different files described in the section
 above is to avoid having the same information in more than one place. If
 you change the installation directories or top-level prefix at
 `configure'-time, those changes will propagate through the whole
@@ -247,10 +248,10 @@ before installation, or the installed `texmf.cnf', and remove the
 description of the default arrangement of the input files that comprise
 the TeX system.  The file `kpathsea/HIER' is a copy of that section.
 
-Default path generation
-.......................
+1.2.3.2 Default path generation
+...............................
 
-  This section describes how the default paths are constructed.
+This section describes how the default paths are constructed.
 
   You may wish to ignore the whole mess and simply edit `texmf.cnf'
 after it is installed, perhaps even copying it into place beforehand so
@@ -279,10 +280,10 @@ paths:
      `texmf.cnf' expand into; but the paths as distributed have no extra
      :'s, and there's no particular reason for them to.)
 
-Running `configure'
--------------------
+1.2.4 Running `configure'
+-------------------------
 
-  Run `sh configure OPTIONS' (in the top-level directory, the one
+Run `sh configure OPTIONS' (in the top-level directory, the one
 containing `kpathsea/'), possibly using a shell other than `sh' (*note
 configure shells::).
 
@@ -297,13 +298,13 @@ command-line options, or by setting environment variables before
 invoking it.  For example, you can disable `mktexpk' by default with
 the option `--disable-mktexpk'.  *Note configure options::.
 
-`configure' shells
-..................
+1.2.4.1 `configure' shells
+..........................
 
-  Considerable effort has gone into trying to ensure that the
-`configure' scripts can be run by most Bourne shell variants.  If `sh'
-runs into trouble, your best bet is to use Bash, the GNU Bourne-again
-shell (*note Top: (bash)Top.).
+Considerable effort has gone into trying to ensure that the `configure'
+scripts can be run by most Bourne shell variants.  If `sh' runs into
+trouble, your best bet is to use Bash, the GNU Bourne-again shell
+(*note Top: (bash)Top.).
 
   Bourne shell variants for which problems have been reported in the
 past are:
@@ -322,13 +323,13 @@ past are:
      `/bin/sh' under Ultrix is a DEC-grown shell that is notably
      deficient in many ways.  `/bin/sh5' may be necessary.
 
-`configure' options
-...................
+1.2.4.2 `configure' options
+...........................
 
-  For a complete list of all `configure' options, run `configure
---help' or see *Note Running `configure' scripts: (autoconf)Invoking
-configure, (a copy is in the file `kpathsea/README.CONFIGURE').  The
-generic options are listed first in the `--help' output, and the
+For a complete list of all `configure' options, run `configure --help'
+or see *Note Running `configure' scripts: (autoconf)Invoking configure,
+(a copy is in the file `kpathsea/README.CONFIGURE').  The generic
+options are listed first in the `--help' output, and the
 package-specific options come last.  The environment variables
 `configure' pays attention to are listed below.
 
@@ -358,10 +359,10 @@ and the like; see *Note configure scenarios::.
      option is enabled may not work at all for you.  You have been
      warned.
 
-`configure' environment
-.......................
+1.2.4.3 `configure' environment
+...............................
 
-  `configure' uses the value of the following environment variables in
+`configure' uses the value of the following environment variables in
 determining your system's characteristics, and substitutes for them in
 Makefile's:
 
@@ -400,10 +401,10 @@ Makefile's:
 `LIBS'
      Additional libraries to link with.
 
-`configure' scenarios
-.....................
+1.2.4.4 `configure' scenarios
+.............................
 
-  Here are some common installation scenarios:
+Here are some common installation scenarios:
 
    * Including X support in Metafont.  This is disabled by default,
      since many sites have no use for it, and it's a leading cause of
@@ -426,19 +427,19 @@ Makefile's:
           configure --prefix=TEXMF --datadir=TEXMF \
             --bindir=TEXMF/ARCH/bin --libdir=TEXMF/ARCH/lib
           make texmf=TEXMF
-      (Unless you make provisions for architecture-specific files in
+     (Unless you make provisions for architecture-specific files in
      other ways, e.g., with Depot or an automounter.)
 
    * To compile with optimization (to compile without debugging, remove
      the `-g'):
           env CFLAGS="-g -O" sh configure ...
-      For a potential problem if you optimize, see *Note TeX or
-     Metafont failing: TeX or Metafont failing.
+     For a potential problem if you optimize, see *Note TeX or Metafont
+     failing: TeX or Metafont failing.
 
-Shared library
-..............
+1.2.4.5 Shared library
+......................
 
-  You can compile Kpathsea as a shared library on a few systems, by
+You can compile Kpathsea as a shared library on a few systems, by
 specifying the option `--enable-shared' when you run `configure'.
 
   The main advantage in doing this is that the executables can then
@@ -460,10 +461,10 @@ interested and willing in adding support for other systems, please see
 the `configure' mode in the `klibtool' script, especially the
 host-specific case statement around line 250.
 
-Running `make'
---------------
+1.2.5 Running `make'
+--------------------
 
-  `make' (still in the top-level directory).  This also creates the
+`make' (still in the top-level directory).  This also creates the
 `texmf.cnf' and `paths.h' files that define the default search paths,
 and (by default) the `plain' and `latex' TeX formats.
 
@@ -512,10 +513,10 @@ include files (`ucbinclude').
 typesetting, you need to modify some files before making the LaTeX
 format.  See the file `install.txt' in the Babel distribution.
 
-Installing files
-----------------
+1.2.6 Installing files
+----------------------
 
-  The basic command is the usual `make install'.  For security issues,
+The basic command is the usual `make install'.  For security issues,
 *note Security::.
 
   The first time you install any manual in the GNU Info system, you
@@ -524,7 +525,7 @@ should add a line (you choose where) to the file `dir' in your
 the Texinfo source files (`kpathsea/kpathsea.texi',
 `dvipsk/dvips.texi', and `web2c/doc/web2c.texi').  If you have a recent
 version of the GNU Texinfo distribution installed
-(<ftp://prep.ai.mit.edu/pub/gnu/texinfo-3.9.tar.gz> or later), this
+(`ftp://prep.ai.mit.edu/pub/gnu/texinfo-3.9.tar.gz' or later), this
 should happen automatically.
 
   On the offchance that this is your first Info installation, the `dir'
@@ -549,12 +550,12 @@ something like this:
      configure --prefix=/whatever
      make
      make install prefix=/afs/.SYSTEM.NAME/system/1.3/@sys/whatever
-   With AFS, you will definitely want to use relative filenames in
+  With AFS, you will definitely want to use relative filenames in
 `ls-R' (*note Filename database::), not absolute filenames.  This is
 done by default, but check anyway.
 
-Cleaning up
------------
+1.2.7 Cleaning up
+-----------------
 
 The basic command is `make distclean'.  This removes all files created
 by the build.
@@ -577,22 +578,22 @@ by the build.
      files, patch rejects.  This is independent of the other `clean'
      targets.
 
-Filename database generation
-----------------------------
+1.2.8 Filename database generation
+----------------------------------
 
-  You will probably want to set up a `cron' entry on the appropriate
+You will probably want to set up a `cron' entry on the appropriate
 machine(s) to rebuild the filename database nightly or so, as in:
      0 0 * * * cd TEXMF && /BINDIR/mktexlsr
-   *Note Filename database::.
+  *Note Filename database::.
 
-Although the `mktex...' scripts make every effort to add newly-created
-files on the fly, it can't hurt to make sure you get a fresh version
-every so often.
+  Although the `mktex...' scripts make every effort to add
+newly-created files on the fly, it can't hurt to make sure you get a
+fresh version every so often.
 
-`mktex' scripts
----------------
+1.2.9 `mktex' scripts
+---------------------
 
-  If Kpathsea cannot otherwise find a file, for some file types it is
+If Kpathsea cannot otherwise find a file, for some file types it is
 configured by default to invoke an external program to create it
 dynamically (*note mktex configuration::).  This is most useful for
 fonts (bitmaps, TFM's, and arbitrarily-sizable Metafont sources such as
@@ -605,10 +606,10 @@ arguments, as explained below.  It must echo the full pathname of the
 file it created (and nothing else) to standard output; it can write
 diagnostics to standard error.
 
-`mktex' configuration
-.....................
+1.2.9.1 `mktex' configuration
+.............................
 
-  The following file types can run an external program to create missing
+The following file types can run an external program to create missing
 files: `pk', `tfm', `mf', `tex'; the scripts are named `mktexpk',
 `mktextfm', `mktexmf', and `mktextex'.
 
@@ -717,10 +718,20 @@ other cases the working directory is used.
      `USE_VARTEXFONTS' environment variable: if set to `1', the feature
      is enabled, and if set to `0', the feature is disabled.
 
-`mktex' script names
-....................
+`texmfvar'
+     Force generated files that would go into a system tree (as defined
+     by `SYSTEXMF') into `TEXMFVAR'. Starting with teTeX-3.0, the
+     variable `TEXMFVAR' is always set.  The `varfonts' feature takes
+     precedence if also set.
 
-  The following table shows the default name of the script for each
+     The `texmfvar' setting in `MT_FEATURES' is overridden by the
+     `USE_TEXMFVAR' environment variable: if set to `1', the feature is
+     enabled, and if set to `0', the feature is disabled.
+
+1.2.9.2 `mktex' script names
+............................
+
+The following table shows the default name of the script for each
 possible file types.  (The source is the variable `kpse_make_specs' in
 `kpathsea/tex-make.c'.)
 
@@ -749,10 +760,10 @@ or configuration file value `TEXMFOUTPUT' is set, its value is used.
 Otherwise, nothing is written.  The name `missfont.log' is overridden
 by the `MISSFONT_LOG' environment variable or configuration file value.
 
-`mktex' script arguments
-........................
+1.2.9.3 `mktex' script arguments
+................................
 
-  The first argument to a `mktex' script is always the name of the file
+The first argument to a `mktex' script is always the name of the file
 to be created.
 
   In the default `mktexpk' implementation, additional arguments may
@@ -777,17 +788,17 @@ also be passed:
      Otherwise, it is appended to the root destination directory set in
      the script.
 
-Installation testing
---------------------
+1.2.10 Installation testing
+---------------------------
 
-  Besides the tests listed in *Note Simple installation::, you can try
+Besides the tests listed in *Note Simple installation::, you can try
 running `make check'.  This includes the torture tests (trip, trap, and
 mptrap) that come with Web2c (*note Triptrap: (web2c)Triptrap.).
 
-Security
-========
+1.3 Security
+============
 
-  None of the programs in the TeX system require any special system
+None of the programs in the TeX system require any special system
 privileges, so there's no first-level security concern of people gaining
 illegitimate root access.
 

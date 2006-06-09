@@ -1,20 +1,23 @@
 /* tilde.c: Expand user's home directories.
 
-Copyright (C) 1993, 95, 96, 97 Karl Berry.
+    Copyright 1997, 98, 2005, Olaf Weber.
+    Copyright 1993, 95, 96, 97 Karl Berry.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+*/
 
 #include <kpathsea/config.h>
 
@@ -35,11 +38,25 @@ kpse_tilde_expand P1C(const_string, name)
 {
   const_string expansion;
   const_string home;
+  const_string prefix;
   
   assert (name);
+
+  /* If there is a leading "!!", set prefix to "!!", otherwise use
+     the empty string.  After this, we can test whether a prefix was
+     found by checking *prefix, and it is safe to unconditionally
+     prepend it. */
+  if (name[0] == '!' && name[1] == '!') {
+    name += 2;
+    prefix = "!!";
+  } else {
+    prefix = "";
+  }
   
-  /* If no leading tilde, do nothing.  */
+  /* If no leading tilde, do nothing, and return the original string.  */
   if (*name != '~') {
+    if (*prefix)
+      name -= 2;
     expansion = name;
   
   /* If a bare tilde, return the home directory or `.'.  (Very unlikely
@@ -49,7 +66,7 @@ kpse_tilde_expand P1C(const_string, name)
     if (!home) {
       home = ".";
     }
-    expansion = xstrdup (home);
+    expansion = concat (prefix, home);
   
   /* If `~/', remove any trailing / or replace leading // in $HOME.
      Should really check for doubled intermediate slashes, too.  */
@@ -65,13 +82,12 @@ kpse_tilde_expand P1C(const_string, name)
     if (IS_DIR_SEP (home[strlen (home) - 1])) {        /* omit / after ~ */
       c++;
     }
-    expansion = concat (home, name + c);
+    expansion = concat3 (prefix, home, name + c);
   
   /* If `~user' or `~user/', look up user in the passwd database (but
      OS/2 doesn't have this concept.  */
-  } else
+  } else {
 #ifdef HAVE_PWD_H
-    {
       struct passwd *p;
       string user;
       unsigned c = 2;
@@ -95,12 +111,15 @@ kpse_tilde_expand P1C(const_string, name)
       if (IS_DIR_SEP (home[strlen (home) - 1]) && name[c] != 0)
         c++; /* If HOME ends in /, omit the / after ~user. */
 
-      expansion = name[c] == 0 ? xstrdup (home) : concat (home, name + c);
-    }
+      expansion = concat3 (prefix, home, name + c);
 #else /* not HAVE_PWD_H */
-    expansion = name;
+      /* Since we don't know how to look up a user name, just return the
+         original string. */
+      if (*prefix)
+        name -= 2;
+      expansion = name;
 #endif /* not HAVE_PWD_H */
-
+  }
   /* We may return the same thing as the original, and then we might not
      be returning a malloc-ed string.  Callers beware.  Sorry.  */
   return (string) expansion;
@@ -128,6 +147,12 @@ main ()
   test_expand_tilde ("~root");
   test_expand_tilde ("~");
   test_expand_tilde ("foo~bar");
+
+  test_expand_tilde ("!!");
+  test_expand_tilde ("!!none");
+  test_expand_tilde ("!!~root");
+  test_expand_tilde ("!!~");
+  test_expand_tilde ("!!foo~bar");
   
   return 0;
 }

@@ -38,24 +38,21 @@ printversionandexit P3C(const_string, banner,
   puts (kpathsea_version_string);
 
   if (copyright_holder) {
-    printf ("Copyright (C) 1997-2006 %s.\n", copyright_holder);
+    printf ("Copyright 2005 %s.\n", copyright_holder);
     if (!author)
       author = copyright_holder;
   }
 
-  puts ("Kpathsea is copyright (C) 1997-2004 Free Software Foundation, Inc.");
+  puts ("Kpathsea is copyright 2005 Karl Berry and Olaf Weber.");
 
   puts ("There is NO warranty.  Redistribution of this software is");
   fputs ("covered by the terms of ", stdout);
-  /* DVIcopy is GPL'd, so no additional words needed. */
-  if (/*copyright_holder && */!STREQ (prog_name, "DVIcopy")) {
-    printf ("both the %s copyright and\n", prog_name);
-  }
-  puts ("the GNU General Public License.");
-  puts ("For more information about these matters, see the files");
+  printf ("both the %s copyright and\n", prog_name);
+  puts ("the Lesser GNU General Public License.");
+  puts ("For more information about these matters, see the file");
   printf ("named COPYING and the %s source.\n", prog_name);
   printf ("Primary author of %s: %s.\n", prog_name, author);
-  puts ("Kpathsea written by Karl Berry and others.\n");
+  puts ("Kpathsea written by Karl Berry, Olaf Weber, and others.\n");
 
   uexit (0);
 }

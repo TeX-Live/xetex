@@ -1,4 +1,4 @@
-% This is `tex.ech' in text format as of Jul 19, 2004,
+% This is `tex.ech' in text format as of Aug 3, 2005,
 % for web2c-7.5 and e-TeX Version 2.1 as of Jul 19, 2004,
 % made by B. Raichle and P. Breitenlohner.
 % Public domain.
@@ -57,13 +57,33 @@
   hyph_root:=0; hyph_start:=0;
 @z
 
-@x [53a.???] l.??? texarray
+@x [53a.1379] l.??? -etex command line switch
+@!init if (buffer[loc]="*")and(format_ident=" (INITEX)") then
+@y
+@!init if (etex_p or(buffer[loc]="*"))and(format_ident=" (INITEX)") then
+@z
+
+@x [53a.1379] l.??? -etex command line switch
+  incr(loc); eTeX_mode:=1; {enter extended mode}
+@y
+  if (buffer[loc]="*") then incr(loc);
+  eTeX_mode:=1; {enter extended mode}
+@z
+
+@x [53a.1383] l.??? -etex command line switch
+@!eTeX_mode: 0..1; {identifies compatibility and extended mode}
+@y
+@!eTeX_mode: 0..1; {identifies compatibility and extended mode}
+@!etex_p: boolean; {was the -etex option specified}
+@z
+
+@x [53a.1391] l.??? texarray
 @!eof_seen : array[1..max_in_open] of boolean; {has eof been seen?}
 @y
 @!eof_seen : ^boolean; {has eof been seen?}
 @z
 
-@x [53a.???] l.??? texarray
+@x [53a.1506] l.??? texarray
 @!grp_stack : array[0..max_in_open] of save_pointer; {initial |cur_boundary|}
 @!if_stack : array[0..max_in_open] of pointer; {initial |cond_ptr|}
 @y
@@ -71,7 +91,7 @@
 @!if_stack : ^pointer; {initial |cond_ptr|}
 @z
 
-@x [53a.???] l.??? texarray
+@x [53a.1587] l.??? texarray
 hyph_root:=0; hyph_start:=0;
 @y
 @z

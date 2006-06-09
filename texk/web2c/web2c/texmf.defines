@@ -22,7 +22,7 @@
 @define function callmakempx ();
 @define function floorscaled ();
 @define function floorunscaled ();
-@define function getjobname;
+@define function getjobname ();
 @define function getrandomseed;
 @define function initscreen;
 @define function inputln ();
@@ -43,6 +43,7 @@
 @define procedure calledit ();
 @define procedure clearterminal;
 @define procedure dateandtime ();
+@define procedure secondsandmicros ();
 @define procedure dumpcore;
 @define procedure dumphh ();
 @define procedure dumpint ();

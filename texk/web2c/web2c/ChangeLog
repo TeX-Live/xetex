@@ -1,3 +1,54 @@
+2006-05-26  Jonathan Kew <jonathan_kew@sil.org>
+
+	* coerce.h: add support for xetex
+
+	* convert: add support for xetex
+
+	* splitup.c: add support for xetex
+
+2005-07-27  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* convert.bat: New file, .bat version of convert script.
+
+	* texmf.defines: Add secondsandmicros defn.  From Martin Schröder
+	<martin@oneiros.de>.
+
+	* coerce.h: Remove support for pdfxtex.  From Martin Schröder
+	<martin@oneiros.de>.
+
+	* common.defines: Remove support for pdfxtex.  From Martin
+	Schröder <martin@oneiros.de>.
+
+	* splitup.c: Remove support for pdfxtex.  From Martin Schröder
+	<martin@oneiros.de>.
+
+	* convert: Remove support for pdfxtex.  From Martin Schröder
+	<martin@oneiros.de>.
+
+2005-06-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in: Replace ac_include with kpse_include.  From Peter
+	Breitenlohner.
+
+2005-06-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* common.defines: Add xreallocarray().  Requested by Hartmut
+	Henkel <hartmut_henkel@gmx.de>.
+
+2005-06-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* kps.c: Instead of using an implicit definition of toupper,
+	include extra headers and use TOUPPER.  Reported by Albert Chin
+	<china@thewrittenword.com>.
+
+2005-04-12  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* coerce.h (getjobname): Take a strnumber parameter, the string to
+	return if the --jobname switch wasn't given.
+	* texmf.defines (getjobname): Accepts a parameter now.
+	This is part of a group of changes that fix pdftex bug 302.
+	http://sarovar.org/tracker/?func=detail&atid=493&aid=302&group_id=106
+
 2004-07-14  Olaf Weber  <olaf@infovore.xs4all.nl>
 
 	* texmf.defines (print): Remove forward declaration.

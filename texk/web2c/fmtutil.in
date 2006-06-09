@@ -1,9 +1,10 @@
 # Originally written by Thomas Esser, 1998. Public domain.
 # fmtutil.cnf: configuration file for fmtutil.
-#
-# This TeX Live fmtutil.cnf is not kept in sync with the teTeX
+# 
+# This TeX Live fmtutil.cnf is not kept exactly in sync with the teTeX
 # fmtutil.cnf (and not maintained by te), since the two distributions
-# need different settings.
+# need different settings, although they are nearly the same.  The TL
+# version has a few extra entries at the end, mainly.
 
 # Customize this file to your needs, e.g.
 #   - remove or uncomment formats that you don't need
@@ -34,7 +35,7 @@
 # initex (or another "ini"-engine) on.
 
 # metafont and metapost:
-mf		mf-nowin	-		-translate-file=cp227.tcx mf.ini
+mf		mf		-		-translate-file=cp227.tcx mf.ini
 mpost		mpost		-		-translate-file=cp227.tcx mpost.mp
 metafun		mpost		-		-translate-file=cp227.tcx metafun.mp
 
@@ -45,8 +46,6 @@ metafun		mpost		-		-translate-file=cp227.tcx metafun.mp
 # if you want to make all characters directly "printable" for
 # any \write (instead of ^^xy).
 tex		tex		-		tex.ini
-
-@ALEPH@aleph		aleph		-		*aleph.ini
 latex		pdfetex		language.dat	-translate-file=cp227.tcx *latex.ini
 etex		pdfetex		language.def	-translate-file=cp227.tcx *etex.ini
 pdftex		pdfetex		-	-translate-file=cp227.tcx *pdftex.ini
@@ -54,6 +53,7 @@ pdflatex	pdfetex		language.dat	-translate-file=cp227.tcx *pdflatex.ini
 pdfetex		pdfetex		language.def	-translate-file=cp227.tcx *pdfetex.ini
 @OMEGA@omega		omega		-	omega.ini
 @OMEGA@lambda		omega		language.dat	lambda.ini
+@ALEPH@aleph		aleph		-		*aleph.ini
 @ALEPH@lamed		aleph		language.dat	*lambda.ini
 
 # The amstex format:
@@ -82,20 +82,31 @@ cont-en	pdfetex		cont-usr.tex	-8bit *cont-en.ini
 
 # - Polish:
 platex		pdfetex		language.dat	-translate-file=cp227.tcx *platex.ini
-pdfplatex		pdfetex		language.dat	-translate-file=cp227.tcx *pdfplatex.ini
+pdfplatex	pdfetex		language.dat	-translate-file=cp227.tcx *pdfplatex.ini
 mex		pdfetex		mexconf.tex	-translate-file=cp227.tcx *mex.ini
 pdfmex		pdfetex		mexconf.tex	-translate-file=cp227.tcx *pdfmex.ini
+utf8mex		pdfetex		mexconf.tex	-enc *utf8mex.ini
 
 # - Polish with translated messages (experimental):
 #! platex-pl	pdfetex		-		nls=pdfetex-pl,il2-pl *platex.ini
-#! mex-pl		pdfetex		mexconf.tex	nls=pdfetex-pl,il2-pl *mex.ini
+#! mex-pl	pdfetex		mexconf.tex	nls=pdfetex-pl,il2-pl *mex.ini
 #! pdfmex-pl	pdfetex		mexconf.tex	nls=pdfetex-pl,il2-pl *pdfmex.ini
 
-# - Czech / Slovak:
-csplain	pdfetex		-		-translate-file=cp227.tcx *csplain.ini
-cslatex	pdfetex		-	-translate-file=cp227.tcx *cslatex.ini
-pdfcsplain	pdfetex		-		-translate-file=cp227.tcx *csplain.ini
-pdfcslatex	pdfetex		-    -translate-file=cp227.tcx *cslatex.ini
+# - Czech / Slovak for ISO-8859-2 locale (see below for UTF8). Enable
+# "by hand", not by "fmtutil --enablefmt", because definitions for
+# ISO-8859-2 / UTF8 share the same name.
+csplain      pdfetex     -     -etex -translate-file=cp227.tcx csplain.ini
+cslatex      pdfetex     -     -etex -translate-file=cp227.tcx cslatex.ini
+pdfcsplain   pdfetex     -     -etex -translate-file=cp227.tcx csplain.ini
+pdfcslatex   pdfetex     -     -etex -translate-file=cp227.tcx cslatex.ini
+
+# - Czech / Slovak for UTF8 locale (see above for ISO-8859-2). Enable
+# "by hand", not by "fmtutil --enablefmt", because definitions for
+# ISO-8859-2 / UTF8 share the same name.
+#! csplain      pdfetex     -     -etex -enc csplain-utf8.ini
+#! cslatex      pdfetex     -     -etex -enc cslatex-utf8.ini
+#! pdfcsplain   pdfetex     -     -etex -enc csplain-utf8.ini
+#! pdfcslatex   pdfetex     -     -etex -enc cslatex-utf8.ini
 
 # formats for mltex extension:
 mltex		pdfetex	-		-translate-file=cp227.tcx -mltex mltex.ini
@@ -109,10 +120,6 @@ eplain	pdfetex		-		-translate-file=cp227.tcx *eplain.ini
 
 # mptopdf utility
 mptopdf		pdfetex	-		-translate-file=cp227.tcx mptopdf.tex
-
-# Texinfo formats
-texinfo		tex	-		-translate-file=cp227.tcx texinfo.ini
-pdftexinfo	pdfetex	-		-translate-file=cp227.tcx *texinfo.ini
 
 # --- strange things
 texsis		pdfetex	-		-translate-file=cp227.tcx texsis.ini

@@ -19,7 +19,7 @@ for details on building those packages.
 
 Web2c is free software.  The files I wrote (originally for the Free
 Software Foundation) are covered by the GNU General Public License --
-see the files COPYING*.  Knuth's original sources are covered by their
+see the file COPYING.  Knuth's original sources are covered by their
 own copyright -- see the beginning of tex.web, mf.web, etc.  You can get
 the original files on their own from CTAN:/systems/knuth; you can get
 MetaPost from ftp://netlib.att.com/netlib/research/metapost.tar.Z

@@ -6,8 +6,8 @@
 .if t .ds MF M\s-2ETAFONT\s0
 .if t .ds TX \fRT\\h'-0.1667m'\\v'0.20v'E\\v'-0.20v'\\h'-0.125m'X\fP
 .if n .ds TX TeX
-.ie t .ds OX \fIT\v'+0.25m'E\v'-0.25m'X\fP\" for troff
-.el .ds OX TeX\" for nroff
+.ie t .ds OX \fIT\v'+0.25m'E\v'-0.25m'X\fP for troff
+.el .ds OX TeX for nroff
 .\" the same but obliqued
 .\" BX definition must follow TX so BX can use TX
 .if t .ds BX \fRB\s-2IB\s0\fP\*(TX
@@ -20,15 +20,14 @@
 kpseaccess \- determine whether a file can be accessed
 .SH SYNOPSIS
 .B kpseaccess
-.I -mode
+.I [-rwx]
 .I file
 .\"=====================================================================
 .SH DESCRIPTION
 Exit successfully if
 .I file
 can be accessed with the specified mode.
-.I mode
-is one or more letters of
+The mode is one or more letters of
 .IR rwx ,
 where
 .I r

@@ -17,41 +17,34 @@ CF_SUBST(loader,LD,ld)
 CF_SUBST(archiver,AR,ar)
 CF_SUBST(archiver options,ARFLAGS,rc)
 
-AC_ARG_WITH(mktexmf-default,
+AC_ARG_WITH([mktexmf-default],
 [  --without-mktexmf-default    do not run mktexmf if MF source missing],
-  , with_mktexmf_default=yes)
-AC_ARG_WITH(mktexpk-default,
+  , [with_mktexmf_default=yes])
+AC_ARG_WITH([mktexpk-default],
 [  --without-mktexpk-default    do not run mktexpk if PK font missing],
-  , with_mktexpk_default=yes)
-AC_ARG_WITH(mktextfm-default,
+  , [with_mktexpk_default=yes])
+AC_ARG_WITH([mktextfm-default],
 [  --without-mktextfm-default   do not run mktextfm if TFM file missing],
-   , with_mktextfm_default=yes)
-AC_ARG_WITH(mkocp-default,
+   , [with_mktextfm_default=yes])
+AC_ARG_WITH([mkocp-default],
 [  --without-mkocp-default      do not run mkocp if OCP file missing],
-   , with_mkocp_default=yes)
-AC_ARG_WITH(mkofm-default,
+   , [with_mkocp_default=yes])
+AC_ARG_WITH([mkofm-default],
 [  --without-mkofm-default      do not run mkofm if OFM file missing],
-   , with_mkofm_default=yes)
-AC_ARG_WITH(mktexfmt-default,
+   , [with_mkofm_default=yes])
+AC_ARG_WITH([mktexfmt-default],
 [  --with-mktexfmt-default      run mktexfmt if format file missing])
-AC_ARG_WITH(mktextex-default,
+AC_ARG_WITH([mktextex-default],
 [  --with-mktextex-default      run mktextex if TeX source missing],
-  with_mktextex_default=yes, with_mktextex_default=no)
-
-dnl The --enable-multiplatform option.
-AC_CANONICAL_HOST
-AC_ARG_ENABLE(multiplatform,
-[  --enable-multiplatform     put executables in bin/PLATFORM],
-if test "x$enable_multiplatform" = xyes &&
-    test "x$bindir" = 'x${exec_prefix}/bin'
-then
-  bindir="$bindir/$host"
-fi)
+  [with_mktextex_default=yes], [with_mktextex_default=no])
 
 dnl Check whether we can find a texmf tree.  Look at the most common spots.
 dnl Not a switch, but something that must be included everywhere, even at
 dnl at the top level, so putting it in common.ac is not enough.
 AC_MSG_CHECKING(where the main texmf tree is located)
+case $prefix in
+  */) prefix=`echo "$prefix" | sed 's@/*$@@'`;;
+esac
 texmfmain=
 if test "x$datadir" != 'x${prefix}/share'; then
   # First case, datadir is defined...

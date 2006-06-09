@@ -1,21 +1,23 @@
 /* pathsearch.c: look up a filename in a path.
 
-Copyright (C) 1993, 94, 95, 97 Karl Berry.
-Copyright (C) 1997, 98, 99, 2000 Olaf Weber.
+   Copyright 1997-2005 Olaf Weber.
+   Copyright 1993, 94, 95, 97 Karl Berry.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+*/
 
 #include <kpathsea/config.h>
 #include <kpathsea/c-pathch.h>
@@ -440,7 +442,7 @@ search_list P4C(const_string, path,  const_string*, names,
              must_exist, all, path);
   }
   
-  /* No need to do any expansion on names.  */
+  /* FIXME: is this really true?  No need to do any expansion on names.  */
 
   /* First catch any absolute or explicit relative names. */
   for (namep = names; *namep; namep++) {

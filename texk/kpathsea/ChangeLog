@@ -1,3 +1,267 @@
+2006-02-03  Karl Berry  <karl@tug.org>
+
+	* mktexlsr: ignore .svn directories.
+
+2005-08-13  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* kpsewhich.c: Update copyright message.
+
+2005-08-03  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* README: Change references to COPYING and COPYING.LIB to GPL and
+	LGPL.
+
+	* kpathsea.texi: Change references to COPYING and COPYING.LIB to
+	GPL and LGPL.
+
+	* readlink.c: Correct license banner.
+
+2005-07-27  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in: Add comment to start of kpathsea.h.
+
+	* absolute.h, acconfig.h, c-ctype.h, c-dir.h, c-errno.h,
+	c-fopen.h, c-limits.h, c-memstr.h, c-minmax.h, c-namemx.h,
+	c-pathch.h, c-pathmx.h, c-proto.h, c-stat.h, c-std.h, c-unistd.h,
+	c-vararg.h, cnf.h, concatn.h, config.h, db.h, debug.h, default.h,
+	expand.h, fn.h, fontmap.h, getopt.h, hash.h, lib.h, line.h,
+	magstep.h, pathsearch.h, proginit.h, progname.h, readable.h,
+	str-list.h, str-llist.h, systypes.h, tex-file.h, tex-glyph.h,
+	tex-hush.h, tex-make.h, tilde.h, truncate.h, types.h, variable.h,
+	xopendir.h, xstat.h: Update copyright, license to LGPL 2.1.
+
+2005-07-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* access.c, readlink.c: Update copyright, license text.
+
+	* atou.c, absolute.c, cnf.c, concat.c, concat3.c, concatn.c, db.c,
+	debug.c, dir.c, elt-dirs.c, expand.c, extend-fname.c, file-p.c,
+	find-suffix.c, fn.c, fontmap.c, getopt.c, getopt1.c, hash.c,
+	kdefault.c, kpsestat.c, kpsewhich.c, line.c, magstep.c,
+	make-suffix.c, path-elt.c, pathsearch.c, proginit.c, progname.c,
+	readable.c, rm-suffix.c, str-list.c, str-llist.c, strcasecmp.c,
+	strstr.c, strtol.c, tex-file.c, tex-glyph.c, tex-hush.c,
+	tex-make.c, tilde.c, truncate.c, uppercasify.c, variable.c,
+	version.c, xbasename.c, xcalloc.c, xdirname.c, xfopen.c, xfseek.c,
+	xftell.c, xgetcwd.c, xopendir.c, xrealloc.c, xstat.c, xstrdup.c:
+	Update copyright, license to LGLP 2.1.
+
+	* xmalloc.c, xrealloc.c: Update copyright, license to LGPL 2.1.
+	Don't include stdio.h directly, it comes via config.h.
+
+2005-07-25  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmf.in: Increase trie_size.  Remove inaccurate comment about
+	its limits.
+
+	* common.ac: Remove the check for SMART_PUTENV, the xputenv code
+	has been rewritten not to need this.
+
+	* tex-file.c (kpse_init_format): Add uppercase versions of the
+	.ttf and .ttc suffixes for truetype fonts.  Dont require a
+	recognized suffix.
+
+	* types.h: Don't #define true if it is already defined.  From Karl
+	Berry.
+
+	* mktexmf: Additional change for generating cbgreek from Thomas.
+
+2005-07-12  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* mktexmf: Patterns for cbgreek weren't inclusive enough.  From
+	Thomas.
+
+2005-07-10  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tex-file.c (kpse_init_format): Revive .otf extension for
+	kpse_opentype_format, requested by Akira Kakuto
+	<kakuto@fsci.fuk.kindai.ac.jp>.
+
+	* tex-make.c (maketex): Print the name of the failing command
+	instead of always mktexpk.  From Karl berry
+	<karl@freefriends.org>.
+
+	* acconfig.h: Remove SMART_PUTENV code.
+
+	* xputenv.c (xputenv): Replace with code that doesn't depend on
+	the SMART_PUTENV check.
+	(common.ac): Remove SMART_PUTENV check code.
+
+2005-06-29  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tex-make.c: Metafont doesn't like literals larger than anout
+	4000, so try to avoid them when specifying magnifications.  From
+	Werner Fink <werner@suse.de>.
+
+	* hash.h [KPSE_DEBUG]: Add KPSEDLL to declaration of
+	kpse_debug_hash_lookup_int.  From Jan Nieuwenhuizen
+	<janneke@gnu.org>.
+
+2005-06-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* xt.ac: Fully quote the arguments of AC_ARG_WITH.  From Peter
+	Breitenlohner.
+
+	* withenable.ac: Fully quote arguments of AC_ARG_WITH.  From Peter
+	Breitenlohner.
+
+	* configure.in: Syntax changes to match autoconf2.5x.  From Peter
+	Breitenlohner.  Version to 3.5.5.
+
+	* common.ac: Fully quote AC_CONFIG_HEADERS.  From Peter
+	Breitenlohner.
+
+	* Makefile.in: Replace ac_include with kpse_include.  From Peter
+	Breitenlohner.
+
+2005-06-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* common.ac: Add KPSE_STRUCT_ST_MTIM check.
+
+	* expand.c: Update some comments.
+
+	* pathsearch.c: Update some comments.
+
+	* tex-file.c (init_path): Translate ';' to ':' in values we get
+	from the environment if the latter is our env_sep.
+
+	* cnf.c (do_line): Always translate ';' to ':' in config values if
+	the latter is the env_sep.
+
+	* kpathsea.texi: Remove ALLOW_SEMICOLON_IN_FILENAMES comment.
+
+2005-06-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* mktexlsr: Re-export PATH after changing it.  Some shells require
+	this.  Reported by Albert Chin <china@thewrittenword.com>.
+
+	* tex-file.c (kpse_find_file): Call kpse_expand() to do tilde and
+	variable expansion, which kpse_path_search_list() doesn't do, but
+	kpse_path_search() did.  Re-enabling this was requested by several
+	people, including Oliver Grewe <olligrewe@nexgo.de>.
+
+	* mktexpk, bugs.texi: From Karl Berry: "Try to be more informative
+	when mktexpk can't guess the mode; reported by Knuth in tex-k
+	mail, 26 Apr 2005 18:07:20 -0400."
+
+2005-04-10  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tilde.c (kpse_tilde_expand): Slightly simplify code.
+
+	* tilde.c (kpse_tilde_expand): Account for the possibility that
+	we're fed an argument starting with "!!~".  Problem reported by
+	DEK.
+
+2005-03-07  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* install.texi: Document texmfvar and USE_TEXMFVAR.  From Thomas.
+
+	* mktexdir: Break out of loop on failure of mkdir.  Last-minute
+	change for teTeX 3.0 from Thomas.
+
+2005-02-06  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* kpsereadlink.man: Correct banner: READLINK -> KPSEREADLINK.
+
+2005-02-05  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in (texmf.sed): With TEXMFSYSVAR and TEXMFSYSCONFIG
+	added, there's even more potential damage to clean up.
+	(uninstall-data): Try to cleanly uninstall the info document.
+
+	* texmf.in: Add TEXMFSYSVAR, TEXMFSYSCONFIG for teTeX 3.0.  From
+	Thomas.
+
+2005-01-25  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* mktexmf: Don't redirect output of cd, Ultrix doesn't like that.
+
+2005-01-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in: Change POSTINSTALL to POST_INSTALL.
+
+	* mktex.opt: Add texmfvar to list of allowed feature options.
+
+	* mktexlsr: Make getting the list of directories from $TEXMFDBS
+	more robust.  From Thomas.
+
+	* kpsereadlink.man, kpsestat.man, kpsewhich.man, mktexlsr.man,
+	mktexmf.man, mktextfm.man, mktexpk.man, kpseaccess.man: Man page
+	corrections from Eric S. Raymond <esr@thyrsus.com>.
+
+2005-01-07  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* mktexpk: Add guess ultre for 1200 dpi.  This is a fairly neutral
+	mode, also useful for pdftex.  From Karl Berry.
+
+	* mktexlsr: Make sorting the texmf trees more robust.  From
+	Thomas.
+
+2004-12-29  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* configure.in: Version 3.5.4.
+
+	* mktexlsr: Remove duplicate trees.  From Thomas.
+
+	* mktexdir: Remove superfluous cd.  From Thomas.
+
+	* withenable.ac: Sync with Thomas' version, removes
+	--enabled-multiplatform code.
+
+2004-12-28  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in (texmf.sed): New variables were added named TEXMF*.
+	The cleanup code needed additional fixes for this.  From Thomas
+	Esser.
+
+	* mktexnam.opt: Improve comment.
+
+	* mktexnam: Handle texmfvar option, which directs all writes into
+	the system trees to the TEXMFVAR tree, with the usual caveats.
+
+	* mktexnam.opt: Add texmfvar option.
+
+	* texmf.in: Changes to bring it close to teTeX 3.0.
+
+2004-12-20  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmf.in: For XeTeX: TEXINPUTS.xetex, TEXINPUTS.xelatex,
+	OTFFONTS.
+
+2004-12-19  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* xt.ac: Mark --with-x-toolkit as obsolete.
+
+	* Makefile.in [KPATHSEA_CC]: Don't quote $(CC), as it prevents
+	libtool from functioning properly if $(CC) contains options in
+	addition to the compiler name.  From Harald Koenig
+	<koenig@science-computing.de>.
+
+	* mktexpk: Add guesses for dpi 360 and 720.  From Frank Küster
+	<frank@kuesterei.ch> (Debian maintainer).
+
+	* mktexlsr: Write all regular progress messages to stderr, instead
+	of some to stdout.
+
+	* mktexdir: Handle directories with spaces in the names.
+
+	* mktexupd: If we've called mktexlsr, there is no need to do
+	anything else, so exit immediately.  From Thomas.
+
+2004-11-28  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmf.in: Add default entries for $progname and $engine, so we
+	don't expand these to empty if the file is used by pre 3.5.3
+	implementations.
+
+	* mktexmf: Extend the pattern for the cbgreek fonts.  From Hartmut
+	Henkel <hartmut_henkel@gmx.de>.
+
+2004-10-05  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmf.in: Add TEXINPUTS.lamed (Aleph's version of lambda) and
+	TEXINPUTS.uft8mex (utf8 variation of mex).
+
 2004-08-24  Olaf Weber  <olaf@infovore.xs4all.nl>
 
 	* mktex.opt: Correct syntax error.  Reported by Staszek

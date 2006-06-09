@@ -13,7 +13,7 @@
 # <te@dbs.uni-hannover.de>, Okt., 1994.
 # Public domain.
 
-version='$Id: mktexlsr,v 1.41 2004/08/17 21:24:38 olaf Exp $'
+version='$Id: mktexlsr,v 1.46 2005/06/21 14:32:26 olaf Exp $'
 progname=`echo $0 | sed 's%.*/%%'`
 usage="Usage: $progname [DIRS ...]
 
@@ -42,9 +42,11 @@ case $dirname in
   "") # Do nothing
       ;;
   /* | [A-z]:/*) # Absolute name
-      PATH="$dirname$SEP$PATH" ;;
+      PATH="$dirname$SEP$PATH"
+      export PATH ;;
    *)  # Relative name
-      PATH="`pwd`/$dirname$SEP$PATH" ;;
+      PATH="`pwd`/$dirname$SEP$PATH"
+      export PATH ;;
 esac
 
 # A copy of some stuff from mktex.opt, so we can run in the presence of
@@ -66,9 +68,16 @@ old_ls_R_magic='% ls-R -- maintained by MakeTeXls-R; do not change this line.'
 
 trap 'cd / ; test -z "$db_dir_tmp" || rm -rf "$db_dir_tmp"; exit' 0 1 2 3 7 13 15
 
+# Get list of directories from $TEXMFDBS; eliminate duplicates.
 test $# = 0 && {
-  OIFS=$IFS; IFS=$SEP; set x `kpsewhich --show-path=ls-R 2>/dev/null`; shift; IFS=$OIFS
+  OIFS=$IFS
+  IFS='
+'
+  set x `kpsewhich --show-path=ls-R | tr : '
+' | sort | uniq`; shift
+  IFS=$OIFS
 }
+
 for TEXMFLS_R in "$@"; do
   # Prepend cwd if the directory was relative.
   case "$TEXMFLS_R" in
@@ -118,17 +127,23 @@ for TEXMFLS_R in "$@"; do
   db_file_tmp="$db_dir_tmp/lsR$$.tmp"
   rm -f "$db_file_tmp"
 
-  tty -s && echo "$progname: Updating $db_file... "
+  tty -s && echo "$progname: Updating $db_file... " >&2
   echo "$ls_R_magic" >"$db_file_tmp"
 
   # The main task. We put ./: in the output, so top-level files can be
   # found via ls-R. Probably irrelevant in practice.
   # The sed command inserts the leading ./ for directory names, and
-  # removes . and .. from the list.  Note that using colons in directory
-  # names results in nothing but grief.
+  # removes ., .., and .svn entries from the list.  Also omit contents
+  # of any .svn directories; sed apparently requires that we do that
+  # operation in a separate invocation.
+  # We do not try to support colons in directory names.
+  # 
   echo "./:" >>"$db_file_tmp"
-  (cd "$TEXMFLS_R" && \ls -LRa 2>/dev/null) |
-    sed '/^$/{n;s%^\./%%;s%^%./%;}; /^\.$/d; /^\.\.$/d; /^[\.\/]*lsR[0-9]*\.tmp:*$/d' >>"$db_file_tmp"
+  (cd "$TEXMFLS_R" && \ls -LRa 2>/dev/null) \
+   | sed -e '/^$/{n;s%^\./%%;s%^%./%;}; /^\.$/d; /^\.\.$/d; /^\.svn$/d;' \
+        -e '/^[\.\/]*lsR[0-9]*\.tmp:*$/d' \
+   | sed -e '/\.svn.*:$/,/^$/d' \
+   >>"$db_file_tmp"
 
   # To be really safe, a loop.
   until PERMS=`kpsestat = "$db_file"`; do sleep 1; done
@@ -137,5 +152,5 @@ for TEXMFLS_R in "$@"; do
   mv "$db_file_tmp" "$db_file"
   rm -rf "$db_dir_tmp"
 done
-tty -s && echo "$progname: Done."
+tty -s && echo "$progname: Done." >&2
 exit 0

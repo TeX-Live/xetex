@@ -1,9 +1,9 @@
 # Makefile for Web2c documentation.
 
-ac_include ../make/paths.mk
-ac_include ../make/common.mk
-ac_include kpathsea.mk
-ac_include ../make/texi.mk
+kpse_include ../make/paths.mk
+kpse_include ../make/common.mk
+kpse_include kpathsea.mk
+kpse_include ../make/texi.mk
 
 info: web2c.info
 dvi: web2c.dvi
@@ -51,7 +51,7 @@ install-data: web2c.info
 	$(SHELL) $(top_srcdir)/../mkinstalldirs $(infodir)
 	test -r ./web2c.info || cd $(srcdir) && for i in web2c.i*; do \
 	  $(INSTALL_DATA) $$i $(infodir)/$$i; done
-	$(POSTINSTALL)
+	$(POST_INSTALL)
 	if $(SHELL) -c 'install-info --version' >/dev/null 2>&1; then \
 	  install-info --info-dir=$(infodir) $(infodir)/web2c.info; \
 	else true; fi
@@ -60,4 +60,4 @@ check: all
 
 #html: texi2html -expandinfo -number -menu -split_chapter
 
-ac_include ../make/clean.mk
+kpse_include ../make/clean.mk

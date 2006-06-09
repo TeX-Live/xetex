@@ -487,24 +487,43 @@ precisely when the disk or network is being pounded.  @xref{Debugging}.
 @cindex unable to generate fonts
 @cindex font generation failures
 
-This can happen if either @code{mktexpk} hasn't been installed
-properly, or if the local installation of Metafont isn't correct.
+Metafont outputs fonts in bitmap format, tuned for a particular
+device at a particular resolution, in order to allow for the
+highest-possible quality of output.  Some DVI-to-whatever programs,
+such as Dvips, try to generate these on the fly when they are needed,
+but this generation may fail in several cases.
 
-@cindex Metafont installation
-If @code{mf} is a command not found by @code{mktexpk}, then you need
-to install Metafont (@pxref{unixtex.ftp}).
-
-@cindex Metafont using the wrong resolution
-@cindex resolution, wrong
-If Metafont runs, but generates fonts at the wrong resolution, you need
-to be sure the @samp{M} and @samp{D} lines in your Dvips configuration
-file match (@pxref{Config files,,, dvips, Dvips}).  For example, if
-@code{mktexpk} is generating 300@dmn{dpi} fonts, but you need
-600@dmn{dpi} fonts, you should have:
+@cindex @code{mktexpk} can't guess mode
+If @code{mktexpk} runs, but fails with this error:
 @example
-M ljfour
-D 600
+mktexpk: Can't guess mode for @var{nnn} dpi devices.
+mktexpk: Use a config file to specify the mode, or update me.
 @end example
+you need to ensure the resolution and mode match; just
+specifying the resolution, as in @code{-D 360}, is not enough.
+
+You can specify the mode name with the @code{-mode} option on the
+Dvips command line, or in a Dvips configuration file (@pxref{Config
+files,,, dvips, Dvips}), such as @file{config.ps} in your document
+directory, @file{~/.dvipsrc} in your home directory, or in a system
+directory (again named @file{config.ps}).  (Other drivers use other
+files, naturally.)
+
+For example, if you need 360@dmn{dpi} fonts, you could include this in
+a configuration file:
+@example
+D 360
+M lqmed
+@end example
+
+@cindex Metafont using the wrong device
+@cindex device, wrong
+If Metafont runs, but generates fonts at the wrong resolution or for
+the wrong device, most likely @code{mktexpk}'s built-in guess for the
+mode is wrong, and you should override it as above.
+
+See @url{ftp://ftp.tug.org/tex/modes.mf} for a list of resolutions and
+mode names for most devices (additional submissions are welcome).
 
 @flindex .2602gf
 @flindex 2602gf
@@ -531,6 +550,10 @@ the base files are stored on your system
 (either hard or soft) from @file{plain.base} to @file{mf.base} in that
 directory.
 @xref{inimf invocation,,, web2c, Web2c}.
+
+@cindex Metafont installation
+If @code{mf} is a command not found at all by @code{mktexpk}, then you
+need to install Metafont (@pxref{unixtex.ftp}).
 
 
 @node TeX or Metafont failing

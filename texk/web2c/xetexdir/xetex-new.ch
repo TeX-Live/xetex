@@ -4418,9 +4418,9 @@ pool_ptr:=str_start_macro(str_ptr); {erase the string}
 @z
 
 @x
-    pool_ptr:=str_start[str_ptr];  {erase the string}
+  pool_ptr:=str_start[str_ptr];  {erase the string}
 @y
-    pool_ptr:=str_start_macro(str_ptr);  {erase the string}
+  pool_ptr:=str_start_macro(str_ptr);  {erase the string}
 @z
 
 @x

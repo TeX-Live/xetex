@@ -16,12 +16,12 @@ dnl to build part of the distribution may not have any given program.
 dnl Even main.c isn't guaranteed, but then nothing is, really ...
 AC_INIT(web2c/main.c)
 
-WEB2CVERSION=7.5.3
+WEB2CVERSION=7.5.5
 AC_SUBST(WEB2CVERSION)
 AC_DEFINE_UNQUOTED(WEB2CVERSION," (Web2C $WEB2CVERSION)")
 
 dnl Write output here, instead of putting a zillion -D's on the command line.
-AC_CONFIG_HEADER(c-auto.h:c-auto.in)
+AC_CONFIG_HEADERS([c-auto.h:c-auto.in], [date >stamp-auto])
 
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -31,10 +31,11 @@ AC_PROG_MAKE_SET
 AC_PROG_YACC
 AC_PROG_LEX
 # Work around a problem with Flex Version 2.5.31 which needs -l flag.
-# Since all versions of flex support -l, don't check for the
-# specific version. We also want to catch LEX=/some/where/flex, so:
+# Since all recent versions of flex support -l, don't check for the
+# specific version, but check that at least "--version" is supported.
+# We also want to catch LEX=/some/where/flex, so:
 case $LEX in
-  *flex) LEX="$LEX -l" ;;
+  *flex) $LEX --version >/dev/null 2>&1 && LEX="$LEX -l" ;;
 esac
 AC_PROG_RANLIB
 AC_CHECK_HEADERS(sys/time.h sys/timeb.h)
@@ -104,22 +105,6 @@ else
 fi
 AC_SUBST(MFN)
 
-# For XeTeX.
-if test -d $srcdir/xetexdir; then
-  test "${with_xetex+set}" = set || with_xetex=yes
-else
-  if test "x$with_xetex" = xyes; then
-    AC_MSG_WARN(The XeTeX sources are not available.)
-  fi
-  with_xetex=no
-fi
-if test "x$with_xetex" = xyes; then
-  XETEX=
-else
-  XETEX='#! '
-fi
-AC_SUBST(XETEX)
-
 # For Omega.
 if test -d $srcdir/omegadir; then
   test "${with_omega+set}" = set || with_omega=yes
@@ -131,8 +116,7 @@ else
 fi
 if test "x$with_omega" = xyes; then
   OMEGA=
-  omegafontsmakefile=omegafonts/Makefile
-  otpsmakefile=otps/Makefile
+#  KPSE_CONFIG_FILES([omegafonts/Makefile otps/Makefile])
 else
   OMEGA='#! '
 fi
@@ -177,22 +161,21 @@ else
   with_pdfetex=no
 fi
 
-# For pdfxTeX
-if test -d $srcdir/pdfxtexdir && test -d $srcdir/pdftexdir \
+# For XeTeX
+if test -d $srcdir/xetexdir \
     && test -d $srcdir/etexdir; then
-  test "${with_pdfxtex+set}" = set || with_pdfxtex=yes
+  test "${with_xetex+set}" = set || with_xetex=yes
 else
-  if test "x$with_pdfxtex" = xyes; then
-    AC_MSG_WARN(Not all sources of pdfxTeX are available.)
+  if test "x$with_xetex" = xyes; then
+    AC_MSG_WARN(Not all sources of XeTeX are available.)
   fi
-  with_pdfxtex=no
+  with_xetex=no
 fi
 
 # Check whether C++ compiler works.  Prevent exit if it doesn't.
 if test "x$with_pdftex"  = xyes ||
    test "x$with_pdfetex" = xyes ||
-   test "x$with_pdfxtex" = xyes ||
-   test "x$with_xetex" = xyes
+   test "x$with_xetex"   = xyes
 then
   # First test whether the compiler works in a subshell, and if so,
   # do it again in the main shell so we see the result.
@@ -205,11 +188,11 @@ then
     && AC_MSG_WARN(No C++ compiler: pdfTeX will not be compiled.)
   test "x$with_pdfetex" = xyes \
     && AC_MSG_WARN(No C++ compiler: pdfeTeX will not be compiled.)
-  test "x$with_pdfxtex" = xyes \
-    && AC_MSG_WARN(No C++ compiler: pdfxTeX will not be compiled.)
+  test "x$with_xetex" = xyes \
+    && AC_MSG_WARN(No C++ compiler: XeTeX will not be compiled.)
   with_pdftex=no
   with_pdfetex=no
-  with_pdfxtex=no
+  with_xetex=no
   true
 }
 fi
@@ -227,7 +210,7 @@ CXXHACKLDLIBS='$(LOADLIBES)'
 if test "x$with_cxx_runtime_hack" = xyes &&
    { test "x$with_pdftex"  = xyes ||
      test "x$with_pdfetex" = xyes ||
-     test "x$with_pdfxtex" = xyes; }
+     test "x$with_xetex"   = xyes; }
 then
   AC_MSG_CHECKING(for statically linking C++ runtime library)
 
@@ -291,12 +274,12 @@ else
 fi
 AC_SUBST(PETEX)
 
-if test "x$with_pdfxtex" = xyes; then
-  PXTEX=
+if test "x$with_xetex" = xyes; then
+  XETEX=
 else
-  PXTEX='#! '
+  XETEX='#! '
 fi
-AC_SUBST(PXTEX)
+AC_SUBST(XETEX)
 
 # For e-TeX, three choices: no, yes, and tex.  In the latter case, we
 # have to comment out the normal TeX build (TEX), as well as enable the
@@ -333,7 +316,7 @@ if test "x$with_x" = xyes; then
     AC_CHECK_LIB(Xext, XextCreateExtension,
                  x_ext_lib=-lXext, :, $wlibs $X_EXTRA_LIBS $XLFLAG)
   fi
-  if test "x$with_x_toolkit" = xno; then
+  if test "x$with_mf_x_toolkit" = xno; then
     wfile=x11-Xlib.c
   else
     # Effectively demote --with-x-toolkit=athena to xt since 
@@ -363,20 +346,14 @@ AC_SUBST(FMU)
 
 # Don't bother with pdflib unless pdf*TeX is requested.
 if test "$with_pdftex" = yes || \
-   test "$with_pdfetex" = yes || \
-   test "$with_pdfxtex" = yes
+   test "$with_pdfetex" = yes
 then
-  libpdfmakefile=pdftexdir/Makefile
+  KPSE_CONFIG_FILES([pdftexdir/Makefile])
 fi
 
 # Don't bother with pdfelib unless pdfeTeX is requested.
 if test "$with_pdfetex" = yes; then
-  libpdfemakefile=pdfetexdir/Makefile
-fi
-
-# Don't bother with pdfxlib unless pdfxTeX is requested.
-if test "$with_pdfxtex" = yes; then
-  libpdfxmakefile=pdfxtexdir/Makefile
+  AC_CONFIG_FILES([pdfetexdir/Makefile])
 fi
 
 dnl Create tests subdirectory.
@@ -403,14 +380,11 @@ KPSE_CROSS_PATH_PROG(TANGLE, tangle, ./tangle)
 KPSE_CROSS_PATH_PROG(CTANGLEBOOT, ctangle, ./ctangleboot)
 KPSE_CROSS_PATH_PROG(CTANGLE, ctangle, ./ctangle)
 KPSE_CROSS_PATH_PROG(TIE, tie, ./tie)
-if test "x$with_omega" = xyes || test "x$with_aleph" = yes; then
+if test "x$with_omega" = xyes || test "x$with_aleph" = xyes || test "x$with_xetex" = xyes; then
 KPSE_CROSS_PATH_PROG(OTANGLE, otangle, ./otangle)
 fi
 
 dnl Generate `Makefile's, `config.status', and our header file.
-AC_OUTPUT(Makefile doc/Makefile lib/Makefile 
-          web2c/Makefile 
-          $libpdfmakefile $libpdfemakefile $libpdfxmakefile
-          fmtutil.cnf:fmtutil.in)
-dnl Update stamp-auto, since we just remade `c-auto.h'.
-date >stamp-auto
+KPSE_CONFIG_FILES([Makefile doc/Makefile lib/Makefile web2c/Makefile])
+AC_CONFIG_FILES([fmtutil.cnf:fmtutil.in])
+AC_OUTPUT

@@ -1,20 +1,23 @@
 /* cnf.c: read config files.
 
-Copyright (C) 1994, 95, 96, 97 Karl Berry.
+   Copyright 1997-2005 Olaf Weber.
+   Copyright 1994, 95, 96, 97 Karl Berry.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+*/
 
 #include <kpathsea/config.h>
 #include <kpathsea/c-fopen.h>
@@ -121,21 +124,15 @@ do_line P1C(string, line)
      
      So, simply translate all ;'s in the path
      values to :'s if we are a Unix binary.  (Fortunately we don't use ;
-     in other kinds of texmf.cnf values.)
+     in other kinds of texmf.cnf values.)  */
      
-     If you really want to put ; in your filenames, add
-     -DALLOW_SEMICOLON_IN_FILENAMES.  (And there's no way to get :'s in
-     your filenames, sorry.)  */
-     
-#if IS_ENV_SEP(':') && !defined (ALLOW_SEMICOLON_IN_FILENAMES)
-  {
-    string loc;
-    for (loc = value; *loc; loc++) {
-      if (*loc == ';')
-        *loc = ':';
-    }
+  if (IS_ENV_SEP(':')) {
+      string loc;
+      for (loc = value; *loc; loc++) {
+          if (*loc == ';')
+              *loc = ':';
+      }
   }
-#endif
 
   /* We want TEXINPUTS.prog to override plain TEXINPUTS.  The simplest
      way is to put both in the hash table (so we don't have to write

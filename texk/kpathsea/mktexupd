@@ -3,7 +3,7 @@
 # 
 # te@dbs.uni-hannover.de and kb@mail.tug.org. Public domain.
 
-version='$Id: mktexupd,v 1.19 2004/04/24 15:19:04 olaf Exp $'
+version='$Id: mktexupd,v 1.20 2004/12/19 12:41:13 olaf Exp $'
 usage="Usage: $0 DIR FILE.
   Update the ls-R file with an entry for FILE in DIR."
 mt_min_args=2
@@ -38,7 +38,7 @@ db_file="$TEXMFLS_R/ls-R"
 db_file_lc="$TEXMFLS_R/ls-r"
 
 test ! -f "$db_file" && test -f "$db_file_lc" && db_file="$db_file_lc"
-test -f "$db_file" || mktexlsr "$TEXMFLS_R"
+test -f "$db_file" || { mktexlsr "$TEXMFLS_R"; exit; }
 test -w "$db_file" || { echo "$0: $db_file unwritable." >&2; exit 1; }
 
 test "x`sed '1s/$//;1q' \"$db_file\"`" = "x$ls_R_magic" \

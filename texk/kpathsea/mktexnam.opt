@@ -2,7 +2,7 @@
 # Sourced from mktexnam.
 # 
 # te@dbs.uni-hannover.de and kb@mail.tug.org. Public domain.
-# $Id: mktexnam.opt,v 1.12 2002/10/22 18:34:33 olaf Exp $
+# $Id: mktexnam.opt,v 1.14 2004/12/28 20:58:18 olaf Exp $
 
 # Get 8.3 filenames like dpiNNN/NAME.pk.
 case "$MT_FEATURES" in
@@ -93,4 +93,14 @@ esac
 # USE_VARTEXFONTS to 1 or 0.
 case "$MT_FEATURES" in
   *varfonts*) test "$USE_VARTEXFONTS" != 0 && USE_VARTEXFONTS=1;;
+esac
+
+# Force generated files that would go into a system tree (as defined by
+# SYSTEXMF) into TEXMFVAR. Starting with teTeX-3.0, the variable TEXMFVAR
+# is always set.  The varfonts feature takes precedence if also set.
+#
+# A user can override this setting in either direction by setting
+# USE_TEXMFVAR to 1 or 0.
+case "$MT_FEATURES" in
+  *texmfvar*) test "$USE_TEXMFVAR" != 0 && USE_TEXMFVAR=1;;
 esac

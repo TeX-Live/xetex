@@ -2,10 +2,7 @@
    and it produces several .c and .h files in the current directory
    as its output.
 
-   Tim Morgan  September 19, 1987.
-   
-   Added xetex support -- JK -- Dec 15, 2004
-*/
+   Tim Morgan  September 19, 1987.  */
 
 #include "config.h"
 #include <kpathsea/getopt.h>
@@ -116,9 +113,6 @@ main P2C(int, argc, string *, argv)
   } else if (STREQ (output_name, "pdfetex")) {
     fputs ("#define INITEX\n#define TeX\n#define pdfeTeX\n", out);
     coerce = "pdfetexcoerce.h";
-  } else if (STREQ (output_name, "pdfxtex")) {
-    fputs ("#define INITEX\n#define TeX\n#define pdfxTeX\n", out);
-    coerce = "pdfxtexcoerce.h";
   } else if (STREQ (output_name, "xetex")) {
     fputs ("#define INITEX\n#define TeX\n#define XeTeX\n", out);
     coerce = "xetexcoerce.h";
@@ -126,7 +120,7 @@ main P2C(int, argc, string *, argv)
     fputs ("#define INIMP\n#define MP\n", out);
     coerce = "mpcoerce.h";
   } else
-    FATAL1 ("Can only split mf, mp, tex, etex, omega, eomega, aleph, xetex, or pdf[ex]tex,\n not %s", output_name);
+    FATAL1 ("Can only split mf, mp, tex, etex, omega, eomega, aleph, pdf[e]tex, or xetex,\n not %s", output_name);
   
   coerce_len = strlen (coerce);
   

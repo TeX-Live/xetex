@@ -1,5 +1,17 @@
 This file records noteworthy changes.
-7.5.3
+7.5.5
+* BibTeX: dynamically resize the buffer (and related arrays).
+* MP: Version 0.9
+* mpware: Brought to the equivalent of version 0.9.
+* e-TeX, Aleph, pdfeTeX: You can use -ini -etex to start etex mode now
+  instead of prepending an asterisk.
+
+7.5.4 (6 February 2005)
+* TeX: \ifeof18 is false if \write18 is enabled.
+* MF, MP: Prevent pathological code from overflowing the "serial number"
+  counter for independent variables.
+
+7.5.3 (28 November 2004)
 * ctie: New program, from Julian Gilbey.
 * TeX, MF, MP: We now save the name of the engine in the dump, in
   order to be able to give better error messages in case a dump

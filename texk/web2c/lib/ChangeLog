@@ -1,3 +1,70 @@
+2005-08-13  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* printversion.c: Update copyright messages.
+
+2005-08-03  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c: Implement -etex switch.
+
+2005-07-29  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c (opennameok): Check all occurrences of ".." in a
+	filename, not just the first.  Reported by Yutaka OIWA
+	<y.oiwa@aist.go.jp>.
+
+2005-07-27  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* printversion.c: libkpathsea is covered by the LGPL, not the GPL,
+	and is the common factor that brings in the *GPL to all
+	web2c-based programs.
+
+	* texmfmp.c (get_seconds_and_micros): New function, gets high-res
+	time if possible.  Remove references to pdfxtex.
+
+2005-07-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* input2int.c: The correct format string to use depends on whether
+	integer is an int or a long int.  Reported by M.J. Rutter
+	<mjr19@cus.cam.ac.uk>.
+
+2005-06-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in: Replace ac_include with kpse_include.  From Peter
+	Breitenlohner.
+
+2005-06-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c [MP][BANNER]: Update for MetaPost 0.901.
+
+2005-06-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c (opennameok,openinnameok,openoutnameok): Add new
+	parameter to opennameok() so its diagnostics are correct wrt to
+	whether we are testing a file name for reading or writing.
+
+2005-04-12  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c (getjobname): Add a parameter, the string to return if
+	--jobname wasn't given.
+	This is part of a group of changes that fix pdftex bug 302.
+	http://sarovar.org/tracker/?func=detail&atid=493&aid=302&group_id=106
+
+	* openclose.c (open_input): kpse_find_file() always returns a new
+	string, so we can unconditionally deallocate it.
+
+	* texmfmp.c (maininit): Factor out common code into texmf_yesno().
+	(texmf_yesno): New function, return true if a variable is set and set
+	to 't', 'y', or '1' in texmf.cnf or the environment.
+
+2004-12-20  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c [pdfTeX,pdfeTeX,pdfxTeX]: New variable ptexbanner.
+
+2004-12-19  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* texmfmp.c [TeX] (maininit): For all TeX variants, recognize
+	"initex" and "virtex" program names, just in case.
+
 2004-09-16  Olaf Weber  <olaf@infovore.xs4all.nl>
 
 	* printversion.c (printversionandexit): Hartmut Henkel

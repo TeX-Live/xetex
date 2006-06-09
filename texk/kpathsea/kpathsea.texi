@@ -2,8 +2,8 @@
 @setfilename kpathsea.info
 @settitle Kpathsea: A library for path searching
 
-@set version 3.5.3
-@set month-year May 2004
+@set version 3.5.5
+@set month-year June 2005
 
 @c Define new indices for commands, filenames, and options.
 @defcodeindex cm
@@ -34,7 +34,7 @@
 @copying
 This file documents the Kpathsea library for path searching.
 
-Copyright (C) 1993-2004 Karl Berry & Olaf Weber.
+Copyright (C) 1993-2005 Karl Berry & Olaf Weber.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -139,7 +139,7 @@ you must (offer to) distribute the source to the library, along with any
 changes you have made, and allow anyone to modify the library source and
 distribute their modifications.  It does not mean you have to distribute
 the source to your program, although we hope you will.  See the files
-@file{COPYING} and @file{COPYING.LIB} for the text of the GNU licenses.
+@file{GPL} and @file{LGPL} for the text of the GNU licenses.
 
 @cindex @TeX{} Users Group
 If you know enough about @TeX{} to be reading this manual, then you (or
@@ -492,8 +492,7 @@ feature is not available on the right-hand side; instead, you must use
 an additional variable (see below for example).  A @samp{;} in
 @var{value} is translated to @samp{:} if running under Unix; this is
 useful to write a single @file{texmf.cnf} which can be used under both
-Unix and NT.  (If you really want @samp{;}'s in your filenames, add
-@samp{-DALLOW_SEMICOLON_IN_FILENAMES} to @code{CFLAGS}.)
+Unix and NT.
 
 @item All definitions are read before anything is expanded, so you can
 use variables before they are defined (like Make, unlike most other
@@ -584,6 +583,17 @@ setenv TEXINPUTS /home/karl:
 
 @example
 /home/karl:.:$TEXMF//tex
+@end example
+
+Put another way, default expansion works on ``formats'' (search
+paths), and not directly on environment variables.  Example, showing
+the trailing @samp{:} ignored in the first case and expanded in the second:
+
+@example
+$ env TTFONTS=/tmp: kpsewhich --expand-path '$TTFONTS'
+/tmp
+$ env TTFONTS=/tmp: kpsewhich --show-path=.ttf
+/tmp:.:/home/olaf/texmf/fonts/truetype//:...
 @end example
 
 Since Kpathsea looks for multiple configuration files, it would be
@@ -1216,7 +1226,14 @@ hierarchy.  @xref{Path expansion}.
 @samp{--expand-path=@var{string}} outputs the complete expansion of
 @var{string} as a colon-separated path.  This is useful to construct a
 search path for a program that doesn't accept recursive subdirectory
-specifications.
+specifications.  Nonexistent directories are culled from the output:
+
+@example
+$ kpsewhich --expand-path '/tmp'
+@result{} /tmp
+$ kpsewhich --expand-path '/nonesuch'
+@result{}
+@end example
 
 For one-shot uses of an arbitrary (not built in to Kpathsea) path, see
 @samp{--path} in the previous section.

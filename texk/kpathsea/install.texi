@@ -1036,6 +1036,18 @@ recommends @file{/var/tex/fonts}.
 The @samp{varfonts} setting in @code{MT_FEATURES} is overridden by the
 @code{USE_VARTEXFONTS} environment variable: if set to @samp{1}, the
 feature is enabled, and if set to @samp{0}, the feature is disabled.
+
+@item texmfvar
+@vindex TEXMFVAR
+Force generated files that would go into a system tree (as defined by
+@code{SYSTEXMF}) into @code{TEXMFVAR}. Starting with te@TeX{}-3.0, the
+variable @code{TEXMFVAR} is always set.  The @samp{varfonts} feature takes
+precedence if also set.
+
+@vindex USE_TEXMFVAR
+The @samp{texmfvar} setting in @code{MT_FEATURES} is overridden by the
+@code{USE_TEXMFVAR} environment variable: if set to @samp{1}, the
+feature is enabled, and if set to @samp{0}, the feature is disabled.
 @end vtable
 
 

@@ -1,3 +1,197 @@
+2005-09-02  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tex.ch [53.1370]: Since we generate a string in all cases, we
+	need to erase it in all cases.  Reported by Han The Thanh
+	<hanthethanh@gmail.com>, diagnosed by Akira Kakuto
+	<kakuto@fsci.fuk.kindai.ac.jp>.
+
+2005-08-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* bibtex.ch: Make the buffer and related arrays grow dynamically.
+	Fixes a bug reported by Kevin Cahill <cahill@unm.edu>.
+
+2005-08-13  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tex.ch: An \immediate\write18 on the '**' prompt would crash
+	TeX, because the log file isn't open yet.  Reported by Jerzy
+	B. Ludwichowski <Jerzy.Ludwichowski@uni.torun.pl>.  Since we
+	always log something for \write18, so lets also log the command
+	when \write18 is disabled, instead of merely showing that
+	something was attempted.
+
+2005-08-03  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in: Fix missing double-quote.
+
+	* texmfmp-help.h [Aleph,eTeX,pdfeTeX]: Document -etex switch.
+
+	* doc/web2c.texi: Correct missing entries in a table.
+
+2005-07-27  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* doc/web2c.texi: libkpathsea is entirely in LGPL.
+
+	* vftovp.ch: Remove misplaced semicolon.
+
+	* texmfmp.h: Disable IPC when compiling with __DJGPP__.  (Should
+	really be done in configure script.)
+
+	* texmfmp.h: Remove references to pdfxtex.  Add
+	get_seconds_and_micros prototype.
+
+2005-07-25  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* weave.ch: Increase max_bytes to 65530.  We're bumping to the
+	16-bit limits here.
+
+	* tex.ch: Significantly increase the ssup_trie_size.
+
+	* metapost.mk: Fix build rules/dependencies for mpware.
+
+	* Makefile.in: Fix build rules for mpware.
+
+	* vftovp.ch: Report the name of tfm files that we cannot find or
+	find to be unusable.  Reported by Patrick Gundlach.
+
+2005-06-29  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* withenable.ac: Remove one pair of brackets from
+	--with-editor-CMD help text.
+
+2005-06-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* doc/Makefile.in: Replace ac_include with kpse_include.  From
+	Peter Breitenlohner.
+
+	* withenable.ac: Fully quote arguments of AC_AG_WITH.  From Peter
+	Breitenlohner.
+
+	* configure.in: Syntax changes to match autoconf2.5x.  From Peter
+	Breitenlohner.  To version 7.5.5.
+
+	* Makefile.in: Change ac_include to kpse_include.  From Peter
+	Breitenlohner.
+
+2005-06-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* mp.web: Update for MetaPost 0.901.
+
+	* mp.ch: Update for MetaPost 0.901.
+
+	* cpascal.h: Add xreallocarray().  Requested by Hartmut Henkel
+	<hartmut_henkel@gmx.de>.
+
+2005-06-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* metapost.mk, dvitomp.mk, Makefile.in: Break out the metapost and
+	dvitomp related makefile rules into separate makefile fragments.
+
+	* doc/web2c.texi: Update description of newer.
+
+2005-04-12  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* mf.ch [38.788]: Use |get_job_name| so the --jobname switch can
+	be used to replace "mfput".
+	[38.793]: Interface of |get_job_name| changed.
+	* mp.ch [35.765]: Use |get_job_name| so the --jobname switch can
+	be used to replace "mpout".
+	[35.770]: Interface of |get_job_name| changed.
+	* tex.ch [29.534]: Use |get_job_name| so the --jobname switch can
+	be used to replace "texput".
+	[29.537]: Interface to |get_job_name| changed.
+	This is part of a group of changes that fixes pdftex bug 302.
+	http://sarovar.org/tracker/?func=detail&atid=493&aid=302&group_id=106
+	
+2005-02-06  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in (aleph-dist): Remove generated file, make sure
+	aleph.version file exists.
+
+2005-02-05  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in (uninstall, uninstall-exec, uninstall-data): Dummy
+	target added so make uninstall doesn't stop here.
+
+2005-01-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* doc/Makefile.in: Change POSTINSTALL to POST_INSTALL.
+
+	* tiedir/tie.1: Man page corrections from Eric S. Raymond
+	<esr@thyrsus.com>.
+
+2005-01-08  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* configure.in: Correct check whether otangle is needed. From
+	Kenta MURATA <muraken20@yahoo.co.jp>.
+
+	* withenable.ac: Update references to e-Omega to Aleph.  From
+	Kenta MURATA <muraken20@yahoo.co.jp>.
+
+2004-12-29  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* configure.in: Version 7.5.4.
+
+	* doc/web2c.texi: Version 7.5.4.
+
+	* tex.ch: Shuffle the \eof18 code around a bit.
+
+2004-12-28  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* tex.ch [16.211,46.1049]: I18N fix for |print_mode|, adding
+	|print_in_mode| function to account for differences in declination
+	etc.  After Wlodzimierz Bzyl <matwb@univ.gda.pl>.
+
+	* mf.ch [28.585]: Sufficiently pathological code can overflow the
+	serial_no counter: add a check for this.  From Thorsten Dahlheimer
+	<tdahlheim@gmx.net>.
+
+	* mp.ch [24.539]: Sufficiently pathological code can overflow the
+	serial_no counter: add a check for this.  From Thorsten Dahlheimer
+	<tdahlheim@gmx.net>.
+
+	* tex.ch: Implement \ifeof18 to test whether \write18 is enabled.
+	A variant of the code submitted by Heiko Oberdiek
+	<oberdiek@uni-freiburg.de>.
+
+2004-12-20  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* withenable.ac: Don't define IPC in c-auto.h if --enable-ipc
+	wasn't given.
+
+	* Makefile.in: configure depends on withenable.ac.
+
+2004-12-19  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* configure.in: Old versions of flex don't support -l, but don't
+	support --version either, so use the latter to test whether the
+	former should be used.  From Thomas.
+
+	* withenable.ac: Add --with-mf-x-toolkit option to replace
+	--with-x-toolkit.  The latter couldn't be shared between mf and
+	xdvi any more.
+
+	* Makefile.in (tex-check, bibtex-check, dvicopy-check,
+	dvitomp-check, mpost-check): Add TEXMFCNF=../kpathsea to the
+	environment so the check works even if installation is not yet
+	complete.  From Peter Breitenlohner <peb@mppmu.mpg.de>.
+
+	* Makefile.in (install-data): Don't install cwebdir/cweb.1; this
+	page now lives under .../man.
+
+	* Makefile.in (tangle.p): Depend on tangleboot, not $(TANGLEBOOT).
+	This means we build tangleboot even when cross-compiling.  The
+	reason is that some versions of make get confused if we depend on
+	./tangleboot but only have rules with tangleboot as the target.
+	(ctangle.c,cweb.c): As above for $(CTANGLEBOOT).
+	Problem reported for Digital UNIX 4.0E make by Bernhard Simon
+	<simon@zid.tuwien.ac.at>.
+
+2004-11-28  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in (afmts): alambda -> lamed.  Restrict the use of FF
+	to comments, as some make implementations cannot deal with it
+	otherwise.
+
 2004-09-07  Olaf Weber  <olaf@infovore.xs4all.nl>
 
 	* doc/web2c.texi: Changes made by Karl Berry.

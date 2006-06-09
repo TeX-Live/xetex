@@ -3,6 +3,13 @@
 
 #include "config.h"
 
+#ifdef INTEGER_IS_INT
+#define SCAN2INT "%d %d"
+#define SCAN3INT "%d %d %d"
+#else
+#define SCAN2INT "%ld %ld"
+#define SCAN3INT "%ld %ld %ld"
+#endif
 
 /* Read two integers from stdin.  */
 
@@ -11,7 +18,7 @@ zinput2ints P2C(integer *, a,  integer *, b)
 {
   int ch;
 
-  while (scanf ("%ld %ld", a, b) != 2)
+  while (scanf (SCAN2INT, a, b) != 2)
     {
       while ((ch = getchar ()) != EOF && ch != '\n');
       if (ch == EOF) return;
@@ -29,7 +36,7 @@ zinput3ints P3C(integer *, a,  integer *, b,  integer *, c)
 {
   int ch;
 
-  while (scanf ("%ld %ld %ld", a, b, c) != 3)
+  while (scanf (SCAN3INT, a, b, c) != 3)
     {
       while ((ch = getchar ()) != EOF && ch != '\n');
       if (ch == EOF) return;

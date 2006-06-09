@@ -1,8 +1,8 @@
 # Makefile for the web2c library.
 
-ac_include ../make/common.mk
-ac_include ../make/library.mk
-ac_include kpathsea.mk
+kpse_include ../make/common.mk
+kpse_include ../make/library.mk
+kpse_include kpathsea.mk
 
 library = lib
 
@@ -27,6 +27,6 @@ alloca.o: alloca.c
 Makefile: Makefile.in ../config.status
 	cd .. && $(SHELL) config.status
 
-ac_include ../make/clean.mk
-ac_include ../make/rdepend.mk
-ac_include lib/depend.mk
+kpse_include ../make/clean.mk
+kpse_include ../make/rdepend.mk
+kpse_include lib/depend.mk

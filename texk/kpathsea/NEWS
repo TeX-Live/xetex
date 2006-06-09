@@ -1,5 +1,22 @@
 This file records noteworthy changes.
-3.5.3
+3.5.5
+* Copyrights of some source files were erroneously attributed to FSF.
+* On UNIX, accept the semicolon as well as the colon in environment
+  variables like TEXINPUTS.
+* Keep metafont from choking on large literals (> 4000) when calling
+  mktexpk.
+
+3.5.4 (7 March 2005)
+* Change of some standard environment/texmf.cnf variables:
+  HOMETEXMF -> TEXMFHOME
+  VARTEXMF -> TEXMFVAR
+  TEXMFVAR, TEXMFCONFIG: Always defined for the sake of teTeX 3.0.
+  TEXMFSYSVAR, TEXMFSYSCONFIG: Added for the sake of teTeX 3.0.
+* mktex*: A new option for MT_FEATURES in mktex.cnf: texmfvar.  If
+  selected, files that would be written into a system texmf tree go
+  to the TEXMFVAR tree.  Overriden by varfonts.
+
+3.5.3 (28 November 2004)
 * New options for kpsewhich
   -var-value=VARIABLE  to expand $VARIABLE without having to give an $
                        on the command line.

@@ -1,20 +1,23 @@
 /* tex-make.c: Run external programs to make TeX-related files.
 
-Copyright (C) 1993, 94, 95, 96, 97 Karl Berry.
+    Copyright 1997, 98, 2001-05 Olaf Weber.
+    Copyright 1993, 94, 95, 96, 97 Karl Berry.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
-License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+*/
 
 #include <kpathsea/config.h>
 
@@ -54,21 +57,36 @@ set_maketex_mag P1H(void)
      up DPI, but may as well be safe, and also get the magstep number.  */
   (void) kpse_magstep_fix (dpi, bdpi, &m);
   
-  if (m == 0)
-    sprintf (q, "%d+%d/%d", dpi / bdpi, dpi % bdpi, bdpi);
-  else
-    { /* m is encoded with LSB being a ``half'' bit (see magstep.h).  Are
+  if (m == 0) {
+      if (bdpi <= 4000) {
+          sprintf(q, "%u+%u/%u", dpi / bdpi, dpi % bdpi, bdpi);
+      } else {
+          unsigned f = bdpi/4000;
+          unsigned r = bdpi%4000;
+
+          if (f > 1) {
+              if (r > 0) {
+                  sprintf(q, "%u+%u/(%u*%u + %u)",
+                          dpi/bdpi, dpi%bdpi, f, (bdpi - r)/f, r);
+              } else {
+                  sprintf(q, "%u+%u/(%u*%u)", dpi/bdpi, dpi%bdpi, f, bdpi/f);
+              }
+          } else {
+              sprintf(q, "%u+%u/(4000 + %u)", dpi/bdpi, dpi%bdpi, bdpi, r);
+          }
+      }
+  } else {
+      /* m is encoded with LSB being a ``half'' bit (see magstep.h).  Are
          we making an assumption here about two's complement?  Probably.
          In any case, if m is negative, we have to put in the sign
          explicitly, since m/2==0 if m==-1.  */
       const_string sign = "";
-      if (m < 0)
-        {
+      if (m < 0) {
           m *= -1;
           sign = "-";
-        }
-      sprintf (q, "magstep\\(%s%d.%d\\)", sign, m / 2, (m & 1) * 5);
-    }  
+      }
+      sprintf(q, "magstep\\(%s%d.%d\\)", sign, m / 2, (m & 1) * 5);
+  }
   xputenv ("MAKETEX_MAG", q);
 }
 
@@ -305,7 +323,8 @@ maketex P2C(kpse_file_format_type, format, string*, args)
 
       ret = len == 0 ? NULL : kpse_readable_file (fn);
       if (!ret && len > 1) {
-        WARNING1 ("kpathsea: mktexpk output `%s' instead of a filename", fn);
+        WARNING2 ("kpathsea: %s output `%s' instead of a filename",
+                  new_cmd, fn);
       }
 
       /* Free the name if we're not returning it.  */
@@ -429,7 +448,8 @@ maketex P2C(kpse_file_format_type, format, string*, args)
 
       ret = len == 0 ? NULL : kpse_readable_file (fn);
       if (!ret && len > 1) {
-        WARNING1 ("kpathsea: mktexpk output `%s' instead of a filename", fn);
+        WARNING2("kpathsea: %s output `%s' instead of a filename",
+                 args[0], fn);
       }
 
       /* Free the name if we're not returning it.  */

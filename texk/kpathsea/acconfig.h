@@ -2,7 +2,26 @@
 
    If you're thinking of editing acconfig.h to fix a configuration
    problem, don't. Edit the c-auto.h file created by configure,
-   instead.  Even better, fix configure to give the right answer.  */
+   instead.  Even better, fix configure to give the right answer.
+
+   Copyright 1997-99, 2002, 2005 Olaf Weber.
+   Copyright 1994-97 Karl Berry.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+*/
 
 /* Guard against double inclusion. */
 #ifndef KPATHSEA_C_AUTO_H
@@ -25,12 +44,6 @@
 
 /* Define if your compiler understands prototypes.  */
 #undef HAVE_PROTOTYPES
-
-/* Define if your putenv doesn't waste space when the same environment
-   variable is assigned more than once, with different (malloced)
-   values.  This is true only on NetBSD/FreeBSD, as far as I know. See
-   xputenv.c.  */
-#undef SMART_PUTENV
 
 /* Define if getcwd if implemented using fork or vfork.  Let me know
    if you have to add this by hand because configure failed to detect

@@ -45,7 +45,7 @@
 \initial {.}
 \entry {\code {. \r {directories, ignored}}}{33}
 \entry {\code {. \r {files}}}{33}
-\entry {\code {.2602gf}}{24}
+\entry {\code {.2602gf}}{25}
 \entry {\code {.afm}}{39}
 \entry {\code {.base}}{39}
 \entry {\code {.bib}}{39}
@@ -106,7 +106,7 @@
 \initial {~}
 \entry {\code {~ \r {expansion}}}{31}
 \initial {2}
-\entry {\code {2602gf}}{24}
+\entry {\code {2602gf}}{25}
 \initial {8}
 \entry {8.3 filenames, using}{12}
 \initial {A}
@@ -116,7 +116,7 @@
 \entry {Acorn \TeX {} implementations}{19}
 \entry {\code {AFMFONTS}}{39}
 \entry {AFS}{10}
-\entry {AIX 4.1 \code {configure} error}{25}
+\entry {AIX 4.1 \code {configure} error}{26}
 \entry {AIX shells and \code {configure}}{7}
 \entry {aliases for fonts}{43}
 \entry {aliases, for filenames}{34}
@@ -125,8 +125,8 @@
 \entry {Amiga support}{4}
 \entry {Amiga \TeX {} implementations}{19}
 \entry {Andrew File System, installing with}{10}
-\entry {announcement mailing list}{20, 21}
-\entry {ANSI C}{25}
+\entry {announcement mailing list}{21}
+\entry {ANSI C}{26}
 \entry {append-only directories and \code {mktexpk}}{15}
 \entry {\code {appendonlydir}}{12}
 \entry {architecture-(in)dependent files, installing only}{10}
@@ -140,7 +140,7 @@
 \entry {auxiliary tasks}{37}
 \initial {B}
 \entry {Babel}{5, 10}
-\entry {Bach, Johann Sebastian}{31}
+\entry {Bach, Johann Sebastian}{30}
 \entry {backbone of CTAN}{17}
 \entry {backslash-newline}{29}
 \entry {\code {bash\r {, recommended for running \code {configure}}}}{7}
@@ -155,7 +155,7 @@
 \entry {\code {BSTINPUTS}}{39}
 \entry {bug address}{19}
 \entry {bug checklist}{19}
-\entry {bug mailing list}{20}
+\entry {bug mailing list}{21}
 \entry {bugs, reporting}{19}
 \initial {C}
 \entry {\code {c-*.h}}{47}
@@ -166,7 +166,7 @@
 \entry {\code {CC}}{8}
 \entry {\code {cc \r {warnings}}}{27}
 \entry {\code {cc\r {, compiling with}}}{8}
-\entry {CD-ROM distributions}{18}
+\entry {CD-ROM distributions}{19}
 \entry {\code {CFLAGS}}{8}
 \entry {\code {ChangeLog \r {entry}}}{20}
 \entry {checklist for bug reports}{19}
@@ -186,7 +186,7 @@
 \entry {comments, making}{1}
 \entry {common features in glyph lookup}{43}
 \entry {common problems}{23}
-\entry {\code {comp.sys.sun.admin \r {FAQ}}}{26}
+\entry {\code {comp.sys.sun.admin \r {FAQ}}}{27}
 \entry {\code {comp.text.tex}}{21}
 \entry {compilation}{3}
 \entry {compilation value, source for path}{29}
@@ -195,7 +195,7 @@
 \entry {compiler options, additional}{9}
 \entry {compiler options, specifying}{8}
 \entry {compiler, changing}{10}
-\entry {compiling on HP-UX}{25}
+\entry {compiling on HP-UX}{26}
 \entry {conditions for use}{1}
 \entry {config files}{29}
 \entry {config files, for Kpathsea-using programs}{47}
@@ -211,7 +211,7 @@
 \entry {configuration files as shell scripts.}{30}
 \entry {configuration of \file {mktex} scripts}{11}
 \entry {configuration of optional features}{7}
-\entry {\code {configure \r {error from \code {sed}}}}{25}
+\entry {\code {configure \r {error from \code {sed}}}}{26}
 \entry {\code {configure} options}{7}
 \entry {\code {configure} options for \file {mktex} scripts}{11}
 \entry {\code {configure\r {, running}}}{6}
@@ -242,6 +242,7 @@
 \entry {\code {default_texsizes}}{44}
 \entry {\code {DEFS}}{8}
 \entry {\code {depot}}{9}
+\entry {device, wrong}{25}
 \entry {directories, changing default installation}{6}
 \entry {directories, making append-only}{12}
 \entry {directory permissions}{15}
@@ -254,12 +255,12 @@
 \entry {\code {distclean \r {Make target}}}{11}
 \entry {distributions, compiling simultaneously}{5}
 \entry {distributions, not compiling}{5}
-\entry {distributions, on CD-ROM}{18}
+\entry {distributions, on CD-ROM}{19}
 \entry {distributions, via ftp}{17}
 \entry {\code {dlclose}}{26}
 \entry {\code {dlopen}}{26}
 \entry {\code {dlsym}}{26}
-\entry {\code {dlsym.c}}{26}
+\entry {\code {dlsym.c}}{27}
 \entry {\code {doc files}}{41}
 \entry {DOS compatible names}{12}
 \entry {DOS support}{4}
@@ -269,14 +270,14 @@
 \entry {doubled colons}{30}
 \entry {\code {dpi\var {nnn} directories}}{12}
 \entry {DVI drivers}{5}
-\entry {\code {DVILJMAKEPK}}{13}
+\entry {\code {DVILJMAKEPK}}{14}
 \entry {\code {DVILJSIZES}}{44}
 \entry {\code {DVIPSFONTS}}{42}
 \entry {\code {DVIPSHEADERS}}{41}
-\entry {\code {DVIPSMAKEPK}}{13}
+\entry {\code {DVIPSMAKEPK}}{14}
 \entry {\code {DVIPSSIZES}}{44}
 \entry {dynamic creation of files}{11}
-\entry {dynamic linking problems with OpenWin libraries}{26}
+\entry {dynamic linking problems with OpenWin libraries}{27}
 \initial {E}
 \entry {EC fonts, and dynamic source creation}{11}
 \entry {\code {elt-dirs.c}}{33}
@@ -304,11 +305,11 @@
 \entry {extra colons}{30}
 \entry {\code {extraclean \r {Make target}}}{11}
 \initial {F}
-\entry {failed \code {mktex\dots {}} script invocation}{13}
+\entry {failed \code {mktex\dots {}} script invocation}{14}
 \entry {fallback font}{44}
 \entry {fallback resolutions}{44}
 \entry {fallback resolutions, overriding}{9}
-\entry {FAQ, \t {comp.sys.sun.admin}}{26}
+\entry {FAQ, \t {comp.sys.sun.admin}}{27}
 \entry {FAQ, Kpathsea}{23}
 \entry {Farwell, Matthew}{32}
 \entry {features, of default paths}{5}
@@ -335,10 +336,10 @@
 \entry {\code {FOOINPUTS}}{42}
 \entry {\code {fopen\r {, redefined}}}{22}
 \entry {format of external database}{34}
-\entry {Free Software Foundation}{18}
-\entry {FreeBSD \code {configure} error}{25}
+\entry {Free Software Foundation}{19}
+\entry {FreeBSD \code {configure} error}{26}
 \entry {FreeBSD shells and \code {configure}}{7}
-\entry {FSF Source Code CD-ROM}{18}
+\entry {FSF Source Code CD-ROM}{19}
 \entry {ftp retrieval}{17}
 \entry {\code {ftp.tug.org}}{17}
 \entry {fundamental purpose of Kpathsea}{1}
@@ -346,11 +347,11 @@
 \entry {\code {gcc\r {, compiling with}}}{8}
 \entry {\code {gdb\r {, recommended}}}{20}
 \entry {generation of filename database}{11}
-\entry {\code {get_applicationShellWidgetClass}}{26}
-\entry {\code {get_wmShellWidgetClass}}{26}
+\entry {\code {get_applicationShellWidgetClass}}{27}
+\entry {\code {get_wmShellWidgetClass}}{27}
 \entry {\code {gf}}{40}
 \entry {\code {GFFONTS}}{40}
-\entry {globally writable directories}{14}
+\entry {globally writable directories}{15}
 \entry {glyph lookup}{42}
 \entry {glyph lookup bitmap tolerance}{43}
 \entry {\code {GLYPHFONTS}}{40, 41}
@@ -359,15 +360,15 @@
 \entry {group-writable directories}{15}
 \entry {\code {GSFTOPK_DEBUG \r {(128)}}}{22}
 \initial {H}
-\entry {hash table buckets, printing}{22}
+\entry {hash table buckets, printing}{23}
 \entry {hash table routines}{47}
-\entry {\code {hash_summary_only \r {variable for debugging}}}{22}
+\entry {\code {hash_summary_only \r {variable for debugging}}}{23}
 \entry {help, mailing list for general \TeX {}}{21}
 \entry {\code {HIER}}{6}
 \entry {history of Kpathsea}{1}
 \entry {home directories in paths}{31}
 \entry {\code {HOME\r {, as ~ expansion}}}{31}
-\entry {HP-UX, compiling on}{25}
+\entry {HP-UX, compiling on}{26}
 \initial {I}
 \entry {identifiers, characters valid in}{29}
 \entry {illegal pointer combination warnings}{27}
@@ -389,11 +390,11 @@
 \entry {interface, not frozen}{1}
 \entry {introduction}{1}
 \initial {K}
-\entry {\samp {kdebug:}}{22}
+\entry {\samp {kdebug:}}{23}
 \entry {\code {kdefault.c}}{31}
 \entry {Knuth, Donald E.}{1}
 \entry {Knuth, Donald E., archive of programs by}{19}
-\entry {Knuth, Donald E., original author}{17}
+\entry {Knuth, Donald E., original author}{18}
 \entry {Korn shell\r {, losing with \code {configure}}}{7}
 \entry {Kpathsea config file, source for path}{29}
 \entry {Kpathsea version number}{5}
@@ -407,7 +408,7 @@
 \entry {\code {kpse_cnf_get}}{48}
 \entry {\code {KPSE_DEBUG_EXPAND \r {(16)}}}{22}
 \entry {\code {KPSE_DEBUG_FOPEN \r {(4)}}}{22}
-\entry {\code {KPSE_DEBUG_HASH \r {(2)}}}{21}
+\entry {\code {KPSE_DEBUG_HASH \r {(2)}}}{22}
 \entry {\code {KPSE_DEBUG_PATHS \r {(8)}}}{22}
 \entry {\code {KPSE_DEBUG_SEARCH \r {(32)}}}{22}
 \entry {\code {KPSE_DEBUG_STAT \r {(1)}}}{21}
@@ -438,7 +439,7 @@
 \entry {\code {lcircle10}}{43}
 \entry {\code {LDFLAGS}}{8}
 \entry {leading colons}{30}
-\entry {leaf directories wrongly guessed}{23}
+\entry {leaf directories wrongly guessed}{24}
 \entry {leaf directory trick}{32}
 \entry {\code {libdl.a}}{26}
 \entry {libraries, changing}{10}
@@ -465,25 +466,25 @@
 \entry {\code {ls-R \r {database file}}}{33}
 \entry {\code {ls-R\r {, simplest build}}}{33}
 \initial {M}
-\entry {Mach10 \code {configure} error}{25}
+\entry {Mach10 \code {configure} error}{26}
 \entry {Macintosh \TeX {} implementations}{19}
 \entry {MacKenzie, David}{2, 32}
 \entry {magic characters}{28}
-\entry {mailing lists}{20}
+\entry {mailing lists}{21}
 \entry {\code {maintainer-clean \r {Make target}}}{11}
 \entry {Make arguments, additional}{10}
 \entry {\code {make\r {, running}}}{9}
 \entry {\code {Makefile.in}}{6}
-\entry {Makefiles, empty}{25}
+\entry {Makefiles, empty}{26}
 \entry {\code {MAKETEX_DEBUG \r {(512)}}}{22}
-\entry {\code {MAKETEX_FINE_DEBUG \r {(1024)}}}{22}
+\entry {\code {MAKETEX_FINE_DEBUG \r {(1024)}}}{23}
 \entry {\code {MAKETEX_MODE}}{6}
 \entry {memory allocation routines}{47}
 \entry {metafont driver files}{13}
 \entry {Metafont failures}{25}
-\entry {Metafont installation}{24}
-\entry {Metafont making too-large fonts}{24}
-\entry {Metafont using the wrong resolution}{24}
+\entry {Metafont installation}{25}
+\entry {Metafont making too-large fonts}{25}
+\entry {Metafont using the wrong device}{25}
 \entry {\code {MFBASES}}{39}
 \entry {\code {MFINPUTS}}{40}
 \entry {\code {MFPOOL}}{40}
@@ -491,8 +492,8 @@
 \entry {mirrors, FTP}{17}
 \entry {\code {MISCFONTS}}{40}
 \entry {mismatched checksum warnings}{44}
-\entry {\code {missfont.log}}{13}
-\entry {\code {MISSFONT_LOG}}{13}
+\entry {\code {missfont.log}}{14}
+\entry {\code {MISSFONT_LOG}}{14}
 \entry {missing character warnings}{44}
 \entry {\file {mktex} script configuration}{11}
 \entry {\file {mktex} script names}{13}
@@ -503,6 +504,7 @@
 \entry {\code {mktexmf}}{13}
 \entry {\code {mktexpk}}{13}
 \entry {\code {mktexpk \r {, initial runs}}}{4}
+\entry {\code {mktexpk} can't guess mode}{24}
 \entry {\code {mktextex}}{13}
 \entry {\code {mktextfm}}{13}
 \entry {mode directory, omitting}{13}
@@ -520,11 +522,11 @@
 \entry {must exist}{28}
 \initial {N}
 \entry {names for \file {mktex} scripts}{13}
-\entry {NetBSD \code {configure} error}{25}
+\entry {NetBSD \code {configure} error}{26}
 \entry {NetBSD shells and \code {configure}}{7}
 \entry {Neumann, Gustaf}{2}
 \entry {newsgroup for \TeX {}}{21}
-\entry {NeXT \code {sed} error}{25}
+\entry {NeXT \code {sed} error}{26}
 \entry {NeXT, lacking X11}{5}
 \entry {NFS and \file {ls-R}}{34}
 \entry {NFS CTAN access}{17}
@@ -538,12 +540,12 @@
 \initial {O}
 \entry {obtaining \TeX {}}{17}
 \entry {obtaining Web2c by ftp}{17}
-\entry {obtaining Web2c on CD-ROM}{18}
+\entry {obtaining Web2c on CD-ROM}{19}
 \entry {\code {OCPINPUTS}}{40}
 \entry {\code {OFMFONTS}}{40}
-\entry {online Metafont display, spurious}{24}
+\entry {online Metafont display, spurious}{25}
 \entry {\code {OPENTYPEFONTS}}{40}
-\entry {OpenWin libraries, dynamic linking problems}{26}
+\entry {OpenWin libraries, dynamic linking problems}{27}
 \entry {optimization caveat}{25}
 \entry {optimization, enabling}{9}
 \entry {options for debugging}{21}
@@ -596,7 +598,7 @@
 \entry {programming with config files}{48}
 \entry {programming with Kpathsea}{46}
 \entry {programs using the library}{1}
-\entry {proof mode}{24}
+\entry {proof mode}{25}
 \entry {\code {PSHEADERS}}{41}
 \entry {\code {pxp \r {Pascal preprocessor}}}{1}
 \initial {Q}
@@ -612,7 +614,6 @@
 \entry {reporting bugs}{19}
 \entry {\code {resident.c}}{47}
 \entry {resolution, setting}{35}
-\entry {resolution, wrong}{24}
 \entry {resolutions, last-resort}{44}
 \entry {retrieving \TeX {}}{17}
 \entry {right-hand side of variable assignments}{29}
@@ -631,7 +632,7 @@
 \entry {searching the database}{28}
 \entry {searching the disk}{28}
 \entry {security considerations}{14}
-\entry {\code {sed \r {error from \code {configure}}}}{25}
+\entry {\code {sed \r {error from \code {configure}}}}{26}
 \entry {SELFAUTODIR}{46}
 \entry {SELFAUTOLOC}{46}
 \entry {SELFAUTOPARENT}{46}
@@ -674,7 +675,7 @@
 \entry {supported file formats}{39}
 \entry {suppressing warnings}{44}
 \entry {symbolic link trees, for multiple architectures}{8}
-\entry {symbolic links not found}{23}
+\entry {symbolic links not found}{24}
 \entry {symbolic links, and \file {ls-R}}{33}
 \entry {symlinks, resolving}{46}
 \entry {system C compiler bugs}{25}
@@ -693,7 +694,7 @@
 \entry {\code {tex-file.h}}{46}
 \entry {\code {tex-glyph.c}}{42}
 \entry {\code {tex-glyph.h}}{46}
-\entry {\code {tex-k-request@mail.tug.org}}{20}
+\entry {\code {tex-k-request@mail.tug.org}}{21}
 \entry {\code {tex-k@mail.tug.org \r {(bug address)}}}{19}
 \entry {\code {tex-make.c}}{13}
 \entry {\code {TEX_HUSH}}{28, 44}
@@ -705,7 +706,7 @@
 \entry {\TeX {} glyph lookup}{42}
 \entry {\TeX {} help mailing list}{21}
 \entry {\TeX {} hierarchy, one}{8}
-\entry {\TeX {} Live CD-ROM}{18}
+\entry {\TeX {} Live CD-ROM}{19}
 \entry {\TeX {} support}{39}
 \entry {\TeX {} Users Group}{1}
 \entry {\code {TEXBIB}}{39}
@@ -730,8 +731,10 @@
 \entry {\code {TEXMFDBS}}{33, 40}
 \entry {\code {TEXMFINI}}{39, 40}
 \entry {\code {TEXMFLOG}}{23}
-\entry {\code {TEXMFOUTPUT}}{13}
+\entry {\code {TEXMFOUTPUT}}{14}
 \entry {\code {TEXMFSCRIPTS}}{41}
+\entry {\code {texmfvar}}{13}
+\entry {\code {TEXMFVAR}}{13}
 \entry {\code {TEXPICTS}}{40}
 \entry {\code {TEXPKS}}{41}
 \entry {\code {TEXPOOL}}{41}
@@ -758,7 +761,7 @@
 \entry {Ultrix shells and \code {configure}}{7}
 \entry {unable to find files}{23}
 \entry {unable to generate fonts}{24}
-\entry {\code {uname}}{19}
+\entry {\code {uname}}{20}
 \entry {universe, BSD vs.\: system V}{10}
 \entry {\code {UNIX_ST_LINK}}{32}
 \entry {\code {unixtex.ftp}}{17}
@@ -767,6 +770,7 @@
 \entry {unreadable files}{28}
 \entry {unusable \file {ls-R} warning}{34}
 \entry {usage patterns, finding}{23}
+\entry {\code {USE_TEXMFVAR}}{13}
 \entry {\code {USE_VARTEXFONTS}}{13}
 \entry {Usenet \TeX {} newsgroup}{21}
 \initial {V}
@@ -777,7 +781,7 @@
 \entry {\code {VARTEXFONTS}}{13}
 \entry {VAX 11/750}{1}
 \entry {version number, of Kpathsea}{5}
-\entry {version numbers, determining}{19}
+\entry {version numbers, determining}{20}
 \entry {VF files, not found}{28}
 \entry {\code {VFFONTS}}{41}
 \entry {VMS support}{4}
@@ -805,12 +809,12 @@
 \entry {\code {XCPPFLAGS}}{9}
 \entry {\code {XDEFS}}{9}
 \entry {\code {XDVIFONTS}}{42}
-\entry {\code {XDVIMAKEPK}}{13}
+\entry {\code {XDVIMAKEPK}}{14}
 \entry {\code {XDVISIZES}}{44}
 \entry {\code {XLDFLAGS}}{9}
 \entry {\code {XLOADLIBES}}{10}
 \entry {\code {XMAKEARGS}}{10}
-\entry {\code {Xmu \r {library problems}}}{26}
+\entry {\code {Xmu \r {library problems}}}{27}
 \entry {\code {XtStrings}}{26}
 \initial {Z}
 \entry {zuhn, david}{2}

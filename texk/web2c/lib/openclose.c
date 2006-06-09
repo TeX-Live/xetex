@@ -89,6 +89,8 @@ open_input P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
        would be better to replace lookups in "." with lookups in the
        output_directory followed by "." but to do this requires much more
        invasive surgery in libkpathsea.  */
+    /* FIXME: This code assumes that the filename of the input file is
+       not an absolute filename. */
     if (output_directory) {
         fname = concat3(output_directory, DIR_SEP_STRING, nameoffile + 1);
         *f_ptr = fopen(fname, fopen_mode);
@@ -139,15 +141,12 @@ open_input P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
                     fname[i] = 0;
                 }
 
-                /* FIXME: Can kpse_find_file ever return the name it was
-                   given?  Otherwise the following can be unconditional. */
-                if (nameoffile + 1 != fname) {
-                    free (nameoffile);
-                    namelength = strlen (fname);
-                    nameoffile = (string)xmalloc (namelength + 2);
-                    strcpy (nameoffile + 1, fname);
-                    free (fname);
-                }
+                /* kpse_find_file always returns a new string. */
+                free (nameoffile);
+                namelength = strlen (fname);
+                nameoffile = (string)xmalloc (namelength + 2);
+                strcpy (nameoffile + 1, fname);
+                free (fname);
 
                 /* This fopen is not allowed to fail. */
                 *f_ptr = xfopen (nameoffile + 1, fopen_mode);

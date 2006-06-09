@@ -23,7 +23,7 @@ etex: $(etex_o)
 # C file dependencies
 $(etex_c) etexcoerce.h etexd.h: etex.p $(web2c_texmf)
 	$(web2c) etex
-etexextra.c: lib/texmfmp.c
+etexextra.c: etexdir/etexextra.h lib/texmfmp.c
 	sed s/TEX-OR-MF-OR-MP/etex/ $(srcdir)/lib/texmfmp.c >$@
 etexdir/etexextra.h: etexdir/etexextra.in etexdir/etex.version
 	test -d etexdir || mkdir etexdir
@@ -70,7 +70,8 @@ etex-check: etrip etex.fmt
 # tcx files are a bad idea.
 #	./etex --translate-file=$(srcdir)/share/isol1-t1.tcx \
 #	  $(srcdir)/tests/eight && ./dvitype eight.dvi >eigh.typ
-	./etex --mltex --progname=einitex $(srcdir)/tests/mltextst
+	TEXMFCNF=../kpathsea \
+	  ./etex --mltex --progname=einitex $(srcdir)/tests/mltextst
 	-./etex --progname=etex </dev/null
 	-PATH=`pwd`:$(kpathsea_dir):$(kpathsea_srcdir):$$PATH \
 	  WEB2C=$(kpathsea_srcdir) TMPDIR=.. \

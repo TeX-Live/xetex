@@ -6,10 +6,10 @@
 .NOTPARALLEL:
 
 # These get expanded from the parent directory, not this one.
-ac_include ../make/common.mk
-ac_include ../make/programs.mk
-ac_include ../make/cross.mk
-ac_include kpathsea.mk
+kpse_include ../make/common.mk
+kpse_include ../make/programs.mk
+kpse_include ../make/cross.mk
+kpse_include kpathsea.mk
 
 LEX = @LEX@
 LEXLIB = @LEXLIB@
@@ -61,11 +61,11 @@ regfix.o: regfix.c
 Makefile: Makefile.in ../config.status
 	cd .. && $(SHELL) config.status
 
-ac_include ../make/tkpathsea.mk
-ac_include ../make/clean.mk
+kpse_include ../make/tkpathsea.mk
+kpse_include ../make/clean.mk
 
 clean::
 	rm -f y_tab.c y_tab.h y.out* yacc.* $(LEX_OUTPUT_ROOT).c
 
-ac_include ../make/rdepend.mk
-ac_include web2c/depend.mk
+kpse_include ../make/rdepend.mk
+kpse_include web2c/depend.mk

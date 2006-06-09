@@ -1,3 +1,5 @@
+/* This is a generated file */
+/* collecting all kpathsea headers. */
 #include <kpathsea/config.h>
 #include <kpathsea/absolute.h>
 #include <kpathsea/c-auto.h>

@@ -3,7 +3,7 @@
 # te@dbs.uni-hannover.de, kb@mail.tug.org, and infovore@xs4all.nl.
 # Public domain.
 
-version='$Id: mktexnam,v 1.29 2004/02/25 08:26:29 olaf Exp $'
+version='$Id: mktexnam,v 1.30 2004/12/28 20:55:56 olaf Exp $'
 usage="Usage: $0 NAME [DPI MODE] [DESTDIR].
   Output the PK, TFM, and MF names for a font NAME."
 mt_max_args=4
@@ -137,18 +137,47 @@ test -n "$MT_MKTEXNAM_OPT" && . "$MT_MKTEXNAM_OPT"
 
 # Adjust MT_DESTROOT, if necessary.
 if test -n "${MT_DESTROOT}"; then
-  # Do we have write access and permission?
-  kpseaccess -w "$MT_DESTROOT" || USE_ALTERNATE=1
-  test -w "$MT_DESTROOT" || USE_ALTERNATE=1
   # We distinguish system trees from the rest.
   systexmf="`kpsewhich --expand-path='{$SYSTEXMF}/fonts'`$SEP$MT_VARTEXFONTS"
   case "$SEP$systexmf$SEP" in
-    *$SEP$MT_DESTROOT$SEP*) # A system tree, check for varfonts.
-      if test "x$USE_VARTEXFONTS" = x1 || test "x$USE_ALTERNATE" = x1; then
+    *$SEP$MT_DESTROOT$SEP*) # A system tree.
+      # If the texmfvar option is set, use TEXMFVAR tree.
+      # Some additional uglyness handles the case where $TEXMFVAR exists
+      # but $TEXMFVAR/fonts doesn't (yet).
+      if test "x$USE_TEXMFVAR" = x1; then
+        : ${MT_TEXMFVAR=`kpsewhich --expand-path='$TEXMFVAR'`}
+        MT_DESTROOT=$MT_TEXMFVAR/fonts
+        if test -z "$MT_TEXMFVAR"; then
+          # Path expansion of $TEXMFVAR was empty.
+          FALLBACK=1
+        elif test -d "$MT_DESTROOT"; then
+          # Do we have write access and permission?
+          kpseaccess -w "$MT_DESTROOT" || FALLBACK=1
+          test -w "$MT_DESTROOT" || FALLBACK=1
+        elif test -d "$MT_TEXMFVAR"; then
+          # De we have write access and permission?
+          kpseaccess -w "$MT_TEXMFVAR" || FALLBACK=1
+          test -w "$MT_TEXMFVAR" || FALLBACK=1
+        else
+          # TEXMFVAR defined and exists, but it is not a directory?
+          FALLBACK=1
+        fi
+      else
+        # Do we have write access and permission?
+        kpseaccess -w "$MT_DESTROOT" || FALLBACK=1
+        test -w "$MT_DESTROOT" || FALLBACK=1
+      fi
+      # Fall back on VARTEXFONTS if the varfonts option is set, or
+      # we cannot write in the given tree.
+      if test "x$USE_VARTEXFONTS" = x1 || test "x$FALLBACK" = x1; then
         MT_DESTROOT=$MT_VARTEXFONTS
       fi ;;
     *) # A non-system tree.
-      test "x$USE_ALTERNATE" = x1 && MT_DESTROOT=;;
+      # Do we have write access and permission?
+      kpseaccess -w "$MT_DESTROOT" || FALLBACK=1
+      test -w "$MT_DESTROOT" || FALLBACK=1
+      # If we cannot write fall back of defaults.
+      test "x$FALLBACK" = x1 && MT_DESTROOT=;;
   esac
 fi
 

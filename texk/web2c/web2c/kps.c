@@ -24,6 +24,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #include "web2c.h"
+#include <kpathsea/c-ctype.h>
 /* Get rid of kpathsea debug definitions. */
 #undef fopen
 #undef fclose
@@ -36,7 +37,7 @@ uppercasify P1C(const_string, s)
 
   target = ret;
   while (*s) {
-      *target = toupper(*s);
+      *target = TOUPPER(*s);
       target++;
       s++;
   }

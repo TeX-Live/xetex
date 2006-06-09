@@ -6,7 +6,7 @@ dnl These configure scripts won't work with anything else.
 AC_PREREQ(2.12.1)
 
 dnl Write output here, instead of putting a zillion -D's on the command line.
-AC_CONFIG_HEADER(c-auto.h:c-auto.in)
+AC_CONFIG_HEADERS([c-auto.h:c-auto.in], [date >stamp-auto])
 
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -34,6 +34,9 @@ AC_CHECK_FUNCS(bcmp bcopy bzero getcwd getwd index memcmp memcpy rindex strchr s
 
 AC_C_CONST
 
+# Check whether struct stat provides high-res time.
+KPSE_STRUCT_ST_MTIM
+
 # Check whether prototypes work.
 AC_MSG_CHECKING(whether the compiler accepts prototypes)
 AC_CACHE_VAL(kb_cv_c_prototypes,
@@ -53,69 +56,6 @@ AC_CACHE_VAL(kb_cv_var_program_inv_name,
 AC_MSG_RESULT($kb_cv_var_program_inv_name)
 if test "$kb_cv_var_program_inv_name" = yes; then
   AC_DEFINE(HAVE_PROGRAM_INVOCATION_NAME)
-fi
-
-# Some BSD putenv's, e.g., FreeBSD, do malloc/free's on the environment.
-# This test program is due to Mike Hibler <mike@cs.utah.edu>.
-# We don't actually need to run this if we don't have putenv, but it
-# doesn't hurt.
-AC_MSG_CHECKING(whether putenv uses malloc)
-AC_CACHE_VAL(kb_cv_func_putenv_malloc,
-[AC_TRY_RUN([
-#define VAR	"YOW_VAR"
-#define STRING1 "GabbaGabbaHey"
-#define STRING2 "Yow!!"		/* should be shorter than STRING1 */
-extern char *getenv (); /* in case char* and int don't mix gracefully */
-extern char *malloc (); /* ditto */
-main ()
-{
-  char *str1, *rstr1, *str2, *rstr2;
-  str1 = getenv (VAR);
-  if (str1)
-    exit (1);
-  str1 = malloc (strlen (VAR) + 1 + strlen (STRING1) + 1);
-  if (str1 == 0)
-    exit (2);
-  strcpy (str1, VAR);
-  strcat (str1, "=");
-  strcat (str1, STRING1);
-  if (putenv (str1) < 0)
-    exit (3);
-  rstr1 = getenv (VAR);
-  if (rstr1 == 0)
-    exit (4);
-  rstr1 -= strlen (VAR) + 1;
-  if (strncmp (rstr1, VAR, strlen (VAR)))
-    exit (5);
-  str2 = malloc (strlen (VAR) + 1 + strlen (STRING2) + 1);
-  if (str2 == 0 || str1 == str2)
-    exit (6);
-  strcpy (str2, VAR);
-  strcat (str2, "=");
-  strcat (str2, STRING2);
-  if (putenv (str2) < 0)
-    exit (7);
-  rstr2 = getenv (VAR);
-  if (rstr2 == 0)
-    exit (8);
-  rstr2 -= strlen (VAR) + 1;
-#if 0
-  printf ("rstr1=0x%x, rstr2=0x%x\n", rstr1, rstr2);
-  /*
-   * If string from first call was reused for the second call,
-   * you had better not do a free on the first string!
-   */
-  if (rstr1 == rstr2)
-          printf ("#define SMART_PUTENV\n");
-  else
-          printf ("#undef SMART_PUTENV\n");
-#endif
-  exit (rstr1 == rstr2 ? 0 : 1);
-}], kb_cv_func_putenv_malloc=yes, kb_cv_func_putenv_malloc=no,
-    kb_cv_func_putenv_malloc=no)])dnl
-AC_MSG_RESULT($kb_cv_func_putenv_malloc)
-if test $kb_cv_func_putenv_malloc = yes; then
-  AC_DEFINE(SMART_PUTENV)
 fi
 
 if test $ac_cv_func_getcwd = yes; then
