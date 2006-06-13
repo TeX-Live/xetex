@@ -76,7 +76,7 @@ le_uint32 PairPositioningFormat1Subtable::process(GlyphIterator *glyphIterator, 
             valueRecord2->adjustPosition(SWAPW(valueFormat2), (char *) this, *glyphIterator, fontInstance);
         }
 
-        return 2;
+        return 0;
     }
 
     return 0;
@@ -112,7 +112,7 @@ le_uint32 PairPositioningFormat2Subtable::process(GlyphIterator *glyphIterator, 
             valueRecord2->adjustPosition(SWAPW(valueFormat2), (const char *) this, *glyphIterator, fontInstance);
         }
 
-        return 2;
+        return 0;
     }
 
     return 0;
