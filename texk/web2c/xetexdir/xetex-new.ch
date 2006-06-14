@@ -735,6 +735,13 @@ but then they contain a glyph ID rather than size and length fields, and there's
 @d pdf_node=43 {|subtype| in whatsits that hold PDF page references}
 @d glyph_node=44 {|subtype| in whatsits that hold glyph numbers}
 
+@d pdfbox_crop = 1 { |pic_box_type| values in PDF nodes }
+@d pdfbox_media = 2
+@d pdfbox_bleed = 3
+@d pdfbox_trim = 4
+@d pdfbox_art = 5
+
+
 {Picture files are handled with nodes that include fields for the transform associated
 with the picture, and a pathname for the picture file itself.
 They also have
@@ -748,7 +755,7 @@ pdf_nodes are just like pic_nodes, but generate a different xdv file code.}
 @d pic_node_size=8 { must sync with xetex.h }
 @d pic_path_length(#)==mem[#+4].hh.b0
 @d pic_page(#)==mem[#+4].hh.b1
-@d pic_unused(#)==mem[#+4].hh.rh
+@d pic_box_type(#)==mem[#+4].hh.rh { for PDF, unused in picfile }
 @d pic_transform1(#)==mem[#+5].hh.lh
 @d pic_transform2(#)==mem[#+5].hh.rh
 @d pic_transform3(#)==mem[#+6].hh.lh
@@ -4434,7 +4441,7 @@ begin
 synch_h; synch_v;
 dvi_out(pic_file);
 if is_pdf then
-	dvi_out(1)
+	dvi_out(pic_box_type(p))
 else
 	dvi_out(0);
 dvi_four(pic_transform1(p));
@@ -4549,22 +4556,30 @@ var
 	xmin,xmax,ymin,ymax: real;
 	i: small_number;
 	page: integer;
+	pdf_box_type: integer;
 	result: integer;
 begin
 	{ scan the filename and pack into name_of_file }
 	scan_file_name;
 	pack_cur_name;
 
+    pdf_box_type := 0;
 	page := 0;
 	if is_pdf then begin
 		if scan_keyword("page") then begin
 			scan_int;
 			page := cur_val;
-		end
+		end;
+		pdf_box_type := pdfbox_crop;
+		if scan_keyword("crop") then do_nothing
+		else if scan_keyword("media") then pdf_box_type := pdfbox_media
+		else if scan_keyword("bleed") then pdf_box_type := pdfbox_bleed
+		else if scan_keyword("trim") then pdf_box_type := pdfbox_trim
+		else if scan_keyword("art") then pdf_box_type := pdfbox_art;
 	end;
 
 	{ access the picture file and check its size }
-	result := find_pic_file(address_of(pic_path), address_of(bounds), is_pdf, page);
+	result := find_pic_file(address_of(pic_path), address_of(bounds), pdf_box_type, page);
 
 	setPoint(corners[0], 0.0, 0.0);
 	setPoint(corners[1], 0.0, htField(bounds) * 72.27 / 72.0);
@@ -4648,7 +4663,10 @@ begin
 	if result = 0 then begin
 
 		new_whatsit(pic_node, pic_node_size + (strlen(pic_path) + sizeof(memory_word) - 1) div sizeof(memory_word));
-		if is_pdf then subtype(tail) := pdf_node;
+		if is_pdf then begin
+		  subtype(tail) := pdf_node;
+		  pic_box_type(tail) := pdf_box_type;
+		end;
 		pic_path_length(tail) := strlen(pic_path);
 		pic_page(tail) := page;
 			

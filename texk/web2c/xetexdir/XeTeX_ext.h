@@ -72,6 +72,14 @@ typedef struct {
 
 
 /* these are also in xetex-new.ch and must correspond! */
+
+#define pdfbox_crop	1
+#define pdfbox_media	2
+#define pdfbox_bleed	3
+#define pdfbox_trim	4
+#define pdfbox_art	5
+
+
 #define XeTeX_count_glyphs	1
 
 #define XeTeX_count_variations	2

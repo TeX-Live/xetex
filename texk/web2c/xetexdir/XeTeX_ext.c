@@ -1828,7 +1828,7 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 #ifdef XETEX_OTHER
 #include <wand/magick-wand.h>
 int
-find_pic_file(char** path, realrect* bounds, int isPDF, int page)
+find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 		/* FIXME: not yet handling /page/ parameter or PDFs properly */
 {
 	int					err = -1;

@@ -890,7 +890,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 }
 
 OSErr
-find_pic_file(char** path, realrect* bounds, int isPDF, int page)
+find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 {
 	*path = NULL;
 
@@ -905,10 +905,9 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 			FSRef	picFileRef;
 			CFURLGetFSRef(picFileURL, &picFileRef);
 			
-			if (isPDF) {
+			if (pdfBoxType > 0) {
 				CGPDFDocumentRef	document = CGPDFDocumentCreateWithURL(picFileURL);
 				if (document != NULL) {
-					CGRect	mediaBox;
 					int	nPages = CGPDFDocumentGetNumberOfPages(document);
 					if (page < 0)
 						page = nPages + 1 + page;
@@ -919,13 +918,50 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 
 					CGRect	r;
 #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
-					if (&CGPDFDocumentGetPage == NULL)
-						r = CGPDFDocumentGetCropBox(document, page);
+					if (&CGPDFDocumentGetPage == NULL) {
+						switch (pdfBoxType) {
+							case pdfbox_crop:
+							default:
+								r = CGPDFDocumentGetCropBox(document, page);
+								break;
+							case pdfbox_media:
+								r = CGPDFDocumentGetMediaBox(document, page);
+								break;
+							case pdfbox_bleed:
+								r = CGPDFDocumentGetBleedBox(document, page);
+								break;
+							case pdfbox_trim:
+								r = CGPDFDocumentGetTrimBox(document, page);
+								break;
+							case pdfbox_art:
+								r = CGPDFDocumentGetArtBox(document, page);
+								break;
+						}
+					}
 					else
 #endif
 					{
 						CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, page);
-						r = CGPDFPageGetBoxRect(pageRef, kCGPDFCropBox);
+						CGPDFBox	boxType;
+						switch (pdfBoxType) {
+							case pdfbox_crop:
+							default:
+								boxType = kCGPDFCropBox;
+								break;
+							case pdfbox_media:
+								boxType = kCGPDFMediaBox;
+								break;
+							case pdfbox_bleed:
+								boxType = kCGPDFBleedBox;
+								break;
+							case pdfbox_trim:
+								boxType = kCGPDFTrimBox;
+								break;
+							case pdfbox_art:
+								boxType = kCGPDFArtBox;
+								break;
+						}
+						r = CGPDFPageGetBoxRect(pageRef, boxType);
 					}
 
 					bounds->x = r.origin.x;
