@@ -13,6 +13,12 @@
  * additional plain C extensions for XeTeX - MacOS-specific routines
  */
 
+#ifdef __POWERPC__
+#define MAC_OS_X_VERSION_MIN_REQUIRED	MAC_OS_X_VERSION_10_2
+#else
+#define MAC_OS_X_VERSION_MIN_REQUIRED	MAC_OS_X_VERSION_10_4
+#endif
+
 #define EXTERN extern
 #include "xetexd.h"
 
@@ -910,7 +916,18 @@ find_pic_file(char** path, realrect* bounds, int isPDF, int page)
 						page = 1;
 					if (page > nPages)
 						page = nPages;
-					CGRect r = CGPDFDocumentGetMediaBox(document, page);
+
+					CGRect	r;
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
+					if (&CGPDFDocumentGetPage == NULL)
+						r = CGPDFDocumentGetCropBox(document, page);
+					else
+#endif
+					{
+						CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, page);
+						r = CGPDFPageGetBoxRect(pageRef, kCGPDFCropBox);
+					}
+
 					bounds->x = r.origin.x;
 					bounds->y = r.origin.y;
 					bounds->wd = r.size.width;

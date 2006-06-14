@@ -704,7 +704,15 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 				if (p < 0)			p = nPages + 1 + p;
 				if (p > nPages)		p = nPages;
 				if (p < 1)			p = 1;
-				bounds = CGPDFDocumentGetMediaBox(document, p);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
+				if (&CGPDFDocumentGetPage == NULL)
+					bounds = CGPDFDocumentGetCropBox(document, p);
+				else
+#endif
+				{
+					CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, p);
+					bounds = CGPDFPageGetBoxRect(pageRef, kCGPDFCropBox);
+				}
 			}
 		}
 
@@ -757,7 +765,26 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 
 		if (document != NULL) {
 			bounds.origin.x = bounds.origin.y = 0.0;
-			CGContextDrawPDFDocument(gCtx, bounds, document, p);
+			CGContextClipToRect(gCtx, bounds);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
+			if (&CGPDFDocumentGetPage == NULL) {
+				CGRect	srcBox = CGPDFDocumentGetCropBox(document, p);
+				CGAffineTransform	xf = CGAffineTransformMakeTranslation(-srcBox.origin.x, -srcBox.origin.y);
+				xf = CGAffineTransformScale(xf, bounds.size.width / srcBox.size.width,
+											bounds.size.height / srcBox.size.height);
+				CGContextConcatCTM(gCtx, xf);
+				CGRect	mediaBox = CGPDFDocumentGetMediaBox(document, p);
+				CGContextDrawPDFDocument(gCtx, mediaBox, document, p);
+			}
+			else
+#endif
+			{
+				CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, p);
+				CGAffineTransform	xf = CGPDFPageGetDrawingTransform(pageRef,
+												kCGPDFCropBox, bounds, 0, true);
+				CGContextConcatCTM(gCtx, xf);
+				CGContextDrawPDFPage(gCtx, pageRef);
+			}
 		}
 		else if (image != NULL)
 			CGContextDrawImage(gCtx, bounds, image);
@@ -2014,19 +2041,18 @@ processAllPages(FILE* xdv)
 {
 	// initialize some global variables that we use as CG "constants"
 #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
-	if (&kCGColorSpaceGenericRGB != NULL) {
-#endif
-		gRGBColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-		gCMYKColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericCMYK);
-		gGrayColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_4
-	}
-	else {
+	if (&kCGColorSpaceGenericRGB == NULL) {
 		gRGBColorSpace = CreateColorSpaceFromSystemICCProfileName(CFSTR("Generic RGB Profile.icc"));
 		gCMYKColorSpace = CreateColorSpaceFromSystemICCProfileName(CFSTR("Generic CMYK Profile.icc"));
 		gGrayColorSpace = CreateColorSpaceFromSystemICCProfileName(CFSTR("Generic Gray Profile.icc"));
 	}
+	else
 #endif
+	{
+		gRGBColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+		gCMYKColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericCMYK);
+		gGrayColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+	}
 
 	if (gRGBColorSpace == NULL || gCMYKColorSpace == NULL || gGrayColorSpace == NULL) {
 		fprintf(stderr, "\n*** unable to initialize color spaces.... something's badly broken\n");
