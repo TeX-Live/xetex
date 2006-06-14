@@ -67,6 +67,13 @@
 #define XDV_FLAG_FEATURES		0x0400
 #define XDV_FLAG_VARIATIONS		0x0800
 
+#define pdfbox_crop	1
+#define pdfbox_media	2
+#define pdfbox_bleed	3
+#define pdfbox_trim	4
+#define pdfbox_art	5
+
+
 #define DEFINE_GLOBALS	1
 #include "xdv2pdf_globals.h"
 
@@ -664,7 +671,7 @@ std::map<std::string,imageRec>			sCGImages;
 std::map<std::string,CGPDFDocumentRef>	sPdfDocs;
 
 static void
-doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
+doPicFile(FILE* xdv, int pdfBoxType)	// t[4][6] p[2] l[2] a[l]
 {
     CGAffineTransform	t;
     t.a = Fix2X(readSigned(xdv, 4));
@@ -691,7 +698,8 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 		CGPDFDocumentRef	document = NULL;
 		CGImageRef			image = NULL;
 		CGRect				bounds;
-		if (isPDF) {
+		CGPDFBox			cgPdfBoxType;
+		if (pdfBoxType > 0) {
 			std::map<std::string,CGPDFDocumentRef>::const_iterator	i = sPdfDocs.find(pathString);
 			if (i != sPdfDocs.end())
 				document = i->second;
@@ -705,13 +713,49 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 				if (p > nPages)		p = nPages;
 				if (p < 1)			p = 1;
 #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
-				if (&CGPDFDocumentGetPage == NULL)
-					bounds = CGPDFDocumentGetCropBox(document, p);
+				if (&CGPDFDocumentGetPage == NULL) {
+					switch (pdfBoxType) {
+						case pdfbox_crop:
+						default:
+							bounds = CGPDFDocumentGetCropBox(document, p);
+							break;
+						case pdfbox_media:
+							bounds = CGPDFDocumentGetMediaBox(document, p);
+							break;
+						case pdfbox_bleed:
+							bounds = CGPDFDocumentGetBleedBox(document, p);
+							break;
+						case pdfbox_trim:
+							bounds = CGPDFDocumentGetTrimBox(document, p);
+							break;
+						case pdfbox_art:
+							bounds = CGPDFDocumentGetArtBox(document, p);
+							break;
+					}
+				}
 				else
 #endif
 				{
 					CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, p);
-					bounds = CGPDFPageGetBoxRect(pageRef, kCGPDFCropBox);
+					switch (pdfBoxType) {
+						case pdfbox_crop:
+						default:
+							cgPdfBoxType = kCGPDFCropBox;
+							break;
+						case pdfbox_media:
+							cgPdfBoxType = kCGPDFMediaBox;
+							break;
+						case pdfbox_bleed:
+							cgPdfBoxType = kCGPDFBleedBox;
+							break;
+						case pdfbox_trim:
+							cgPdfBoxType = kCGPDFTrimBox;
+							break;
+						case pdfbox_art:
+							cgPdfBoxType = kCGPDFArtBox;
+							break;
+					}
+					bounds = CGPDFPageGetBoxRect(pageRef, cgPdfBoxType);
 				}
 			}
 		}
@@ -764,25 +808,27 @@ doPicFile(FILE* xdv, bool isPDF)	// t[4][6] p[2] l[2] a[l]
 		CGContextConcatCTM(gCtx, t);
 
 		if (document != NULL) {
+			CGRect	srcBox = bounds;
 			bounds.origin.x = bounds.origin.y = 0.0;
-			CGContextClipToRect(gCtx, bounds);
 #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
 			if (&CGPDFDocumentGetPage == NULL) {
-				CGRect	srcBox = CGPDFDocumentGetCropBox(document, p);
 				CGAffineTransform	xf = CGAffineTransformMakeTranslation(-srcBox.origin.x, -srcBox.origin.y);
 				xf = CGAffineTransformScale(xf, bounds.size.width / srcBox.size.width,
 											bounds.size.height / srcBox.size.height);
 				CGContextConcatCTM(gCtx, xf);
 				CGRect	mediaBox = CGPDFDocumentGetMediaBox(document, p);
+				CGRect	cropBox = CGPDFDocumentGetCropBox(document, p);
+				CGContextClipToRect(gCtx, cropBox);
 				CGContextDrawPDFDocument(gCtx, mediaBox, document, p);
 			}
 			else
 #endif
 			{
 				CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, p);
-				CGAffineTransform	xf = CGPDFPageGetDrawingTransform(pageRef,
-												kCGPDFCropBox, bounds, 0, true);
+				CGAffineTransform	xf = CGPDFPageGetDrawingTransform(pageRef, cgPdfBoxType, bounds, 0, true);
 				CGContextConcatCTM(gCtx, xf);
+				CGRect	cropBox = CGPDFPageGetBoxRect(pageRef, kCGPDFCropBox);
+				CGContextClipToRect(gCtx, cropBox);
 				CGContextDrawPDFPage(gCtx, pageRef);
 			}
 		}
@@ -1936,8 +1982,8 @@ processPage(FILE* xdv)
 			
             case XDV_PIC_FILE:
 				ensurePageStarted();
-				k = readUnsigned(xdv, 1);	/* flag = 1 for PDF mode, 0 for QuickTime raster */
-                doPicFile(xdv, (k == 1));
+				k = readUnsigned(xdv, 1);	/* 0 for QT picfile, or PDF box code (1..5) */
+                doPicFile(xdv, k);
                 break;
                             
 			case DVI_FNTDEF4:
