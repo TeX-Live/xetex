@@ -452,14 +452,14 @@ when it comes to determining whether a character is printable.
 procedure print_char(@!s:ASCII_code); {prints a single character}
 label exit;
 var l: small_number;
-begin if selector>pseudo then {"printing" to a new string, don't encode chars}
+begin if (selector>pseudo) and (not doing_special) then {"printing" to a new string, don't encode chars}
   begin print_visible_char(s); return;
   end;
 if @<Character |s| is the current new-line character@> then
  if selector<pseudo then
   begin print_ln; return;
   end;
-if (s < 32) and (eight_bit_p = 0) then begin
+if (s < 32) and (eight_bit_p = 0) and (not doing_special) then begin
 	{ control char: ^^X }
 	print_visible_char("^"); print_visible_char("^"); print_visible_char(s+64);
 end else if s < 127 then
@@ -467,11 +467,11 @@ end else if s < 127 then
 	print_visible_char(s)
 else if (s = 127) then begin
 	{ DEL }
-	if (eight_bit_p = 0) then begin
+	if (eight_bit_p = 0) and (not doing_special) then begin
 		print_visible_char("^"); print_visible_char("^"); print_visible_char("?")
 	end else
 		print_visible_char(s)
-end else if (s < @"A0) and (eight_bit_p = 0) then begin { C1 controls: ^^xx }
+end else if (s < @"A0) and (eight_bit_p = 0) and (not doing_special) then begin { C1 controls: ^^xx }
 	print_visible_char("^"); print_visible_char("^");
 	print_lc_hex((s mod @"100) div @"10); print_lc_hex(s mod @"10);
 end else begin
@@ -487,6 +487,12 @@ end else begin
 	end
 end;
 exit:end;
+
+@ @<Glob...@>=
+doing_special: boolean;
+
+@ @<Set init...@>=
+doing_special:=false;
 @z
 
 @x
@@ -4382,6 +4388,19 @@ end
 @z
 
 @x
+procedure special_out(@!p:pointer);
+var old_setting:0..max_selector; {holds print |selector|}
+@!k:pool_pointer; {index into |str_pool|}
+begin synch_h; synch_v;@/
+@y
+procedure special_out(@!p:pointer);
+var old_setting:0..max_selector; {holds print |selector|}
+@!k:pool_pointer; {index into |str_pool|}
+begin synch_h; synch_v;@/
+doing_special := true;
+@z
+
+@x
 for k:=str_start[str_ptr] to pool_ptr-1 do dvi_out(so(str_pool[k]));
 spec_out := spec_sout; mubyte_out := mubyte_sout; mubyte_log := mubyte_slog;
 special_printing := false; cs_converting := false;
@@ -4390,6 +4409,7 @@ pool_ptr:=str_start[str_ptr]; {erase the string}
 @y
 for k:=str_start_macro(str_ptr) to pool_ptr-1 do dvi_out(so(str_pool[k]));
 pool_ptr:=str_start_macro(str_ptr); {erase the string}
+doing_special := false;
 @z
 
 @x

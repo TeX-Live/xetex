@@ -40,7 +40,18 @@ my %dest;
 my @links;
 my @bookmarks;
 
-open FH, "< $markfile" or die "failed to read mark-file $markfile\n";
+sub toUtf16
+{
+	my $txt = shift;
+	$txt =~ s/\\([\\\(\)])/$1/g;
+	$txt = pack('n*', 0xfeff, unpack('U*', $txt));
+	$txt =~ s/\\/\\\\/g;
+	$txt =~ s/\(/\\(/g;
+	$txt =~ s/\)/\\)/g;
+	return $txt;
+}
+
+open FH, "<:utf8", "$markfile" or die "failed to read mark-file $markfile\n";
 while (<FH>) {
 	chomp;
 	my ($page, $xpos, $ypos, $txt) = split(/\t/, $_, 4);
@@ -116,9 +127,9 @@ while (<FH>) {
 	}
 
 	elsif ($txt =~ /^\s*outline/o) {
-		$txt =~ m!outline\s+(-?\d+)\s*<+\s*/Title\s*\(([^\)]+)\)\s*/A\s*<+([^>]+)>>\s*>>!o;
+		$txt =~ m!outline\s+(-?\d+)\s*<+\s*/Title\s*\(((?:[^\)]|\\\))+)\)\s*/A\s*<+([^>]+)>>\s*>>!o;
 		my ($level, $title, $action) = ($1, $2, $3);
-		my $bm = { 'text' => $title, 'pdfact' => $action, '_lvl' => $level };
+		my $bm = { 'text' => &toUtf16($title), 'pdfact' => $action, '_lvl' => $level };
 		if ((scalar @bookmarks == 0) || ($level <= $bookmarks[$#bookmarks]->{'_lvl'})) {
 			push @bookmarks, $bm;
 		}
