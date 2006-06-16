@@ -325,7 +325,7 @@ load_mapping_file(const char* s, const char* e)
 	mapPath = kpse_find_file(buffer, kpse_miscfonts_format, 1);
 
 	if (mapPath) {
-		FILE*	mapFile = fopen(mapPath, "r");
+		FILE*	mapFile = fopen(mapPath, "rb");
 		free(mapPath);
 		if (mapFile) {
 			UInt32	mappingSize;
