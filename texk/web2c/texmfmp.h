@@ -10,11 +10,11 @@
 /* added typedefs for unicodefile and voidpointer */
 #define XETEX_UNICODE_FILE_DEFINED	1
 typedef struct {
-	FILE*	f;
-	long	savedChar;
-	short	skipNextLF;
-	short	encodingMode;
-	void*	conversionData;
+  FILE *f;
+  long  savedChar;
+  short skipNextLF;
+  short encodingMode;
+  void *conversionData;
 } UFILE;
 typedef UFILE* unicodefile;
 

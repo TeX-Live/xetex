@@ -61,7 +61,7 @@
 
 typedef struct
 {
-    Fixed       version;
+    Fixed    version;
     UInt16   numGlyphs;
     UInt16   maxPoints;
     UInt16   maxContours;
@@ -80,8 +80,8 @@ typedef struct
 
 typedef struct
 {
-	Fixed		version;
-	Fixed		italicAngle;
+	Fixed	version;
+	Fixed	italicAngle;
 	SInt16	underlinePosition;
 	UInt16	underlineThickness;
 	UInt32	isFixedPitch;
@@ -95,6 +95,56 @@ enum {
     LE_MAXP_TABLE_TAG = 0x6D617870UL, /**< 'maxp' */
     LE_POST_TABLE_TAG = 0x706F7374UL, /**< 'post' */
 };
+
+/* tables/values used in UTF-8 interpretation - 
+   code is based on ConvertUTF.[ch] sample code
+   published by the Unicode consortium */
+const UInt32
+offsetsFromUTF8[6] =	{
+	0x00000000UL,
+	0x00003080UL,
+	0x000E2080UL, 
+	0x03C82080UL,
+	0xFA082080UL,
+	0x82082080UL
+};
+
+const UInt8
+bytesFromUTF8[256] = {
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+};
+
+const UInt8
+firstByteMark[7] = {
+	0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+};
+
+const int halfShift					= 10;
+const UInt32 halfBase				= 0x0010000UL;
+const UInt32 halfMask				= 0x3FFUL;
+const UInt32 kSurrogateHighStart	= 0xD800UL;
+const UInt32 kSurrogateHighEnd		= 0xDBFFUL;
+const UInt32 kSurrogateLowStart		= 0xDC00UL;
+const UInt32 kSurrogateLowEnd		= 0xDFFFUL;
+const UInt32 byteMask				= 0x000000BFUL;
+const UInt32 byteMark				= 0x00000080UL;
+
+
+/* if the user specifies a paper size or output driver program */
+string papersize;
+#ifdef XETEX_MAC
+string outputdriver = "xdv2pdf"; /* default for backward compatibility on Mac OS X */
+#else
+string outputdriver = "xdvipdfmx"; /* for linux version with preliminary dvipdfmx-based driver */
+#endif
+
 
 extern char*	gettexstring(int strNumber);
 void
@@ -393,14 +443,14 @@ loadOTfont(XeTeXFont font, Fixed scaled_size, const char* cp1)
 
 	UInt32	rgbValue = 0x000000FF;
 
-	// scan the feature string (if any)
+	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
 		while (*cp1) {
 			if ((*cp1 == ':') || (*cp1 == ';') || (*cp1 == ','))
 				++cp1;
-			while ((*cp1 == ' ') || (*cp1 == '\t'))	// skip leading whitespace
+			while ((*cp1 == ' ') || (*cp1 == '\t'))	/* skip leading whitespace */
 				++cp1;
-			if (*cp1 == 0)	// break if end of string
+			if (*cp1 == 0)	/* break if end of string */
 				break;
 	
 			cp2 = cp1;
@@ -586,7 +636,7 @@ splitFontName(char* name, char** var, char** feat, char** end)
 
 void*
 findnativefont(unsigned char* uname, long scaled_size)
-	// scaled_size here is in TeX points
+	/* scaled_size here is in TeX points */
 {
 	void*	rval = 0;
 	char*	nameString;
@@ -637,7 +687,7 @@ findnativefont(unsigned char* uname, long scaled_size)
 		strcpy((char*)nameoffile + 1, fullName);
 
 #ifdef XETEX_MAC
-		// decide whether to use AAT or OpenType rendering with this font
+		/* decide whether to use AAT or OpenType rendering with this font */
 		if (getReqEngine() == 'A')
 			goto load_aat;
 #endif
@@ -717,7 +767,7 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 		*xheight = X2Fix(a);
 	}
 	else
-		*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
+		*xheight = *ascent / 2; /* arbitrary figure if there's no 'x' in the font */
 
 	glyphID = mapCharToGlyph(engine, 'X');
 	if (glyphID != 0) {
@@ -725,7 +775,7 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 		*capheight = X2Fix(a);
 	}
 	else
-		*capheight = *ascent; // arbitrary figure if there's no 'X' in the font
+		*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
 }
 
 long
@@ -956,7 +1006,7 @@ makefontdef(long f)
 	famLen = strlen(famName);
 	styLen = strlen(styName);
 
-	// parameters after internal font ID:
+	/* parameters after internal font ID:
 	//	size[4]
 	//	flags[2]
 	//	lp[1] lf[1] ls[1] ps[lp] fam[lf] sty[ls]
@@ -966,24 +1016,25 @@ makefontdef(long f)
 	//		nv[2]
 	//		a[4nv]
 	//		v[4nv]
+	*/
 
 	fontDefLength
-		= 4 // size
-		+ 2	// flags
-		+ 3	// name length
+		= 4 /* size */
+		+ 2	/* flags */
+		+ 3	/* name length */
 		+ psLen + famLen + styLen;
 
 	if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
-		fontDefLength += 4; // 32-bit RGBA value
+		fontDefLength += 4; /* 32-bit RGBA value */
 		flags |= XDV_FLAG_COLORED;
 	}
 
 #ifdef XETEX_MAC
 	if (variationCount > 0) {
 		fontDefLength +=
-			  2	// number of variations
+			  2	/* number of variations */
 			+ 4 * variationCount
-			+ 4 * variationCount;	// axes and values
+			+ 4 * variationCount;	/* axes and values */
 		flags |= XDV_FLAG_VARIATIONS;
 	}
 #endif
@@ -1053,7 +1104,7 @@ applymapping(void* pCnv, const UniChar* txtPtr, int txtLen)
 	TECkit_Status	status;
 	static UInt32	outLength = 0;
 
-	// allocate outBuffer if not big enough
+	/* allocate outBuffer if not big enough */
 	if (outLength < txtLen * sizeof(UniChar) + 32) {
 		if (mappedtext != 0)
 			free(mappedtext);
@@ -1061,7 +1112,7 @@ applymapping(void* pCnv, const UniChar* txtPtr, int txtLen)
 		mappedtext = xmalloc(outLength);
 	}
 	
-	// try the mapping
+	/* try the mapping */
 retry:
 	status = TECkit_ConvertBuffer(cnv,
 			(Byte*)txtPtr, txtLen * sizeof(UniChar), &inUsed,
@@ -1178,17 +1229,17 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
-		// we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle
+		/* we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle */
 		DoAtsuiLayout(node, 0);
 	}
 	else
 #endif
 	if (fontarea[f] == OT_FONT_FLAG) {
-		// using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine
+		/* using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine */
 		
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)(fontlayoutengine[f]);
 
-		// need to find direction runs within the text, and call layoutChars separately for each
+		/* need to find direction runs within the text, and call layoutChars separately for each */
 
 		int		nGlyphs;
 		UBiDiDirection	dir;
@@ -1209,9 +1260,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		
 		dir = ubidi_getDirection(pBiDi);
 		if (dir == UBIDI_MIXED) {
-			// we actually do the layout twice here, once to count glyphs and then again to get them;
+			/* we actually do the layout twice here, once to count glyphs and then again to get them;
 			// which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
 			// bothered to deal with the memory reallocation headache of doing it differently
+			*/
 			int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
 			double		wid = 0;
 			long		totalGlyphs = 0;
@@ -1579,7 +1631,7 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 			*xheight = X2Fix(ht);
 		}
 		else
-			*xheight = *ascent / 2; // arbitrary figure if there's no 'x' in the font
+			*xheight = *ascent / 2; /* arbitrary figure if there's no 'x' in the font */
 		
 		glyphID = MapCharToGlyph_AAT(style, 'X');
 		if (glyphID != 0) {
@@ -1587,7 +1639,7 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 			*capheight = X2Fix(ht);
 		}
 		else
-			*capheight = *ascent; // arbitrary figure if there's no 'X' in the font
+			*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
 	}
 #endif
 }
@@ -1881,3 +1933,222 @@ find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 	return err;
 }
 #endif
+
+boolean
+u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData)
+{
+	boolean	rval;
+	*f = malloc(sizeof(UFILE));
+	(*f)->encodingMode = 0;
+	(*f)->conversionData = 0;
+	(*f)->savedChar = -1;
+	(*f)->skipNextLF = 0;
+	rval = open_input (&((*f)->f), filefmt, fopen_mode);
+	if (rval) {
+		int	B1, B2;
+		if (mode == AUTO) {
+			/* sniff encoding form */
+			B1 = getc((*f)->f);
+			B2 = getc((*f)->f);
+			if (B1 == 0xfe && B2 == 0xff)
+				mode = UTF16BE;
+			else if (B2 == 0xfe && B1 == 0xff)
+				mode = UTF16LE;
+			else if (B1 == 0 && B2 != 0) {
+				mode = UTF16BE;
+				fseek((*f)->f, SEEK_SET, 0);
+			}
+			else if (B2 == 0 && B1 != 0) {
+				mode = UTF16LE;
+				fseek((*f)->f, SEEK_SET, 0);
+			}
+			else if (B1 == 0xef && B2 == 0xbb) {
+				int	B3 = getc((*f)->f);
+				if (B3 == 0xbf)
+					mode = UTF8;
+			}
+			if (mode == AUTO) {
+				fseek((*f)->f, SEEK_SET, 0);
+				mode = UTF8;
+			}
+		}
+
+		setinputfileencoding(*f, mode, encodingData);
+	}
+	return rval;
+}
+
+boolean
+open_dvi_output(FILE** fptr)
+{
+	if (nopdfoutput) {
+		return open_output(fptr, "w");
+	}
+	else {
+		char*	cmd2 = concat(outputdriver, " -o \"");
+		char*	cmd = concat3(cmd2, (char*)nameoffile+1, "\"");
+		free(cmd2);
+		if (papersize != 0) {
+			cmd2 = concat3(cmd, " -p ", papersize);
+			free(cmd);
+			cmd = cmd2;
+		}
+		*fptr = popen(cmd, "w");
+		free(cmd);
+		return (*fptr != 0);
+	}
+}
+
+void
+dviclose(FILE* fptr)
+{
+	if (nopdfoutput)
+		fclose(fptr);
+	else
+		pclose(fptr);
+}
+
+int
+get_uni_c(UFILE* f)
+{
+	int	rval;
+
+	if (f->savedChar != -1) {
+		rval = f->savedChar;
+		f->savedChar = -1;
+		return rval;
+	}
+
+	switch (f->encodingMode) {
+		case UTF8:
+			/* FIXME: we don't currently check for malformed UTF-8 */
+			rval = getc(f->f);
+			if (rval != EOF) {
+				UInt16 extraBytes = bytesFromUTF8[rval];
+				switch (extraBytes) {	/* note: code falls through cases! */
+					case 5: rval <<= 6;	rval += getc(f->f);
+					case 4: rval <<= 6;	rval += getc(f->f);
+					case 3: rval <<= 6;	rval += getc(f->f);
+					case 2: rval <<= 6;	rval += getc(f->f);
+					case 1: rval <<= 6;	rval += getc(f->f);
+					case 0:	;
+				};
+				rval -= offsetsFromUTF8[extraBytes];
+				if (rval > 0xFFFF) {
+					rval -= 0x10000;
+					f->savedChar = 0xdc00 + rval % 0x0400;
+					rval = 0xd800 + rval / 0x0400;
+				}
+			}
+			break;
+
+		case UTF16BE:
+			rval = getc(f->f);
+			rval <<= 8;
+			rval += getc(f->f);
+			break;
+
+		case UTF16LE:
+			rval = getc(f->f);
+			rval += (getc(f->f) << 8);
+			break;
+
+		case RAW:
+			rval = getc(f->f);
+			break;
+
+		default:
+			/* this can't happen */
+			fprintf(stderr, "! Internal error---file input mode=%d.\n", f->encodingMode);
+			uexit(3);
+	}
+
+	return rval;
+}
+
+boolean
+input_line(UFILE* f)
+{
+	int i;
+	
+	if (f->encodingMode == ICUMAPPING)
+		return input_line_icu(f);
+	
+	/* Recognize either LF or CR as a line terminator; skip initial LF if prev line ended with CR.  */
+	i = get_uni_c(f);
+	if (f->skipNextLF) {
+		f->skipNextLF = 0;
+		if (i == '\n')
+			i = get_uni_c(f);
+	}
+
+	last = first;
+	if (last < bufsize && i != EOF && i != '\n' && i != '\r')
+		buffer[last++] = i;
+	if (i != EOF && i != '\n' && i != '\r')
+		while (last < bufsize && (i = get_uni_c(f)) != EOF && i != '\n' && i != '\r')
+			buffer[last++] = i;
+	
+	if (i == EOF && errno != EINTR && last == first)
+		return false;
+	
+	/* We didn't get the whole line because our buffer was too small.  */
+	if (i != EOF && i != '\n' && i != '\r') {
+		fprintf (stderr, "! Unable to read an entire line---bufsize=%u.\n",
+						 (unsigned) bufsize);
+		fputs ("Please increase buf_size in texmf.cnf.\n", stderr);
+		uexit (1);
+	}
+	
+	buffer[last] = ' ';
+	if (last >= maxbufstack)
+		maxbufstack = last;
+	
+	/* If line ended with CR, remember to skip following LF. */
+	if (i == '\r')
+		f->skipNextLF = 1;
+	
+	/* Trim trailing whitespace.  */
+	while (last > first && ISBLANK (buffer[last - 1]))
+		--last;
+	
+	return true;
+}
+
+void
+makeutf16name()
+{
+	unsigned char* s = nameoffile + 1;
+	UInt32	rval;
+	UInt16*	t;
+	static int name16len = 0;
+	if (name16len <= namelength) {
+		if (nameoffile16 != 0)
+			free(nameoffile16);
+		name16len = namelength + 10;
+		nameoffile16 = xmalloc(name16len * sizeof(UInt16));
+	}
+	t = nameoffile16;
+	while (s <= nameoffile + namelength) {
+		rval = *(s++);
+		UInt16 extraBytes = bytesFromUTF8[rval];
+		switch (extraBytes) {	/* note: code falls through cases! */
+			case 5: rval <<= 6;	if (*s) rval += *(s++);
+			case 4: rval <<= 6;	if (*s) rval += *(s++);
+			case 3: rval <<= 6;	if (*s) rval += *(s++);
+			case 2: rval <<= 6;	if (*s) rval += *(s++);
+			case 1: rval <<= 6;	if (*s) rval += *(s++);
+			case 0:	;
+		};
+		rval -= offsetsFromUTF8[extraBytes];
+		if (rval > 0xffff) {
+			rval -= 0x10000;
+			*(t++) = 0xd800 + rval / 0x0400;
+			*(t++) = 0xdc00 + rval % 0x0400;
+		}
+		else
+			*(t++) = rval;
+	}
+	namelength16 = t - nameoffile16;
+}
+

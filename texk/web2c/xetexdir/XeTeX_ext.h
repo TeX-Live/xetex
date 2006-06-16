@@ -107,7 +107,7 @@ typedef struct {
 
 #define XeTeX_map_char_to_glyph_code	22
 
-#define XeTeX_variation_name	7	// must match xetex.web
+#define XeTeX_variation_name	7	/* must match xetex.web */
 #define XeTeX_feature_name	8
 #define XeTeX_selector_name	9
 
@@ -167,6 +167,25 @@ typedef struct
 	float	xMax;
 	float	yMax;
 } GlyphBBox;
+
+
+extern char *outputdriver;
+extern char *papersize;
+
+/* For Unicode encoding form interpretation... */
+extern const UInt32 offsetsFromUTF8[6];
+extern const UInt8 bytesFromUTF8[256];
+extern const UInt8 firstByteMark[7];
+
+extern const int halfShift;
+extern const UInt32 halfBase;
+extern const UInt32 halfMask;
+extern const UInt32 kSurrogateHighStart;
+extern const UInt32 kSurrogateHighEnd;
+extern const UInt32 kSurrogateLowStart;
+extern const UInt32 kSurrogateLowEnd;
+extern const UInt32 byteMask;
+extern const UInt32 byteMark;
 
 #ifdef __cplusplus
 extern "C" {
@@ -231,4 +250,5 @@ extern "C" {
 #endif
 #endif
 
-#endif
+#endif /* __XETEX_EXT_H */
+

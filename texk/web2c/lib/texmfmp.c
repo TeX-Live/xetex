@@ -107,60 +107,12 @@
 
 #ifdef XeTeX
 #include "xetexdir/XeTeX_ext.h"
-
-/* For Unicode encoding form interpretation... */
-static UInt32
-offsetsFromUTF8[6] =	{
-	0x00000000UL,
-	0x00003080UL,
-	0x000E2080UL, 
-	0x03C82080UL,
-	0xFA082080UL,
-	0x82082080UL
-};
-
-static UInt8
-bytesFromUTF8[256] = {
-	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
-};
-
-static UInt8
-firstByteMark[7] = {
-	0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
-};
-
-const int halfShift					= 10;
-const UInt32 halfBase				= 0x0010000UL;
-const UInt32 halfMask				= 0x3FFUL;
-const UInt32 kSurrogateHighStart	= 0xD800UL;
-const UInt32 kSurrogateHighEnd		= 0xDBFFUL;
-const UInt32 kSurrogateLowStart		= 0xDC00UL;
-const UInt32 kSurrogateLowEnd		= 0xDFFFUL;
-const UInt32 byteMask				= 0x000000BFUL;
-const UInt32 byteMark				= 0x00000080UL;
 #endif
 
 
 /* What we were invoked as and with.  */
 char **argv;
 int argc;
-
-#ifdef XeTeX
-/* if the user specifies a paper size or output driver program */
-static string papersize;
-#ifdef XETEX_MAC
-static string outputdriver = "xdv2pdf"; /* default for backward compatibility on Mac OS X */
-#else
-static string outputdriver = "xdvipdfmx"; /* for linux version with preliminary dvipdfmx-based driver */
-#endif
-#endif
 
 /* If the user overrides argv[0] with -progname.  */
 static string user_progname;
@@ -412,15 +364,15 @@ topenin P1H(void)
   int i;
 
 #ifdef XeTeX
-  static UFILE	termin_file;
+  static UFILE termin_file;
   if (termin == 0) {
-	  termin = &termin_file;
-	  termin->f = stdin;
-	  termin->savedChar = -1;
-	  termin->skipNextLF = 0;
-	  termin->encodingMode = UTF8;
-	  termin->conversionData = 0;
-	  inputfile[0] = termin;
+    termin = &termin_file;
+    termin->f = stdin;
+    termin->savedChar = -1;
+    termin->skipNextLF = 0;
+    termin->encodingMode = UTF8;
+    termin->conversionData = 0;
+    inputfile[0] = termin;
   }
 #endif
 
@@ -432,27 +384,27 @@ topenin P1H(void)
 #ifdef XeTeX
       unsigned char *ptr = (unsigned char *)&(argv[i][0]);
       /* need to interpret UTF8 from the command line */
-		UInt32	rval;
-		while (rval = *(ptr++)) {
-			UInt16 extraBytes = bytesFromUTF8[rval];
-			switch (extraBytes) {	// note: code falls through cases!
-				case 5: rval <<= 6;	if (*ptr) rval += *(ptr++);
-				case 4: rval <<= 6;	if (*ptr) rval += *(ptr++);
-				case 3: rval <<= 6;	if (*ptr) rval += *(ptr++);
-				case 2: rval <<= 6;	if (*ptr) rval += *(ptr++);
-				case 1: rval <<= 6;	if (*ptr) rval += *(ptr++);
-				case 0:	;
-			};
-			rval -= offsetsFromUTF8[extraBytes];
-			/* now rval is a USV; if it's >=64K, we need to put surrogates in the buffer */
-			if (rval > 0xFFFF) {
-				rval -= 0x10000;
-				buffer[k++] = 0xd800 + rval / 0x0400;
-				buffer[k++] = 0xdc00 + rval % 0x0400;
-			}
-			else
-				buffer[k++] = rval;
-		}
+      UInt32 rval;
+      while (rval = *(ptr++)) {
+        UInt16 extraBytes = bytesFromUTF8[rval];
+        switch (extraBytes) { /* note: code falls through cases! */
+          case 5: rval <<= 6; if (*ptr) rval += *(ptr++);
+          case 4: rval <<= 6; if (*ptr) rval += *(ptr++);
+          case 3: rval <<= 6; if (*ptr) rval += *(ptr++);
+          case 2: rval <<= 6; if (*ptr) rval += *(ptr++);
+          case 1: rval <<= 6; if (*ptr) rval += *(ptr++);
+          case 0: ;
+        };
+        rval -= offsetsFromUTF8[extraBytes];
+        /* now rval is a USV; if it's >=64K, we need to put surrogates in the buffer */
+        if (rval > 0xFFFF) {
+          rval -= 0x10000;
+          buffer[k++] = 0xd800 + rval / 0x0400;
+          buffer[k++] = 0xdc00 + rval % 0x0400;
+        }
+        else
+          buffer[k++] = rval;
+      }
 #else
       char *ptr = &(argv[i][0]);
       /* Don't use strcat, since in Omega the buffer elements aren't
@@ -486,83 +438,6 @@ topenin P1H(void)
 #endif
 }
 
-#ifdef XeTeX
-
-boolean
-u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData)
-{
-	boolean	rval;
-	*f = malloc(sizeof(UFILE));
-	(*f)->encodingMode = 0;
-	(*f)->conversionData = 0;
-	(*f)->savedChar = -1;
-	(*f)->skipNextLF = 0;
-	rval = open_input (&((*f)->f), filefmt, fopen_mode);
-	if (rval) {
-		int	B1, B2;
-		if (mode == AUTO) {
-			/* sniff encoding form */
-			B1 = getc((*f)->f);
-			B2 = getc((*f)->f);
-			if (B1 == 0xfe && B2 == 0xff)
-				mode = UTF16BE;
-			else if (B2 == 0xfe && B1 == 0xff)
-				mode = UTF16LE;
-			else if (B1 == 0 && B2 != 0) {
-				mode = UTF16BE;
-				fseek((*f)->f, SEEK_SET, 0);
-			}
-			else if (B2 == 0 && B1 != 0) {
-				mode = UTF16LE;
-				fseek((*f)->f, SEEK_SET, 0);
-			}
-			else if (B1 == 0xef && B2 == 0xbb) {
-				int	B3 = getc((*f)->f);
-				if (B3 == 0xbf)
-					mode = UTF8;
-			}
-			if (mode == AUTO) {
-				fseek((*f)->f, SEEK_SET, 0);
-				mode = UTF8;
-			}
-		}
-
-		setinputfileencoding(*f, mode, encodingData);
-	}
-	return rval;
-}
-
-boolean
-open_dvi_output(FILE** fptr)
-{
-	if (nopdfoutput) {
-		return open_output(fptr, "w");
-	}
-	else {
-		char*	cmd2 = concat(outputdriver, " -o \"");
-		char*	cmd = concat3(cmd2, (char*)nameoffile+1, "\"");
-		free(cmd2);
-		if (papersize != 0) {
-			cmd2 = concat3(cmd, " -p ", papersize);
-			free(cmd);
-			cmd = cmd2;
-		}
-		*fptr = popen(cmd, "w");
-		free(cmd);
-		return (*fptr != 0);
-	}
-}
-
-void
-dviclose(FILE* fptr)
-{
-	if (nopdfoutput)
-		fclose(fptr);
-	else
-		pclose(fptr);
-}
-#endif
-
 
 /* IPC for TeX.  By Tom Rokicki for the NeXT; it makes TeX ship out the
    DVI file in a pipe to TeXView so that the output can be displayed
@@ -1509,116 +1384,7 @@ getrandomseed()
    to eof.  Otherwise, we return `true' and set last = first +
    length(line except trailing whitespace).  */
 
-#ifdef XeTeX
-int
-get_uni_c(UFILE* f)
-{
-	int	rval;
-
-	if (f->savedChar != -1) {
-		rval = f->savedChar;
-		f->savedChar = -1;
-		return rval;
-	}
-
-	switch (f->encodingMode) {
-		case UTF8:
-			// FIXME: we don't currently check for malformed UTF-8
-			rval = getc(f->f);
-			if (rval != EOF) {
-				UInt16 extraBytes = bytesFromUTF8[rval];
-				switch (extraBytes) {	// note: code falls through cases!
-					case 5: rval <<= 6;	rval += getc(f->f);
-					case 4: rval <<= 6;	rval += getc(f->f);
-					case 3: rval <<= 6;	rval += getc(f->f);
-					case 2: rval <<= 6;	rval += getc(f->f);
-					case 1: rval <<= 6;	rval += getc(f->f);
-					case 0:	;
-				};
-				rval -= offsetsFromUTF8[extraBytes];
-				if (rval > 0xFFFF) {
-					rval -= 0x10000;
-					f->savedChar = 0xdc00 + rval % 0x0400;
-					rval = 0xd800 + rval / 0x0400;
-				}
-			}
-			break;
-
-		case UTF16BE:
-			rval = getc(f->f);
-			rval <<= 8;
-			rval += getc(f->f);
-			break;
-
-		case UTF16LE:
-			rval = getc(f->f);
-			rval += (getc(f->f) << 8);
-			break;
-
-		case RAW:
-			rval = getc(f->f);
-			break;
-
-		default:
-			/* this can't happen */
-			fprintf(stderr, "! Internal error---file input mode=%d.\n", f->encodingMode);
-			uexit(3);
-	}
-
-	return rval;
-}
-
-boolean
-input_line(UFILE* f)
-{
-	int i;
-	
-	if (f->encodingMode == ICUMAPPING)
-		return input_line_icu(f);
-	
-	/* Recognize either LF or CR as a line terminator; skip initial LF if prev line ended with CR.  */
-	i = get_uni_c(f);
-	if (f->skipNextLF) {
-		f->skipNextLF = 0;
-		if (i == '\n')
-			i = get_uni_c(f);
-	}
-
-	last = first;
-	if (last < bufsize && i != EOF && i != '\n' && i != '\r')
-		buffer[last++] = i;
-	if (i != EOF && i != '\n' && i != '\r')
-		while (last < bufsize && (i = get_uni_c(f)) != EOF && i != '\n' && i != '\r')
-			buffer[last++] = i;
-	
-	if (i == EOF && errno != EINTR && last == first)
-		return false;
-	
-	/* We didn't get the whole line because our buffer was too small.  */
-	if (i != EOF && i != '\n' && i != '\r') {
-		fprintf (stderr, "! Unable to read an entire line---bufsize=%u.\n",
-						 (unsigned) bufsize);
-		fputs ("Please increase buf_size in texmf.cnf.\n", stderr);
-		uexit (1);
-	}
-	
-	buffer[last] = ' ';
-	if (last >= maxbufstack)
-		maxbufstack = last;
-	
-	/* If line ended with CR, remember to skip following LF. */
-	if (i == '\r')
-		f->skipNextLF = 1;
-	
-	/* Trim trailing whitespace.  */
-	while (last > first && ISBLANK (buffer[last - 1]))
-		--last;
-	
-	return true;
-}
-
-#else /* !XeTeX */
-
+#ifndef XeTeX /* for XeTeX, we have a replacement function in XeTeX_ext.c */
 boolean
 input_line P1C(FILE *, f)
 {
@@ -1925,7 +1691,7 @@ checkpoolpointer (poolpointer poolptr, size_t len)
 }
 
 #if !defined(pdfTeX) && !defined(pdfeTeX)
-#ifndef XeTeX	/* XeTeX uses this from xetexmac.c */
+#ifndef XeTeX	/* XeTeX uses this from XeTeX_mac.c */
 static
 #endif
 int
@@ -1934,31 +1700,31 @@ maketexstring(const_string s)
   size_t len;
 #ifdef XeTeX
   UInt32 rval;
-  unsigned char*	cp = (unsigned char*)s;
+  unsigned char* cp = (unsigned char*)s;
 #endif
   assert (s != 0);
   len = strlen(s);
   checkpoolpointer (poolptr, len); /* in the XeTeX case, this may be more than enough */
 #ifdef XeTeX
-	while (rval = *(cp++)) {
-		UInt16 extraBytes = bytesFromUTF8[rval];
-		switch (extraBytes) {	// note: code falls through cases!
-			case 5: rval <<= 6;	if (*cp) rval += *(cp++);
-			case 4: rval <<= 6;	if (*cp) rval += *(cp++);
-			case 3: rval <<= 6;	if (*cp) rval += *(cp++);
-			case 2: rval <<= 6;	if (*cp) rval += *(cp++);
-			case 1: rval <<= 6;	if (*cp) rval += *(cp++);
-			case 0:	;
-		};
-		rval -= offsetsFromUTF8[extraBytes];
-		if (rval > 0xffff) {
-			rval -= 0x10000;
-			strpool[poolptr++] = 0xd800 + rval / 0x0400;
-			strpool[poolptr++] = 0xdc00 + rval % 0x0400;
-		}
-		else
-			strpool[poolptr++] = rval;
-	}
+  while (rval = *(cp++)) {
+  UInt16 extraBytes = bytesFromUTF8[rval];
+  switch (extraBytes) { /* note: code falls through cases! */
+    case 5: rval <<= 6; if (*cp) rval += *(cp++);
+    case 4: rval <<= 6; if (*cp) rval += *(cp++);
+    case 3: rval <<= 6; if (*cp) rval += *(cp++);
+    case 2: rval <<= 6; if (*cp) rval += *(cp++);
+    case 1: rval <<= 6; if (*cp) rval += *(cp++);
+    case 0: ;
+  };
+  rval -= offsetsFromUTF8[extraBytes];
+  if (rval > 0xffff) {
+    rval -= 0x10000;
+    strpool[poolptr++] = 0xd800 + rval / 0x0400;
+    strpool[poolptr++] = 0xdc00 + rval % 0x0400;
+  }
+  else
+    strpool[poolptr++] = rval;
+  }
 #else
   while (len-- > 0)
     strpool[poolptr++] = *s++;
@@ -1967,45 +1733,6 @@ maketexstring(const_string s)
   return (makestring());
 }
 #endif
-
-#ifdef XeTeX
-void
-makeutf16name()
-{
-	unsigned char* s = nameoffile + 1;
-	UInt32	rval;
-	UInt16*	t;
-	static int name16len = 0;
-	if (name16len <= namelength) {
-		if (nameoffile16 != 0)
-			free(nameoffile16);
-		name16len = namelength + 10;
-		nameoffile16 = xmalloc(name16len * sizeof(UInt16));
-	}
-	t = nameoffile16;
-	while (s <= nameoffile + namelength) {
-		rval = *(s++);
-		UInt16 extraBytes = bytesFromUTF8[rval];
-		switch (extraBytes) {	// note: code falls through cases!
-			case 5: rval <<= 6;	if (*s) rval += *(s++);
-			case 4: rval <<= 6;	if (*s) rval += *(s++);
-			case 3: rval <<= 6;	if (*s) rval += *(s++);
-			case 2: rval <<= 6;	if (*s) rval += *(s++);
-			case 1: rval <<= 6;	if (*s) rval += *(s++);
-			case 0:	;
-		};
-		rval -= offsetsFromUTF8[extraBytes];
-		if (rval > 0xffff) {
-			rval -= 0x10000;
-			*(t++) = 0xd800 + rval / 0x0400;
-			*(t++) = 0xdc00 + rval % 0x0400;
-		}
-		else
-			*(t++) = rval;
-	}
-	namelength16 = t - nameoffile16;
-}
-#endif /* XeTeX */
 
 strnumber
 makefullnamestring()
