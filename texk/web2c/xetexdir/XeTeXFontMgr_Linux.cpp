@@ -167,9 +167,13 @@ XeTeXFontMgr_Linux::getOpSizeRecAndStyleFlags(Font* theFont)
 void
 XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 {
-	static	FcFontSet*	allFonts = 0;
+	static bool	cacheAll = false;
+	static	FcFontSet*	allFonts = NULL;
 	
-	if (allFonts == 0) {
+	if (cacheAll) // we've already loaded everything on an earlier search
+		return;
+
+	if (allFonts == NULL) {
 		FcPattern*		pat = FcNameParse((const FcChar8*)":outline=true");
 		FcObjectSet*	os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, FC_INDEX,
 												FC_FULLNAME, FC_WEIGHT, FC_WIDTH, FC_SLANT, NULL);
@@ -187,46 +191,64 @@ XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 	else
 		hyph = 0;
 
-	for (int f = 0; f < allFonts->nfont; ++f) {
-	restart:
-		FcPattern*	pat = allFonts->fonts[f];
-		if (platformRefToFont.find(pat) != platformRefToFont.end())
-			continue;
-		char*	s;
-		int	i;
-		for (i = 0; FcPatternGetString(pat, FC_FULLNAME, i, (FcChar8**)&s) == FcFalse; ++i) {
-			if (name == s) {
+	bool	found = false;
+	while (1) {
+		for (int f = 0; f < allFonts->nfont; ++f) {
+		restart:
+			FcPattern*	pat = allFonts->fonts[f];
+			if (platformRefToFont.find(pat) != platformRefToFont.end())
+				continue;
+
+			if (cacheAll) {
+				// failed to find it via FC; add everything to our maps (potentially slow) as a last resort
 				NameCollection*	names = readNames(pat);
 				addToMaps(pat, names);
 				delete names;
-				goto next_font;
+				continue;
 			}
-		}
-		
-		for (i = 0; FcPatternGetString(pat, FC_FAMILY, i, (FcChar8**)&s) == FcFalse; ++i) {
-			if (name == s || (hyph && famName == s)) {
-				NameCollection*	names = readNames(pat);
-				addToMaps(pat, names);
-				delete names;
-				goto next_font;
-			}
-			char*	t;
-			for (int j = 0; FcPatternGetString(pat, FC_STYLE, j, (FcChar8**)&t) == FcFalse; ++j) {
-				std::string full(s);
-				full += " ";
-				full += t;
-				if (name == full) {
-					// need to ensure we'll pick up the whole family
-					famName = s;
-					hyph = 1;
-					f = 0;
-					goto restart;
+
+			char*	s;
+			int	i;
+			for (i = 0; FcPatternGetString(pat, FC_FULLNAME, i, (FcChar8**)&s) == FcFalse; ++i) {
+				if (name == s) {
+					NameCollection*	names = readNames(pat);
+					addToMaps(pat, names);
+					delete names;
+					found = true;
+					goto next_font;
 				}
 			}
+		
+			for (i = 0; FcPatternGetString(pat, FC_FAMILY, i, (FcChar8**)&s) == FcFalse; ++i) {
+				if (name == s || (hyph && famName == s)) {
+					NameCollection*	names = readNames(pat);
+					addToMaps(pat, names);
+					delete names;
+					found = true;
+					goto next_font;
+				}
+				char*	t;
+				for (int j = 0; FcPatternGetString(pat, FC_STYLE, j, (FcChar8**)&t) == FcFalse; ++j) {
+					std::string full(s);
+					full += " ";
+					full += t;
+					if (name == full) {
+						// need to ensure we'll pick up the whole family
+						famName = s;
+						hyph = 1;
+						f = 0;
+						goto restart;
+					}
+				}
+			}
+
+		next_font:
+			;
 		}
 
-	next_font:
-		;
+		if (found || cacheAll)
+			break;
+		cacheAll = true;
 	}
 }
 
