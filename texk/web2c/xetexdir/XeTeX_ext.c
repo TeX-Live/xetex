@@ -580,6 +580,20 @@ loadOTfont(XeTeXFont font, Fixed scaled_size, const char* cp1)
 				removeFeatures[nRemoved-1] = tag;
 				goto next_option;
 			}
+
+			if (strncmp(cp1, "vertical", 8) == 0) {
+				cp3 = cp2;
+				if (*cp3 == ';' || *cp3 == ':')
+					--cp3;
+				while (*cp3 == ' ' || *cp3 == '\t')
+					--cp3;
+				if (*cp3)
+					++cp3;
+				if (cp3 == cp1 + 8) {
+					loadedfontflags |= FONT_FLAGS_VERTICAL;
+					goto next_option;
+				}
+			}
 			
 		bad_option:
 			fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
@@ -991,6 +1005,8 @@ makefontdef(long f)
 		fontRef = getFontRef(engine);
 
 		rgba = getRgbValue(engine);
+		if ((fontflags[f] & FONT_FLAGS_VERTICAL) != 0)
+			flags |= XDV_FLAG_VERTICAL;
 
 		size = X2Fix(getPointSize(engine));
 	}
