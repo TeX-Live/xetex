@@ -47,18 +47,19 @@ XeTeXFontInst::XeTeXFontInst(PlatformFontRef fontRef, float pointSize, LEErrorCo
     , fXHeight(0)
     , fItalicAngle(0)
     , fCMAPMapper(NULL)
-    , fHMTXTable(NULL)
-    , fNumLongHorMetrics(0)
+    , fMetricsTable(NULL)
+    , fNumLongMetrics(0)
     , fNumGlyphs(0)
     , fNumGlyphsInited(false)
+    , fVertical(false)
 {
 	// the concrete subclass is responsible to call initialize()
 }
 
 XeTeXFontInst::~XeTeXFontInst()
 {
-	if (fHMTXTable != NULL)
-		deleteTable(fHMTXTable);
+	if (fMetricsTable != NULL)
+		deleteTable(fMetricsTable);
 
 	if (fCMAPMapper != NULL)
 		delete fCMAPMapper;
@@ -68,11 +69,18 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
 {
     const LETag headTag = LE_HEAD_TABLE_TAG;
     const LETag hheaTag = LE_HHEA_TABLE_TAG;
+    const LETag vheaTag = LE_VHEA_TABLE_TAG;
     const LETag postTag = LE_POST_TABLE_TAG;
     const HEADTable *headTable = NULL;
-    const HHEATable *hheaTable = NULL;
+    const HHEATable *dirHeadTable = NULL;
     const POSTTable *postTable = NULL;
 
+    // dispose of any cached metrics table
+    if (fMetricsTable != NULL) {
+	    deleteTable(fMetricsTable);
+    	fMetricsTable = NULL;
+    }
+    
     // read unitsPerEm from 'head' table
     headTable = (const HEADTable *) readFontTable(headTag);
 
@@ -84,20 +92,21 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
     fUnitsPerEM = SWAPW(headTable->unitsPerEm);
     deleteTable(headTable);
 
-    hheaTable = (const HHEATable *) readFontTable(hheaTag);
+	// we use the fact that 'hhea' and 'vhea' have the same format!
+    dirHeadTable = (const HHEATable *) readFontTable(fVertical ? vheaTag : hheaTag);
 
-    if (hheaTable == NULL) {
+    if (dirHeadTable == NULL) {
         status = LE_MISSING_FONT_TABLE_ERROR;
         goto error_exit;
     }
 
-    fAscent  = yUnitsToPoints((float)(le_int16)SWAPW(hheaTable->ascent));
-    fDescent = yUnitsToPoints((float)(le_int16)SWAPW(hheaTable->descent));
-    fLeading = yUnitsToPoints((float)(le_int16)SWAPW(hheaTable->lineGap));
+    fAscent  = yUnitsToPoints((float)(le_int16)SWAPW(dirHeadTable->ascent));
+    fDescent = yUnitsToPoints((float)(le_int16)SWAPW(dirHeadTable->descent));
+    fLeading = yUnitsToPoints((float)(le_int16)SWAPW(dirHeadTable->lineGap));
 
-    fNumLongHorMetrics = SWAPW(hheaTable->numOfLongHorMetrics);
+    fNumLongMetrics = SWAPW(dirHeadTable->numOfLongHorMetrics);
 
-    deleteTable((void *) hheaTable);
+    deleteTable(dirHeadTable);
 
     fCMAPMapper = findUnicodeMapper();
 
@@ -110,13 +119,20 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
 
     if (postTable != NULL) {
 		fItalicAngle = Fix2X(SWAPL(postTable->italicAngle));
-		deleteTable((void*)postTable);
+		deleteTable(postTable);
     }
 
     return;
 
 error_exit:
     return;
+}
+
+void XeTeXFontInst::setLayoutDir(bool vertical)
+{
+	fVertical = vertical;
+	LEErrorCode	status = LE_NO_ERROR;
+	initialize(status);
 }
 
 void XeTeXFontInst::deleteTable(const void *table) const
@@ -175,24 +191,25 @@ void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 {
     TTGlyphID ttGlyph = (TTGlyphID) LE_GET_GLYPH(glyph);
 
-    if (fHMTXTable == NULL) {
-        LETag hmtxTag = LE_HMTX_TABLE_TAG;
+    if (fMetricsTable == NULL) {
+    	// we use the fact that 'hmtx' and 'vmtx' have the same format
+        LETag metricsTag = fVertical ? LE_VMTX_TABLE_TAG : LE_HMTX_TABLE_TAG;
         XeTeXFontInst *realThis = (XeTeXFontInst *) this;
-        realThis->fHMTXTable = (const HMTXTable *) readFontTable(hmtxTag);
+        realThis->fMetricsTable = (const HMTXTable *) readFontTable(metricsTag);
     }
 
     le_uint16 index = ttGlyph;
 
-    if (ttGlyph >= getNumGlyphs() || fHMTXTable == NULL) {
+    if (ttGlyph >= getNumGlyphs() || fMetricsTable == NULL) {
         advance.fX = advance.fY = 0;
         return;
     }
 
-    if (ttGlyph >= fNumLongHorMetrics) {
-        index = fNumLongHorMetrics - 1;
+    if (ttGlyph >= fNumLongMetrics) {
+        index = fNumLongMetrics - 1;
     }
 
-    advance.fX = xUnitsToPoints(SWAPW(fHMTXTable->hMetrics[index].advanceWidth));
+    advance.fX = xUnitsToPoints(SWAPW(fMetricsTable->hMetrics[index].advanceWidth));
     advance.fY = 0;
 }
 

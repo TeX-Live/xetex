@@ -90,6 +90,11 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 	return (XeTeXFont)font;
 }
 
+void setFontLayoutDir(XeTeXFont font, int vertical)
+{
+	((XeTeXFontInst*)font)->setLayoutDir(vertical != 0);
+}
+
 PlatformFontRef getFontRef(XeTeXLayoutEngine engine)
 {
 	return engine->font->getFontRef();

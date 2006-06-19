@@ -46,8 +46,10 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
 		
 	FcChar8*	pathname = 0;
 	FcPatternGetString(pattern, FC_FILE, 0, &pathname);
+	int			index;
+	FcPatternGetInteger(pattern, FC_INDEX, 0, &index);
 
-	err = FT_New_Face(gLibrary, (char*)pathname, 0, &face);
+	err = FT_New_Face(gLibrary, (char*)pathname, index, &face);
 
 	if (err != 0) {
         status = LE_FONT_FILE_NOT_FOUND_ERROR;

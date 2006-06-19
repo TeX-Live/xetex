@@ -62,10 +62,12 @@ protected:
 
     CMAPMapper *fCMAPMapper;
 
-    const HMTXTable *fHMTXTable;
-    le_uint16 fNumLongHorMetrics;
+    const HMTXTable *fMetricsTable;
+    le_uint16 fNumLongMetrics;
     le_uint16 fNumGlyphs;
 	bool fNumGlyphsInited;
+	
+	bool fVertical; // false = horizontal, true = vertical
 
     virtual const void *readTable(LETag tag, le_uint32 *length) const = 0;
     void deleteTable(const void *table) const;
@@ -87,6 +89,13 @@ public:
 	virtual void initialize(LEErrorCode &status);
 
     virtual const void *getFontTable(LETag tableTag) const;
+
+	virtual void setLayoutDir(bool vertical);
+
+	virtual bool getLayoutDir() const
+	{
+		return fVertical;
+	};
 
     virtual le_int32 getUnitsPerEM() const
     {

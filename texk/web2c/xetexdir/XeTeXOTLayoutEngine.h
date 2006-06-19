@@ -17,6 +17,8 @@
 #include "IndicLayoutEngine.h"
 #include "HanLayoutEngine.h"
 
+#include "XeTeXFontInst.h"
+
 class XeTeXOTLayoutEngine : public OpenTypeLayoutEngine
 {
 public:
@@ -32,15 +34,16 @@ public:
     static inline UClassID getStaticClassID() { return (UClassID)&fgClassID; }
 
     static LayoutEngine* LayoutEngineFactory
-				(const LEFontInstance* fontInstance,
+				(const XeTeXFontInst* fontInstance,
 					LETag scriptTag, LETag languageTag,
 					const LETag* addFeatures, const LETag* removeFeatures,
 					LEErrorCode &success);
 
+protected:
+	const LETag*	fDefaultFeatures;
+	
 private:
     static const char fgClassID;
-	
-	const LETag*	fDefaultFeatures;
 	
 };
 
@@ -84,24 +87,22 @@ private:
 	const LETag*	fDefaultFeatures;
 };
 
-class XeTeXHanLayoutEngine : public HanOpenTypeLayoutEngine
+class XeTeXHanLayoutEngine : public XeTeXOTLayoutEngine
 {
 public:
-    XeTeXHanLayoutEngine(const LEFontInstance *fontInstance, LETag scriptTag, LETag languageTag,
+    XeTeXHanLayoutEngine(const XeTeXFontInst *fontInstance, LETag scriptTag, LETag languageTag,
                             const GlyphSubstitutionTableHeader *gsubTable,
 							const LETag *addFeatures, const LETag *removeFeatures);
 
     virtual ~XeTeXHanLayoutEngine();
 
-	virtual void adjustFeatures(const LETag* addTags, const LETag* removeTags);
+//	virtual void adjustFeatures(const LETag* addTags, const LETag* removeTags);
 
     virtual inline UClassID getDynamicClassID() const { return getStaticClassID(); }
     static inline UClassID getStaticClassID() { return (UClassID)&fgClassID; }
 
 private:
     static const char fgClassID;
-
-	const LETag*	fDefaultFeatures;
 };
 
 #endif

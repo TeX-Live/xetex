@@ -36,7 +36,7 @@ static le_int32 getLanguageCode(LETag languageTag)
 }
 
 LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
-				(const LEFontInstance* fontInstance,
+				(const XeTeXFontInst* fontInstance,
 					LETag scriptTag, LETag languageTag,
 					const LETag* addFeatures, const LETag* removeFeatures,
 					LEErrorCode &success)
@@ -77,6 +77,7 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
             break;
 
         case haniScriptCode:
+#if 0
             switch (languageCode) {
             case korLanguageCode:
             case janLanguageCode:
@@ -90,11 +91,13 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
 
                 // note: falling through to default case.
             default:
-//                result = new XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+//                result = new XeTeXLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
                 result = new OpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
                 break;
             }
-
+#else
+                result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
+#endif
             break;
 
         case khmrScriptCode:
@@ -240,3 +243,35 @@ void XeTeXOTLayoutEngine::adjustFeatures(const LETag* addTags, const LETag* remo
 	fFeatureList = newList;
 }
 
+
+/*
+ * XeTeXHanLayoutEngine
+ */
+
+const char XeTeXHanLayoutEngine::fgClassID=0;
+
+static const LETag loclFeatureTag = LE_LOCL_FEATURE_TAG;
+static const LETag smplFeatureTag = LE_SMPL_FEATURE_TAG;
+static const LETag tradFeatureTag = LE_TRAD_FEATURE_TAG;
+static const LETag vertFeatureTag = LE_VERT_FEATURE_TAG;
+static const LETag vrt2FeatureTag = LE_VRT2_FEATURE_TAG;
+
+static const LETag horizontalFeatures[] = {loclFeatureTag, emptyTag};
+static const LETag verticalFeatures[] = {loclFeatureTag, vrt2FeatureTag, vertFeatureTag, emptyTag};
+
+XeTeXHanLayoutEngine::XeTeXHanLayoutEngine(const XeTeXFontInst *fontInstance, LETag scriptTag, LETag languageTag,
+                            const GlyphSubstitutionTableHeader *gsubTable,
+							const LETag *addFeatures, const LETag *removeFeatures)
+	: XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, NULL, NULL)
+{
+	// reset the default feature list
+	fFeatureList = fontInstance->getLayoutDir() ? verticalFeatures : horizontalFeatures;
+	fDefaultFeatures = fFeatureList;
+	
+	// then apply any adjustments
+	adjustFeatures(addFeatures, removeFeatures);
+}
+
+XeTeXHanLayoutEngine::~XeTeXHanLayoutEngine()
+{
+}

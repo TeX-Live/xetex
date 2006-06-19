@@ -615,6 +615,9 @@ loadOTfont(XeTeXFont font, Fixed scaled_size, const char* cp1)
 	if ((loadedfontflags & FONT_FLAGS_COLORED) == 0)
 		rgbValue = 0x000000FF;
 
+	if ((loadedfontflags & FONT_FLAGS_VERTICAL) != 0)
+		setFontLayoutDir(font, 1);
+
 	engine = createLayoutEngine(font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
 	if (engine == 0) {
 		deleteFont(font);

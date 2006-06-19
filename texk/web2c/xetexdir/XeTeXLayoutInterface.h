@@ -37,6 +37,8 @@ XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
 XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize);
 #endif
 
+void setFontLayoutDir(XeTeXFont font, int vertical);
+
 PlatformFontRef getFontRef(XeTeXLayoutEngine engine);
 PlatformFontRef findFontByName(const char* name, char* var, double size);
 
