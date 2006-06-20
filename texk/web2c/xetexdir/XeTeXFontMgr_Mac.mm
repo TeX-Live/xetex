@@ -1,12 +1,6 @@
+#ifdef XETEX_MAC // this file only for Mac OS X
+
 #include "XeTeXFontMgr_Mac.h"
-
-#ifdef XETEX_MAC // this is currently an ATSUI-based implementation
-
-#define FONTMGR_ATS		1
-#define FONTMGR_FM		2
-#define FONTMGR_COCOA	3
-
-#define FONTMGR		FONTMGR_COCOA
 
 XeTeXFontMgr::NameCollection*
 XeTeXFontMgr_Mac::readNames(ATSFontRef fontRef)
@@ -139,104 +133,34 @@ XeTeXFontMgr_Mac::readNames(ATSFontRef fontRef)
 	return names;
 }
 
-#if FONTMGR == FONTMGR_COCOA
-#include <Cocoa/Cocoa.h>
-#endif
+void
+XeTeXFontMgr_Mac::addFontsToCaches(NSArray* fonts)
+{
+	NSEnumerator*	enumerator = [fonts objectEnumerator];
+	while (id aFont = [enumerator nextObject]) {
+		ATSFontRef	fontRef = ATSFontFindFromPostScriptName((CFStringRef)[aFont objectAtIndex: 0], kATSOptionFlagsDefault);
+		NameCollection*	names = readNames(fontRef);
+		addToMaps(fontRef, names);
+		delete names;
+	}
+}
 
 void
 XeTeXFontMgr_Mac::addFamilyToCaches(ATSFontFamilyRef familyRef)
 {
-#if FONTMGR == FONTMGR_ATS
-/* This doesn't work.... the documentation is confused and the API is broken.
-   So we end up caching all the fonts of all families on first access. Yuck.
-
-	ATSFontFilter	filter;
-	filter.version = kATSFontFilterCurrentVersion;
-	filter.filterSelector = kATSFontFilterSelectorFontFamily;
-	filter.filter.fontFamilyFilter = familyRef;
-*/
-	ATSFontIterator	iterator;
-	OSStatus	status = ATSFontIteratorCreate(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
-	if (status == noErr) {
-		while (status == noErr) {
-			ATSFontRef	fontRef;
-			status = ATSFontIteratorNext(iterator, &fontRef);
-			if (status == kATSIterationScopeModified) {
-				status = ATSFontIteratorReset(kATSFontContextGlobal, /*&filter*/ NULL, NULL, kATSOptionFlagsUnRestrictedScope, &iterator);
-				if (status == noErr)
-					continue;
-			}
-			if (status != noErr)
-				break;
-			NameCollection*	names = readNames(fontRef);
-			addToMaps(fontRef, names);
-			delete names;
-		}
-		status = ATSFontIteratorRelease(&iterator);
-	}
-#endif
-
-#if FONTMGR == FONTMGR_COCOA
 	CFStringRef	nameStr;
 	OSStatus	status = ATSFontFamilyGetName(familyRef, kATSOptionFlagsDefault, &nameStr);
 	if (status == noErr) {
 		NSArray*	members = [[NSFontManager sharedFontManager]
 								availableMembersOfFontFamily: (NSString*)nameStr];
 		CFRelease(nameStr);
-		NSEnumerator*	enumerator = [members objectEnumerator];
-		while (id aMember = [enumerator nextObject]) {
-			ATSFontRef	fontRef = ATSFontFindFromPostScriptName((CFStringRef)[aMember objectAtIndex: 0], kATSOptionFlagsDefault);
-			NameCollection*	names = readNames(fontRef);
-			addToMaps(fontRef, names);
-			delete names;
-		}
+		addFontsToCaches(members);
 	}
-#endif
-
-#if FONTMGR == FONTMGR_FM
-/* unfortunately, this much faster version only works for FOND-based families */
-	FMFontFamily	fam = FMGetFontFamilyFromATSFontFamilyRef(familyRef);
-	FMFontFamilyInstanceIterator	iter;
-	OSStatus status = FMCreateFontFamilyInstanceIterator(fam, &iter); 
-	if (status == noErr) {
-		while (1) {
-			FMFont		font;
-			FMFontStyle	style;
-			FMFontSize	size;
-			status = FMGetNextFontFamilyInstance(&iter, &font, &style, &size);
-/*
-			if (status == kFMIteratorScopeModified) {
-				status = FMResetFontFamilyInstanceIterator(fam, &iter);
-				if (status == noErr)
-					continue;
-			}
-*/
-			if (status != noErr)
-				break;
-			ATSFontRef	fontRef = FMGetATSFontRefFromFont(font);
-			NameCollection*	names = readNames(fontRef);
-			addToMaps(fontRef, names);
-			delete names;
-		}
-		status = FMDisposeFontFamilyInstanceIterator(&iter);
-	}
-#endif
 }
 
 void
 XeTeXFontMgr_Mac::addFontAndSiblingsToCaches(ATSFontRef fontRef)
 {
-#if (FONTMGR == FONTMGR_ATS) || (FONTMGR == FONTMGR_FM)
-//	ATSFontFamilyRef	familyRef = ATSFontFamilyFromFont(fontRef);
-		// GRRR... this function (or equiv) doesn't exist!!!
-
-	FMFontFamily	fontFamily;
-	FMFontStyle		style;
-	OSStatus	status = FMGetFontFamilyInstanceFromFont(FMGetFontFromATSFontRef(fontRef), &fontFamily, &style);
-	if (status == noErr)
-		addFamilyToCaches(FMGetATSFontFamilyRefFromFontFamily(fontFamily));
-#endif
-#if FONTMGR == FONTMGR_COCOA
 	CFStringRef	name;
 	OSStatus	status = ATSFontGetPostScriptName(fontRef, kATSOptionFlagsDefault, &name);
 	if (status == noErr) {
@@ -244,15 +168,8 @@ XeTeXFontMgr_Mac::addFontAndSiblingsToCaches(ATSFontRef fontRef)
 		CFRelease(name);
 		NSArray*	members = [[NSFontManager sharedFontManager]
 								availableMembersOfFontFamily: [font familyName]];
-		NSEnumerator*	enumerator = [members objectEnumerator];
-		while (id aMember = [enumerator nextObject]) {
-			ATSFontRef	fontRef = ATSFontFindFromPostScriptName((CFStringRef)[aMember objectAtIndex: 0], kATSOptionFlagsDefault);
-			NameCollection*	names = readNames(fontRef);
-			addToMaps(fontRef, names);
-			delete names;
-		}
+		addFontsToCaches(members);
 	}
-#endif
 }
 
 void
@@ -277,6 +194,14 @@ XeTeXFontMgr_Mac::searchForHostPlatformFonts(const std::string& name)
 	if (hyph > 0 && hyph < name.length() - 1) {
 		std::string			family(name.begin(), name.begin() + hyph);
 		CFStringRef			familyStr = CFStringCreateWithCString(kCFAllocatorDefault, family.c_str(), kCFStringEncodingUTF8);
+
+		NSArray*	familyMembers = [[NSFontManager sharedFontManager]
+									availableMembersOfFontFamily: (NSString*)familyStr];
+		if ([familyMembers count] > 0) {
+			addFontsToCaches(familyMembers);
+			return;
+		}
+
 		ATSFontFamilyRef	familyRef = ATSFontFamilyFindFromName(familyStr, kATSOptionFlagsDefault);
 		if (familyRef != 0xffffffff) {
 			addFamilyToCaches(familyRef);
@@ -290,6 +215,13 @@ XeTeXFontMgr_Mac::searchForHostPlatformFonts(const std::string& name)
 		return;
 	}
 
+	NSArray*	familyMembers = [[NSFontManager sharedFontManager]
+								availableMembersOfFontFamily: (NSString*)nameStr];
+	if ([familyMembers count] > 0) {
+		addFontsToCaches(familyMembers);
+		return;
+	}
+
 	ATSFontFamilyRef	familyRef = ATSFontFamilyFindFromName(nameStr, kATSOptionFlagsDefault);
 	if (familyRef != 0xffffffff) {
 		addFamilyToCaches(familyRef);
@@ -297,27 +229,20 @@ XeTeXFontMgr_Mac::searchForHostPlatformFonts(const std::string& name)
 	}
 }
 
-#if FONTMGR == FONTMGR_COCOA
 NSAutoreleasePool* pool = NULL;
-#endif
 
 void
 XeTeXFontMgr_Mac::initialize()
 {
-#if FONTMGR == FONTMGR_COCOA
 	pool = [[NSAutoreleasePool alloc] init];
-//	[NSApplication sharedApplication];
-#endif
 }
 
 void
 XeTeXFontMgr_Mac::terminate()
 {
-#if FONTMGR == FONTMGR_COCOA
 	if (pool != NULL) {
 		[pool release];
 	}
-#endif
 }
 
 #endif // XETEX_MAC
