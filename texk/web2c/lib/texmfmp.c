@@ -1285,7 +1285,9 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
       fname = (string)xmalloc(strlen(nameoffile+1));
       strcpy(fname,nameoffile+1);
 #if !defined(pdfTeX) && !defined(pdfeTeX)
-      fullnameoffile = xstrdup(fname);
+      if (fullnameoffile)
+         free (fullnameoffile);
+      fullnameoffile = xstrdup (fname);
 #endif
       *f_ptr = popen(fname+1,"r");
       free(fname);
@@ -1295,9 +1297,6 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
           break;
         }
       }
-#if !defined(pdfTeX) && !defined(pdfeTeX)
-      if(fullnameoffile) free(fullnameoffile);
-#endif
       if (*f_ptr)
         setvbuf (*f_ptr,(char *)NULL,_IOLBF,0);
 
