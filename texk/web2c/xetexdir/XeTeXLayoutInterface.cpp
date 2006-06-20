@@ -408,6 +408,11 @@ void getGlyphBounds(XeTeXLayoutEngine engine, UInt32 glyphID, GlyphBBox* bbox)
 	engine->font->getGlyphBounds(glyphID, bbox);
 }
 
+float getGlyphWidthFromEngine(XeTeXLayoutEngine engine, UInt32 glyphID)
+{
+	return engine->font->getGlyphWidth(glyphID);
+}
+
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth)
 {
 	engine->font->getGlyphHeightDepth(glyphID, height, depth);

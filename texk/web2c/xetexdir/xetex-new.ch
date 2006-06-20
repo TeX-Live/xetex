@@ -3578,7 +3578,7 @@ end;
 delta:=round((w-a)/float_constant(2)+h*t-x*s);
 @y
 if is_native_font(f) and (a=0) then { special case for non-spacing marks }
-  delta:=round((w-rsb-lsb)/float_constant(2)+h*t-x*s)
+  delta:=round((w-lsb+rsb)/float_constant(2)+h*t-x*s)
 else delta:=round((w-a)/float_constant(2)+h*t-x*s);
 @z
 
@@ -5135,6 +5135,49 @@ XeTeX_selector_name_code:
 @z
 
 @x
+font_char_wd_code,
+font_char_ht_code,
+font_char_dp_code,
+font_char_ic_code: begin scan_font_ident; q:=cur_val; scan_char_num;
+  if (font_bc[q]<=cur_val)and(font_ec[q]>=cur_val) then
+    begin i:=char_info(q)(qi(cur_val));
+    case m of
+    font_char_wd_code: cur_val:=char_width(q)(i);
+    font_char_ht_code: cur_val:=char_height(q)(height_depth(i));
+    font_char_dp_code: cur_val:=char_depth(q)(height_depth(i));
+    font_char_ic_code: cur_val:=char_italic(q)(i);
+    end; {there are no other cases}
+    end
+  else cur_val:=0;
+  end;
+@y
+font_char_wd_code,
+font_char_ht_code,
+font_char_dp_code,
+font_char_ic_code: begin scan_font_ident; q:=cur_val; scan_usv_num;
+  if is_native_font(q) then begin
+    case m of
+    font_char_wd_code: cur_val := getnativecharwd(q, cur_val);
+    font_char_ht_code: cur_val := getnativecharht(q, cur_val);
+    font_char_dp_code: cur_val := getnativechardp(q, cur_val);
+    font_char_ic_code: cur_val := getnativecharic(q, cur_val);
+    end; {there are no other cases}
+  end else begin
+    if (font_bc[q]<=cur_val)and(font_ec[q]>=cur_val) then
+      begin i:=char_info(q)(qi(cur_val));
+      case m of
+      font_char_wd_code: cur_val:=char_width(q)(i);
+      font_char_ht_code: cur_val:=char_height(q)(height_depth(i));
+      font_char_dp_code: cur_val:=char_depth(q)(height_depth(i));
+      font_char_ic_code: cur_val:=char_italic(q)(i);
+      end; {there are no other cases}
+      end
+    else cur_val:=0;
+    end
+  end;
+@z
+
+@x
 @d TeXXeT_en==(TeXXeT_state>0) {is \TeXXeT\ enabled?}
 @y
 @d TeXXeT_en==(TeXXeT_state>0) {is \TeXXeT\ enabled?}
@@ -5194,6 +5237,24 @@ whatsit_node:
 str_pool[pool_ptr]:=si(" "); l:=str_start[s];
 @y
 str_pool[pool_ptr]:=si(" "); l:=str_start_macro(s);
+@z
+
+@x
+if_font_char_code:begin scan_font_ident; n:=cur_val; scan_char_num;
+  if (font_bc[n]<=cur_val)and(font_ec[n]>=cur_val) then
+    b:=char_exists(char_info(n)(qi(cur_val)))
+  else b:=false;
+  end;
+@y
+if_font_char_code:begin scan_font_ident; n:=cur_val; scan_usv_num;
+  if is_native_font(n) then
+    b := (map_char_to_glyph(n, cur_val) > 0)
+  else begin
+    if (font_bc[n]<=cur_val)and(font_ec[n]>=cur_val) then
+      b:=char_exists(char_info(n)(qi(cur_val)))
+    else b:=false;
+    end;
+  end;
 @z
 
 @x

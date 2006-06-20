@@ -353,6 +353,14 @@ void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox)
 	}
 }
 
+float GetGlyphWidth_AAT(ATSUStyle style, UInt16 gid)
+	/* returns TeX points */
+{
+	ATSGlyphIdealMetrics	metrics;
+	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
+	return PStoTeXPoints(metrics.advance.x);
+}
+
 void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp)
 	/* returns TeX points */
 {
@@ -369,15 +377,10 @@ void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rs
 {
 	ATSGlyphIdealMetrics	metrics;
 	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
-#if 0
-	*lsb = metrics.sideBearing.x;
-	*rsb = metrics.otherSideBearing.x;
-#else
 	GlyphBBox	bbox;
 	GetGlyphBBox_AAT(style, gid, &bbox);
 	*lsb = bbox.xMin;
-	*rsb = bbox.xMax - PStoTeXPoints(metrics.advance.x);
-#endif
+	*rsb = PStoTeXPoints(metrics.advance.x) - bbox.xMax;
 }
 
 float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
@@ -385,16 +388,10 @@ float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid)
 	float	rval = 0.0;
 	ATSGlyphIdealMetrics	metrics;
 	OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
-#if 0
-	/* this doesn't seem to work for OT/CFF fonts */
-	if (metrics.otherSideBearing.x > 0.0)
-		rval = metrics.otherSideBearing.x;
-#else
 	GlyphBBox	bbox;
 	GetGlyphBBox_AAT(style, gid, &bbox);
-	if (bbox.xMax > metrics.advance.x)
+	if (bbox.xMax > PStoTeXPoints(metrics.advance.x))
 		rval = bbox.xMax - PStoTeXPoints(metrics.advance.x);
-#endif
 	return rval;
 }
 

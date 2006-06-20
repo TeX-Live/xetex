@@ -1201,6 +1201,22 @@ getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth)
 	snap_zone(height, CAP_HEIGHT(font), fuzz);
 }
 
+scaled
+getnativecharht(int f, int c)
+{
+	scaled	h, d;
+	getnativecharheightdepth(f, c, &h, &d);
+	return h;
+}
+
+scaled
+getnativechardp(int f, int c)
+{
+	scaled	h, d;
+	getnativecharheightdepth(f, c, &h, &d);
+	return d;
+}
+
 void
 getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb)
 {
@@ -1228,6 +1244,40 @@ getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb)
 	*rsb = X2Fix(r);
 }
 
+scaled
+getnativecharic(int f, int c)
+{
+	scaled	lsb, rsb;
+	getnativecharsidebearings(f, c, &lsb, &rsb);
+	if (rsb < 0)
+		return fontletterspace[f] - rsb;
+	else
+		return fontletterspace[f];
+}
+
+scaled
+getnativecharwd(int f, int c)
+{
+	scaled wd = 0;
+#ifdef XETEX_MAC
+	if (fontarea[f] == AAT_FONT_FLAG) {
+		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[f]);
+		int	gid = MapCharToGlyph_AAT(style, c);
+		wd = X2Fix(GetGlyphWidth_AAT(style, gid));
+	}
+	else
+#endif
+	if (fontarea[f] == OT_FONT_FLAG) {
+		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
+		int	gid = mapCharToGlyph(engine, c);
+		wd = X2Fix(getGlyphWidthFromEngine(engine, gid));
+	}
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
+	return wd;
+}
 
 void
 store_justified_native_glyphs(void* node)

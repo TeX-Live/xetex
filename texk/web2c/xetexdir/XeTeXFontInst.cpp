@@ -218,6 +218,14 @@ le_bool XeTeXFontInst::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPo
     return FALSE;
 }
 
+float
+XeTeXFontInst::getGlyphWidth(LEGlyphID gid)
+{
+	LEPoint	advance;
+	getGlyphAdvance(gid, advance);
+	return advance.fX;
+}
+
 void
 XeTeXFontInst::getGlyphHeightDepth(LEGlyphID gid, float* ht, float* dp)
 {
@@ -238,7 +246,7 @@ XeTeXFontInst::getGlyphSidebearings(LEGlyphID gid, float* lsb, float* rsb)
 	getGlyphBounds(gid, &bbox);
 
 	*lsb = bbox.xMin;
-	*rsb = bbox.xMax - adv.fX;
+	*rsb = adv.fX - bbox.xMax;
 }
 
 float

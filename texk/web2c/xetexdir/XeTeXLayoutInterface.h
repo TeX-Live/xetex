@@ -96,6 +96,8 @@ UInt32 getRgbValue(XeTeXLayoutEngine engine);
 
 void getGlyphBounds(XeTeXLayoutEngine engine, UInt32 glyphID, GlyphBBox* bbox);
 
+float getGlyphWidthFromEngine(XeTeXLayoutEngine engine, UInt32 glyphID);
+
 void getGlyphHeightDepth(XeTeXLayoutEngine engine, UInt32 glyphID, float* height, float* depth);
 
 void getGlyphSidebearings(XeTeXLayoutEngine engine, UInt32 glyphID, float* lsb, float* rsb);

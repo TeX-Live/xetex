@@ -62,6 +62,11 @@
 @define function getnativeitaliccorrection();
 @define function getnativeglyphitaliccorrection();
 
+@define function getnativecharwd();
+@define function getnativecharht();
+@define function getnativechardp();
+@define function getnativecharic();
+
 @define procedure atsugetfontmetrics();
 @define procedure otgetfontmetrics();
 

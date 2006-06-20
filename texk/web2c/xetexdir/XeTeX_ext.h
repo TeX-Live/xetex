@@ -207,6 +207,12 @@ extern "C" {
 	void getnativecharheightdepth(int font, int ch, integer* height, integer* depth);
 	void getnativecharsidebearings(int font, int ch, integer* lsb, integer* rsb);
 
+	/* single-purpose metrics accessors */
+	integer getnativecharwd(int font, int ch);
+	integer getnativecharht(int font, int ch);
+	integer getnativechardp(int font, int ch);
+	integer getnativecharic(int font, int ch);
+
 	long otfontget(int what, void* engine);
 	long otfontget1(int what, void* engine, long param);
 	long otfontget2(int what, void* engine, long param1, long param2);
@@ -227,6 +233,7 @@ extern "C" {
 	void* loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1);
 	void DoAtsuiLayout(void* node, int justify);
 	void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox);
+	float GetGlyphWidth_AAT(ATSUStyle style, UInt16 gid);
 	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
 	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
 	int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch);

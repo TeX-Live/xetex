@@ -147,6 +147,7 @@ public:
 
 	virtual void getGlyphBounds(LEGlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
 
+	float getGlyphWidth(LEGlyphID glyph);	
 	void getGlyphHeightDepth(LEGlyphID glyph, float *ht, float* dp);	
 	void getGlyphSidebearings(LEGlyphID glyph, float* lsb, float* rsb);
 	float getGlyphItalCorr(LEGlyphID glyph);
