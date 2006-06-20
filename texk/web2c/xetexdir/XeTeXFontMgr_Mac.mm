@@ -2,6 +2,8 @@
 
 #include "XeTeXFontMgr_Mac.h"
 
+#include <Cocoa/Cocoa.h>
+
 XeTeXFontMgr::NameCollection*
 XeTeXFontMgr_Mac::readNames(ATSFontRef fontRef)
 {
@@ -134,9 +136,9 @@ XeTeXFontMgr_Mac::readNames(ATSFontRef fontRef)
 }
 
 void
-XeTeXFontMgr_Mac::addFontsToCaches(NSArray* fonts)
+XeTeXFontMgr_Mac::addFontsToCaches(CFArrayRef fonts)
 {
-	NSEnumerator*	enumerator = [fonts objectEnumerator];
+	NSEnumerator*	enumerator = [(NSArray*)fonts objectEnumerator];
 	while (id aFont = [enumerator nextObject]) {
 		ATSFontRef	fontRef = ATSFontFindFromPostScriptName((CFStringRef)[aFont objectAtIndex: 0], kATSOptionFlagsDefault);
 		NameCollection*	names = readNames(fontRef);
@@ -154,7 +156,7 @@ XeTeXFontMgr_Mac::addFamilyToCaches(ATSFontFamilyRef familyRef)
 		NSArray*	members = [[NSFontManager sharedFontManager]
 								availableMembersOfFontFamily: (NSString*)nameStr];
 		CFRelease(nameStr);
-		addFontsToCaches(members);
+		addFontsToCaches((CFArrayRef)members);
 	}
 }
 
@@ -168,7 +170,7 @@ XeTeXFontMgr_Mac::addFontAndSiblingsToCaches(ATSFontRef fontRef)
 		CFRelease(name);
 		NSArray*	members = [[NSFontManager sharedFontManager]
 								availableMembersOfFontFamily: [font familyName]];
-		addFontsToCaches(members);
+		addFontsToCaches((CFArrayRef)members);
 	}
 }
 
@@ -198,7 +200,7 @@ XeTeXFontMgr_Mac::searchForHostPlatformFonts(const std::string& name)
 		NSArray*	familyMembers = [[NSFontManager sharedFontManager]
 									availableMembersOfFontFamily: (NSString*)familyStr];
 		if ([familyMembers count] > 0) {
-			addFontsToCaches(familyMembers);
+			addFontsToCaches((CFArrayRef)familyMembers);
 			return;
 		}
 
@@ -218,7 +220,7 @@ XeTeXFontMgr_Mac::searchForHostPlatformFonts(const std::string& name)
 	NSArray*	familyMembers = [[NSFontManager sharedFontManager]
 								availableMembersOfFontFamily: (NSString*)nameStr];
 	if ([familyMembers count] > 0) {
-		addFontsToCaches(familyMembers);
+		addFontsToCaches((CFArrayRef)familyMembers);
 		return;
 	}
 

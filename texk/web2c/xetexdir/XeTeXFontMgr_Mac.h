@@ -14,7 +14,7 @@
 
 #include "XeTeXFontMgr.h"
 
-#include <Cocoa/Cocoa.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 class XeTeXFontMgr_Mac
 	: public XeTeXFontMgr
@@ -35,7 +35,7 @@ protected:
 	virtual NameCollection*			readNames(ATSUFontID fontID);
 
 private:
-	void		addFontsToCaches(NSArray* fonts);
+	void		addFontsToCaches(CFArrayRef fonts);
 
 	void		addFamilyToCaches(ATSFontFamilyRef familyRef);
 
