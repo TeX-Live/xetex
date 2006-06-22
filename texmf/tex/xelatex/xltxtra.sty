@@ -1,0 +1,156 @@
+%%
+%% This is file `xltxtra.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xltxtra.dtx  (with options: `package')
+%% 
+%%   ____________________________
+%%   The xltxtra package
+%%   (C) 2006  Will Robertson
+%%   License information appended
+%% 
+%% 
+\unless\ifdefined\XeTeXversion
+  \@latex@error{^^J
+   *************************************************^^J
+   *** The xltxtra package only works with XeTeX ***^^J
+   *************************************************}
+\fi
+\ProvidesPackage{xltxtra}
+  [2006/06/08 v0.1 Improvements for the XeTeX/LaTeX format]
+\newcommand*\TeXlogospacing[5]{%
+  \DeclareRobustCommand\TeX{%
+    \leavevmode
+    \smash{%
+      T\kern#1
+      \lower#3\hbox{E}\kern#2 X}%
+    \spacefactor1000\relax}
+  \DeclareRobustCommand{\LaTeX}{%
+    \leavevmode
+    \smash{
+    L\kern#4%
+    {\sbox\z@ T%
+      \vbox to\ht\z@{\hbox{\check@mathfonts
+        \fontsize\sf@size\z@
+        \math@fontsfalse\selectfont
+        A}%
+      \vss}%
+    }%
+    \kern#5%
+    \TeX}}
+  \DeclareRobustCommand\XeTeX{%
+    \leavevmode
+    \smash{%
+     X\lower #3
+     \hbox{\kern #2
+       \ifnum\XeTeXcharglyph"018E > 0
+         \char"018E\relax
+       \else\ifdim\fontdimen1\font=0pt
+         \reflectbox{E}%
+       \else % rotation is about the origin, so we need to adjust positioning
+         \XeTeXuseglyphmetrics=1%
+         \setbox0=\hbox{E}\dimen0=\ht0\advance\dimen0by\dp0%
+         \raise\dimen0\hbox{\rotatebox{180}{\box0}}%
+       \fi\fi
+     }\kern#1\TeX}}}
+\TeXlogospacing{-0.15em}{-0.15em}{0.5ex}{-0.36em}{-0.15em}
+\RequirePackage{etex}
+\RequirePackage{fixltx2e}[2006/03/24]
+\newcommand*\robust@let@nc[2]{%
+  \expandafter\let\expandafter#1\csname #2 \endcsname}
+\DeclareRobustCommand{\-}{%
+  \discretionary{%
+    \char\ifnum\hyphenchar\font<\z@
+           \xlx@defaulthyphenchar
+         \else
+           \hyphenchar\font
+         \fi}{}{}}
+\def\xlx@defaulthyphenchar{`\-}
+\robust@let@nc\faketextsubscript{textsubscript}
+\robust@let@nc\faketextsuperscript{textsuperscript}
+\DeclareRobustCommand*\textsubscript{%
+  \@ifstar{\faketextsubscript}{\@@textsubscript}}
+\newcommand\@@textsubscript[1]{%
+  \begingroup
+    \c@zf@script 1818326126\relax
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@set@font@type
+    \ifzf@atsui
+      \zf@make@aat@feature@string{10}{2}%
+      \unless\ifx\zf@thisfontfeature\@empty
+        {\addfontfeature{VerticalPosition=Inferior}#1}%
+      \else
+        \faketextsubscript{#1}%
+      \fi
+    \fi
+    \ifzf@icu
+      \zf@check@ot@feat{+subs}%
+      \if@tempswa
+        {\addfontfeature{VerticalPosition=Inferior}#1}%
+      \else
+        \zf@check@ot@feat{+sinf}%
+        \if@tempswa
+          {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
+        \else
+          \faketextsubscript{#1}%
+        \fi
+      \fi
+    \fi
+  \endgroup}
+\DeclareRobustCommand*\textsuperscript{%
+  \@ifstar{\faketextsuperscript}{\@@textsuperscript}}
+\newcommand\@@textsuperscript[1]{%
+  \begingroup
+    \c@zf@script 1818326126\relax
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@set@font@type
+    \ifzf@atsui
+      \zf@make@aat@feature@string{10}{1}%
+      \unless\ifx\zf@thisfontfeature\@empty
+        {\addfontfeature{VerticalPosition=Superior}#1}%
+      \else
+        \faketextsuperscript{#1}%
+      \fi
+    \fi
+    \ifzf@icu
+      \zf@check@ot@feat{+sups}%
+      \if@tempswa
+        {\addfontfeature{VerticalPosition=Superior}#1}%
+      \else
+        \faketextsuperscript{#1}%
+      \fi
+    \fi
+  \endgroup}
+\newcommand*\vfrac[2]{%
+  \begingroup
+    \c@zf@script 1818326126\relax
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@set@font@type
+    \ifzf@atsui
+      {\addfontfeature{VerticalPosition=Superior}#1}%
+       \textfractionsolidus
+      {\addfontfeature{VerticalPosition=Inferior}#2}%
+    \fi
+    \ifzf@icu
+      {\addfontfeature{VerticalPosition=Numerator}#1}%
+       \textfractionsolidus
+      {\addfontfeature{VerticalPosition=Denominator}#2}%
+    \fi
+  \endgroup}
+%% 
+%% Copyright (C) 2006 by Will Robertson <wspr81@gmail.com>
+%% 
+%% Distributable under the LaTeX Project Public License,
+%% version 1.3b or higher (your choice). The latest version of
+%% this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status)
+%% by Will Robertson.
+%% 
+%% This work consists of the file  xltxtra.dtx
+%%           and the derived files xltxtra.sty and xltxtra.pdf.
+%% 
+%%
+%% End of file `xltxtra.sty'.

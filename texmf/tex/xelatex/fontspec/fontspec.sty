@@ -12,10 +12,9 @@
 %% 
 %%   License information appended.
 %% 
-%% This copy patched at line 938 by JK - v. 1.9 -> 1.9a
 %% 
 \ProvidesPackage{fontspec}
-  [2006/04/26 v1.9a Advanced font selection for XeLaTeX]
+  [2006/06/07 v1.10 Advanced font selection for XeLaTeX]
 
 \unless\ifdefined\XeTeXversion
   \@latex@error{^^J
@@ -24,24 +23,31 @@
    *** The fontspec package only works with XeTeX.  ^^J
    *************************************************}
 \fi
-\def\zf@enc{U}
-\renewcommand\encodingdefault{\zf@enc}
+\newif\ifzf@firsttime
+\newif\ifzf@tfm
+\newif\ifzf@atsui
+\newif\ifzf@icu
+\newif\ifzf@mm
+\newif\ifzf@math@euler
+\newif\ifzf@math@lucida
+\newif\ifzf@euler@package@loaded
+\newif\ifzf@package@babel@loaded
+\newcount\c@zf@newff
+\newcount\c@zf@index
+\newcount\c@zf@script
+\newcount\c@zf@language
 \newcommand\zf@PackageError[2]{\PackageError{fontspec}{#1}{#2}}
 \newcommand\zf@PackageWarning[1]{\PackageWarning{fontspec}{#1}}
 \newcommand\zf@PackageInfo[1]{\PackageInfo{fontspec}{#1}}
 \RequirePackage{calc}
 \RequirePackage{xkeyval}[2005/05/07]
-\newif\ifzf@firsttime
-\newif\ifzf@aat
-\newif\ifzf@opentype
-\newif\ifzf@mm
-\newif\ifzf@math@euler
-\newif\ifzf@math@lucida
-\newif\ifzf@euler@package@loaded
-\newcount\c@zf@newff
-\newcount\c@zf@index
-\newcount\c@zf@script
-\newcount\c@zf@language
+\def\zf@enc{U}
+\renewcommand\encodingdefault{\zf@enc}
+\def\cyrillicencoding{U}%
+\def\latinencoding{U}%
+\g@addto@macro\document{%
+  \def\cyrillicencoding{U}%
+  \def\latinencoding{U}}
 \newcommand*\fontspec[2][]{%
   \zf@fontspec{#1}{#2}%
   \fontfamily\zf@family\selectfont
@@ -87,11 +93,11 @@
 \newcommand*\addfontfeatures[1]{%
   \let\zf@default@options@old\zf@default@options
   \let\zf@default@options\@empty
-  \edef\zf@thisinfo{\csname zf@family@\f@family\endcsname}%
+  \edef\zf@thisinfo{}%
   \edef\@tempa{%
     \noexpand\zf@fontspec
-      {\expandafter\@firstoftwo\zf@thisinfo,#1}%
-      {\expandafter\@secondoftwo\zf@thisinfo}}%
+      {\csname zf@family@options\f@family\endcsname,#1}%
+      {\csname zf@family@fontname\f@family\endcsname}}%
   \@tempa
   \fontfamily\zf@family\selectfont
   \let\zf@default@options\zf@default@options@old
@@ -101,7 +107,7 @@
   \stepcounter{zf@newff}%
   \def@cx{+zf-#1}{+zf-\the\c@zf@newff}%
   \define@key[zf]{options}{#1}[]{%
-    \zf@update@family{\csname +zf-#1\endcsname}%
+    \zf@update@family{\csname+zf-#1\endcsname}%
     \zf@update@ff{#2}}}
 \newcommand*\newAATfeature[4]{%
   \unless\ifcsname zf@options@#1\endcsname
@@ -128,7 +134,7 @@
       \xdef\zf@family@long{\zf@family@long+script=#1}%
       \xdef\zf@pre@ff{script=#2,\zf@pre@ff}%
     \else
-      \zf@PackageWarning{Font '\zf@fontname' does not contain script '#1'}%
+      \zf@PackageWarning{Font \fontname\zf@basefont does not contain script '#1'}%
     \fi}}
 \newcommand*\newfontlanguage[2]{%
   \define@key[zf@feat]{Lang}{#1}[]{%
@@ -139,7 +145,7 @@
       \xdef\zf@family@long{\zf@family@long+lang=#1}%
       \xdef\zf@pre@ff{\zf@pre@ff language=#2,}%
     \else
-      \zf@PackageWarning{Font '\zf@fontname' does not contain
+      \zf@PackageWarning{Font \fontname\zf@basefont does not contain
                          language '#1' for script '\zf@script@name'}%
     \fi}}
 \providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
@@ -149,7 +155,7 @@
   \begingroup
   \zf@init
   \edef\zf@fontname{#2}%
-  \edef\zf@family@long{#2}%
+  \let\zf@family@long\zf@fontname
   \setkeys*[zf]{preparse}{#1}%
   \edef\zf@font@feat{\zf@font@feat\XKV@rm}%
   \unless\ifdefined\zf@basefont
@@ -164,13 +170,17 @@
       \expandafter\stepcounter\else
       \expandafter\newcounter\fi
         {zf@famc@#2}%
-    \def@cx{zf@UID@\zf@family@long}{#2 (\expandafter\the\csname c@zf@famc@#2\endcsname)}%
+    \def@cx{zf@UID@\zf@family@long}{%
+      \zap@space#2 \@empty
+      (\expandafter\the\csname c@zf@famc@#2\endcsname)}%
   \fi
   \xdef\zf@family{\@nameuse{zf@UID@\zf@family@long}}%
-  \unless\ifcsname zf@family@\zf@family\endcsname
+  \unless\ifcsname zf@family@fontname\zf@family\endcsname
     \zf@PackageInfo{Defining font family for "#2"
           with options [\zf@default@options #1]}%
-    \gdef@cx{zf@family@\zf@family}{{\zf@default@options #1}{#2}}%
+    \gdef@cx{zf@family@fontname\zf@family}{\zf@fontname}%
+    \gdef@cx{zf@family@options\zf@family}{\zf@default@options #1}%
+    \gdef@cx{zf@family@fontdef\zf@family}{\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff}%
     \DeclareFontFamily{\zf@enc}{\zf@family}{}%
     \zf@make@font@shapes{\zf@fontname}{\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
     \ifx\zf@bf\@empty
@@ -197,17 +207,19 @@
       \zf@make@font@shapes{\zf@bfit}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
     \fi
   \fi
-  \endgroup}
+  \endgroup
+  }
 \newcommand*\zf@set@font@type{%
-  \zf@aatfalse \zf@opentypefalse \zf@mmfalse
-  \ifnum\XeTeXcountfeatures\zf@basefont > 0
-    \zf@aattrue
-  \fi
-  \ifnum\XeTeXOTcountscripts\zf@basefont > 0
-    \zf@opentypetrue
-  \fi
-  \ifnum\XeTeXcountvariations\zf@basefont > 0
-    \zf@mmtrue
+  \zf@tfmfalse \zf@atsuifalse \zf@icufalse \zf@mmfalse
+  \ifcase\XeTeXfonttype\zf@basefont
+    \zf@tfm
+  \or
+    \zf@atsuitrue
+    \ifnum\XeTeXcountvariations\zf@basefont > 0
+      \zf@mmtrue
+    \fi
+  \or
+    \zf@icutrue
   \fi}
 \newcommand*\zf@make@font@shapes[5][]{%
   \bgroup
@@ -282,13 +294,13 @@
 }
 \newcommand*\zf@make@smallcaps{%
   \let\zf@smallcaps\@empty
-  \ifzf@aat
+  \ifzf@atsui
     \zf@make@aat@feature@string{3}{3}%
     \unless\ifx\zf@thisfontfeature\@empty
       \edef\zf@smallcaps{\zf@thisfontfeature;}%
     \fi
   \fi
-  \ifzf@opentype
+  \ifzf@icu
     \zf@check@ot@feat{+smcp}%
     \if@tempswa
       \edef\zf@smallcaps{+smcp,}%
@@ -296,21 +308,21 @@
   \fi}
 \newcommand*\zf@update@ff[1]{%
   \unless\ifzf@firsttime
-    \xdef\zf@ff{\zf@ff #1\ifzf@opentype,\else;\fi}%
+    \xdef\zf@ff{\zf@ff #1\ifzf@icu,\else;\fi}%
   \fi}
 \newcommand*\zf@make@feature[3]{%
-  \ifzf@aat
+  \ifzf@atsui
     \zf@make@aat@feature@string{#1}{#2}%
     \ifx\zf@thisfontfeature\@empty
       \zf@PackageWarning{%
         AAT feature '\XKV@tfam=\XKV@tkey'
-        (#1,#2) not available in font '\zf@fontname'}
+        (#1,#2) not available in font \fontname\zf@basefont}%
     \else
       \zf@update@family{+#1,#2}%
       \zf@update@ff\zf@thisfontfeature
     \fi
   \fi
-  \ifzf@opentype
+  \ifzf@icu
     \zf@check@ot@feat{#3}%
     \if@tempswa
       \zf@update@family{#3}%
@@ -318,8 +330,8 @@
     \else
       \zf@PackageWarning{%
         OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
-        not available in font '\zf@fontname', script
-        '\zf@script@name', language '\zf@language@name'}
+        not available in font \fontname\zf@basefont, script
+        '\zf@script@name', language '\zf@language@name'}%
     \fi
   \fi}
 \newcommand*\zf@define@font@feature[1]{%
@@ -449,7 +461,7 @@
 \define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
   \edef\zf@suffix{\zf@suffix/#1}%
   \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long &rend:#1}}
+  \edef\zf@family@long{\zf@family@long +rend:#1}}
 \define@key[zf]{preparse}{Script}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
@@ -506,6 +518,9 @@
   \zf@update@family{+punctspace:#1}%
   \g@addto@macro\zf@adjust{%
     \fontdimen7\font#1\fontdimen7\font}}
+\define@key[zf]{options}{LetterSpace}{%
+  \zf@update@family{+tracking:#1}%
+  \zf@update@ff{letterspace=#1}}
 \define@key[zf]{options}{HyphenChar}{%
   \zf@update@family{+hyphenchar:#1}%
   \edef\@tempa{#1}%
@@ -526,6 +541,7 @@
 \define@key[zf]{options}{Colour}{%
   \zf@update@family{+col:#1}%
   \zf@update@ff{color=#1}}
+\keyval@alias@key[zf]{options}{Colour}{Color}
 \define@key[zf]{options}{Mapping}{%
   \zf@update@family{+map:#1}%
   \zf@update@ff{mapping=#1}}
@@ -536,7 +552,7 @@
   \zf@update@family{+width:#1}%
   \zf@update@ff{width=#1}}
 \define@key[zf]{options}{OpticalSize}{%
-  \ifzf@opentype
+  \ifzf@icu
     \edef\zf@suffix{\zf@suffix/S=#1}%
     \zf@update@family{+size:#1}
   \fi
@@ -544,27 +560,27 @@
     \zf@update@family{+size:#1}%
     \zf@update@ff{optical size=#1}
   \fi
-  \ifzf@opentype\else
+  \ifzf@icu\else
     \ifzf@mm\else
       \ifzf@firsttime
         \zf@PackageWarning
-          {\zf@fontname\space doesn't appear to have an Optical Size axis}
+          {\fontname\zf@basefont\space doesn't appear to have an Optical Size axis}
       \fi
     \fi
   \fi}
 \zf@define@font@feature{Ligatures}
-\zf@define@feature@option{Ligatures}{Required}{1}{0}{+rlig}
-\zf@define@feature@option{Ligatures}{NoRequired}     {1}{1} {-rlig}
-\zf@define@feature@option{Ligatures}{Common}         {1}{2} {+liga}
-\zf@define@feature@option{Ligatures}{NoCommon}       {1}{3} {-liga}
-\zf@define@feature@option{Ligatures}{Rare}           {1}{4} {+dlig}
-\zf@define@feature@option{Ligatures}{NoRare}         {1}{5} {-dlig}
-\zf@define@feature@option{Ligatures}{Discretionary}  {1}{4} {+dlig}
-\zf@define@feature@option{Ligatures}{NoDiscretionary}{1}{5} {-dlig}
-\zf@define@feature@option{Ligatures}{Contextual}     {}{}   {+clig}
-\zf@define@feature@option{Ligatures}{NoContextual}   {}{}   {-clig}
-\zf@define@feature@option{Ligatures}{Historical}     {}{}   {+hlig}
-\zf@define@feature@option{Ligatures}{NoHistorical}   {}{}   {-hlig}
+\zf@define@feature@option{Ligatures}{Required}       {1}{0}{+rlig}
+\zf@define@feature@option{Ligatures}{NoRequired}     {1}{1}{-rlig}
+\zf@define@feature@option{Ligatures}{Common}         {1}{2}{+liga}
+\zf@define@feature@option{Ligatures}{NoCommon}       {1}{3}{-liga}
+\zf@define@feature@option{Ligatures}{Rare}           {1}{4}{+dlig}
+\zf@define@feature@option{Ligatures}{NoRare}         {1}{5}{-dlig}
+\zf@define@feature@option{Ligatures}{Discretionary}  {1}{4}{+dlig}
+\zf@define@feature@option{Ligatures}{NoDiscretionary}{1}{5}{-dlig}
+\zf@define@feature@option{Ligatures}{Contextual}     {}{}  {+clig}
+\zf@define@feature@option{Ligatures}{NoContextual}   {}{}  {-clig}
+\zf@define@feature@option{Ligatures}{Historical}     {}{}  {+hlig}
+\zf@define@feature@option{Ligatures}{NoHistorical}   {}{}  {-hlig}
 \zf@define@feature@option{Ligatures}{Logos}          {1}{6} {}
 \zf@define@feature@option{Ligatures}{NoLogos}        {1}{7} {}
 \zf@define@feature@option{Ligatures}{Rebus}          {1}{8} {}
@@ -685,7 +701,7 @@
 \zf@define@feature@option{Annotation}{DoubleCircle}{24}{11}{}
 \zf@define@font@feature{Vertical}
 \define@key[zf@feat]{Vertical}{RotatedGlyphs}[]{%
-  \ifzf@opentype
+  \ifzf@icu
     \zf@make@feature{}{}{+vrt2}%
   \else
     \zf@update@family{+vert}%
@@ -911,6 +927,7 @@
     \fi}{}
   \@ifpackageloaded{lucbmath}{\zf@math@lucidatrue}{}
   \@ifpackageloaded{lucidabr}{\zf@math@lucidatrue}{}
+  \@ifpackageloaded{lucimatx}{\zf@math@lucidatrue}{}
   \DeclareSymbolFont{legacymaths}{OT1}{cmr}{m}{n}
   \SetSymbolFont{legacymaths}{bold}{OT1}{cmr}{bx}{n}
   \DeclareMathAccent{\acute}   {\mathalpha}{legacymaths}{19}
@@ -935,7 +952,7 @@
     \DeclareMathSymbol{:}{\mathrel}  {legacymaths}{58}
     \DeclareMathSymbol{;}{\mathpunct}{legacymaths}{59}
     \DeclareMathSymbol{?}{\mathclose}{legacymaths}{63}
-    \ifzf@math@lucida\else % missing \else added, JK 2006-04-26
+    \ifzf@math@lucida\else
       \DeclareMathSymbol{0}{\mathalpha}{legacymaths}{`0}
       \DeclareMathSymbol{1}{\mathalpha}{legacymaths}{`1}
       \DeclareMathSymbol{2}{\mathalpha}{legacymaths}{`2}
@@ -998,7 +1015,7 @@
 %% Copyright 2005 by Will Robertson <will@guerilla.net.au>
 %% 
 %% Distributable under the LaTeX Project Public License,
-%% version 1.3a or higher (your choice). The latest version of
+%% version 1.3b or higher (your choice). The latest version of
 %% this license is at: http://www.latex-project.org/lppl.txt
 %% 
 %% This work is "maintained" (as per LPPL maintenance status)
