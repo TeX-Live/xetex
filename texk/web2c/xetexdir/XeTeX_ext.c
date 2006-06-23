@@ -2051,7 +2051,7 @@ boolean
 open_dvi_output(FILE** fptr)
 {
 	if (nopdfoutput) {
-		return open_output(fptr, "w");
+		return open_output(fptr, FOPEN_WBIN_MODE);
 	}
 	else {
 		char*	cmd2 = concat(outputdriver, " -o \"");
