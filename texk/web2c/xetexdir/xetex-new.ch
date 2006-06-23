@@ -4734,7 +4734,7 @@ begin
       help2("You can't use `auto' encoding here, only for \XeTeXdefaultencoding. ")
            ("I'll ignore this and leave the current encoding unchanged.");
 	  error;
-	end	else set_input_file_encoding(cur_file, i, j);
+	end	else set_input_file_encoding(input_file[in_open], i, j);
 end
 
 @ @<Implement \.{\\XeTeXdefaultencoding}@>=
