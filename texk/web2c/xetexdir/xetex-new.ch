@@ -2661,8 +2661,12 @@ if (pdf_page_width > 0) and (pdf_page_height > 0) then begin
   { generate a papersize \special at start of page }
   old_setting:=selector; selector:=new_string;
   print("papersize ");
-  print_scaled(pdf_page_width); print("pt"); print(",");
-  print_scaled(pdf_page_height); print("pt");
+  if mag=1000 then print_scaled(pdf_page_width)
+  else print_scaled(xn_over_d(pdf_page_width,mag,1000));
+  print("pt"); print(",");
+  if mag=1000 then print_scaled(pdf_page_height)
+  else print_scaled(xn_over_d(pdf_page_height,mag,1000));
+  print("pt");
   selector:=old_setting;
   dvi_out(xxx1); dvi_out(cur_length);
   for s:=str_start_macro(str_ptr) to pool_ptr-1 do dvi_out(so(str_pool[s]));
@@ -5482,7 +5486,7 @@ begin
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := s;									{space = width of space character}
 	incr(fmem_ptr);
-	font_info[fmem_ptr].sc := (s * 2) div 3;						{space_stretch = 2/3 * space}
+	font_info[fmem_ptr].sc := s div 2;								{space_stretch = 1/2 * space}
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := s div 3;								{space_shrink = 1/3 * space}
 	incr(fmem_ptr);
@@ -5490,7 +5494,7 @@ begin
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := font_size[font_ptr];					{quad = font size}
 	incr(fmem_ptr);
-	font_info[fmem_ptr].sc := (s * 2) div 3;						{extra_space = 2/3 * space}
+	font_info[fmem_ptr].sc := s div 3;								{extra_space = 1/3 * space}
 	incr(fmem_ptr);
 	font_info[fmem_ptr].sc := cap_ht;								{cap_height}
 	incr(fmem_ptr);
