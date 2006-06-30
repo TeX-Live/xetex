@@ -273,7 +273,7 @@ maininit P2C(int, ac, string *, av)
     }
 #endif
 #endif
-#if defined(eTeX) || defined(pdfeTeX) || defined(Aleph)
+#if defined(eTeX) || defined(pdfeTeX) || defined(Aleph) || defined(XeTeX)
     if (etexp) {
       fprintf(stderr, "-etex only works with -ini\n");
     }
@@ -825,7 +825,7 @@ static struct option long_options[]
       { "enc",                       0, &enctexp, 1 },
 #endif /* !XeTeX */
 #endif /* !Omega && !eOmega && !Aleph */
-#if defined (eTeX) || defined(pdfeTeX) || defined(Aleph)
+#if defined (eTeX) || defined(pdfeTeX) || defined(Aleph) || defined(XeTeX)
       { "etex",                      0, &etexp, 1 },
 #endif /* eTeX || pdfeTeX || Aleph */
       { "output-comment",            1, 0, 0 },
