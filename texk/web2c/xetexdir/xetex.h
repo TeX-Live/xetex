@@ -49,6 +49,16 @@
 #define casttoptr(x)		(void*)(x)
 #define casttointeger(x)	(long)(x)
 #define glyphinfobyte(p,k)	((unsigned char*)p)[k]
+#define casttoushort(x)		(unsigned short)(x)
+
+/* easier to do the bit-twiddling here than in Pascal */
+/* read fields from a 32-bit math code */
+#define mathfamfield(x)     (((unsigned)(x) >> 24) & 0xFF)
+#define mathclassfield(x)   (((unsigned)(x) >> 21) & 0x07)
+#define mathcharfield(x)    ((unsigned)(x) & 0x1FFFFF)
+/* calculate pieces to assign to a math code */
+#define setfamilyfield(x)   (((unsigned)(x) & 0xFF) << 24)
+#define setclassfield(x)    (((unsigned)(x) & 0x07) << 21)
 
 /* Unicode file reading modes */
 #define AUTO		0	/* default: will become one of 1..3 at file open time, after sniffing */

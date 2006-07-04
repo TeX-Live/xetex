@@ -104,11 +104,12 @@
 @d number_regs=256 {|biggest_reg+1|}
 @d font_biggest=255 {the real biggest font}
 @d number_fonts=font_biggest-font_base+2
-@d number_math_fonts=48
-@d math_font_biggest=47
+@d number_math_families=256
+@d number_math_fonts=number_math_families+number_math_families+number_math_families
+@d math_font_biggest=number_math_fonts-1
 @d text_size=0 {size code for the largest size in a family}
-@d script_size=16 {size code for the medium size in a family}
-@d script_script_size=32 {size code for the smallest size in a family}
+@d script_size=number_math_families {size code for the medium size in a family}
+@d script_script_size=number_math_families+number_math_families {size code for the smallest size in a family}
 @d biggest_lang=255
 @d too_big_lang=256
 @z
@@ -138,6 +139,7 @@ system libraries.
 @<Types...@>=
 @!ASCII_code=0..biggest_char; {16-bit numbers}
 @!UTF8_code=0..255; {8-bit numbers}
+@!UnicodeScalar=0..@"10FFFF; {Unicode scalars}
 @z
 
 @x
@@ -815,6 +817,116 @@ i:integer; {temp index for printing chars of picfile paths}
 @z
 
 @x
+@* \[15] The command codes.
+@y
+@* \[15] The command codes.
+@z
+
+@x
+@d math_given=69 {math code defined by \.{\\mathchardef}}
+@d last_item=70 {most recent item ( \.{\\lastpenalty},
+  \.{\\lastkern}, \.{\\lastskip} )}
+@d max_non_prefixed_command=70 {largest command code that can't be \.{\\global}}
+
+@ The next codes are special; they all relate to mode-independent
+assignment of values to \TeX's internal registers or tables.
+Codes that are |max_internal| or less represent internal quantities
+that might be expanded by `\.{\\the}'.
+
+@d toks_register=71 {token list register ( \.{\\toks} )}
+@d assign_toks=72 {special token list ( \.{\\output}, \.{\\everypar}, etc.~)}
+@d assign_int=73 {user-defined integer ( \.{\\tolerance}, \.{\\day}, etc.~)}
+@d assign_dimen=74 {user-defined length ( \.{\\hsize}, etc.~)}
+@d assign_glue=75 {user-defined glue ( \.{\\baselineskip}, etc.~)}
+@d assign_mu_glue=76 {user-defined muglue ( \.{\\thinmuskip}, etc.~)}
+@d assign_font_dimen=77 {user-defined font dimension ( \.{\\fontdimen} )}
+@d assign_font_int=78 {user-defined font integer ( \.{\\hyphenchar},
+  \.{\\skewchar} )}
+@d set_aux=79 {specify state info ( \.{\\spacefactor}, \.{\\prevdepth} )}
+@d set_prev_graf=80 {specify state info ( \.{\\prevgraf} )}
+@d set_page_dimen=81 {specify state info ( \.{\\pagegoal}, etc.~)}
+@d set_page_int=82 {specify state info ( \.{\\deadcycles},
+  \.{\\insertpenalties} )}
+  {( or \.{\\interactionmode} )}
+@d set_box_dimen=83 {change dimension of box ( \.{\\wd}, \.{\\ht}, \.{\\dp} )}
+@d set_shape=84 {specify fancy paragraph shape ( \.{\\parshape} )}
+  {(or \.{\\interlinepenalties}, etc.~)}
+@d def_code=85 {define a character code ( \.{\\catcode}, etc.~)}
+@d def_family=86 {declare math fonts ( \.{\\textfont}, etc.~)}
+@d set_font=87 {set current font ( font identifiers )}
+@d def_font=88 {define a font file ( \.{\\font} )}
+@d register=89 {internal register ( \.{\\count}, \.{\\dimen}, etc.~)}
+@d max_internal=89 {the largest code that can follow \.{\\the}}
+@d advance=90 {advance a register or parameter ( \.{\\advance} )}
+@d multiply=91 {multiply a register or parameter ( \.{\\multiply} )}
+@d divide=92 {divide a register or parameter ( \.{\\divide} )}
+@d prefix=93 {qualify a definition ( \.{\\global}, \.{\\long}, \.{\\outer} )}
+  {( or \.{\\protected} )}
+@d let=94 {assign a command code ( \.{\\let}, \.{\\futurelet} )}
+@d shorthand_def=95 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
+  {or \.{\\charsubdef}}
+@d read_to_cs=96 {read into a control sequence ( \.{\\read} )}
+  {( or \.{\\readline} )}
+@d def=97 {macro definition ( \.{\\def}, \.{\\gdef}, \.{\\xdef}, \.{\\edef} )}
+@d set_box=98 {set a box ( \.{\\setbox} )}
+@d hyph_data=99 {hyphenation data ( \.{\\hyphenation}, \.{\\patterns} )}
+@d set_interaction=100 {define level of interaction ( \.{\\batchmode}, etc.~)}
+@d max_command=100 {the largest command code seen at |big_switch|}
+@y
+@d math_given=69 {math code defined by \.{\\mathchardef}}
+@d XeTeX_math_given=70
+@d last_item=71 {most recent item ( \.{\\lastpenalty},
+  \.{\\lastkern}, \.{\\lastskip} )}
+@d max_non_prefixed_command=71 {largest command code that can't be \.{\\global}}
+
+@ The next codes are special; they all relate to mode-independent
+assignment of values to \TeX's internal registers or tables.
+Codes that are |max_internal| or less represent internal quantities
+that might be expanded by `\.{\\the}'.
+
+@d toks_register=72 {token list register ( \.{\\toks} )}
+@d assign_toks=73 {special token list ( \.{\\output}, \.{\\everypar}, etc.~)}
+@d assign_int=74 {user-defined integer ( \.{\\tolerance}, \.{\\day}, etc.~)}
+@d assign_dimen=75 {user-defined length ( \.{\\hsize}, etc.~)}
+@d assign_glue=76 {user-defined glue ( \.{\\baselineskip}, etc.~)}
+@d assign_mu_glue=77 {user-defined muglue ( \.{\\thinmuskip}, etc.~)}
+@d assign_font_dimen=78 {user-defined font dimension ( \.{\\fontdimen} )}
+@d assign_font_int=79 {user-defined font integer ( \.{\\hyphenchar},
+  \.{\\skewchar} )}
+@d set_aux=80 {specify state info ( \.{\\spacefactor}, \.{\\prevdepth} )}
+@d set_prev_graf=81 {specify state info ( \.{\\prevgraf} )}
+@d set_page_dimen=82 {specify state info ( \.{\\pagegoal}, etc.~)}
+@d set_page_int=83 {specify state info ( \.{\\deadcycles},
+  \.{\\insertpenalties} )}
+  {( or \.{\\interactionmode} )}
+@d set_box_dimen=84 {change dimension of box ( \.{\\wd}, \.{\\ht}, \.{\\dp} )}
+@d set_shape=85 {specify fancy paragraph shape ( \.{\\parshape} )}
+  {(or \.{\\interlinepenalties}, etc.~)}
+@d def_code=86 {define a character code ( \.{\\catcode}, etc.~)}
+@d XeTeX_def_code=87 {\.{\\XeTeXmathcode}, \.{\\XeTeXdelcode}}
+@d def_family=88 {declare math fonts ( \.{\\textfont}, etc.~)}
+@d set_font=89 {set current font ( font identifiers )}
+@d def_font=90 {define a font file ( \.{\\font} )}
+@d register=91 {internal register ( \.{\\count}, \.{\\dimen}, etc.~)}
+@d max_internal=91 {the largest code that can follow \.{\\the}}
+@d advance=92 {advance a register or parameter ( \.{\\advance} )}
+@d multiply=93 {multiply a register or parameter ( \.{\\multiply} )}
+@d divide=94 {divide a register or parameter ( \.{\\divide} )}
+@d prefix=95 {qualify a definition ( \.{\\global}, \.{\\long}, \.{\\outer} )}
+  {( or \.{\\protected} )}
+@d let=96 {assign a command code ( \.{\\let}, \.{\\futurelet} )}
+@d shorthand_def=97 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
+  {or \.{\\charsubdef}}
+@d read_to_cs=98 {read into a control sequence ( \.{\\read} )}
+  {( or \.{\\readline} )}
+@d def=99 {macro definition ( \.{\\def}, \.{\\gdef}, \.{\\xdef}, \.{\\edef} )}
+@d set_box=100 {set a box ( \.{\\setbox} )}
+@d hyph_data=101 {hyphenation data ( \.{\\hyphenation}, \.{\\patterns} )}
+@d set_interaction=102 {define level of interaction ( \.{\\batchmode}, etc.~)}
+@d max_command=102 {the largest command code seen at |big_switch|}
+@z
+
+@x
 @* \[17] The table of equivalents.
 @y
 @* \[17] The table of equivalents.
@@ -951,7 +1063,10 @@ primitive("XeTeXlinebreakskip",assign_glue,glue_base+XeTeX_linebreak_skip_code);
 @x
 @d var_code==@'70000 {math code meaning ``use the current family''}
 @y
-@d var_code==@"7000000 {math code meaning ``use the current family''}
+@d var_fam_class = 7
+@d active_math_char = @"1FFFFF
+@d is_active_math_char(#) == math_char_field(#) = active_math_char
+@d is_var_family(#) == math_class_field(#) = 7
 @z
 
 @x
@@ -979,11 +1094,17 @@ for k:=0 to number_chars-1 do
 @z
 
 @x
+for k:="0" to "9" do math_code(k):=hi(k+var_code);
+@y
+for k:="0" to "9" do math_code(k):=hi(k + set_class_field(var_fam_class));
+@z
+
+@x
   math_code(k):=hi(k+var_code+@"100);
   math_code(k+"a"-"A"):=hi(k+"a"-"A"+var_code+@"100);@/
 @y
-  math_code(k):=hi(k+var_code+@"10000);
-  math_code(k+"a"-"A"):=hi(k+"a"-"A"+var_code+@"10000);@/
+  math_code(k) := hi(k + set_family_field(1) + set_class_field(var_fam_class));
+  math_code(k+"a"-"A") := hi(k+"a"-"A" + set_family_field(1) + set_class_field(var_fam_class));@/
 @z
 
 @x
@@ -1164,6 +1285,16 @@ else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
 @z
 
 @x
+primitive("mathchar",math_char_num,0);@/
+@!@:math_char_}{\.{\\mathchar} primitive@>
+@y
+primitive("mathchar",math_char_num,0);@/
+primitive("XeTeXmathchar",math_char_num,1);@/
+primitive("XeTeXextmathchar",math_char_num,2);@/
+@!@:math_char_}{\.{\\mathchar} primitive@>
+@z
+
+@x
 primitive("relax",relax,256); {cf.\ |scan_file_name|}
 @y
 primitive("relax",relax,too_big_char); {cf.\ |scan_file_name|}
@@ -1174,6 +1305,14 @@ end_cs_name: if chr_code = 10 then print_esc("endmubyte")
              else print_esc("endcsname");
 @y
 end_cs_name: print_esc("endcsname");
+@z
+
+@x
+math_char_num: print_esc("mathchar");
+@y
+math_char_num: if chr_code=2 then print_esc("XeTeXextmathchar")
+  else if chr_code=1 then print_esc("XeTeXmathchar")
+  else print_esc("mathchar");
 @z
 
 @x
@@ -1554,6 +1693,29 @@ var m:halfword; {|chr_code| part of the operand token}
 @z
 
 @x
+def_code: @<Fetch a character code from some table@>;
+@y
+def_code: @<Fetch a character code from some table@>;
+XeTeX_def_code:
+  begin
+    scan_char_num;
+    if m=math_code_base then begin
+      cur_val1:=ho(math_code(cur_val));
+      scanned_result(cur_val1)(int_val)
+    end
+    else if m=math_code_base+1 then begin
+      print_err("Can't use \XeTeXextmathcode as a number");
+      help2("\XeTeXextmathcode is for setting a mathcode from separate values;")@/
+      ("use \XeTeXmathcode to access them as single values."); error;
+      scanned_result(0)(int_val)
+    end
+    else begin
+      scanned_result(-1)(int_val); { FIXME - XeTeXdelcode }
+    end;
+  end;
+@z
+
+@x
 if m=xord_code_base then scanned_result(xord[cur_val])(int_val)
 else if m=xchr_code_base then scanned_result(xchr[cur_val])(int_val)
 else if m=xprn_code_base then scanned_result(xprn[cur_val])(int_val)
@@ -1561,19 +1723,47 @@ else if m=math_code_base then scanned_result(ho(math_code(cur_val)))(int_val)
 @y
 if m=math_code_base then begin
   cur_val1:=ho(math_code(cur_val));
-  if ((cur_val1 div @"1000000)>8) or
-     (((cur_val1 mod @"1000000) div @"10000)>15) or
-     ((cur_val1 mod @"10000)>255) then
+  if (math_class_field(cur_val1)>8) or
+     (math_fam_field(cur_val1)>15) or
+     (math_char_field(cur_val1)>255) then
     begin print_err("Extended mathchar used as mathchar");
 @.Bad mathchar@>
     help2("A mathchar number must be between 0 and ""7FFF.")@/
       ("I changed this one to zero."); int_error(cur_val1); cur_val1:=0;
     end;
-  cur_val1:=((cur_val1 div @"1000000)*@"1000) +
-            (((cur_val1 mod @"1000000) div @"10000)*@"100) +
-            (cur_val1 mod @"10000);
+  cur_val1:=(math_class_field(cur_val1)*@"1000) +
+            (math_fam_field(cur_val1)*@"100) +
+            math_char_field(cur_val1);
   scanned_result(cur_val1)(int_val)
   end
+else if m=del_code_base then begin
+  cur_val1:=del_code(cur_val);
+  if (math_class_field(cur_val1) > 8) or
+     (math_fam_field(cur_val1) > 15) or
+     (math_char_field(cur_val1) > 255) then begin
+    print_err("Extended delcode used as delcode");
+@.Bad delcode@>
+    help2("A delimiter code must be between 0 and ""7FFFFFF.")@/
+      ("I changed this one to zero."); error;
+    scanned_result(0)(int_val);
+  end else begin
+    cur_val1:=del_code1(cur_val);
+    if (math_class_field(cur_val1) > 0) or
+       (math_fam_field(cur_val1) > 15) or
+       (math_char_field(cur_val1) > 255) then begin
+      print_err("Extended delcode used as delcode");
+      help2("A delimiter code must be between 0 and ""7FFFFFF.")@/
+        ("I changed this one to zero."); error;
+      scanned_result(0)(int_val);
+    end else begin
+      scanned_result(((math_class_field(del_code(cur_val))*@"1000) +
+            (math_fam_field(del_code(cur_val))*@"100) +
+            math_char_field(del_code(cur_val)))*@"1000 +
+            (math_fam_field(cur_val1)*@"100) +
+            math_char_field(cur_val1))(int_val);
+    end
+  end
+end
 @z
 
 @x
@@ -1625,6 +1815,48 @@ if (cur_val<0)or(cur_val>biggest_char) then
 @z
 
 @x
+procedure scan_four_bit_int;
+@y
+procedure scan_xetex_math_char_int;
+begin scan_int;
+  if is_active_math_char(cur_val) then begin
+    if cur_val <> active_math_char then begin
+      print_err("Bad active XeTeX math code");
+      help2("Since I ignore class and family for active math chars,")@/
+      ("I changed this one to ""1FFFFF."); int_error(cur_val);
+      cur_val := active_math_char;
+    end
+  end else if math_char_field(cur_val) > @"10FFFF then begin
+    print_err("Bad XeTeX math character code");
+    help2("Since I expected a character number between 0 and ""10FFFF,")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
+  end;
+end;
+
+procedure scan_math_class_int;
+begin scan_int;
+if (cur_val<0)or(cur_val>7) then
+  begin print_err("Bad math class");
+@.Bad number@>
+  help2("Since I expected to read a number between 0 and 7,")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
+  end;
+end;
+
+procedure scan_math_fam_int;
+begin scan_int;
+if (cur_val<0)or(cur_val>number_math_families-1) then
+  begin print_err("Bad math family");
+@.Bad number@>
+  help2("Since I expected to read a number between 0 and 255,")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
+  end;
+end;
+
+procedure scan_four_bit_int;
+@z
+
+ x
 procedure scan_fifteen_bit_int;
 begin scan_int;
 if (cur_val<0)or(cur_val>@'77777) then
@@ -1634,7 +1866,7 @@ if (cur_val<0)or(cur_val>@'77777) then
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
 end;
-@y
+ y
 procedure scan_real_fifteen_bit_int;
 begin scan_int;
 if (cur_val<0)or(cur_val>@'77777) then
@@ -1645,7 +1877,7 @@ if (cur_val<0)or(cur_val>@'77777) then
   end;
 end;
 
-procedure scan_fifteen_bit_int;
+procedure scan_fifteen_bit_int; { scans a \mathchar value and expands it to 32-bit form }
 begin scan_int;
 if (cur_val<0)or(cur_val>@'77777) then
   begin print_err("Bad mathchar");
@@ -1653,11 +1885,11 @@ if (cur_val<0)or(cur_val>@'77777) then
   help2("A mathchar number must be between 0 and 32767.")@/
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
-cur_val := ((cur_val div @"1000) * @"1000000) +
-           (((cur_val mod @"1000) div @"100) * @"10000) +
+cur_val := set_class_field(cur_val div @"1000) +
+           set_family_field((cur_val mod @"1000) div @"100) +
            (cur_val mod @"100);
 end;
-@z
+ z
 
 @x
 procedure scan_twenty_seven_bit_int;
@@ -1670,6 +1902,23 @@ if (cur_val<0)or(cur_val>@'777777777) then
   end;
 end;
 @y
+procedure scan_delimiter_int;
+begin scan_int;
+if (cur_val<0)or(cur_val>@'777777777) then
+  begin print_err("Bad delimiter code");
+@.Bad delimiter code@>
+  help2("A numeric delimiter code must be between 0 and 2^{27}-1.")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
+  end;
+cur_val1 := set_family_field((cur_val mod @"1000) div @"100) +
+            (cur_val mod @"100);
+cur_val := cur_val div @"1000;
+cur_val := set_family_field((cur_val mod @"1000) div @"100) +
+           set_class_field(cur_val div @"1000) +
+           (cur_val mod @"100);
+end;
+@z
+
 procedure scan_twenty_seven_bit_int;
 begin scan_int;
 if (cur_val<0)or(cur_val>@'777777777) then
@@ -1685,7 +1934,7 @@ cur_val := ((cur_val div @"1000) * @"1000000) +
            (((cur_val mod @"1000) div @"100) * @"10000) +
            (cur_val mod @"100);
 end;
-@z
+ z
 
 @x
 if cur_val>255 then
@@ -2726,6 +2975,39 @@ label reswitch, common_ending, exit, restart;
 @z
 
 @x
+@d fam==font {a |quarterword| in |mem|}
+@y
+@d plane_and_fam_field==font {a |quarterword| in |mem|}
+@d fam(#) == (plane_and_fam_field(#) mod @"100)
+@z
+
+@x
+@d small_fam(#)==mem[#].qqqq.b0 {|fam| for ``small'' delimiter}
+@d small_char(#)==mem[#].qqqq.b1 {|character| for ``small'' delimiter}
+@d large_fam(#)==mem[#].qqqq.b2 {|fam| for ``large'' delimiter}
+@d large_char(#)==mem[#].qqqq.b3 {|character| for ``large'' delimiter}
+@y
+@d small_fam(#)==(mem[#].qqqq.b0 mod @"100) {|fam| for ``small'' delimiter}
+@d small_char(#)==(mem[#].qqqq.b1 + (mem[#].qqqq.b0 div @"100) * @"10000) {|character| for ``small'' delimiter}
+@d large_fam(#)==(mem[#].qqqq.b2 mod @"100) {|fam| for ``large'' delimiter}
+@d large_char(#)==(mem[#].qqqq.b3 + (mem[#].qqqq.b2 div @"100) * @"10000) {|character| for ``large'' delimiter}
+@d small_plane_and_fam_field(#)==mem[#].qqqq.b0
+@d small_char_field(#)==mem[#].qqqq.b1
+@d large_plane_and_fam_field(#)==mem[#].qqqq.b2
+@d large_char_field(#)==mem[#].qqqq.b3
+@z
+
+@x
+procedure print_fam_and_char(@!p:pointer); {prints family and character}
+begin print_esc("fam"); print_int(fam(p)); print_char(" ");
+print_ASCII(qo(character(p)));
+@y
+procedure print_fam_and_char(@!p:pointer); {prints family and character}
+begin print_esc("fam"); print_int(fam(p) mod @"100); print_char(" ");
+print_ASCII(qo(character(p)) + (fam(p) div @"100) * @"10000);
+@z
+
+@x
 @* \[35] Subroutines for math mode.
 @y
 @* \[35] Subroutines for math mode.
@@ -2742,6 +3024,18 @@ label reswitch, common_ending, exit, restart;
 else cur_size:=16*((cur_style-text_style) div 2);
 @y
 else cur_size:=script_size*((cur_style-text_style) div 2);
+@z
+
+@x
+function var_delimiter(@!d:pointer;@!s:small_number;@!v:scaled):pointer;
+@y
+function var_delimiter(@!d:pointer;@!s:integer;@!v:scaled):pointer;
+@z
+
+@x
+@!z: small_number; {runs through font family members}
+@y
+@!z: integer; {runs through font family members}
 @z
 
 @x
@@ -2769,7 +3063,7 @@ height(b):=char_height(f)(hd); depth(b):=char_depth(f)(hd);
 p:=get_avail; character(p):=c; font(p):=f; list_ptr(b):=p; char_box:=b;
 end;
 @y
-function char_box(@!f:internal_font_number;@!c:quarterword):pointer;
+function char_box(@!f:internal_font_number;@!c:integer):pointer;
 var q:four_quarters;
 @!hd:eight_bits; {|height_depth| byte}
 @!b,@!p:pointer; {the new box and its character node}
@@ -2788,6 +3082,75 @@ else begin
   end;
 list_ptr(b):=p; char_box:=b;
 end;
+@z
+
+@x
+@* \[36] Typesetting math formulas.
+@y
+@* \[36] Typesetting math formulas.
+@z
+
+@x
+@!cur_size:small_number; {size code corresponding to |cur_style|}
+@y with 256 families, this can be up to 768
+@!cur_size:integer; {size code corresponding to |cur_style|}
+@z
+
+@x
+@p procedure fetch(@!a:pointer); {unpack the |math_char| field |a|}
+begin cur_c:=character(a); cur_f:=fam_fnt(fam(a)+cur_size);
+if cur_f=null_font then
+  @<Complain about an undefined family and set |cur_i| null@>
+else  begin if (qo(cur_c)>=font_bc[cur_f])and(qo(cur_c)<=font_ec[cur_f]) then
+    cur_i:=orig_char_info(cur_f)(cur_c)
+@y
+@p procedure fetch(@!a:pointer); {unpack the |math_char| field |a|}
+begin cur_c:=cast_to_ushort(character(a)); cur_f:=fam_fnt(fam(a)+cur_size);
+cur_c:=cur_c + (plane_and_fam_field(a) div @"100) * @"10000;
+if cur_f=null_font then
+  @<Complain about an undefined family and set |cur_i| null@>
+else if is_native_font(cur_f) then begin
+  cur_i:=null_character;
+end else begin if (qo(cur_c)>=font_bc[cur_f])and(qo(cur_c)<=font_ec[cur_f]) then
+    cur_i:=orig_char_info(cur_f)(cur_c)
+@z
+
+@x
+@!cur_c:quarterword; {the |character| field of a |math_char|}
+@y
+@!cur_c:integer; {the |character| field of a |math_char|}
+@z
+
+@x
+      character(nucleus(r)):=rem_byte(cur_i);
+      fam(nucleus(r)):=fam(nucleus(q));@/
+@y
+      character(nucleus(r)):=rem_byte(cur_i);
+      plane_and_fam_field(nucleus(r)):=fam(nucleus(q));@/
+@z
+
+@x
+@ @<Create a character node |p| for |nucleus(q)|...@>=
+begin fetch(nucleus(q));
+if char_exists(cur_i) then
+@y
+@ @<Create a character node |p| for |nucleus(q)|...@>=
+begin fetch(nucleus(q));
+if is_native_font(cur_f) then begin
+  delta:=0; p:=new_native_character(cur_f, qo(cur_c));
+end else if char_exists(cur_i) then
+@z
+
+@x
+procedure make_scripts(@!q:pointer;@!delta:scaled);
+var p,@!x,@!y,@!z:pointer; {temporary registers for box construction}
+@!shift_up,@!shift_down,@!clr:scaled; {dimensions in the calculation}
+@!t:small_number; {subsidiary size code}
+@y
+procedure make_scripts(@!q:pointer;@!delta:scaled);
+var p,@!x,@!y,@!z:pointer; {temporary registers for box construction}
+@!shift_up,@!shift_down,@!clr:scaled; {dimensions in the calculation}
+@!t:integer; {subsidiary size code}
 @z
 
 @x
@@ -3494,6 +3857,12 @@ adjust_space_factor;@/
 @z
 
 @x
+non_math(math_given), non_math(math_comp), non_math(delim_num),
+@y
+non_math(math_given), non_math(XeTeX_math_given), non_math(math_comp), non_math(delim_num),
+@z
+
+@x
 procedure append_italic_correction;
 label exit;
 var p:pointer; {|char_node| at the tail of the current list}
@@ -3597,7 +3966,25 @@ letter,other_char,char_given: begin c:=ho(math_code(cur_chr));
     if c=@'100000 then
 @y
 letter,other_char,char_given: begin c:=ho(math_code(cur_chr));
-    if c=@"8000000 then
+    if is_active_math_char(c) then
+@z
+
+@x
+math_char_num: begin scan_fifteen_bit_int; c:=cur_val;
+  end;
+@y
+math_char_num:
+  if cur_chr = 2 then begin { \XeTeXextmathchar }
+    scan_math_class_int; c := set_class_field(cur_val);
+    scan_math_fam_int;   c := c + set_family_field(cur_val);
+    scan_usv_num;        c := c + cur_val;
+  end else if cur_chr = 1 then begin { \XeTeXmathchar }
+    scan_xetex_math_char_int; c := cur_val;
+  end else begin scan_fifteen_bit_int;
+    c := set_class_field(cur_val div @"1000) +
+           set_family_field((cur_val mod @"1000) div @"100) +
+           (cur_val mod @"100);
+  end;
 @z
 
 @x
@@ -3605,15 +3992,14 @@ math_given: c:=cur_chr;
 delim_num: begin scan_twenty_seven_bit_int; c:=cur_val div @'10000;
 @y
 math_given: begin
-  c := ((cur_chr div @"1000) * @"1000000) +
-         (((cur_chr mod @"1000) div @"100) * @"10000) +
-         (cur_chr mod @"100);
+  c := set_class_field(cur_chr div @"1000) +
+       set_family_field((cur_chr mod @"1000) div @"100) +
+       (cur_chr mod @"100);
   end;
+XeTeX_math_given: c:=cur_chr;
 delim_num: begin
-  {OMEGA extra}
-  {if cur_chr=0 then} scan_twenty_seven_bit_int
-  {else scan_fifty_one_bit_int};
-  c:=cur_val;
+  scan_delimiter_int;
+  c := cur_val; {cur_val is the 'small' delimiter mathchar value}
 @z
 
 @x
@@ -3622,8 +4008,27 @@ if (c>=var_code)and fam_in_range then fam(p):=cur_fam
 else fam(p):=(c div 256) mod 16;
 @y
 math_type(p):=math_char; character(p):=qi(c mod @"10000);
-if (c>=var_code)and fam_in_range then fam(p):=cur_fam
-else fam(p):=(c div @"10000) mod @"100;
+if (is_var_family(c)) and fam_in_range then plane_and_fam_field(p):=cur_fam
+else plane_and_fam_field(p):=(math_fam_field(c));
+plane_and_fam_field(p) := plane_and_fam_field(p) + (math_char_field(c) div @"10000) * @"100;
+@z
+
+@x
+mmode+math_char_num: begin scan_fifteen_bit_int; set_math_char(cur_val);
+  end;
+@y
+mmode+math_char_num: if cur_chr = 2 then begin { \XeTeXextmathchar }
+    scan_math_class_int; t := set_class_field(cur_val);
+    scan_math_fam_int; t := t + set_family_field(cur_val);
+    scan_usv_num; t := t + cur_val;
+    set_math_char(t);
+  end else if cur_chr = 1 then begin { \XeTeXmathchar }
+    scan_xetex_math_char_int; set_math_char(cur_val);
+  end else begin scan_fifteen_bit_int;
+    set_math_char(set_class_field(cur_val div @"1000) +
+           set_family_field((cur_val mod @"1000) div @"100) +
+           (cur_val mod @"100));
+  end;
 @z
 
 @x
@@ -3632,37 +4037,53 @@ mmode+delim_num: begin scan_twenty_seven_bit_int;
   set_math_char(cur_val div @'10000);
 @y
 mmode+math_given: begin
-  set_math_char(((cur_chr div @"1000) * @"1000000) +
-                (((cur_chr mod @"1000) div @"100) * @"10000) +
+  set_math_char(set_class_field(cur_chr div @"1000) +
+                set_family_field((cur_chr mod @"1000) div @"100) +
                 (cur_chr mod @"100));
   end;
+mmode+XeTeX_math_given: set_math_char(cur_chr);
 mmode+delim_num: begin
-  {OMEGA extra}
-  {if cur_chr=0 then} scan_twenty_seven_bit_int
-  {else scan_fifty_one_bit_int};
+  scan_delimiter_int;
   set_math_char(cur_val);
 @z
 
 @x
+procedure set_math_char(@!c:integer);
 var p:pointer; {the new noad}
 begin if c>=@'100000 then
-@y
-var p,q,r:pointer; {the new noad}
-begin if c>=@"8000000 then
-@z
-
-@x
+  @<Treat |cur_chr|...@>
+else  begin p:=new_noad; math_type(nucleus(p)):=math_char;
   character(nucleus(p)):=qi(c mod 256);
   fam(nucleus(p)):=(c div 256) mod 16;
+  if c>=var_code then
+    begin if fam_in_range then fam(nucleus(p)):=cur_fam;
+    type(p):=ord_noad;
+    end
+  else  type(p):=ord_noad+(c div @'10000);
 @y
-  character(nucleus(p)):=qi(c mod @"10000);
-  fam(nucleus(p)):=(c div @"10000) mod @"100;
+procedure set_math_char(@!c:integer);
+var p,q,r:pointer; {the new noad}
+  ch: UnicodeScalar;
+begin if is_active_math_char(c) then
+  @<Treat |cur_chr|...@>
+else  begin p:=new_noad; math_type(nucleus(p)):=math_char;
+  ch:=math_char_field(c);
+  character(nucleus(p)):=qi(ch mod @"10000);
+  plane_and_fam_field(nucleus(p)):=math_fam_field(c);
+  if is_var_family(c) then
+    begin if fam_in_range then plane_and_fam_field(nucleus(p)):=cur_fam;
+    type(p):=ord_noad;
+    end
+  else  type(p):=ord_noad+math_class_field(c);
+  plane_and_fam_field(nucleus(p)) := plane_and_fam_field(nucleus(p)) + (ch div @"10000) * @"100;
 @z
 
 @x
-  else  type(p):=ord_noad+(c div @'10000);
+procedure scan_delimiter(@!p:pointer;@!r:boolean);
+begin if r then scan_twenty_seven_bit_int
 @y
-  else  type(p):=ord_noad+(c div @"1000000);
+procedure scan_delimiter(@!p:pointer;@!r:boolean);
+begin if r then scan_delimiter_int
 @z
 
 @x
@@ -3673,8 +4094,7 @@ begin if c>=@"8000000 then
   letter,other_char: begin
     cur_val:=del_code(cur_chr); cur_val1:=del_code1(cur_chr);
     end;
-  delim_num: {if cur_chr=0 then} scan_twenty_seven_bit_int
-             {else scan_fifty_one_bit_int};
+  delim_num: scan_delimiter_int;
   othercases begin cur_val:=-1; cur_val1:=-1; end;
 @z
 
@@ -3690,10 +4110,10 @@ if cur_val<0 then begin @<Report that an invalid delimiter code is being changed
    to null; set~|cur_val:=0|@>;
   cur_val1:=0;
   end;
-small_fam(p):=(cur_val div @"10000) mod @"100;
-small_char(p):=qi(cur_val mod @"10000);
-large_fam(p):=(cur_val1 div @"10000) mod @"100;
-large_char(p):=qi(cur_val1 mod @"10000);
+small_plane_and_fam_field(p) := (math_char_field(cur_val) div @"10000) * @"100 + math_fam_field(cur_val);
+small_char_field(p) := cur_val mod @"10000;
+large_plane_and_fam_field(p) := (math_char_field(cur_val1) div @"10000) * @"100 + math_fam_field(cur_val1);
+large_char_field(p) := cur_val1 mod @"10000;
 @z
 
 @x
@@ -3702,8 +4122,23 @@ if (cur_val>=var_code)and fam_in_range then fam(accent_chr(tail)):=cur_fam
 else fam(accent_chr(tail)):=(cur_val div 256) mod 16;
 @y
 character(accent_chr(tail)):=qi(cur_val mod @"10000);
-if (cur_val>=var_code)and fam_in_range then fam(accent_chr(tail)):=cur_fam
-else fam(accent_chr(tail)):=(cur_val div @"10000) mod @"100;
+if (is_var_family(cur_val))and fam_in_range then plane_and_fam_field(accent_chr(tail)):=cur_fam
+else plane_and_fam_field(accent_chr(tail)):=math_fam_field(cur_val);
+plane_and_fam_field(accent_chr(tail))
+  := plane_and_fam_field(accent_chr(tail)) + (math_char_field(cur_val) div @"10000) * @"100;
+@z
+
+@x
+@* \[49] Mode-independent processing.
+@y
+@* \[49] Mode-independent processing.
+@z
+
+@x
+any_mode(def_code),
+@y
+any_mode(def_code),
+any_mode(XeTeX_def_code),
 @z
 
 @x
@@ -3711,6 +4146,56 @@ else fam(accent_chr(tail)):=(cur_val div @"10000) mod @"100;
 @y
 @d word_define(#)==if global then geq_word_define(#)@+else eq_word_define(#)
 @d word_define1(#)==if global then geq_word_define1(#)@+else eq_word_define1(#)
+@z
+
+@x
+@d char_def_code=0 {|shorthand_def| for \.{\\chardef}}
+@d math_char_def_code=1 {|shorthand_def| for \.{\\mathchardef}}
+@d count_def_code=2 {|shorthand_def| for \.{\\countdef}}
+@d dimen_def_code=3 {|shorthand_def| for \.{\\dimendef}}
+@d skip_def_code=4 {|shorthand_def| for \.{\\skipdef}}
+@d mu_skip_def_code=5 {|shorthand_def| for \.{\\muskipdef}}
+@d toks_def_code=6 {|shorthand_def| for \.{\\toksdef}}
+@d char_sub_def_code=7 {|shorthand_def| for \.{\\charsubdef}}
+@y
+@d char_def_code=0 {|shorthand_def| for \.{\\chardef}}
+@d math_char_def_code=1 {|shorthand_def| for \.{\\mathchardef}}
+@d count_def_code=2 {|shorthand_def| for \.{\\countdef}}
+@d dimen_def_code=3 {|shorthand_def| for \.{\\dimendef}}
+@d skip_def_code=4 {|shorthand_def| for \.{\\skipdef}}
+@d mu_skip_def_code=5 {|shorthand_def| for \.{\\muskipdef}}
+@d toks_def_code=6 {|shorthand_def| for \.{\\toksdef}}
+@d char_sub_def_code=7 {|shorthand_def| for \.{\\charsubdef}}
+@d XeTeX_math_char_def_code=8
+@d XeTeX_ext_math_char_def_code=9
+@z
+
+@x
+primitive("mathchardef",shorthand_def,math_char_def_code);@/
+@!@:math_char_def_}{\.{\\mathchardef} primitive@>
+@y
+primitive("mathchardef",shorthand_def,math_char_def_code);@/
+primitive("XeTeXmathchardef",shorthand_def,XeTeX_math_char_def_code);@/
+primitive("XeTeXextmathchardef",shorthand_def,XeTeX_ext_math_char_def_code);@/
+@!@:math_char_def_}{\.{\\mathchardef} primitive@>
+@z
+
+@x
+  math_char_def_code: print_esc("mathchardef");
+@y
+  math_char_def_code: print_esc("mathchardef");
+  XeTeX_math_char_def_code: print_esc("XeTeXmathchardef");
+  XeTeX_ext_math_char_def_code: print_esc("XeTeXextmathchardef");
+@z
+
+@x
+math_given: begin print_esc("mathchar"); print_hex(chr_code);
+  end;
+@y
+math_given: begin print_esc("mathchar"); print_hex(chr_code);
+  end;
+XeTeX_math_given: begin print_esc("XeTeXmathchar"); print_hex(chr_code);
+  end;
 @z
 
 @x
@@ -3727,8 +4212,61 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
 
 @x
   math_char_def_code: begin scan_fifteen_bit_int; define(p,math_given,cur_val);
+    end;
 @y
-  math_char_def_code: begin scan_real_fifteen_bit_int; define(p,math_given,cur_val);
+  math_char_def_code: begin scan_fifteen_bit_int; define(p,math_given,cur_val);
+    end;
+  XeTeX_math_char_def_code: begin scan_xetex_math_char_int;
+    define(p, XeTeX_math_given, cur_val);
+    end;
+  XeTeX_ext_math_char_def_code: begin
+      scan_math_class_int; n := set_class_field(cur_val);
+      scan_math_fam_int;   n := n + set_family_field(cur_val);
+      scan_usv_num;        n := n + cur_val;
+      define(p, XeTeX_math_given, n);
+    end;
+@z
+
+@x
+primitive("mathcode",def_code,math_code_base);
+@y
+primitive("mathcode",def_code,math_code_base);
+primitive("XeTeXmathcode",XeTeX_def_code,math_code_base);
+primitive("XeTeXextmathcode",XeTeX_def_code,math_code_base+1);
+@z
+
+@x
+def_family: print_size(chr_code-math_font_base);
+@y
+XeTeX_def_code: if chr_code=math_code_base then print_esc("XeTeXmathcode")
+  else if chr_code=math_code_base+1 then print_esc("XeTeXextmathcode")
+  else print_esc("XeTeXdelcode");
+def_family: print_size(chr_code-math_font_base);
+@z
+
+@x
+def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
+@y
+XeTeX_def_code: begin
+    if cur_chr = math_code_base then begin
+      p:=cur_chr; scan_char_num;
+      p:=p+cur_val;
+      scan_optional_equals;
+      scan_xetex_math_char_int;
+      define(p,data,hi(cur_val));
+    end
+    else if cur_chr = math_code_base+1 then begin
+      p:=cur_chr-1; scan_char_num;
+      p:=p+cur_val;
+      scan_optional_equals;
+      scan_math_class_int; n := set_class_field(cur_val);
+      scan_math_fam_int;   n := n + set_family_field(cur_val);
+      scan_usv_num;        n := n + cur_val;
+      define(p,data,hi(n));
+    end
+    else do_nothing; {FIXME - XeTeXdelcode}
+  end;
+def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
 @z
 
 @x
@@ -3736,21 +4274,21 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
   else if p<512 then xchr[p-256]:=cur_val
   else if p<768 then xprn[p-512]:=cur_val
   else if p<math_code_base then define(p,data,cur_val)
+  else if p<del_code_base then define(p,data,hi(cur_val))
 @y
   if p<math_code_base then define(p,data,cur_val)
-  {from OMEGA: added this without really knowing why}
-  else if p<(math_code_base+256) then begin
-    if cur_val=@"8000 then cur_val:=@"8000000
-    else cur_val:=((cur_val div @"1000) * @"1000000) +
-                  (((cur_val mod @"1000) div @"100) * @"10000) +
+  else if p<del_code_base then begin
+    if cur_val=@"8000 then cur_val:=active_math_char
+    else cur_val:=set_class_field(cur_val div @"1000) +
+                  set_family_field((cur_val mod @"1000) div @"100) +
                   (cur_val mod @"100);
     define(p,data,hi(cur_val));
     end
 @z
 
-@x
+ x
   else word_define(p,cur_val);
-@y
+ y
   else begin
    cur_val1:=cur_val div @"1000;
    cur_val1:=(cur_val1 div @"100)*@"10000 + (cur_val1 mod @"100);
@@ -3759,12 +4297,32 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
    word_define(p,cur_val);
    word_define1(p,cur_val1);
    end;
+ z
+@x
+  else word_define(p,cur_val);
+@y
+  else begin
+    cur_val1 := cur_val mod @"1000; { large delim code }
+    cur_val1 := set_family_field(cur_val1 div @"100) + cur_val1 mod @"100;
+    cur_val := cur_val div @"1000;
+    cur_val := set_class_field((cur_val div @"1000) mod 8) +
+               set_family_field((cur_val div @"100) mod @"10) +
+               (cur_val mod @"100);
+    word_define(p, cur_val);
+    word_define1(p, cur_val1);
+  end;
 @z
 
 @x
 else n:=255
 @y
 else n:=biggest_char
+@z
+
+@x
+def_family: begin p:=cur_chr; scan_four_bit_int; p:=p+cur_val;
+@y
+def_family: begin p:=cur_chr; scan_math_fam_int; p:=p+cur_val;
 @z
 
 @x
@@ -5311,32 +5869,6 @@ end;
 
 { additional functions for native font support }
 
-function new_native_character(@!f:internal_font_number;@!c:ASCII_code):pointer;
-var
-	p:	pointer;
-begin
-	if tracing_lost_chars > 0 then
-		if map_char_to_glyph(f, c) = 0 then begin
-			char_warning(f, c);
-		end;
-
-	p := get_node(native_node_size + 1);
-	type(p) := whatsit_node;
-	subtype(p) := native_word_node;
-	
-	native_size(p) := native_node_size + 1;
-	native_font(p) := f;
-	native_length(p) := 1;
-	
-	native_glyph_count(p) := 0;
-	native_glyph_info_ptr(p) := 0;
-
-	set_native_char(p, 0, c);
-	set_native_metrics(p, XeTeX_use_glyph_metrics);
-	
-	new_native_character := p;
-end;
-
 function new_native_word_node(@!f:internal_font_number;@!n:integer):pointer;
 	{ note that this function creates the node, but does not actually set its metrics;
 		call set_native_metrics(node) if that is required! }
@@ -5358,6 +5890,77 @@ begin
 	native_glyph_info_ptr(q) := 0;
 
 	new_native_word_node := q;
+end;
+
+function new_native_character(@!f:internal_font_number;@!c:UnicodeScalar):pointer;
+var
+	p:	pointer;
+	i, len: integer;
+begin
+	if font_mapping[f] <> 0 then begin
+		if c > @"FFFF then begin
+			str_room(2);
+			append_char((c - @"10000) div 1024 + @"D800);
+			append_char((c - @"10000) mod 1024 + @"DC00);
+		end
+		else begin
+			str_room(1);
+			append_char(c);
+		end;
+		len := apply_mapping(font_mapping[f], address_of(str_pool[str_start_macro(str_ptr)]), cur_length);
+		pool_ptr := str_start_macro(str_ptr); { flush the string, as we'll be using the mapped text instead }
+		
+		i := 0;
+		while i < len do begin
+			if (mapped_text[i] >= @"D800) and (mapped_text[i] < @"DC00) then begin
+				c := (mapped_text[i] - @"D800) * 1024 + mapped_text[i+1] - @"DC00 + @"10000;
+				if map_char_to_glyph(f, c) = 0 then begin
+					char_warning(f, c);
+				end;
+				i := i + 2;
+			end
+			else begin
+				if map_char_to_glyph(f, mapped_text[i]) = 0 then begin
+					char_warning(f, mapped_text[i]);
+				end;
+				i := i + 1;
+			end;
+		end;
+
+		p := new_native_word_node(f, len);
+		for i := 0 to len-1 do begin
+			set_native_char(p, i, mapped_text[i]);
+		end
+	end
+	else begin
+		if tracing_lost_chars > 0 then
+			if map_char_to_glyph(f, c) = 0 then begin
+				char_warning(f, c);
+			end;
+
+		p := get_node(native_node_size + 1);
+		type(p) := whatsit_node;
+		subtype(p) := native_word_node;
+		
+		native_size(p) := native_node_size + 1;
+		native_glyph_count(p) := 0;
+		native_glyph_info_ptr(p) := 0;
+		native_font(p) := f;
+
+		if c > @"FFFF then begin
+			native_length(p) := 2;
+			set_native_char(p, 0, (c - @"10000) div 1024 + @"D800);
+			set_native_char(p, 1, (c - @"10000) mod 1024 + @"DC00);
+		end
+		else begin
+			native_length(p) := 1;
+			set_native_char(p, 0, c);
+		end;
+	end;
+
+	set_native_metrics(p, XeTeX_use_glyph_metrics);
+
+	new_native_character := p;
 end;
 
 procedure font_feature_warning(featureNameP:void_pointer; featLen:integer;

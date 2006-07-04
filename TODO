@@ -2,9 +2,8 @@
 
 - native-word hyphenation doesn't always reassemble words fully - e.g., Noori diacritic problem
 
-- error message when using \XeTeXcharglyph with a non-native font
-
 - font style identification in complex families (LM)
+  - improved; LM family needs reorg!
 
 
 ** FEATURES to consider:
@@ -24,7 +23,7 @@
 
 + make \tracinglostchars report missing Unicode chars in native fonts
 
-- vertical mode for OpenType/ICU fonts
++ vertical mode for OpenType/ICU fonts
 
 - ability to adjust the font matrix (provides stretch, slant, baseline adjust, etc)
 

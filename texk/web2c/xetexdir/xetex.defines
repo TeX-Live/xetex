@@ -44,6 +44,7 @@
 @define function casttoptr();
 @define function casttointeger();
 @define function glyphinfobyte();
+@define function casttoushort();
 
 @define function atsufontget();
 @define function atsufontget1();
@@ -66,6 +67,12 @@
 @define function getnativecharht();
 @define function getnativechardp();
 @define function getnativecharic();
+
+@define function setfamilyfield();
+@define function setclassfield();
+@define function mathfamfield();
+@define function mathclassfield();
+@define function mathcharfield();
 
 @define procedure atsugetfontmetrics();
 @define procedure otgetfontmetrics();
