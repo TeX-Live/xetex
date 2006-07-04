@@ -1682,7 +1682,7 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 		if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
 			POSTTable*      post = xmalloc(tableSize);
 			ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
-			*slant = X2Fix(tan(Fix2X( - post->italicAngle) * M_PI / 180.0));
+			*slant = X2Fix(tan(Fix2X( - SWAP32(post->italicAngle)) * M_PI / 180.0));
 			free(post);
 		}
 	}
