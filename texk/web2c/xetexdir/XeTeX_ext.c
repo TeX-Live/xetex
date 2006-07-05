@@ -1904,39 +1904,97 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
 
 	FontNameCode	code;
-	OSStatus	status = 1;
+	OSStatus		status = -1;
+	ItemCount		count, i;
+	Boolean			found = 0;
+
 	switch (what) {
 		case XeTeX_variation_name:
-			status = ATSUGetFontVariationNameCode(fontID, param1, &code);
+			status = ATSUCountFontVariations(fontID, &count);
+			if (status == noErr) {
+				for (i = 0; i < count; ++i) {
+					ATSUFontVariationAxis	axis;
+					ATSUFontVariationValue	min, max, def;
+					status = ATSUGetIndFontVariation(fontID, i, &axis, &min, &max, &def);
+					if (status == noErr && axis == param1) {
+						status = ATSUGetFontVariationNameCode(fontID, param1, &code);
+						found = 1;
+						break;
+					}
+				}
+			}
 			break;
 			
 		case XeTeX_feature_name:
-			status = ATSUGetFontFeatureNameCode(fontID, param1, kATSUNoSelector, &code);
-			break;
-			
 		case XeTeX_selector_name:
-			status = ATSUGetFontFeatureNameCode(fontID, param1, param2, &code);
+			status = ATSUCountFontFeatureTypes(fontID, &count);
+			if (status == noErr) {
+				ATSUFontFeatureType*	features = xmalloc(count * sizeof(ATSUFontFeatureType));
+				status = ATSUGetFontFeatureTypes(fontID, count, features, &count);
+				if (status == noErr) {
+					for (i = 0; i < count; ++i) {
+						if (features[i] == param1) {
+							/* the requested feature code is valid */
+							if (what == XeTeX_feature_name) {
+								status = ATSUGetFontFeatureNameCode(fontID, param1, kATSUNoSelector, &code);
+								found = 1;
+							}
+							else {
+								status = ATSUCountFontFeatureSelectors(fontID, param1, &count);
+								if (status == noErr) {
+									ATSUFontFeatureSelector*	selectors = xmalloc(count * sizeof(ATSUFontFeatureSelector));
+									Boolean*					onByDefault = xmalloc(count * sizeof(Boolean));
+									Boolean						exclusive;
+									status = ATSUGetFontFeatureSelectors(fontID, param1, count, selectors, onByDefault, &count, &exclusive);
+									if (status == noErr) {
+										for (i = 0; i < count; ++i) {
+											if (selectors[i] == param2) {
+												/* feature/selector combination is valid */
+												status = ATSUGetFontFeatureNameCode(fontID, param1, param2, &code);
+												found = 1;
+												break;
+											}
+										}
+									}
+									free(onByDefault);
+									free(selectors);
+								}
+							}
+							break;
+						}
+					}
+				}
+				free(features);
+			}
 			break;
 	}
 
-	if (status == noErr) {
+	if (found && status == noErr) {
+#define NAME_BUF_SIZE	1024
 		ByteCount	len = 0;
-		char		name[1024];
+		char		name[NAME_BUF_SIZE]; /* should be more than enough for any sensible font name */
 		do {
-			if (ATSUFindFontName(fontID, code, kFontMacintoshPlatform, kFontRomanScript, kFontEnglishLanguage, 1024, name, &len, 0) == noErr) break;
-			if (ATSUFindFontName(fontID, code, kFontMacintoshPlatform, kFontRomanScript, kFontNoLanguageCode, 1024, name, &len, 0) == noErr) break;
+			if (ATSUFindFontName(fontID, code, kFontMacintoshPlatform, kFontRomanScript, kFontEnglishLanguage, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
+			if (ATSUFindFontName(fontID, code, kFontMacintoshPlatform, kFontRomanScript, kFontNoLanguageCode, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
 		} while (0);
 		if (len > 0) {
-			char*	cp = &name[0];
-			while (len-- > 0)
-				printchar(*(cp++));
+			/* need to convert MacRoman name to Unicode */
+			CFStringRef	str = CFStringCreateWithBytes(kCFAllocatorDefault, (UInt8*)name, len, kCFStringEncodingMacRoman, false);
+			if (str != NULL) {
+				len = CFStringGetLength(str);
+				UniChar*	buf = xmalloc(len * sizeof(UniChar));
+				CFStringGetCharacters(str, CFRangeMake(0, len), buf);
+				printchars(buf, len);
+				free(buf);
+				CFRelease(str);
+			}
 		}
 		else {
 			do {
-				if (ATSUFindFontName(fontID, code, kFontUnicodePlatform, kFontNoScriptCode, kFontEnglishLanguage, 1024, name, &len, 0) == noErr) break;
-				if (ATSUFindFontName(fontID, code, kFontMicrosoftPlatform, kFontNoScriptCode, kFontEnglishLanguage, 1024, name, &len, 0) == noErr) break;
-				if (ATSUFindFontName(fontID, code, kFontUnicodePlatform, kFontNoScriptCode, kFontNoLanguageCode, 1024, name, &len, 0) == noErr) break;
-				if (ATSUFindFontName(fontID, code, kFontMicrosoftPlatform, kFontNoScriptCode, kFontNoLanguageCode, 1024, name, &len, 0) == noErr) break;
+				if (ATSUFindFontName(fontID, code, kFontUnicodePlatform, kFontNoScriptCode, kFontEnglishLanguage, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
+				if (ATSUFindFontName(fontID, code, kFontMicrosoftPlatform, kFontNoScriptCode, kFontEnglishLanguage, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
+				if (ATSUFindFontName(fontID, code, kFontUnicodePlatform, kFontNoScriptCode, kFontNoLanguageCode, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
+				if (ATSUFindFontName(fontID, code, kFontMicrosoftPlatform, kFontNoScriptCode, kFontNoLanguageCode, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
 			} while (0);
 			if (len > 0) {
 				printchars((unsigned short*)(&name[0]), len / 2);
