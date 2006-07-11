@@ -76,28 +76,13 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
             result = new ArabicOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
             break;
 
+        case bopoScriptCode:
         case haniScriptCode:
-#if 0
-            switch (languageCode) {
-            case korLanguageCode:
-            case janLanguageCode:
-            case zhtLanguageCode:
-            case zhsLanguageCode:
-                if (gsubTable->coversScriptAndLanguage(scriptTag, languageTag, TRUE)) {
-//                    result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
-                    result = new HanOpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
-                    break;
-                }
-
-                // note: falling through to default case.
-            default:
-//                result = new XeTeXLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
-                result = new OpenTypeLayoutEngine(fontInstance, scriptCode, languageCode, typoFlags, gsubTable);
-                break;
-            }
-#else
-                result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
-#endif
+        case hangScriptCode:
+        case hiraScriptCode:
+        case kanaScriptCode:
+        case hrktScriptCode:
+            result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, removeFeatures);
             break;
 
         case khmrScriptCode:
