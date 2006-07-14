@@ -4,40 +4,38 @@
 
 Makefile: $(srcdir)/xetexdir/xetex.mk
 
-target = @target@
-target_os = @target_os@
-target_cpu = @target_cpu@
-target_vendor = @target_vendor@
-
-# We build etex.
+# We build xetex unless configure decides to skip it
 xetex = @XETEX@ xetex
 
-# Platform specific defines and files to be built
-ifeq '$(target_vendor)' 'apple' # or should we be testing target_os???
+### Platform-specific defines and files to be built
 
-xetex_platform_o = XeTeX_mac.o XeTeXFontMgr_Mac.o
-xetex_platform_layout_o = XeTeXFontInst_Mac.o
-xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp
+# On Mac OS X:
+@XETEX_MACOSX@ xetex_platform_o = XeTeX_mac.o XeTeXFontMgr_Mac.o
+@XETEX_MACOSX@ xetex_platform_layout_o = XeTeXFontInst_Mac.o
+@XETEX_MACOSX@ xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp
 
-XETEX_DEFINES = -DXETEX_MAC
+@XETEX_MACOSX@ XETEX_DEFINES = -DXETEX_MAC
 
-# System frameworks we link with on Mac OS X
-FRAMEWORKS = -framework Carbon -framework Cocoa -framework QuickTime
+@XETEX_MACOSX@ EXTRALIBS = -framework Carbon -framework Cocoa -framework QuickTime
 
-else # not apple, currently assume a Linux-like system with X11, etc... no W32 option yet
+@XETEX_MACOSX@ EXTRADEPS =
 
-#Linux is linux-gnu, ought to be same defines/files for other X11 systems like BSDs
-xetex_platform_o = XeTeXFontMgr_Linux.o
-xetex_platform_layout_o = XeTeXFontInst_FC.o
-xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
+# On non-Mac platforms:
+@XETEX_GENERIC@ xetex_platform_o = XeTeXFontMgr_Linux.o
+@XETEX_GENERIC@ xetex_platform_layout_o = XeTeXFontInst_FC.o
+@XETEX_GENERIC@ xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
 
-XETEX_DEFINES = -DXETEX_OTHER
+@XETEX_GENERIC@ XETEX_DEFINES = -DXETEX_OTHER
 
-# FIXME: this should be handled through configure
-# assumes FreeType, FontConfig, ImageMagick are available
-FRAMEWORKS = -lfreetype -lfontconfig `Wand-config  --ldflags --libs`
+@XETEX_GENERIC@ # FIXME: FontConfig & ImageMagick not yet checked by configure
+@XETEX_GENERIC@ EXTRALIBS = @LDFREETYPE2@ -lfontconfig `Wand-config  --ldflags --libs`
 
-endif
+@XETEX_GENERIC@ EXTRADEPS = @FREETYPE2DEP@
+
+### end of platform-specific setup
+
+FREETYPE2DIR = ../../libs/freetype2
+FREETYPE2SRCDIR = $(srcdir)/../../libs/freetype2
 
 XDEFS = $(XETEX_DEFINES)
 
@@ -92,7 +90,7 @@ ICUCFLAGS = \
 	-I. -I..
 
 # FIXME: this should be handled through configure
-FTFLAGS =  -I/usr/include/freetype2/
+FTFLAGS =  @FREETYPE2CPPFLAGS@
 
 TECkitFLAGS = -I../../../libs/teckit/source/Public-headers/
 
@@ -139,6 +137,9 @@ xetexlibs = \
 ../../libs/teckit/lib/.libs/libTECkit.a:
 	(cd ../../libs/teckit ; $(MAKE))
 
+$(FREETYPE2DIR)/.libs/libfreetype.a:
+	(cd $(FREETYPE2DIR) ; $(MAKE))
+
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
 	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
@@ -149,9 +150,9 @@ trans.o: $(srcdir)/xetexdir/trans.c
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 # Making xetex.
-xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetex_add_o) $(xetexlibs)
+xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetex_add_o) $(xetexlibs) $(EXTRADEPS)
 	$(kpathsea_cxx_link) $(xetex_o) $(xetex_add_o) $(xetex_ot_layout_o) $(socketlibs) $(LOADLIBES) \
-	$(xetexlibs) $(FRAMEWORKS) -lz
+	$(xetexlibs) $(EXTRALIBS) -lz
 
 # C file dependencies
 $(xetex_c) xetexcoerce.h xetexd.h: xetex.p $(web2c_texmf)

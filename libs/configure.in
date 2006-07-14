@@ -22,6 +22,7 @@ sinclude(zlib/withenable.ac)
 sinclude(zlib/zlib.ac)
 sinclude(freetype/withenable.ac)
 sinclude(freetype/freetype.ac)
+sinclude(freetype2/freetype2.ac)
 
 # The following line helps, e.g. for ncurses which properly detects the
 # system's terminfo definitions if configured without explicit --prefix.
@@ -36,6 +37,8 @@ test "x$needs_libxpdf" != xno \
   && subconfigures="$subconfigures xpdf"
 test "x$needs_freetype" != xno \
   && subconfigures="$subconfigures freetype"
+test "x$needs_freetype2" != xno \
+  && subconfigures="$subconfigures freetype2"
 test "x$needs_gd" != xno \
   && subconfigures="$subconfigures gd"
 
