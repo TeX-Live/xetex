@@ -3722,6 +3722,8 @@ adjust_space_factor;@/
 
 { added code for native font support }
 if is_native_font(cur_font) then begin
+	if mode>0 then if language<>clang then fix_language;
+
 	main_h := 0;
 	main_f := cur_font;
 
