@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = 1.6
 
+LINK=$(CXXLINK)
+
 bin_PROGRAMS = teckit_compile txtconv sfconv
 
 AM_CPPFLAGS  = -I$(top_srcdir)/source/Public-headers
