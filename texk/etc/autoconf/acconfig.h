@@ -95,6 +95,9 @@
 /* Define if your struct stat has st_blocks.  */
 #undef HAVE_ST_BLOCKS
 
+/* Define if your struct stat has st_mtim.  */
+#undef HAVE_ST_MTIM
+
 /* Define if you have the strcoll function and it is properly defined.  */
 #undef HAVE_STRCOLL
 

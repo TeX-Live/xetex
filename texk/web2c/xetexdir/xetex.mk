@@ -13,6 +13,7 @@ xetex = @XETEX@ xetex
 @XETEX_MACOSX@ xetex_platform_o = XeTeX_mac.o XeTeXFontMgr_Mac.o
 @XETEX_MACOSX@ xetex_platform_layout_o = XeTeXFontInst_Mac.o
 @XETEX_MACOSX@ xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp
+@XETEX_MACOSX@ xetex_images_o =
 
 @XETEX_MACOSX@ XETEX_DEFINES = -DXETEX_MAC
 
@@ -24,15 +25,33 @@ xetex = @XETEX@ xetex
 @XETEX_GENERIC@ xetex_platform_o = XeTeXFontMgr_Linux.o
 @XETEX_GENERIC@ xetex_platform_layout_o = XeTeXFontInst_FC.o
 @XETEX_GENERIC@ xetex_platform_layout_cxx = XeTeXFontInst_FC.cpp
+@XETEX_GENERIC@ xetex_images_o = mfileio.o numbers.o pdfimage.o bmpimage.o jpegimage.o pngimage.o XeTeX_pic.o
 
 @XETEX_GENERIC@ XETEX_DEFINES = -DXETEX_OTHER
 
 @XETEX_GENERIC@ # FIXME: FontConfig & ImageMagick not yet checked by configure
-@XETEX_GENERIC@ EXTRALIBS = @LDFREETYPE2@ -lfontconfig `Wand-config  --ldflags --libs`
+@XETEX_GENERIC@ EXTRALIBS = @LDFREETYPE2@ @LDLIBXPDF@ @LDLIBPNG@ -lfontconfig
 
-@XETEX_GENERIC@ EXTRADEPS = @FREETYPE2DEP@
+@XETEX_GENERIC@ EXTRADEPS = @FREETYPE2DEP@ @LIBXPDFDEP@ @LIBPNGDEP@
 
 ### end of platform-specific setup
+
+LDLIBXPDF=@LDLIBXPDF@
+LIBXPDFCPPFLAGS=@LIBXPDFCPPFLAGS@
+LIBXPDFDEP=@LIBXPDFDEP@
+
+LIBXPDFDIR=../../libs/xpdf
+LIBXPDFSRCDIR=$(srcdir)/$(LIBXPDFDIR)
+
+LDLIBPNG=@LDLIBPNG@
+LIBPNGCPPFLAGS=@LIBPNGCPPFLAGS@
+LIBPNGDEP=@LIBPNGDEP@
+
+LIBPNGDIR=../../libs/libpng
+LIBPNGSRCDIR=$(srcdir)/$(LIBPNGDIR)
+
+# FIXME: this should be handled through configure
+FTFLAGS =  @FREETYPE2CPPFLAGS@
 
 FREETYPE2DIR = ../../libs/freetype2
 FREETYPE2SRCDIR = $(srcdir)/../../libs/freetype2
@@ -64,6 +83,28 @@ xetex2.o: xetex2.c
 xetexextra.o: xetexextra.c
 	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
+# image support
+mfileio.o: $(srcdir)/xetexdir/mfileio.c
+	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+
+numbers.o: $(srcdir)/xetexdir/numbers.c
+	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+
+bmpimage.o: $(srcdir)/xetexdir/bmpimage.c
+	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+
+jpegimage.o: $(srcdir)/xetexdir/jpegimage.c
+	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+
+pngimage.o: $(srcdir)/xetexdir/pngimage.c
+	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) $(DEFS) -c $< -o $@
+
+XeTeX_pic.o: $(srcdir)/xetexdir/XeTeX_pic.c
+	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+
+pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp
+	$(compile) $(ALL_CFLAGS) $(LIBXPDFCPPFLAGS) $(DEFS) -c $< -o $@
+
 # Layout library sources
 xetex_ot_layout_o = \
 		XeTeXFontMgr.o \
@@ -88,9 +129,6 @@ ICUCFLAGS = \
 	-I../../../libs/$(icudir) \
 	-DLE_USE_CMEMORY \
 	-I. -I..
-
-# FIXME: this should be handled through configure
-FTFLAGS =  @FREETYPE2CPPFLAGS@
 
 TECkitFLAGS = -I../../../libs/teckit/source/Public-headers/
 
@@ -137,6 +175,18 @@ xetexlibs = \
 ../../libs/teckit/lib/.libs/libTECkit.a:
 	(cd ../../libs/teckit ; $(MAKE))
 
+$(LIBXPDFDIR)/xpdf/libxpdf.a:
+	(cd $(LIBXPDFDIR)/xpdf ; $(MAKE))
+
+$(LIBXPDFDIR)/goo/libGoo.a:
+	(cd $(LIBXPDFDIR)/goo ; $(MAKE))
+
+$(LIBXPDFDIR)/fofi/libfofi.a:
+	(cd $(LIBXPDFDIR)/fofi ; $(MAKE))
+
+$(LIBPNGDIR)/libpng.a:
+	(cd $(LIBPNGDIR) ; $(MAKE))
+
 $(FREETYPE2DIR)/.libs/libfreetype.a:
 	(cd $(FREETYPE2DIR) ; $(MAKE))
 
@@ -150,8 +200,9 @@ trans.o: $(srcdir)/xetexdir/trans.c
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 # Making xetex.
-xetex: $(xetex_ot_layout_o) $(xetex_o) $(xetex_add_o) $(xetexlibs) $(EXTRADEPS)
-	$(kpathsea_cxx_link) $(xetex_o) $(xetex_add_o) $(xetex_ot_layout_o) $(socketlibs) $(LOADLIBES) \
+xetex: $(xetex_o) $(xetex_add_o) $(xetex_images_o) $(xetex_ot_layout_o) $(xetexlibs) $(EXTRADEPS)
+	$(kpathsea_cxx_link) $(xetex_o) $(xetex_add_o) $(xetex_images_o) $(xetex_ot_layout_o) \
+	$(socketlibs) $(LOADLIBES) \
 	$(xetexlibs) $(EXTRALIBS) -lz
 
 # C file dependencies

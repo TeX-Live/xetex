@@ -34,6 +34,8 @@ LIBXPDFDIR=libs/xpdf
 GDDIR=libs/gd
 FREETYPEDIR=libs/freetype
 FREETYPE2DIR=libs/freetype2
+TECKITDIR=libs/teckit
+ICUDIR=libs/icu-xetex
 
 # Subdirectories that have makefiles
 ESUBDIRS = @ESUBDIRS@ texk
@@ -178,6 +180,10 @@ $(FREETYPEDIR)/lib/.libs/libttf.a:
 	cd $(FREETYPEDIR); $(MAKE)
 $(FREETYPE2DIR)/.libs/libfreetype.a:
 	cd $(FREETYPE2DIR); $(MAKE)
+$(TECKITDIR)/libTECkit.a:
+        cd $(TECKITDIR); $(MAKE)
+$(ICUDIR)/lib/libsicudata.a $(ICUDIR)/lib/libsicule.a $(ICUDIR)/lib/libsicuuc.a:
+        cd $(ICUDIR); $(MAKE)
 
 # Prevent GNU make v3 from overflowing arg limit on SysV.
 .NOEXPORT:

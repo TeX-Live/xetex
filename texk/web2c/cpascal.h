@@ -15,6 +15,10 @@
 /* We must include this first, to resolve many C issues.  */
 #include "config.h"
 
+/* avoid clash between 'readline' from web programs and possible stdio.h declaration
+   included via config.h above */
+#define readline pascal_readline
+
 /* We only use getopt in the applications, not in web2c itself.  */
 #include <kpathsea/getopt.h>
 

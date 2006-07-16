@@ -206,6 +206,8 @@ extern const UInt32 kSurrogateLowEnd;
 extern const UInt32 byteMask;
 extern const UInt32 byteMark;
 
+#include "trans.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -246,6 +248,8 @@ extern "C" {
 	void measure_native_glyph(void* node, int use_glyph_metrics);
 	int mapchartoglyph(int font, unsigned int ch);
 	int mapglyphtoindex(int font);
+
+	int find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page);
 
 #ifdef XETEX_MAC
 /* functions in XeTeX_mac.c */

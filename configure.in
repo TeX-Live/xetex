@@ -1,8 +1,48 @@
+dnl Top-level configure for TeX Live build.  Public domain.
+
 AC_INIT(texk/make/common.mk)
 
 AC_CONFIG_AUX_DIR(config)
 AC_SET_MAKE
 AC_PROG_CC
+AC_PROG_CXX
+
+AC_PROG_LEX
+case $LEX in
+  lex)
+    OLDIFS=$IFS; IFS=:
+    foundLEX=false
+    for p in $PATH; do
+      if test -f "$p/lex"; then
+        foundLEX=true
+        break
+      fi
+    done
+    IFS=$OLDIFS
+  ;;
+esac
+if $foundLEX; then :; else
+  AC_MSG_ERROR(no working lexical scanner (lex/flex) found)
+fi
+
+AC_PROG_YACC
+case $YACC in
+  yacc)
+    OLDIFS=$IFS; IFS=:
+    foundYACC=false
+    for p in $PATH; do
+      if test -f "$p/yacc"; then
+        foundYACC=true
+        break
+      fi
+    done
+    IFS=$OLDIFS
+  ;;
+esac
+if $foundYACC; then :; else
+  AC_MSG_ERROR(no working parser generator (yacc/bison) found)
+fi
+
 AC_CANONICAL_SYSTEM
 
 dnl Various compiler directives
@@ -45,22 +85,23 @@ dnl These are included for compilation with either teTeX or standalone xdvik
 dnl (tetex will only provide tetex.ac, xdvik only xdvik.ac)    
 sinclude(tetex.ac)
 sinclude(texlive.ac)
-sinclude(xdvik.ac)
+dnl sinclude(xdvik.ac)
 sinclude(withenable.ac)
-sinclude(utils/dialog/withenable.ac)
+dnl sinclude(utils/dialog/withenable.ac)
 sinclude(texk/withenable.ac)
+sinclude(texk/kpathsea/xt.ac)
 sinclude(texk/kpathsea/withenable.ac)
-dnl xdvik's xt.ac has much more to offer
-dnl sinclude(texk/kpathsea/xt.ac)
 sinclude(texk/web2c/withenable.ac)
-sinclude(texk/xdvik/withenable.ac)
-sinclude(texk/xdvik/xt.ac)
-sinclude(libs/ncurses/withenable.ac)
+dnl sinclude(texk/xdvik/withenable.ac)
+dnl sinclude(libs/ncurses/withenable.ac)
 sinclude(libs/libpng/withenable.ac)
-sinclude(libs/t1lib/withenable.ac)
+dnl sinclude(libs/t1lib/withenable.ac)
 sinclude(libs/zlib/withenable.ac)
-sinclude(libs/gd/withenable.ac)
-sinclude(libs/freetype/withenable.ac)
+dnl sinclude(libs/gd/withenable.ac)
+dnl sinclude(libs/freetype/withenable.ac)
+sinclude(libs/freetype2/withenable.ac)
+sinclude(libs/fontconfig/withenable.ac)
+dnl sinclude(libs/expat/withenable.ac)
 sinclude(libs/freetype2/withenable.ac)
 
 NCURSESDIR=libs/ncurses
@@ -72,6 +113,11 @@ LIBXPDFDIR=libs/xpdf
 FREETYPEDIR=libs/freetype
 FREETYPE2DIR=libs/freetype2
 GDDIR=libs/gd
+FT2DIR=libs/freetype2
+FONTCONFIGDIR=libs/fontconfig
+EXPATDIR=libs/expat
+TECKITDIR=libs/teckit
+ICUDIR=libs/icu-xetex
 
 test "$no_x" = yes && { with_xdvik=no; with_oxdvik=no; }
 export with_xdvik with_oxdvik
@@ -95,7 +141,6 @@ test ! -d $srcdir/$LIBPNGDIR  && : ${needs_pnglib=no}
 test "$with_dvipng"  != no    && : ${needs_pnglib=yes}
 test "$with_pdftex"  != no    && : ${needs_pnglib=yes}
 test "$with_pdfetex" != no    && : ${needs_pnglib=yes}
-test "$with_pdfxtex" != no    && : ${needs_pnglib=yes}
 : ${needs_pnglib=no}
 export needs_pnglib
 
@@ -104,7 +149,6 @@ test ! -d $srcdir/$ZLIBDIR    && : ${needs_zlib=no}
 test "$with_dvipng"  != no    && : ${needs_zlib=yes}
 test "$with_pdftex"  != no    && : ${needs_zlib=yes}
 test "$with_pdfetex" != no    && : ${needs_zlib=yes}
-test "$with_pdfxtex" != no    && : ${needs_zlib=yes}
 test "$with_texinfo" != no    && : ${needs_zlib=yes}
 : ${needs_zlib=no}
 export needs_zlib
@@ -113,7 +157,6 @@ export needs_zlib
 test ! -d $srcdir/$LIBXPDFDIR && : ${needs_libxpdf=no}
 test "$with_pdftex"  != no    && : ${needs_libxpdf=yes}
 test "$with_pdfetex"  != no    && : ${needs_libxpdf=yes}
-test "$with_pdfxtex"  != no    && : ${needs_libxpdf=yes}
 : ${needs_libxpdf=no}
 export needs_libxpdf
 
@@ -136,17 +179,30 @@ test "$with_xetex" = no        && : ${needs_freetype2=no}
 : ${needs_freetype2=yes}
 export needs_freetype2
 
+# we need teckit for xetex
+test ! -d $srcdir/$TECKITDIR  && : ${needs_teckit=no}
+test "$with_xetex"   != no    && : ${needs_teckit=yes}
+: ${needs_teckit=no}
+export needs_teckit
+
+# we need ICU for xetex
+test ! -d $srcdir/$ICUDIR     && : ${needs_icu=no}
+test "$with_xetex"   != no    && : ${needs_icu=yes}
+: ${needs_icu=no}
+export needs_icu
+
 dnl We cannot use variables (e.g. $LIBPNGDIR) for sinclude, so...
 sinclude(libs/libpng/libpng.ac)
 sinclude(libs/zlib/zlib.ac)
-sinclude(libs/ncurses/ncurses.ac)
+dnl sinclude(libs/ncurses/ncurses.ac)
 sinclude(libs/xpdf/libxpdf.ac)
-sinclude(libs/t1lib/t1lib.ac)
-sinclude(libs/gd/gd.ac)
-sinclude(libs/freetype/freetype.ac)
+dnl sinclude(libs/t1lib/t1lib.ac)
+dnl sinclude(libs/gd/gd.ac)
+dnl sinclude(libs/freetype/freetype.ac)
 sinclude(libs/freetype2/freetype2.ac)
+dnl sinclude(libs/expat/expat.ac)
 
-LIBSDEP="$CURSESDEP $ZLIBDEP $LIBPNGDEP $LIBXPDFDEP $LIBT1DEP $GDDEP $FREETYPEDEP $FREETYPE2DEP"
+LIBSDEP="$CURSESDEP $ZLIBDEP $LIBPNGDEP $LIBXPDFDEP $LIBT1DEP $GDDEP $FREETYPEDEP $FREETYPE2DEP $TECKITDEP $ICUDEP"
 
 LIBSDIRS=
 test "$needs_ncurses" = yes && test "$using_system_ncurses" != yes \
@@ -157,32 +213,39 @@ test "$needs_zlib" = yes && test "$using_system_zlib" != yes \
   && LIBSDIRS="$ZLIBDIR $LIBSDIRS"
 test "$needs_libxpdf" = yes \
   && LIBSDIRS="$LIBXPDFDIR $LIBSDIRS"
-test "$needs_libt1" = yes \
+test "$needs_libt1" = yes && test "$using_system_t1lib" != yes \
   && LIBSDIRS="$LIBT1DIR $LIBTYPE1DIR $LIBSDIRS"
-test "$needs_gd" = yes \
+test "$needs_gd" = yes && test "$using_system_gd" != yes \
   && LIBSDIRS="$GDDIR $LIBSDIRS"
-test "$needs_freetype" = yes \
+test "$needs_freetype" = yes && test "$using_system_freetype" != yes \
   && LIBSDIRS="$FREETYPEDIR $LIBSDIRS"
-test "$needs_freetype2" = yes \
+test "$needs_freetype2" = yes && test "$using_system_freetype2" != yes \
   && LIBSDIRS="$FREETYPE2DIR $LIBSDIRS"
+test "$needs_teckit" = yes \
+  && LIBSDIRS="$TECKITDIR $LIBSDIRS"
+test "$needs_icu" = yes \
+  && LIBSDIRS="$ICUDIR $LIBSDIRS"
 
-PKGS='texinfo dialog t1utils lcdf-typetools psutils texi2html'
-ESUBDIRS=
-for pkg in $PKGS; do
-  if test -d $srcdir/utils/$pkg; then
-    if eval "test \"`echo '$with_'${pkg}`\" != no"; then
-      ESUBDIRS="$ESUBDIRS utils/$pkg"
-      test -d utils || mkdir utils
-    fi
-  fi
-done
+AC_CONFIG_SUBDIRS([libs])
 
-AC_SUBST(ESUBDIRS)
+dnl PKGS='dialog lcdf-typetools pdfopen psutils t1utils texi2html texinfo'
+dnl ESUBDIRS=
+dnl for pkg in $PKGS; do
+dnl   if test -d $srcdir/utils/$pkg; then
+dnl     if eval "test \"`echo '$with_'${pkg}`\" != no"; then
+dnl       ESUBDIRS="$ESUBDIRS utils/$pkg"
+dnl       AC_CONFIG_SUBDIRS([utils/$pkg])
+dnl       test -d utils || mkdir utils
+dnl     fi
+dnl   fi
+dnl done
+
+dnl AC_SUBST(ESUBDIRS)
 AC_SUBST(LIBSDEP)
 AC_SUBST(LIBSDIRS)
 
 # initialize texmf tree with fmtutil only for teTeX and TeX Live
-if test ! -d $srcdir/texk/tetex || test -n "$xdvik_standalone"; then
+if test ! -d $srcdir/texk/tetex || test -n "$xdvik_standalone" || test "x$cross_compiling" = xyes; then
   FMU=
 else
   FMU='# '
@@ -197,5 +260,6 @@ else
 fi
 AC_SUBST(INSTDIRS)
 
-AC_CONFIG_SUBDIRS(libs $ESUBDIRS texk)
-AC_OUTPUT(Makefile)
+AC_CONFIG_SUBDIRS([texk])
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

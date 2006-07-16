@@ -206,6 +206,7 @@ infodir='${prefix}/info'
 mandir='${prefix}/man'
 
 # Initialize some other variables.
+ac_config_files=
 subdirs=
 MFLAGS= MAKEFLAGS=
 SHELL=${CONFIG_SHELL-/bin/sh}
@@ -549,6 +550,18 @@ changequote([, ])dnl
 
   -*) AC_MSG_ERROR([$ac_option: invalid option; use --help to show usage])
     ;;
+
+  *=*)
+    ac_envvar=`expr "x$ac_option" : 'x\([[^=]]*\)='`
+    # Reject names that are not valid shell variable names.
+changequote(, )dnl
+    if test -n "`echo $ac_envvar| sed 's/[_a-zA-Z0-9]//g'`"; then
+changequote([, ])dnl
+      AC_MSG_ERROR([invalid variable name: $ac_envvar])
+    fi
+    ac_optarg=`echo "$ac_optarg" | sed "s/'/'\\\\\\\\''/g"`
+    eval "$ac_envvar='$ac_optarg'"
+    export $ac_envvar ;;
 
   *)
 changequote(, )dnl
@@ -2037,6 +2050,9 @@ changequote([,]), [#include <sys/types.h>
 #if STDC_HEADERS
 #include <stdlib.h>
 #include <stddef.h>
+#endif
+#if HAVE_STDINT_H
+#include <stdint.h>
 #endif], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
 AC_MSG_RESULT($ac_cv_type_$1)
 if test $ac_cv_type_$1 = no; then
@@ -2047,10 +2063,49 @@ fi
 
 dnl ### Creating output files
 
+dnl # Preparing for autoconf-2.5x:
+dnl #
+dnl # As a first step towards autoconf-2.5x we (re)define some
+dnl # autoconf-2.13 macros, thus simulating autoconf-2.5x syntax.
+dnl #
+dnl # In a second step we shall convert the various configure.in's
+dnl # to the new syntax (and add required quoting) such that they
+dnl # can be used with both autoconf versions.
+dnl #
+dnl # 2005-02-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+dnl # First we define some new macros as in autoconf-2.5x
+
+dnl # AC_CONFIG_HEADERS(HEADERS..., [COMMANDS], [INIT-CMDS])
+dnl # ------------------------------------------------------
+define([AC_LIST_HEADER])
+AC_DEFUN(AC_CONFIG_HEADERS,
+[define([AC_LIST_HEADER], AC_LIST_HEADER $1)dnl
+AC_DIVERT_PUSH(AC_DIVERSION_CMDS)dnl
+[$2]
+AC_DIVERT_POP()dnl
+AC_DIVERT_PUSH(AC_DIVERSION_ICMDS)dnl
+[$3]
+AC_DIVERT_POP()])
+
+dnl # AC_CONFIG_FILES(FILE..., [COMMANDS], [INIT-CMDS])
+dnl # -------------------------------------------------
+AC_DEFUN(AC_CONFIG_FILES,
+[ac_config_files="$ac_config_files $1"
+AC_DIVERT_PUSH(AC_DIVERSION_CMDS)dnl
+[$2]
+AC_DIVERT_POP()dnl
+AC_DIVERT_PUSH(AC_DIVERSION_ICMDS)dnl
+[$3]
+AC_DIVERT_POP()])
+
+dnl # Below we redefine some autoconf-2.13 macros in terms of the
+dnl # new ones.
 
 dnl AC_CONFIG_HEADER(HEADER-TO-CREATE ...)
 AC_DEFUN(AC_CONFIG_HEADER,
-[define([AC_LIST_HEADER], $1)])
+[AC_OBSOLETE([$0], [; instead use AC_CONFIG_HEADERS]) 
+AC_CONFIG_HEADERS([$1])])
 
 dnl Link each of the existing files SOURCE... to the corresponding
 dnl link name in DEST...
@@ -2075,8 +2130,7 @@ AC_DIVERT_POP()])
 dnl AC_CONFIG_SUBDIRS(DIR ...)
 AC_DEFUN(AC_CONFIG_SUBDIRS,
 [AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])dnl
-define([AC_LIST_SUBDIRS], ifdef([AC_LIST_SUBDIRS], [AC_LIST_SUBDIRS ],)[$1])dnl
-subdirs="AC_LIST_SUBDIRS"
+subdirs="$subdirs $1"
 AC_SUBST(subdirs)dnl
 ])
 
@@ -2085,6 +2139,8 @@ dnl Produce config.status, config.h, and links; and configure subdirs.
 dnl AC_OUTPUT([FILE...] [, EXTRA-CMDS] [, INIT-CMDS])
 define(AC_OUTPUT,
 [trap '' 1 2 15
+ifelse([$1][$2][$3], , , [AC_OBSOLETE([$0 with arguments],
+  [; instead use AC_CONFIG_FILES and $0 without arguments])])dnl
 AC_CACHE_SAVE
 trap 'rm -fr conftest* confdefs* core core.* *.core $ac_clean_files; exit 1' 1 2 15
 
@@ -2146,15 +2202,12 @@ ac_given_srcdir=$srcdir
 ifdef([AC_PROVIDE_AC_PROG_INSTALL], [ac_given_INSTALL="$INSTALL"
 ])dnl
 
-changequote(<<, >>)dnl
-ifdef(<<AC_LIST_HEADER>>,
-<<trap 'rm -fr `echo "$1 AC_LIST_HEADER" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15>>,
-<<trap 'rm -fr `echo "$1" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15>>)
-changequote([, ])dnl
+ifelse([$1], [],, [AC_CONFIG_FILES([$1])])
+trap 'rm -fr `echo "$ac_config_files AC_LIST_HEADER" | sed "s/:[[^ ]]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
-AC_OUTPUT_FILES($1)
+AC_OUTPUT_FILES([$ac_config_files])
 ifdef([AC_LIST_HEADER], [AC_OUTPUT_HEADER(AC_LIST_HEADER)])dnl
 ifdef([AC_LIST_LINKS], [AC_OUTPUT_LINKS(AC_LIST_FILES, AC_LIST_LINKS)])dnl
 EOF
@@ -2171,7 +2224,7 @@ chmod +x $CONFIG_STATUS
 rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
 dnl config.status should not do recursion.
-ifdef([AC_LIST_SUBDIRS], [AC_OUTPUT_SUBDIRS(AC_LIST_SUBDIRS)])dnl
+AC_OUTPUT_SUBDIRS([$subdirs])dnl
 ])dnl
 
 dnl Set the DEFS variable to the -D options determined earlier.
@@ -2316,7 +2369,10 @@ changequote([, ])dnl
   *) ac_comsub= ;;
   esac
 
+  rm -f conftest.in
   ac_file_inputs=`echo $ac_file_in|sed -e "s%:% $ac_given_srcdir/%g" -e "s%^%$ac_given_srcdir/%"`
+  cat $ac_file_inputs > conftest.in
+  # 
   # Replace lines of the form ac_include foo with the contents of foo:
   # first, from the ac_include lines construct a list of file names.
   # From that list, we construct a second list of those files that exist.
@@ -2329,32 +2385,28 @@ changequote([, ])dnl
   # Be careful, because the filename may contain /.  Be careful with
   # whitespace; we need to use echo.
   # 
-  # No support for the multiple-output file :-separated stuff.
-  # 
-  file_substs=`sed -n \
-changequote(,)dnl
-'/^ac_include/s%ac_include[ 	]*\(.*\)%\1%p' \
-changequote([,])dnl
-               "$ac_given_srcdir/$ac_file_in"`
+  file_substs=`sed -n '/^ac_include/s%ac_include[[ 	]]*\(.*\)%\1%p' conftest.in`
   # Create the sed command line ...
-  file_subst_cmd='sed'
-  for ac_inc in $file_substs; do
+  if test -n "$file_substs"; then
+    AC_MSG_WARN([ac_include is obsolete; instead use kpse_include])
+    file_subst_cmd="sed -e 's/^ac_include/kpse_include/'"
+  else
+    file_subst_cmd='sed'
+  fi
+  kpse_substs=`sed -n '/^kpse_include/s%kpse_include[[ 	]]*\(.*\)%\1%p' conftest.in`
+  for ac_inc in $file_substs $kpse_substs; do
     if test -f "$ac_given_srcdir/$ac_inc"; then
       ac_mung=`echo $ac_inc | sed 's,/,%,g'`
-      file_subst_cmd="$file_subst_cmd -e '/^ac_include $ac_mung$/r $ac_inc'"
+      file_subst_cmd="$file_subst_cmd -e '/^kpse_include $ac_mung$/r $ac_given_srcdir/$ac_inc'"
     fi
   done
-  file_subst_cmd="$file_subst_cmd -e '/^ac_include/d'"
+  file_subst_cmd="$file_subst_cmd -e '/^kpse_include/d'"
   # ... and fix the whitespace and escaped slashes.
   file_subst_cmd=`echo "$file_subst_cmd" | sed -e 's,%,\\\/,g' \
-changequote(,)dnl
--e 's/ac_include /ac_include[ 	]*/g'`
-changequote([,])dnl
-  # cd into the srcdir because the files being included more or less
-  # must be part of the distribution. I can't find any way to do
-  # variable substitution in the sed commands (so the user could have,
-  # e.g., $top_srcdir in their ac_include line).
-  (cd $ac_given_srcdir && eval $file_subst_cmd $ac_file_in) \
+-e 's/kpse_include /kpse_include[[ 	]]*/g'`
+  # I can't find any way to do variable substitution in the sed commands
+  # (so the user could have, e.g., $top_srcdir in their ac_include line).
+  (eval $file_subst_cmd conftest.in) \
   | sed -e "$ac_comsub
 s%@configure_input@%$configure_input%g
 s%@srcdir@%$srcdir%g
@@ -2375,7 +2427,7 @@ dnl     rm -f $ac_file
 dnl    mv conftest.out $ac_file
 dnl  fi
 fi; done
-rm -f conftest.s*
+rm -f conftest.s* conftest.in
 ])
 
 dnl Create the config.h files from the config.h.in files.
@@ -2593,7 +2645,7 @@ if test "$no_recursion" != yes; then
     esac
   done
 
-  for ac_config_dir in $1; do
+  for ac_config_dir in : $1; do
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.

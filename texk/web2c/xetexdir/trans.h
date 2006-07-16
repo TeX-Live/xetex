@@ -28,6 +28,9 @@ use or other dealings in this Software without prior written
 authorization from SIL International.
 \****************************************************************************/
 
+#ifndef _TRANS_H_
+#define _TRANS_H_
+
 #ifdef XETEX_MAC
 
 #include <Carbon/Carbon.h>
@@ -87,3 +90,5 @@ void maketranslation(transform* t, double dx, double dy);
 void makerotation(transform* t, double a);
 void transformpoint(realpoint* p, const transform* t);
 void transformconcat(transform* t1, const transform* t2);
+
+#endif /* _TRANS_H_ */

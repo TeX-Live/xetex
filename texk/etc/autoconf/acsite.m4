@@ -15,8 +15,7 @@ AC_SUBST(LIBTOOL_LIBOBJS)dnl
 
 dnl Check if gcc asm for i386 needs external symbols with an underscore.
 dnl Peter Breitenlohner, April 15, 1996.
-undefine([pb_AC_ASM_UNDERSCORE])
-AC_DEFUN(pb_AC_ASM_UNDERSCORE,
+AC_DEFUN([pb_AC_ASM_UNDERSCORE],
 [AC_REQUIRE_CPP()dnl
 AC_CACHE_CHECK(whether gcc asm needs underscore, pb_cv_asm_underscore,
 [
@@ -76,29 +75,6 @@ AC_DEFUN(AM_MAINTAINER_MODE,
 ]
 )
 
-dnl Following two are copied from 'acspecific.m4'. --Roozbeh Pournader
-
-dnl Unset CC to run configure with cross compiler.
-AC_DEFUN(AC_UNSET_CC, [
-ZZ=
-if test "$cross_compiling" = yes &&
-   (test "x$CC" = "xdos-gcc" || test "x$CC" = "xi386-mingw32-gcc" || test
-"x$CC" = "xgnuwin32gcc"
-ZZ=$CC
-unset CC
-cross_compiling=no
-fi
-])
-
-dnl Restore CC that has been unset by AC_UNSET_CC
-AC_DEFUN(AC_RESET_CC, [
-if test "x$ZZ" = "xdos-gcc" || test "x$ZZ" = "xi386-mingw32-gcc" || test
-"x$ZZ" = "xgnuwin32gcc"
-CC=$ZZ
-cross_compiling=yes
-fi		 
-])		 
-
 dnl The following three macros are copied from Thomas Dickey's autoconf
 dnl patches at:
 dnl 	http://dickey.his.com/autoconf/autoconf.html
@@ -121,6 +97,16 @@ cat <<EOF
 define([ac_help_count], 1)dnl
 ])dnl
 AC_DIVERT_POP()dnl
+])
+
+AC_DEFUN(KPSE_STRUCT_ST_MTIM,
+[AC_CACHE_CHECK([for st_mtim in struct stat], ac_cv_struct_st_mtim,
+[AC_TRY_COMPILE([#include <sys/types.h>
+#include <sys/stat.h>], [struct stat s; s.st_mtim;],
+ac_cv_struct_st_mtim=yes, ac_cv_struct_st_mtim=no)])
+if test $ac_cv_struct_st_mtim = yes; then
+  AC_DEFINE(HAVE_ST_MTIM)
+fi
 ])
 
 # Find a program when cross-compiling, or use a default when not.
@@ -155,3 +141,16 @@ else
 fi
 AC_SUBST(BUILD$1)
 ])
+
+dnl # Preparing for autoconf-2.5x:
+dnl #
+dnl # As a first step towards autoconf-2.5x we define some new
+dnl # autoconf-2.13 macros.
+dnl #
+dnl # 2005-02-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+dnl # KPSE_CONFIG_FILES(FILE..., [COMMANDS], [INIT-CMDS])
+dnl # ---------------------------------------------------
+dnl # For now just an other name for AC_CONFIG_FILES, in future
+dnl # (autoconf-2.5x) this will enable kpse_include substitution.
+AC_DEFUN([KPSE_CONFIG_FILES], [AC_CONFIG_FILES([$1], [$2], [$3])])

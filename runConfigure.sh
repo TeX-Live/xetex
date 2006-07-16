@@ -29,27 +29,13 @@ fi
 # run the TeX Live configure script
 echo "### running TeX Live configure script as:"
 echo "../configure --prefix=${PREFIX} --datadir=${DATADIR}"
-../configure --prefix=${PREFIX} --datadir=${DATADIR}
+../configure --prefix=${PREFIX} --datadir=${DATADIR} || exit
 
-# we need different configure options for ICU
-echo "### configuring the ICU library"
-mkdir -p libs/icu-xetex
-(
-	cd libs/icu-xetex
-	../../../libs/icu-xetex/configure --enable-static --disable-shared
-	if [ "`uname`" == "Darwin" ]; then
-		# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available - hoping for 10.2 compatibility :)
-		perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' common/unicode/platform.h
-	fi
-)
-
-# also configure TECkit separately for now
-echo "### configuring the TECkit library"
-mkdir -p libs/teckit
-(
-	cd libs/teckit
-	../../../libs/teckit/configure
-)
+if [ "`uname`" == "Darwin" ]; then
+	# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available
+	# ....hoping for 10.2 compatibility :)
+	perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' libs/icu-xetex/common/unicode/platform.h
+fi
 
 # To build:
 # "make xetex" in Work/texk/web2c

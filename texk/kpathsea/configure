@@ -1832,7 +1832,7 @@ darwin* | rhapsody*)
   esac
   ;;
 
-freebsd* | kfreebsd*-gnu)
+freebsd*)
   if echo __ELF__ | $CC -E - | grep __ELF__ > /dev/null; then
     case $host_cpu in
     i*86 )
@@ -3609,7 +3609,7 @@ else
     ;;
 
   # FreeBSD 3 and greater uses gcc -shared to do shared libraries.
-  freebsd* | kfreebsd*-gnu)
+  freebsd*)
     archive_cmds='$CC -shared -o $lib $libobjs $deplibs $compiler_flags'
     hardcode_libdir_flag_spec='-R$libdir'
     hardcode_direct=yes
@@ -4079,7 +4079,7 @@ freebsd1*)
   dynamic_linker=no
   ;;
 
-kfreebsd*-gnu)
+freebsd*-gnu*)
   version_type=linux
   need_lib_prefix=no
   need_version=no

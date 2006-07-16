@@ -20,38 +20,57 @@ sinclude(libpng/withenable.ac)
 sinclude(libpng/libpng.ac)
 sinclude(zlib/withenable.ac)
 sinclude(zlib/zlib.ac)
+sinclude(gd/withenable.ac)
+sinclude(gd/gd.ac)
 sinclude(freetype/withenable.ac)
 sinclude(freetype/freetype.ac)
+sinclude(freetype2/withenable.ac)
 sinclude(freetype2/freetype2.ac)
 
 # The following line helps, e.g. for ncurses which properly detects the
 # system's terminfo definitions if configured without explicit --prefix.
 # ac_configure_args=`echo "$ac_configure_args" | sed 's@--prefix=[[^ ]]*@@'`
 
-subconfigures=
-test "x$needs_libt1" != xno && test "$using_system_t1lib"  != yes \
-  && subconfigures="$subconfigures t1lib type1"
-test "x$needs_ncurses" != xno && test "$using_system_ncurses"  != yes \
-  && subconfigures="$subconfigures ncurses"
-test "x$needs_libxpdf" != xno \
-  && subconfigures="$subconfigures xpdf"
-test "x$needs_freetype" != xno \
-  && subconfigures="$subconfigures freetype"
-test "x$needs_freetype2" != xno \
-  && subconfigures="$subconfigures freetype2"
-test "x$needs_gd" != xno \
-  && subconfigures="$subconfigures gd"
+if test "x$needs_libt1" != xno && test "$using_system_t1lib"  != yes; then
+  AC_CONFIG_SUBDIRS([t1lib type1])
+fi
+if test "x$needs_ncurses" != xno && test "$using_system_ncurses"  != yes; then
+  AC_CONFIG_SUBDIRS([ncurses])
+fi
+if test "x$needs_libxpdf" != xno; then
+  AC_CONFIG_SUBDIRS([xpdf])
+fi
+if test "x$needs_freetype" != xno && test "$using_system_freetype" != yes; then
+  AC_CONFIG_SUBDIRS([freetype])
+fi
+if test "x$needs_freetype2" != xno && test "$using_system_freetype2" != yes; then
+  AC_CONFIG_SUBDIRS([freetype2])
+fi
+if test "x$needs_gd" != xno && test "$using_system_gd" != yes; then
+  AC_CONFIG_SUBDIRS([gd])
+fi
+if test "x$needs_expat" != xno && test "$using_system_expat" != yes; then
+  AC_CONFIG_SUBDIRS([expat])
+fi
+if test "x$needs_teckit" != xno; then
+  AC_CONFIG_SUBDIRS([teckit])
+fi
+if test "x$needs_icu" != xno; then
+  # ICU configure requires an explicit --enable-static, else the build fails
+  ac_configure_args="$ac_configure_args --enable-static"
+  AC_CONFIG_SUBDIRS([icu-xetex])
+fi
 
-outfiles=
-test "x$needs_pnglib" != xno && test "$using_system_pnglib"  != yes \
-  && outfiles="$outfiles libpng/Makefile"
-test "x$needs_zlib" != xno && test "$using_system_zlib"  != yes \
-  && outfiles="$outfiles zlib/Makefile"
+if test "x$needs_pnglib" != xno && test "$using_system_pnglib"  != yes; then
+  KPSE_CONFIG_FILES([libpng/Makefile])
+fi
+if test "x$needs_zlib" != xno && test "$using_system_zlib"  != yes; then
+  KPSE_CONFIG_FILES([zlib/Makefile])
+fi
 
 # create md5 directory  when building outside the srcdir:
 if test -d $srcdir/md5; then
   test -d md5 || mkdir md5
 fi
 
-AC_CONFIG_SUBDIRS($subconfigures)
-AC_OUTPUT($outfiles)
+AC_OUTPUT
