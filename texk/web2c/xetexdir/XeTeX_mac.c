@@ -905,7 +905,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 	return style;
 }
 
-OSErr
+int
 find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 {
 	*path = NULL;
