@@ -211,6 +211,13 @@ resetTextColor()
 	gTextColor = kBlackColor;
 }
 
+static void
+setBackground(CGColorRef bg)
+{
+	gBackground = bg;
+	paintBackground();
+}
+
 static bool
 readColorValues(const char*& s, int n, float* v)
 {
@@ -340,19 +347,21 @@ readAlphaIfPresent(const char*& s)
 }
 
 static void
-doColorSpecial(const char* s)
+doColorSpecial(const char* s, bool background)
 {
 	while (*s != 0) {
-		if (kwmatch(s, "push")) {
-			pushRuleColor();
-			pushTextColor();
-			continue;
-		}
-		
-		if (kwmatch(s, "pop")) {
-			popRuleColor();
-			popTextColor();
-			continue;
+		if (!background) {
+			if (kwmatch(s, "push")) {
+				pushRuleColor();
+				pushTextColor();
+				continue;
+			}
+			
+			if (kwmatch(s, "pop")) {
+				popRuleColor();
+				popTextColor();
+				continue;
+			}
 		}
 		
 		if (kwmatch(s, "rgb")) {
@@ -360,8 +369,12 @@ doColorSpecial(const char* s)
 			if (readColorValues(s, 3, rgba)) {
 				rgba[3] = readAlphaIfPresent(s);
 				CGColorRef	c = CGColorCreate(gRGBColorSpace, rgba);
-				setRuleColor(c);
-				setTextColor(c);
+				if (background)
+					setBackground(c);
+				else {
+					setRuleColor(c);
+					setTextColor(c);
+				}
 			}
 			break;
 		}
@@ -371,8 +384,12 @@ doColorSpecial(const char* s)
 			if (readColorValues(s, 4, cmyka)) {
 				cmyka[4] = readAlphaIfPresent(s);
 				CGColorRef	c = CGColorCreate(gCMYKColorSpace, cmyka);
-				setRuleColor(c);
-				setTextColor(c);
+				if (background)
+					setBackground(c);
+				else {
+					setRuleColor(c);
+					setTextColor(c);
+				}
 			}
 			break;
 		}
@@ -391,8 +408,12 @@ doColorSpecial(const char* s)
 				rgba[2] = cm.rgb.blue / 65535.0;
 				rgba[3] = readAlphaIfPresent(s);
 				CGColorRef	c = CGColorCreate(gRGBColorSpace, rgba);
-				setRuleColor(c);
-				setTextColor(c);
+				if (background)
+					setBackground(c);
+				else {
+					setRuleColor(c);
+					setTextColor(c);
+				}
 			}
 			break;
 		}
@@ -411,8 +432,12 @@ doColorSpecial(const char* s)
 				rgba[2] = cm.rgb.blue / 65535.0;
 				rgba[3] = readAlphaIfPresent(s);
 				CGColorRef	c = CGColorCreate(gRGBColorSpace, rgba);
-				setRuleColor(c);
-				setTextColor(c);
+				if (background)
+					setBackground(c);
+				else {
+					setRuleColor(c);
+					setTextColor(c);
+				}
 			}
 			break;
 		}
@@ -422,8 +447,12 @@ doColorSpecial(const char* s)
 			if (readColorValues(s, 1, gray)) {
 				gray[1] = readAlphaIfPresent(s);
 				CGColorRef	c = CGColorCreate(gGrayColorSpace, gray);
-				setRuleColor(c);
-				setTextColor(c);
+				if (background)
+					setBackground(c);
+				else {
+					setRuleColor(c);
+					setTextColor(c);
+				}
 			}
 			break;
 		}
@@ -438,8 +467,12 @@ doColorSpecial(const char* s)
 				cmyka[3] = nc->cmyk[3];
 				cmyka[4] = readAlphaIfPresent(s);
 				CGColorRef	c = CGColorCreate(gCMYKColorSpace, cmyka);
-				setRuleColor(c);
-				setTextColor(c);
+				if (background)
+					setBackground(c);
+				else {
+					setRuleColor(c);
+					setTextColor(c);
+				}
 				break;
 			}
 		}
@@ -553,7 +586,10 @@ doSpecial(const char* special)
 		doPDFspecial(specialArg);
 	
 	else if (prefixMatch(special, "color ", specialArg))
-		doColorSpecial(specialArg);
+		doColorSpecial(specialArg, false);
+	
+	else if (prefixMatch(special, "background ", specialArg))
+		doColorSpecial(specialArg, true);
 	
 	else if (prefixMatch(special, "x:fontmapfile", specialArg))
 		doPdfMapFile(specialArg);
@@ -647,13 +683,7 @@ doSpecial(const char* special)
 				bg = readColorValue(specialArg);
 			else
 				bg = readColorValueWithAlpha(specialArg);
-//			if (bg.alpha == 0.0)
-//				bg.alpha = 0.0001;	// avoid an apparent Quartz bug
-			CGContextSaveGState(gCtx);
-			CGContextSetFillColorWithColor(gCtx, bg);
-			CGContextTranslateCTM(gCtx, -72.0, 72.0);
-			CGContextFillRect(gCtx, gMediaBox);
-			CGContextRestoreGState(gCtx);
+			setBackground(bg);
 	   }
 	}
 	else if (prefixMatch(special, "x:shadow", specialArg)) {

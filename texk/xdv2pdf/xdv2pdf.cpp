@@ -340,8 +340,24 @@ ensurePageStarted()
     gPageHt = kScr2Dvi * gMediaBox.size.height;
 	
 	cur_cgFont = kUndefinedFont;
-	
+
 	gPageStarted = true;
+
+	paintBackground();
+}
+
+void
+paintBackground()
+{
+	if (!gPageStarted)
+		ensurePageStarted(); /* this will call paintBackground() again */
+	else {
+		CGContextSaveGState(gCtx);
+		CGContextSetFillColorWithColor(gCtx, gBackground);
+		CGContextTranslateCTM(gCtx, -72.0, 72.0);
+		CGContextFillRect(gCtx, gMediaBox);
+		CGContextRestoreGState(gCtx);
+	}
 }
 
 #define MAX_BUFFERED_GLYPHS	1024

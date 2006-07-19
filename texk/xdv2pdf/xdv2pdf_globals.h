@@ -63,6 +63,7 @@ GLOBAL std::list<CGColorRef>	gRuleColorStack;
 
 GLOBAL CGColorRef	gTextColor;
 GLOBAL CGColorRef	gRuleColor;
+GLOBAL CGColorRef	gBackground;
 
 GLOBAL CGColorRef	gCurrentColor;
 
@@ -129,6 +130,7 @@ void	doSpecial(const char* special);
 
 
 void	ensurePageStarted();
+void	paintBackground();
 void	setColor(CGColorRef color, bool force);
 void	doPdfMapLine(const char* line, char mode);
 void	doPdfMapFile(const char* fileName);
