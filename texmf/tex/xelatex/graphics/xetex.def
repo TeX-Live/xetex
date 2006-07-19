@@ -3,7 +3,7 @@
 %% based upon other drivers for LaTeX color and graphics support.
 %%
 %%  Copyright 2004, 2005  Ross Moore <ross@maths.mq.edu.au>
-%%                        modified by Jonathan Kew
+%%                        modified by Jonathan Kew <jonathan_kew@sil.org>
 %%
 %% This file is *not yet* part of the Standard LaTeX `Graphics Bundle'.
 %% It may be distributed under the terms of the LaTeX Project Public
@@ -12,6 +12,11 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Version History
+%%
+%%  2006/07/19  [JK] Version v0.91  use \special{color ...} rather than
+%%              \special{x:textcolor ...} etc, for compatibility with
+%%              both xdv2pdf and xdvipdfmx drivers
+%%              Added .bmp to list of recognized graphics extensions
 %%
 %%  2006/01/09  [JK] Version v0.9  removed support for XeTeX versions
 %%              prior to 0.6 (when the \XeTeXpicfile parameters were
@@ -46,7 +51,7 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ProvidesFile{xetex.def}
-        [2006/01/09 v0.9 LaTeX color/graphics driver for XeTeX (RRM, mod. JK)]
+        [2006/07/19 v0.91 LaTeX color/graphics driver for XeTeX (RRM, mod. JK)]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % make sure we can use " with correct catcode
@@ -84,101 +89,45 @@
 \fi
 
 % Colour Support. The following models may be used.
-%   * rgb    supported directly, in HEX.
-%   * cmyk   converted to rgb (HEX) by this file.
-%   * RGB    converted to rgb (HEX) by this file.
-%   * gray   converted to rgb (HEX) by this file.
-%   * named  converted to rgb (HEX) by this file.
-%   * hsb    converted to rgb (HEX) by this file.
+%   * rgb  \
+%   * cmyk  \
+%   * gray  /-- all passed directly to the driver
+%   * hsb  /
+%   * RGB  ---- converted to rgb here
+%   * named
 %
 \def\c@lor@arg#1{%
   \dimen@#1\p@
-  \ifdim\dimen@<\z@\advance\dimen@\p@\fi
+  \ifdim\dimen@<\z@\dimen@\maxdimen\fi
   \ifdim\dimen@>\p@
     \PackageError{color}{Argument `#1' not in range [0,1]}\@ehd
-  \fi
-}
-\def\FF@@{255}%
-\def\convertHEX@#1#2{%
-  \bgroup
-   \dimen@#2\p@ \relax
-   \multiply\dimen@ by\FF@@
-   \advance\dimen@ by.5\p@
-   \count@=\dimen@\divide\count@ by\p@
-   \count254=\count@
-   \divide\count@ by16
-   \edef#1{#1\ifnum\count@ >14 F%
-   \else\ifnum\count@ >13 E%
-   \else\ifnum\count@ >12 D%
-   \else\ifnum\count@ >11 C%
-   \else\ifnum\count@ >10 B%
-   \else\ifnum\count@ >9 A%
-   \else \the\count@ \fi\fi\fi\fi\fi\fi}%
-   \multiply\count@ by16
-   \advance\count254 by-\count@
-   \count@=\count254
-   \edef#1{#1\ifnum\count@ >14 F%
-   \else\ifnum\count@ >13 E%
-   \else\ifnum\count@ >12 D%
-   \else\ifnum\count@ >11 C%
-   \else\ifnum\count@ >10 B%
-   \else\ifnum\count@ >9 A%
-   \else \the\count@ \fi\fi\fi\fi\fi\fi}%
-   \edef\next{\egroup\def\noexpand#1{#1}}%
-  \next
-}
+  \fi}
 \def\color@gray#1#2{%
   \c@lor@arg{#2}%
-  \def#1{}%
-  \convertHEX@#1{#2}%
-  \edef#1{#1#1#1}%
-}
+  \edef#1{gray #2}%
+  }
 \def\color@cmyk#1#2{\c@lor@@cmyk#2\@@#1}
 \def\c@lor@@cmyk#1,#2,#3,#4\@@#5{%
   \c@lor@arg{#4}%
   \c@lor@arg{#1}%
   \c@lor@arg{#2}%
   \c@lor@arg{#3}%
-  \bgroup
-   \def#5{}%
-   \dimen@=-#1\p@ \advance\dimen@\p@
-   \advance\dimen@-#4\p@
-   \ifdim\dimen@<\z@ \dimen@\z@\fi
-   \edef\tmp{\strip@pt\dimen@}%
-   \convertHEX@#5{\tmp}%
-   %
-   \dimen@=-#2\p@ \advance\dimen@\p@
-   \advance\dimen@-#4\p@
-   \ifdim\dimen@<\z@ \dimen@\z@\fi
-   \edef\tmp{\strip@pt\dimen@}%
-   \convertHEX@#5{\tmp}%
-   %
-   \dimen@=-#3\p@ \advance\dimen@\p@
-   \advance\dimen@-#4\p@
-   \ifdim\dimen@<\z@ \dimen@\z@\fi
-   \edef\tmp{\strip@pt\dimen@}%
-   \convertHEX@#5{\tmp}%
-   %
-   \edef\next{\egroup \def\noexpand#5{#5}}%
-  \next
-}
+  \edef#5{cmyk #1 #2 #3 #4}%
+  }
 \def\color@rgb#1#2{\c@lor@@rgb#2\@@#1}
 \def\c@lor@@rgb#1,#2,#3\@@#4{%
   \c@lor@arg{#1}%
   \c@lor@arg{#2}%
   \c@lor@arg{#3}%
-  \def#4{}%
-  \convertHEX@#4{#1}%
-  \convertHEX@#4{#2}%
-  \convertHEX@#4{#3}%
-}
+  \edef#4{rgb #1 #2 #3}%
+  }
 \def\color@RGB#1#2{\c@lor@@RGB#2\@@#1}
 \def\c@lor@@RGB#1,#2,#3\@@#4{%
-  \c@lor@RGB@rgb{#1}\@tempa
-  \c@lor@RGB@rgb{#2}\@tempb
-  \c@lor@RGB@rgb{#3}\@tempc
-  \c@lor@@rgb\@tempa,\@tempb,\@tempc\@@#4%
-}
+ \c@lor@RGB@rgb{#1}\@tempa
+ \c@lor@RGB@rgb{#2}\@tempb
+ \c@lor@RGB@rgb{#3}\@tempc
+ \c@lor@@rgb\@tempa,\@tempb,\@tempc\@@#4%
+  }
 \def\c@lor@RGB@rgb#1#2{%
   \dimen@#1\p@
   \divide\dimen@\@cclv
@@ -188,54 +137,17 @@
   \c@lor@arg{#1}%
   \c@lor@arg{#2}%
   \c@lor@arg{#3}%
-  \bgroup
-   % process the hue
-    \dimen@=#1\p@
-    \multiply\dimen@ by 6 \relax
-    \count@=\dimen@ \divide\count@\p@
-    \advance\dimen@ -\count@\p@
-    \ifnum\count@=6 \relax\count@\z@\fi
-    \count254=\count@ \divide\count254\tw@
-    \multiply\count254\tw@\relax
-    \ifnum\count254=\count@\relax
-      \dimen@=-\dimen@ \advance\dimen@ by\p@
-    \fi
-   % process the saturation
-    \dimen2=-#2\dimen@ \advance\dimen2 by\p@
-    \dimen4=-#2\p@ \advance\dimen4 by\p@
-   % process the brightness
-    \dimen@=#3\p@\relax
-    \dimen2=#3\dimen2\relax
-    \dimen4=#3\dimen4\relax
-   % convert to RGB
-    \edef\@tempa{\strip@pt\dimen@}%
-    \edef\@tempb{\strip@pt\dimen2}%
-    \edef\@tempc{\strip@pt\dimen4}%
-    \def#4{}%
-    \edef\next{\ifcase \count@
-      \@tempa,\@tempb,\@tempc
-    \or
-      \@tempb,\@tempa,\@tempc
-    \or
-      \@tempc,\@tempa,\@tempb
-    \or
-      \@tempc,\@tempb,\@tempa
-    \or
-      \@tempb,\@tempc,\@tempa
-    \or
-      \@tempa,\@tempc,\@tempb
-    \fi}%
-    \expandafter\c@lor@@rgb\next\@@#4\relax
-    \edef\next{\egroup \def\noexpand#4{#4}}%
-  \next
-}
+  \edef#4{hsb #1 #2 #3}%
+  }
 \def\color@named#1#2{\c@lor@@named#2,,\@@#1}
 \def\c@lor@@named#1,#2,#3\@@#4{%
   \@ifundefined{col@#1}%
     {\PackageError{color}{Undefined color `#1'}\@ehd}%
-  {\edef#4{\csname col@#1\endcsname}}%
-}
-\def\current@color{000000}
+  {\edef#4{ #1}}%
+  }
+
+\def\current@color{gray 0}
+
 %
 % v0.02t: support for \pagecolor
 \def\set@page@color{%
@@ -261,31 +173,25 @@
       \GXTorg@shipout\box\@cclv\relax
     }%
     \gdef\GXT@setpagecolor{%
-      \special{x:backgroundcolor=\current@page@color}%
+      \special{background \current@page@color}%
     }%
   }{}%
 }
 
 \def\set@color@stack{%
-  \special{x:textcolorpush}%
-  \special{x:rulecolorpush}%
-  \special{x:textcolor=\current@color}%
-  \special{x:rulecolor=\current@color}%
+  \special{color push \current@color}%
   \aftergroup\reset@color
 }
 \def\set@color@nostack{%
-  \special{x:textcolor=\current@color}%
-  \special{x:rulecolor=\current@color}%
+  \special{color \current@color}%
   \aftergroup\reset@color
 }
 \def\reset@color@nostack{%
-  \special{x:textcolor=\current@color}%
-  \special{x:rulecolor=\current@color}%
+  \special{color \current@color}%
   \expandafter\checkfor@moreresets
 }
 \def\reset@color@stack{%
-  \special{x:textcolorpop}%
-  \special{x:rulecolorpop}%
+  \special{color pop}%
   \expandafter\checkfor@moreresets
 }
 \def\checkfor@moreresets{\futurelet\tmp\checkfor@moreresets@}
@@ -499,6 +405,7 @@
 \@namedef{Gin@rule@.sgi}#1{{QTm}{QTm}{#1}}
 \@namedef{Gin@rule@.tga}#1{{QTm}{QTm}{#1}}
 \@namedef{Gin@rule@.tif}#1{{QTm}{QTm}{#1}}
+\@namedef{Gin@rule@.bmp}#1{{QTm}{QTm}{#1}}
 
 % movies not supported yet:
 %\@namedef{Gin@rule@.qt}#1{{QTm}{QTm}{#1}}
@@ -511,18 +418,13 @@
 \@namedef{Gin@rule@*}#1{{QTm}{QTm}{#1}}
 
 % ... and add it's extension here
-\def\Gin@extensions{.pdf,.png,.jpg,.pict,.tif,.psd,.mac,.sga,.tga,.gif}
+\def\Gin@extensions{.pdf,.png,.jpg,.bmp,.pict,.tif,.psd,.mac,.sga,.tga,.gif}
 
 %
 % Rotation & Scaling
-%  supported from v0.6 onwards
+%  supported from xetex v0.6 onwards
 %
-\let\Grot@start\relax
-\let\Grot@end\relax
-\let\Gscale@start\relax
-\let\Gscale@end\relax
 
-\typeout{...supports rotation and scaling}%
 \def\Grot@start{\wd\z@\z@ 
   \special{x:gsave}\special{x:rotate \Grot@angle}}
 \def\Grot@end{\special{x:grestore}}
