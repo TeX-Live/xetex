@@ -349,14 +349,16 @@ ensurePageStarted()
 void
 paintBackground()
 {
-	if (!gPageStarted)
-		ensurePageStarted(); /* this will call paintBackground() again */
-	else {
-		CGContextSaveGState(gCtx);
-		CGContextSetFillColorWithColor(gCtx, gBackground);
-		CGContextTranslateCTM(gCtx, -72.0, 72.0);
-		CGContextFillRect(gCtx, gMediaBox);
-		CGContextRestoreGState(gCtx);
+	if (gBackground != NULL) {
+		if (!gPageStarted)
+			ensurePageStarted(); /* this will call paintBackground() again */
+		else {
+			CGContextSaveGState(gCtx);
+			CGContextSetFillColorWithColor(gCtx, gBackground);
+			CGContextTranslateCTM(gCtx, -72.0, 72.0);
+			CGContextFillRect(gCtx, gMediaBox);
+			CGContextRestoreGState(gCtx);
+		}
 	}
 }
 
