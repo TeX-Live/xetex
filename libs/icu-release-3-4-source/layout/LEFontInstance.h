@@ -491,6 +491,10 @@ public:
      */
     static UClassID getStaticClassID();
 
+    /**
+     * Returns true if writing direction is vertical.
+     */
+    virtual inline bool getLayoutDirVertical() const;
 };
 
 inline le_bool LEFontInstance::canDisplay(LEUnicode32 ch) const
@@ -549,6 +553,11 @@ inline le_int32 LEFontInstance::floatToFixed(float theFloat)
 inline le_int32 LEFontInstance::getLineHeight() const
 {
     return getAscent() + getDescent() + getLeading();
+}
+
+inline bool LEFontInstance::getLayoutDirVertical() const
+{
+    return false;
 }
 
 U_NAMESPACE_END

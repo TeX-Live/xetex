@@ -269,7 +269,7 @@ XeTeXHanLayoutEngine::XeTeXHanLayoutEngine(const XeTeXFontInst *fontInstance, LE
 	: XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, NULL, NULL)
 {
 	// reset the default feature list
-	fFeatureList = fontInstance->getLayoutDir() ? verticalFeatures : horizontalFeatures;
+	fFeatureList = fontInstance->getLayoutDirVertical() ? verticalFeatures : horizontalFeatures;
 	fDefaultFeatures = fFeatureList;
 	
 	// then apply any adjustments

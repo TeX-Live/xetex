@@ -111,7 +111,7 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 
 void setFontLayoutDir(XeTeXFont font, int vertical)
 {
-	((XeTeXFontInst*)font)->setLayoutDir(vertical != 0);
+	((XeTeXFontInst*)font)->setLayoutDirVertical(vertical != 0);
 }
 
 PlatformFontRef getFontRef(XeTeXLayoutEngine engine)

@@ -147,7 +147,7 @@ error_exit:
     return;
 }
 
-void XeTeXFontInst::setLayoutDir(bool vertical)
+void XeTeXFontInst::setLayoutDirVertical(bool vertical)
 {
 	fVertical = vertical;
 	LEErrorCode	status = LE_NO_ERROR;

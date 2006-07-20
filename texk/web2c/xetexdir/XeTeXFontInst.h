@@ -109,9 +109,9 @@ public:
 
     virtual const void *getFontTable(LETag tableTag) const;
 
-	virtual void setLayoutDir(bool vertical);
+	virtual void setLayoutDirVertical(bool vertical);
 
-	virtual bool getLayoutDir() const
+	virtual bool getLayoutDirVertical() const
 	{
 		return fVertical;
 	};
