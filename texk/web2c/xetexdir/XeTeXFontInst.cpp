@@ -38,9 +38,9 @@ authorization from SIL International.
  */
 
 
-#include "layout/LETypes.h"
-#include "layout/LEFontInstance.h"
-#include "layout/LESwaps.h"
+#include "LETypes.h"
+#include "LEFontInstance.h"
+#include "LESwaps.h"
 
 #include "XeTeXFontInst.h"
 #include "XeTeXLayoutInterface.h"

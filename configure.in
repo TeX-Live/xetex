@@ -103,6 +103,7 @@ sinclude(libs/freetype2/withenable.ac)
 sinclude(libs/fontconfig/withenable.ac)
 dnl sinclude(libs/expat/withenable.ac)
 sinclude(libs/freetype2/withenable.ac)
+sinclude(libs/icu-xetex/withenable.ac)
 
 NCURSESDIR=libs/ncurses
 LIBT1DIR=libs/t1lib
@@ -200,6 +201,8 @@ dnl sinclude(libs/t1lib/t1lib.ac)
 dnl sinclude(libs/gd/gd.ac)
 dnl sinclude(libs/freetype/freetype.ac)
 sinclude(libs/freetype2/freetype2.ac)
+sinclude(libs/teckit/teckit.ac)
+sinclude(libs/icu-xetex/icu-xetex.ac)
 dnl sinclude(libs/expat/expat.ac)
 
 LIBSDEP="$CURSESDEP $ZLIBDEP $LIBPNGDEP $LIBXPDFDEP $LIBT1DEP $GDDEP $FREETYPEDEP $FREETYPE2DEP $TECKITDEP $ICUDEP"

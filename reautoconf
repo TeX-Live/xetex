@@ -96,7 +96,7 @@ for dir in `find libs texk -name configure.in | sed 's,/configure.in$,,'`; do
 		;;
 		texk/*)	rdir=`echo $dir | sed -e 's,^texk/,,' -e 's,[^/]*,..,g'`/m4
 			case $dir in
-				*/devnag|*/dvipdfmx|*/xdvipdfmx|*/xdv2pdf)
+				*/devnag|*/dvipdfmx|*/xdvipdfmx)
 					(cd $dir; acnew);;
 				*)	(cd $dir; acold);;
 			esac

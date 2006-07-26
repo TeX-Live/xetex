@@ -37,7 +37,7 @@ authorization from SIL International.
  **********************************************************************
  */
 
-#include "layout/LETypes.h"
+#include "LETypes.h"
 
 #include "FontTableCache.h"
 

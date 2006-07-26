@@ -40,7 +40,7 @@ authorization from SIL International.
 
 #define __FONTTABLECACHE_H
 
-#include "layout/LETypes.h"
+#include "LETypes.h"
 
 struct FontTableCacheEntry;
 

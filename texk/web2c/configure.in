@@ -97,6 +97,10 @@ sinclude(../../libs/libpng/libpng.ac)
 sinclude(../../libs/xpdf/libxpdf.ac)
 sinclude(../../libs/freetype2/withenable.ac)
 sinclude(../../libs/freetype2/freetype2.ac)
+sinclude(../../libs/teckit/withenable.ac)
+sinclude(../../libs/teckit/teckit.ac)
+sinclude(../../libs/icu-xetex/withenable.ac)
+sinclude(../../libs/icu-xetex/icu-xetex.ac)
 
 # Whether to build mf-nowin.
 : ${with_mf_nowin=no} # Default.

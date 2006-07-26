@@ -31,7 +31,7 @@ authorization from SIL International.
 #ifndef __XeTeXswap_H
 #define __XeTeXswap_H
 
-#include "platform.h"	// ICU's platform.h defines U_IS_BIG_ENDIAN for us
+#include "unicode/platform.h"	// ICU's platform.h defines U_IS_BIG_ENDIAN for us
 
 #ifdef WIN32
 #define inline __inline /* for VC++ (non-C99); not sure about other compilers on W32 */

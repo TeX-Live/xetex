@@ -29,7 +29,7 @@ xetex = @XETEX@ xetex
 
 @XETEX_GENERIC@ XETEX_DEFINES = -DXETEX_OTHER
 
-@XETEX_GENERIC@ # FIXME: FontConfig & ImageMagick not yet checked by configure
+@XETEX_GENERIC@ # FIXME: FontConfig not yet handled by configure
 @XETEX_GENERIC@ EXTRALIBS = @LDFREETYPE2@ @LDLIBXPDF@ @LDLIBPNG@ -lfontconfig
 
 @XETEX_GENERIC@ EXTRADEPS = @FREETYPE2DEP@ @LIBXPDFDEP@ @LIBPNGDEP@
@@ -50,13 +50,48 @@ LIBPNGDEP=@LIBPNGDEP@
 LIBPNGDIR=../../libs/libpng
 LIBPNGSRCDIR=$(srcdir)/$(LIBPNGDIR)
 
-# FIXME: this should be handled through configure
 FTFLAGS =  @FREETYPE2CPPFLAGS@
 
 FREETYPE2DIR = ../../libs/freetype2
-FREETYPE2SRCDIR = $(srcdir)/../../libs/freetype2
+FREETYPE2SRCDIR = $(srcdir)/$(FREETYPE2DIR)
+
+TECKITFLAGS = @TECKITCPPFLAGS@
+LDTECKIT = @LDTECKIT@
+TECKITDEP = @TECKITDEP@
+
+TECKITDIR=../../libs/teckit
+TECKITSRCDIR=$(srcdir)/$(TECKITDIR)
+
+ICUFLAGS = @ICUCPPFLAGS@
+LDICU = @LDICU@
+ICUDEP = @ICUDEP@
+
+ICUDIR=../../libs/icu-xetex
+ICUSRCDIR=$(srcdir)/$(ICUDIR)
+
+ICUCFLAGS = @ICUCPPFLAGS@ -DLE_USE_CMEMORY
+
 
 XDEFS = $(XETEX_DEFINES)
+
+# Font-related headers
+XeTeXFontHdrs = \
+	$(srcdir)/xetexdir/FontTableCache.h \
+	$(srcdir)/xetexdir/XeTeXFontInst.h \
+	$(srcdir)/xetexdir/XeTeXFontInst_FC.h \
+	$(srcdir)/xetexdir/XeTeXFontInst_Mac.h \
+	$(srcdir)/xetexdir/XeTeXFontMgr.h \
+	$(srcdir)/xetexdir/XeTeXFontMgr_Linux.h \
+	$(srcdir)/xetexdir/XeTeXFontMgr_Mac.h \
+	$(srcdir)/xetexdir/XeTeXLayoutInterface.h \
+	$(srcdir)/xetexdir/XeTeXOTLayoutEngine.h
+	
+# Image-related headers
+XeTeXImageHdrs = \
+	$(srcdir)/xetexdir/bmpimage.h \
+	$(srcdir)/xetexdir/jpegimage.h \
+	$(srcdir)/xetexdir/pdfimage.h \
+	$(srcdir)/xetexdir/pngimage.h
 
 # Extract xetex version
 xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
@@ -72,80 +107,60 @@ xetex_add_o = trans.o XeTeX_ext.o $(xetex_platform_o)
 # these compilations require the path to TECkit headers;
 # just setting it in XCFLAGS doesn't seem to work when we're called
 # recursively from "make world" etc
-xetexini.o: xetexini.c
-	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
-xetex0.o: xetex0.c
-	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
-xetex1.o: xetex1.c
-	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
-xetex2.o: xetex2.c
-	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
-xetexextra.o: xetexextra.c
-	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetexini.o: xetexini.c $(srcdir)/xetexdir/XeTeX_ext.h
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetex0.o: xetex0.c $(srcdir)/xetexdir/XeTeX_ext.h
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetex1.o: xetex1.c $(srcdir)/xetexdir/XeTeX_ext.h
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetex2.o: xetex2.c $(srcdir)/xetexdir/XeTeX_ext.h
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+xetexextra.o: xetexextra.c $(srcdir)/xetexdir/XeTeX_ext.h
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 # image support
-mfileio.o: $(srcdir)/xetexdir/mfileio.c
+mfileio.o: $(srcdir)/xetexdir/mfileio.c $(srcdir)/xetexdir/mfileio.h
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
-numbers.o: $(srcdir)/xetexdir/numbers.c
+numbers.o: $(srcdir)/xetexdir/numbers.c $(srcdir)/xetexdir/numbers.h
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
-bmpimage.o: $(srcdir)/xetexdir/bmpimage.c
+bmpimage.o: $(srcdir)/xetexdir/bmpimage.c $(srcdir)/xetexdir/bmpimage.h
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
-jpegimage.o: $(srcdir)/xetexdir/jpegimage.c
+jpegimage.o: $(srcdir)/xetexdir/jpegimage.c $(srcdir)/xetexdir/jpegimage.h
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
-pngimage.o: $(srcdir)/xetexdir/pngimage.c
+pngimage.o: $(srcdir)/xetexdir/pngimage.c $(srcdir)/xetexdir/pngimage.h
 	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) $(DEFS) -c $< -o $@
 
-XeTeX_pic.o: $(srcdir)/xetexdir/XeTeX_pic.c
-	$(compile) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
-
-pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp
+pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp $(srcdir)/xetexdir/pdfimage.h
 	$(compile) $(ALL_CFLAGS) $(LIBXPDFCPPFLAGS) $(DEFS) -c $< -o $@
 
-# Layout library sources
+XeTeX_pic.o: $(srcdir)/xetexdir/XeTeX_pic.c $(srcdir)/xetexdir/XeTeX_ext.h $(XeTeXImageHdrs)
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+
+# Layout library
 xetex_ot_layout_o = \
 		XeTeXFontMgr.o \
 		XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
 		XeTeXFontInst.o cmaps.o FontTableCache.o \
 		$(xetex_platform_layout_o) 
-xetex_ot_layout_cxx = \
-		XeTeXFontMgr.cpp \
-		XeTeXLayoutInterface.cpp XeTeXOTLayoutEngine.cpp \
-		XeTeXFontInst.cpp cmaps.cpp FontTableCache.cpp \
-		$(xetex_platform_layout_cxx)
 
-icudir = icu-xetex
-
-ICUCFLAGS = \
-	-I../../libs/$(icudir)/common/unicode \
-	-I../../libs/$(icudir)/common \
-	-I../../../libs/$(icudir)/common/unicode \
-	-I../../../libs/$(icudir)/common \
-	-I../../../libs/$(icudir)/layout/unicode \
-	-I../../../libs/$(icudir)/layout \
-	-I../../../libs/$(icudir) \
-	-DLE_USE_CMEMORY \
-	-I. -I..
-
-TECkitFLAGS = -I../../../libs/teckit/source/Public-headers/
-
-XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp
+XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp
+XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
-XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp  $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXFontMgr_Linux.o: $(srcdir)/xetexdir/XeTeXFontMgr_Linux.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+XeTeXFontMgr_Linux.o: $(srcdir)/xetexdir/XeTeXFontMgr_Linux.cpp  $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 # Changed this for the Cocoa version of the Mac font manager
-# XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp $(srcdir)/xetexdir/XeTeXFontMgr.h
+# XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp  $(XeTeXFontHdrs)
 #	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.mm $(srcdir)/xetexdir/XeTeXFontMgr.h
+XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.mm  $(XeTeXFontHdrs)
 	gcc -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
@@ -153,27 +168,21 @@ cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
 FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
-XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp
+XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp
+XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
-XeTeXFontInst_FC.o: $(srcdir)/xetexdir/XeTeXFontInst_FC.cpp
+XeTeXFontInst_FC.o: $(srcdir)/xetexdir/XeTeXFontInst_FC.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 
 
-xetexlibs = \
-	../../libs/$(icudir)/lib/libsicuuc.a \
-	../../libs/$(icudir)/lib/libsicule.a \
-	../../libs/$(icudir)/lib/libsicudata.a \
-	../../libs/teckit/lib/.libs/libTECkit.a
+xetexlibs = $(LDICU) $(LDTECKIT)
 
-../../libs/$(icudir)/lib/libsicuuc.a \
-../../libs/$(icudir)/lib/libsicule.a \
-../../libs/$(icudir)/lib/libsicudata.a:
-	(cd ../../libs/$(icudir) ; $(MAKE))
+$(ICUDEP):
+	(cd $(ICUDIR) ; $(MAKE))
 
-../../libs/teckit/lib/.libs/libTECkit.a:
-	(cd ../../libs/teckit ; $(MAKE))
+$(TECKITDIR)/lib/.libs/libTECkit.a:
+	(cd $(TECKITDIR) ; $(MAKE))
 
 $(LIBXPDFDIR)/xpdf/libxpdf.a:
 	(cd $(LIBXPDFDIR)/xpdf ; $(MAKE))
@@ -192,9 +201,9 @@ $(FREETYPE2DIR)/.libs/libfreetype.a:
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECkitFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
 
 trans.o: $(srcdir)/xetexdir/trans.c
 	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
@@ -233,45 +242,30 @@ xetex_web_srcs = $(srcdir)/tex.web \
 xetex.web: tie xetexdir/xetex.mk $(xetex_web_srcs)
 	$(TIE) -m xetex.web $(xetex_web_srcs)
 
-#   Sources for etex.ch:
-#etex_ch_srcs = etex.web \
-#  $(srcdir)/etexdir/tex.ch0 \
-#  $(srcdir)/tex.ch \
-#  $(srcdir)/etexdir/tex.ch1 \
-#  $(srcdir)/etexdir/tex.ech
-#   Rules:
-#etex.web: tie etexdir/etex.mk $(etex_web_srcs)
-#	$(TIE) -m etex.web $(etex_web_srcs)
-#etex.ch: $(etex_ch_srcs)
-#	$(TIE) -c etex.ch $(etex_ch_srcs)
-
 ################## FIXME: the rest of this isn't properly updated for xetex yet...
 ##################        e.g., we don't have real xetex tests to run!
 
 # Tests...
-check: @XETEX@ xetex-check
-xetex-check: etrip xetex.fmt
+#check: @XETEX@ xetex-check
+#xetex-check: etrip xetex.fmt
 # Test truncation (but don't bother showing the warning msg).
-	./xetex --progname=xetex --output-comment="`cat $(srcdir)/PROJECTS`" \
-	  $(srcdir)/tests/hello 2>/dev/null \
-	  && ./dvitype hello.dvi | grep olaf@infovore.xs4all.nl >/dev/null
+#	./xetex --progname=xetex --output-comment="`cat $(srcdir)/PROJECTS`" \
+#	  $(srcdir)/tests/hello 2>/dev/null \
+#	  && ./dvitype hello.dvi | grep olaf@infovore.xs4all.nl >/dev/null
 # \openout should show up in \write's.
-	./xetex --progname=xetex $(srcdir)/tests/openout && grep xfoo openout.log
+#	./xetex --progname=xetex $(srcdir)/tests/openout && grep xfoo openout.log
 # one.two.tex -> one.two.log
-	./xetex --progname=xetex $(srcdir)/tests/one.two && ls -l one.two.log
+#	./xetex --progname=xetex $(srcdir)/tests/one.two && ls -l one.two.log
 # uno.dos -> uno.log
-	./xetex --progname=xetex $(srcdir)/tests/uno.dos && ls -l uno.log
-	./xetex --progname=xetex $(srcdir)/tests/just.texi && ls -l just.log
-	-./xetex --progname=xetex $(srcdir)/tests/batch.tex
-	./xetex --progname=xetex --shell $(srcdir)/tests/write18 | grep echo
-# tcx files are a bad idea.
-#	./etex --translate-file=$(srcdir)/share/isol1-t1.tcx \
-#	  $(srcdir)/tests/eight && ./dvitype eight.dvi >eigh.typ
-	./xetex --mltex --progname=xeinitex $(srcdir)/tests/mltextst
-	-./xetex --progname=xetex </dev/null
-	-PATH=`pwd`:$(kpathsea_dir):$(kpathsea_srcdir):$$PATH \
-	  WEB2C=$(kpathsea_srcdir) TMPDIR=.. \
-	  ./xetex --progname=xetex '\nonstopmode\font\foo=nonesuch\end'
+#	./xetex --progname=xetex $(srcdir)/tests/uno.dos && ls -l uno.log
+#	./xetex --progname=xetex $(srcdir)/tests/just.texi && ls -l just.log
+#	-./xetex --progname=xetex $(srcdir)/tests/batch.tex
+#	./xetex --progname=xetex --shell $(srcdir)/tests/write18 | grep echo
+#	./xetex --mltex --progname=xeinitex $(srcdir)/tests/mltextst
+#	-./xetex --progname=xetex </dev/null
+#	-PATH=`pwd`:$(kpathsea_dir):$(kpathsea_srcdir):$$PATH \
+#	  WEB2C=$(kpathsea_srcdir) TMPDIR=.. \
+#	  ./xetex --progname=xetex '\nonstopmode\font\foo=nonesuch\end'
 
 # Cleaning up.
 clean:: xetex-clean
@@ -286,69 +280,6 @@ xetex-clean: # etrip-clean
 	rm -f missfont.log
 	rm -rf tfm
 
-# etrip
-#etestdir = $(srcdir)/etexdir/etrip
-#etestenv = TEXMFCNF=$(etestdir)
-
-#triptrap: @XETEX@ etrip
-#etrip: pltotf tftopl etex dvitype etrip-clean
-#	@echo ">>> See $(etestdir)/etrip.diffs for example of acceptable diffs." >&2
-#	@echo "*** TRIP test for e-TeX in compatibility mode ***."
-#	./pltotf $(testdir)/trip.pl trip.tfm
-#	./tftopl ./trip.tfm trip.pl
-#	-diff $(testdir)/trip.pl trip.pl
-#	$(LN) $(testdir)/trip.tex . # get same filename in log
-#	-$(SHELL) -c '$(etestenv) ./etex --progname=einitex --ini <$(testdir)/trip1.in >ctripin.fot'
-#	mv trip.log ctripin.log
-#	-diff $(testdir)/tripin.log ctripin.log
-#	-$(SHELL) -c '$(etestenv) ./etex --progname=etex <$(testdir)/trip2.in >ctrip.fot'
-#	mv trip.log ctrip.log
-#	-diff $(testdir)/trip.fot ctrip.fot
-#	-$(DIFF) $(DIFFFLAGS) $(testdir)/trip.log ctrip.log
-#	$(SHELL) -c '$(etestenv) ./dvitype $(dvitype_args) trip.dvi >ctrip.typ'
-#	-$(DIFF) $(DIFFFLAGS) $(testdir)/trip.typ ctrip.typ
-#	@echo "*** TRIP test for e-TeX in extended mode ***."
-#	-$(SHELL) -c '$(etestenv) ./etex --progname=einitex --ini <$(etestdir)/etrip1.in >xtripin.fot'
-#	mv trip.log xtripin.log
-#	-diff ctripin.log xtripin.log
-#	-$(SHELL) -c '$(etestenv) ./etex --progname=etex <$(etestdir)/trip2.in >xtrip.fot'
-#	mv trip.log xtrip.log
-#	-diff ctrip.fot xtrip.fot
-#	-$(DIFF) $(DIFFFLAGS) ctrip.log xtrip.log
-#	$(SHELL) -c '$(etestenv) ./dvitype $(dvitype_args) trip.dvi >xtrip.typ'
-#	-$(DIFF) $(DIFFFLAGS) ctrip.typ xtrip.typ
-#	@echo "*** e-TeX specific part of e-TRIP test ***."
-#	./pltotf $(etestdir)/etrip.pl etrip.tfm
-#	./tftopl ./etrip.tfm etrip.pl
-#	-diff $(etestdir)/etrip.pl etrip.pl
-#	$(LN) $(etestdir)/etrip.tex . # get same filename in log
-#	-$(SHELL) -c '$(etestenv) ./etex --progname=einitex --ini <$(etestdir)/etrip2.in >etripin.fot'
-#	mv etrip.log etripin.log
-#	-diff $(etestdir)/etripin.log etripin.log
-#	-$(SHELL) -c '$(etestenv) ./etex --progname=etex <$(etestdir)/etrip3.in >etrip.fot'
-#	-diff $(etestdir)/etrip.fot etrip.fot
-#	-$(DIFF) $(DIFFFLAGS) $(etestdir)/etrip.log etrip.log
-#	diff $(etestdir)/etrip.out etrip.out
-#	$(SHELL) -c '$(etestenv) ./dvitype $(dvitype_args) etrip.dvi >etrip.typ'
-#	-$(DIFF) $(DIFFFLAGS) $(etestdir)/etrip.typ etrip.typ
-
-# Cleaning up for the etrip.
-#etrip-clean:
-#	rm -f trip.tfm trip.pl trip.tex trip.fmt ctripin.fot ctripin.log
-#	rm -f ctrip.fot ctrip.log trip.dvi ctrip.typ
-#	rm -f xtripin.fot xtripin.log
-#	rm -f xtrip.fot xtrip.log xtrip.typ
-#	rm -f etrip.tfm etrip.pl etrip.tex etrip.fmt etripin.fot etripin.log
-#	rm -f etrip.fot etrip.log etrip.dvi etrip.out etrip.typ
-#	rm -f tripos.tex 8terminal.tex
-#	rm -rf tfm
-
-# Distfiles ...
-#@MAINT@triptrapdiffs: etexdir/etrip/etrip.diffs
-#@MAINT@etexdir/etrip/etrip.diffs: etex
-#@MAINT@	$(MAKE) etrip | tail +1 >etexdir/etrip/etrip.diffs
-
-
 # Dumps
 all_xefmts = xetex.fmt $(xefmts)
 
@@ -360,12 +291,12 @@ $(xefmtdir)::
 	$(SHELL) $(top_srcdir)/../mkinstalldirs $(xefmtdir)
 
 xetex.fmt: xetex
-	$(dumpenv) $(MAKE) progname=xetex files="xetex.src plain.tex cmr10.tfm" prereq-check
-	$(dumpenv) ./xetex --progname=xetex --jobname=xetex --ini \*\\input xetex.src \\dump </dev/null
+	$(dumpenv) $(MAKE) progname=xetex files="xetex.ini unicode-letters.tex plain.tex cmr10.tfm" prereq-check
+	$(dumpenv) ./xetex --progname=xetex --jobname=xetex --ini \*\\input xetex.ini \\dump </dev/null
 
 xelatex.fmt: xetex
-	$(dumpenv) $(MAKE) progname=xelatex files="latex.ltx" prereq-check
-	$(dumpenv) ./xetex --progname=xelatex --jobname=xelatex --ini \*\\input latex.ltx </dev/null
+	$(dumpenv) $(MAKE) progname=xelatex files="xelatex.ini unicode-letters.tex latex.ltx" prereq-check
+	$(dumpenv) ./xetex --progname=xelatex --jobname=xelatex --ini \*\\input xelatex.ini </dev/null
 
 
 # Install
