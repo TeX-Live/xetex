@@ -33,7 +33,7 @@ authorization from SIL International.
 #include FT_SFNT_NAMES_H
 #include FT_TRUETYPE_IDS_H
 
-#include "ucnv.h"
+#include "unicode/ucnv.h"
 
 #define kFontFamilyName	1
 #define kFontStyleName	2
