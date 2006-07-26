@@ -72,8 +72,6 @@ ICUSRCDIR=$(srcdir)/$(ICUDIR)
 ICUCFLAGS = @ICUCPPFLAGS@ -DLE_USE_CMEMORY
 
 
-XDEFS = $(XETEX_DEFINES)
-
 # Font-related headers
 XeTeXFontHdrs = \
 	$(srcdir)/xetexdir/FontTableCache.h \
@@ -108,37 +106,37 @@ xetex_add_o = trans.o XeTeX_ext.o $(xetex_platform_o)
 # just setting it in XCFLAGS doesn't seem to work when we're called
 # recursively from "make world" etc
 xetexini.o: xetexini.c $(srcdir)/xetexdir/XeTeX_ext.h
-	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 xetex0.o: xetex0.c $(srcdir)/xetexdir/XeTeX_ext.h
-	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 xetex1.o: xetex1.c $(srcdir)/xetexdir/XeTeX_ext.h
-	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 xetex2.o: xetex2.c $(srcdir)/xetexdir/XeTeX_ext.h
-	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 xetexextra.o: xetexextra.c $(srcdir)/xetexdir/XeTeX_ext.h
-	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # image support
 mfileio.o: $(srcdir)/xetexdir/mfileio.c $(srcdir)/xetexdir/mfileio.h
-	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) -c $< -o $@
 
 numbers.o: $(srcdir)/xetexdir/numbers.c $(srcdir)/xetexdir/numbers.h
-	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) -c $< -o $@
 
 bmpimage.o: $(srcdir)/xetexdir/bmpimage.c $(srcdir)/xetexdir/bmpimage.h
-	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) -c $< -o $@
 
 jpegimage.o: $(srcdir)/xetexdir/jpegimage.c $(srcdir)/xetexdir/jpegimage.h
-	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) -c $< -o $@
 
 pngimage.o: $(srcdir)/xetexdir/pngimage.c $(srcdir)/xetexdir/pngimage.h
-	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) -c $< -o $@
 
 pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp $(srcdir)/xetexdir/pdfimage.h
-	$(compile) $(ALL_CFLAGS) $(LIBXPDFCPPFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) $(LIBXPDFCPPFLAGS) -c $< -o $@
 
 XeTeX_pic.o: $(srcdir)/xetexdir/XeTeX_pic.c $(srcdir)/xetexdir/XeTeX_ext.h $(XeTeXImageHdrs)
-	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # Layout library
 xetex_ot_layout_o = \
@@ -148,65 +146,41 @@ xetex_ot_layout_o = \
 		$(xetex_platform_layout_o) 
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 XeTeXFontMgr.o: $(srcdir)/xetexdir/XeTeXFontMgr.cpp  $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXFontMgr_Linux.o: $(srcdir)/xetexdir/XeTeXFontMgr_Linux.cpp  $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
-# Changed this for the Cocoa version of the Mac font manager
-# XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.cpp  $(XeTeXFontHdrs)
-#	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
 XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.mm  $(XeTeXFontHdrs)
-	gcc -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	gcc -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 FontTableCache.o: $(srcdir)/xetexdir/FontTableCache.cpp
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 XeTeXFontInst.o: $(srcdir)/xetexdir/XeTeXFontInst.cpp $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXFontInst_Mac.o: $(srcdir)/xetexdir/XeTeXFontInst_Mac.cpp $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXFontInst_FC.o: $(srcdir)/xetexdir/XeTeXFontInst_FC.cpp $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(DEFS) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 
 xetexlibs = $(LDICU) $(LDTECKIT)
 
-$(ICUDEP):
-	(cd $(ICUDIR) ; $(MAKE))
-
-$(TECKITDIR)/lib/.libs/libTECkit.a:
-	(cd $(TECKITDIR) ; $(MAKE))
-
-$(LIBXPDFDIR)/xpdf/libxpdf.a:
-	(cd $(LIBXPDFDIR)/xpdf ; $(MAKE))
-
-$(LIBXPDFDIR)/goo/libGoo.a:
-	(cd $(LIBXPDFDIR)/goo ; $(MAKE))
-
-$(LIBXPDFDIR)/fofi/libfofi.a:
-	(cd $(LIBXPDFDIR)/fofi ; $(MAKE))
-
-$(LIBPNGDIR)/libpng.a:
-	(cd $(LIBPNGDIR) ; $(MAKE))
-
-$(FREETYPE2DIR)/.libs/libfreetype.a:
-	(cd $(FREETYPE2DIR) ; $(MAKE))
-
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 trans.o: $(srcdir)/xetexdir/trans.c
-	$(compile) $(ALL_CFLAGS) $(DEFS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # Making xetex.
 xetex: $(xetex_o) $(xetex_add_o) $(xetex_images_o) $(xetex_ot_layout_o) $(xetexlibs) $(EXTRADEPS)

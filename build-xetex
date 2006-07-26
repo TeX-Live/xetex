@@ -16,7 +16,17 @@ test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-4-source lib
 # run the configure script, which will create a Work subtree
 bash ./runConfigure.sh
 
-# this should make ICU and TECkit along the way, if xetex.mk works
+# make libraries first (not handled by the xetex makefile)
+if [ "`uname`" = "Darwin" ]; then
+	LIBS="teckit icu-xetex freetype2"
+else
+	LIBS="teckit icu-xetex freetype2 libpng xpdf"
+fi
+for f in ${LIBS}; do
+	(cd Work/libs/${f} && make)
+done
+
+# make the xetex binary
 (cd Work/texk/web2c && make web2cdir=`dirname \`kpsewhich texmf.cnf\`` xetex)
 PRODUCTS=Work/texk/web2c/xetex
 
