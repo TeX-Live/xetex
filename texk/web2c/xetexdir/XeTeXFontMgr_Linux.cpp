@@ -1,4 +1,4 @@
-/****************************************************************************\
+F/****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2006 by SIL International
  written by Jonathan Kew
@@ -29,6 +29,11 @@ authorization from SIL International.
 \****************************************************************************/
 
 #include "XeTeXFontMgr_Linux.h"
+
+/* allow compilation with old Fontconfig header */
+#ifndef FC_FULLNAME
+#define FC_FULLNAME "fullname"
+#endif
 
 #include FT_SFNT_NAMES_H
 #include FT_TRUETYPE_IDS_H
