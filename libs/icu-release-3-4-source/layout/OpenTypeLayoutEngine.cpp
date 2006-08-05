@@ -241,8 +241,10 @@ void OpenTypeLayoutEngine::adjustGlyphPositions(const LEUnicode chars[], le_int3
     }
 
     le_int32 glyphCount = glyphStorage.getGlyphCount();
+    if (glyphCount == 0)
+        return;
 
-    if (glyphCount > 0 && fGPOSTable != NULL) {
+    if (fGPOSTable != NULL) {
         GlyphPositionAdjustments *adjustments = new GlyphPositionAdjustments(glyphCount);
         le_int32 i;
 
@@ -299,6 +301,10 @@ void OpenTypeLayoutEngine::adjustGlyphPositions(const LEUnicode chars[], le_int3
         glyphStorage.adjustPosition(glyphCount, xAdjust, -yAdjust, success);
 
         delete adjustments;
+    }
+    else {
+        // if there was no GPOS table, maybe there's non-OpenType kerning we can use
+        LayoutEngine::adjustGlyphPositions(chars, offset, count, reverse, glyphStorage, success);
     }
 
 #if 0
