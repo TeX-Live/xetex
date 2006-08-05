@@ -1,4 +1,4 @@
-F/****************************************************************************\
+/****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2006 by SIL International
  written by Jonathan Kew
