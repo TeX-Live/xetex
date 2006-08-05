@@ -71,6 +71,7 @@ public:
     virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
     virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const;
     virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
+    virtual void getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const;
 };
 
 #endif

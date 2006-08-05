@@ -42,6 +42,8 @@ authorization from SIL International.
 #include FT_TYPE1_TABLES_H
 #include FT_GLYPH_H
 
+#include <string.h>
+
 static FT_Library	gLibrary = 0;
 
 
@@ -74,6 +76,19 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
         status = LE_FONT_FILE_NOT_FOUND_ERROR;
         return;
     }
+
+	/* for non-sfnt-packaged fonts (presumably Type 1), see if there is an AFM file we can attach */
+	if (index == 0 && !FT_IS_SFNT(face)) {
+		char*	afm = new char[strlen((const char*)pathname) + 5];	// room to append ".afm"
+		strcpy(afm, (const char*)pathname);
+		char*	p = strrchr(afm, '.');
+		if (p == NULL || strlen(p) != 4 || tolower(*(p+1)) != 'p' || tolower(*(p+2)) != 'f')
+			strcat(afm, ".afm");	// append .afm if the extension didn't seem to be .pf[ab]
+		else
+			strcpy(p, ".afm");		// else replace extension with .afm
+		FT_Attach_File(face, afm);	// ignore error code; AFM might not exist
+		delete[] afm;
+	}
 
 	initialize(status);
 }
@@ -214,4 +229,16 @@ XeTeXFontInst_FC::mapGlyphToIndex(const char* glyphName) const
 	if (rval == 0)
 		rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
 	return rval;
+}
+
+void
+XeTeXFontInst_FC::getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const
+{
+	FT_Vector	kerning;
+	if (FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_UNSCALED, &kerning) == 0) {
+		kern.fX = kerning.x;
+		kern.fY = kerning.y;
+	}
+	else
+		kern.fX = kern.fY = 0;
 }
