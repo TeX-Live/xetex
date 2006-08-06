@@ -14,8 +14,7 @@
 %% 
 %% 
 \ProvidesPackage{fontspec}
-  [2006/06/07 v1.10 Advanced font selection for XeLaTeX]
-
+  [2006/06/07 v1.11 Advanced font selection for XeLaTeX]
 \unless\ifdefined\XeTeXversion
   \@latex@error{^^J
    *************************************************^^J
@@ -24,6 +23,8 @@
    *************************************************}
 \fi
 \newif\ifzf@firsttime
+\newif\ifzf@nobf
+\newif\ifzf@noit
 \newif\ifzf@tfm
 \newif\ifzf@atsui
 \newif\ifzf@icu
@@ -83,11 +84,22 @@
 \def\zf@rmmaths{\rmdefault}
 \def\zf@sfmaths{\sfdefault}
 \def\zf@ttmaths{\ttdefault}
-\newcommand*\newfontinstance[1]{%
-  \@ifnextchar[{\newfontinstance@i#1}{\newfontinstance@i#1[]}}
-\def\newfontinstance@i#1[#2]#3{%
+\newcommand*\newfontfamily[1]{%
+  \@ifnextchar[{\newfontfamily@i#1}{\newfontfamily@i#1[]}}
+\def\newfontfamily@i#1[#2]#3{%
   \zf@fontspec{#2}{#3}%
-  \edef#1{\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}
+  \edef\@tempa{%
+    \noexpand\DeclareRobustCommand\noexpand#1
+      {\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}%
+  \@tempa}
+\newcommand*\newfontface[1]{%
+  \@ifnextchar[{\newfontface@i#1}{\newfontface@i#1[]}}
+\def\newfontface@i#1[#2]#3{%
+  \zf@fontspec{BoldFont={},ItalicFont={},#2}{#3}%
+  \edef\@tempa{%
+    \noexpand\DeclareRobustCommand\noexpand#1
+      {\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}%
+  \@tempa}
 \newcommand*\defaultfontfeatures[1]{\def\zf@default@options{#1,}}
 \let\zf@default@options\@empty
 \newcommand*\addfontfeatures[1]{%
@@ -155,13 +167,21 @@
   \begingroup
   \zf@init
   \edef\zf@fontname{#2}%
+  \font\zf@basefont="\zf@fontname" at \f@size pt
   \let\zf@family@long\zf@fontname
   \setkeys*[zf]{preparse}{#1}%
   \edef\zf@font@feat{\zf@font@feat\XKV@rm}%
-  \unless\ifdefined\zf@basefont
+  \zf@set@font@type
+  \ifx\zf@suffix\@empty
+    \ifzf@atsui
+      \def\zf@suffix{/AAT}%
+    \else
+      \ifzf@icu
+        \def\zf@suffix{/ICU}%
+      \fi
+    \fi
     \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
   \fi
-  \zf@set@font@type
   \zf@firsttimetrue
     \zf@get@feature@requests{\zf@font@feat}%
   \zf@firsttimefalse
@@ -183,30 +203,39 @@
     \gdef@cx{zf@family@fontdef\zf@family}{\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff}%
     \DeclareFontFamily{\zf@enc}{\zf@family}{}%
     \zf@make@font@shapes{\zf@fontname}{\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
-    \ifx\zf@bf\@empty
-      \zf@make@font@shapes[\zf@fontname]{/B}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
-    \else
-      \zf@make@font@shapes{\zf@bf}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
-    \fi
-    \ifx\zf@it\@empty
-      \zf@make@font@shapes[\zf@fontname]{/I}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
-    \else
-      \zf@make@font@shapes{\zf@it}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
-    \fi
-    \ifx\zf@bfit\@empty
+    \unless\ifzf@nobf
       \ifx\zf@bf\@empty
-        \ifx\zf@it\@empty
-          \zf@make@font@shapes[\zf@fontname]{/BI}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+        \zf@make@font@shapes[\zf@fontname]{/B}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
+      \else
+        \zf@make@font@shapes{\zf@bf}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
+      \fi
+    \fi
+    \unless\ifzf@noit
+      \ifx\zf@it\@empty
+        \zf@make@font@shapes[\zf@fontname]{/I}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
+      \else
+        \zf@make@font@shapes{\zf@it}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
+      \fi
+    \fi
+    \@tempswatrue
+    \ifzf@nobf\@tempswafalse\fi
+    \ifzf@noit\@tempswafalse\fi
+    \if@tempswa
+      \ifx\zf@bfit\@empty
+        \ifx\zf@bf\@empty
+          \ifx\zf@it\@empty
+            \zf@make@font@shapes[\zf@fontname]{/BI}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+          \else
+            \zf@make@font@shapes[\zf@it]{/B}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+          \fi
         \else
-          \zf@make@font@shapes[\zf@it]{/B}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+          \zf@make@font@shapes[\zf@bf]{/I}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
         \fi
       \else
-        \zf@make@font@shapes[\zf@bf]{/I}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+        \zf@make@font@shapes{\zf@bfit}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
       \fi
-    \else
-      \zf@make@font@shapes{\zf@bfit}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
     \fi
-  \fi
+    \fi
   \endgroup
   }
 \newcommand*\zf@set@font@type{%
@@ -422,13 +451,23 @@
     \fi
   \repeat}
 \define@key[zf]{preparse}{BoldFont}{%
-  \zf@partial@fontname#1\@nil
-  \let\zf@bf\@tempa
-  \edef\zf@family@long{\zf@family@long bf:#1}}
+  \edef\@tempa{#1}%
+  \ifx\@tempa\@empty
+    \zf@nobftrue
+  \else
+    \zf@partial@fontname#1\@nil
+    \let\zf@bf\@tempa
+    \edef\zf@family@long{\zf@family@long bf:#1}%
+  \fi}
 \define@key[zf]{preparse}{ItalicFont}{%
-  \zf@partial@fontname#1\@nil
-  \let\zf@it\@tempa
-  \edef\zf@family@long{\zf@family@long it:#1}}
+  \edef\@tempa{#1}%
+  \ifx\@tempa\@empty
+    \zf@noittrue
+  \else
+    \zf@partial@fontname#1\@nil
+    \let\zf@it\@tempa
+    \edef\zf@family@long{\zf@family@long it:#1}
+  \fi}
 \define@key[zf]{preparse}{BoldItalicFont}{%
   \zf@partial@fontname#1\@nil
   \let\zf@bfit\@tempa
@@ -654,7 +693,7 @@
 \define@key[zf]{options}{Variant}{%
   \setkeys*[zf@feat]{Variant}{#1}%
   \unless\ifx\XKV@rm\@empty
-    \zf@make@feature{18}{#1}{+ss\two@digits{#1}}%
+    \edef\@tempa{\noexpand\zf@make@feature{18}{#1}{+ss\two@digits{#1}}}\@tempa
   \fi}
 \zf@define@font@feature{Style}
 \zf@define@feature@option{Style}{Alternate}{}{}{+salt}
@@ -859,7 +898,7 @@
 \newfontlanguage{Tigre}{TGR} \newfontlanguage{Tigrinya}{TGY} \newfontlanguage{Thai}{THA}
 \newfontlanguage{Tahitian}{THT} \newfontlanguage{Tibetan}{TIB} \newfontlanguage{Turkmen}{TKM}
 \newfontlanguage{Temne}{TMN} \newfontlanguage{Tswana}{TNA} \newfontlanguage{Tundra Nenets}{TNE}
-\newfontlanguage{Tonga}{TNG} \newfontlanguage{Todo}{TOD} \newfontlanguage{Turkish}{TUR}
+\newfontlanguage{Tonga}{TNG} \newfontlanguage{Todo}{TOD}
 \newfontlanguage{Tsonga}{TSG} \newfontlanguage{Turoyo Aramaic}{TUA} \newfontlanguage{Tulu}{TUL}
 \newfontlanguage{Tuvin}{TUV} \newfontlanguage{Twi}{TWI} \newfontlanguage{Udmurt}{UDM}
 \newfontlanguage{Ukrainian}{UKR} \newfontlanguage{Urdu}{URD} \newfontlanguage{Upper Sorbian}{USB}
@@ -871,6 +910,25 @@
 \newfontlanguage{Yi Modern}{YIM} \newfontlanguage{Chinese Hong Kong}{ZHH}
 \newfontlanguage{Chinese Phonetic}{ZHP} \newfontlanguage{Chinese Simplified}{ZHS}
 \newfontlanguage{Chinese Traditional}{ZHT} \newfontlanguage{Zande}{ZND} \newfontlanguage{Zulu}{ZUL}
+\define@key[zf@feat]{Lang}{Turkish}[]{%
+  \zf@check@ot@lang{TRK}%
+  \if@tempswa
+    \c@zf@language\@tempcnta\relax
+    \xdef\zf@language@name{Turkish}%
+    \xdef\zf@family@long{\zf@family@long+lang=Turkish}%
+    \xdef\zf@pre@ff{\zf@pre@ff language=TRK,}%
+  \else
+    \zf@check@ot@lang{TUR}%
+    \if@tempswa
+      \c@zf@language\@tempcnta\relax
+      \xdef\zf@language@name{Turkish}%
+      \xdef\zf@family@long{\zf@family@long+lang=Turkish}%
+      \xdef\zf@pre@ff{\zf@pre@ff language=TUR,}%
+    \else
+      \zf@PackageWarning{Font \fontname\zf@basefont does not contain
+                         language '#1' for script '\zf@script@name'}%
+    \fi
+  \fi}
 \providecommand*{\sidefault}{si}
 \DeclareRobustCommand{\sishape}{%
   \not@math@alphabet\sishape\relax
@@ -1012,10 +1070,10 @@
 \ExecuteOptions{config}
 \ProcessOptions
 %% 
-%% Copyright 2005 by Will Robertson <will@guerilla.net.au>
+%% Copyright 2005 by Will Robertson <wspr81@gmail.com>
 %% 
 %% Distributable under the LaTeX Project Public License,
-%% version 1.3b or higher (your choice). The latest version of
+%% version 1.3c or higher (your choice). The latest version of
 %% this license is at: http://www.latex-project.org/lppl.txt
 %% 
 %% This work is "maintained" (as per LPPL maintenance status)
