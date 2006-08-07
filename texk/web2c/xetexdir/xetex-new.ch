@@ -3402,14 +3402,19 @@ first letter.
 @y
     begin
       if subtype(s) = native_word_node then begin
-        c := get_native_char(s, 0);
-        hf := native_font(s);
-        prev_s := s;
-        goto done2;
-      end else begin
-        @<Advance \(p)past a whatsit node in the \(p)pre-hyphenation loop@>;
-        goto continue;
-      end
+        { we only consider the node if it contains at least one letter, otherwise we'll skip it }
+        for l:=0 to native_length(s) - 1 do begin
+          c := get_native_char(s, l);
+          if lc_code(c) <> 0 then begin
+            c := get_native_char(s, 0);
+            hf := native_font(s);
+            prev_s := s;
+            goto done2;
+          end
+        end
+      end;
+      @<Advance \(p)past a whatsit node in the \(p)pre-hyphenation loop@>;
+      goto continue
 @z
 
 @x
