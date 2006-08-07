@@ -3406,7 +3406,6 @@ first letter.
         for l:=0 to native_length(s) - 1 do begin
           c := get_native_char(s, l);
           if lc_code(c) <> 0 then begin
-            c := get_native_char(s, 0);
             hf := native_font(s);
             prev_s := s;
             goto done2;
