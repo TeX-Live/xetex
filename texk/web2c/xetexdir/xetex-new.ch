@@ -199,15 +199,6 @@ system libraries.
 @z
 
 @x
-@!eight_bit_p:c_int_type; {make all characters printable by default}
-@!halt_on_error_p:c_int_type; {stop at first error}
-@!quoted_filename:boolean; {current filename is quoted}
-@y
-@!eight_bit_p:c_int_type; {make all characters printable by default}
-@!halt_on_error_p:c_int_type; {stop at first error}
-@z
-
-@x
 @* \[4] String handling.
 @y
 @* \[4] String handling.
@@ -2069,6 +2060,12 @@ eTeX_revision_code: print(eTeX_revision);
 @z
 
 @x
+job_name_code: print(job_name);
+@y
+job_name_code: print_file_name(job_name, 0, 0);
+@z
+
+@x
 @!read_file:array[0..15] of alpha_file; {used for \.{\\read}}
 @y
 @!read_file:array[0..15] of unicode_file; {used for \.{\\read}}
@@ -2128,7 +2125,7 @@ includes spaces is ``quoted'' somehow.
 @x
 begin area_delimiter:=0; ext_delimiter:=0; quoted_filename:=false;
 @y
-begin area_delimiter:=0; ext_delimiter:=0;
+begin area_delimiter:=0; ext_delimiter:=0; quoted_filename:=false;
 file_name_quote_char:=0;
 @z
 
@@ -2140,36 +2137,20 @@ else  if c="""" then begin
   quoted_filename:=not quoted_filename;
   more_name:=true;
   end
-else  begin str_room(1); append_char(c); {contribute |c| to the current string}
-  if IS_DIR_SEP(c) then
-    begin area_delimiter:=cur_length; ext_delimiter:=0;
-    end
-  else if c="." then ext_delimiter:=cur_length;
-  more_name:=true;
-  end;
-end;
 @y
 @p function more_name(@!c:ASCII_code):boolean;
-begin if stop_at_space and (c=" ") then more_name:=false
-else  begin
-  if (cur_length=0) and stop_at_space
-  and ((c="'") or (c="""") or (c="(")) then begin
-    if c="(" then file_name_quote_char:=")" else file_name_quote_char:=c;
-    stop_at_space:=false; more_name:=true;
+begin if stop_at_space and (c=" ") and (file_name_quote_char=0) then
+  more_name:=false
+else if stop_at_space and (file_name_quote_char<>0) and (c=file_name_quote_char) then begin
+  file_name_quote_char:=0;
+  more_name:=true;
   end
-  else if (file_name_quote_char<>0) and (c=file_name_quote_char) then begin
-    stop_at_space:=true; more_name:=false;
+else if stop_at_space and (file_name_quote_char=0) and ((c="""") or (c="'") or (c="(")) then begin
+  if c="(" then file_name_quote_char:=")"
+  else file_name_quote_char:=c;
+  quoted_filename:=true;
+  more_name:=true;
   end
-  else begin
-    str_room(1); append_char(c); {contribute |c| to the current string}
-    if IS_DIR_SEP(c) then
-      begin area_delimiter:=cur_length; ext_delimiter:=0;
-      end
-    else if c="." then ext_delimiter:=cur_length;
-    more_name:=true;
-  end;
-end;
-end;
 @z
 
 @x
@@ -2313,7 +2294,77 @@ if must_quote then print_char("""");
 end;
 @y
 procedure print_file_name(@!n,@!a,@!e:integer);
-begin slow_print(a); slow_print(n); slow_print(e);
+var @!must_quote: boolean; {whether to quote the filename}
+@!quote_char: integer; {current quote char (single or double)}
+@!j:pool_pointer; {index into |str_pool|}
+begin
+must_quote:=false;
+quote_char:=0;
+if a<>0 then begin
+  j:=str_start_macro(a);
+  while ((not must_quote) or (quote_char=0)) and (j<>str_start_macro(a+1)) do begin
+    if (str_pool[j]=" ") then must_quote:=true
+    else if (str_pool[j]="""") or (str_pool[j]="'") then begin
+      must_quote:=true;
+      quote_char:="""" + "'" - str_pool[j];
+    end;
+    incr(j);
+  end;
+end;
+if n<>0 then begin
+  j:=str_start_macro(n);
+  while ((not must_quote) or (quote_char=0)) and (j<>str_start_macro(n+1)) do begin
+    if (str_pool[j]=" ") then must_quote:=true
+    else if (str_pool[j]="""") or (str_pool[j]="'") then begin
+      must_quote:=true;
+      quote_char:="""" + "'" - str_pool[j];
+    end;
+    incr(j);
+  end;
+end;
+if e<>0 then begin
+  j:=str_start_macro(e);
+  while ((not must_quote) or (quote_char=0)) and (j<>str_start_macro(e+1)) do begin
+    if (str_pool[j]=" ") then must_quote:=true
+    else if (str_pool[j]="""") or (str_pool[j]="'") then begin
+      must_quote:=true;
+      quote_char:="""" + "'" - str_pool[j];
+    end;
+    incr(j);
+  end;
+end;
+if must_quote then begin
+  if quote_char=0 then quote_char:="""";
+  print_char(quote_char);
+end;
+if a<>0 then
+  for j:=str_start_macro(a) to str_start_macro(a+1)-1 do begin
+    if str_pool[j]=quote_char then begin
+      print(quote_char);
+      quote_char:="""" + "'" - quote_char;
+      print(quote_char);
+    end;
+    print(str_pool[j]);
+  end;
+if n<>0 then
+  for j:=str_start_macro(n) to str_start_macro(n+1)-1 do begin
+    if str_pool[j]=quote_char then begin
+      print(quote_char);
+      quote_char:="""" + "'" - quote_char;
+      print(quote_char);
+    end;
+    print(str_pool[j]);
+  end;
+if e<>0 then
+  for j:=str_start_macro(e) to str_start_macro(e+1)-1 do begin
+    if str_pool[j]=quote_char then begin
+      print(quote_char);
+      quote_char:="""" + "'" - quote_char;
+      print(quote_char);
+    end;
+    print(str_pool[j]);
+  end;
+if quote_char<>0 then print_char(quote_char);
 end;
 @z
 
@@ -2524,7 +2575,7 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @y
 file_opened:=false;
 pack_file_name(nom,aire,cur_ext);
-if file_name_quote_char<>0 then begin
+if quoted_filename then begin
   { quoted name, so try for a native font }
   g:=load_native_font(u,nom,aire,s);
   if g=null_font then goto bad_tfm else goto done;
@@ -4384,11 +4435,13 @@ set_font:begin print("select font ");
     read_open[n]:=just_open;
 @y
      and u_open_in(read_file[n], kpse_tex_format, XeTeX_default_input_mode, XeTeX_default_input_encoding) then
-    begin k:=1;
+    begin
+    make_utf16_name;
     name_in_progress:=true;
     begin_name;
     stop_at_space:=false;
-    while (k<=name_length)and(more_name(name_of_file[k])) do
+    k:=0;
+    while (k<name_length16)and(more_name(name_of_file16[k])) do
       incr(k);
     stop_at_space:=true;
     end_name;
