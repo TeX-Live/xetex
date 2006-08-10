@@ -3003,7 +3003,7 @@ if not no_pdf_output then fflush(dvi_file);
 @x
   print_nl("Output written on "); print_file_name(0, output_file_name, 0);
 @y
-  print_nl("Output written on "); print_file_name(output_file_name, "", "");
+  print_nl("Output written on "); print(output_file_name);
 @z
 
 @x
@@ -4579,7 +4579,7 @@ k:=biggest_lang+1;
 @x
     print_file_name(0, log_name, 0); print_char(".");
 @y
-    print_file_name(log_name, "", ""); print_char(".");
+    print(log_name); print_char(".");
 @z
 
 @x

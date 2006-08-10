@@ -2133,11 +2133,27 @@ open_dvi_output(FILE** fptr)
 		return open_output(fptr, FOPEN_WBIN_MODE);
 	}
 	else {
-		char*	cmd2 = concat(outputdriver, " -o \"");
-		char*	cmd = concat3(cmd2, (char*)nameoffile+1, "\"");
-		free(cmd2);
+		const char *p = nameoffile+1;
+		char	*cmd, *q;
+		int len = strlen(p);
+		while (*p)
+			if (*p++ == '\"')
+				++len;
+		len += strlen(outputdriver);
+		len += 8; /* space for -o flag, quotes, NUL */
+		cmd = xmalloc(len);
+		strcpy(cmd, outputdriver);
+		strcat(cmd, " -o \"");
+		q = cmd + strlen(cmd);
+		for (p = nameoffile+1; *p; p++) {
+			if (*p == '\"')
+				*q++ = '\\';
+			*q++ = *p;
+		}
+		*q++ = '\"';
+		*q = '\0';
 		if (papersize != 0) {
-			cmd2 = concat3(cmd, " -p ", papersize);
+			char* cmd2 = concat3(cmd, " -p ", papersize);
 			free(cmd);
 			cmd = cmd2;
 		}
