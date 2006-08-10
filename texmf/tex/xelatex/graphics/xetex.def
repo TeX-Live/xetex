@@ -13,14 +13,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Version History
 %%
+%%  2006/08/10  [JK] Version v0.92  correct type-check in \G@measure@QTm;
+%%              remove \G@PDF@ext, apply \lowercase instead;
+%%              make \XeTeXquote have catcode 12 rather than 11;
+%%              explicit space after "filename.ext" (reqd by xetex 0.995)
+%%
 %%  2006/07/19  [JK] Version v0.91  use \special{color ...} rather than
 %%              \special{x:textcolor ...} etc, for compatibility with
-%%              both xdv2pdf and xdvipdfmx drivers
-%%              Added .bmp to list of recognized graphics extensions
+%%              both xdv2pdf and xdvipdfmx drivers;
+%%              added .bmp to list of recognized graphics extensions
 %%
 %%  2006/01/09  [JK] Version v0.9  removed support for XeTeX versions
 %%              prior to 0.6 (when the \XeTeXpicfile parameters were
-%%              modified), to avoid problem when \XeTeXrevision
+%%              modified), to avoid problem when \XeTeXrevision inc. letters
 %%
 %%  2005/10/12  Version v0.8  removed spurious space in \convertHEX@
 %%               -- found by Morten Hogholm
@@ -51,11 +56,11 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ProvidesFile{xetex.def}
-        [2006/07/19 v0.91 LaTeX color/graphics driver for XeTeX (RRM, mod. JK)]
+        [2006/08/10 v0.92 LaTeX color/graphics driver for XeTeX (RRM, mod. JK)]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % make sure we can use " with correct catcode
-{\catcode`\"=11
+{\catcode`\"=12
  \gdef\XeTeXquote{"}%
 }
 
@@ -227,7 +232,6 @@
 %
 % PDF is a special case which has extra features
 \def\G@pdf@ext{.pdf}
-\def\G@PDF@ext{.PDF}
 
 % \Gin@XeTeX@page: page number of pdf image or \@empty otherwise.
 % This code adapted from  pdftex.def
@@ -259,19 +263,15 @@
 %
 \def\XeTeX@include@QTm#1{%
   \def\picpage{}%
-  \ifx\Gin@ext\G@pdf@ext
+  \lowercase{\edef\type@ext{\Gin@ext}}%
+  \ifx\type@ext\G@pdf@ext
    \ifx\Gin@XeTeX@page\@empty\else
      \edef\picpage{ page\Gin@XeTeX@page}\fi
    \def\picfilecommand{\pdffile@cmd}%
   \else
-   \ifx\Gin@ext\G@PDF@ext
-    \ifx\Gin@XeTeX@page\@empty\else
-      \edef\picpage{ page\Gin@XeTeX@page}\fi
-    \def\picfilecommand{\pdffile@cmd}%
-   \else
-    \def\picfilecommand{\picfile@cmd}%
-  \fi\fi
-  \edef\picfileargs{ \XeTeXquote#1\XeTeXquote\picpage}%
+   \def\picfilecommand{\picfile@cmd}%
+  \fi
+  \edef\picfileargs{ \XeTeXquote#1\XeTeXquote\space\picpage}%
   \Gin@log{%
     <use \picfileargs>%
   }%
@@ -358,18 +358,18 @@
 \def\G@measure@QTm#1#2{%
  % \@warning{measuring size of QuickTime graphic #1#2}%
   \bgroup
-   \def\type{#2}%
+   \lowercase{\edef\type@ext{#2}}%
    \ifx\type@ext\G@pdf@ext
-    \ifx\GXT@page\@empty \def\picpage{}%
-    \else \edef\picpage{ page\GXT@page}\fi
+    \ifx\Gin@XeTeX@page\@empty \def\picpage{}%
+    \else \edef\picpage{ page\Gin@XeTeX@page}\fi
    \fi
    \setbox0=\hbox{%
-     \ifx\type\G@pdf@ext
+     \ifx\type@ext\G@pdf@ext
       \edef\piccommand{\noexpand\pdffile@cmd
-         \XeTeXquote#1#2\XeTeXquote\picpage}%
+         \XeTeXquote#1#2\XeTeXquote\space\picpage}%
      \else
       \edef\piccommand{\noexpand\picfile@cmd 
-         \XeTeXquote#1#2\XeTeXquote}%
+         \XeTeXquote#1#2\XeTeXquote\space}%
      \fi
      \piccommand
     }\dimen0=\wd0 \dimen2=\ht0
