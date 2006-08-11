@@ -50,7 +50,7 @@ static UConverter*	macRomanConv = NULL;
 static UConverter*	utf16beConv = NULL;
 static UConverter*	utf8Conv = NULL;
 
-extern FT_Library	gFreeTypeLib;
+extern FT_Library	gFreeTypeLibrary; /* shared with XeTeXFontInst_FT2 */
 
 static char*
 convertToUtf8(UConverter* conv, const unsigned char* name, int len)
@@ -90,7 +90,7 @@ XeTeXFontMgr_FC::readNames(FcPattern* pat)
 		return names;
 
 	FT_Face face;
-	if (FT_New_Face(gFreeTypeLib, pathname, index, &face) != 0)
+	if (FT_New_Face(gFreeTypeLibrary, pathname, index, &face) != 0)
 		return names;
 
 	const char* name = FT_Get_Postscript_Name(face);
@@ -297,7 +297,7 @@ XeTeXFontMgr_FC::initialize()
 		exit(9);
 	}
 
-	if (gFreeTypeLib == 0 && FT_Init_FreeType(&gFreeTypeLib) != 0) {
+	if (gFreeTypeLibrary == 0 && FT_Init_FreeType(&gFreeTypeLibrary) != 0) {
 		fprintf(stderr, "FreeType initialization failed!\n");
 		exit(9);
 	}

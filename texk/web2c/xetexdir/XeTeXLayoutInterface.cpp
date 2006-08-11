@@ -101,10 +101,10 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 	XeTeXFontInst* font = new XeTeXFontInst_Mac((ATSFontRef)fontRef, Fix2X(pointSize), status);
 #else
 	FcChar8*	pathname = 0;
-	FcPatternGetString(pattern, FC_FILE, 0, &pathname);
+	FcPatternGetString(fontRef, FC_FILE, 0, &pathname);
 	int			index;
-	FcPatternGetInteger(pattern, FC_INDEX, 0, &index);
-	XeTeXFontInst* font = new XeTeXFontInst_FT2(pathname, index, Fix2X(pointSize), status);
+	FcPatternGetInteger(fontRef, FC_INDEX, 0, &index);
+	XeTeXFontInst* font = new XeTeXFontInst_FT2((const char*)pathname, index, Fix2X(pointSize), status);
 #endif
 	if (LE_FAILURE(status)) {
 		delete font;
