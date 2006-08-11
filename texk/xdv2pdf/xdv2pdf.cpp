@@ -1660,7 +1660,7 @@ doNativeFontDef(FILE* xdv)
 	char*	name = new char[psLen+1];
 	fread(name, 1, psLen, xdv);
 	name[psLen] = 0;
-
+	
 	// don't use fseek, doesn't work when reading from a pipe!
 	while (skipLen-- > 0)
 		(void)readUnsigned(xdv, 1);
@@ -1669,11 +1669,22 @@ doNativeFontDef(FILE* xdv)
 	if (flags & XDV_FLAG_COLORED)
 		rgba = readUnsigned(xdv, 4);
 
-	CFStringRef	psNameStr = CFStringCreateWithCString(kCFAllocatorDefault, name, kCFStringEncodingMacRoman);
-	ATSFontRef	fontRef = ATSFontFindFromPostScriptName(psNameStr, kATSOptionFlagsDefault);
-	CFRelease(psNameStr);
+	ATSFontRef	fontRef = 0;
+	ATSUFontID	fontID = kATSUInvalidFontID;
 
-	ATSUFontID	fontID = FMGetFontFromATSFontRef(fontRef);
+	if (name[0] == '<') { // uninstalled font specified by filename: not supported
+		fprintf(stderr, "\n"
+					"## xdv2pdf: use of uninstalled fonts (specified by filename) such as\n"
+					"##   %s\n"
+					"## is not supported; try using the xdvipdfmx driver instead.\n", name);
+	}
+	else {
+		CFStringRef	psNameStr = CFStringCreateWithCString(kCFAllocatorDefault, name, kCFStringEncodingMacRoman);
+		fontRef = ATSFontFindFromPostScriptName(psNameStr, kATSOptionFlagsDefault);
+		CFRelease(psNameStr);
+
+		fontID = FMGetFontFromATSFontRef(fontRef);
+	}
 	
 	if (fontID == kATSUInvalidFontID)
 		rgba = 0xFF0000FF;
@@ -1737,7 +1748,7 @@ doNativeFontDef(FILE* xdv)
 	fontRec.cgFont = cgFont;
 	fontRec.atsFont = fontRef;
 	fontRec.size = s;
-	fontRec.isColored = (flags & XDV_FLAG_COLORED) != 0;
+	fontRec.isColored = (flags & XDV_FLAG_COLORED) != 0 || fontID == kATSUInvalidFontID;
 	fontRec.isVertical = (flags & XDV_FLAG_VERTICAL) != 0;
 	if (fontRec.isColored) {
 		float	values[4];

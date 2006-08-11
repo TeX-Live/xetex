@@ -36,4 +36,5 @@ if [ "`uname`" = "Darwin" ]; then
 	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
 fi
 
+# show the executables we made (assuming the build was successful)
 ls -l ${PRODUCTS}

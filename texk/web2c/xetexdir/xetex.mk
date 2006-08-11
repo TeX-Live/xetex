@@ -15,7 +15,7 @@ xetex = @XETEX@ xetex
 @XETEX_MACOSX@ xetex_platform_layout_cxx = XeTeXFontInst_Mac.cpp XeTeXFontInst_FT2.cpp
 @XETEX_MACOSX@ xetex_images_o =
 
-@XETEX_MACOSX@ XETEX_DEFINES = -DXETEX_MAC -g
+@XETEX_MACOSX@ XETEX_DEFINES = -DXETEX_MAC
 
 @XETEX_MACOSX@ EXTRALIBS = @LDFREETYPE2@ -framework Carbon -framework Cocoa -framework QuickTime
 
@@ -27,7 +27,7 @@ xetex = @XETEX@ xetex
 @XETEX_GENERIC@ xetex_platform_layout_cxx = XeTeXFontInst_FT2.cpp
 @XETEX_GENERIC@ xetex_images_o = mfileio.o numbers.o pdfimage.o bmpimage.o jpegimage.o pngimage.o XeTeX_pic.o
 
-@XETEX_GENERIC@ XETEX_DEFINES = -DXETEX_OTHER -g
+@XETEX_GENERIC@ XETEX_DEFINES = -DXETEX_OTHER
 
 @XETEX_GENERIC@ # FIXME: FontConfig not yet handled by configure
 @XETEX_GENERIC@ EXTRALIBS = @LDFREETYPE2@ @LDLIBXPDF@ @LDLIBPNG@ -lfontconfig

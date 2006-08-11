@@ -672,6 +672,7 @@ splitFontName(char* name, char** var, char** feat, char** end)
 			}
 			++name;
 		}
+		*end = name;
 	}
 	else {
 		while (*name) {
