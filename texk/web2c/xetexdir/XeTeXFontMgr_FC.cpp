@@ -28,7 +28,7 @@ use or other dealings in this Software without prior written
 authorization from SIL International.
 \****************************************************************************/
 
-#include "XeTeXFontMgr_Linux.h"
+#include "XeTeXFontMgr_FC.h"
 
 /* allow compilation with old Fontconfig header */
 #ifndef FC_FULLNAME
@@ -49,6 +49,8 @@ authorization from SIL International.
 static UConverter*	macRomanConv = NULL;
 static UConverter*	utf16beConv = NULL;
 static UConverter*	utf8Conv = NULL;
+
+extern FT_Library	gFreeTypeLib;
 
 static char*
 convertToUtf8(UConverter* conv, const unsigned char* name, int len)
@@ -76,7 +78,7 @@ static int		bufSize = -1;
 }
 
 XeTeXFontMgr::NameCollection*
-XeTeXFontMgr_Linux::readNames(FcPattern* pat)
+XeTeXFontMgr_FC::readNames(FcPattern* pat)
 {
 	NameCollection*	names = new NameCollection;
 
@@ -88,7 +90,7 @@ XeTeXFontMgr_Linux::readNames(FcPattern* pat)
 		return names;
 
 	FT_Face face;
-	if (FT_New_Face(ftLib, pathname, index, &face) != 0)
+	if (FT_New_Face(gFreeTypeLib, pathname, index, &face) != 0)
 		return names;
 
 	const char* name = FT_Get_Postscript_Name(face);
@@ -182,7 +184,7 @@ XeTeXFontMgr_Linux::readNames(FcPattern* pat)
 }
 
 void
-XeTeXFontMgr_Linux::getOpSizeRecAndStyleFlags(Font* theFont)
+XeTeXFontMgr_FC::getOpSizeRecAndStyleFlags(Font* theFont)
 {
 	XeTeXFontMgr::getOpSizeRecAndStyleFlags(theFont);
 	
@@ -200,7 +202,7 @@ XeTeXFontMgr_Linux::getOpSizeRecAndStyleFlags(Font* theFont)
 }
 
 void
-XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
+XeTeXFontMgr_FC::searchForHostPlatformFonts(const std::string& name)
 {
 	static bool	cacheAll = false;
 	static	FcFontSet*	allFonts = NULL;
@@ -288,14 +290,14 @@ XeTeXFontMgr_Linux::searchForHostPlatformFonts(const std::string& name)
 }
 
 void
-XeTeXFontMgr_Linux::initialize()
+XeTeXFontMgr_FC::initialize()
 {
 	if (FcInit() == FcFalse) {
 		fprintf(stderr, "fontconfig initialization failed!\n");
 		exit(9);
 	}
 
-	if (FT_Init_FreeType(&ftLib) != 0) {
+	if (gFreeTypeLib == 0 && FT_Init_FreeType(&gFreeTypeLib) != 0) {
 		fprintf(stderr, "FreeType initialization failed!\n");
 		exit(9);
 	}
@@ -311,7 +313,7 @@ XeTeXFontMgr_Linux::initialize()
 }
 
 void
-XeTeXFontMgr_Linux::terminate()
+XeTeXFontMgr_FC::terminate()
 {
 	if (macRomanConv != NULL)
 		ucnv_close(macRomanConv);

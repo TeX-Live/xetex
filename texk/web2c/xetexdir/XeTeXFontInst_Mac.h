@@ -48,6 +48,7 @@ class XeTeXFontInst_Mac : public XeTeXFontInst
 protected:
     const void *readTable(LETag tag, le_uint32 *length) const;
 
+	ATSFontRef	fFontRef;
 	ATSUStyle	fStyle;
 
 public:
@@ -58,6 +59,8 @@ public:
 	virtual void initialize(LEErrorCode &status);
 	
 	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
+
+//	virtual const char *getPSName() const;
 };
 
 #endif

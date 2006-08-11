@@ -29,24 +29,22 @@ authorization from SIL International.
 \****************************************************************************/
 
 /*
- *   file name:  XeTeXFontInst_FC.h
+ *   file name:  XeTeXFontInst_FT2.h
  *
  *   created on: 2005-10-25
  *   created by: Jonathan Kew
  */
 
 
-#ifndef __XeTeXFontInst_FC_H
-#define __XeTeXFontInst_FC_H
+#ifndef __XeTeXFontInst_FT2_H
+#define __XeTeXFontInst_FT2_H
 
 #include "XeTeXFontInst.h"
-
-#include <fontconfig/fontconfig.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-class XeTeXFontInst_FC : public XeTeXFontInst
+class XeTeXFontInst_FT2 : public XeTeXFontInst
 {
 protected:
 
@@ -56,13 +54,13 @@ protected:
 	bool			fFreeTypeOnly;
 	
 public:
-    				XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorCode &status);
+    				XeTeXFontInst_FT2(const char* filename, int index, float pointSize, LEErrorCode &status);
 
-    virtual 		~XeTeXFontInst_FC();
+    virtual 		~XeTeXFontInst_FT2();
 
 	virtual void	initialize(LEErrorCode &status);
 
-	virtual char*	getPSName() const;	// returns a malloced string
+//	virtual const char*	getPSName() const;	// returns a ptr to a font-owned string, do not free!
 
 	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
 

@@ -29,14 +29,14 @@ authorization from SIL International.
 \****************************************************************************/
 
 /*
- *   file name:  XeTeXFontInst_FC.cpp
+ *   file name:  XeTeXFontInst_FT2.cpp
  *
  *   created on: 2005-10-25
  *   created by: Jonathan Kew
  */
 
 
-#include "XeTeXFontInst_FC.h"
+#include "XeTeXFontInst_FT2.h"
 
 #include FT_TRUETYPE_TABLES_H
 #include FT_TYPE1_TABLES_H
@@ -44,11 +44,10 @@ authorization from SIL International.
 
 #include <string.h>
 
-static FT_Library	gLibrary = 0;
+FT_Library	gFreeTypeLibrary = 0;
 
-
-XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorCode &status)
-    : XeTeXFontInst(pattern, pointSize, status)
+XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float pointSize, LEErrorCode &status)
+    : XeTeXFontInst(pointSize, status)
     , face(0)
     , fFreeTypeOnly(false)
 {
@@ -57,20 +56,15 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
     }
 
 	FT_Error	err;
-	if (!gLibrary) {
-		err = FT_Init_FreeType(&gLibrary);
+	if (!gFreeTypeLibrary) {
+		err = FT_Init_FreeType(&gFreeTypeLibrary);
 		if (err != 0) {
 			fprintf(stderr, "FreeType initialization failed! (%d)\n", err);
 			exit(1);
 		}
 	}
-		
-	FcChar8*	pathname = 0;
-	FcPatternGetString(pattern, FC_FILE, 0, &pathname);
-	int			index;
-	FcPatternGetInteger(pattern, FC_INDEX, 0, &index);
 
-	err = FT_New_Face(gLibrary, (char*)pathname, index, &face);
+	err = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &face);
 
 	if (err != 0) {
         status = LE_FONT_FILE_NOT_FOUND_ERROR;
@@ -88,12 +82,24 @@ XeTeXFontInst_FC::XeTeXFontInst_FC(FcPattern* pattern, float pointSize, LEErrorC
 			strcpy(p, ".afm");		// else replace extension with .afm
 		FT_Attach_File(face, afm);	// ignore error code; AFM might not exist
 		delete[] afm;
+		fFreeTypeOnly = true;
 	}
 
 	initialize(status);
+
+	if (LE_FAILURE(status))
+		return;
+	
+	char	buf[20];
+	if (index > 0)
+		sprintf(buf, ":%d", index);
+	else
+		buf[0] = 0;
+	fFilename = new char[strlen(pathname) + 2 + strlen(buf) + 1];
+	sprintf(fFilename, "<%s%s>", pathname, buf);
 }
 
-XeTeXFontInst_FC::~XeTeXFontInst_FC()
+XeTeXFontInst_FT2::~XeTeXFontInst_FT2()
 {
 	if (face != 0) {
 		FT_Done_Face(face);
@@ -101,7 +107,7 @@ XeTeXFontInst_FC::~XeTeXFontInst_FC()
 	}
 }
 
-void XeTeXFontInst_FC::initialize(LEErrorCode &status)
+void XeTeXFontInst_FT2::initialize(LEErrorCode &status)
 {
     if (face == 0) {
         status = LE_FONT_FILE_NOT_FOUND_ERROR;
@@ -131,7 +137,7 @@ void XeTeXFontInst_FC::initialize(LEErrorCode &status)
     return;
 }
 
-const void *XeTeXFontInst_FC::readTable(LETag tag, le_uint32 *length) const
+const void *XeTeXFontInst_FT2::readTable(LETag tag, le_uint32 *length) const
 {
 	*length = 0;
 	FT_ULong	tmpLength = 0;
@@ -152,7 +158,8 @@ const void *XeTeXFontInst_FC::readTable(LETag tag, le_uint32 *length) const
     return table;
 }
 
-char* XeTeXFontInst_FC::getPSName() const
+/*
+const char* XeTeXFontInst_FT2::getPSName() const
 {
 	if (face == NULL)
 		return NULL;
@@ -161,15 +168,12 @@ char* XeTeXFontInst_FC::getPSName() const
 	if (facePSName == NULL)
 		return NULL;
 	
-	le_uint32	length = strlen(facePSName);
-	char*	name = (char*)xmalloc(length + 1);
-	strcpy(name, facePSName);
-
-	return name;
+	return facePSName;
 }
+*/
 
 void
-XeTeXFontInst_FC::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
+XeTeXFontInst_FT2::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
 {
 	bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0.0;
 
@@ -191,7 +195,7 @@ XeTeXFontInst_FC::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
 }
 
 LEGlyphID
-XeTeXFontInst_FC::mapCharToGlyph(LEUnicode32 ch) const
+XeTeXFontInst_FT2::mapCharToGlyph(LEUnicode32 ch) const
 {
 	if (!fFreeTypeOnly)
 		return XeTeXFontInst::mapCharToGlyph(ch);
@@ -200,13 +204,13 @@ XeTeXFontInst_FC::mapCharToGlyph(LEUnicode32 ch) const
 }
 
 le_uint16
-XeTeXFontInst_FC::getNumGlyphs() const
+XeTeXFontInst_FT2::getNumGlyphs() const
 {
 	return face->num_glyphs;
 }
 
 void
-XeTeXFontInst_FC::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
+XeTeXFontInst_FT2::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 {
 	if (!fFreeTypeOnly)
 		XeTeXFontInst::getGlyphAdvance(glyph, advance);
@@ -223,7 +227,7 @@ XeTeXFontInst_FC::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 }
 
 LEGlyphID
-XeTeXFontInst_FC::mapGlyphToIndex(const char* glyphName) const
+XeTeXFontInst_FT2::mapGlyphToIndex(const char* glyphName) const
 {
 	LEGlyphID	rval = FT_Get_Name_Index(face, const_cast<char*>(glyphName));
 	if (rval == 0)
@@ -232,7 +236,7 @@ XeTeXFontInst_FC::mapGlyphToIndex(const char* glyphName) const
 }
 
 void
-XeTeXFontInst_FC::getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const
+XeTeXFontInst_FT2::getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const
 {
 	FT_Vector	kerning;
 	if (FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_UNSCALED, &kerning) == 0) {
