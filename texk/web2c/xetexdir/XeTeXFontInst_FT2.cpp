@@ -96,7 +96,7 @@ XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float poin
 	else
 		buf[0] = 0;
 	fFilename = new char[strlen(pathname) + 2 + strlen(buf) + 1];
-	sprintf(fFilename, "<%s%s>", pathname, buf);
+	sprintf(fFilename, "[%s%s]", pathname, buf);
 }
 
 XeTeXFontInst_FT2::~XeTeXFontInst_FT2()
@@ -157,20 +157,6 @@ const void *XeTeXFontInst_FT2::readTable(LETag tag, le_uint32 *length) const
 
     return table;
 }
-
-/*
-const char* XeTeXFontInst_FT2::getPSName() const
-{
-	if (face == NULL)
-		return NULL;
-	
-	const char*	facePSName = FT_Get_Postscript_Name(face);
-	if (facePSName == NULL)
-		return NULL;
-	
-	return facePSName;
-}
-*/
 
 void
 XeTeXFontInst_FT2::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)

@@ -86,7 +86,7 @@ protected:
 	
 	bool fVertical; // false = horizontal, true = vertical
 
-	char *fFilename; // actually holds <filename:index>, as used in xetex
+	char *fFilename; // actually holds [filename:index], as used in xetex
 
     virtual const void *readTable(LETag tag, le_uint32 *length) const = 0;
     void deleteTable(const void *table) const;

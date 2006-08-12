@@ -60,8 +60,6 @@ public:
 
 	virtual void	initialize(LEErrorCode &status);
 
-//	virtual const char*	getPSName() const;	// returns a ptr to a font-owned string, do not free!
-
 	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
 
 	// overrides of XeTeXFontInst methods, in case it's not an sfnt

@@ -1672,7 +1672,7 @@ doNativeFontDef(FILE* xdv)
 	ATSFontRef	fontRef = 0;
 	ATSUFontID	fontID = kATSUInvalidFontID;
 
-	if (name[0] == '<') { // uninstalled font specified by filename: not supported
+	if (name[0] == '[') { // uninstalled font specified by filename: not supported
 		fprintf(stderr, "\n"
 					"## xdv2pdf: use of uninstalled fonts (specified by filename) such as\n"
 					"##   %s\n"

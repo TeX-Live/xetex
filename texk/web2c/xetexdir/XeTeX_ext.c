@@ -656,10 +656,11 @@ splitFontName(char* name, char** var, char** feat, char** end)
 {
 	*var = NULL;
 	*feat = NULL;
-	if (*name == '<') {
+	if (*name == '[') {
+		++name;
 		int	withinFileName = 1;
 		while (*name) {
-			if (withinFileName && *name == '>') {
+			if (withinFileName && *name == ']') {
 				withinFileName = 0;
 				if (*var == NULL)
 					*var = name;
@@ -727,8 +728,8 @@ findnativefont(unsigned char* uname, long scaled_size)
 		featString[end - feat - 1] = 0;
 	}
 	
-	// check for "<filename>" form, don't search maps in this case
-	if (nameString[0] == '<') {
+	// check for "[filename]" form, don't search maps in this case
+	if (nameString[0] == '[') {
 		char* path;
 		path = kpse_find_file(nameString + 1, kpse_opentype_format, 0);
 		if (path == NULL)
