@@ -1,5 +1,5 @@
 --------------------------
-THE FONTSPEC PACKAGE v1.10
+THE FONTSPEC PACKAGE v1.11
 
 The fontspec package only works with XeTeX, a unicode capable TeX-variant. It provides an automatic and unified interface for loading fonts in LaTeX. XeTeX allows a direct interface to system-installed fonts, so no manual font installation is required.
 
@@ -14,7 +14,8 @@ Font families may be selected individually with the command
    \fontspec[<font options>]{<font name>}
 
 Commands for selecting fonts efficiently can be created with
-   \newfontinstance\myfont[<font options>]{<font name>}
+   \newfontfamily\myfamily[<font options>]{<font name>}
+   \newfontface\myfont[<font options>]{<font name>}
 
 Default document fonts are selected with 
    \setromanfont[<font options>]{<font name>}
