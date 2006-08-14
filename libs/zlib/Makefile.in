@@ -1,8 +1,8 @@
 # Thomas Esser, Makefile.in for zlib / teTeX. (C) 2002-2004, public domain.
 
-ac_include ../texk/make/common.mk
-ac_include ../texk/make/programs.mk
-ac_include ../texk/make/library.mk
+kpse_include ../texk/make/common.mk
+kpse_include ../texk/make/programs.mk
+kpse_include ../texk/make/library.mk
 
 OBJS = adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o \
        zutil.o inflate.o infback.o inftrees.o inffast.o
@@ -14,11 +14,11 @@ libz.a: $(OBJS)
 
 all: libz.a
 uninstall:
-clean:
-	rm -f *.o *~ libz.a
 
-extraclean maintainer-clean distclean:	clean
-	rm -f Makefile
+kpse_include ../texk/make/clean.mk
+
+clean::
+	rm -f libz.a
 
 depend:
 	makedepend -- $(CFLAGS) -- *.[ch]
