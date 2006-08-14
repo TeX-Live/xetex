@@ -110,30 +110,3 @@ void XeTeXFontInst_Mac::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
 {
 	GetGlyphBBox_AAT(fStyle, gid, bbox);
 }
-
-/*
-const char* XeTeXFontInst_Mac::getPSName() const
-{
-	const int		BUFUNIT = 256;
-	static int		bufSize = BUFUNIT;
-	static char*	buffer = new char[bufSize];
-	const char*		rval = "";
-
-	CFStringRef	psName;
-	OSStatus	status = ATSFontGetPostScriptName(fFontRef, kATSOptionFlagsDefault, &psName);
-	CFIndex 	length = CFStringGetLength(psName);	// in 16-bit character units
-	if (length > 0) {
-		length = length * 6 + 1;
-		if (length >= bufSize) {
-			delete[] buffer;
-			bufSize = ((length / BUFUNIT) + 1) * BUFUNIT;
-			buffer = new char[bufSize];
-		}
-		if (CFStringGetCString(psName, buffer, bufSize, kCFStringEncodingUTF8))
-			rval = buffer;
-	}
-	CFRelease(psName);
-	
-	return rval;
-}
-*/

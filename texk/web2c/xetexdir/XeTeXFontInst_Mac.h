@@ -59,8 +59,6 @@ public:
 	virtual void initialize(LEErrorCode &status);
 	
 	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
-
-//	virtual const char *getPSName() const;
 };
 
 #endif
