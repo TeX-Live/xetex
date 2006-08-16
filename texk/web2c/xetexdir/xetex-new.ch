@@ -4197,6 +4197,9 @@ character(accent_chr(tail)):=qi(cur_val mod 256);
 if (cur_val>=var_code)and fam_in_range then fam(accent_chr(tail)):=cur_fam
 else fam(accent_chr(tail)):=(cur_val div 256) mod 16;
 @y
+cur_val := set_class_field(cur_val div @"1000) +
+           set_family_field((cur_val mod @"1000) div @"100) +
+           (cur_val mod @"100);
 character(accent_chr(tail)):=qi(cur_val mod @"10000);
 if (is_var_family(cur_val))and fam_in_range then plane_and_fam_field(accent_chr(tail)):=cur_fam
 else plane_and_fam_field(accent_chr(tail)):=math_fam_field(cur_val);
