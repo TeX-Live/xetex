@@ -18,8 +18,10 @@
 - \XeTeXadjustfeatures "featurestring" (does this modify the font identifier globally? locally?)
 
 - \XeTeXmathchar, \XeTeXmathcode, etc
+  - begun in 0.995; no variable-size operators/delimiters yet
 
 + \XeTeXglyphindex <name> (to look up index of named glyph in current font, 0 if absent)
+  - doesn't work for non-TrueType fonts on OS X
 
 + make \tracinglostchars report missing Unicode chars in native fonts
 
@@ -33,7 +35,7 @@
 
 - mechanism to load supplementary OT tables
 
-- read AFM files if available with PFBs, and apply kerning
++ read AFM files if available with PFBs, and apply kerning
 
 - Pango and/or Graphite as alternative renderers
 
@@ -43,3 +45,7 @@
   - must check support for Syriac, Arabic supplement, Mongolian, Lao bug-fix
 
 + \pdfsavepos, \pdflastxpos, \pdflastypos (also \pdfpagewidth, \pdfpageheight)
+
+- fallback rendering mechanism similar to \charsubdef
+
++ specify (uninstalled) fonts by file name

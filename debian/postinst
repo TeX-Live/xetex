@@ -37,7 +37,8 @@ __EOT__
 	# use system-wide setup if available
 	fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`
 
-	patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` <<'__EOT__' || true
+	# it's OK for this patch to fail (only needed on older TeX systems)
+	patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` <<'__EOT__' >/dev/null 2>&1 || true
 *** /usr/bin/fmtutil    2006-04-12 10:57:49.000000000 +0100
 --- fmtutil     2006-04-21 16:41:22.000000000 +0100
 ***************

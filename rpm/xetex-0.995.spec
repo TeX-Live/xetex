@@ -5,9 +5,9 @@
 Summary: An extension of TeX (and LaTeX/ConTeXt) with Unicode and OpenType support
 Name: xetex
 Icon: xetex.xpm
-Version: 0.994a
+Version: 0.995
 Release: 1
-License: CPL
+License: X11 license
 Group: Productivity/Publishing/TeX/Base
 Source: http://scripts.sil.org/svn-view/xetex/TAGS/xetex-%{version}.tar.gz
 URL: http://scripts.sil.org/xetex
@@ -21,16 +21,15 @@ Requires: tetex >= 3.0
 # te_latex is required because we intend to build a xelatex format during installation
 Requires: te_latex >= 3.0
 
-# we also need fontconfig, freetype2 and ImageMagick libraries
-# (FIXME: not sure what the minimum versions would be)
-Requires: fontconfig, freetype2, ImageMagick
+# we also need fontconfig
+Requires: fontconfig
 
 # finally, we need the xdvipdfmx driver to be present
 Requires: xdvipdfmx
 
 # to build, we need flex, bison, and various -devel packages...
 BuildRequires: flex, bison
-BuildRequires: fontconfig-devel >= 2.3, freetype2-devel, ImageMagick-devel, zlib-devel
+BuildRequires: fontconfig-devel >= 2.3
 
 %description
 XeTeX extends the TeX typesetting system (and macro packages

@@ -2,7 +2,7 @@
 
 # script to create initial xetex and xelatex formats, after installation
 
-set -o xtrace
+# set -o xtrace
 
 # ensure our entries are present in fmtutil.cnf
 fmtutil_cnf=`kpsewhich --format="web2c files" fmtutil.cnf`
@@ -28,7 +28,8 @@ texbindir=`dirname ${texbin}`
 PATH=${texbindir}:$PATH
 
 # patch fmtutil from teTeX 2.x so it doesn't confuse xetex with an etex engine
-patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` < fmtutil.tetex-2.patch
+# (discarding any error message in case we have teTeX 3 or an already-patched teTeX 2)
+patch -N -r /tmp/fmtutilpatch.rej -p0 `which fmtutil` < fmtutil.tetex-2.patch >/dev/null 2>&1
 
 # use system-wide setup if available
 fmtutil=`type -p fmtutil-sys` || fmtutil=`type -p fmtutil`

@@ -1,8 +1,8 @@
 Source: xetex
-Section: TeX-Authoring
+Section: contrib/tex
 Priority: optional
 Maintainer: Jonathan Kew <jonathan_kew@sil.org>
-Build-Depends: debhelper (>= 4.0.0), flex, bison, libfontconfig1-dev, libfreetype6-dev, libmagick6-dev
+Build-Depends: debhelper (>= 4.0.0), flex, bison, libfontconfig1-dev
 Standards-Version: 3.6.1
 
 Package: xetex

@@ -10,7 +10,7 @@
 
 # to be run from the top level dir of the xetex tree, after ./build-xetex
 
-set -o xtrace
+# set -o xtrace
 
 filelist=Work/xetex-installed-files
 
