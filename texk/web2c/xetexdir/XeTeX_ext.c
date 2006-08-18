@@ -737,7 +737,13 @@ findnativefont(unsigned char* uname, long scaled_size)
 		if (path == NULL)
 			path = kpse_find_file(nameString + 1, kpse_type1_format, 0);
 		if (path != NULL) {
-			font = createFontFromFile(path, 0, scaled_size);
+			int index = 0;
+			if (varString != NULL) {
+				char* cp = varString;
+				while (*cp && *cp != ']')
+					index = index * 10 + *cp++ - '0';
+			}
+			font = createFontFromFile(path, index, scaled_size);
 			if (font != NULL) {
 				rval = loadOTfont(0, font, scaled_size, featString);
 				if (rval == 0)
