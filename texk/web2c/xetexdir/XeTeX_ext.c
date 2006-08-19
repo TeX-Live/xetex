@@ -730,8 +730,7 @@ findnativefont(unsigned char* uname, long scaled_size)
 	
 	// check for "[filename]" form, don't search maps in this case
 	if (nameString[0] == '[') {
-		char* path;
-		path = kpse_find_file(nameString + 1, kpse_opentype_format, 0);
+		char* path = kpse_find_file(nameString + 1, kpse_opentype_format, 0);
 		if (path == NULL)
 			path = kpse_find_file(nameString + 1, kpse_truetype_format, 0);
 		if (path == NULL)
@@ -739,9 +738,9 @@ findnativefont(unsigned char* uname, long scaled_size)
 		if (path != NULL) {
 			int index = 0;
 			if (varString != NULL) {
-				char* cp = varString;
-				while (*cp && *cp != ']')
-					index = index * 10 + *cp++ - '0';
+				char* cp;
+				for (cp = varString; *cp && isdigit(*cp); ++cp)
+					index = index * 10 + *cp - '0';
 			}
 			font = createFontFromFile(path, index, scaled_size);
 			if (font != NULL) {
