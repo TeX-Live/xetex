@@ -12,9 +12,8 @@
 %% 
 %%   License information appended.
 %% 
-%% 
 \ProvidesPackage{fontspec}
-  [2006/08/12 v1.11 Advanced font selection for XeLaTeX]
+  [2006/08/20 v1.11a Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \newif\ifzf@firsttime
@@ -262,17 +261,17 @@
       \let\zf@basefont\@tempfontb
       \zf@DeclareFontShape{#3}{#4}{#5}%
       \ifx\zf@sc\@empty
-        \zf@make@smallcaps
-        \ifx\zf@smallcaps\@empty\else
-          \zf@DeclareFontShape[\zf@smallcaps]{#3}
-            {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
+        \unless\ifzf@nosc
+          \zf@make@smallcaps
+          \ifx\zf@smallcaps\@empty\else
+            \zf@DeclareFontShape[\zf@smallcaps]{#3}
+              {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
+          \fi
         \fi
       \else
-        \unless\ifzf@nosc
-          \edef\zf@fontname{\zf@sc}%
-          \zf@DeclareFontShape{#3}
-            {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
-        \fi
+        \edef\zf@fontname{\zf@sc}%
+        \zf@DeclareFontShape{#3}
+          {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
       \fi
     \fi
   \egroup}
@@ -323,8 +322,8 @@
   \let\zf@smallcaps\@empty
   \ifzf@atsui
     \zf@make@aat@feature@string{3}{3}%
-    \unless\ifx\zf@thisfontfeature\@empty
-      \edef\zf@smallcaps{\zf@thisfontfeature;}%
+    \unless\ifx\@tempa\@empty
+      \edef\zf@smallcaps{\@tempa;}%
     \fi
   \fi
   \ifzf@icu
@@ -340,13 +339,13 @@
 \newcommand*\zf@make@feature[3]{%
   \ifzf@atsui
     \zf@make@aat@feature@string{#1}{#2}%
-    \ifx\zf@thisfontfeature\@empty
+    \ifx\@tempa\@empty
       \zf@PackageWarning{%
         AAT feature '\XKV@tfam=\XKV@tkey'
         (#1,#2) not available in font \fontname\zf@basefont}%
     \else
       \zf@update@family{+#1,#2}%
-      \zf@update@ff\zf@thisfontfeature
+      \zf@update@ff\@tempa
     \fi
   \fi
   \ifzf@icu
@@ -376,24 +375,22 @@
        {\keyval@alias@key[zf]{options}{#1}{#2}}}
     {\keyval@alias@key[zf]{preparse}{#1}{#2}}}
 \newcommand*\zf@make@aat@feature@string[2]{%
-  \edef\zf@this@featurename{\XeTeXfeaturename\zf@basefont #1}%
-  \ifx\zf@this@featurename\@empty
-    \let\zf@thisfontfeature\@empty
-  \else
-    \edef\zf@this@selectionname{\XeTeXselectorname\zf@basefont #1 #2}%
-    \ifx\zf@this@selectionname\@empty
-      \let\zf@thisfontfeature\@empty
+  \edef\@tempa{\XeTeXfeaturename\zf@basefont #1}%
+  \unless\ifx\@tempa\@empty
+    \ifnum\XeTeXisexclusivefeature\zf@basefont #1 > 0
+      \edef\@tempb{\XeTeXselectorname\zf@basefont #1 #2}%
     \else
-      \edef\zf@thisfontfeature{%
-        \ifnum\XeTeXisexclusivefeature\zf@basefont #1 > 0
-          \zf@this@featurename=\zf@this@selectionname
-        \else
-          \ifodd #2
-            \zf@this@featurename=!\zf@this@selectionname
-          \else
-            \zf@this@featurename=\zf@this@selectionname
-          \fi
-        \fi}%
+      \unless\ifodd #2
+        \edef\@tempb{\XeTeXselectorname\zf@basefont #1 #2}%
+      \else
+        \edef\@tempb{\XeTeXselectorname\zf@basefont #1 \numexpr#2-1\relax}%
+        \unless\ifx\@tempb\@empty
+          \edef\@tempb{!\@tempb}%
+        \fi
+      \fi
+    \fi
+    \unless\ifx\@tempb\@empty
+      \edef\@tempa{\@tempa=\@tempb}%
     \fi
   \fi}
 \newcommand\zf@iv@strnum[1]{%
@@ -1077,7 +1074,7 @@
 \ExecuteOptions{config}
 \ProcessOptions
 %% 
-%% Copyright 2005 by Will Robertson <wspr81@gmail.com>
+%% Copyright 2005-2006 by Will Robertson <wspr81@gmail.com>
 %% 
 %% Distributable under the LaTeX Project Public License,
 %% version 1.3c or higher (your choice). The latest version of
