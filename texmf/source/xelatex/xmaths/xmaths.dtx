@@ -1,0 +1,460 @@
+% \iffalse meta-comment
+%
+%!TEX encoding = UTF-8 Unicode
+%!TEX TS-program = xelatex
+%
+% Copyright 2005 by Will Robertson <wspr81@gmail.com>
+% 
+% Distributable under the LaTeX Project Public License,
+% version 1.3a or higher (your choice). The latest version of
+% this license is at: http://www.latex-project.org/lppl.txt
+%
+% This work is "maintained" (as per LPPL maintenance status) 
+% by Will Robertson.
+% 
+% This work consists of the file  xmaths.dtx
+%           and the derived files xmaths.sty and xmaths.pdf.
+%
+%
+%<*batchfile>
+\begingroup
+\input docstrip.tex
+\keepsilent
+\preamble
+
+  ________________________________
+  Copyright © 2006  Will Robertson
+
+  License information appended.
+
+
+\endpreamble
+\postamble
+
+Copyright © 2006 by Will Robertson <wspr81@gmail.com>
+
+Distributable under the LaTeX Project Public License,
+version 1.3a or higher (your choice). The latest version of
+this license is at: http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status) 
+by Will Robertson.
+
+This work consists of the file  \jobname.dtx
+          and the derived files \jobname.sty and \jobname.pdf.
+
+\endpostamble
+\askforoverwritefalse
+\generate{\file{\jobname.sty}{\from{\jobname.dtx}{package}}}
+\nopreamble\nopostamble
+\generate{\file{dtx-style.sty}{\from{\jobname.dtx}{dtx-style}}}
+\generate{\file{stix-extract.sh}{\from{\jobname.dtx}{awk-script}}}
+\endgroup
+%</batchfile>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+%\OnlyDescription
+\usepackage{dtx-style}
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+%
+% \fi
+%
+% \GetFileInfo{\jobname.sty}
+% \CheckSum{0}
+% \errorcontextlines=20
+% \makeatletter
+%
+% \title{Experimental unicode mathematical typesetting:\\ The \pkg{xmaths} package}
+% \author{Will Robertson}
+% \date{\filedate \qquad \fileversion}
+%
+% \maketitle
+%
+% \tableofcontents
+%
+% \section{Introduction}
+%
+% This document describes the \pkg{xmaths} package, which is a proof-of-concept
+% \emph{experimental} implementation of a macro to unicode glyph encoding for 
+% mathematical glyphs. Its intended use is for \XeTeX, although it is conjectured 
+% that small effect needs to be spent to create a cross-format package that would 
+% also work with \OMEGA.
+%
+% \section{Methods}
+%
+% As of \XeTeX\ almost v.\,1, maths characters cannot be accessed in unicode 
+% ranges. Explaining this shortcoming, \TeX’s \cmd\mathchar\ primitive has unusual 
+% behaviour, which a future
+% \XeTeX\ may not wish to inherit. \OMEGA’s \cmd\omathchar\ is an extension that
+% requires the same methods; it's unclear at this stage whether \TeX's notions
+% of maths families are even required when using unicode maths fonts.
+%
+% To use unicode characters as mathematical glyphs, Bruno Voisin
+%   \note{Thread ‘Use of Apple Symbols font in XeLaTeX’ on the \XeTeX\ mailing list, September 17, 2004.}
+% has used the method of inserting text boxes into the maths mode with the following
+% code:
+% \begin{Verbatim}[gobble=2]
+%	\DeclareFontFamily{U}{appsym}{}
+%	\DeclareFontShape{U}{appsym}{m}{n}{<-> "Apple Symbols"}{}
+%	\DeclareTextFontCommand{\applesym}{%
+%	  \normalfont\fontencoding{U}\fontfamily{appsym}\selectfont}
+%	\DeclareRobustCommand{\textapplehighplus}    {\applesym{\char"253C}}
+%	\DeclareRobustCommand{\textappleblacksquare} {\applesym{\char"25A0}}
+%	...
+%	\DeclareRobustCommand{\applehighplus}    {\text{\textapplehighplus}}
+%	\DeclareRobustCommand{\appleblacksquare} {\text{\textappleblacksquare}}
+%	...
+% \end{Verbatim}
+%
+% A similar approach will be taken here. However, a generic technique will
+% be used in order to be able to adapt the methods to better techniques as
+% they arise.
+%
+% As this isn't so much a user's guide, the package will be documented
+% interleaved with its implementation.
+%
+% \part{The \textsf{xmaths} package}
+%\iffalse
+%<*package>
+%\fi
+% This is the package.
+%    \begin{macrocode}
+\ProvidesPackage{xmaths}
+  [2006/02/20 v0.01 Unicode maths definitions]  
+%    \end{macrocode} 
+% We want \pkg{amsmath}'s \cmd\text\ macro; not much else at this stage.
+%    \begin{macrocode}
+\RequirePackage{amstext}
+%    \end{macrocode}
+% Things we need:
+%    \begin{macrocode}
+\unless\ifdefined\@tempcntc
+  \newcount\@tempcntc
+\fi
+%    \end{macrocode}
+% Through \pkg{fontspec}, select a font to use for \emph{all} subsequent
+% maths glyphs. Remember: we're using unicode now!
+%    \begin{macrocode}
+\newcommand*\setmathfont[2][]{%
+  \newfontinstance\mathfont[#1]{#2}}
+\setmathfont{Code2001}  
+%    \end{macrocode}
+% \begin{macro}{\DeclareUnicodeMathSymbol}
+% \darg{Unicode scalar value (hex.)}
+% \darg{math group}
+% \darg{command name}
+% \darg{description}
+% This command is unlike \cmd\DeclareMathSymbol\ in that it doesn't take
+% a mandatory font family to be rendered in.
+% Instead, the maths font is decided by the user (this being unicode, all
+% glyphs hopefully come from the same font); at present we assume each
+% glyph comes from the same font, but this assumption will surely be
+% relaxed in the future.
+%
+% The description line is a bit of self-documenting that will surely come in handy.
+%    \begin{macrocode}
+\newcommand*\DeclareUnicodeMathSymbol[4]{%
+  \DeclareRobustCommand#2{%
+    \ensuremath{#3{\text{\mathfont\UnicodeCharacter{#1}}}}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% A question arises as to how multiple fonts should be incorporated.
+% It is desired that one maths font supply all maths glyph required.
+% For this reason I hesitate to provide a hook directly in 
+% \cmd\DeclareUnicodeMathSymbol.
+%
+% \begin{macro}{\UnicodeCharacter}
+% \darg{Unicode scalar value (hex.)}
+% To access individual unicode characters, it is best to represent
+% them in their pure hexadecimal form, with no assumption on their encoding.
+% This is provided by this macro, by Jonathan Kew. Thanks!
+%    \begin{macrocode}
+\def\UnicodeCharacter#1{{\uppercase{\@tempcnta="#1}\relax
+  \ifnum\@tempcnta < "FFFF
+    \ifnum\@tempcnta < "D800 \char\@tempcnta \else
+      \ifnum\@tempcnta > "DFFF \char\@tempcnta \else
+        \errmessage{Isolated surrogate code}
+      \fi 
+    \fi
+  \else
+    \ifnum\@tempcnta > "10FFFF
+      \errmessage{USV out of range 0000 .. 10FFFF}%
+    \else
+      \advance\@tempcnta by -"10000
+      \@tempcntb=\@tempcnta \divide\@tempcntb by "400
+      \@tempcntc=\@tempcntb \advance\@tempcntc by "D800
+      \multiply\@tempcntb by "400
+      \advance\@tempcnta by -\@tempcntb
+      \advance\@tempcnta by "DC00
+      \char\@tempcntc \char\@tempcnta 
+    \fi
+  \fi}}
+%    \end{macrocode}
+% \end{macro}
+% This macro will become obsolete in future versions of \XeTeX.
+%
+% \section{Test}
+%
+% After the macros this package uses are defined, a brief test verifies
+% that they are working:
+%
+%    \begin{macrocode}
+\DeclareUnicodeMathSymbol{1D6FD}{\test@italic@beta}{\mathalpha}{example italic beta}
+%    \end{macrocode}
+%
+% \cmd\test@italic@beta: \test@italic@beta
+%
+% \section{Symbol definitions}
+% 
+% The source for the \TeX\ names for the very large number of mathematical
+% glyphs are provided via Barbara Beeton's table file for the STIX project
+% (|ams.org/STIX|). The source file for the current version is:\\
+% |http://www.ams.org/STIX/bnb/stix-tbl.ascii-2005-09-24|
+%
+% The (mostly \texttt{awk}, and fairly crude at that) script to generate the 
+% appropriate input files
+% is presented in Part~\ref{part:awk-script}.
+%    \begin{macrocode}
+\input stix-tex-plane0.tex
+\input stix-tex-plane1.tex
+%    \end{macrocode}
+% 
+% \section{Verification}
+%
+% The input files used to define the unicode maths symbols are
+% processed with a different definition of \cmd\DeclareUnicodeMathSymbol\
+% to typeset the defined symbols. The Code2000 font is used for
+% Plane~0 characters, Code2001 for Plane~1.
+%
+% \renewcommand\DeclareUnicodeMathSymbol[4]{
+%   \scshape\addfontfeature{Numbers=Monospaced}\MakeLowercase{#1} &
+%   #2 & \cmd#2 & \scshape#4\\}
+%
+% \subsection{Plane 0}
+% \setmathfont{Code2000}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \input stix-tex-plane0.tex
+% \end{longtable}
+%
+% \subsection{Plane 1}
+% \setmathfont{Code2001}
+% \begin{longtable}[l]{@{}cccp{8cm}@{}}
+% \input stix-tex-plane1.tex
+% \end{longtable}
+%
+%\iffalse
+%</package>
+%\fi
+%
+% \part{STIX table data extraction}\label{part:awk-script}
+%\iffalse
+%<*awk-script>
+%\fi
+%
+% Separate files are produced for Plane~0 and Plane~1 characters.
+% Future plans may be to partition the files by maths symbol type.
+%
+%    \begin{macrocode}
+#!/bin/sh
+
+cat stix-tbl.asc | 
+awk '
+ BEGIN {OFS="|"} 
+ {if (usv != substr($0,2,5) ) 
+   {usv = substr($0,2,5);
+    texname = substr($0,84,25);
+    type = substr($0,57,1);
+    description = tolower(substr($0,233,350));
+    {if (texname ~ /[\\]/)
+      if (substr($0,2,1) == "0")
+       {print usv, texname, type, description;}}}
+ }' - | 
+awk -F"|" ' 
+  (($3 != " ") && ($3 != "F") && ($3 != "D")) {
+    print "\\DeclareUnicodeMathSymbol{" $1 "}{" $2 "}{" $3 "}{" $4 "}";
+ }' - |
+sed -e ' s/{N}/{\\\\mathord}/   ' \
+    -e ' s/{A}/{\\\\mathalpha}/ ' \
+    -e ' s/{P}/{\\\\mathpunct}/ ' \
+    -e ' s/{B}/{\\\\mathbin}/   ' \
+    -e ' s/{R}/{\\\\mathrel}/   ' \
+    -e ' s/{L}/{\\\\mathop}/    ' \
+    -e ' s/{O}/{\\\\mathopen}/  ' \
+    -e ' s/{C}/{\\\\mathclose}/ ' > stix-tex-plane0.tex
+
+cat stix-tbl.asc | 
+awk '
+ BEGIN {OFS="|"} 
+ {if (usv != substr($0,2,5) ) 
+   {usv = substr($0,2,5);
+    texname = substr($0,84,25);
+    type = substr($0,57,1);
+    description = tolower(substr($0,233,350));
+    {if (texname ~ /[\\]/)
+      if (substr($0,2,1) == "1")
+       {print usv, texname, type, description;}}}
+ }' - | 
+awk -F"|" ' 
+  (($3 != " ") && ($3 != "F") && ($3 != "D")) {
+    print "\\DeclareUnicodeMathSymbol{" $1 "}{" $2 "}{" $3 "}{" $4 "}";
+ }' - |
+sed -e ' s/{N}/{\\\\mathord}/   ' \
+    -e ' s/{A}/{\\\\mathalpha}/ ' \
+    -e ' s/{P}/{\\\\mathpunct}/ ' \
+    -e ' s/{B}/{\\\\mathbin}/   ' \
+    -e ' s/{R}/{\\\\mathrel}/   ' \
+    -e ' s/{L}/{\\\\mathop}/    ' \
+    -e ' s/{O}/{\\\\mathopen}/  ' \
+    -e ' s/{C}/{\\\\mathclose}/ ' > stix-tex-plane1.tex
+%    \end{macrocode}
+%\iffalse
+%</awk-script>
+%\fi
+% \clearpage
+% \PrintChanges
+%
+% \clearpage
+% \PrintIndex
+%
+% \Finale
+%
+%\iffalse
+%<*dtx-style>
+%    \begin{macrocode}
+\ProvidesPackage{dtx-style}
+
+\def\@dotsep{1000}
+\setcounter{tocdepth}{2}
+\setlength\columnseprule{0.4pt}
+\renewcommand\tableofcontents{\relax
+  \begin{multicols}{2}[\section*{\contentsname}]\relax
+    \@starttoc{toc}\relax
+  \end{multicols}}
+
+\setcounter{IndexColumns}{2}
+\renewenvironment{theglossary}
+  {\small\list{}{}
+     \item\relax
+     \glossary@prologue\GlossaryParms 
+     \let\item\@idxitem \ignorespaces 
+     \def\pfill{\hspace*{\fill}}}
+  {\endlist}
+
+\usepackage{array,booktabs,calc,color,fancyvrb,graphicx,ifthen,longtable,refstyle,varioref}
+\usepackage{fontspec,xunicode,xmaths}
+\setromanfont[WordSpace=0.9,Mapping=tex-text,
+  BoldFont=Hoefler Text]{Hoefler Text}
+\setsansfont[Scale=MatchLowercase,Mapping=tex-text,BoldFont=Gill Sans]{Gill Sans}
+\setmonofont[Scale=MatchLowercase]{Andale Mono}
+
+\linespread{1.05}      % A bit more space between lines
+\frenchspacing         % Remove ugly extra space after punctuation
+  
+\definecolor{niceblue}{rgb}{0.4,0.6,1.000}
+\newenvironment{example}
+  {\hrulefill\par\VerbatimEnvironment
+   \begin{VerbatimOut}[gobble=4]{\examplefilename}}
+  {\end{VerbatimOut}\relax
+   \begingroup
+     \color{niceblue}
+     \typesetexample
+   \endgroup\par\hrulefill}
+
+\let\examplesize\normalsize
+\let\auxwidth\relax
+
+\newlength\examplewidth\newlength\verbatimwidth
+\newlength\exoutdent   \newlength\exverbgap
+\setlength\exverbgap{1em}
+\setlength\exoutdent{-0.15\textwidth}
+\newsavebox\verbatimbox
+\edef\examplefilename{\jobname.example}
+
+\newcommand\typesetexample{\relax
+   \begin{lrbox}{\verbatimbox}\relax
+     \BVerbatimInput[fontsize=\small]{\examplefilename}\relax
+   \end{lrbox}
+   \begin{list}{}{\setlength\itemindent{0pt}
+                  \setlength\leftmargin\exoutdent
+                  \setlength\rightmargin{0pt}}\item
+   \ifx\auxwidth\relax
+     \setlength\verbatimwidth{\wd\verbatimbox}\relax
+   \else
+     \setlength\verbatimwidth{\auxwidth}\relax
+   \fi
+   \begin{minipage}[c]{\textwidth-\exoutdent-\verbatimwidth-\exverbgap}
+     \catcode`\%=14\centering\examplesize\input\examplefilename\relax
+   \end{minipage}\hfill
+   \begin{minipage}[c]{\verbatimwidth}
+     \usebox\verbatimbox
+   \end{minipage}
+   \end{list}
+   \global\let\examplesize\normalsize}
+
+\newcommand*\setexsize[1]{\let\examplesize#1}
+\newcommand*\setverbwidth[1]{\def\auxwidth{#1}}
+
+\newcommand*\name[1]{{#1}}
+\newcommand*\pkg[1]{\textsf{#1}}
+
+\newcommand*\note[1]{\unskip\footnote{#1}}
+
+\let\latin\textit
+\def\eg{\latin{e.g.}}
+\def\Eg{\latin{E.g.}}
+\def\ie{\latin{i.e.}}
+\def\etc{\@ifnextchar.{\latin{etc}}{\latin{etc.}\@}}
+
+\def\TeX{\smash{T\kern-.15em\lower.5ex\hbox{E}\kern-.07em X}\spacefactor1000\relax}
+\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
+  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
+\def\XeTeX{%
+  \smash{X\lower.5ex\hbox{\kern-.07em\reflect{E}}}\kern-.15em \TeX}
+\def\MacOSX{Mac~OS~X}
+
+\def\OMEGA{Ω}
+
+\newcounter{argument}
+\g@addto@macro\endmacro{\setcounter{argument}{0}}
+\newcommand*\darg[1]{%
+  \stepcounter{argument}%
+  \noindent{\ttfamily\#\theargument}:~#1\par}
+\newcommand*\doarg[1]{%
+  \stepcounter{argument}%
+  \noindent{\ttfamily\makebox[0pt][r]{[}\#\theargument]}:~#1\par}
+
+\newcount\c@xm@testcommands
+\newcommand\TestCommands[2][4]{%
+  \begin{multicols}{#1}\parindent0pt
+    \c@xm@testcommands\z@
+    \@for\@ii:=#2\do{%
+      \global\advance\c@xm@testcommands\@ne
+      {\ttfamily\char`\\#1\@ii}\hfill
+      \csname#1\@ii\endcsname\endgraf}
+  \end{multicols}
+  {\unskip\vspace{5pt}\noindent
+   \small(\the\c@xm@testcommands~commands)\par}}
+
+%    \end{macrocode}
+%</dtx-style>
+%\fi
+%
+% \typeout{*************************************************************}
+% \typeout{*}
+% \typeout{* To finish the installation you have to move the following}
+% \typeout{* file into a directory searched by XeTeX:}
+% \typeout{*}
+% \typeout{* \space\space\space xmaths.sty}
+% \typeout{*}
+% \typeout{*************************************************************}
+%
+\endinput
+ 
