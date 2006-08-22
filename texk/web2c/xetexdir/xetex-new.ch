@@ -1787,15 +1787,19 @@ end
 @z
 
 @x
+procedure scan_eight_bit_int;
+begin scan_int;
 if (cur_val<0)or(cur_val>255) then
-@y
-if (cur_val<0)or(cur_val>biggest_reg) then
-@z
-
-@x
+  begin print_err("Bad register code");
+@.Bad register code@>
   help2("A register number must be between 0 and 255.")@/
 @y
-  help2("A register number must be between 0 and 65535.")@/
+procedure scan_eight_bit_int; {only used for insertion numbers now}
+begin scan_int;
+if (cur_val<0)or(cur_val>255) then
+  begin print_err("Bad register code");
+@.Bad register code@>
+  help2("An insertion number must be between 0 and 255.")@/
 @z
 
 @x
