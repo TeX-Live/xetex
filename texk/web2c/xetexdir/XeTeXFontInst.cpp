@@ -291,5 +291,8 @@ XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
 {
     le_uint32	len;
     const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
-	return findGlyphInPostTable(p, len, glyphName);
+    if (p != NULL)
+		return findGlyphInPostTable(p, len, glyphName);
+	else
+		return 0;
 }
