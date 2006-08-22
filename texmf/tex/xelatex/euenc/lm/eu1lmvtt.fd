@@ -1,0 +1,18 @@
+\ProvidesFile{eu1lmvtt.fd}[2005/08/29 v1.2 Font defs for Latin Modern]
+\DeclareFontFamily{EU1}{lmvtt}{\hyphenchar \font\m@ne}
+\DeclareFontShape{EU1}{lmvtt}{m}{n}
+     {<-> "[lmtypewritervarwd10-regular]"}{}
+\DeclareFontShape{EU1}{lmvtt}{m}{sl}
+     {<-> "[lmtypewritervarwd10-oblique]"}{}
+%%%%%%%% light (lt) and dark (dk) variants:
+\DeclareFontShape{EU1}{lmvtt}{lt}{n}
+     {<-> "[lmtypewritervarwd10-light]"}{}
+\DeclareFontShape{EU1}{lmvtt}{lt}{sl}
+     {<-> "[lmtypewritervarwd10-lightoblique]"}{}
+\DeclareFontShape{EU1}{lmvtt}{dk}{n}
+     {<-> "[lmtypewritervarwd10-dark]"}{}
+\DeclareFontShape{EU1}{lmvtt}{dk}{sl}
+     {<-> "[lmtypewritervarwd10-darkoblique]"}{}
+\endinput
+%%
+%% End of file `eu1lmvtt.fd'.
