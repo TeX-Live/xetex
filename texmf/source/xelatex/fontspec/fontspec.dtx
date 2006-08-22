@@ -1580,18 +1580,15 @@ This work consists of the file  fontspec.dtx
 %   by this package!}
 %
 % \subsection{Encodings}
-% Frank Mittelbach has recommended using the `EU$x$' family of font encodings
-% to experiment with unicode. But we're not using it until some things have been sorted out.
-% (How \pkg{xunicode} should behave; being able to load the Latin Modern fonts by default.)
+% Frank Mittelbach has recommended using the `\texttt{EU}$x$' family of font encodings
+% to experiment with unicode. 
+% Now that \XeTeX\ can find fonts in the |texmf| tree, the Latin Modern OpenType fonts
+% can be used as the defaults. See the |euenc| collection of files for how this is implemented.
 %    \begin{macrocode}
-\def\zf@enc{U}
-\let\encodingdefault\zf@enc
+\def\zf@enc{EU1}
+\RequirePackage[\zf@enc]{fontenc}
 %    \end{macrocode}
-% We'll use the following when the time comes:
-% \begin{verbatim}
-%   \def\zf@enc{EU1}
-%   \RequirePackage[\zf@enc]{fontenc}
-% \end{verbatim}
+% \changes{v1.12}{2006/08/21}{Finally, use the \texttt{EU1} font encoding.}
 % Dealing with a couple of the problems introduced by \pkg{babel}:
 %    \begin{macrocode}
 \let\cyrillicencoding\zf@enc
