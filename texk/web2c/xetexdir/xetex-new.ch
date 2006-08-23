@@ -1295,6 +1295,13 @@ else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
 @z
 
 @x
+primitive("mathaccent",math_accent,0);@/
+@y
+primitive("mathaccent",math_accent,0);@/
+primitive("XeTeXmathaccent",math_accent,1);@/
+@z
+
+@x
 primitive("mathchar",math_char_num,0);@/
 @!@:math_char_}{\.{\\mathchar} primitive@>
 @y
@@ -1315,6 +1322,13 @@ end_cs_name: if chr_code = 10 then print_esc("endmubyte")
              else print_esc("endcsname");
 @y
 end_cs_name: print_esc("endcsname");
+@z
+
+@x
+math_accent: print_esc("mathaccent");
+@y
+math_accent: if chr_code=1 then print_esc("XeTeXmathaccent")
+  else print_esc("mathaccent");
 @z
 
 @x
@@ -3196,6 +3210,52 @@ end else begin if (qo(cur_c)>=font_bc[cur_f])and(qo(cur_c)<=font_ec[cur_f]) then
 @z
 
 @x
+procedure make_math_accent(@!q:pointer);
+label done,done1;
+var p,@!x,@!y:pointer; {temporary registers for box construction}
+@!a:integer; {address of lig/kern instruction}
+@!c:quarterword; {accent character}
+@!f:internal_font_number; {its font}
+@!i:four_quarters; {its |char_info|}
+@!s:scaled; {amount to skew the accent to the right}
+@!h:scaled; {height of character being accented}
+@!delta:scaled; {space to remove between accent and accentee}
+@!w:scaled; {width of the accentee, not including sub/superscripts}
+begin fetch(accent_chr(q));
+if char_exists(cur_i) then
+  begin i:=cur_i; c:=cur_c; f:=cur_f;@/
+  @<Compute the amount of skew@>;
+  x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
+  @<Switch to a larger accent if available and appropriate@>;
+@y
+procedure make_math_accent(@!q:pointer);
+label done,done1;
+var p,@!x,@!y:pointer; {temporary registers for box construction}
+@!a:integer; {address of lig/kern instruction}
+@!c:integer; {accent character}
+@!f:internal_font_number; {its font}
+@!i:four_quarters; {its |char_info|}
+@!s:scaled; {amount to skew the accent to the right}
+@!h:scaled; {height of character being accented}
+@!delta:scaled; {space to remove between accent and accentee}
+@!w:scaled; {width of the accentee, not including sub/superscripts}
+begin fetch(accent_chr(q));
+x:=null;
+if is_native_font(cur_f) then
+  begin c:=cur_c; f:=cur_f;
+  s:=0; {@<Compute the amount of skew@>;}
+  x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
+  end
+else if char_exists(cur_i) then
+  begin i:=cur_i; c:=cur_c; f:=cur_f;@/
+  @<Compute the amount of skew@>;
+  x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
+  @<Switch to a larger accent if available and appropriate@>;
+  end;
+if x<>null then begin
+@z
+
+@x
       character(nucleus(r)):=rem_byte(cur_i);
       fam(nucleus(r)):=fam(nucleus(q));@/
 @y
@@ -4197,13 +4257,29 @@ large_char_field(p) := cur_val1 mod @"10000;
 @z
 
 @x
+procedure math_ac;
+@y
+procedure math_ac;
+var c: integer;
+@z
+
+@x
+scan_fifteen_bit_int;
 character(accent_chr(tail)):=qi(cur_val mod 256);
 if (cur_val>=var_code)and fam_in_range then fam(accent_chr(tail)):=cur_fam
 else fam(accent_chr(tail)):=(cur_val div 256) mod 16;
 @y
-cur_val := set_class_field(cur_val div @"1000) +
-           set_family_field((cur_val mod @"1000) div @"100) +
-           (cur_val mod @"100);
+if cur_chr=1 then begin
+  scan_math_class_int; c := set_class_field(cur_val);
+  scan_math_fam_int;   c := c + set_family_field(cur_val);
+  scan_usv_num;        cur_val := cur_val + c;
+end
+else begin
+  scan_fifteen_bit_int;
+  cur_val := set_class_field(cur_val div @"1000) +
+             set_family_field((cur_val mod @"1000) div @"100) +
+             (cur_val mod @"100);
+end;
 character(accent_chr(tail)):=qi(cur_val mod @"10000);
 if (is_var_family(cur_val))and fam_in_range then plane_and_fam_field(accent_chr(tail)):=cur_fam
 else plane_and_fam_field(accent_chr(tail)):=math_fam_field(cur_val);
