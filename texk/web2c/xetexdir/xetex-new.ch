@@ -3160,7 +3160,8 @@ if is_native_font(f) then begin
   b:=new_null_box;
   p:=new_native_character(f, c);
   list_ptr(b):=p;
-  height(b):=height(p); depth(b):=depth(p); width(b):=width(p);
+  height(b):=height(p); width(b):=width(p);
+  if depth(p)<0 then depth(b):=0 else depth(b):=depth(p);
   end
 else begin
   q:=char_info(f)(c); hd:=height_depth(q);
