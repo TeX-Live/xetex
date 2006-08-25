@@ -12,7 +12,6 @@
 %% 
 %%   License information appended.
 %% 
-%% 
 \ProvidesPackage{fontspec}
   [2006/08/20 v1.12 Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
@@ -233,8 +232,7 @@
       \fi
     \fi
     \fi
-  \endgroup
-  }
+  \endgroup}
 \newcommand*\zf@set@font@type{%
   \zf@tfmfalse \zf@atsuifalse \zf@icufalse \zf@mmfalse
   \ifcase\XeTeXfonttype\zf@basefont
@@ -465,7 +463,7 @@
   \else
     \zf@partial@fontname#1\@nil
     \let\zf@it\@tempa
-    \edef\zf@family@long{\zf@family@long it:#1}
+    \edef\zf@family@long{\zf@family@long it:#1}%
   \fi}
 \define@key[zf]{preparse}{BoldItalicFont}{%
   \zf@partial@fontname#1\@nil
@@ -479,7 +477,7 @@
   \else
     \zf@partial@fontname#1\@nil
     \let\zf@sc\@tempa
-    \zf@update@family{sc:\zap@space #1 \@empty}
+    \zf@update@family{sc:\zap@space #1 \@empty}%
   \fi}
 \def\zf@partial@fontname#1#2\@nil{%
   \if#1*\relax
@@ -509,12 +507,12 @@
 \define@key[zf]{preparse}{Script}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +script:#1}
+  \edef\zf@family@long{\zf@family@long +script:#1}%
   {\setkeys[zf@feat]{Script}{#1}}}
 \define@key[zf]{preparse}{Language}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +language:#1}
+  \edef\zf@family@long{\zf@family@long +language:#1}%
   {\setkeys[zf@feat]{Lang}{#1}}}
 \define@key[zf]{options}{Scale}{%
   \edef\@tempa{#1}%
@@ -537,7 +535,7 @@
     \setlength\@tempdima{\fontdimen#1\font}%
     \setlength\@tempdimb{\fontdimen#1\zf@basefont}%
     \setlength\@tempdimc{1pt*\ratio{\@tempdima}{\@tempdimb}}%
-    \xdef\zf@scale{\strip@pt\@tempdimc}
+    \xdef\zf@scale{\strip@pt\@tempdimc}%
     \zf@PackageInfo{\zf@fontname\space scale = \zf@scale}%
   \endgroup}
 \define@key[zf]{options}{WordSpace}{%
@@ -612,17 +610,17 @@
 \define@key[zf]{options}{OpticalSize}{%
   \ifzf@icu
     \edef\zf@suffix{\zf@suffix/S=#1}%
-    \zf@update@family{+size:#1}
+    \zf@update@family{+size:#1}%
   \fi
   \ifzf@mm
     \zf@update@family{+size:#1}%
-    \zf@update@ff{optical size=#1}
+    \zf@update@ff{optical size=#1}%
   \fi
   \ifzf@icu\else
     \ifzf@mm\else
       \ifzf@firsttime
         \zf@PackageWarning
-          {\fontname\zf@basefont\space doesn't appear to have an Optical Size axis}
+          {\fontname\zf@basefont\space doesn't appear to have an Optical Size axis}%
       \fi
     \fi
   \fi}
