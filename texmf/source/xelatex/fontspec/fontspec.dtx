@@ -2085,8 +2085,7 @@ This work consists of the file  fontspec.dtx
       \fi
     \fi
     \fi
-  \endgroup  
-  }
+  \endgroup}
 %    \end{macrocode}
 % \changes{v1.5}{2004/11/29}{NFSS specifiers now take the default values.}  
 % \changes{v1.5}{2004/11/29}{Added code for choosing arbitrary bold/italic fonts.}  
@@ -2621,7 +2620,7 @@ This work consists of the file  fontspec.dtx
   \else
     \zf@partial@fontname#1\@nil
     \let\zf@it\@tempa
-    \edef\zf@family@long{\zf@family@long it:#1}
+    \edef\zf@family@long{\zf@family@long it:#1}%
   \fi}
 \define@key[zf]{preparse}{BoldItalicFont}{%
   \zf@partial@fontname#1\@nil
@@ -2635,7 +2634,7 @@ This work consists of the file  fontspec.dtx
   \else
     \zf@partial@fontname#1\@nil
     \let\zf@sc\@tempa
-    \zf@update@family{sc:\zap@space #1 \@empty}
+    \zf@update@family{sc:\zap@space #1 \@empty}%
   \fi}
 %    \end{macrocode}
 %
@@ -2689,7 +2688,7 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{preparse}{Script}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +script:#1}
+  \edef\zf@family@long{\zf@family@long +script:#1}%
   {\setkeys[zf@feat]{Script}{#1}}}
 %    \end{macrocode}
 % Exactly the same:
@@ -2697,7 +2696,7 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{preparse}{Language}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +language:#1}
+  \edef\zf@family@long{\zf@family@long +language:#1}%
   {\setkeys[zf@feat]{Lang}{#1}}}
 %    \end{macrocode}
 %
@@ -2747,7 +2746,7 @@ This work consists of the file  fontspec.dtx
     \setlength\@tempdima{\fontdimen#1\font}%
     \setlength\@tempdimb{\fontdimen#1\zf@basefont}%
     \setlength\@tempdimc{1pt*\ratio{\@tempdima}{\@tempdimb}}%
-    \xdef\zf@scale{\strip@pt\@tempdimc}
+    \xdef\zf@scale{\strip@pt\@tempdimc}%
     \zf@PackageInfo{\zf@fontname\space scale = \zf@scale}%
   \endgroup}
 %    \end{macrocode}
@@ -2885,17 +2884,17 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{options}{OpticalSize}{%
   \ifzf@icu
     \edef\zf@suffix{\zf@suffix/S=#1}%
-    \zf@update@family{+size:#1}
+    \zf@update@family{+size:#1}%
   \fi
   \ifzf@mm
     \zf@update@family{+size:#1}%
-    \zf@update@ff{optical size=#1}
+    \zf@update@ff{optical size=#1}%
   \fi
   \ifzf@icu\else
     \ifzf@mm\else
       \ifzf@firsttime
         \zf@PackageWarning
-          {\fontname\zf@basefont\space doesn't appear to have an Optical Size axis}
+          {\fontname\zf@basefont\space doesn't appear to have an Optical Size axis}%
       \fi
     \fi
   \fi}
