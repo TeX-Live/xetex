@@ -1747,7 +1747,9 @@ else if m=math_code_base then scanned_result(ho(math_code(cur_val)))(int_val)
 @y
 if m=math_code_base then begin
   cur_val1:=ho(math_code(cur_val));
-  if (math_class_field(cur_val1)>8) or
+  if is_active_math_char(cur_val1) then
+    cur_val1:=@"8000
+  else if (math_class_field(cur_val1)>8) or
      (math_fam_field(cur_val1)>15) or
      (math_char_field(cur_val1)>255) then
     begin print_err("Extended mathchar used as mathchar");
