@@ -525,7 +525,7 @@ doGlyphArray(FILE* xdv, bool yLocs)
 	
 	if (f != cur_cgFont) {
 		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
-		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size) * gMagScale);
+		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size));
 		CGContextSetTextMatrix(gCtx, sNativeFonts[f].isVertical
 										? verticalMatrix : horizontalMatrix);
 		cur_cgFont = f;
@@ -549,8 +549,8 @@ doGlyphArray(FILE* xdv, bool yLocs)
 									kDvi2Scr * (gPageHt - dvi.v) - Fix2X(locations[0].y) * 72 / 72.27);
 
 	for (int i = 0; i < glyphCount - 1; ++i) {
-		advances[i].width = Fix2X(locations[i+1].x - locations[i].x) * 72 / 72.27;
-		advances[i].height = Fix2X(locations[i].y - locations[i+1].y) * 72 / 72.27;
+		advances[i].width = gMagScale * Fix2X(locations[i+1].x - locations[i].x) * 72 / 72.27;
+		advances[i].height = gMagScale * Fix2X(locations[i].y - locations[i+1].y) * 72 / 72.27;
 	}
 	advances[glyphCount-1].width = 0.0;
 	advances[glyphCount-1].height = 0.0;
