@@ -69,7 +69,7 @@ acnew () {	# $dir=current, $dir/$rdir->./texk/m4 with the KPSE macros.
 	#echo "Running aclocal-1.9 (patched) in \`$dir'"
 	#$topdir/config/aclocal-1.9peb --force $arg || return
 	echo "    Running autoconf-2.59 in \`$dir'"
-	/usr/bin/autoconf2.50 --force || return
+	/usr/bin/autoconf --force || return
 	#rm -rf autom4te.cache
 }
 
@@ -83,6 +83,8 @@ for dir in `find libs texk -name configure.in | sed 's,/configure.in$,,'`; do
 		*/texi*)	# texinfo and texi2html are automade
 		;;
 		*/ncurses)	# ncurses has it's own special configure
+		;;
+		*/xdv2pdf)	# skip xdv2pdf as it seems to be fussy
 		;;
 		utils/*)	# Skip everything in utils for now.
 		;;
