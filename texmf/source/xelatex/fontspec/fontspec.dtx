@@ -1533,7 +1533,7 @@ This work consists of the file  fontspec.dtx
 % For some reason, I decided to prefix all the package internal
 % command names and variables with |zf|. I don't know why I chose
 % those letters, but I guess I just liked the look/feel of them
-% together at the time. (Possibly inspired by Hermann \emph Zap\emph f.)
+% together at the time. (Possibly inspired by Hermann \emph{Z}ap\emph{f}.)
 %
 % \iffalse
 %<*fontspec> 
@@ -1713,7 +1713,7 @@ This work consists of the file  fontspec.dtx
 %   option arguments every time.
 %
 %   \cs{zf@fontspec} defines a font family and saves its name in
-%   \cs{zf@family}. This family is then used in a typical NFSS \cmd\fontfamily
+%   \cs{zf@family}. This family is then used in a typical NFSS \cmd\fontfamily\
 %   declaration, saved in the macro name specified.
 %    \begin{macrocode}
 \newcommand*\newfontfamily[1]{%
@@ -1726,7 +1726,7 @@ This work consists of the file  fontspec.dtx
   \@tempa}
 %    \end{macrocode}
 % \cmd\newfontface\ uses an undocumented feature of the \feat{BoldFont}
-% feature; if its argument is empty (\eg, |BoldFont={}|, then no bold
+% feature; if its argument is empty (\ie, |BoldFont={}|), then no bold
 % font is searched for.
 %    \begin{macrocode}
 \newcommand*\newfontface[1]{%
@@ -1918,7 +1918,7 @@ This work consists of the file  fontspec.dtx
 %
 % \begin{macro}{\def@cx}
 % \begin{macro}{\gdef@cx}
-% Natural counterparts to \cmd\@namedef.
+% \LaTeX3--like syntax for various low level commands.
 %    \begin{macrocode}
 \providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
 \providecommand\gdef@cx[2]{\expandafter\xdef\csname#1\endcsname{#2}}
@@ -1933,20 +1933,6 @@ This work consists of the file  fontspec.dtx
 % in \cs{zf@fontname} globally for the
 % \cs{zf@make@aat@feature@string} macro), it will define an NFSS
 % family for that font and put the family name into \cs{zf@family}.
-%
-% Then we check with \cs{zf@set@font@type} whether the font is AAT
-% or OpenType, and convert the requested features to font definition
-% strings. This is performed with \cs{zf@get@feature@requests}, in
-% which \cs{setkeys} retrieves the requested font features and
-% processes them. To build up the complex family name, it
-% concatenates each font feature with the family name of the
-% font. So since \cs{setkeys} is run more than once (since different
-% font faces may have different feature names), we only want the
-% complex family name to be built up once, hence the \cs{zf@firsttime}
-% conditionals.
-%
-% In the future, this will be replaced by a dedicated \texttt{makefamily}
-% \pkg{xkeyval} \cmd\setkeys\ declaration. Probably.
 %
 % This macro does its processing inside a group, but it's a bit worthless coz
 % there's all sorts of \cmd\global\ action going on. Pity.
@@ -1983,6 +1969,18 @@ This work consists of the file  fontspec.dtx
     \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
   \fi
 %    \end{macrocode}
+% Now convert the requested features to font definition
+% strings. This is performed with \cs{zf@get@feature@requests}, in
+% which \cs{setkeys} retrieves the requested font features and
+% processes them. To build up the complex family name, it
+% concatenates each font feature with the family name of the
+% font. So since \cs{setkeys} is run more than once (since different
+% font faces may have different feature names), we only want the
+% complex family name to be built up once, hence the \cs{zf@firsttime}
+% conditionals.
+%
+% In the future, this will be replaced by a dedicated \texttt{makefamily}
+% \pkg{xkeyval} \cmd\setkeys\ declaration. Probably.
 %    \begin{macrocode}  
   \zf@firsttimetrue
     \zf@get@feature@requests{\zf@font@feat}%
@@ -2016,7 +2014,8 @@ This work consists of the file  fontspec.dtx
           with options [\zf@default@options #1]}%
     \gdef@cx{zf@family@fontname\zf@family}{\zf@fontname}%
     \gdef@cx{zf@family@options\zf@family}{\zf@default@options #1}%
-    \gdef@cx{zf@family@fontdef\zf@family}{\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff}%
+    \gdef@cx{zf@family@fontdef\zf@family}
+      {\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff}%
 %    \end{macrocode}
 % Next the font family and its shapes are defined in the NFSS.
 %
@@ -2033,7 +2032,8 @@ This work consists of the file  fontspec.dtx
 % specified options are used implicitly)
 %    \begin{macrocode}
     \DeclareFontFamily{\zf@enc}{\zf@family}{}%
-    \zf@make@font@shapes{\zf@fontname}{\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
+    \zf@make@font@shapes{\zf@fontname}
+      {\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
 %    \end{macrocode}
 % Secondly, bold. Start out by saving the current font features and
 % appending to them, if any, the extra bold options defined with
@@ -2044,9 +2044,11 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
     \unless\ifzf@nobf
       \ifx\zf@bf\@empty
-        \zf@make@font@shapes[\zf@fontname]{/B}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
+        \zf@make@font@shapes[\zf@fontname]{/B}
+          {\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
       \else
-        \zf@make@font@shapes{\zf@bf}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
+        \zf@make@font@shapes{\zf@bf}
+          {\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
       \fi
     \fi
 %    \end{macrocode}
@@ -2054,9 +2056,11 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
     \unless\ifzf@noit
       \ifx\zf@it\@empty
-        \zf@make@font@shapes[\zf@fontname]{/I}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
+        \zf@make@font@shapes[\zf@fontname]{/I}
+          {\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
       \else
-        \zf@make@font@shapes{\zf@it}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
+        \zf@make@font@shapes{\zf@it}
+          {\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
       \fi
     \fi
 %    \end{macrocode}
@@ -2073,15 +2077,19 @@ This work consists of the file  fontspec.dtx
       \ifx\zf@bfit\@empty
         \ifx\zf@bf\@empty
           \ifx\zf@it\@empty
-            \zf@make@font@shapes[\zf@fontname]{/BI}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+            \zf@make@font@shapes[\zf@fontname]{/BI}
+              {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
           \else
-            \zf@make@font@shapes[\zf@it]{/B}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+            \zf@make@font@shapes[\zf@it]{/B}
+              {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
           \fi
         \else
-          \zf@make@font@shapes[\zf@bf]{/I}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+          \zf@make@font@shapes[\zf@bf]{/I}
+            {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
         \fi
       \else
-        \zf@make@font@shapes{\zf@bfit}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+        \zf@make@font@shapes{\zf@bfit}
+          {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
       \fi
     \fi
     \fi
@@ -2137,7 +2145,7 @@ This work consists of the file  fontspec.dtx
 % \begin{macro}{\zf@make@font@shapes}
 %   This macro uses \cs{DeclareFontShape} to define the font shape in
 %   question. The arguments are: 
-%   \begin{itemize}\itemsep0pt\parsep0pt
+%   \begin{itemize}[nolistsep]
 %     \item |#1#2|~the font name,      \item |#3|~the font series, 
 %     \item   |#4|~the font shape, and \item |#5|~the font features.
 %   \end{itemize} 
@@ -2422,7 +2430,7 @@ This work consists of the file  fontspec.dtx
 %   creates a specified macro containing the string required in the
 %   font definition to turn that feature on or off. Used primarily in
 %   \cmd\zf@make@aat@feature, but also used to check if small caps
-%   exists in the requested font (see page~\ref{mac:zf@make@smallcaps}).
+%   exists in the requested font (see page~\pageref{mac:zf@make@smallcaps}).
 %
 %    \begin{macrocode}
 \newcommand*\zf@make@aat@feature@string[2]{%
@@ -3731,7 +3739,7 @@ Please see the documentation for font feature explanation and further package ni
 %    \begin{macrocode}
 \ProvidesPackage{fontspec-doc-style}
 
-\RequirePackage{booktabs,calc,color,euler,fancyvrb,fontspec,
+\RequirePackage{booktabs,calc,color,enumitem,euler,fancyvrb,fontspec,
             graphicx,ifthen,ifxetex,url,varioref,xltxtra,xunicode}
 
 %% Titlepage
