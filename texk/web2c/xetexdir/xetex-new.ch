@@ -4881,53 +4881,68 @@ begin
 
 	native_word_node:
 		begin
-			{ merge with any following word fragments, discarding discretionary breaks }
+			{ merge with any following word fragments in same font, discarding discretionary breaks }
 			while (link(q) <> p) do q := link(q); { bring q up in preparation for deletion of nodes starting at p }
 			pp := link(p);
 		restart:
-			if (pp <> null) and (not is_char_node(pp)) and (type(pp) = disc_node) then begin
-				ppp := link(pp);
-				if (ppp <> null) and (not is_char_node(ppp)) and (type(ppp) = whatsit_node) and (subtype(ppp) = native_word_node) and (native_font(ppp) = native_font(p)) then begin
-					pp := link(ppp);
+			if (pp <> null) and (not is_char_node(pp)) then begin
+				if (type(pp) = whatsit_node)
+					and (subtype(pp) = native_word_node)
+					and (native_font(pp) = native_font(p)) then begin
+					pp := link(pp);
 					goto restart;
 				end
+				else if (type(pp) = disc_node) then begin
+					ppp := link(pp);
+					if (ppp <> null) and (not is_char_node(ppp))
+							and (type(ppp) = whatsit_node)
+							and (subtype(ppp) = native_word_node)
+							and (native_font(ppp) = native_font(p)) then begin
+						pp := link(ppp);
+						goto restart;
+					end
+				end
 			end;
+
 			{ now pp points to the non-native_word node that ended the chain, or null }
-			
+
+			{ we can just check type(p)=whatsit_node below, as we know that the chain
+			  contains only discretionaries and native_word nodes, no other whatsits or char_nodes }
+
 			if (pp <> link(p)) then begin
 				{ found a chain of at least two pieces starting at p }
 				total_chars := 0;
-				p := q;
-				while (p <> pp) do begin
-					p := link(p); { point to fragment }
-					total_chars := total_chars + native_length(p); { accumulate char count }
-					ppp := p; { remember last fragment seen }
-					p := link(p); { point to discretionary or other terminator }
-				end;
-				
 				p := link(q); { the first fragment }
+				while (p <> pp) do begin
+					if (type(p) = whatsit_node) then
+						total_chars := total_chars + native_length(p); { accumulate char count }
+					ppp := p; { remember last node seen }
+					p := link(p); { point to next fragment or discretionary or terminator }
+				end;
+
+				p := link(q); { the first fragment again }
 				pp := new_native_word_node(native_font(p), total_chars); { make new node for merged word }
 				link(q) := pp; { link to preceding material }
 				link(pp) := link(ppp); { attach remainder of hlist to it }
 				link(ppp) := null; { and detach from the old fragments }
-				
+
 				{ copy the chars into new node }
 				total_chars := 0;
 				ppp := p;
 				repeat
-					for k := 0 to native_length(ppp)-1 do begin
-						set_native_char(pp, total_chars, get_native_char(ppp, k));
-						incr(total_chars);
-					end;
+					if (type(ppp) = whatsit_node) then
+						for k := 0 to native_length(ppp)-1 do begin
+							set_native_char(pp, total_chars, get_native_char(ppp, k));
+							incr(total_chars);
+						end;
 					ppp := link(ppp);
-					if (ppp <> null) then ppp := link(ppp); { pass a disc_node }
 				until (ppp = null);
-	
+
 				flush_node_list(p); { delete the fragments }
 				p := link(q); { update p to point to the new node }
 				set_native_metrics(p, XeTeX_use_glyph_metrics); { and measure it (i.e., re-do the OT layout) }
 			end;
-			
+
 			{ now incorporate the native_word node measurements into the box we're packing }
 			if height(p) > h then
 				h := height(p);
@@ -4935,7 +4950,7 @@ begin
 				d := depth(p);
 			x := x + width(p);
 		end;
-	
+
 	glyph_node, pic_node, pdf_node:
 		begin
 			if height(p) > h then
@@ -4944,7 +4959,7 @@ begin
 				d := depth(p);
 			x := x + width(p);
 		end;
-	
+
 	othercases
 		do_nothing
 
