@@ -43,7 +43,7 @@ authorization from SIL International.
 
 #undef input /* this is defined in texmfmp.h, but we don't need it and it confuses the carbon headers */
 #include <Carbon/Carbon.h>
-#include <Quicktime/Quicktime.h>
+#include <QuickTime/QuickTime.h>
 
 #include "TECkit_Engine.h"
 #include "XeTeX_ext.h"

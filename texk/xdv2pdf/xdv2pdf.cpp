@@ -46,7 +46,7 @@
 #include "config.h"
 
 #include <ApplicationServices/ApplicationServices.h>
-#include <Quicktime/Quicktime.h>
+#include <QuickTime/QuickTime.h>
 
 #include <string>
 #include <vector>
