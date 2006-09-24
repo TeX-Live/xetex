@@ -659,6 +659,9 @@ splitFontName(char* name, char** var, char** feat, char** end)
 	if (*name == '[') {
 		++name;
 		int	withinFileName = 1;
+#ifdef WIN32
+		char* start = name;
+#endif
 		while (*name) {
 			if (withinFileName && *name == ']') {
 				withinFileName = 0;
@@ -666,7 +669,11 @@ splitFontName(char* name, char** var, char** feat, char** end)
 					*var = name;
 			}
 			else if (*name == ':') {
-				if (withinFileName && *var == NULL)
+				if (withinFileName && *var == NULL
+#ifdef WIN32
+					&& !((name - start == 1) && isalpha(*start))
+#endif
+					)
 					*var = name;
 				else if (!withinFileName && *feat == NULL)
 					*feat = name;
@@ -2071,65 +2078,6 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 	}
 #endif
 }
-
-#ifdef XETEX_OTHER
-#if 0
-#include <wand/magick-wand.h>
-int
-find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
-		/* FIXME: not yet handling /page/ parameter or PDFs properly */
-{
-	int					err = -1;
-    MagickBooleanType	status;
-    MagickWand			*wand;
-    ResolutionType		units;
-    double				xRes, yRes;
-    char*				pic_path = kpse_find_file((char*)nameoffile + 1, kpse_pict_format, 1);
-
-	*path = NULL;
-
-    wand = NewMagickWand();
-    status = MagickPingImage(wand, pic_path);
-    if (status == MagickTrue) {
-        status = MagickGetImageResolution(wand, &xRes, &yRes);
-		if (status == MagickTrue) {
-			bounds->x = bounds->y = 0;
-			units = MagickGetImageUnits(wand);
-			switch (units) {
-				default:
-					/* treat unknown as 72 pixels per inch horiz, and proportionately vertical */
-					bounds->wd = MagickGetImageWidth(wand);
-					if (xRes != 0.0 && yRes != 0.0)
-						bounds->ht = MagickGetImageHeight(wand) * xRes / yRes;
-					else
-						bounds->ht = MagickGetImageHeight(wand);
-					break;
-				case PixelsPerInchResolution:
-					bounds->wd = MagickGetImageWidth(wand) * 72.0 / xRes;
-					bounds->ht = MagickGetImageHeight(wand) * 72.0 / yRes;
-					break;
-				case PixelsPerCentimeterResolution:
-					bounds->wd = MagickGetImageWidth(wand) * 72.0 / (xRes * 2.54);
-					bounds->ht = MagickGetImageHeight(wand) * 72.0 / (yRes * 2.54);
-					break;
-			}
-			err = 0;
-		}
-    }
-
-    /* current API returns wand, but formerly returned void;
-       we don't need the result, and this allows XeTeX to build with older libraries */
-    (void)DestroyMagickWand(wand);
-
-	if (err != 0)
-		free(pic_path);
-	else
-		*path = pic_path;
-
-	return err;
-}
-#endif
-#endif
 
 boolean
 u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData)
