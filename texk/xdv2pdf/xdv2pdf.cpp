@@ -826,14 +826,8 @@ doPicFile(FILE* xdv, int pdfBoxType)	// t[4][6] p[2] l[2] a[l]
 		CGContextConcatCTM(gCtx, t);
 
 		if (document != NULL) {
-			CGRect	srcBox = bounds;
-			bounds.origin.x = bounds.origin.y = 0.0;
 #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
 			if (&CGPDFDocumentGetPage == NULL) {
-				CGAffineTransform	xf = CGAffineTransformMakeTranslation(-srcBox.origin.x, -srcBox.origin.y);
-				xf = CGAffineTransformScale(xf, bounds.size.width / srcBox.size.width,
-											bounds.size.height / srcBox.size.height);
-				CGContextConcatCTM(gCtx, xf);
 				CGRect	mediaBox = CGPDFDocumentGetMediaBox(document, p);
 				CGRect	cropBox = CGPDFDocumentGetCropBox(document, p);
 				CGContextClipToRect(gCtx, cropBox);

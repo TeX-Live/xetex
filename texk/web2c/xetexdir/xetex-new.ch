@@ -5342,10 +5342,10 @@ begin
 	{ access the picture file and check its size }
 	result := find_pic_file(address_of(pic_path), address_of(bounds), pdf_box_type, page);
 
-	setPoint(corners[0], 0.0, 0.0);
-	setPoint(corners[1], 0.0, htField(bounds) * 72.27 / 72.0);
-	setPoint(corners[2], wdField(bounds) * 72.27 / 72.0, htField(bounds) * 72.27 / 72.0);
-	setPoint(corners[3], wdField(bounds) * 72.27 / 72.0, 0.0);
+	setPoint(corners[0], xField(bounds) * 72.27 / 72.0, yField(bounds) * 72.27 / 72.0);
+	setPoint(corners[1], xField(corners[0]), (yField(bounds) + htField(bounds)) * 72.27 / 72.0);
+	setPoint(corners[2], (xField(bounds) + wdField(bounds)) * 72.27 / 72.0, yField(corners[1]));
+	setPoint(corners[3], xField(corners[2]), yField(corners[0]));
 
 	x_size_req := 0.0;
 	y_size_req := 0.0;
@@ -5439,8 +5439,8 @@ begin
 		pic_transform2(tail) := X2Fix(bField(t));
 		pic_transform3(tail) := X2Fix(cField(t));
 		pic_transform4(tail) := X2Fix(dField(t));
-		pic_transform5(tail) := X2Fix(xField(t));
-		pic_transform6(tail) := X2Fix(yField(t));
+		pic_transform5(tail) := X2Fix(txField(t));
+		pic_transform6(tail) := X2Fix(tyField(t));
 	
 		memcpy(address_of(mem[tail + pic_node_size]), pic_path, strlen(pic_path));
 		libc_free(pic_path);
