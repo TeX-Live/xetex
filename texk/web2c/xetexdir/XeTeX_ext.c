@@ -657,11 +657,11 @@ splitFontName(char* name, char** var, char** feat, char** end)
 	*var = NULL;
 	*feat = NULL;
 	if (*name == '[') {
-		++name;
 		int	withinFileName = 1;
 #ifdef WIN32
-		char* start = name;
+		char* start = name + 1;
 #endif
+		++name;
 		while (*name) {
 			if (withinFileName && *name == ']') {
 				withinFileName = 0;
@@ -1698,6 +1698,22 @@ mapglyphtoindex(int font)
 	}
 }
 
+int
+getfontcharrange(int font, int first)
+{
+#ifdef XETEX_MAC
+	if (fontarea[font] == AAT_FONT_FLAG)
+		return GetFontCharRange_AAT((ATSUStyle)(fontlayoutengine[font]), first);
+	else
+#endif
+	if (fontarea[font] == OT_FONT_FLAG)
+		return getFontCharRange((XeTeXLayoutEngine)(fontlayoutengine[font]), first);
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
+}
+
 #ifndef XETEX_MAC
 Fixed X2Fix(double d)
 {
@@ -2079,6 +2095,30 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 #endif
 }
 
+void
+printglyphname(int font, int gid)
+{
+	char* s;
+	int   len = 0;
+#ifdef XETEX_MAC
+	if (fontarea[font] == AAT_FONT_FLAG) {
+		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
+		s = GetGlyphName_AAT(style, gid, &len);
+	}
+	else
+#endif
+	if (fontarea[font] == OT_FONT_FLAG) {
+		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
+		s = (char*)getGlyphName(getFont(engine), gid, &len);
+	}
+	else {
+		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		exit(3);
+	}
+	while (len-- > 0)
+		printchar(*s++);
+}
+
 boolean
 u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData)
 {
@@ -2291,8 +2331,9 @@ makeutf16name()
 	}
 	t = nameoffile16;
 	while (s <= nameoffile + namelength) {
+		UInt16 extraBytes;
 		rval = *(s++);
-		UInt16 extraBytes = bytesFromUTF8[rval];
+		extraBytes = bytesFromUTF8[rval];
 		switch (extraBytes) {	/* note: code falls through cases! */
 			case 5: rval <<= 6;	if (*s) rval += *(s++);
 			case 4: rval <<= 6;	if (*s) rval += *(s++);

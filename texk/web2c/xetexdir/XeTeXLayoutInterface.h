@@ -132,6 +132,10 @@ int	mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName);
 
 int	findGlyphInPostTable(const char* p, int tableSize, const char* glyphName);
 
+const char* getGlyphName(XeTeXFont font, UInt16 gid, int* len);
+
+int getFontCharRange(XeTeXLayoutEngine engine, int reqFirst);
+
 #ifdef __cplusplus
 };
 #endif

@@ -81,6 +81,8 @@ authorization from SIL International.
 @define procedure getnativecharsidebearings();
 @define function getnativeitaliccorrection();
 @define function getnativeglyphitaliccorrection();
+@define procedure printglyphname();
+@define function getfontcharrange();
 
 @define function getnativecharwd();
 @define function getnativecharht();

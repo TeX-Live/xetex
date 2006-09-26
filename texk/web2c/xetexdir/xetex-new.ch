@@ -1798,7 +1798,7 @@ end
 @#
 @d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
 @#
-@d eTeX_dim=XeTeX_int+27 {first of \eTeX\ codes for dimensions}
+@d eTeX_dim=XeTeX_int+29 {first of \eTeX\ codes for dimensions}
  {changed for \XeTeX\ to make room for \XeTeX\ integers}
 @z
 
@@ -2025,8 +2025,9 @@ end;
 @d XeTeX_variation_name_code=7	{ must match codes in xetexmac.c }
 @d XeTeX_feature_name_code=8
 @d XeTeX_selector_name_code=9
+@d XeTeX_glyph_name_code=10
 
-@d etex_convert_codes=XeTeX_selector_name_code+1 {end of \eTeX's command codes}
+@d etex_convert_codes=XeTeX_glyph_name_code+1 {end of \eTeX's command codes}
 @z
 
 @x
@@ -5259,12 +5260,7 @@ begin
    native_font(tail):=cur_font;
    native_glyph(tail):=cur_val;
    set_native_glyph_metrics(tail, XeTeX_use_glyph_metrics);
-  end else begin
-   print_err("Invalid use of \XeTeXglyph");
-   help2("The \XeTeXglyph command can only be used with AAT or OT fonts,")
-   ("not TFM-based fonts. So I'm ignoring this.");
-   error;
-  end
+  end else not_native_font_error(extension, glyph_code, cur_font);
  end
 end
 
@@ -5544,9 +5540,13 @@ end
 @d XeTeX_glyph_index_code=XeTeX_int+23
 @d XeTeX_font_type_code=XeTeX_int+24
 
-@d pdf_last_x_pos_code        = XeTeX_int+25
-@d pdf_last_y_pos_code        = XeTeX_int+26
-{ remember to update eTeX_dim when new items are added here }
+@d XeTeX_first_char_code=XeTeX_int+25
+@d XeTeX_last_char_code=XeTeX_int+26
+
+@d pdf_last_x_pos_code        = XeTeX_int+27
+@d pdf_last_y_pos_code        = XeTeX_int+28
+
+{ NB: must update eTeX_dim when items are added here! }
 @z
 
 @x
@@ -5591,7 +5591,12 @@ primitive("XeTeXOTfeaturetag",last_item,XeTeX_OT_feature_code);
 primitive("XeTeXcharglyph", last_item, XeTeX_map_char_to_glyph_code);
 primitive("XeTeXglyphindex", last_item, XeTeX_glyph_index_code);
 
+primitive("XeTeXglyphname",convert,XeTeX_glyph_name_code);
+
 primitive("XeTeXfonttype", last_item, XeTeX_font_type_code);
+
+primitive("XeTeXfirstfontchar", last_item, XeTeX_first_char_code);
+primitive("XeTeXlastfontchar", last_item, XeTeX_last_char_code);
 
 primitive("pdflastxpos",last_item,pdf_last_x_pos_code);
 primitive("pdflastypos",last_item,pdf_last_y_pos_code);
@@ -5632,6 +5637,9 @@ XeTeX_map_char_to_glyph_code: print_esc("XeTeXcharglyph");
 XeTeX_glyph_index_code: print_esc("XeTeXglyphindex");
 
 XeTeX_font_type_code: print_esc("XeTeXfonttype");
+
+XeTeX_first_char_code: print_esc("XeTeXfirstfontchar");
+XeTeX_last_char_code: print_esc("XeTeXlastfontchar");
 
   pdf_last_x_pos_code:  print_esc("pdflastxpos");
   pdf_last_y_pos_code:  print_esc("pdflastypos");
@@ -5794,6 +5802,17 @@ XeTeX_font_type_code:
     end
   end;
 
+XeTeX_first_char_code,XeTeX_last_char_code:
+  begin
+    scan_font_ident; n:=cur_val;
+    if is_native_font(n) then
+      cur_val:=get_font_char_range(n, m = XeTeX_first_char_code)
+    else begin
+      if m = XeTeX_first_char_code then cur_val:=font_bc[n]
+      else cur_val:=font_ec[n];
+    end
+  end;
+
   pdf_last_x_pos_code:  cur_val := pdf_last_x_pos;
   pdf_last_y_pos_code:  cur_val := pdf_last_y_pos;
 
@@ -5840,6 +5859,7 @@ XeTeX_revision_code: print_esc("XeTeXrevision");
 XeTeX_variation_name_code: print_esc("XeTeXvariationname");
 XeTeX_feature_name_code: print_esc("XeTeXfeaturename");
 XeTeX_selector_name_code: print_esc("XeTeXselectorname");
+XeTeX_glyph_name_code: print_esc("XeTeXglyphname");
 
 @ @<Cases of `Scan the argument for command |c|'@>=
 eTeX_revision_code: do_nothing;
@@ -5852,7 +5872,7 @@ XeTeX_feature_name_code:
     if is_atsu_font(fnt) then begin
       scan_int; arg1:=cur_val; arg2:=0;
     end else
-      not_atsu_font_error(convert, c, f);
+      not_atsu_font_error(convert, c, fnt);
   end;
 
 XeTeX_selector_name_code:
@@ -5861,7 +5881,16 @@ XeTeX_selector_name_code:
     if is_atsu_font(fnt) then begin
       scan_int; arg1:=cur_val; scan_int; arg2:=cur_val;
     end else
-      not_atsu_font_error(convert, c, f);
+      not_atsu_font_error(convert, c, fnt);
+  end;
+
+XeTeX_glyph_name_code:
+  begin
+    scan_font_ident; fnt:=cur_val;
+    if is_native_font(fnt) then begin
+      scan_int; arg1:=cur_val;
+    end else
+      not_native_font_error(convert, c, fnt);
   end;
 
 @ @<Cases of `Print the result of command |c|'@>=
@@ -5873,6 +5902,9 @@ XeTeX_feature_name_code,
 XeTeX_selector_name_code:
     if is_atsu_font(fnt) then
       atsu_print_font_name(c, font_layout_engine[fnt], arg1, arg2);
+
+XeTeX_glyph_name_code:
+    if is_native_font(fnt) then print_glyph_name(fnt, arg1);
 @z
 
 @x

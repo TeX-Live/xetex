@@ -68,6 +68,9 @@ public:
     virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const;
     virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
     virtual void getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const;
+	virtual const char* getGlyphName(LEGlyphID gid, int& nameLen);
+	virtual LEUnicode32 getFirstCharCode();
+	virtual LEUnicode32 getLastCharCode();
 };
 
 #endif
