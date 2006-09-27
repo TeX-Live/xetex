@@ -365,7 +365,7 @@ paintBackground()
 #define MAX_BUFFERED_GLYPHS	1024
 int			gGlyphCount = 0;
 CGGlyph		gGlyphs[MAX_BUFFERED_GLYPHS];
-CGSize		gAdvances[MAX_BUFFERED_GLYPHS];
+CGSize		gAdvances[MAX_BUFFERED_GLYPHS+1];
 CGPoint		gStartLoc;
 CGPoint		gPrevLoc;
 
