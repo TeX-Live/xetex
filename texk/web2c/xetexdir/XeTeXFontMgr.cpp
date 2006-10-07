@@ -320,7 +320,10 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 			// try for more boldness, with the same width and slant
 			Font*	bestMatch = font;
 			if (font->weight < parent->maxWeight) {
-				bestMatch = bestMatchFromFamily(parent, parent->maxWeight, font->width, font->slant);
+				// try to increase weight by 1/2 x (max - min), rounding up
+				bestMatch = bestMatchFromFamily(parent,
+					font->weight + (parent->maxWeight - parent->minWeight) / 2 + 1,
+					font->width, font->slant);
 				if (parent->minSlant == parent->maxSlant) {
 					// double-check the italic flag, as we can't trust slant values
 					Font*	newBest = NULL;
