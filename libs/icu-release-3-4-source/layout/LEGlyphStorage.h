@@ -63,11 +63,12 @@ private:
     float     *fPositions;
 
     /**
-     * The auxillary data array.
+     * The auxiliary data arrays.
      *
      * @internal
      */
     void     **fAuxData;
+    void     **fAuxData2;
 
 
     /**
@@ -295,6 +296,7 @@ public:
      * @draft ICU 3.0
      */
     void *getAuxData(le_int32 glyphIndex, LEErrorCode &success) const;
+    void *getAuxData2(le_int32 glyphIndex, LEErrorCode &success) const;
 
     /**
      * This operator allows direct access to the glyph array
@@ -396,6 +398,7 @@ public:
      * @draft ICU 3.0
      */
     void setAuxData(le_int32 glyphIndex, void *auxData, LEErrorCode &success);
+    void setAuxData2(le_int32 glyphIndex, void *auxData, LEErrorCode &success);
 
     /**
      * Delete the glyph array and replace it with the one
@@ -443,7 +446,7 @@ public:
      *
      * @draft ICU 3.0
      */
-    void adoptAuxDataArray(LEGlyphStorage &from);
+    void adoptAuxDataArrays(LEGlyphStorage &from);
 
     /**
      * Change the glyph count of this object to be the same

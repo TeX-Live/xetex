@@ -84,7 +84,7 @@ float getGlyphWidth(XeTeXFont font, UInt32 gid);
 UInt32 countGlyphs(XeTeXFont font);
 
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
-						UInt32* addFeatures, UInt32* removeFeatures, UInt32 rgbValue);
+						UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue);
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine);
 

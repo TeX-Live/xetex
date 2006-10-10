@@ -442,6 +442,37 @@ read_tag(const char* cp)
 	return tag;
 }
 
+static UInt32
+read_tag_with_param(const char* cp, SInt32* param)
+{
+	UInt32	tag = 0;
+	int i;
+	for (i = 0; i < 4; ++i) {
+		tag <<= 8;
+		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
+			tag += *(unsigned char*)cp;
+			++cp;
+		}
+		else
+			tag += ' ';
+	}
+	if (*cp == '=') {
+		int	neg = 0;
+		++cp;
+		if (*cp == '-') {
+			++neg;
+			++cp;
+		}
+		while (*cp >= '0' && *cp <= '9') {
+			*param = *param * 10 + *cp - '0';
+			++cp;
+		}
+		if (neg)
+			*param = -(*param);
+	}
+	return tag;
+}
+
 static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
@@ -451,6 +482,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	
 	UInt32*	addFeatures = 0;
 	UInt32*	removeFeatures = 0;
+	SInt32* addParams = 0;
 	
 	int	nAdded = 0;
 	int nRemoved = 0;
@@ -579,13 +611,19 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			}
 			
 			if (*cp1 == '+') {
-				tag = read_tag(cp1 + 1);
+				SInt32	param = 0;
+				tag = read_tag_with_param(cp1 + 1, &param);
 				++nAdded;
-				if (nAdded == 1)
+				if (nAdded == 1) {
 					addFeatures = xmalloc(sizeof(UInt32));
-				else
+					addParams = xmalloc(sizeof(SInt32));
+				}
+				else {
 					addFeatures = xrealloc(addFeatures, nAdded * sizeof(UInt32));
+					addParams = xrealloc(addParams, nAdded * sizeof(SInt32));
+				}
 				addFeatures[nAdded-1] = tag;
+				addParams[nAdded-1] = param;
 				goto next_option;
 			}
 			
@@ -637,11 +675,14 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	if ((loadedfontflags & FONT_FLAGS_VERTICAL) != 0)
 		setFontLayoutDir(font, 1);
 
-	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag, addFeatures, removeFeatures, rgbValue);
+	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag,
+					addFeatures, addParams, removeFeatures, rgbValue);
 	if (engine == 0) {
 		deleteFont(font);
 		if (addFeatures)
 			free(addFeatures);
+		if (addParams)
+			free(addParams);
 		if (removeFeatures)
 			free(removeFeatures);
 	}

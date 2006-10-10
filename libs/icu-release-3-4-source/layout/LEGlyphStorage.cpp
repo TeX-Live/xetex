@@ -15,7 +15,7 @@ UOBJECT_DEFINE_RTTI_IMPLEMENTATION(LEGlyphStorage)
 
 LEGlyphStorage::LEGlyphStorage()
     : fGlyphCount(0), fGlyphs(NULL), fCharIndices(NULL), fPositions(NULL),
-      fAuxData(NULL), fInsertionList(NULL), fSrcIndex(0), fDestIndex(0)
+      fAuxData(NULL), fAuxData2(NULL), fInsertionList(NULL), fSrcIndex(0), fDestIndex(0)
 {
     // nothing else to do!
 }
@@ -37,6 +37,10 @@ void LEGlyphStorage::reset()
     if (fAuxData != NULL) {
         LE_DELETE_ARRAY(fAuxData);
         fAuxData = NULL;
+    }
+    if (fAuxData2 != NULL) {
+        LE_DELETE_ARRAY(fAuxData2);
+        fAuxData2 = NULL;
     }
 
     if (fInsertionList != NULL) {
@@ -136,8 +140,9 @@ le_int32 LEGlyphStorage::allocateAuxData(LEErrorCode &success)
     }
 
     fAuxData = LE_NEW_ARRAY(void *, fGlyphCount);
+    fAuxData2 = LE_NEW_ARRAY(void *, fGlyphCount);
 
-    if (fAuxData == NULL) {
+    if (fAuxData == NULL || fAuxData2 == NULL) {
         success = LE_MEMORY_ALLOCATION_ERROR;
         return -1;
     }
@@ -344,6 +349,25 @@ void *LEGlyphStorage::getAuxData(le_int32 glyphIndex, LEErrorCode &success) cons
     return fAuxData[glyphIndex];
 }
 
+void *LEGlyphStorage::getAuxData2(le_int32 glyphIndex, LEErrorCode &success) const
+{
+    if (LE_FAILURE(success)) {
+        return NULL;
+    }
+
+    if (fAuxData2 == NULL) {
+        success = LE_NO_LAYOUT_ERROR;
+        return NULL;
+    }
+    
+    if (glyphIndex < 0 || glyphIndex >= fGlyphCount) {
+        success = LE_INDEX_OUT_OF_BOUNDS_ERROR;
+        return NULL;
+    }
+
+    return fAuxData2[glyphIndex];
+}
+
 void LEGlyphStorage::setAuxData(le_int32 glyphIndex, void *auxData, LEErrorCode &success)
 {
     if (LE_FAILURE(success)) {
@@ -361,6 +385,25 @@ void LEGlyphStorage::setAuxData(le_int32 glyphIndex, void *auxData, LEErrorCode 
     }
 
     fAuxData[glyphIndex] = auxData;
+}
+
+void LEGlyphStorage::setAuxData2(le_int32 glyphIndex, void *auxData, LEErrorCode &success)
+{
+    if (LE_FAILURE(success)) {
+        return;
+    }
+
+    if (fAuxData2 == NULL) {
+        success = LE_NO_LAYOUT_ERROR;
+        return;
+    }
+
+    if (glyphIndex < 0 || glyphIndex >= fGlyphCount) {
+        success = LE_INDEX_OUT_OF_BOUNDS_ERROR;
+        return;
+    }
+
+    fAuxData2[glyphIndex] = auxData;
 }
 
 void LEGlyphStorage::getGlyphPositions(float positions[], LEErrorCode &success) const
@@ -469,14 +512,19 @@ void LEGlyphStorage::adoptPositionArray(LEGlyphStorage &from)
     from.fPositions = NULL;
 }
 
-void LEGlyphStorage::adoptAuxDataArray(LEGlyphStorage &from)
+void LEGlyphStorage::adoptAuxDataArrays(LEGlyphStorage &from)
 {
     if (fAuxData != NULL) {
         LE_DELETE_ARRAY(fAuxData);
     }
+    if (fAuxData2 != NULL) {
+        LE_DELETE_ARRAY(fAuxData2);
+    }
 
     fAuxData = from.fAuxData;
     from.fAuxData = NULL;
+    fAuxData2 = from.fAuxData2;
+    from.fAuxData2 = NULL;
 }
 
 void LEGlyphStorage::adoptGlyphCount(LEGlyphStorage &from)
@@ -510,6 +558,9 @@ le_int32 LEGlyphStorage::applyInsertions()
 
     if (fAuxData != NULL) {
         fAuxData     = (void **) LE_GROW_ARRAY(fAuxData,     newGlyphCount);
+    }
+    if (fAuxData2 != NULL) {
+        fAuxData2     = (void **) LE_GROW_ARRAY(fAuxData2,     newGlyphCount);
     }
 
     fSrcIndex  = fGlyphCount - 1;
@@ -561,6 +612,18 @@ le_bool LEGlyphStorage::applyInsertion(le_int32 atPosition, le_int32 count, LEGl
 
         for (le_int32 i = count - 1; i >= 0; i -= 1) {
             fAuxData[dest--] = fAuxData[atPosition];
+        }
+    }
+
+    if (fAuxData2 != NULL) {
+        le_int32 src = fSrcIndex, dest = fDestIndex;
+
+        while (src > atPosition) {
+            fAuxData2[dest--] = fAuxData2[src--];
+        }
+
+        for (le_int32 i = count - 1; i >= 0; i -= 1) {
+            fAuxData2[dest--] = fAuxData2[atPosition];
         }
     }
 
