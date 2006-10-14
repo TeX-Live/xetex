@@ -71,7 +71,7 @@ GlyphIterator::GlyphIterator(GlyphIterator &that, LETag newFeatureTag, le_int32 
     destIndex = that.destIndex;
     lookupFlags = that.lookupFlags;
     featureTag = newFeatureTag;
-    featureTag = newFeatureParam;
+    featureParam = newFeatureParam;
     glyphClassDefinitionTable = that.glyphClassDefinitionTable;
     markAttachClassDefinitionTable = that.markAttachClassDefinitionTable;
 }
