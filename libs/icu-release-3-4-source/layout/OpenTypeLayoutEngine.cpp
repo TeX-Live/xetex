@@ -150,8 +150,7 @@ le_int32 OpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[], le_i
     glyphStorage.allocateGlyphArray(outCharCount, rightToLeft, success);
     glyphStorage.allocateAuxData(success);
     for (le_int32 i = 0; i < outCharCount; i += 1) {
-        glyphStorage.setAuxData(i, (void *) fFeatureList, success);
-        glyphStorage.setAuxData2(i, (void *) fFeatureParamList, success);
+        glyphStorage.setAuxData(i, (void *) fFeatureList, (void *) fFeatureParamList, success);
     }
 
     return outCharCount;

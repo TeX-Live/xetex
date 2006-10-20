@@ -68,7 +68,7 @@ private:
      * @internal
      */
     void     **fAuxData;
-    void     **fAuxData2;
+    void     **fAuxParam;
 
 
     /**
@@ -389,16 +389,16 @@ public:
     void adjustPosition(le_int32 glyphIndex, float xAdjust, float yAdjust, LEErrorCode &success);
 
     /**
-     * Set the auxillary data for a particular glyph.
+     * Set the auxiliary data for a particular glyph.
      *
      * @param glyphIndex the index of the glyph
-     * @param auxData the new auxillary data
-     * @param success will be set to an error code if the auxillary data cannot be set.
+     * @param auxData the new auxiliary data
+     * @param auxParam the new secondary auxiliary data (parameter)
+     * @param success will be set to an error code if the auxiliary data cannot be set.
      *
      * @draft ICU 3.0
      */
-    void setAuxData(le_int32 glyphIndex, void *auxData, LEErrorCode &success);
-    void setAuxData2(le_int32 glyphIndex, void *auxData, LEErrorCode &success);
+    void setAuxData(le_int32 glyphIndex, void *auxData, void *auxParam, LEErrorCode &success);
 
     /**
      * Delete the glyph array and replace it with the one
