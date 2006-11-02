@@ -54,7 +54,7 @@ This work consists of the file  fontspec.dtx
 \nopreamble\nopostamble
 \generate{\file{fontspec.cfg}{\from{fontspec.dtx}{cfg}}}
 \generate{\file{fontspec.ins}{\from{fontspec.dtx}{batchfile}}}
-\generate{\file{fontspec-example.tex}{\from{fontspec.dtx}{example}}}
+\generate{\file{fontspec-example.ltx}{\from{fontspec.dtx}{example}}}
 %</batchfile>
 %<batchfile>\endbatchfile
 %<*internalbatchfile>
@@ -89,8 +89,8 @@ This work consists of the file  fontspec.dtx
 %
 % \GetFileInfo{fontspec.sty}
 %
-% \title{The \pkg{fontspec} package}
-% \author{Will Robertson}
+% \title{The {\fontspec{Zapfino} fontspec} package}
+% \author{\scshape Will Robertson}
 % \date{\filedate \qquad \fileversion}
 %
 % \maketitle
@@ -103,17 +103,17 @@ This work consists of the file  fontspec.dtx
 % now easily access system-wide fonts directly in a \TeX\
 % variant, providing a best of both worlds environment. \XeTeX\
 % eliminates the need for all those files required for installing
-% fonts (|.tfm|, |.vf|, |.map|,\dots) and provides an easy
+% fonts (|.tfm|, |.vf|, |.map|, \dots) and provides an easy
 % way to select fonts in Plain \TeX: |\font\tenrm="Times New Roman" at 10pt|.
 % 
-% However, it was still necessary to write cumbersome font definition
+% Before \pjg{fontspec}, it was still necessary to write cumbersome font definition
 % files for \LaTeX, since the NFSS had a lot more going on behind the
 % scenes to allow easy commands like \cmd\emph\ or \cmd\bfseries.
 %
-% This package almost entirely eliminates this need by providing a
+% This package provides a
 % completely automatic way to select font families in \LaTeX\ for
-% arbitrary fonts. Furthermore, it allows (again, almost) total
-% control over the selection of rich font features such as number case
+% arbitrary fonts. Furthermore, it allows very flexible
+% control over the selection of advanced font features such as number case
 % and fancy ligatures (and many more!) present in most modern fonts.
 %
 % \subsection{Usage}
@@ -132,10 +132,23 @@ This work consists of the file  fontspec.dtx
 % \XeTeX; it also provides the \cmd\XeTeX\ macro to typeset the \XeTeX\ logo.
 %
 % \emph{The \pkg{babel} package is not really supported!} Especially Vietnamese,
-% Greek, and Hebrew at least will all not work correctly, as far as I can tell.
-% Cyrillic and Latin-based languages, however, might---\pkg{fontspec} ensures
+% Greek, and Hebrew at least might not work correctly, as far as I can tell.
+% There's a better chance with Cyrillic and Latin-based languages, however---\pkg{fontspec} ensures
 % at least that fonts should load correctly, but hyphenation and other matters
 % aren't guaranteed.
+%
+% \subsubsection{Latin Modern defaults}
+% \pkg{fontspec} defines a new \LaTeX\ font encoding for its purposes to allow
+% the Latin Modern fonts to be used by default \new{v1.12}. This has three implications:
+% \begin{enumerate}
+% \item Unicode font loaded by default; it didn't make sense to have the legacy Computer Modern fonts loaded by default in the Unicode-enabled \XeTeX.
+% \item If you don't have the Latin Modern OpenType fonts installed, you might want to consider doing so.
+% \item \pkg{fontspec} also requires the |euenc| `package' to be installed.
+% \end{enumerate}
+% Another package option is provided for controlling this behaviour. |[cm-default]| 
+% will ignore the Latin Modern fonts and go about things as it used to. Use this
+% option if you don't have the Latin Modern fonts installed or you (Mac-specifically) 
+% want to use the `default \TeX\ font' without using the |xdvipdfmx| driver.
 %
 % \subsubsection{Configuration}
 % If you wish to customise any part of the \pkg{fontspec} interface (see later 
@@ -215,13 +228,13 @@ This work consists of the file  fontspec.dtx
 %   \def\pangram{The five boxing 
 %              wizards jump quickly.\\}
 %   \fontspec{Hoefler Text} \pangram
-%    { \itshape             \pangram  }
-%    { \scshape             \pangram  }
-%    { \scshape\itshape     \pangram  }
+%     {\itshape             \pangram}
+%     {\scshape             \pangram}
+%     {\scshape\itshape     \pangram}
 %   \bfseries               \pangram
-%    { \itshape             \pangram  }
-%    { \scshape             \pangram  }
-%    { \itshape\scshape     \pangram  }
+%     {\itshape             \pangram}
+%     {\scshape             \pangram}
+%     {\itshape\scshape     \pangram}
 % \end{example}
 % The \pkg{fontspec} package takes care of the necessary font
 % definitions for those shapes as shown above
@@ -370,6 +383,34 @@ This work consists of the file  fontspec.dtx
 % \end{example}
 % \endgroup
 %
+% \subsection{External fonts}
+% \XeTeX\ v0.995 introduced the feature of loading
+% fonts not installed through the operating system (`external' fonts). This feature is currently
+% only available through the |xdvipdfmx| driver, which is notably \emph{not}
+% the default on \MacOSX.
+%
+% This feature is handled in \pkg{fontspec} with the font feature \feat{ExternalLocation}.
+% When this feature is used, the main argument to \cmd\fontspec\ is the \emph{file name} of the
+% font (in contrast to the usual syntax which requires the font display name) and the argument
+% to the feature is the (absolute) path to the font. For example:
+% \begin{verbatim}
+%     \fontspec[ExternalLocation=/Users/will/Fonts/]{CODE2000.TTF}
+% \end{verbatim}
+% 
+% If no path is given, then the font will be found in a location normally searched by
+% \XeTeX, including the current directory. For example, the following declaration
+% could load either the Latin Modern roman font in the current directory or, say, 
+% in \path{$TEXMF/fonts/opentype/public/lm/}:
+% \begin{verbatim}
+%     \fontspec[ExternalLocation]{lmroman10-regular}
+% \end{verbatim}
+%
+% Bold and italic fonts cannot be automatically selected when external fonts
+% are being used; they must be explicitly declared using the methods
+% described in \vref{sec:bfitfonts}.
+%
+% Optical sizes cannot be selected (either implicitly or explicitly) for externally loaded fonts;
+% this is a failing of the \pkg{fontspec} package. Hopefully it will be rectified in the future.
 %
 % \subsection{Miscellaneous font selecting details}
 % 
@@ -1442,7 +1483,7 @@ This work consists of the file  fontspec.dtx
 % \DescribeMacro{\newICUfeature}
 % New OpenType features may be created with this command:\par
 % {\centering\cmd\newICUfeature\marg{feature}\marg{option}\marg{feature tag}\par}
-% In the following example, the Moldavian language (see \vref{sec:ot}) and the Local forms must be activated to achieve the effect shown.
+% In the following example, the Moldavian language (see \vref{sec:ot}) must be activated to achieve the effect shown.
 % \setexsize\Large
 % \begingroup
 % \setmonofont[Scale=MatchLowercase]{Monaco}
@@ -1538,13 +1579,9 @@ This work consists of the file  fontspec.dtx
 % \iffalse
 %<*fontspec> 
 % \fi
-% Only proceed if it is \XeTeX\ that is doing the typesetting.
-%    \begin{macrocode}
-\RequirePackage{ifxetex}
-\RequireXeTeX
-%    \end{macrocode}
+%
 % \subsection{Bits and pieces}
-% Counters, conditionals, \dots
+% \paragraph{Conditionals}
 %    \begin{macrocode}
 \newif\ifzf@firsttime
 \newif\ifzf@nobf
@@ -1554,21 +1591,71 @@ This work consists of the file  fontspec.dtx
 \newif\ifzf@atsui
 \newif\ifzf@icu 
 \newif\ifzf@mm
+%    \end{macrocode}
+% For dealing with legacy maths
+%    \begin{macrocode}
 \newif\ifzf@math@euler
 \newif\ifzf@math@lucida
-\newif\ifzf@euler@package@loaded
+\newif\ifzf@package@euler@loaded
+%    \end{macrocode}
+% For, well, dealing with \pkg{babel}:
+%    \begin{macrocode}
 \newif\ifzf@package@babel@loaded
+%    \end{macrocode}
+% For package options:
+%    \begin{macrocode}
+\newif\if@zf@configfile
+\newif\if@zf@euenc
+%    \end{macrocode}
+% \paragraph{Counters}
+%    \begin{macrocode}
 \newcount\c@zf@newff
 \newcount\c@zf@index
 \newcount\c@zf@script
 \newcount\c@zf@language
 %    \end{macrocode}
+% 
 % \pkg{fontspec} shorthands:
 %    \begin{macrocode}
 \newcommand\zf@PackageError[2]{\PackageError{fontspec}{#1}{#2}}
 \newcommand\zf@PackageWarning[1]{\PackageWarning{fontspec}{#1}}
 \newcommand\zf@PackageInfo[1]{\PackageInfo{fontspec}{#1}}
 %    \end{macrocode}
+%
+% \begin{macro}{\def@cx}
+% \begin{macro}{\gdef@cx}
+% \begin{macro}{\let@cc}
+% \LaTeX3--like syntax for various low level commands.
+% Makes life much easier; can't wait for the official interface |:)|
+%    \begin{macrocode}
+\providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
+\providecommand\gdef@cx[2]{\expandafter\xdef\csname#1\endcsname{#2}}
+\providecommand\let@cc[2]{%
+  \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \subsection{Option processing}
+%
+%    \begin{macrocode}
+\DeclareOption{cm-default}{\@zf@euencfalse}
+\DeclareOption{lm-default}{\@zf@euenctrue}
+\DeclareOption{config}{\@zf@configfiletrue}
+\DeclareOption{noconfig}{\@zf@configfilefalse}
+\DeclareOption{quiet}{\let\zf@PackageWarning\zf@PackageInfo}
+\ExecuteOptions{config,lm-default}
+\ProcessOptions*
+%    \end{macrocode}
+% \changes{v1.12}{2006/10/24}{Package option for disabling the EU1 encoding.}
+%
+% Only proceed if it is \XeTeX\ that is doing the typesetting.
+%    \begin{macrocode}
+\RequirePackage{ifxetex}
+\RequireXeTeX
+%    \end{macrocode}
+%
 % \subsection{Packages}
 % We require the \pkg{calc} package for autoscaling and a recent version of the 
 % \pkg{xkeyval} package for option processing.
@@ -1585,11 +1672,17 @@ This work consists of the file  fontspec.dtx
 % Now that \XeTeX\ can find fonts in the |texmf| tree, the Latin Modern OpenType fonts
 % can be used as the defaults. See the |euenc| collection of files for how this is implemented.
 %    \begin{macrocode}
-\def\zf@enc{EU1}
+\if@zf@euenc
+  \def\zf@enc{EU1}
+  \RequirePackage{lmodern}
+  \RequirePackage[\zf@enc]{fontenc}
+\else
+  \def\zf@enc{U}
+  \let\encodingdefault\zf@enc
+\fi
 \let\UTFencname\zf@enc
-\RequirePackage[\zf@enc]{fontenc}
 %    \end{macrocode}
-% \changes{v1.12}{2006/08/21}{Finally, use the \texttt{EU1} font encoding.}
+% \changes{v1.12}{2006/08/21}{Finally, use the \texttt{EU1} font encoding (and the LM fonts).}
 % Dealing with a couple of the problems introduced by \pkg{babel}:
 %    \begin{macrocode}
 \let\cyrillicencoding\zf@enc
@@ -1607,13 +1700,10 @@ This work consists of the file  fontspec.dtx
 %
 %
 % \subsection{User commands}\label{sec:codeuser}
-%
-%
 % This section contains the definitions of the commands detailed in
 % the user documentation.  Only the `top level' definitions of the
 % commands are contained herein; they all use or define macros which
 % are defined or used later on in \vref{sec:codeinternal}.
-%
 %
 % \subsubsection{Font selection}
 % \begin{macro}{\fontspec}
@@ -1633,8 +1723,6 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.6}{2005/01/25}{Removed \cs{zf@currfont} (unnecessary)}
 % \changes{v1.9}{2005/12/14}{Added \cs{ignorespaces} to make it invisible.}
 % \end{macro}
-%
-%
 %
 % \begin{macro}{\setromanfont}
 % \begin{macro}{\setsansfont} 
@@ -1691,7 +1779,7 @@ This work consists of the file  fontspec.dtx
 \@onlypreamble\setmathsf
 \@onlypreamble\setmathtt
 %    \end{macrocode}
-% If the commands above are not executed, then \cmd\rmdefault\ (etc.)
+% If the commands above are not executed, then \cmd\rmdefault\ (\etc)
 % will be used.
 %    \begin{macrocode}
 \def\zf@rmmaths{\rmdefault}
@@ -1773,8 +1861,9 @@ This work consists of the file  fontspec.dtx
 %   font features to add to the already existing ones, and calls the
 %   font again with the top level \cs{fontspec} command.
 %
-%   The default options are \emph{not} applied (which is why they're
-%   saved and restored with \cs{zf@default@options@old}), so this
+%   The default options are \emph{not} applied (which is why
+%   \cs{zf@default@options} is emptied inside the group; this is allowed
+%   as \cmd\zf@family\ is globally defined in \cmd\zf@fontspec), so this
 %   means that the only added features to the font are strictly those
 %   specified by this command.
 %
@@ -1782,16 +1871,15 @@ This work consists of the file  fontspec.dtx
 %   often typed this instead when adding only a single font feature.
 %    \begin{macrocode}
 \newcommand*\addfontfeatures[1]{%
-  \let\zf@default@options@old\zf@default@options
-  \let\zf@default@options\@empty
-  \edef\zf@thisinfo{}%
-  \edef\@tempa{%
-    \noexpand\zf@fontspec
-      {\csname zf@family@options\f@family\endcsname,#1}%
-      {\csname zf@family@fontname\f@family\endcsname}}%
-  \@tempa
+  \begingroup
+    \let\zf@default@options\@empty
+    \edef\@tempa{%
+      \noexpand\zf@fontspec
+        {\csname zf@family@options\f@family\endcsname,#1}%
+        {\csname zf@family@fontname\f@family\endcsname}}%
+    \@tempa
+  \endgroup
   \fontfamily\zf@family\selectfont
-  \let\zf@default@options\zf@default@options@old
   \ignorespaces}
 \let\addfontfeature\addfontfeatures
 %    \end{macrocode}
@@ -1801,6 +1889,7 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.9}{2005/12/14}{Changed \cs{fontspec} call to \cs{@fontspec} so that \cs{ignorespaces} isn't called unnecessarily.}
 % \changes{v1.9}{2005/12/15}{Removed space in \texttt{, \#1}; can't believe I made this mistake again!}
 % \changes{v1.10}{2006/04/14}{Saved family information macro changes.}
+% \changes{v1.12}{2006/10/31}{Now use grouping to restore \cmd\zf@default@option\ change.}
 % \end{macro}
 %
 %
@@ -1865,19 +1954,24 @@ This work consists of the file  fontspec.dtx
 %
 %
 % \begin{macro}{\aliasfontfeature}
-% \changes{v1.9}{2005/12/09}{Implemented.}
 % \begin{macro}{\aliasfontfeatureoption}
-% \changes{v1.9}{2005/12/09}{Implemented.}
 % User commands for renaming font features and font feature options.
 % Provided I've been consistent, they should work for everything.
 %    \begin{macrocode}  
 \newcommand*\aliasfontfeature[2]{\multi@alias@key{#1}{#2}}
 \newcommand*\aliasfontfeatureoption[3]{\keyval@alias@key[zf@feat]{#1}{#2}{#3}}
 %    \end{macrocode}
+% \changes{v1.9}{2005/12/09}{Implemented.}
 % \end{macro}
+% \changes{v1.9}{2005/12/09}{Implemented.}
 % \end{macro}
 %
 % \begin{macro}{\newfontscript}
+% Mostly used internally, but also possibly useful for users, to define new OpenType
+% `scripts', mapping logical names to OpenType script tags. 
+% Iterates though the scripts in the selected font to check that it's a valid 
+% feature choice, and then prepends the (\XeTeX) \cmd\font\ feature string with the appropriate
+% script selection tag.
 %    \begin{macrocode}
 \newcommand*\newfontscript[2]{%
   \define@key[zf@feat]{Script}{#1}[]{%
@@ -1896,6 +1990,11 @@ This work consists of the file  fontspec.dtx
 % \end{macro}
 %
 % \begin{macro}{\newfontlanguage}
+% Mostly used internally, but also possibly useful for users, to define new OpenType
+% `languages', mapping logical names to OpenType language tags. 
+% Iterates though the languages in the selected font to check that it's a valid 
+% feature choice, and then prepends the (\XeTeX) \cmd\font\ feature string with the appropriate
+% language selection tag.
 %    \begin{macrocode}
 \newcommand*\newfontlanguage[2]{%
   \define@key[zf@feat]{Lang}{#1}[]{%
@@ -1916,39 +2015,39 @@ This work consists of the file  fontspec.dtx
 %
 % \subsection{Internal macros}\label{sec:codeinternal}
 %
-% \begin{macro}{\def@cx}
-% \begin{macro}{\gdef@cx}
-% \LaTeX3--like syntax for various low level commands.
-%    \begin{macrocode}
-\providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
-\providecommand\gdef@cx[2]{\expandafter\xdef\csname#1\endcsname{#2}}
-\providecommand\let@cc[2]{\expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-%
 % \begin{macro}{\zf@fontspec}
-% This is the command that defines font families for use. Given a
-% list of font features for a requested font (|#2|, stored
+% This is the command that defines font families for use, the underlying
+% procedure of all \cmd\fontspec-like commands. Given a
+% list of font features (|#1|) for a requested font (|#2|, stored
 % in \cs{zf@fontname} globally for the
 % \cs{zf@make@aat@feature@string} macro), it will define an NFSS
 % family for that font and put the family name into \cs{zf@family}.
 %
 % This macro does its processing inside a group, but it's a bit worthless coz
-% there's all sorts of \cmd\global\ action going on. Pity.
-%
-% Finally, lots of things are branched out for the pure reason of splitting
+% there's all sorts of \cmd\global\ action going on. Pity. Anyway, lots of things 
+% are branched out for the pure reason of splitting
 % the code up into logical chunks. Some of it is never even re-used, so it
-% all might be a bit worthless. (\Eg, \cmd\zf@init\ and \cmd\zf@set@font@type.)
+% all might be a bit obfuscating. (\Eg, \cmd\zf@init\ and \cmd\zf@set@font@type.)
+%
+% First off, initialise some bits and pieces and run the |preparse| feature
+% processing. This catches font features such as |Renderer| that can change
+% the way subsequent features are processed. All font features that `slip through'
+% this stage are saved in the \cmd\zf@font@feat\ macro for future processing.
 %    \begin{macrocode}
 \newcommand*\zf@fontspec[2]{%
   \begingroup
   \zf@init
   \edef\zf@fontname{#2}%
-  \font\zf@basefont="\zf@fontname" at \f@size pt
   \let\zf@family@long\zf@fontname
   \setkeys*[zf]{preparse}{#1}%
-  \edef\zf@font@feat{\zf@font@feat\XKV@rm}%
+  \let\zf@font@feat\XKV@rm
+%    \end{macrocode}
+% After pre-parsing, check if an external font is to be loaded. This only works
+% with the |xdvipdfmx| driver, by the way.
+%    \begin{macrocode}
+  \unless\ifx\zf@font@path\relax
+    \def\zf@font@wrap##1{[\zf@font@path##1]}%
+  \fi
 %    \end{macrocode}
 % Now check if the font is to be rendered with ATSUI or ICU. This will either
 % be automatic (based on the font type), or specified by the user via a font feature.
@@ -1957,6 +2056,7 @@ This work consists of the file  fontspec.dtx
 % assign it a value so that the other weights of the font are specifically loaded with the
 % same renderer. This fixes a bug in v1.10 for a mishmash of Lucida fonts.
 %    \begin{macrocode}
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \zf@set@font@type
   \ifx\zf@suffix\@empty
     \ifzf@atsui
@@ -1966,10 +2066,10 @@ This work consists of the file  fontspec.dtx
         \def\zf@suffix{/ICU}%
       \fi
     \fi
-    \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+    \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \fi
 %    \end{macrocode}
-% Now convert the requested features to font definition
+% Now convert the remaining requested features to font definition
 % strings. This is performed with \cs{zf@get@feature@requests}, in
 % which \cs{setkeys} retrieves the requested font features and
 % processes them. To build up the complex family name, it
@@ -2028,16 +2128,17 @@ This work consists of the file  fontspec.dtx
 % custom bold, et al., font, if requested as user options. If they are
 % empty, the default fonts are used.
 %
-% First we define the font family and define the normal shape: (the
-% specified options are used implicitly)
+% First we define the font family and define the normal shape: (any shape-specific
+% features are appended to the generic font features requested in the last argument
+% of \cmd\zf@make@font@shapes.)
 %    \begin{macrocode}
     \DeclareFontFamily{\zf@enc}{\zf@family}{}%
     \zf@make@font@shapes{\zf@fontname}
       {\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
 %    \end{macrocode}
-% Secondly, bold. Start out by saving the current font features and
-% appending to them, if any, the extra bold options defined with
-% \feat{BoldFeatures}. Then, the bold font is defined either as the ATS
+% Secondly, bold. Again, the extra bold options defined with
+% \feat{BoldFeatures} are appended to the generic font features. 
+% Then, the bold font is defined either as the ATS
 % default (\cs{zf@make@font@shapes}' optional argument is to check if
 % there actually is one; if not, the bold NFSS series is left
 % undefined) or with the font specified with the \feat{BoldFont} feature.
@@ -2157,13 +2258,13 @@ This work consists of the file  fontspec.dtx
 %   proceed and the font shape is not created for the NFSS.
 %    \begin{macrocode}
 \newcommand*\zf@make@font@shapes[5][]{%
-  \bgroup
+  \begingroup
     \edef\@tempa{#1}%
-    \ifx\@tempa\@empty\else
-      \font\@tempfonta="#1\zf@suffix" at \f@size pt
+    \unless\ifx\@tempa\@empty
+      \font\@tempfonta="\zf@font@wrap{#1}\zf@suffix" at \f@size pt
       \edef\@tempa{\fontname\@tempfonta}%
     \fi
-    \font\@tempfontb="#1#2\zf@suffix" at \f@size pt
+    \font\@tempfontb="\zf@font@wrap{#1#2}\zf@suffix" at \f@size pt
     \edef\@tempb{\fontname\@tempfontb}%
     \ifx\@tempa\@tempb
       \zf@PackageInfo{Could not resolve font #1#2 (it might not exist)}%
@@ -2194,7 +2295,7 @@ This work consists of the file  fontspec.dtx
           {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
       \fi
     \fi
-  \egroup}
+  \endgroup}
 %    \end{macrocode}
 % Note that the test for italics to choose the \cmd\sidefault\ shape
 % only works while \cmd\zf@fontspec\ passes single tokens to this macro\dots
@@ -2213,6 +2314,7 @@ This work consists of the file  fontspec.dtx
 %     \cmd\DeclareFontShape\ argument directly now that it's fully expanded.}
 % \changes{v1.9}{2005/12/11}{Added code for \feat{SmallCaps...} features.}
 % \changes{v1.9}{2005/12/20}{Made local to hide \cs{zf@fontname} changes.}
+% \changes{v1.12}{2006/10/28}{\cmd\bgroup\ changed to \cmd\begingroup. Thanks Chris!}
 % \end{macro}
 %
 % \begin{macro}{\zf@DeclareFontShape}
@@ -2225,7 +2327,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \newcommand\zf@DeclareFontShape[4][]{%
   \zf@get@feature@requests{#4}%
-  \def\@tempb{"\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff#1"}%
+  \def\@tempb{"\zf@font@wrap\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff#1"}%
   \zf@PackageInfo{\string\font\space is \@tempb}%
   \edef\@tempa{\noexpand
     \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}
@@ -2290,8 +2392,10 @@ This work consists of the file  fontspec.dtx
 % because it's no longer the first thing that can affect these things.
 %    \begin{macrocode}
 \newcommand*\zf@init{%
-  \let\zf@pre@ff      \@empty
+  \let\zf@pre@ff      \@empty 
   \let\zf@font@feat   \@empty
+  \let\zf@font@path      \relax
+  \let\zf@font@wrap     \@firstofone
   \let\zf@suffix      \@empty
   \let\zf@bf          \@empty
   \let\zf@it          \@empty
@@ -2462,12 +2566,14 @@ This work consists of the file  fontspec.dtx
         \fi
       \fi
 %    \end{macrocode}
-% Finally, save out the feature string in \cmd\@tempa, which will remain empty
-% if the feature doesn't exist.
+% Finally, save out the complete feature string in \cmd\@tempa.
+% If the selector doesn't exist, re-initialise the feature string to empty.
 %    \begin{macrocode}
     \fi
     \unless\ifx\@tempb\@empty
       \edef\@tempa{\@tempa=\@tempb}%
+    \else
+      \let\@tempa\@empty
     \fi
   \fi}
 %    \end{macrocode}
@@ -2594,6 +2700,49 @@ This work consists of the file  fontspec.dtx
 % This is the tedious section where we correlate all possible
 % (eventually) font feature requests with their \XeTeX\ representations.
 %
+% \subsubsection{Pre-parsed features}
+%
+% These features are extracted from the font feature list before all others, using
+% \pkg{xkeyval}'s \cmd\setkeys|*|.
+%
+% \paragraph{\feat{ExternalLocation}}
+% For fonts that aren't installed in the system. If no argument is given, the font is located
+% with |kpsewhich|; it's either in the current directory or the \TeX\ tree. Otherwise, the
+% argument given defines the file path of the font.
+%    \begin{macrocode}
+\define@key[zf]{preparse}{ExternalLocation}[]{%
+  \zf@nobftrue\zf@noittrue
+  \def\zf@font@path{#1}}
+%    \end{macrocode}
+% \changes{v1.12}{2006/11/02}{New feature \feat{ExternalLocation} for loading external fonts.}
+%
+% \paragraph{\feat{Renderer}}
+% This feature must be processed before all others (the other font shape and features options are also pre-parsed for convenience) because the renderer determines the format of the features and even whether certain features are available.
+%    \begin{macrocode}
+\define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
+  \edef\zf@suffix{\zf@suffix/#1}%
+  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \edef\zf@family@long{\zf@family@long +rend:#1}}
+%    \end{macrocode}
+%
+% \paragraph{OpenType script/language}
+% See later for the resolutions from \pkg{fontspec} features to OpenType definitions.
+%    \begin{macrocode}
+\define@key[zf]{preparse}{Script}{%
+  \edef\zf@suffix{\zf@suffix/ICU}%
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
+  \edef\zf@family@long{\zf@family@long +script:#1}%
+  {\setkeys[zf@feat]{Script}{#1}}}
+%    \end{macrocode}
+% Exactly the same:
+%    \begin{macrocode}
+\define@key[zf]{preparse}{Language}{%
+  \edef\zf@suffix{\zf@suffix/ICU}%
+  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \edef\zf@family@long{\zf@family@long +language:#1}%
+  {\setkeys[zf@feat]{Lang}{#1}}}
+%    \end{macrocode}
+%
 % \subsubsection{Bold/italic choosing options}
 %
 % The \opt{Bold}, \opt{Italic}, and \opt{BoldItalic}
@@ -2607,6 +2756,7 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.6}{2005/02/09}{\opt{Bold} option aliased to \opt{BoldFont}.} 
 % \changes{v1.9}{2005/12/11}{New feature \feat{UprightFeatures}.}
 % \changes{v1.9}{2005/12/11}{New features \feat{SmallCapsFont} and \feat{SmallCapsFeatures}.}
+% \changes{v1.12}{2006/11/02}{\feat{BoldFont}, \etc, flags \cmd\zf@nobf\ conditional false rather than assuming it implicitly. This allows, \eg, \texttt{BoldFont=\{\}} to be overloaded.}
 %
 % \paragraph{Fonts}
 %    \begin{macrocode}
@@ -2616,6 +2766,7 @@ This work consists of the file  fontspec.dtx
     \zf@nobftrue
     \edef\zf@family@long{\zf@family@long nobf}%
   \else
+    \zf@nobffalse
     \zf@partial@fontname#1\@nil
     \let\zf@bf\@tempa
     \edef\zf@family@long{\zf@family@long bf:#1}%
@@ -2626,6 +2777,7 @@ This work consists of the file  fontspec.dtx
     \zf@noittrue
     \edef\zf@family@long{\zf@family@long noit}%
   \else
+    \zf@noitfalse
     \zf@partial@fontname#1\@nil
     \let\zf@it\@tempa
     \edef\zf@family@long{\zf@family@long it:#1}%
@@ -2640,6 +2792,7 @@ This work consists of the file  fontspec.dtx
     \zf@nosctrue
     \edef\zf@family@long{\zf@family@long nosc}%
   \else
+    \zf@noscfalse
     \zf@partial@fontname#1\@nil
     \let\zf@sc\@tempa
     \zf@update@family{sc:\zap@space #1 \@empty}%
@@ -2679,33 +2832,6 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{options}{SmallCapsFeatures}{%
   \unless\ifzf@firsttime\def\zf@sc@feat{,#1}\fi
   \zf@update@family{scfeat:\zap@space #1 \@empty}}
-%    \end{macrocode}
-%
-% \subsubsection{The \feat{Renderer} pre-parsed feature}
-% This feature must be processed before all others (the other font shape and features options are also pre-parsed for convenience) because the renderer determines the format of the features and even whether certain features are available.
-%    \begin{macrocode}
-\define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
-  \edef\zf@suffix{\zf@suffix/#1}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +rend:#1}}
-%    \end{macrocode}
-%
-% \paragraph{OpenType script/language}
-% See later for the resolutions from \pkg{fontspec} features to OpenType definitions.
-%    \begin{macrocode}
-\define@key[zf]{preparse}{Script}{%
-  \edef\zf@suffix{\zf@suffix/ICU}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +script:#1}%
-  {\setkeys[zf@feat]{Script}{#1}}}
-%    \end{macrocode}
-% Exactly the same:
-%    \begin{macrocode}
-\define@key[zf]{preparse}{Language}{%
-  \edef\zf@suffix{\zf@suffix/ICU}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +language:#1}%
-  {\setkeys[zf@feat]{Lang}{#1}}}
 %    \end{macrocode}
 %
 % \subsubsection{Font-independent features}
@@ -3446,13 +3572,13 @@ This work consists of the file  fontspec.dtx
 % either. But I'm pretty sure they are.
 % 
 %    \begin{macrocode}
-\@ifpackageloaded{euler}{\zf@euler@package@loadedtrue}
-                        {\zf@euler@package@loadedfalse}
+\@ifpackageloaded{euler}{\zf@package@euler@loadedtrue}
+                        {\zf@package@euler@loadedfalse}
 \AtBeginDocument{%
   \let\zf@font@warning\@font@warning
   \let\@font@warning\@font@info
   \@ifpackageloaded{euler}{%
-    \ifzf@euler@package@loaded
+    \ifzf@package@euler@loaded
       \zf@math@eulertrue
     \else
       \zf@PackageError{The euler package must be loaded BEFORE fontspec}
@@ -3602,17 +3728,14 @@ This work consists of the file  fontspec.dtx
 %    \end{macrocode}
 % \changes{v1.9}{2006/01/31}{Suppresses harmless maths font encoding warnings.}
 % \end{macro}
-% \subsection{Option processing}
+% \subsection{Finishing up}
 % Now we just want to set up loading the \texttt{.cfg} file, if it exists.
 %    \begin{macrocode}
-\DeclareOption{config}{%
+\if@zf@configfile
   \InputIfFileExists{fontspec.cfg}
     {\typeout{fontspec.cfg loaded.}}
-    {\typeout{fontspec.cfg would be loaded now if it existed.}}}
-\DeclareOption{noconfig}{}
-\DeclareOption{quiet}{\let\zf@PackageWarning\zf@PackageInfo}
-\ExecuteOptions{config}
-\ProcessOptions
+    {\typeout{No fontspec.cfg file found; no configuration loaded.}}
+\fi    
 %    \end{macrocode}
 % \changes{v1.9}{2006/01/31}{Package options \opt{(no)config}, \opt{quiet} implemented.}
 % The end! Thanks for coming.
@@ -3661,34 +3784,29 @@ This work consists of the file  fontspec.dtx
 %<*example>
 % \fi
 %
-% \part{fontspec-example.tex}
+% \part{fontspec-example.ltx}
 %
 %    \begin{macrocode}
-%!TEX TS-program =xelatex
-\documentclass[12pt]{article}
+\documentclass{article}
 
-\usepackage{euler,fontspec,graphicx}
+\usepackage{euler}
+\usepackage[cm-default]{fontspec}
+\usepackage{xltxtra}
 
-\defaultfontfeatures{Scale=MatchLowercase ,Mapping=tex-text}
-\setromanfont{Hoefler Text}
-\setsansfont{Gill Sans}
+\defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
+\setromanfont[Numbers=Lowercase]{FPL Neu}
+\setsansfont{Lucida Sans}
 \setmonofont{Lucida Sans Typewriter}
 
-%% Define the \XeTeX logo:
-\DeclareRobustCommand\XeTeX{%
-  \mbox{\smash{%
-    X\lower.5ex\hbox{\kern-.12em\reflectbox{E}}\kern-.1667em 
-    T\kern -.1667em\lower .5ex\hbox {E}\kern -.12em X}}\@}
-%% The logo should be defined on a per-document basis 
-%% so that its parameters may be fine tuned for the fonts used.
+\frenchspacing % TeX's default is a little old-fashioned...
 
 \begin{document}
 \pagestyle{empty}
 
-\section{The basics of the \textsf{fontspec} package}
+\section*{The basics of the \textsf{fontspec} package}
 
 The \textsf{fontspec} package enables automatic font selection for \LaTeX{} documents typeset with \XeTeX{}. The basic command is\\
-\indent \verb|\fontspec[font features]{Mac OS X font display name}|.\\
+\indent \verb|\fontspec[font features]{font display name}|.\\
 As an example:
 
 \begin{center}
@@ -3705,13 +3823,13 @@ As an example:
 The default roman, sans serif, and typewriter fonts may be set with the \verb|\setromanfont|, \verb|\setsansfont| and \verb|\setmonofont| commands, respectively, as shown in the preamble. They take the same syntax as the \verb|\fontspec| package. All expected font shapes are available:
 
 \begin{center}
-  {\scshape Small caps and \itshape small caps italic\dots}\\
+  {\itshape Italics and \scshape small caps\dots}\\
   {\sffamily\bfseries Bold sans serif and \itshape bold italic sans serif\dots}
 \end{center}
 
-With the roman and sans serif fonts set in the preamble, text fonts in math mode are also changed: $\cos(n\pi)=\pm 1$. The maths typeface `Euler' has been used in this document (with the \textsf{euler} package---note that the \textsf{eulervm} package will not work in \XeTeX{} because it uses virtual fonts), since the default Computer Modern maths font is rather light.
+With the roman and sans serif fonts set in the preamble, text fonts in math mode are also changed: $\cos(n\pi)=\pm 1$. The maths typeface `Euler' has been used in this document (with the \textsf{euler} package---or the \textsf{eulervm} package if the |xpdfdvimx| driver is being used), since the default Computer Modern maths font is rather light.
 \[
-  \mathcal F(s) = \int^\infty_0\! f(t) e^{-st}\,\mathrm{d}t
+  \mathcal F(s) = \int^\infty_0 f(t) \exp(-st)\,\mathrm{d}t
 \]
 
 You'll also notice the \verb|\defaultfontfeatures| command in the preamble. This command takes a single argument of font features that are then applied to every subsequent instance of font selection. The first argument in this case, \verb|Mapping=tex-text|, enables regular \TeX{} ligatures like \verb|``---''| for ``---''. The second automatically scales the fonts to the same x-height.
