@@ -17,6 +17,8 @@
 %                             and fontspec.pdf.
 %
 %<*internalbatchfile>
+\immediate\write18{makeindex -s gind.ist -o \jobname.ind \jobname.idx}
+\immediate\write18{makeindex -s gglo.ist -o \jobname.gls \jobname.glo}
 \begingroup
 %</internalbatchfile>
 %<*batchfile>
@@ -82,14 +84,12 @@ This work consists of the file  fontspec.dtx
 %
 % \fi
 %
-% \CheckSum{2412}
-%
 % \makeatletter                         ^^A% To document @-cmds
 % \errorcontextlines=999                ^^A% Show up all my mistakes
 %
 % \GetFileInfo{fontspec.sty}
 %
-% \title{The {\fontspec{Zapfino} fontspec} package}
+% \title{The\kern-0.2ex {\fontspec[Scale=0.82]{Zapfino} fontspec} package}
 % \author{\scshape Will Robertson}
 % \date{\filedate \qquad \fileversion}
 %
@@ -106,7 +106,7 @@ This work consists of the file  fontspec.dtx
 % fonts (|.tfm|, |.vf|, |.map|, \dots) and provides an easy
 % way to select fonts in Plain \TeX: |\font\tenrm="Times New Roman" at 10pt|.
 % 
-% Before \pjg{fontspec}, it was still necessary to write cumbersome font definition
+% Before \pkg{fontspec}, it was still necessary to write cumbersome font definition
 % files for \LaTeX, since the NFSS had a lot more going on behind the
 % scenes to allow easy commands like \cmd\emph\ or \cmd\bfseries.
 %
@@ -141,11 +141,11 @@ This work consists of the file  fontspec.dtx
 % \pkg{fontspec} defines a new \LaTeX\ font encoding for its purposes to allow
 % the Latin Modern fonts to be used by default \new{v1.12}. This has three implications:
 % \begin{enumerate}
-% \item Unicode font loaded by default; it didn't make sense to have the legacy Computer Modern fonts loaded by default in the Unicode-enabled \XeTeX.
+% \item Unicode fonts are loaded by default; it didn't make sense to have the legacy Computer Modern fonts in the Unicode-enabled \XeTeX.
 % \item If you don't have the Latin Modern OpenType fonts installed, you might want to consider doing so.
-% \item \pkg{fontspec} also requires the |euenc| `package' to be installed.
+% \item \pkg{fontspec} also requires the \pkg{euenc} package\footnote{\url{http://tug.ctan.org/cgi-bin/ctanPackageInformation.py?id=euenc}} to be installed.
 % \end{enumerate}
-% Another package option is provided for controlling this behaviour. |[cm-default]| 
+% Another package option is provided for controlling this behaviour: |[cm-default]| 
 % will ignore the Latin Modern fonts and go about things as it used to. Use this
 % option if you don't have the Latin Modern fonts installed or you (Mac-specifically) 
 % want to use the `default \TeX\ font' without using the |xdvipdfmx| driver.
@@ -179,17 +179,15 @@ This work consists of the file  fontspec.dtx
 %
 % Such things, and some other comments, are noted in the margin like
 % this~\warn{v1.6}{An example warning!}, with a red arrow if the
-% change is relevant to the current release of the package. New features
-% are denoted similarly in blue.
+% change is relevant to the current release of the package. (New features
+% are denoted similarly in blue.)
 %
 % \subsection{About this manual}
 % This document has been typeset with \XeTeX\ using a variety of fonts
 % to display various features that the package supports. You will not
 % be able to typeset the documentation if you do not have all of these
-% fonts, although I've used as many Mac~OS~X pre-installed fonts as
-% possible. Running normal \LaTeX\ (\ie, with\emph{out} \XeTeX) on
-% this file will generate the \texttt{fontspec.sty} file if this is
-% required for some odd reason.
+% fonts, many of which are distributed with \MacOSX\ or are otherwise 
+% commercial.
 %
 % Many examples are shown in this manual. These are typeset
 % side-by-side with their verbatim source code, although various
@@ -883,8 +881,8 @@ This work consists of the file  fontspec.dtx
 % \end{opentypeexample}
 % The \opt{Uppercase} option is also provided \emph{but} it will (probably)
 % not actually map letters to uppercase.
-%  \note{If you want automatic uppercase letters, look into the 
-%       \cmd\MakeUppercase\ command, as defined by \LaTeX.}
+%  \note{If you want automatic uppercase letters, look to \LaTeX's
+%       \cmd\MakeUppercase\ command.}
 % It will, however, select various
 % uppercase forms for glyphs such as accents and dashes.
 % \begin{opentypeexample}
@@ -1614,7 +1612,6 @@ This work consists of the file  fontspec.dtx
 \newcount\c@zf@script
 \newcount\c@zf@language
 %    \end{macrocode}
-% 
 % \pkg{fontspec} shorthands:
 %    \begin{macrocode}
 \newcommand\zf@PackageError[2]{\PackageError{fontspec}{#1}{#2}}
@@ -1649,7 +1646,6 @@ This work consists of the file  fontspec.dtx
 \ProcessOptions*
 %    \end{macrocode}
 % \changes{v1.12}{2006/10/24}{Package option for disabling the EU1 encoding.}
-%
 % Only proceed if it is \XeTeX\ that is doing the typesetting.
 %    \begin{macrocode}
 \RequirePackage{ifxetex}
@@ -2745,10 +2741,10 @@ This work consists of the file  fontspec.dtx
 %
 % \subsubsection{Bold/italic choosing options}
 %
-% The \opt{Bold}, \opt{Italic}, and \opt{BoldItalic}
+% The \feat{Bold}, \feat{Italic}, and \feat{BoldItalic}
 % features are for defining explicitly the bold and italic fonts used
 % in a font family. \textsf{v1.6} introduced arbitrary font features
-% for these shapes (\opt{BoldFeatures}, etc.), so the names of the
+% for these shapes (\feat{BoldFeatures}, etc.), so the names of the
 % shape-selecting options were appended with \opt{Font} for
 % consistency.
 %
@@ -2756,7 +2752,7 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.6}{2005/02/09}{\opt{Bold} option aliased to \opt{BoldFont}.} 
 % \changes{v1.9}{2005/12/11}{New feature \feat{UprightFeatures}.}
 % \changes{v1.9}{2005/12/11}{New features \feat{SmallCapsFont} and \feat{SmallCapsFeatures}.}
-% \changes{v1.12}{2006/11/02}{\feat{BoldFont}, \etc, flags \cmd\zf@nobf\ conditional false rather than assuming it implicitly. This allows, \eg, \texttt{BoldFont=\{\}} to be overloaded.}
+% \changes{v1.12}{2006/11/02}{\feat{BoldFont}, etc., flags \cmd\zf@nobf\ conditional false rather than assuming it implicitly. This allows, \eg, empty \feat{BoldFont} to be overloaded.}
 %
 % \paragraph{Fonts}
 %    \begin{macrocode}
@@ -3115,7 +3111,7 @@ This work consists of the file  fontspec.dtx
 % \subsubsection{Contextuals}
 % \changes{v1.9}{2005/12/21}{\feat{Swashes} feature changed to \feat{Contextuals}. Option of this feature \opt{Contextual} changed to \opt{Swash}, for obvious reasons.}
 %    \begin{macrocode}
-\zf@define@font@feature{Contextuals}
+\zf@define@font@feature  {Contextuals}
 \zf@define@feature@option{Contextuals}{Swash}{}{}{+cswh}
 \zf@define@feature@option{Contextuals}{NoSwash}{}{}{-cswh}
 \zf@define@feature@option{Contextuals}{WordInitial}{8}{0}{+init}
@@ -3199,8 +3195,6 @@ This work consists of the file  fontspec.dtx
 %    \end{macrocode}
 %
 % \subsubsection{Style}
-% \changes{v1.7}{2005/03/26}
-%    {\feat{Style} feature renamed from \feat{StyleOptions}.}
 %    \begin{macrocode}
 \zf@define@font@feature{Style}
 \zf@define@feature@option{Style}{Alternate}{}{}{+salt}
@@ -3215,10 +3209,10 @@ This work consists of the file  fontspec.dtx
 \zf@define@feature@option{Style}{HorizontalKana}{}{}{+hkna}  
 \zf@define@feature@option{Style}{VerticalKana}{}{}{+vkna}  
 %    \end{macrocode}
+% \changes{v1.7}{2005/03/26}
+%    {\feat{Style} feature renamed from \feat{StyleOptions}.}
 %
 % \subsubsection{CJK shape}
-% \changes{v1.7}{2005/03/26}{New feature: \feat{CharacterShape}}
-% \changes{v1.9}{2006/02/12}{\feat{CharacterShape} now \feat{CJKShape}}
 %    \begin{macrocode}
 \zf@define@font@feature{CJKShape}
 \zf@define@feature@option{CJKShape}{Traditional}{20}{0}{+trad}
@@ -3229,6 +3223,8 @@ This work consists of the file  fontspec.dtx
 \zf@define@feature@option{CJKShape}{Expert}{20}{10}{+expt}
 \zf@define@feature@option{CJKShape}{NLC}{20}{13}{+nlck}
 %    \end{macrocode}
+% \changes{v1.7}{2005/03/26}{New feature: \feat{CharacterShape}}
+% \changes{v1.9}{2006/02/12}{\feat{CharacterShape} now \feat{CJKShape}}
 %
 % \subsubsection{Character width}
 % \changes{v1.7}{2005/04/18}{New feature: \feat{CharacterWidth}}
@@ -3984,26 +3980,20 @@ Please see the documentation for font feature explanation and further package ni
   \ifhmode\unskip~\fi({\ifx\thisversion\fileversion\color{red}\fi
   $\leftarrow$})%
   \marginpar{\raggedleft
-    \scriptsize({\ifx\thisversion\fileversion\color{red}\fi
-    $\rightarrow$}\,\notefont #1:~#2)}}
+    \small(%
+      {\ifx\thisversion\fileversion\color{red}\fi$\rightarrow$}%
+      \,{\notefont #1:~#2})}}
 
 \newcommand\new[1]{%
   \edef\thisversion{#1}%
   \ifhmode\unskip~\fi({\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
   $\leftarrow$})%
   \marginpar{\raggedleft
-    \scriptsize(\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
-    $\rightarrow$\,\notefont #1:~New!)}}
-
+    \small(\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
+    $\rightarrow$\,{\notefont #1:~New!})}}
 
 %% Sidenote font
-\newfontfamily\notefont[
-                     Width=1.2,
-                  BoldFont={Skia},
-              BoldFeatures={Width=1.2,Weight=1.5},
-                  ItalicFont={Skia},
-              ItalicFeatures={Width=1.2,Weight=1.5}
-                         ]{Skia}
+\newfontfamily\notefont[Scale=MatchLowercase]{Optima}
 
 %% Various labelling commands:
 \newcommand*\name[1]{{#1}}
@@ -4027,7 +4017,7 @@ Please see the documentation for font feature explanation and further package ni
 \def\MacOSX{Mac~OS~X}
 
 %% fontspec declarations:
-\setromanfont[Mapping=tex-text]{FPL Neu}
+\setromanfont[Mapping=tex-text,Numbers=OldStyle]{FPL Neu}
 \defaultfontfeatures{Scale=MatchLowercase}
 \setsansfont[Weight=1.2, Width=1.1,
              Mapping=tex-text,

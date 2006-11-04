@@ -12,10 +12,9 @@
 %% 
 %%   License information appended.
 %% 
+%% 
 \ProvidesPackage{fontspec}
   [2006/08/20 v1.12 Advanced font selection for XeLaTeX]
-\RequirePackage{ifxetex}
-\RequireXeTeX
 \newif\ifzf@firsttime
 \newif\ifzf@nobf
 \newif\ifzf@noit
@@ -26,8 +25,10 @@
 \newif\ifzf@mm
 \newif\ifzf@math@euler
 \newif\ifzf@math@lucida
-\newif\ifzf@euler@package@loaded
+\newif\ifzf@package@euler@loaded
 \newif\ifzf@package@babel@loaded
+\newif\if@zf@configfile
+\newif\if@zf@euenc
 \newcount\c@zf@newff
 \newcount\c@zf@index
 \newcount\c@zf@script
@@ -35,11 +36,30 @@
 \newcommand\zf@PackageError[2]{\PackageError{fontspec}{#1}{#2}}
 \newcommand\zf@PackageWarning[1]{\PackageWarning{fontspec}{#1}}
 \newcommand\zf@PackageInfo[1]{\PackageInfo{fontspec}{#1}}
+\providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
+\providecommand\gdef@cx[2]{\expandafter\xdef\csname#1\endcsname{#2}}
+\providecommand\let@cc[2]{%
+  \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+\DeclareOption{cm-default}{\@zf@euencfalse}
+\DeclareOption{lm-default}{\@zf@euenctrue}
+\DeclareOption{config}{\@zf@configfiletrue}
+\DeclareOption{noconfig}{\@zf@configfilefalse}
+\DeclareOption{quiet}{\let\zf@PackageWarning\zf@PackageInfo}
+\ExecuteOptions{config,lm-default}
+\ProcessOptions*
+\RequirePackage{ifxetex}
+\RequireXeTeX
 \RequirePackage{calc}
 \RequirePackage{xkeyval}[2005/05/07]
-\def\zf@enc{EU1}
+\if@zf@euenc
+  \def\zf@enc{EU1}
+  \RequirePackage{lmodern}
+  \RequirePackage[\zf@enc]{fontenc}
+\else
+  \def\zf@enc{U}
+  \let\encodingdefault\zf@enc
+\fi
 \let\UTFencname\zf@enc
-\RequirePackage[\zf@enc]{fontenc}
 \let\cyrillicencoding\zf@enc
 \let\latinencoding\zf@enc
 \g@addto@macro\document{%
@@ -99,16 +119,15 @@
 \newcommand*\defaultfontfeatures[1]{\def\zf@default@options{#1,}}
 \let\zf@default@options\@empty
 \newcommand*\addfontfeatures[1]{%
-  \let\zf@default@options@old\zf@default@options
-  \let\zf@default@options\@empty
-  \edef\zf@thisinfo{}%
-  \edef\@tempa{%
-    \noexpand\zf@fontspec
-      {\csname zf@family@options\f@family\endcsname,#1}%
-      {\csname zf@family@fontname\f@family\endcsname}}%
-  \@tempa
+  \begingroup
+    \let\zf@default@options\@empty
+    \edef\@tempa{%
+      \noexpand\zf@fontspec
+        {\csname zf@family@options\f@family\endcsname,#1}%
+        {\csname zf@family@fontname\f@family\endcsname}}%
+    \@tempa
+  \endgroup
   \fontfamily\zf@family\selectfont
-  \let\zf@default@options\zf@default@options@old
   \ignorespaces}
 \let\addfontfeature\addfontfeatures
 \newcommand*\newfontfeature[2]{%
@@ -156,17 +175,17 @@
       \zf@PackageWarning{Font \fontname\zf@basefont does not contain
                          language '#1' for script '\zf@script@name'}%
     \fi}}
-\providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
-\providecommand\gdef@cx[2]{\expandafter\xdef\csname#1\endcsname{#2}}
-\providecommand\let@cc[2]{\expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
 \newcommand*\zf@fontspec[2]{%
   \begingroup
   \zf@init
   \edef\zf@fontname{#2}%
-  \font\zf@basefont="\zf@fontname" at \f@size pt
   \let\zf@family@long\zf@fontname
   \setkeys*[zf]{preparse}{#1}%
-  \edef\zf@font@feat{\zf@font@feat\XKV@rm}%
+  \let\zf@font@feat\XKV@rm
+  \unless\ifx\zf@font@path\relax
+    \def\zf@font@wrap##1{[\zf@font@path##1]}%
+  \fi
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \zf@set@font@type
   \ifx\zf@suffix\@empty
     \ifzf@atsui
@@ -176,7 +195,7 @@
         \def\zf@suffix{/ICU}%
       \fi
     \fi
-    \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+    \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \fi
   \zf@firsttimetrue
     \zf@get@feature@requests{\zf@font@feat}%
@@ -196,21 +215,27 @@
           with options [\zf@default@options #1]}%
     \gdef@cx{zf@family@fontname\zf@family}{\zf@fontname}%
     \gdef@cx{zf@family@options\zf@family}{\zf@default@options #1}%
-    \gdef@cx{zf@family@fontdef\zf@family}{\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff}%
+    \gdef@cx{zf@family@fontdef\zf@family}
+      {\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff}%
     \DeclareFontFamily{\zf@enc}{\zf@family}{}%
-    \zf@make@font@shapes{\zf@fontname}{\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
+    \zf@make@font@shapes{\zf@fontname}
+      {\mddefault}{\updefault}{\zf@font@feat\zf@up@feat}%
     \unless\ifzf@nobf
       \ifx\zf@bf\@empty
-        \zf@make@font@shapes[\zf@fontname]{/B}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
+        \zf@make@font@shapes[\zf@fontname]{/B}
+          {\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
       \else
-        \zf@make@font@shapes{\zf@bf}{\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
+        \zf@make@font@shapes{\zf@bf}
+          {\bfdefault}{\updefault}{\zf@font@feat\zf@bf@feat}%
       \fi
     \fi
     \unless\ifzf@noit
       \ifx\zf@it\@empty
-        \zf@make@font@shapes[\zf@fontname]{/I}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
+        \zf@make@font@shapes[\zf@fontname]{/I}
+          {\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
       \else
-        \zf@make@font@shapes{\zf@it}{\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
+        \zf@make@font@shapes{\zf@it}
+          {\mddefault}{\itdefault}{\zf@font@feat\zf@it@feat}%
       \fi
     \fi
     \@tempswatrue
@@ -220,15 +245,19 @@
       \ifx\zf@bfit\@empty
         \ifx\zf@bf\@empty
           \ifx\zf@it\@empty
-            \zf@make@font@shapes[\zf@fontname]{/BI}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+            \zf@make@font@shapes[\zf@fontname]{/BI}
+              {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
           \else
-            \zf@make@font@shapes[\zf@it]{/B}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+            \zf@make@font@shapes[\zf@it]{/B}
+              {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
           \fi
         \else
-          \zf@make@font@shapes[\zf@bf]{/I}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+          \zf@make@font@shapes[\zf@bf]{/I}
+            {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
         \fi
       \else
-        \zf@make@font@shapes{\zf@bfit}{\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
+        \zf@make@font@shapes{\zf@bfit}
+          {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
       \fi
     \fi
     \fi
@@ -246,13 +275,13 @@
     \zf@icutrue
   \fi}
 \newcommand*\zf@make@font@shapes[5][]{%
-  \bgroup
+  \begingroup
     \edef\@tempa{#1}%
-    \ifx\@tempa\@empty\else
-      \font\@tempfonta="#1\zf@suffix" at \f@size pt
+    \unless\ifx\@tempa\@empty
+      \font\@tempfonta="\zf@font@wrap{#1}\zf@suffix" at \f@size pt
       \edef\@tempa{\fontname\@tempfonta}%
     \fi
-    \font\@tempfontb="#1#2\zf@suffix" at \f@size pt
+    \font\@tempfontb="\zf@font@wrap{#1#2}\zf@suffix" at \f@size pt
     \edef\@tempb{\fontname\@tempfontb}%
     \ifx\@tempa\@tempb
       \zf@PackageInfo{Could not resolve font #1#2 (it might not exist)}%
@@ -274,10 +303,10 @@
           {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
       \fi
     \fi
-  \egroup}
+  \endgroup}
 \newcommand\zf@DeclareFontShape[4][]{%
   \zf@get@feature@requests{#4}%
-  \def\@tempb{"\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff#1"}%
+  \def\@tempb{"\zf@font@wrap\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff#1"}%
   \zf@PackageInfo{\string\font\space is \@tempb}%
   \edef\@tempa{\noexpand
     \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}
@@ -303,6 +332,8 @@
 \newcommand*\zf@init{%
   \let\zf@pre@ff      \@empty
   \let\zf@font@feat   \@empty
+  \let\zf@font@path      \relax
+  \let\zf@font@wrap     \@firstofone
   \let\zf@suffix      \@empty
   \let\zf@bf          \@empty
   \let\zf@it          \@empty
@@ -391,6 +422,8 @@
     \fi
     \unless\ifx\@tempb\@empty
       \edef\@tempa{\@tempa=\@tempb}%
+    \else
+      \let\@tempa\@empty
     \fi
   \fi}
 \newcommand\zf@iv@strnum[1]{%
@@ -445,12 +478,30 @@
       \advance\c@zf@index\@ne
     \fi
   \repeat}
+\define@key[zf]{preparse}{ExternalLocation}[]{%
+  \zf@nobftrue\zf@noittrue
+  \def\zf@font@path{#1}}
+\define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
+  \edef\zf@suffix{\zf@suffix/#1}%
+  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \edef\zf@family@long{\zf@family@long +rend:#1}}
+\define@key[zf]{preparse}{Script}{%
+  \edef\zf@suffix{\zf@suffix/ICU}%
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
+  \edef\zf@family@long{\zf@family@long +script:#1}%
+  {\setkeys[zf@feat]{Script}{#1}}}
+\define@key[zf]{preparse}{Language}{%
+  \edef\zf@suffix{\zf@suffix/ICU}%
+  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \edef\zf@family@long{\zf@family@long +language:#1}%
+  {\setkeys[zf@feat]{Lang}{#1}}}
 \define@key[zf]{preparse}{BoldFont}{%
   \edef\@tempa{#1}%
   \ifx\@tempa\@empty
     \zf@nobftrue
     \edef\zf@family@long{\zf@family@long nobf}%
   \else
+    \zf@nobffalse
     \zf@partial@fontname#1\@nil
     \let\zf@bf\@tempa
     \edef\zf@family@long{\zf@family@long bf:#1}%
@@ -461,6 +512,7 @@
     \zf@noittrue
     \edef\zf@family@long{\zf@family@long noit}%
   \else
+    \zf@noitfalse
     \zf@partial@fontname#1\@nil
     \let\zf@it\@tempa
     \edef\zf@family@long{\zf@family@long it:#1}%
@@ -475,6 +527,7 @@
     \zf@nosctrue
     \edef\zf@family@long{\zf@family@long nosc}%
   \else
+    \zf@noscfalse
     \zf@partial@fontname#1\@nil
     \let\zf@sc\@tempa
     \zf@update@family{sc:\zap@space #1 \@empty}%
@@ -500,20 +553,6 @@
 \define@key[zf]{options}{SmallCapsFeatures}{%
   \unless\ifzf@firsttime\def\zf@sc@feat{,#1}\fi
   \zf@update@family{scfeat:\zap@space #1 \@empty}}
-\define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
-  \edef\zf@suffix{\zf@suffix/#1}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +rend:#1}}
-\define@key[zf]{preparse}{Script}{%
-  \edef\zf@suffix{\zf@suffix/ICU}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +script:#1}%
-  {\setkeys[zf@feat]{Script}{#1}}}
-\define@key[zf]{preparse}{Language}{%
-  \edef\zf@suffix{\zf@suffix/ICU}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
-  \edef\zf@family@long{\zf@family@long +language:#1}%
-  {\setkeys[zf@feat]{Lang}{#1}}}
 \define@key[zf]{options}{Scale}{%
   \edef\@tempa{#1}%
   \edef\@tempb{MatchLowercase}%
@@ -668,7 +707,7 @@
 \zf@define@feature@option{Numbers}{Lining}{21}{1}{+lnum}
 \zf@define@feature@option{Numbers}{SlashedZero}{14}{5}{+zero}
 \zf@define@feature@option{Numbers}{NoSlashedZero}{14}{4}{-zero}
-\zf@define@font@feature{Contextuals}
+\zf@define@font@feature  {Contextuals}
 \zf@define@feature@option{Contextuals}{Swash}{}{}{+cswh}
 \zf@define@feature@option{Contextuals}{NoSwash}{}{}{-cswh}
 \zf@define@feature@option{Contextuals}{WordInitial}{8}{0}{+init}
@@ -972,13 +1011,13 @@
 \DeclareRobustCommand{\upshape}{%
   \not@math@alphabet\upshape\relax
   \zf@merge@shape\updefault\sidefault\scdefault}
-\@ifpackageloaded{euler}{\zf@euler@package@loadedtrue}
-                        {\zf@euler@package@loadedfalse}
+\@ifpackageloaded{euler}{\zf@package@euler@loadedtrue}
+                        {\zf@package@euler@loadedfalse}
 \AtBeginDocument{%
   \let\zf@font@warning\@font@warning
   \let\@font@warning\@font@info
   \@ifpackageloaded{euler}{%
-    \ifzf@euler@package@loaded
+    \ifzf@package@euler@loaded
       \zf@math@eulertrue
     \else
       \zf@PackageError{The euler package must be loaded BEFORE fontspec}
@@ -1065,14 +1104,11 @@
   \SetMathAlphabet\mathsf{bold}\zf@enc\zf@sfmaths\bfdefault\updefault
   \SetMathAlphabet\mathtt{bold}\zf@enc\zf@ttmaths\bfdefault\updefault
   \let\font@warning\zf@font@warning}
-\DeclareOption{config}{%
+\if@zf@configfile
   \InputIfFileExists{fontspec.cfg}
     {\typeout{fontspec.cfg loaded.}}
-    {\typeout{fontspec.cfg would be loaded now if it existed.}}}
-\DeclareOption{noconfig}{}
-\DeclareOption{quiet}{\let\zf@PackageWarning\zf@PackageInfo}
-\ExecuteOptions{config}
-\ProcessOptions
+    {\typeout{No fontspec.cfg file found; no configuration loaded.}}
+\fi
 %% 
 %% Copyright 2005-2006 by Will Robertson <wspr81@gmail.com>
 %% 
