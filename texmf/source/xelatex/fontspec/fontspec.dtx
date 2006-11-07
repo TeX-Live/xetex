@@ -79,7 +79,7 @@ This work consists of the file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2006/08/20 v1.12 Advanced font selection for XeLaTeX]
+  [2006/11/05 v1.12 Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -89,7 +89,7 @@ This work consists of the file  fontspec.dtx
 %
 % \GetFileInfo{fontspec.sty}
 %
-% \title{The\kern-0.2ex {\fontspec[Scale=0.82]{Zapfino} fontspec} package}
+% \title{The \hspace{-1pt}{\fontspec[Scale=0.83]{Zapfino} fontspec}\hspace{1pt} package}
 % \author{\scshape Will Robertson}
 % \date{\filedate \qquad \fileversion}
 %
@@ -167,15 +167,11 @@ This work consists of the file  fontspec.dtx
 % Use the \texttt{[quiet]} package option to write 
 % these warnings to the transcript (\texttt{.log}) file instead.
 %
-% \subsection{Warning}
-% I still consider this package to be experimental, so I'm not
-% ensuring backwards compatibility at all costs. I don't want to weigh
-% the package down with old ways of doing things, so unfortunately
-% this will mean that some old documents will need to be modified in
-% order to compile correctly after future updates. 
-% It'll be worth it in the long run,
-% but you can curse at my lack of foresight as much as you wish in the
-% meantime.
+% \subsection{Warning!}
+% From time to time I'm forced  (or, at least, I prefer) to make 
+% backwards-incompatible changes to this package. (The interfaces are
+% converging to fixed points, however, and I don't envisage great changes
+% in the future.)
 %
 % Such things, and some other comments, are noted in the margin like
 % this~\warn{v1.6}{An example warning!}, with a red arrow if the
