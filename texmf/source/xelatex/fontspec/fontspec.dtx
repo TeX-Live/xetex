@@ -17,8 +17,6 @@
 %                             and fontspec.pdf.
 %
 %<*internalbatchfile>
-\immediate\write18{makeindex -s gind.ist -o \jobname.ind \jobname.idx}
-\immediate\write18{makeindex -s gglo.ist -o \jobname.gls \jobname.glo}
 \begingroup
 %</internalbatchfile>
 %<*batchfile>
@@ -79,7 +77,7 @@ This work consists of the file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2006/11/05 v1.12 Advanced font selection for XeLaTeX]
+  [2006/08/20 v1.13 Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -89,7 +87,7 @@ This work consists of the file  fontspec.dtx
 %
 % \GetFileInfo{fontspec.sty}
 %
-% \title{The \hspace{-1pt}{\fontspec[Scale=0.83]{Zapfino} fontspec}\hspace{1pt} package}
+% \title{The {\fontspec[Scale=0.82,Variant=3]{Zapfino}{\addfontfeature{Variant=4}f}ontspec} package}
 % \author{\scshape Will Robertson}
 % \date{\filedate \qquad \fileversion}
 %
@@ -167,11 +165,15 @@ This work consists of the file  fontspec.dtx
 % Use the \texttt{[quiet]} package option to write 
 % these warnings to the transcript (\texttt{.log}) file instead.
 %
-% \subsection{Warning!}
-% From time to time I'm forced  (or, at least, I prefer) to make 
-% backwards-incompatible changes to this package. (The interfaces are
-% converging to fixed points, however, and I don't envisage great changes
-% in the future.)
+% \subsection{Warning}
+% I still consider this package to be experimental, so I'm not
+% ensuring backwards compatibility at all costs. I don't want to weigh
+% the package down with old ways of doing things, so unfortunately
+% this will mean that some old documents will need to be modified in
+% order to compile correctly after future updates. 
+% It'll be worth it in the long run,
+% but you can curse at my lack of foresight as much as you wish in the
+% meantime.
 %
 % Such things, and some other comments, are noted in the margin like
 % this~\warn{v1.6}{An example warning!}, with a red arrow if the
@@ -526,8 +528,61 @@ This work consists of the file  fontspec.dtx
 %   \itshape Bold Italic {\scshape Bold Italic Small Caps}
 % \end{example}
 %
+% \subsection{Different features for different font sizes}
+% \label{sec:sizefeature}
 %
+% The \feat{SizeFeature} feature is a little more complicated
+% than the previous features discussed. It allows different fonts
+% and different font features to be selected for a given font
+% family as the point size varies. 
 %
+% It takes a comma-separated list of comma separated lists of features,
+% which of each sub-list must contain the \opt{Size} option
+% to declare the size range, and optionally \opt{Font} to change the
+% font based on size. Other (regular) fontspec features that are added
+% are used on top of the font features that would be used anyway.
+%
+% A less trivial example is shown in the context of optical font sizes
+% in \vref{sec:opticalsize}.
+%
+% \begin{example}
+%   \fontspec[ SizeFeatures={
+%       {Size={-8}, Font=Apple Chancery, Colour=AA0000},
+%       {Size={8-14}, Colour=00AA00},
+%       {Size={14-}, Colour=0000AA}} ]{Skia} 
+%   {\scriptsize Small\par} Normal size\par {\Large Large\par}
+% \end{example}
+% To be precise, the \opt{Size} sub-feature accepts arguments in the form shown in \vref{tab:sizing}.
+% Braces around the size range are optional. For an exact font size (|Size=X|)
+% font sizes chosen near that size will `snap'. For example, for size definitions
+% at exactly 11pt and 14pt, if a 12pt font is requested \emph{actually} the 
+% 11pt font will be selected. This is a remnant of the past when fonts were designed
+% in metal (at obviously rigid sizes) and later when bitmap fonts were similarly
+% designed for fixed sizes.
+%
+% If additional features are only required for a single size, the other sizes
+% must still be specified.  As in:
+% \begin{verbatim}
+%   SizeFeatures={
+%      {Size=-10,Numbers=Uppercase},
+%      {Size=10-}}
+% \end{verbatim}
+% Otherwise, the font sizes greater than 10 won't be defined!
+%
+% \begin{table}
+% \centering
+% \begin{tabular}{@{}ll@{}}
+% \toprule
+% Input & Font size, $s$ \\
+% \midrule
+%  |Size = X-| & $s \geq \texttt{X}$\,pt \\
+%  |Size = -Y| & $s < \texttt{Y}$\,pt \\
+%  |Size = X-Y| & $\texttt{X} \geq s < \texttt{Y}$\,pt \\
+%  |Size = X| & $s = \texttt{X}$\,pt \\
+% \bottomrule
+% \end{tabular}
+% \caption{Syntax for specifying the size to apply custom font features.}\label{tab:sizing}
+% \end{table}
 %
 %
 % \section{Font independent options} \label{sec:font-ind-features}
@@ -806,7 +861,18 @@ This work consists of the file  fontspec.dtx
 %    MM optical size test                    \\
 % \end{aatexample}
 %
-%
+% The \feat{SizeFeatures} feature (\vref{sec:sizefeature}) can be
+% used to specify exactly which optical sizes will be used for ranges
+% of font size. For example, something like
+% \begin{verbatim}
+%   \fontspec[
+%     SizeFeatures={
+%       {Size=-10,     OpticalSize=8 },
+%       {Size= 10-14,  OpticalSize=10},
+%       {Size= 14-18,  OpticalSize=14},
+%       {Size=    18-, OpticalSize=18}}
+%            ]{Warnock Pro}
+% \end{verbatim}
 %
 % \subsection{Ligatures}
 %
@@ -1573,7 +1639,11 @@ This work consists of the file  fontspec.dtx
 % \iffalse
 %<*fontspec> 
 % \fi
-%
+% Only proceed if it is \XeTeX\ that is doing the typesetting.
+%    \begin{macrocode}
+\RequirePackage{ifxetex}
+\RequireXeTeX
+%    \end{macrocode}
 % \subsection{Bits and pieces}
 % \paragraph{Conditionals}
 %    \begin{macrocode}
@@ -1595,6 +1665,14 @@ This work consists of the file  fontspec.dtx
 % For, well, dealing with \pkg{babel}:
 %    \begin{macrocode}
 \newif\ifzf@package@babel@loaded
+%    \end{macrocode}
+% For package options:
+%    \begin{macrocode}
+\newif\if@zf@configfile
+\newif\if@zf@euenc
+%    \end{macrocode}
+% \paragraph{Counters}
+%    \begin{macrocode}
 %    \end{macrocode}
 % For package options:
 %    \begin{macrocode}
@@ -1674,7 +1752,7 @@ This work consists of the file  fontspec.dtx
 \fi
 \let\UTFencname\zf@enc
 %    \end{macrocode}
-% \changes{v1.12}{2006/08/21}{Finally, use the \texttt{EU1} font encoding (and the LM fonts).}
+% \changes{v1.12}{2006/08/21}{Finally, use the \texttt{EU1} font encoding.}
 % Dealing with a couple of the problems introduced by \pkg{babel}:
 %    \begin{macrocode}
 \let\cyrillicencoding\zf@enc
@@ -2185,7 +2263,7 @@ This work consists of the file  fontspec.dtx
           {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
       \fi
     \fi
-    \fi
+  \fi
   \endgroup}
 %    \end{macrocode}
 % \changes{v1.5}{2004/11/29}{NFSS specifiers now take the default values.}  
@@ -2236,12 +2314,14 @@ This work consists of the file  fontspec.dtx
 %
 %
 % \begin{macro}{\zf@make@font@shapes}
-%   This macro uses \cs{DeclareFontShape} to define the font shape in
-%   question. The arguments are: 
-%   \begin{itemize}[nolistsep]
-%     \item |#1#2|~the font name,      \item |#3|~the font series, 
-%     \item   |#4|~the font shape, and \item |#5|~the font features.
-%   \end{itemize} 
+%  \doarg{Font name prefix}
+%  \darg{Font name}
+%  \darg{Font series}
+%  \darg{Font shape}
+%  \darg{Font features}
+%   This macro eventually uses \cs{DeclareFontShape} to define the font shape in
+%   question.
+%
 %   The optional first
 %   argument is used when making the font shapes for bold, italic, and
 %   bold italic fonts using \XeTeX's auto-recognition with |#2| as |/B|, |/I|,
@@ -2276,7 +2356,7 @@ This work consists of the file  fontspec.dtx
       \ifx\zf@sc\@empty
         \unless\ifzf@nosc
           \zf@make@smallcaps    
-          \ifx\zf@smallcaps\@empty\else
+          \unless\ifx\zf@smallcaps\@empty
             \zf@DeclareFontShape[\zf@smallcaps]{#3}
               {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
           \fi
@@ -2310,31 +2390,65 @@ This work consists of the file  fontspec.dtx
 % \end{macro}
 %
 % \begin{macro}{\zf@DeclareFontShape}
-% Wrapper for \cmd\DeclareFontShape. Among omitting common arguments, it also
-% fully expands its input upon execution, which is required to save the contents of
-% \cmd\zf@adjust\ at the time of processing to the font definition.
-%
-% The extra stuff for the slanted shape substitution is a little bit awkward, 
-% but I'd rather have it here than break out yet another macro.
+% \doarg{Raw appended font feature}
+% \darg{Font series}
+% \darg{Font shape}
+% \darg{Font features}
+% Wrapper for \cmd\DeclareFontShape.
 %    \begin{macrocode}
 \newcommand\zf@DeclareFontShape[4][]{%
-  \zf@get@feature@requests{#4}%
-  \def\@tempb{"\zf@font@wrap\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff#1"}%
-  \zf@PackageInfo{\string\font\space is \@tempb}%
+  \ifx\zf@size@feat\@empty
+    \zf@get@feature@requests{#4}%
+    \edef\zf@font@str{<->\zf@scale"\zf@fontname\zf@suffix:%
+      \zf@pre@ff\zf@ff#1"}%
+  \else
+%    \end{macrocode}
+% Default code, above, sets things up for no optical size fonts or features.
+% On the other hand, loop through \feat{SizeFeatures} arguments, which
+% are of the form
+%
+% {\centering |SizeFeatures={{<one>},{<two>},{<three>}}|.\par}
+%    \begin{macrocode}
+    \@for\zf@this@size:=\zf@size@feat\do{%
+      \let\zf@size\@empty
+      \let\zf@size@fnt\zf@fontname
+      \edef\@tempa{\noexpand
+        \setkeys*[zf]{sizing}{\expandafter\@firstofone\zf@this@size}}%
+      \@tempa
+      \ifx\zf@size\@empty\zf@PackageError
+          {Size information must be supplied}
+          {For example, SizeFeatures={Size={8-12},...},...}%
+      \fi
+      \zf@get@feature@requests{#4,\XKV@rm}%
+      \edef\zf@font@str{\zf@font@str <\zf@size>%
+        \zf@scale"\zf@size@fnt\zf@suffix:\zf@pre@ff\zf@ff#1"}}%
+  \fi
+%    \end{macrocode}
+% And finally the actual font shape declaration using \cmd\zf@font@str\ defined above.
+% \cmd\zf@adjust\ is defined in various places to deal with things like the hyphenation
+% character and interword spacing.
+%    \begin{macrocode}
   \edef\@tempa{\noexpand
-    \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}
-      {<->\zf@scale\@tempb}{\zf@adjust}}%
+    \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}%
+      {\zf@font@str}{\zf@adjust}}%
   \@tempa
-  \edef\@tempa{#3}\edef\@tempb{\itdefault}%
+%    \end{macrocode}
+% This extra stuff for the slanted shape substitution is a little bit awkward, 
+% but I'd rather have it here than break out yet another macro. Alternatively,
+% one day I might just redefine \cmd\slshape. Why not, eh?
+%    \begin{macrocode}
+  \edef\@tempa{#3}%
+  \edef\@tempb{\itdefault}%
   \ifx\@tempa\@tempb
     \edef\@tempa{\noexpand
-      \DeclareFontShape{\zf@enc}{\zf@family}{#2}{\sldefault}
+      \DeclareFontShape{\zf@enc}{\zf@family}{#1}{\sldefault}
         {<->sub*\zf@family/#2/\itdefault}{\zf@adjust}}%
-    \@tempa      
+    \@tempa
   \fi}
 %    \end{macrocode}
 % \changes{v1.9}{2005/12/11}{Implemented as wrapper for \cmd\DeclareFontShape.}
 % \changes{v1.9}{2006/01/15}{Slanted/italic shape substitution implemented.}
+% \changes{v1.13}{2006/11/12}{New feature \feat{SizeFeatures} implemented.}
 % \end{macro}
 %
 %
@@ -2384,8 +2498,9 @@ This work consists of the file  fontspec.dtx
 % because it's no longer the first thing that can affect these things.
 %    \begin{macrocode}
 \newcommand*\zf@init{%
-  \let\zf@pre@ff      \@empty 
+  \let\zf@pre@ff      \@empty
   \let\zf@font@feat   \@empty
+  \let\zf@font@str   \@empty
   \let\zf@font@path      \relax
   \let\zf@font@wrap     \@firstofone
   \let\zf@suffix      \@empty
@@ -2398,6 +2513,9 @@ This work consists of the file  fontspec.dtx
   \let\zf@it@feat     \@empty
   \let\zf@bfit@feat   \@empty
   \let\zf@sc@feat     \@empty
+  \let\zf@size\@empty
+  \let\zf@size@feat\@empty
+  \let\zf@size@fnt\@empty
   \c@zf@script 1818326126\relax
   \def\zf@script@name{Latin}%
   \c@zf@language 0\relax
@@ -2826,6 +2944,22 @@ This work consists of the file  fontspec.dtx
   \zf@update@family{scfeat:\zap@space #1 \@empty}}
 %    \end{macrocode}
 %
+% paragraph{Features varying by size}
+%    \begin{macrocode}
+\define@key[zf]{preparse}{SizeFeatures}{%
+  \unless\ifzf@firsttime
+    \def\zf@size@feat{#1}%
+  \fi
+  \zf@update@family{sizefeat:\zap@space #1 \@empty}}
+%    \end{macrocode}
+% 
+%    \begin{macrocode}
+\define@key[zf]{sizing}{Size}{\def\zf@size{#1}}  
+\define@key[zf]{sizing}{Font}{\def\zf@size@fnt{#1}}  
+%    \end{macrocode}
+% \changes{v1.13}{2006/11/12}{\feat{SizeFeatures}: Beginnings of support for different font features for different font sizes, required by \pkg{unimath}.}
+%
+%
 % \subsubsection{Font-independent features}
 %
 % These features can be applied to any font. 
@@ -3072,15 +3206,15 @@ This work consists of the file  fontspec.dtx
 %   to facilitate option normalisation (to come). Similarly for \opt{PETITECAPS}.}
 %    \begin{macrocode}
 \zf@define@font@feature{Letters}
-\zf@define@feature@option{Letters}{Normal}{3}{0}{}
-\zf@define@feature@option{Letters}{Uppercase}{3}{1}{+case}
-\zf@define@feature@option{Letters}{Lowercase}{3}{2}{}
-\zf@define@feature@option{Letters}{SmallCaps}{3}{3}{+smcp}
-\zf@define@feature@option{Letters}{PetiteCaps}{}{}{+pcap}
-\zf@define@feature@option{Letters}{UppercaseSmallCaps}{}{}{+c2sc}
-\zf@define@feature@option{Letters}{UppercasePetiteCaps}{}{}{+c2pc}
-\zf@define@feature@option{Letters}{InitialCaps}{3}{4}{}
-\zf@define@feature@option{Letters}{Unicase}{}{}{+unic}
+\zf@define@feature@option{Letters}{Normal}             {3}{0}{}
+\zf@define@feature@option{Letters}{Uppercase}          {3}{1}{+case}
+\zf@define@feature@option{Letters}{Lowercase}          {3}{2}{}
+\zf@define@feature@option{Letters}{SmallCaps}          {3}{3}{+smcp}
+\zf@define@feature@option{Letters}{PetiteCaps}         {} {} {+pcap}
+\zf@define@feature@option{Letters}{UppercaseSmallCaps} {} {} {+c2sc}
+\zf@define@feature@option{Letters}{UppercasePetiteCaps}{} {} {+c2pc}
+\zf@define@feature@option{Letters}{InitialCaps}        {3}{4}{}
+\zf@define@feature@option{Letters}{Unicase}            {} {} {+unic}
 %    \end{macrocode}
 %
 % \subsubsection{Numbers}
@@ -3094,13 +3228,13 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.7}{2005/04/18}{AAT \feat{Numbers}:\opt{SlashedZero}.}
 %    \begin{macrocode}
 \zf@define@font@feature{Numbers}
-\zf@define@feature@option{Numbers}{Monospaced}{6}{0}{+tnum}
-\zf@define@feature@option{Numbers}{Proportional}{6}{1}{+pnum}
-\zf@define@feature@option{Numbers}{Lowercase}{21}{0}{+onum}
-\zf@define@feature@option{Numbers}{OldStyle}{21}{0}{+onum}
-\zf@define@feature@option{Numbers}{Uppercase}{21}{1}{+lnum}
-\zf@define@feature@option{Numbers}{Lining}{21}{1}{+lnum}
-\zf@define@feature@option{Numbers}{SlashedZero}{14}{5}{+zero}
+\zf@define@feature@option{Numbers}{Monospaced}   {6} {0}{+tnum}
+\zf@define@feature@option{Numbers}{Proportional} {6} {1}{+pnum}
+\zf@define@feature@option{Numbers}{Lowercase}    {21}{0}{+onum}
+\zf@define@feature@option{Numbers}{OldStyle}     {21}{0}{+onum}
+\zf@define@feature@option{Numbers}{Uppercase}    {21}{1}{+lnum}
+\zf@define@feature@option{Numbers}{Lining}       {21}{1}{+lnum}
+\zf@define@feature@option{Numbers}{SlashedZero}  {14}{5}{+zero}
 \zf@define@feature@option{Numbers}{NoSlashedZero}{14}{4}{-zero}
 %    \end{macrocode}
 %
@@ -3108,25 +3242,25 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.9}{2005/12/21}{\feat{Swashes} feature changed to \feat{Contextuals}. Option of this feature \opt{Contextual} changed to \opt{Swash}, for obvious reasons.}
 %    \begin{macrocode}
 \zf@define@font@feature  {Contextuals}
-\zf@define@feature@option{Contextuals}{Swash}{}{}{+cswh}
-\zf@define@feature@option{Contextuals}{NoSwash}{}{}{-cswh}
-\zf@define@feature@option{Contextuals}{WordInitial}{8}{0}{+init}
+\zf@define@feature@option{Contextuals}{Swash}        {} {} {+cswh}
+\zf@define@feature@option{Contextuals}{NoSwash}      {} {} {-cswh}
+\zf@define@feature@option{Contextuals}{WordInitial}  {8}{0}{+init}
 \zf@define@feature@option{Contextuals}{NoWordInitial}{8}{1}{-init}
-\zf@define@feature@option{Contextuals}{WordFinal}{8}{2}{+fina}
-\zf@define@feature@option{Contextuals}{NoWordFinal}{8}{3}{-fina}
-\zf@define@feature@option{Contextuals}{LineInitial}{8}{4}{}
+\zf@define@feature@option{Contextuals}{WordFinal}    {8}{2}{+fina}
+\zf@define@feature@option{Contextuals}{NoWordFinal}  {8}{3}{-fina}
+\zf@define@feature@option{Contextuals}{LineInitial}  {8}{4}{}
 \zf@define@feature@option{Contextuals}{NoLineInitial}{8}{5}{}
-\zf@define@feature@option{Contextuals}{LineFinal}{8}{6}{+falt}
-\zf@define@feature@option{Contextuals}{NoLineFinal}{8}{7}{-falt}
-\zf@define@feature@option{Contextuals}{Inner}{8}{8}{+medi}
-\zf@define@feature@option{Contextuals}{NoInner}{8}{9}{-medi}
+\zf@define@feature@option{Contextuals}{LineFinal}    {8}{6}{+falt}
+\zf@define@feature@option{Contextuals}{NoLineFinal}  {8}{7}{-falt}
+\zf@define@feature@option{Contextuals}{Inner}        {8}{8}{+medi}
+\zf@define@feature@option{Contextuals}{NoInner}      {8}{9}{-medi}
 %    \end{macrocode}
 %
 % \subsubsection{Diacritics}
 %    \begin{macrocode}
 \zf@define@font@feature{Diacritics}
-\zf@define@feature@option{Diacritics}{Show}{9}{0}{}
-\zf@define@feature@option{Diacritics}{Hide}{9}{1}{}
+\zf@define@feature@option{Diacritics}{Show}     {9}{0}{}
+\zf@define@feature@option{Diacritics}{Hide}     {9}{1}{}
 \zf@define@feature@option{Diacritics}{Decompose}{9}{2}{}
 %    \end{macrocode}
 %
@@ -3135,23 +3269,23 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \zf@define@font@feature{Kerning}
 \zf@define@feature@option{Kerning}{Uppercase}{}{}{+cpsp}
-\zf@define@feature@option{Kerning}{On}{}{}{+kern}
-\zf@define@feature@option{Kerning}{Off}{}{}{-kern}
+\zf@define@feature@option{Kerning}{On}       {}{}{+kern}
+\zf@define@feature@option{Kerning}{Off}      {}{}{-kern}
 %\zf@define@feature@option{Kerning}{Vertical}{}{}{+vkrn}
 %\zf@define@feature@option{Kerning}{VerticalAlternateProportional}{}{}{+vpal}
-%\zf@define@feature@option{Kerning}{VerticalAlternateHalfWidth}{}{}{+vhal}
+%\zf@define@feature@option{Kerning}{VerticalAlternateHalfWidth}   {}{}{+vhal}
 %    \end{macrocode}
 %
 % \subsubsection{Vertical position}
 %    \begin{macrocode}
 \zf@define@font@feature{VerticalPosition}
-\zf@define@feature@option{VerticalPosition}{Normal}{10}{0}{}
-\zf@define@feature@option{VerticalPosition}{Superior}{10}{1}{+sups}
-\zf@define@feature@option{VerticalPosition}{Inferior}{10}{2}{+subs}
+\zf@define@feature@option{VerticalPosition}{Normal}     {10}{0}{}
+\zf@define@feature@option{VerticalPosition}{Superior}   {10}{1}{+sups}
+\zf@define@feature@option{VerticalPosition}{Inferior}   {10}{2}{+subs}
+\zf@define@feature@option{VerticalPosition}{Ordinal}    {10}{3}{+ordn}
+\zf@define@feature@option{VerticalPosition}{Numerator}  {}  {} {+numr}
+\zf@define@feature@option{VerticalPosition}{Denominator}{}  {} {+dnom}
 \zf@define@feature@option{VerticalPosition}{ScientificInferior}{}{}{+sinf}
-\zf@define@feature@option{VerticalPosition}{Ordinal}{10}{3}{+ordn}
-\zf@define@feature@option{VerticalPosition}{Numerator}{}{}{+numr}
-\zf@define@feature@option{VerticalPosition}{Denominator}{}{}{+dnom}
 %    \end{macrocode}
 %
 % \subsubsection{Fractions}
@@ -3159,10 +3293,10 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.7}{2005/03/25}{OpenType \opt{Alternate} \feat{Fractions} feature.}
 %    \begin{macrocode}
 \zf@define@font@feature{Fractions}
-\zf@define@feature@option{Fractions}{On}{11}{1}{+frac}
-\zf@define@feature@option{Fractions}{Off}{11}{0}{-frac}
-\zf@define@feature@option{Fractions}{Diagonal}{11}{2}{}
-\zf@define@feature@option{Fractions}{Alternate}{}{}{+afrc}
+\zf@define@feature@option{Fractions}{On}       {11}{1}{+frac}
+\zf@define@feature@option{Fractions}{Off}      {11}{0}{-frac}
+\zf@define@feature@option{Fractions}{Diagonal} {11}{2}{}
+\zf@define@feature@option{Fractions}{Alternate}{}  {} {+afrc}
 %    \end{macrocode}
 %
 % \subsubsection{Alternates and variants} 
@@ -3193,17 +3327,17 @@ This work consists of the file  fontspec.dtx
 % \subsubsection{Style}
 %    \begin{macrocode}
 \zf@define@font@feature{Style}
-\zf@define@feature@option{Style}{Alternate}{}{}{+salt}
-\zf@define@feature@option{Style}{Italic}{32}{2}{+ital}
-\zf@define@feature@option{Style}{Ruby}{28}{2}{+ruby}
-\zf@define@feature@option{Style}{Swash}{}{}{+swsh}
-\zf@define@feature@option{Style}{Historic}{}{}{+hist}
-\zf@define@feature@option{Style}{Display}{19}{1}{}
-\zf@define@feature@option{Style}{Engraved}{19}{2}{}
-\zf@define@feature@option{Style}{TitlingCaps}{19}{4}{+titl}
-\zf@define@feature@option{Style}{TallCaps}{19}{5}{}
-\zf@define@feature@option{Style}{HorizontalKana}{}{}{+hkna}  
-\zf@define@feature@option{Style}{VerticalKana}{}{}{+vkna}  
+\zf@define@feature@option{Style}{Alternate}     {}  {} {+salt}
+\zf@define@feature@option{Style}{Italic}        {32}{2}{+ital}
+\zf@define@feature@option{Style}{Ruby}          {28}{2}{+ruby}
+\zf@define@feature@option{Style}{Swash}         {}  {} {+swsh}
+\zf@define@feature@option{Style}{Historic}      {}  {} {+hist}
+\zf@define@feature@option{Style}{Display}       {19}{1}{}
+\zf@define@feature@option{Style}{Engraved}      {19}{2}{}
+\zf@define@feature@option{Style}{TitlingCaps}   {19}{4}{+titl}
+\zf@define@feature@option{Style}{TallCaps}      {19}{5}{}
+\zf@define@feature@option{Style}{HorizontalKana}{}  {} {+hkna}  
+\zf@define@feature@option{Style}{VerticalKana}  {}  {} {+vkna}  
 %    \end{macrocode}
 % \changes{v1.7}{2005/03/26}
 %    {\feat{Style} feature renamed from \feat{StyleOptions}.}
@@ -3211,13 +3345,13 @@ This work consists of the file  fontspec.dtx
 % \subsubsection{CJK shape}
 %    \begin{macrocode}
 \zf@define@font@feature{CJKShape}
-\zf@define@feature@option{CJKShape}{Traditional}{20}{0}{+trad}
-\zf@define@feature@option{CJKShape}{Simplified}{20}{1}{+smpl}
-\zf@define@feature@option{CJKShape}{JIS1978}{20}{2}{+jp78}
-\zf@define@feature@option{CJKShape}{JIS1983}{20}{3}{+jp83}
-\zf@define@feature@option{CJKShape}{JIS1990}{20}{4}{+jp90}
-\zf@define@feature@option{CJKShape}{Expert}{20}{10}{+expt}
-\zf@define@feature@option{CJKShape}{NLC}{20}{13}{+nlck}
+\zf@define@feature@option{CJKShape}{Traditional}{20}{0} {+trad}
+\zf@define@feature@option{CJKShape}{Simplified} {20}{1} {+smpl}
+\zf@define@feature@option{CJKShape}{JIS1978}    {20}{2} {+jp78}
+\zf@define@feature@option{CJKShape}{JIS1983}    {20}{3} {+jp83}
+\zf@define@feature@option{CJKShape}{JIS1990}    {20}{4} {+jp90}
+\zf@define@feature@option{CJKShape}{Expert}     {20}{10}{+expt}
+\zf@define@feature@option{CJKShape}{NLC}        {20}{13}{+nlck}
 %    \end{macrocode}
 % \changes{v1.7}{2005/03/26}{New feature: \feat{CharacterShape}}
 % \changes{v1.9}{2006/02/12}{\feat{CharacterShape} now \feat{CJKShape}}
@@ -4028,6 +4162,17 @@ Please see the documentation for font feature explanation and further package ni
 \linespread{1.05}      % Palatino needs more space between lines
 \lineskiplimit=-5pt    % Osaka is really tall so this prevents ugly lines
 \frenchspacing         % Remove ugly extra space after punctuation
+
+\makeatletter
+\newcounter{argument}
+\g@addto@macro\endmacro{\setcounter{argument}{0}}
+\newcommand*\darg[1]{%
+  \stepcounter{argument}%
+  \noindent{\ttfamily\char`\#\theargument~:~}#1\par}
+\newcommand*\doarg[1]{%
+  \stepcounter{argument}%
+  \noindent{\ttfamily\makebox[0pt][r]{[}\char`\#\theargument]:~}#1\par}
+\makeatother
 
 %    \end{macrocode}
 %</doc-style>

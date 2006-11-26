@@ -71,7 +71,7 @@ This work consists of the file  \jobname.dtx
 %
 %<*readme>
 ------------------------
-THE XLTXTRA PACKAGE v0.2
+THE XLTXTRA PACKAGE v0.3
 
 This package provides a few small features that 
 are useful for XeLaTeX.
@@ -127,9 +127,11 @@ Will Robertson
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \RequirePackage{graphicx}
+\@ifpackageloaded{fontspec}{}{\PackageWarning{xltxtra}{fontspec loaded now with default options.}}
 \RequirePackage{fontspec}
 \RequirePackage{xunicode}
 %    \end{macrocode}
+% \changes{v0.2}{2006/10/22}{Added warning if fontspec is loaded by xltxtra.}
 %
 % \section{Logos}
 % \DescribeMacro{\XeTeX}
