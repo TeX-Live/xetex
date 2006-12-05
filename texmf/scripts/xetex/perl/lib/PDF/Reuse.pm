@@ -14,7 +14,10 @@ use autouse 'Carp' => qw(carp
 # use Compress::Zlib qw(compress inflateInit);
 
 use autouse 'Data::Dumper'   => qw(Dumper);
-use AutoLoader qw(AUTOLOAD);
+
+# changed for xetex installation to remove file system clutter
+# use AutoLoader 'AUTOLOAD';
+use SelfLoader; 
 
 our $VERSION = '0.292';
 our @ISA     = qw(Exporter);
@@ -1199,7 +1202,7 @@ sub definieraId
 }
 1;
 
-__END__
+__DATA__
 
 =head1 NAME
 

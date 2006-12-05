@@ -41,10 +41,6 @@ if [ -e Work/texk/xdv2pdf/xdv2pdf ]; then
 		cp -pf Work/texk/xdv2pdf/${f} ${texbindir}/${f}
 		echo ${texbindir}/${f} >> ${filelist}
 	done
-	# the mergemarks script is in the original source dir, not under Work
-	cp -pf texk/xdv2pdf/xdv2pdf_mergemarks ${texbindir}/xdv2pdf_mergemarks
-	chmod +x ${texbindir}/xdv2pdf_mergemarks
-	echo ${texbindir}/xdv2pdf_mergemarks >> ${filelist}
 fi
 
 # copy our texmf additions into the local texmf tree

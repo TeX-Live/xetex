@@ -1395,6 +1395,18 @@ getnativecharwd(int f, int c)
 	return wd;
 }
 
+UInt16
+get_native_glyph_id(void* pNode, unsigned index)
+{
+	memoryword*	node = (memoryword*)pNode;
+	FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
+	UInt16*		glyphIDs = (UInt16*)(locations + native_glyph_count(node));
+	if (index >= native_glyph_count(node))
+		return 0;
+	else
+		return glyphIDs[index];
+}
+
 void
 store_justified_native_glyphs(void* node)
 {

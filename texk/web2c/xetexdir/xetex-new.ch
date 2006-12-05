@@ -1164,14 +1164,6 @@ else  begin print_esc("scriptscriptfont");
 @d saving_hyph_codes==int_par(saving_hyph_codes_code)
 @d XeTeX_linebreak_locale==int_par(XeTeX_linebreak_locale_code)
 @d XeTeX_linebreak_penalty==int_par(XeTeX_linebreak_penalty_code)
-
-@ @<Global...@>=
-xetex_del_code_base:integer; { a hack, because WEB defined constants don't make it through to C }
-
-@ @<Set init...@>=
-xetex_del_code_base:=del_code_base;
-
-@ New sections slipped in above here.
 @z
 
 @x
@@ -1197,7 +1189,6 @@ del_code("."):=0; {this null delimiter is used in error recovery}
 @y
 for k:=0 to number_chars-1 do del_code(k):=-1;
 del_code("."):=0; {this null delimiter is used in error recovery}
-set_del_code1(".",0);
 @z
 
 @x
@@ -1295,6 +1286,13 @@ else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
 @z
 
 @x
+primitive("delimiter",delim_num,0);@/
+@y
+primitive("delimiter",delim_num,0);@/
+primitive("XeTeXdelimiter",delim_num,1);@/
+@z
+
+@x
 primitive("mathaccent",math_accent,0);@/
 @y
 primitive("mathaccent",math_accent,0);@/
@@ -1306,15 +1304,29 @@ primitive("mathchar",math_char_num,0);@/
 @!@:math_char_}{\.{\\mathchar} primitive@>
 @y
 primitive("mathchar",math_char_num,0);@/
-primitive("XeTeXmathchar",math_char_num,1);@/
-primitive("XeTeXextmathchar",math_char_num,2);@/
+primitive("XeTeXmathcharnum",math_char_num,1);@/
+primitive("XeTeXmathchar",math_char_num,2);@/
 @!@:math_char_}{\.{\\mathchar} primitive@>
+@z
+
+@x
+primitive("radical",radical,0);@/
+@y
+primitive("radical",radical,0);@/
+primitive("XeTeXradical",radical,1);@/
 @z
 
 @x
 primitive("relax",relax,256); {cf.\ |scan_file_name|}
 @y
 primitive("relax",relax,too_big_char); {cf.\ |scan_file_name|}
+@z
+
+@x
+delim_num: print_esc("delimiter");
+@y
+delim_num: if chr_code=1 then print_esc("XeTeXdelimiter")
+  else print_esc("delimiter");
 @z
 
 @x
@@ -1334,20 +1346,27 @@ math_accent: if chr_code=1 then print_esc("XeTeXmathaccent")
 @x
 math_char_num: print_esc("mathchar");
 @y
-math_char_num: if chr_code=2 then print_esc("XeTeXextmathchar")
-  else if chr_code=1 then print_esc("XeTeXmathchar")
+math_char_num: if chr_code=2 then print_esc("XeTeXmathchar")
+  else if chr_code=1 then print_esc("XeTeXmathcharnum")
   else print_esc("mathchar");
 @z
 
 @x
+radical: print_esc("radical");
+@y
+radical: if chr_code=1 then print_esc("XeTeXradical") else print_esc("radical");
+@z
+
+@x
 @* \[19] Saving and restoring equivalents.
 @y
 @* \[19] Saving and restoring equivalents.
 @z
 
-@x
+-- based on Omega; not needed with new xetex delimiter coding
+ x
 @ The |eq_define| and |eq_word_define| routines take care of local definitions.
-@y
+ y
 @#
 procedure eq_word_define1(@!p:pointer;@!w:integer);
 label exit;
@@ -1364,11 +1383,11 @@ assign_trace(p,"into")@;@/
 exit:end;
 
 @ The |eq_define| and |eq_word_define| routines take care of local definitions.
-@z
+ z
 
-@x
+ x
 @ Subroutine |save_for_after| puts a token on the stack for save-keeping.
-@y
+ y
 @#
 procedure geq_word_define1(@!p:pointer;@!w:integer); {global |eq_word_define1|}
 begin assign_trace(p,"globally changing")@;@/
@@ -1378,7 +1397,7 @@ assign_trace(p,"into")@;@/
 end;
 
 @ Subroutine |save_for_after| puts a token on the stack for save-keeping.
-@z
+ z
 
 @x
 @* \[20] Token lists.
@@ -1724,17 +1743,21 @@ XeTeX_def_code:
   begin
     scan_char_num;
     if m=math_code_base then begin
-      cur_val1:=ho(math_code(cur_val));
-      scanned_result(cur_val1)(int_val)
+      scanned_result(ho(math_code(cur_val)))(int_val)
     end
     else if m=math_code_base+1 then begin
-      print_err("Can't use \XeTeXextmathcode as a number");
-      help2("\XeTeXextmathcode is for setting a mathcode from separate values;")@/
-      ("use \XeTeXmathcode to access them as single values."); error;
+      print_err("Can't use \XeTeXmathcode as a number");
+      help2("\XeTeXmathcode is for setting a mathcode from separate values;")@/
+      ("use \XeTeXmathcodenum to access them as single values."); error;
       scanned_result(0)(int_val)
     end
-    else begin
-      scanned_result(-1)(int_val); { FIXME - XeTeXdelcode }
+    else if m=del_code_base then begin
+      scanned_result(ho(del_code(cur_val)))(int_val)
+    end else begin
+      print_err("Can't use \XeTeXdelcode as a number");
+      help2("\XeTeXdelcode is for setting a delcode from separate values;")@/
+      ("use \XeTeXdelcodenum to access them as single values."); error;
+      scanned_result(0)(int_val);
     end;
   end;
 @z
@@ -1749,7 +1772,7 @@ if m=math_code_base then begin
   cur_val1:=ho(math_code(cur_val));
   if is_active_math_char(cur_val1) then
     cur_val1:=@"8000
-  else if (math_class_field(cur_val1)>8) or
+  else if (math_class_field(cur_val1)>7) or
      (math_fam_field(cur_val1)>15) or
      (math_char_field(cur_val1)>255) then
     begin print_err("Extended mathchar used as mathchar");
@@ -1764,30 +1787,14 @@ if m=math_code_base then begin
   end
 else if m=del_code_base then begin
   cur_val1:=del_code(cur_val);
-  if (math_class_field(cur_val1) > 8) or
-     (math_fam_field(cur_val1) > 15) or
-     (math_char_field(cur_val1) > 255) then begin
+  if cur_val1>=@"40000000 then begin
     print_err("Extended delcode used as delcode");
 @.Bad delcode@>
     help2("A delimiter code must be between 0 and ""7FFFFFF.")@/
       ("I changed this one to zero."); error;
     scanned_result(0)(int_val);
   end else begin
-    cur_val1:=del_code1(cur_val);
-    if (math_class_field(cur_val1) > 0) or
-       (math_fam_field(cur_val1) > 15) or
-       (math_char_field(cur_val1) > 255) then begin
-      print_err("Extended delcode used as delcode");
-      help2("A delimiter code must be between 0 and ""7FFFFFF.")@/
-        ("I changed this one to zero."); error;
-      scanned_result(0)(int_val);
-    end else begin
-      scanned_result(((math_class_field(del_code(cur_val))*@"1000) +
-            (math_fam_field(del_code(cur_val))*@"100) +
-            math_char_field(del_code(cur_val)))*@"1000 +
-            (math_fam_field(cur_val1)*@"100) +
-            math_char_field(cur_val1))(int_val);
-    end
+    scanned_result(cur_val1)(int_val);
   end
 end
 @z
@@ -1886,41 +1893,6 @@ end;
 procedure scan_four_bit_int;
 @z
 
- x
-procedure scan_fifteen_bit_int;
-begin scan_int;
-if (cur_val<0)or(cur_val>@'77777) then
-  begin print_err("Bad mathchar");
-@.Bad mathchar@>
-  help2("A mathchar number must be between 0 and 32767.")@/
-    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
-  end;
-end;
- y
-procedure scan_real_fifteen_bit_int;
-begin scan_int;
-if (cur_val<0)or(cur_val>@'77777) then
-  begin print_err("Bad mathchar");
-@.Bad mathchar@>
-  help2("A mathchar number must be between 0 and 32767.")@/
-    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
-  end;
-end;
-
-procedure scan_fifteen_bit_int; { scans a \mathchar value and expands it to 32-bit form }
-begin scan_int;
-if (cur_val<0)or(cur_val>@'77777) then
-  begin print_err("Bad mathchar");
-@.Bad mathchar@>
-  help2("A mathchar number must be between 0 and 32767.")@/
-    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
-  end;
-cur_val := set_class_field(cur_val div @"1000) +
-           set_family_field((cur_val mod @"1000) div @"100) +
-           (cur_val mod @"100);
-end;
- z
-
 @x
 procedure scan_twenty_seven_bit_int;
 begin scan_int;
@@ -1940,31 +1912,8 @@ if (cur_val<0)or(cur_val>@'777777777) then
   help2("A numeric delimiter code must be between 0 and 2^{27}-1.")@/
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
-cur_val1 := set_family_field((cur_val mod @"1000) div @"100) +
-            (cur_val mod @"100);
-cur_val := cur_val div @"1000;
-cur_val := set_family_field((cur_val mod @"1000) div @"100) +
-           set_class_field(cur_val div @"1000) +
-           (cur_val mod @"100);
 end;
 @z
-
-procedure scan_twenty_seven_bit_int;
-begin scan_int;
-if (cur_val<0)or(cur_val>@'777777777) then
-  begin print_err("Bad delimiter code");
-@.Bad delimiter code@>
-  help2("A numeric delimiter code must be between 0 and 2^{27}-1.")@/
-    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
-  end;
-cur_val1 := (((cur_val mod @"1000) div @"100) * @"10000) +
-            (cur_val mod @"100);
-cur_val := cur_val div @"1000;
-cur_val := ((cur_val div @"1000) * @"1000000) +
-           (((cur_val mod @"1000) div @"100) * @"10000) +
-           (cur_val mod @"100);
-end;
- z
 
 @x
 if cur_val>255 then
@@ -4118,11 +4067,11 @@ math_char_num: begin scan_fifteen_bit_int; c:=cur_val;
   end;
 @y
 math_char_num:
-  if cur_chr = 2 then begin { \XeTeXextmathchar }
+  if cur_chr = 2 then begin { \XeTeXmathchar }
     scan_math_class_int; c := set_class_field(cur_val);
     scan_math_fam_int;   c := c + set_family_field(cur_val);
     scan_usv_num;        c := c + cur_val;
-  end else if cur_chr = 1 then begin { \XeTeXmathchar }
+  end else if cur_chr = 1 then begin { \XeTeXmathcharnum }
     scan_xetex_math_char_int; c := cur_val;
   end else begin scan_fifteen_bit_int;
     c := set_class_field(cur_val div @"1000) +
@@ -4142,8 +4091,17 @@ math_given: begin
   end;
 XeTeX_math_given: c:=cur_chr;
 delim_num: begin
-  scan_delimiter_int;
-  c := cur_val; {cur_val is the 'small' delimiter mathchar value}
+  if cur_chr=1 then begin {\XeTeXdelimiter <cls> <fam> <usv>}
+    scan_math_class_int; c := set_class_field(cur_val);
+    scan_math_fam_int;   c := c + set_family_field(cur_val);
+    scan_usv_num;        c := c + cur_val;
+  end else begin {\delimiter <27-bit delcode>}
+    scan_delimiter_int;
+    c := cur_val div @'10000; {get the 'small' delimiter field}
+    c := set_class_field(c div @"1000) +
+       set_family_field((c mod @"1000) div @"100) +
+       (c mod @"100); {and convert it to a xetex mathchar code}
+  end;
 @z
 
 @x
@@ -4161,12 +4119,12 @@ plane_and_fam_field(p) := plane_and_fam_field(p) + (math_char_field(c) div @"100
 mmode+math_char_num: begin scan_fifteen_bit_int; set_math_char(cur_val);
   end;
 @y
-mmode+math_char_num: if cur_chr = 2 then begin { \XeTeXextmathchar }
+mmode+math_char_num: if cur_chr = 2 then begin { \XeTeXmathchar }
     scan_math_class_int; t := set_class_field(cur_val);
     scan_math_fam_int; t := t + set_family_field(cur_val);
     scan_usv_num; t := t + cur_val;
     set_math_char(t);
-  end else if cur_chr = 1 then begin { \XeTeXmathchar }
+  end else if cur_chr = 1 then begin { \XeTeXmathcharnum }
     scan_xetex_math_char_int; set_math_char(cur_val);
   end else begin scan_fifteen_bit_int;
     set_math_char(set_class_field(cur_val div @"1000) +
@@ -4187,8 +4145,18 @@ mmode+math_given: begin
   end;
 mmode+XeTeX_math_given: set_math_char(cur_chr);
 mmode+delim_num: begin
-  scan_delimiter_int;
-  set_math_char(cur_val);
+  if cur_chr=1 then begin {\XeTeXdelimiter}
+    scan_math_class_int; t := set_class_field(cur_val);
+    scan_math_fam_int; t := t + set_family_field(cur_val);
+    scan_usv_num; t := t + cur_val;
+    set_math_char(t);
+  end else begin
+    scan_delimiter_int;
+    cur_val:=cur_val div @'10000; {discard the large delimiter code}
+    set_math_char(set_class_field(cur_val div @"1000) +
+         set_family_field((cur_val mod @"1000) div @"100) +
+         (cur_val mod @"100));
+  end;
 @z
 
 @x
@@ -4227,7 +4195,15 @@ procedure scan_delimiter(@!p:pointer;@!r:boolean);
 begin if r then scan_twenty_seven_bit_int
 @y
 procedure scan_delimiter(@!p:pointer;@!r:boolean);
-begin if r then scan_delimiter_int
+begin
+  if r then begin
+    if cur_chr=1 then begin {\XeTeXradical}
+      cur_val1 := @"40000000; {extended delcode flag}
+      scan_math_fam_int;   cur_val1 := cur_val1 + cur_val * @"200000;
+      scan_usv_num;        cur_val := cur_val1 + cur_val;
+    end else {\radical}
+      scan_delimiter_int;
+  end
 @z
 
 @x
@@ -4236,10 +4212,15 @@ begin if r then scan_delimiter_int
   othercases cur_val:=-1
 @y
   letter,other_char: begin
-    cur_val:=del_code(cur_chr); cur_val1:=del_code1(cur_chr);
+    cur_val:=del_code(cur_chr);
     end;
-  delim_num: scan_delimiter_int;
-  othercases begin cur_val:=-1; cur_val1:=-1; end;
+  delim_num: if cur_chr=1 then begin {\XeTeXdelimiter}
+    cur_val1 := @"40000000; {extended delcode flag}
+    scan_math_class_int; {discarded}
+    scan_math_fam_int;   cur_val1 := cur_val1 + cur_val * @"200000;
+    scan_usv_num;        cur_val := cur_val1 + cur_val;
+  end else scan_delimiter_int; {normal \delimiter}
+  othercases begin cur_val:=-1; end;
 @z
 
 @x
@@ -4252,12 +4233,19 @@ large_char(p):=qi(cur_val mod 256);
 @y
 if cur_val<0 then begin @<Report that an invalid delimiter code is being changed
    to null; set~|cur_val:=0|@>;
-  cur_val1:=0;
   end;
-small_plane_and_fam_field(p) := (math_char_field(cur_val) div @"10000) * @"100 + math_fam_field(cur_val);
-small_char_field(p) := cur_val mod @"10000;
-large_plane_and_fam_field(p) := (math_char_field(cur_val1) div @"10000) * @"100 + math_fam_field(cur_val1);
-large_char_field(p) := cur_val1 mod @"10000;
+if cur_val>=@"40000000 then begin {extended delcode, only one size}
+  small_plane_and_fam_field(p) := ((cur_val mod @"200000) div @"10000) * @"100 {plane}
+                                  + (cur_val div @"200000) mod @"100; {family}
+  small_char_field(p) := qi(cur_val mod @"10000);
+  large_plane_and_fam_field(p) := 0;
+  large_char_field(p) := 0;
+end else begin {standard delcode, 4-bit families and 8-bit char codes}
+  small_plane_and_fam_field(p) := (cur_val div @'4000000) mod 16;
+  small_char_field(p) := qi((cur_val div @'10000) mod 256);
+  large_plane_and_fam_field(p) := (cur_val div 256) mod 16;
+  large_char_field(p) := qi(cur_val mod 256);
+end;
 @z
 
 @x
@@ -4329,8 +4317,8 @@ any_mode(XeTeX_def_code),
 @d mu_skip_def_code=5 {|shorthand_def| for \.{\\muskipdef}}
 @d toks_def_code=6 {|shorthand_def| for \.{\\toksdef}}
 @d char_sub_def_code=7 {|shorthand_def| for \.{\\charsubdef}}
-@d XeTeX_math_char_def_code=8
-@d XeTeX_ext_math_char_def_code=9
+@d XeTeX_math_char_num_def_code=8
+@d XeTeX_math_char_def_code=9
 @z
 
 @x
@@ -4338,8 +4326,8 @@ primitive("mathchardef",shorthand_def,math_char_def_code);@/
 @!@:math_char_def_}{\.{\\mathchardef} primitive@>
 @y
 primitive("mathchardef",shorthand_def,math_char_def_code);@/
+primitive("XeTeXmathcharnumdef",shorthand_def,XeTeX_math_char_num_def_code);@/
 primitive("XeTeXmathchardef",shorthand_def,XeTeX_math_char_def_code);@/
-primitive("XeTeXextmathchardef",shorthand_def,XeTeX_ext_math_char_def_code);@/
 @!@:math_char_def_}{\.{\\mathchardef} primitive@>
 @z
 
@@ -4348,7 +4336,7 @@ primitive("XeTeXextmathchardef",shorthand_def,XeTeX_ext_math_char_def_code);@/
 @y
   math_char_def_code: print_esc("mathchardef");
   XeTeX_math_char_def_code: print_esc("XeTeXmathchardef");
-  XeTeX_ext_math_char_def_code: print_esc("XeTeXextmathchardef");
+  XeTeX_math_char_num_def_code: print_esc("XeTeXmathcharnumdef");
 @z
 
 @x
@@ -4379,10 +4367,10 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
 @y
   math_char_def_code: begin scan_fifteen_bit_int; define(p,math_given,cur_val);
     end;
-  XeTeX_math_char_def_code: begin scan_xetex_math_char_int;
+  XeTeX_math_char_num_def_code: begin scan_xetex_math_char_int;
     define(p, XeTeX_math_given, cur_val);
     end;
-  XeTeX_ext_math_char_def_code: begin
+  XeTeX_math_char_def_code: begin
       scan_math_class_int; n := set_class_field(cur_val);
       scan_math_fam_int;   n := n + set_family_field(cur_val);
       scan_usv_num;        n := n + cur_val;
@@ -4394,15 +4382,24 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
 primitive("mathcode",def_code,math_code_base);
 @y
 primitive("mathcode",def_code,math_code_base);
-primitive("XeTeXmathcode",XeTeX_def_code,math_code_base);
-primitive("XeTeXextmathcode",XeTeX_def_code,math_code_base+1);
+primitive("XeTeXmathcodenum",XeTeX_def_code,math_code_base);
+primitive("XeTeXmathcode",XeTeX_def_code,math_code_base+1);
+@z
+
+@x
+primitive("delcode",def_code,del_code_base);
+@y
+primitive("delcode",def_code,del_code_base);
+primitive("XeTeXdelcodenum",XeTeX_def_code,del_code_base);
+primitive("XeTeXdelcode",XeTeX_def_code,del_code_base+1);
 @z
 
 @x
 def_family: print_size(chr_code-math_font_base);
 @y
-XeTeX_def_code: if chr_code=math_code_base then print_esc("XeTeXmathcode")
-  else if chr_code=math_code_base+1 then print_esc("XeTeXextmathcode")
+XeTeX_def_code: if chr_code=math_code_base then print_esc("XeTeXmathcodenum")
+  else if chr_code=math_code_base+1 then print_esc("XeTeXmathcode")
+  else if chr_code=del_code_base then print_esc("XeTeXdelcodenum")
   else print_esc("XeTeXdelcode");
 def_family: print_size(chr_code-math_font_base);
 @z
@@ -4427,7 +4424,28 @@ XeTeX_def_code: begin
       scan_usv_num;        n := n + cur_val;
       define(p,data,hi(n));
     end
-    else do_nothing; {FIXME - XeTeXdelcode}
+    else if cur_chr = del_code_base then begin
+      p:=cur_chr; scan_char_num;
+      p:=p+cur_val;
+      scan_optional_equals;
+      scan_int; {scan_xetex_del_code_int; !!FIXME!!}
+      word_define(p,hi(cur_val));
+    end else begin
+{
+bit usage in delcode values:
+original layout: @"00cffCFF  small/LARGE family & char
+extended:        @"40000000                      FLAG
+                 +  ff << 21 (mult by @"200000)  FAMILY
+                 +   1ccccc (21 bits)            USV
+}
+      p:=cur_chr-1; scan_char_num;
+      p:=p+cur_val;
+      scan_optional_equals;
+      n := @"40000000; {extended delcode flag}
+      scan_math_fam_int;   n := n + cur_val * @"200000;
+      scan_usv_num;        n := n + cur_val;
+      word_define(p,hi(n));
+    end;
   end;
 def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
 @z
@@ -4444,26 +4462,15 @@ def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
     if cur_val=@"8000 then cur_val:=active_math_char
     else cur_val:=set_class_field(cur_val div @"1000) +
                   set_family_field((cur_val mod @"1000) div @"100) +
-                  (cur_val mod @"100);
+                  (cur_val mod @"100); {!!FIXME!! check how this is used}
     define(p,data,hi(cur_val));
     end
 @z
 
+-- from Omega; not needed with new xetex delimiter coding
  x
   else word_define(p,cur_val);
  y
-  else begin
-   cur_val1:=cur_val div @"1000;
-   cur_val1:=(cur_val1 div @"100)*@"10000 + (cur_val1 mod @"100);
-   cur_val:=cur_val mod @"1000;
-   cur_val:=(cur_val div @"100)*@"10000 + (cur_val mod @"100);
-   word_define(p,cur_val);
-   word_define1(p,cur_val1);
-   end;
- z
-@x
-  else word_define(p,cur_val);
-@y
   else begin
     cur_val1 := cur_val mod @"1000; { large delim code }
     cur_val1 := set_family_field(cur_val1 div @"100) + cur_val1 mod @"100;
@@ -4474,7 +4481,7 @@ def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
     word_define(p, cur_val);
     word_define1(p, cur_val1);
   end;
-@z
+ z
 
 @x
 else n:=255
