@@ -5,6 +5,7 @@
 - font style identification in complex families (LM)
   - improved; LM family needs reorg!
 
+- contextual ligature
 
 ** FEATURES to consider:
 
@@ -17,8 +18,11 @@
 
 - \XeTeXadjustfeatures "featurestring" (does this modify the font identifier globally? locally?)
 
-- \XeTeXmathchar, \XeTeXmathcode, etc
-  - begun in 0.995; no variable-size operators/delimiters yet
++ \XeTeXmathchar, \XeTeXmathcode, etc
+  + basic OpenType/Unicode math support in place
+  - further work to support all MATH table parameters
+  - mathaccent positioning, horizontal extensibles
+  - extend mathcode/catcode/etc tables to full Unicode range
 
 + \XeTeXglyphindex <name> (to look up index of named glyph in current font, 0 if absent)
   - doesn't work for non-TrueType fonts on OS X
@@ -39,7 +43,7 @@
 
 - Pango and/or Graphite as alternative renderers
 
-- support one-of-many OT lookups (needs extension to feature syntax, and low-level support in ICU)
++ support one-of-many OT lookups (needs extension to feature syntax, and low-level support in ICU)
 
 - update to latest ICU release
   - must check support for Syriac, Arabic supplement, Mongolian, Lao bug-fix
