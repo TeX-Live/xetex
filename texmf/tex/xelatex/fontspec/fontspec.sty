@@ -12,9 +12,10 @@
 %% 
 %%   License information appended.
 %% 
-%% 
 \ProvidesPackage{fontspec}
-  [2006/11/05 v1.12 Advanced font selection for XeLaTeX]
+  [2006/12/21 v1.13 Advanced font selection for XeLaTeX]
+\RequirePackage{ifxetex}
+\RequireXeTeX
 \newif\ifzf@firsttime
 \newif\ifzf@nobf
 \newif\ifzf@noit
@@ -27,6 +28,8 @@
 \newif\ifzf@math@lucida
 \newif\ifzf@package@euler@loaded
 \newif\ifzf@package@babel@loaded
+\newif\if@zf@configfile
+\newif\if@zf@euenc
 \newif\if@zf@configfile
 \newif\if@zf@euenc
 \newcount\c@zf@newff
@@ -182,9 +185,6 @@
   \let\zf@family@long\zf@fontname
   \setkeys*[zf]{preparse}{#1}%
   \let\zf@font@feat\XKV@rm
-  \unless\ifx\zf@font@path\relax
-    \def\zf@font@wrap##1{[\zf@font@path##1]}%
-  \fi
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \zf@set@font@type
   \ifx\zf@suffix\@empty
@@ -260,7 +260,7 @@
           {\bfdefault}{\itdefault}{\zf@font@feat\zf@bfit@feat}%
       \fi
     \fi
-    \fi
+  \fi
   \endgroup}
 \newcommand*\zf@set@font@type{%
   \zf@tfmfalse \zf@atsuifalse \zf@icufalse \zf@mmfalse
@@ -292,7 +292,7 @@
       \ifx\zf@sc\@empty
         \unless\ifzf@nosc
           \zf@make@smallcaps
-          \ifx\zf@smallcaps\@empty\else
+          \unless\ifx\zf@smallcaps\@empty
             \zf@DeclareFontShape[\zf@smallcaps]{#3}
               {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
           \fi
@@ -305,17 +305,34 @@
     \fi
   \endgroup}
 \newcommand\zf@DeclareFontShape[4][]{%
-  \zf@get@feature@requests{#4}%
-  \def\@tempb{"\zf@font@wrap\zf@fontname\zf@suffix:\zf@pre@ff\zf@ff#1"}%
-  \zf@PackageInfo{\string\font\space is \@tempb}%
+  \ifx\zf@size@feat\@empty
+    \zf@get@feature@requests{#4}%
+    \edef\zf@font@str{<->\zf@scale"\zf@font@wrap\zf@fontname\zf@suffix:%
+      \zf@pre@ff\zf@ff#1"}%
+  \else
+    \@for\zf@this@size:=\zf@size@feat\do{%
+      \let\zf@size\@empty
+      \let\zf@size@fnt\zf@fontname
+      \edef\@tempa{\noexpand
+        \setkeys*[zf]{sizing}{\expandafter\@firstofone\zf@this@size}}%
+      \@tempa
+      \ifx\zf@size\@empty\zf@PackageError
+          {Size information must be supplied}
+          {For example, SizeFeatures={Size={8-12},...},...}%
+      \fi
+      \zf@get@feature@requests{#4,\XKV@rm}%
+      \edef\zf@font@str{\zf@font@str <\zf@size>%
+        \zf@scale"\zf@size@fnt\zf@suffix:\zf@pre@ff\zf@ff#1"}}%
+  \fi
   \edef\@tempa{\noexpand
-    \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}
-      {<->\zf@scale\@tempb}{\zf@adjust}}%
+    \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}%
+      {\zf@font@str}{\zf@adjust}}%
   \@tempa
-  \edef\@tempa{#3}\edef\@tempb{\itdefault}%
+  \edef\@tempa{#3}%
+  \edef\@tempb{\itdefault}%
   \ifx\@tempa\@tempb
     \edef\@tempa{\noexpand
-      \DeclareFontShape{\zf@enc}{\zf@family}{#2}{\sldefault}
+      \DeclareFontShape{\zf@enc}{\zf@family}{#1}{\sldefault}
         {<->sub*\zf@family/#2/\itdefault}{\zf@adjust}}%
     \@tempa
   \fi}
@@ -332,8 +349,8 @@
 \newcommand*\zf@init{%
   \let\zf@pre@ff      \@empty
   \let\zf@font@feat   \@empty
-  \let\zf@font@path      \relax
-  \let\zf@font@wrap     \@firstofone
+  \let\zf@font@str    \@empty
+  \let\zf@font@wrap   \@firstofone
   \let\zf@suffix      \@empty
   \let\zf@bf          \@empty
   \let\zf@it          \@empty
@@ -344,6 +361,9 @@
   \let\zf@it@feat     \@empty
   \let\zf@bfit@feat   \@empty
   \let\zf@sc@feat     \@empty
+  \let\zf@size\@empty
+  \let\zf@size@feat\@empty
+  \let\zf@size@fnt\@empty
   \c@zf@script 1818326126\relax
   \def\zf@script@name{Latin}%
   \c@zf@language 0\relax
@@ -480,10 +500,10 @@
   \repeat}
 \define@key[zf]{preparse}{ExternalLocation}[]{%
   \zf@nobftrue\zf@noittrue
-  \def\zf@font@path{#1}}
+  \gdef\zf@font@wrap##1{[#1##1]}}
 \define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
   \edef\zf@suffix{\zf@suffix/#1}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +rend:#1}}
 \define@key[zf]{preparse}{Script}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
@@ -492,7 +512,7 @@
   {\setkeys[zf@feat]{Script}{#1}}}
 \define@key[zf]{preparse}{Language}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +language:#1}%
   {\setkeys[zf@feat]{Lang}{#1}}}
 \define@key[zf]{preparse}{BoldFont}{%
@@ -502,8 +522,7 @@
     \edef\zf@family@long{\zf@family@long nobf}%
   \else
     \zf@nobffalse
-    \zf@partial@fontname#1\@nil
-    \let\zf@bf\@tempa
+    \zf@partial@fontname#1\@nil=\zf@bf
     \edef\zf@family@long{\zf@family@long bf:#1}%
   \fi}
 \define@key[zf]{preparse}{ItalicFont}{%
@@ -513,13 +532,11 @@
     \edef\zf@family@long{\zf@family@long noit}%
   \else
     \zf@noitfalse
-    \zf@partial@fontname#1\@nil
-    \let\zf@it\@tempa
+    \zf@partial@fontname#1\@nil=\zf@it
     \edef\zf@family@long{\zf@family@long it:#1}%
   \fi}
 \define@key[zf]{preparse}{BoldItalicFont}{%
-  \zf@partial@fontname#1\@nil
-  \let\zf@bfit\@tempa
+  \zf@partial@fontname#1\@nil=\zf@bfit
   \edef\zf@family@long{\zf@family@long bfit:#1}}
 \define@key[zf]{options}{SmallCapsFont}{%
   \edef\@tempa{#1}%
@@ -528,15 +545,14 @@
     \edef\zf@family@long{\zf@family@long nosc}%
   \else
     \zf@noscfalse
-    \zf@partial@fontname#1\@nil
-    \let\zf@sc\@tempa
+    \zf@partial@fontname#1\@nil=\zf@sc
     \zf@update@family{sc:\zap@space #1 \@empty}%
   \fi}
-\def\zf@partial@fontname#1#2\@nil{%
+\def\zf@partial@fontname#1#2\@nil=#3{%
   \if#1*\relax
-    \edef\@tempa{\zf@fontname#2}%
+    \edef#3{\zf@fontname#2}%
   \else
-    \edef\@tempa{#1#2}%
+    \edef#3{#1#2}%
   \fi}
 \define@key[zf]{preparse}{UprightFeatures}{%
   \def\zf@up@feat{,#1}%
@@ -553,6 +569,13 @@
 \define@key[zf]{options}{SmallCapsFeatures}{%
   \unless\ifzf@firsttime\def\zf@sc@feat{,#1}\fi
   \zf@update@family{scfeat:\zap@space #1 \@empty}}
+\define@key[zf]{preparse}{SizeFeatures}{%
+  \unless\ifzf@firsttime
+    \def\zf@size@feat{#1}%
+  \fi
+  \zf@update@family{sizefeat:\zap@space #1 \@empty}}
+\define@key[zf]{sizing}{Size}{\def\zf@size{#1}}
+\define@key[zf]{sizing}{Font}{\def\zf@size@fnt{#1}}
 \define@key[zf]{options}{Scale}{%
   \edef\@tempa{#1}%
   \edef\@tempb{MatchLowercase}%
@@ -689,58 +712,58 @@
 \zf@define@feature@option{Ligatures}{Icelandic}      {1}{32}{}
 \zf@define@feature@option{Ligatures}{NoIcelandic}    {1}{33}{}
 \zf@define@font@feature{Letters}
-\zf@define@feature@option{Letters}{Normal}{3}{0}{}
-\zf@define@feature@option{Letters}{Uppercase}{3}{1}{+case}
-\zf@define@feature@option{Letters}{Lowercase}{3}{2}{}
-\zf@define@feature@option{Letters}{SmallCaps}{3}{3}{+smcp}
-\zf@define@feature@option{Letters}{PetiteCaps}{}{}{+pcap}
-\zf@define@feature@option{Letters}{UppercaseSmallCaps}{}{}{+c2sc}
-\zf@define@feature@option{Letters}{UppercasePetiteCaps}{}{}{+c2pc}
-\zf@define@feature@option{Letters}{InitialCaps}{3}{4}{}
-\zf@define@feature@option{Letters}{Unicase}{}{}{+unic}
+\zf@define@feature@option{Letters}{Normal}             {3}{0}{}
+\zf@define@feature@option{Letters}{Uppercase}          {3}{1}{+case}
+\zf@define@feature@option{Letters}{Lowercase}          {3}{2}{}
+\zf@define@feature@option{Letters}{SmallCaps}          {3}{3}{+smcp}
+\zf@define@feature@option{Letters}{PetiteCaps}         {} {} {+pcap}
+\zf@define@feature@option{Letters}{UppercaseSmallCaps} {} {} {+c2sc}
+\zf@define@feature@option{Letters}{UppercasePetiteCaps}{} {} {+c2pc}
+\zf@define@feature@option{Letters}{InitialCaps}        {3}{4}{}
+\zf@define@feature@option{Letters}{Unicase}            {} {} {+unic}
 \zf@define@font@feature{Numbers}
-\zf@define@feature@option{Numbers}{Monospaced}{6}{0}{+tnum}
-\zf@define@feature@option{Numbers}{Proportional}{6}{1}{+pnum}
-\zf@define@feature@option{Numbers}{Lowercase}{21}{0}{+onum}
-\zf@define@feature@option{Numbers}{OldStyle}{21}{0}{+onum}
-\zf@define@feature@option{Numbers}{Uppercase}{21}{1}{+lnum}
-\zf@define@feature@option{Numbers}{Lining}{21}{1}{+lnum}
-\zf@define@feature@option{Numbers}{SlashedZero}{14}{5}{+zero}
+\zf@define@feature@option{Numbers}{Monospaced}   {6} {0}{+tnum}
+\zf@define@feature@option{Numbers}{Proportional} {6} {1}{+pnum}
+\zf@define@feature@option{Numbers}{Lowercase}    {21}{0}{+onum}
+\zf@define@feature@option{Numbers}{OldStyle}     {21}{0}{+onum}
+\zf@define@feature@option{Numbers}{Uppercase}    {21}{1}{+lnum}
+\zf@define@feature@option{Numbers}{Lining}       {21}{1}{+lnum}
+\zf@define@feature@option{Numbers}{SlashedZero}  {14}{5}{+zero}
 \zf@define@feature@option{Numbers}{NoSlashedZero}{14}{4}{-zero}
 \zf@define@font@feature  {Contextuals}
-\zf@define@feature@option{Contextuals}{Swash}{}{}{+cswh}
-\zf@define@feature@option{Contextuals}{NoSwash}{}{}{-cswh}
-\zf@define@feature@option{Contextuals}{WordInitial}{8}{0}{+init}
+\zf@define@feature@option{Contextuals}{Swash}        {} {} {+cswh}
+\zf@define@feature@option{Contextuals}{NoSwash}      {} {} {-cswh}
+\zf@define@feature@option{Contextuals}{WordInitial}  {8}{0}{+init}
 \zf@define@feature@option{Contextuals}{NoWordInitial}{8}{1}{-init}
-\zf@define@feature@option{Contextuals}{WordFinal}{8}{2}{+fina}
-\zf@define@feature@option{Contextuals}{NoWordFinal}{8}{3}{-fina}
-\zf@define@feature@option{Contextuals}{LineInitial}{8}{4}{}
+\zf@define@feature@option{Contextuals}{WordFinal}    {8}{2}{+fina}
+\zf@define@feature@option{Contextuals}{NoWordFinal}  {8}{3}{-fina}
+\zf@define@feature@option{Contextuals}{LineInitial}  {8}{4}{}
 \zf@define@feature@option{Contextuals}{NoLineInitial}{8}{5}{}
-\zf@define@feature@option{Contextuals}{LineFinal}{8}{6}{+falt}
-\zf@define@feature@option{Contextuals}{NoLineFinal}{8}{7}{-falt}
-\zf@define@feature@option{Contextuals}{Inner}{8}{8}{+medi}
-\zf@define@feature@option{Contextuals}{NoInner}{8}{9}{-medi}
+\zf@define@feature@option{Contextuals}{LineFinal}    {8}{6}{+falt}
+\zf@define@feature@option{Contextuals}{NoLineFinal}  {8}{7}{-falt}
+\zf@define@feature@option{Contextuals}{Inner}        {8}{8}{+medi}
+\zf@define@feature@option{Contextuals}{NoInner}      {8}{9}{-medi}
 \zf@define@font@feature{Diacritics}
-\zf@define@feature@option{Diacritics}{Show}{9}{0}{}
-\zf@define@feature@option{Diacritics}{Hide}{9}{1}{}
+\zf@define@feature@option{Diacritics}{Show}     {9}{0}{}
+\zf@define@feature@option{Diacritics}{Hide}     {9}{1}{}
 \zf@define@feature@option{Diacritics}{Decompose}{9}{2}{}
 \zf@define@font@feature{Kerning}
 \zf@define@feature@option{Kerning}{Uppercase}{}{}{+cpsp}
-\zf@define@feature@option{Kerning}{On}{}{}{+kern}
-\zf@define@feature@option{Kerning}{Off}{}{}{-kern}
+\zf@define@feature@option{Kerning}{On}       {}{}{+kern}
+\zf@define@feature@option{Kerning}{Off}      {}{}{-kern}
 \zf@define@font@feature{VerticalPosition}
-\zf@define@feature@option{VerticalPosition}{Normal}{10}{0}{}
-\zf@define@feature@option{VerticalPosition}{Superior}{10}{1}{+sups}
-\zf@define@feature@option{VerticalPosition}{Inferior}{10}{2}{+subs}
+\zf@define@feature@option{VerticalPosition}{Normal}     {10}{0}{}
+\zf@define@feature@option{VerticalPosition}{Superior}   {10}{1}{+sups}
+\zf@define@feature@option{VerticalPosition}{Inferior}   {10}{2}{+subs}
+\zf@define@feature@option{VerticalPosition}{Ordinal}    {10}{3}{+ordn}
+\zf@define@feature@option{VerticalPosition}{Numerator}  {}  {} {+numr}
+\zf@define@feature@option{VerticalPosition}{Denominator}{}  {} {+dnom}
 \zf@define@feature@option{VerticalPosition}{ScientificInferior}{}{}{+sinf}
-\zf@define@feature@option{VerticalPosition}{Ordinal}{10}{3}{+ordn}
-\zf@define@feature@option{VerticalPosition}{Numerator}{}{}{+numr}
-\zf@define@feature@option{VerticalPosition}{Denominator}{}{}{+dnom}
 \zf@define@font@feature{Fractions}
-\zf@define@feature@option{Fractions}{On}{11}{1}{+frac}
-\zf@define@feature@option{Fractions}{Off}{11}{0}{-frac}
-\zf@define@feature@option{Fractions}{Diagonal}{11}{2}{}
-\zf@define@feature@option{Fractions}{Alternate}{}{}{+afrc}
+\zf@define@feature@option{Fractions}{On}       {11}{1}{+frac}
+\zf@define@feature@option{Fractions}{Off}      {11}{0}{-frac}
+\zf@define@feature@option{Fractions}{Diagonal} {11}{2}{}
+\zf@define@feature@option{Fractions}{Alternate}{}  {} {+afrc}
 \define@key[zf]{options}{Alternate}{%
   \setkeys*[zf@feat]{Alternate}{#1}%
   \unless\ifx\XKV@rm\@empty
@@ -752,25 +775,25 @@
     \edef\@tempa{\noexpand\zf@make@feature{18}{#1}{+ss\two@digits{#1}}}\@tempa
   \fi}
 \zf@define@font@feature{Style}
-\zf@define@feature@option{Style}{Alternate}{}{}{+salt}
-\zf@define@feature@option{Style}{Italic}{32}{2}{+ital}
-\zf@define@feature@option{Style}{Ruby}{28}{2}{+ruby}
-\zf@define@feature@option{Style}{Swash}{}{}{+swsh}
-\zf@define@feature@option{Style}{Historic}{}{}{+hist}
-\zf@define@feature@option{Style}{Display}{19}{1}{}
-\zf@define@feature@option{Style}{Engraved}{19}{2}{}
-\zf@define@feature@option{Style}{TitlingCaps}{19}{4}{+titl}
-\zf@define@feature@option{Style}{TallCaps}{19}{5}{}
-\zf@define@feature@option{Style}{HorizontalKana}{}{}{+hkna}
-\zf@define@feature@option{Style}{VerticalKana}{}{}{+vkna}
+\zf@define@feature@option{Style}{Alternate}     {}  {} {+salt}
+\zf@define@feature@option{Style}{Italic}        {32}{2}{+ital}
+\zf@define@feature@option{Style}{Ruby}          {28}{2}{+ruby}
+\zf@define@feature@option{Style}{Swash}         {}  {} {+swsh}
+\zf@define@feature@option{Style}{Historic}      {}  {} {+hist}
+\zf@define@feature@option{Style}{Display}       {19}{1}{}
+\zf@define@feature@option{Style}{Engraved}      {19}{2}{}
+\zf@define@feature@option{Style}{TitlingCaps}   {19}{4}{+titl}
+\zf@define@feature@option{Style}{TallCaps}      {19}{5}{}
+\zf@define@feature@option{Style}{HorizontalKana}{}  {} {+hkna}
+\zf@define@feature@option{Style}{VerticalKana}  {}  {} {+vkna}
 \zf@define@font@feature{CJKShape}
-\zf@define@feature@option{CJKShape}{Traditional}{20}{0}{+trad}
-\zf@define@feature@option{CJKShape}{Simplified}{20}{1}{+smpl}
-\zf@define@feature@option{CJKShape}{JIS1978}{20}{2}{+jp78}
-\zf@define@feature@option{CJKShape}{JIS1983}{20}{3}{+jp83}
-\zf@define@feature@option{CJKShape}{JIS1990}{20}{4}{+jp90}
-\zf@define@feature@option{CJKShape}{Expert}{20}{10}{+expt}
-\zf@define@feature@option{CJKShape}{NLC}{20}{13}{+nlck}
+\zf@define@feature@option{CJKShape}{Traditional}{20}{0} {+trad}
+\zf@define@feature@option{CJKShape}{Simplified} {20}{1} {+smpl}
+\zf@define@feature@option{CJKShape}{JIS1978}    {20}{2} {+jp78}
+\zf@define@feature@option{CJKShape}{JIS1983}    {20}{3} {+jp83}
+\zf@define@feature@option{CJKShape}{JIS1990}    {20}{4} {+jp90}
+\zf@define@feature@option{CJKShape}{Expert}     {20}{10}{+expt}
+\zf@define@feature@option{CJKShape}{NLC}        {20}{13}{+nlck}
 \zf@define@font@feature{CharacterWidth}
 \zf@define@feature@option{CharacterWidth}{Proportional}{22}{0}{+pwid}
 \zf@define@feature@option{CharacterWidth}{Full}{22}{1}{+fwid}

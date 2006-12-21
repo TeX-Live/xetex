@@ -77,7 +77,7 @@ This work consists of the file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2006/08/20 v1.13 Advanced font selection for XeLaTeX]
+  [2006/12/21 v1.13 Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -1653,7 +1653,7 @@ This work consists of the file  fontspec.dtx
 \newif\ifzf@nosc
 \newif\ifzf@tfm
 \newif\ifzf@atsui
-\newif\ifzf@icu 
+\newif\ifzf@icu
 \newif\ifzf@mm
 %    \end{macrocode}
 % For dealing with legacy maths
@@ -2112,13 +2112,6 @@ This work consists of the file  fontspec.dtx
   \setkeys*[zf]{preparse}{#1}%
   \let\zf@font@feat\XKV@rm
 %    \end{macrocode}
-% After pre-parsing, check if an external font is to be loaded. This only works
-% with the |xdvipdfmx| driver, by the way.
-%    \begin{macrocode}
-  \unless\ifx\zf@font@path\relax
-    \def\zf@font@wrap##1{[\zf@font@path##1]}%
-  \fi
-%    \end{macrocode}
 % Now check if the font is to be rendered with ATSUI or ICU. This will either
 % be automatic (based on the font type), or specified by the user via a font feature.
 % If automatic, the \cmd\zf@suffix\ macro will still be empty (other suffices that could 
@@ -2162,7 +2155,7 @@ This work consists of the file  fontspec.dtx
 % selecting.
 %    \begin{macrocode}  
   \unless\ifcsname zf@UID@\zf@family@long\endcsname
-    \ifcsname c@zf@famc@#2\endcsname    
+    \ifcsname c@zf@famc@#2\endcsname
       \expandafter\stepcounter\else
       \expandafter\newcounter\fi
         {zf@famc@#2}%
@@ -2180,7 +2173,7 @@ This work consists of the file  fontspec.dtx
 % \cs{addfontfeatures}.
 %    \begin{macrocode}
   \unless\ifcsname zf@family@fontname\zf@family\endcsname
-    \zf@PackageInfo{Defining font family for "#2" 
+    \zf@PackageInfo{Defining font family for "#2"
           with options [\zf@default@options #1]}%
     \gdef@cx{zf@family@fontname\zf@family}{\zf@fontname}%
     \gdef@cx{zf@family@options\zf@family}{\zf@default@options #1}%
@@ -2355,7 +2348,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
       \ifx\zf@sc\@empty
         \unless\ifzf@nosc
-          \zf@make@smallcaps    
+          \zf@make@smallcaps
           \unless\ifx\zf@smallcaps\@empty
             \zf@DeclareFontShape[\zf@smallcaps]{#3}
               {\ifx#4\itdefault\sidefault\else\scdefault\fi}{#5\zf@sc@feat}%
@@ -2399,7 +2392,7 @@ This work consists of the file  fontspec.dtx
 \newcommand\zf@DeclareFontShape[4][]{%
   \ifx\zf@size@feat\@empty
     \zf@get@feature@requests{#4}%
-    \edef\zf@font@str{<->\zf@scale"\zf@fontname\zf@suffix:%
+    \edef\zf@font@str{<->\zf@scale"\zf@font@wrap\zf@fontname\zf@suffix:%
       \zf@pre@ff\zf@ff#1"}%
   \else
 %    \end{macrocode}
@@ -2500,9 +2493,8 @@ This work consists of the file  fontspec.dtx
 \newcommand*\zf@init{%
   \let\zf@pre@ff      \@empty
   \let\zf@font@feat   \@empty
-  \let\zf@font@str   \@empty
-  \let\zf@font@path      \relax
-  \let\zf@font@wrap     \@firstofone
+  \let\zf@font@str    \@empty
+  \let\zf@font@wrap   \@firstofone
   \let\zf@suffix      \@empty
   \let\zf@bf          \@empty
   \let\zf@it          \@empty
@@ -2576,7 +2568,7 @@ This work consists of the file  fontspec.dtx
     \zf@make@aat@feature@string{#1}{#2}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        AAT feature '\XKV@tfam=\XKV@tkey' 
+        AAT feature '\XKV@tfam=\XKV@tkey'
         (#1,#2) not available in font \fontname\zf@basefont}%
     \else
       \zf@update@family{+#1,#2}%
@@ -2590,8 +2582,8 @@ This work consists of the file  fontspec.dtx
       \zf@update@ff{#3}%
     \else
       \zf@PackageWarning{%
-        OpenType feature '\XKV@tfam=\XKV@tkey' (#3) 
-        not available in font \fontname\zf@basefont, script 
+        OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
+        not available in font \fontname\zf@basefont, script
         '\zf@script@name', language '\zf@language@name'}%
     \fi
   \fi}
@@ -2822,7 +2814,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \define@key[zf]{preparse}{ExternalLocation}[]{%
   \zf@nobftrue\zf@noittrue
-  \def\zf@font@path{#1}}
+  \gdef\zf@font@wrap##1{[#1##1]}}
 %    \end{macrocode}
 % \changes{v1.12}{2006/11/02}{New feature \feat{ExternalLocation} for loading external fonts.}
 %
@@ -2831,7 +2823,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
   \edef\zf@suffix{\zf@suffix/#1}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +rend:#1}}
 %    \end{macrocode}
 %
@@ -2848,7 +2840,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \define@key[zf]{preparse}{Language}{%
   \edef\zf@suffix{\zf@suffix/ICU}%
-  \font\zf@basefont="\zf@fontname\zf@suffix" at \f@size pt
+  \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +language:#1}%
   {\setkeys[zf@feat]{Lang}{#1}}}
 %    \end{macrocode}
@@ -2869,6 +2861,7 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.12}{2006/11/02}{\feat{BoldFont}, etc., flags \cmd\zf@nobf\ conditional false rather than assuming it implicitly. This allows, \eg, empty \feat{BoldFont} to be overloaded.}
 %
 % \paragraph{Fonts}
+% Bold:
 %    \begin{macrocode}
 \define@key[zf]{preparse}{BoldFont}{%
   \edef\@tempa{#1}%
@@ -2877,10 +2870,12 @@ This work consists of the file  fontspec.dtx
     \edef\zf@family@long{\zf@family@long nobf}%
   \else
     \zf@nobffalse
-    \zf@partial@fontname#1\@nil
-    \let\zf@bf\@tempa
+    \zf@partial@fontname#1\@nil=\zf@bf
     \edef\zf@family@long{\zf@family@long bf:#1}%
   \fi}
+%    \end{macrocode}
+% Same for italic:
+%    \begin{macrocode}
 \define@key[zf]{preparse}{ItalicFont}{%
   \edef\@tempa{#1}%
   \ifx\@tempa\@empty
@@ -2888,14 +2883,18 @@ This work consists of the file  fontspec.dtx
     \edef\zf@family@long{\zf@family@long noit}%
   \else
     \zf@noitfalse
-    \zf@partial@fontname#1\@nil
-    \let\zf@it\@tempa
+    \zf@partial@fontname#1\@nil=\zf@it
     \edef\zf@family@long{\zf@family@long it:#1}%
   \fi}
+%    \end{macrocode}
+% Simpler for bold+italic:
+%    \begin{macrocode}
 \define@key[zf]{preparse}{BoldItalicFont}{%
-  \zf@partial@fontname#1\@nil
-  \let\zf@bfit\@tempa
+  \zf@partial@fontname#1\@nil=\zf@bfit
   \edef\zf@family@long{\zf@family@long bfit:#1}}
+%    \end{macrocode}
+% Small caps isn't pre-parsed because it can vary with others above:
+%    \begin{macrocode}
 \define@key[zf]{options}{SmallCapsFont}{%
   \edef\@tempa{#1}%
   \ifx\@tempa\@empty
@@ -2903,29 +2902,30 @@ This work consists of the file  fontspec.dtx
     \edef\zf@family@long{\zf@family@long nosc}%
   \else
     \zf@noscfalse
-    \zf@partial@fontname#1\@nil
-    \let\zf@sc\@tempa
+    \zf@partial@fontname#1\@nil=\zf@sc
     \zf@update@family{sc:\zap@space #1 \@empty}%
   \fi}
 %    \end{macrocode}
 %
 % \begin{macro}{\zf@partial@fontname}
-% This macro takes the next token and ends up defining \cmd\@tempa\ 
+% This macro takes the first token of its input and ends up defining #3
 % to the name of the font depending if it's been specified in full 
 % (``\texttt{Baskerville Semibold}'') or in abbreviation (``\texttt{* Semibold}'').
+%
+% This could be done more flexibly by making |*| active; I'll change it later if I need to.
 %    \begin{macrocode}
-\def\zf@partial@fontname#1#2\@nil{%
+\def\zf@partial@fontname#1#2\@nil=#3{%
   \if#1*\relax
-    \edef\@tempa{\zf@fontname#2}%
+    \edef#3{\zf@fontname#2}%
   \else
-    \edef\@tempa{#1#2}%
+    \edef#3{#1#2}%
   \fi}
 %    \end{macrocode}
 % \changes{v1.9}{2006/02/03}{Implemented.}
+% \changes{v1.13}{2006/12/20}{Folded in the \cmd\@tempa\ \cmd\let\ command, changing the syntax.}
 % \end{macro}
 %
 % \paragraph{Features}
-% Note that small caps features can vary by shape, so these in fact \emph{aren't} pre-parsed.
 %    \begin{macrocode}  
 \define@key[zf]{preparse}{UprightFeatures}{%
   \def\zf@up@feat{,#1}%
@@ -2939,6 +2939,9 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{preparse}{BoldItalicFeatures}{%
   \def\zf@bfit@feat{,#1}%
   \edef\zf@family@long{\zf@family@long bfitfeat:#1}}
+%    \end{macrocode}
+% Note that small caps features can vary by shape, so these in fact \emph{aren't} pre-parsed.
+%    \begin{macrocode}
 \define@key[zf]{options}{SmallCapsFeatures}{%
   \unless\ifzf@firsttime\def\zf@sc@feat{,#1}\fi
   \zf@update@family{scfeat:\zap@space #1 \@empty}}
@@ -3088,7 +3091,7 @@ This work consists of the file  fontspec.dtx
       {\zf@basefont\expandafter\ifnum\expandafter\XeTeXcharglyph\expandafter`#1 > 0
          \g@addto@macro\zf@adjust{%
            {\expandafter\hyphenchar\expandafter
-            \font\expandafter`#1}}%    
+            \font\expandafter`#1}}%
       \else
         \zf@PackageError
           {\fontname\zf@basefont\space doesn't appear to have the glyph corresponding to #1.}
@@ -3103,7 +3106,7 @@ This work consists of the file  fontspec.dtx
           {You can't hyphenate with a character that's not available!}
       \fi}
     \fi
-  \fi} 
+  \fi}
 \def\zf@check@one@char#1#2\zf@@{\def\@tempb{#2}}
 %    \end{macrocode}
 %
@@ -3311,7 +3314,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \define@key[zf]{options}{Alternate}{%
   \setkeys*[zf@feat]{Alternate}{#1}%
-  \unless\ifx\XKV@rm\@empty 
+  \unless\ifx\XKV@rm\@empty
     \zf@make@feature{17}{#1}{}%
   \fi}
 %    \end{macrocode}
@@ -3319,7 +3322,7 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \define@key[zf]{options}{Variant}{%
   \setkeys*[zf@feat]{Variant}{#1}%
-  \unless\ifx\XKV@rm\@empty 
+  \unless\ifx\XKV@rm\@empty
     \edef\@tempa{\noexpand\zf@make@feature{18}{#1}{+ss\two@digits{#1}}}\@tempa
   \fi}
 %    \end{macrocode}
@@ -3412,7 +3415,7 @@ This work consists of the file  fontspec.dtx
 \newfontscript{Bopomofo}{bopo}          \newfontscript{Braille}{brai}
 \newfontscript{Buginese}{bugi}          \newfontscript{Buhid}{buhd}
 \newfontscript{Byzantine Music}{byzm}   \newfontscript{Canadian Syllabics}{cans}
-\newfontscript{Cherokee}{cher}          
+\newfontscript{Cherokee}{cher}       
 \newfontscript{CJK Ideographic}{hani}   \newfontscript{Coptic}{copt}
 \newfontscript{Cypriot Syllabary}{cprt} \newfontscript{Cyrillic}{cyrl}
 \newfontscript{Default}{DFLT}           \newfontscript{Deseret}{dsrt}
@@ -3422,7 +3425,7 @@ This work consists of the file  fontspec.dtx
 \newfontscript{Gujarati}{gujr}          \newfontscript{Gurmukhi}{guru}
 \newfontscript{Hangul Jamo}{jamo}       \newfontscript{Hangul}{hang}
 \newfontscript{Hanunoo}{hano}           \newfontscript{Hebrew}{hebr}
-\newfontscript{Hiragana and Katakana}{kana} 
+\newfontscript{Hiragana and Katakana}{kana}
 \newfontscript{Javanese}{java}          \newfontscript{Kannada}{knda}
 \newfontscript{Kharosthi}{khar}         \newfontscript{Khmer}{khmr}
 \newfontscript{Lao}{lao }               \newfontscript{Latin}{latn}
@@ -3635,7 +3638,7 @@ This work consists of the file  fontspec.dtx
     \ifcsname\f@encoding/\f@family/\f@series/#3\endcsname
       \edef\@tempa{#3}%
     \fi
-  \fi 
+  \fi
   \fontshape{\@tempa}\selectfont}
 %    \end{macrocode}
 % \end{macro}
@@ -3646,12 +3649,12 @@ This work consists of the file  fontspec.dtx
 \DeclareRobustCommand{\itshape}{% 
   \not@math@alphabet\itshape\mathit
   \zf@merge@shape\itdefault\scdefault\sidefault}
-\DeclareRobustCommand{\slshape}{% 
+\DeclareRobustCommand{\slshape}{%
   \not@math@alphabet\slshape\relax
   \zf@merge@shape\sldefault\scdefault\sidefault}
 \DeclareRobustCommand{\scshape}{%
   \not@math@alphabet\scshape\relax
-  \zf@merge@shape\scdefault\itdefault\sidefault} 
+  \zf@merge@shape\scdefault\itdefault\sidefault}
 \DeclareRobustCommand{\upshape}{%
   \not@math@alphabet\upshape\relax
   \zf@merge@shape\updefault\sidefault\scdefault} 
@@ -3709,7 +3712,7 @@ This work consists of the file  fontspec.dtx
     \else
       \zf@PackageError{The euler package must be loaded BEFORE fontspec}
         {fontspec only overwrites euler's attempt to \MessageBreak
-         define the maths text fonts if fontspec is  \MessageBreak 
+         define the maths text fonts if fontspec is  \MessageBreak
          loaded after euler. Type <return> to proceed\MessageBreak
          with incorrect \protect\mathit, \protect\mathbf, etc}
     \fi}{}
@@ -3741,7 +3744,7 @@ This work consists of the file  fontspec.dtx
   \DeclareMathAccent{\breve}   {\mathalpha}{legacymaths}{21}
   \DeclareMathAccent{\check}   {\mathalpha}{legacymaths}{20}
   \DeclareMathAccent{\hat}     {\mathalpha}{legacymaths}{94} % too bad, euler
-  \DeclareMathAccent{\dot}     {\mathalpha}{legacymaths}{95}  
+  \DeclareMathAccent{\dot}     {\mathalpha}{legacymaths}{95}
   \DeclareMathAccent{\mathring}{\mathalpha}{legacymaths}{23}
 %    \end{macrocode}
 % \paragraph{\cmd\colon: what's going on?} Okay, so \verb":" and \cmd\colon\ in maths mode are defined in a few places, so I need to work out what does what. Respectively, we have:
@@ -3843,7 +3846,7 @@ This work consists of the file  fontspec.dtx
   \ifdefined\zf@rmboldmaths
     \SetMathAlphabet\mathrm{bold}\zf@enc\zf@rmboldmaths\mddefault\updefault
     \SetMathAlphabet\mathbf{bold}\zf@enc\zf@rmboldmaths\bfdefault\updefault
-    \SetMathAlphabet\mathit{bold}\zf@enc\zf@rmboldmaths\mddefault\itdefault  
+    \SetMathAlphabet\mathit{bold}\zf@enc\zf@rmboldmaths\mddefault\itdefault
   \else
     \SetMathAlphabet\mathrm{bold}\zf@enc\zf@rmmaths\bfdefault\updefault
     \SetMathAlphabet\mathit{bold}\zf@enc\zf@rmmaths\bfdefault\itdefault
