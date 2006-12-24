@@ -77,7 +77,7 @@ This work consists of the file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2006/12/21 v1.13 Advanced font selection for XeLaTeX]
+  [2006/12/24 v1.13 Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -239,15 +239,16 @@ This work consists of the file  fontspec.dtx
 % installed in the operating system may be accessed.
 %
 % \subsection{Default font families}\label{sec:setxxfont}
-% \DescribeMacro{\setromanfont} \DescribeMacro{\setsansfont}
-% \DescribeMacro{\setmonofont} The \cs{setromanfont},
+% \DescribeMacro{\setmainfont} \DescribeMacro{\setsansfont}
+% \DescribeMacro{\setmonofont} The \cs{setmainfont},
+% \note{Or \cmd\setromanfont, a historical name that doesn't make much sense when you're, say, typesetting Greek.}
 % \cs{setsansfont}, and \cs{setmonofont} commands are used to select
 % the default font families for the entire document. They take the
 % same arguments as \cmd{\fontspec}. For example:
 %   \def\pangram{Pack my box with five 
 %                      dozen liquor jugs.}
 % \begin{example}
-%   \setromanfont{Baskerville}
+%   \setmainfont{Baskerville}
 %   \setsansfont[Scale=0.86]{Skia}
 %   \setmonofont[Scale=0.8]{Monaco}
 %   \rmfamily\pangram\par
@@ -261,8 +262,6 @@ This work consists of the file  fontspec.dtx
 %
 % \subsection{Font instances for efficiency}
 % \DescribeMacro{\newfontfamily} 
-% \warn{v1.11}{This macro used to be called \cmd\newfontinstance.
-%   Backwards compatibility is preserved via \texttt{fontspec.cfg}.}
 % For cases when a specific font with a specific feature set is going
 % to be re-used many times in a document, it is inefficient to keep
 % calling \cs{fontspec} for every use. While the command does not
@@ -271,19 +270,20 @@ This work consists of the file  fontspec.dtx
 %
 % For this reason, \emph{instances}
 % of a font may be created with the \cmd\newfontfamily\ command,
+% \warn{v1.11}{This macro used to be called \cmd\newfontinstance.
+%   Backwards compatibility is preserved via \texttt{fontspec.cfg}.}
 % as shown in the following example:
 % \begin{example}
 %   \newfontfamily\notefont{Didot}
-%   \notefont This font is used for \emph{notes}.
+%   \notefont This is a \emph{note}.
 % \end{example}
 % This macro should be used to create commands that would be used in 
 % the same way as \cmd\rmfamily, for example.
 %
 % \DescribeMacro{\newfontface}
-% \noindent\new{v1.11}
 % Sometimes only a specific font face is desired, without accompanying italic or bold variants.
 % This is common when selecting a fancy italic font, say, that has swash features unavailable
-% in the upright forms. \cmd\newfontface\ is used for this purpose: 
+% in the upright forms. \cmd\newfontface\ is used for this purpose: \new{v1.11}
 % \begin{example}
 %   \newfontface\fancy
 %       [Contextuals={WordInitial,WordFinal}]
@@ -339,7 +339,7 @@ This work consists of the file  fontspec.dtx
 %
 % \subsection{Math(s) fonts}
 %
-% When \cmd\setromanfont, \cmd\setsansfont\ and \cmd\setmonofont\ are
+% When \cmd\setmainfont, \cmd\setsansfont\ and \cmd\setmonofont\ are
 % used in the preamble, they also define the fonts to be used in maths
 % mode inside the \cmd\mathrm-type commands. This only occurs in the
 % preamble because \LaTeX\ freezes the maths fonts after this stage of
@@ -365,13 +365,13 @@ This work consists of the file  fontspec.dtx
 % \begin{Verbatim}[gobble=4]
 %   \usepackage[mathcal]{euler}
 %   \usepackage{fontspec,xunicode}
-%   \setromanfont{Optima Regular}
+%   \setmainfont{Optima Regular}
 %   \setmathrm{Optima}
 %   \setboldmathrm[BoldFont=Optima ExtraBlack]{Optima Bold}
 % \end{Verbatim}
 % and this would allow you to typeset something like this:
 % \begingroup
-% \setromanfont{Optima Regular}
+% \setmainfont{Optima Regular}
 % \begin{example}
 %   $ X \rightarrow \mathrm{X} \rightarrow \mathbf{X} $
 %   \\\boldmath
@@ -404,9 +404,6 @@ This work consists of the file  fontspec.dtx
 % Bold and italic fonts cannot be automatically selected when external fonts
 % are being used; they must be explicitly declared using the methods
 % described in \vref{sec:bfitfonts}.
-%
-% Optical sizes cannot be selected (either implicitly or explicitly) for externally loaded fonts;
-% this is a failing of the \pkg{fontspec} package. Hopefully it will be rectified in the future.
 %
 % \subsection{Miscellaneous font selecting details}
 % 
@@ -531,19 +528,16 @@ This work consists of the file  fontspec.dtx
 % \subsection{Different features for different font sizes}
 % \label{sec:sizefeature}
 %
-% The \feat{SizeFeature} feature is a little more complicated
+% The \feat{SizeFeature} feature \new{v1.13} is a little more complicated
 % than the previous features discussed. It allows different fonts
 % and different font features to be selected for a given font
 % family as the point size varies. 
 %
-% It takes a comma-separated list of comma separated lists of features,
-% which of each sub-list must contain the \opt{Size} option
+% It takes a comma separated list of braced, comma separated lists of features for each size range.
+% Each sub-list must contain the \opt{Size} option
 % to declare the size range, and optionally \opt{Font} to change the
 % font based on size. Other (regular) fontspec features that are added
 % are used on top of the font features that would be used anyway.
-%
-% A less trivial example is shown in the context of optical font sizes
-% in \vref{sec:opticalsize}.
 %
 % \begin{example}
 %   \fontspec[ SizeFeatures={
@@ -552,6 +546,9 @@ This work consists of the file  fontspec.dtx
 %       {Size={14-}, Colour=0000AA}} ]{Skia} 
 %   {\scriptsize Small\par} Normal size\par {\Large Large\par}
 % \end{example}
+% A less trivial example is shown in the context of optical font sizes
+% in \vref{sec:opticalsize}.
+%
 % To be precise, the \opt{Size} sub-feature accepts arguments in the form shown in \vref{tab:sizing}.
 % Braces around the size range are optional. For an exact font size (|Size=X|)
 % font sizes chosen near that size will `snap'. For example, for size definitions
@@ -575,10 +572,10 @@ This work consists of the file  fontspec.dtx
 % \toprule
 % Input & Font size, $s$ \\
 % \midrule
-%  |Size = X-| & $s \geq \texttt{X}$\,pt \\
-%  |Size = -Y| & $s < \texttt{Y}$\,pt \\
-%  |Size = X-Y| & $\texttt{X} \geq s < \texttt{Y}$\,pt \\
-%  |Size = X| & $s = \texttt{X}$\,pt \\
+%  |Size = X-| & $s \geq \texttt{X}$ \\
+%  |Size = -Y| & $s < \texttt{Y}$ \\
+%  |Size = X-Y| & $\texttt{X} \leq s < \texttt{Y}$ \\
+%  |Size = X| & $s = \texttt{X}$ \\
 % \bottomrule
 % \end{tabular}
 % \caption{Syntax for specifying the size to apply custom font features.}\label{tab:sizing}
@@ -604,7 +601,7 @@ This work consists of the file  fontspec.dtx
 % the current default roman font to either the height of the lowercase or
 % uppercase letters, respectively.
 % \begin{example}
-%   \setromanfont{Georgia}
+%   \setmainfont{Georgia}
 %   \newfontfamily\lc[Scale=MatchLowercase]{Verdana}
 %    The perfect match {\lc is hard to find.}\\
 %   \newfontfamily\uc[Scale=MatchUppercase]{Arial}
@@ -706,7 +703,7 @@ This work consists of the file  fontspec.dtx
 % \subsection{Letter spacing}
 % Letter spacing, or tracking, is the term given to adding (or subtracting) a small amount of horizontal space in between adjacent characters. It is specified with the \feat{LetterSpace}, which takes a numeric argument. 
 %
-% That the letter spacing parameter is a normalised additive factor (not a scaling factor); it is defined as a percentage of the font size. That is, for a 10\,pt font, a letter spacing parameter of `|1.0|' will add 0.1\,pt between each letter.
+% The letter spacing parameter is a normalised additive factor (not a scaling factor); it is defined as a percentage of the font size. That is, for a 10\,pt font, a letter spacing parameter of `|1.0|' will add 0.1\,pt between each letter.
 % \begin{example}
 %   \fontspec{Didot}
 %   \addfontfeature{LetterSpace=0.0}
@@ -1453,7 +1450,7 @@ This work consists of the file  fontspec.dtx
 %
 % \subsubsection{\feat{Language} examples}
 %
-% Vietnamese:
+% Vietnamese requires careful diacritic placement:
 % \begingroup
 % \setmonofont[Scale=MatchLowercase]{Monaco}
 % \setexsize\Large
@@ -1509,7 +1506,7 @@ This work consists of the file  fontspec.dtx
 %   \hrule
 %   \begin{multicols}{6}
 %     \everypar{\setlength\parindent{0pt}\setlength\hangindent{2em}}
-%     \sffamily\footnotesize\raggedright
+%     \fontspec{Optima}\footnotesize\raggedright
 %     Abaza \par Abkhazian \par Adyghe \par Afrikaans \par Afar \par Agaw \par Altai \par Amharic \par Arabic \par Aari \par Arakanese \par Assamese \par Athapaskan \par Avar \par Awadhi \par Aymara \par Azeri \par Badaga \par Baghelkhandi \par Balkar \par Baule \par Berber \par Bench \par Bible Cree \par Belarussian \par Bemba \par Bengali \par Bulgarian \par Bhili \par Bhojpuri \par Bikol \par Bilen \par Blackfoot \par Balochi \par Balante \par Balti \par Bambara \par Bamileke \par Breton \par Brahui \par Braj Bhasha \par Burmese \par Bashkir \par Beti \par Catalan \par Cebuano \par Chechen \par Chaha Gurage \par Chattisgarhi \par Chichewa \par Chukchi \par Chipewyan \par Cherokee \par Chuvash \par Comorian \par Coptic \par Cree \par Carrier \par Crimean Tatar \par Church Slavonic \par Czech \par Danish \par Dargwa \par Woods Cree \par German \par Default \par Dogri \par Divehi \par Djerma \par Dangme \par Dinka \par Dungan \par Dzongkha \par Ebira \par Eastern Cree \par Edo \par Efik \par Greek \par English \par Erzya \par Spanish \par Estonian \par Basque \par Evenki \par Even \par Ewe \par French Antillean \par Farsi \par Finnish \par Fijian \par Flemish \par Forest Nenets \par Fon \par Faroese \par French \par Frisian \par Friulian \par Futa \par Fulani \par Ga \par Gaelic \par Gagauz \par Galician \par Garshuni \par Garhwali \par Ge'ez \par Gilyak \par Gumuz \par Gondi \par Greenlandic \par Garo \par Guarani \par Gujarati \par Haitian \par Halam \par Harauti \par Hausa \par Hawaiin \par Hammer-Banna \par Hiligaynon \par Hindi \par High Mari \par Hindko \par Ho \par Harari \par Croatian \par Hungarian \par Armenian \par Igbo \par Ijo \par Ilokano \par Indonesian \par Ingush \par Inuktitut \par Irish \par Irish Traditional \par Icelandic \par Inari Sami \par Italian \par Hebrew \par Javanese \par Yiddish \par Japanese \par Judezmo \par Jula \par Kabardian \par Kachchi \par Kalenjin \par Kannada \par Karachay \par Georgian \par Kazakh \par Kebena \par Khutsuri Georgian \par Khakass \par Khanty-Kazim \par Khmer \par Khanty-Shurishkar \par Khanty-Vakhi \par Khowar \par Kikuyu \par Kirghiz \par Kisii \par Kokni \par Kalmyk \par Kamba \par Kumaoni \par Komo \par Komso \par Kanuri \par Kodagu \par Korean Old Hangul \par Konkani \par Kikongo \par Komi-Permyak \par Korean \par Komi-Zyrian \par Kpelle \par Krio \par Karakalpak \par Karelian \par Karaim \par Karen \par Koorete \par Kashmiri \par Khasi \par Kildin Sami \par Kui \par Kulvi \par Kumyk \par Kurdish \par Kurukh \par Kuy \par Koryak \par Ladin \par Lahuli \par Lak \par Lambani \par Lao \par Latin \par Laz \par L-Cree \par Ladakhi \par Lezgi \par Lingala \par Low Mari \par Limbu \par Lomwe \par Lower Sorbian \par Lule Sami \par Lithuanian \par Luba \par Luganda \par Luhya \par Luo \par Latvian \par Majang \par Makua \par Malayalam Traditional \par Mansi \par Marathi \par Marwari \par Mbundu \par Manchu \par Moose Cree \par Mende \par Me'en \par Mizo \par Macedonian \par Male \par Malagasy \par Malinke \par Malayalam Reformed \par Malay \par Mandinka \par Mongolian \par Manipuri \par Maninka \par Manx Gaelic \par Moksha \par Moldavian \par Mon \par Moroccan \par Maori \par Maithili \par Maltese \par Mundari \par Naga-Assamese \par Nanai \par Naskapi \par N-Cree \par Ndebele \par Ndonga \par Nepali \par Newari \par Nagari \par Norway House Cree \par Nisi \par Niuean \par Nkole \par N'ko \par Dutch \par Nogai \par Norwegian \par Northern Sami \par Northern Tai \par Esperanto \par Nynorsk \par Oji-Cree \par Ojibway \par Oriya \par Oromo \par Ossetian \par Palestinian Aramaic \par Pali \par Punjabi \par Palpa \par Pashto \par Polytonic Greek \par Pilipino \par Palaung \par Polish \par Provencal \par Portuguese \par Chin \par Rajasthani \par R-Cree \par Russian Buriat \par Riang \par Rhaeto-Romanic \par Romanian \par Romany \par Rusyn \par Ruanda \par Russian \par Sadri \par Sanskrit \par Santali \par Sayisi \par Sekota \par Selkup \par Sango \par Shan \par Sibe \par Sidamo \par Silte Gurage \par Skolt Sami \par Slovak \par Slavey \par Slovenian \par Somali \par Samoan \par Sena \par Sindhi \par Sinhalese \par Soninke \par Sodo Gurage \par Sotho \par Albanian \par Serbian \par Saraiki \par Serer \par South Slavey \par Southern Sami \par Suri \par Svan \par Swedish \par Swadaya Aramaic \par Swahili \par Swazi \par Sutu \par Syriac \par Tabasaran \par Tajiki \par Tamil \par Tatar \par TH-Cree \par Telugu \par Tongan \par Tigre \par Tigrinya \par Thai \par Tahitian \par Tibetan \par Turkmen \par Temne \par Tswana \par Tundra Nenets \par Tonga \par Todo \par Turkish \par Tsonga \par Turoyo Aramaic \par Tulu \par Tuvin \par Twi \par Udmurt \par Ukrainian \par Urdu \par Upper Sorbian \par Uyghur \par Uzbek \par Venda \par Vietnamese \par Wa \par Wagdi \par West-Cree \par Welsh \par Wolof \par Tai Lue \par Xhosa \par Yakut \par Yoruba \par Y-Cree \par Yi Classic \par Yi Modern \par Chinese Hong Kong \par Chinese Phonetic \par Chinese Simplified \par Chinese Traditional \par Zande \par Zulu 
 %   \end{multicols}
 %   \hspace{4pt}
@@ -1618,6 +1615,20 @@ This work consists of the file  fontspec.dtx
 %   \newfontfeature{PurpleColour}{color=550099BB}
 % \end{Verbatim}
 %
+% \subsection{Going behind \pkg{fontspec}'s back}
+% Expert users may wish not to use \pkg{fontspec}'s feature handling at all,
+% while still taking advantage of its \LaTeX\ font selection conveniences. The
+% \feat{RawFeature} \new{v1.13} font feature allows literal \XeTeX\ font feature selection
+% when you happen to have the OpenType feature tag memorised.
+% \begin{example}
+%   \fontspec[RawFeature=+smcp]{FPL Neu}
+%   FPL Neu small caps
+% \end{example}
+% Multiple features can either be included in a single declaration:\par
+% {\centering|[RawFeature=+smcp;+onum]|\par}
+% \noindent or with multiple declarations:\par
+% {\centering|[RawFeature=+smcp, RawFeature=+onum]|\par}
+%
 % \StopEventually{}
 %
 % \clearpage
@@ -1665,14 +1676,6 @@ This work consists of the file  fontspec.dtx
 % For, well, dealing with \pkg{babel}:
 %    \begin{macrocode}
 \newif\ifzf@package@babel@loaded
-%    \end{macrocode}
-% For package options:
-%    \begin{macrocode}
-\newif\if@zf@configfile
-\newif\if@zf@euenc
-%    \end{macrocode}
-% \paragraph{Counters}
-%    \begin{macrocode}
 %    \end{macrocode}
 % For package options:
 %    \begin{macrocode}
@@ -1794,20 +1797,21 @@ This work consists of the file  fontspec.dtx
 % \changes{v1.9}{2005/12/14}{Added \cs{ignorespaces} to make it invisible.}
 % \end{macro}
 %
-% \begin{macro}{\setromanfont}
+% \begin{macro}{\setmainfont}
 % \begin{macro}{\setsansfont} 
 % \begin{macro}{\setmonofont} 
 %     The following three macros perform equivalent operations setting
 %     the default font (using \cs{let} rather than \cs{renewcommand}
 %     because \cs{zf@family} will change in the future) for a
-%     particular family: roman, sans serif, or typewriter
+%     particular family: `roman', sans serif, or typewriter
 %     (monospaced). I end them with |\normalfont| so that if they're
 %     used in the document, the change registers immediately.
 %    \begin{macrocode}
-\newcommand*\setromanfont[2][]{%
+\newcommand*\setmainfont[2][]{%
   \zf@fontspec{#1}{#2}%
   \let\rmdefault\zf@family
   \normalfont}
+\let\setromanfont\setmainfont
 \newcommand*\setsansfont[2][]{%
   \zf@fontspec{#1}{#2}%
   \let\sfdefault\zf@family
@@ -2109,7 +2113,8 @@ This work consists of the file  fontspec.dtx
   \zf@init
   \edef\zf@fontname{#2}%
   \let\zf@family@long\zf@fontname
-  \setkeys*[zf]{preparse}{#1}%
+  \setkeys*[zf]{prepreparse}{#1}%
+  \edef\@tempa{\noexpand\setkeys*[zf]{preparse}{\XKV@rm}}\@tempa
   \let\zf@font@feat\XKV@rm
 %    \end{macrocode}
 % Now check if the font is to be rendered with ATSUI or ICU. This will either
@@ -2120,7 +2125,9 @@ This work consists of the file  fontspec.dtx
 % same renderer. This fixes a bug in v1.10 for a mishmash of Lucida fonts.
 %    \begin{macrocode}
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
-  \zf@set@font@type
+  \unless\ifzf@icu
+    \zf@set@font@type
+  \fi
   \ifx\zf@suffix\@empty
     \ifzf@atsui
       \def\zf@suffix{/AAT}%
@@ -2491,6 +2498,7 @@ This work consists of the file  fontspec.dtx
 % because it's no longer the first thing that can affect these things.
 %    \begin{macrocode}
 \newcommand*\zf@init{%
+  \zf@icufalse
   \let\zf@pre@ff      \@empty
   \let\zf@font@feat   \@empty
   \let\zf@font@str    \@empty
@@ -2564,33 +2572,54 @@ This work consists of the file  fontspec.dtx
 %   according to which type of font is selected.
 %    \begin{macrocode}
 \newcommand*\zf@make@feature[3]{%
+%    \end{macrocode}
+% For AAT fonts:
+%    \begin{macrocode}
   \ifzf@atsui
-    \zf@make@aat@feature@string{#1}{#2}%
+    \def\@tempa{#1}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        AAT feature '\XKV@tfam=\XKV@tkey'
-        (#1,#2) not available in font \fontname\zf@basefont}%
+        ‘\XKV@tfam=\XKV@tkey’ feature not supported
+         for AAT font ‘\fontname\zf@basefont’}%
     \else
-      \zf@update@family{+#1,#2}%
-      \zf@update@ff\@tempa
+      \zf@make@aat@feature@string{#1}{#2}%
+      \ifx\@tempa\@empty
+        \zf@PackageWarning{%
+          AAT feature '\XKV@tfam=\XKV@tkey'
+          (#1,#2) not available in font \fontname\zf@basefont}%
+      \else
+        \zf@update@family{+#1,#2}%
+        \zf@update@ff\@tempa
+      \fi
     \fi
   \fi
+%    \end{macrocode}
+% For OpenType fonts:
+%    \begin{macrocode}
   \ifzf@icu
-    \zf@check@ot@feat{#3}%
-    \if@tempswa
-      \zf@update@family{#3}%
-      \zf@update@ff{#3}%
-    \else
+    \edef\@tempa{#3}%
+    \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
-        not available in font \fontname\zf@basefont, script
-        '\zf@script@name', language '\zf@language@name'}%
+        ‘\XKV@tfam=\XKV@tkey’ feature not supported 
+        for ICU font ‘ \fontname\zf@basefont’}%
+    \else
+      \expandafter\zf@check@ot@feat\expandafter{\@tempa}%
+      \if@tempswa
+        \zf@update@family{#3}%
+        \zf@update@ff{#3}%
+      \else
+        \zf@PackageWarning{%
+          OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
+          not available in font \fontname\zf@basefont, script
+          '\zf@script@name', language '\zf@language@name'}%
+      \fi
     \fi
   \fi}
 %    \end{macrocode}
 % \changes{v1.7}{2005/03/27}{Accommodation of the \cs{zf@thisfontfeature} change.}
 % \changes{v1.9}{2006/02/12}{Now checks for OpenType feature.}
 % \changes{v1.10}{2006/04/04}{Removed embarrassing space after warnings.}
+% \changes{v1.13}{2006/12/24}{Warns (and fixes bug) when an AAT feature is requested for an ICU font and vice versa.}
 % \end{macro}
 %
 % \begin{macro}{\zf@define@font@feature}
@@ -2812,7 +2841,8 @@ This work consists of the file  fontspec.dtx
 % with |kpsewhich|; it's either in the current directory or the \TeX\ tree. Otherwise, the
 % argument given defines the file path of the font.
 %    \begin{macrocode}
-\define@key[zf]{preparse}{ExternalLocation}[]{%
+\define@key[zf]{prepreparse}{ExternalLocation}[]{%
+  \zf@icutrue
   \zf@nobftrue\zf@noittrue
   \gdef\zf@font@wrap##1{[#1##1]}}
 %    \end{macrocode}
@@ -2831,6 +2861,7 @@ This work consists of the file  fontspec.dtx
 % See later for the resolutions from \pkg{fontspec} features to OpenType definitions.
 %    \begin{macrocode}
 \define@key[zf]{preparse}{Script}{%
+  \zf@icutrue
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +script:#1}%
@@ -2839,6 +2870,7 @@ This work consists of the file  fontspec.dtx
 % Exactly the same:
 %    \begin{macrocode}
 \define@key[zf]{preparse}{Language}{%
+  \zf@icutrue
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +language:#1}%
@@ -2908,7 +2940,7 @@ This work consists of the file  fontspec.dtx
 %    \end{macrocode}
 %
 % \begin{macro}{\zf@partial@fontname}
-% This macro takes the first token of its input and ends up defining #3
+% This macro takes the first token of its input and ends up defining |#3|
 % to the name of the font depending if it's been specified in full 
 % (``\texttt{Baskerville Semibold}'') or in abbreviation (``\texttt{* Semibold}'').
 %
@@ -3315,6 +3347,7 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{options}{Alternate}{%
   \setkeys*[zf@feat]{Alternate}{#1}%
   \unless\ifx\XKV@rm\@empty
+    \def\XKV@tfam{Alternate}%
     \zf@make@feature{17}{#1}{}%
   \fi}
 %    \end{macrocode}
@@ -3323,7 +3356,8 @@ This work consists of the file  fontspec.dtx
 \define@key[zf]{options}{Variant}{%
   \setkeys*[zf@feat]{Variant}{#1}%
   \unless\ifx\XKV@rm\@empty
-    \edef\@tempa{\noexpand\zf@make@feature{18}{#1}{+ss\two@digits{#1}}}\@tempa
+    \def\XKV@tfam{Variant}%
+    \zf@make@feature{18}{#1}{+ss\two@digits{#1}}%
   \fi}
 %    \end{macrocode}
 %
@@ -3604,6 +3638,16 @@ This work consists of the file  fontspec.dtx
   \fi}
 %    \end{macrocode}
 % \changes{v1.11}{2006/07/08}{Added better support for Turkish language selection.}
+%
+% \subsubsection{Raw feature string}
+% This allows savvy \XeTeX-ers to input font features manually if they have 
+% already memorised the OpenType abbreviations and don't mind not having error checking.
+%    \begin{macrocode}
+\define@key[zf]{options}{RawFeature}{%
+  \zf@update@family{+Raw:#1}%
+  \zf@update@ff{#1}}
+%    \end{macrocode}
+% \changes{v1.13}{2006/12/24}{\feat{RawFeature} added}
 %
 % \subsection{Italic small caps} \label{sec:sishape} 
 % The following code for utilising italic small caps sensibly is
@@ -4110,20 +4154,20 @@ Please see the documentation for font feature explanation and further package ni
 %% Sidenotes:
 \newcommand\warn[2]{%
   \edef\thisversion{#1}%
-  \ifhmode\unskip~\fi({\ifx\thisversion\fileversion\color{red}\fi
-  $\leftarrow$})%
+  \ifhmode\unskip~\fi{\ifx\thisversion\fileversion\color{red}\fi
+  $\leftarrow$}%
   \marginpar{\raggedleft
-    \small(%
+    \small%
       {\ifx\thisversion\fileversion\color{red}\fi$\rightarrow$}%
-      \,{\notefont #1:~#2})}}
+      \,{\notefont #1:~#2}}}
 
 \newcommand\new[1]{%
   \edef\thisversion{#1}%
-  \ifhmode\unskip~\fi({\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
-  $\leftarrow$})%
+  \ifhmode\unskip~\fi{\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
+  $\leftarrow$}%
   \marginpar{\raggedleft
-    \small(\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
-    $\rightarrow$\,{\notefont #1:~New!})}}
+    \small\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
+    $\rightarrow$\,{\notefont #1:~New!}}}
 
 %% Sidenote font
 \newfontfamily\notefont[Scale=MatchLowercase]{Optima}

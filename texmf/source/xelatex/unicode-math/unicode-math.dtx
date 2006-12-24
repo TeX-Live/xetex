@@ -98,9 +98,11 @@ This work consists of the file  \jobname.dtx
 %
 % \section{Specification}
 %
+% This section will turn into `User Interface' in time, presumably.
+%
 % In the ideal case, a single unicode font will contain all maths glyphs we need.
-% Barbara Beeton's STIX table provides the mapping between unicode maths glyphs 
-% and macro names (all 3298 of them!).
+% Barbara Beeton's \STIX\ table provides the mapping between unicode maths glyphs 
+% and macro names (all 3298 — or however many — of them!).
 % A single command \codeline{\cmd\setmathsfont\oarg{font features}\marg{font name}} would implement this
 % for every every symbol and alphabetic variant.
 % That means |x| to $x$, |\xi| to $\xi$, |\leq| to $\leq$, etc., 
@@ -120,11 +122,16 @@ This work consists of the file  \jobname.dtx
 % follow from my \pkg{fontspec} package, and therefore any additional \meta{font features}
 % specific to maths fonts will hook into \pkg{fontspec}'s methods.
 %
-% \subsection{Dealing with real life}
+% \subsection{Using multiple fonts}
 %
-% Let's face it; there will probably be few cases where a single unicode maths font suffices. The upcoming STIX font comes to mind as a notable exception. It will therefore be necessary to delegate specific unicode ranges of glyphs to separate fonts. This syntax will also hook into the \pkg{fontspec} font feature processing:
+% Let's face it; there will probably be few cases where a single unicode maths font suffices. The upcoming \STIX\ font comes to mind as a notable exception. It will therefore be necessary to delegate specific unicode ranges of glyphs to separate fonts. This syntax will also hook into the \pkg{fontspec} font feature processing:
 %\codeline{\cmd\setmathsfont|[Range=|\meta{unicode range}|,|\meta{font features}|]|\marg{font name}}
 % where \meta{unicode range} is a comma-separated list of unicode slots and ranges such as |{27D0-27EB, 27FF, 295B-297F}|. Furthermore, preset names ranges could be used, such as |MiscMathSymbolsA|, with such ranges based on unicode chunks. The amount of optimisation required here to achieve acceptable performance has yet to be determined. Techniques such as saving out unicode subsets based on \meta{unicode range} data to be \cmd\input\ in the next \LaTeX\ run are a possibility, but at this stage, performance without such measures seems acceptable.
+%
+% \subsection{Script and scriptscript fonts/features}
+% Cambria Math uses OpenType font features to activate smaller optical sizes for scriptsize and scriptscriptsize symbols (the $B$ and $C$, respectively, in $A_{B_C}$.
+%
+% Other fonts will no doubt use entirely separate fonts. Both of these options must be taken into account. I hope this will be mostly automatic from the users' points of view. The |+ssty| feature can be detected and applied automatically, and appropriate optical size information embedded in the fonts will ensure this latter case. Fine tuning should be possible automatically with \pkg{fontspec} options. We might have to wait until MnMath, for example, before we really know.
 %
 % \StopEventually{}
 %
@@ -140,16 +147,23 @@ This work consists of the file  \jobname.dtx
 %
 % \section{Things we need}
 %
-% \subsection{Packages}
+% \paragraph{Packages}
 %    \begin{macrocode}
 \RequirePackage{fontspec}
 %    \end{macrocode}
 %
-% \subsection{Counters and conditionals}
+% \paragraph{Counters and conditionals}
 %    \begin{macrocode}
 \newcounter{um@fam}
 \newif\if@um@fontspec@feature
 %    \end{macrocode} 
+%
+% \paragraph{Shortcuts}
+%    \begin{macrocode}
+\newcommand\um@PackageError[2]{\PackageError{unicode-math}{#1}{#2}}
+\newcommand\um@PackageWarning[1]{\PackageWarning{unicode-math}{#1}}
+\newcommand\um@PackageInfo[1]{\PackageInfo{unicode-math}{#1}}
+%    \end{macrocode}
 %
 % \subsection{Programming macros}
 % \begin{macro}{\um@Loop}
@@ -184,7 +198,7 @@ This work consists of the file  \jobname.dtx
 %
 % \subsection{Overcoming \cmd\@onlypreamble}
 %
-% This will be refined later!
+% TODO: This will be refined later! Sort out which macros actually have to be removed from the \cmd\@preamblecmds\ token list.
 %    \begin{macrocode}
 \def\@preamblecmds{}
 %    \end{macrocode}
@@ -289,6 +303,7 @@ This work consists of the file  \jobname.dtx
 % The final macros that actually define the maths symbol with \XeTeX\ primitives.
 %
 % \begin{macro}{\um@set@mathsymbol}
+% \label{mac:um@set@mathsymbol}
 % \darg{Symbol font number}
 % \darg{Symbol macro, \eg, \cmd\alpha}
 % \darg{Type, \eg, \cmd\mathalpha}
@@ -297,8 +312,9 @@ This work consists of the file  \jobname.dtx
 % There are a bunch of tests to perform to process the various characters.
 %    \begin{macrocode}
 \def\um@set@mathsymbol#1#2#3#4{%
+  \iftrue%\unless\ifx#3\mathalpha
 %    \end{macrocode}
-% First test if the character requires a \cmd\nolimits\ suffix. This is controlled by the \cmd\um@nolimits\ macro, which contains a commalist of such characters. If so, define the mathchar \cs{\meta{cs}op} (where |#2| is \cs{\meta{cs}}) and define \cs{\meta{cs}} as the wrapper around this control sequence.
+% \paragraph{Operators} First test if the character requires a \cmd\nolimits\ suffix. This is controlled by the \cmd\um@nolimits\ macro, which contains a commalist of such characters. If so, define the mathchar \cs{\meta{cs}op} (where |#2| is \cs{\meta{cs}}) and define \cs{\meta{cs}} as the wrapper around this control sequence.
 %    \begin{macrocode}
   \expandafter\in@\expandafter#2\expandafter{\um@nolimits}%
   \ifin@
@@ -308,16 +324,37 @@ This work consists of the file  \jobname.dtx
     \gdef#2{\csname\expandafter\@gobble\string#2 op\endcsname\nolimits}%
   \else
 %    \end{macrocode}
-% Test for the \cmd\sqrt\ radical, which is probably the only one ever.\label{page:radical}
+% \paragraph{Radicals}
 %    \begin{macrocode}
-    \unless\ifnum#4="221A\relax
-      \global\XeTeXmathchardef#2="\mathchar@type#3 #1 #4\relax
-      \ifnum#4<"FFFF
-        \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
-      \fi
-    \else
+    \expandafter\in@\expandafter#2\expandafter{\um@radicals,}%
+    \ifin@
       \gdef#2{\XeTeXradical#1 #4\relax}%
+    \else
+%    \end{macrocode}
+% \paragraph{Delimiters}
+% TODO: sort out which of these three declarations are necessary!
+%    \begin{macrocode}
+      \ifx\mathopen#3\relax
+        \gdef#2{\XeTeXdelimiter "\mathchar@type#3 #1 #4}%
+        \global\XeTeXdelcode#4=#1 #4\relax        
+        \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
+      \else
+        \ifx\mathclose#3\relax
+          \gdef#2{\XeTeXdelimiter "\mathchar@type#3 #1 #4}%
+          \global\XeTeXdelcode#4=#1 #4\relax
+          \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
+        \else
+%    \end{macrocode}
+% And finally, the general case. We define both the macro and the unicode mathcode; this only works for 16-bit unicode scalar values, however. TODO: make all higher plane maths characters math-active so that spacing works for literal unicode input.
+%    \begin{macrocode}
+          \global\XeTeXmathchardef#2="\mathchar@type#3 #1 #4\relax
+          \ifnum#4<"FFFF
+            \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
+          \fi
+        \fi
+      \fi
     \fi
+  \fi
   \fi}
 %    \end{macrocode}
 % \end{macro}
@@ -369,60 +406,81 @@ This work consists of the file  \jobname.dtx
 % \darg{font name}
 %    \begin{macrocode}
 \newcommand\setmathfont[2][]{%
+%  \begingroup
 %    \end{macrocode}
-% Erase any conception \LaTeX\ has of previously defined math symbol fonts;
+% \paragraph{Init}
+% \begin{itemize}
+% \item Erase any conception \LaTeX\ has of previously defined math symbol fonts;
 % this allows \cmd\DeclareSymbolFont\ at any point in the document.
-%
-% To start with, assume we're defining every math symbol character.
+% \item To start with, assume we're defining every math symbol character.
+% \item Bump up the um@fam counter to assign a new maths symbol font.
+% \item Tell \pkg{fontspec} that maths font features are actually allowed.
+% \item Grab the current size information (is this robust enough? Maybe it should be preceded by \cmd\normalsize\dots).
+% \end{itemize}
 %    \begin{macrocode}
   \let\glb@currsize\relax
   \let\um@char@range\@empty
+  \stepcounter{um@fam}%
+  \@um@fontspec@featuretrue
+  \csname S@\f@size\endcsname
 %    \end{macrocode}
+% Now when the list of unicode symbols is input, we want a suitable definition of 
+% its internal macro. By default, we want to define every single math char.
+%
 % Use \pkg{fontspec} to select a font to use. The macro \cmd\S@\meta{size} 
 % contains the definitions of the sizes used for maths letters, subscripts and subsubscripts in
 % \cmd\tf@size, \cmd\sf@size, and \cmd\ssf@size, respectively.
 %
-% Perhaps in the future we want options to change the hard-coded \pkg{fontspec}
-% maths-related features. At this stage, it isn't clear that this is necessary.
+% Probably in the future we want options to change the hard-coded \pkg{fontspec}
+% maths-related features. 
 %    \begin{macrocode}
-  \begingroup
-    \@um@fontspec@featuretrue
-    \csname S@\f@size\endcsname
     \zf@fontspec{
-      Script=Math,
-      SizeFeatures={
+      Mapping=math-italic,
+      Script=Math, SizeFeatures={
         {Size=\tf@size-},
         {Size=\sf@size-\tf@size,ScriptStyle={}},
         {Size=-\sf@size,ScriptScriptStyle={}}},
       #1}{#2}%
-  \endgroup
 %    \end{macrocode}
 % Probably want to check there that we're not creating multiple symbol fonts
 % with the same NFSS declaration. On that note, \pkg{fontspec} doesn't seem to
 % be keeping track of that, either |:(| (check that out!)
 %    \begin{macrocode}
-  \stepcounter{um@fam}%
-  \DeclareSymbolFont{um@fam\theum@fam}
-    {EU1}{\zf@family}{\mddefault}{\updefault}%
-%    \end{macrocode}
-% Now when the list of unicode symbols is input, we want a suitable definition of 
-% its internal macro. By default, we want to define every single math char:
-%    \begin{macrocode}
+    \DeclareSymbolFont{um@fam\theum@fam}
+      {\encodingdefault}{\zf@family}{\mddefault}{\updefault}%
   \ifx\um@char@range\@empty
-      \um@text@input{um@fam\theum@fam}%
-      \PackageWarning{unicode-math}{Defining the default maths font as `#2'}
-      \def\unicode@math@symbol##1##2##3##4{%
-        \DeclareUnicodeMathSymbol
-          {##2}{##3}{um@fam\theum@fam}{##1}}%
+%    \end{macrocode}
+% Try other alphabets:
+%    \begin{macrocode}
+    \zf@fontspec{
+      Script=Math, SizeFeatures={
+        {Size=-\sf@size,ScriptScriptStyle={}},
+        {Size=\sf@size-\tf@size,ScriptStyle={}},
+        {Size=\tf@size-}},
+      #1}{#2}%
+    \SetMathAlphabet\mathrm{normal}{\encodingdefault}{\zf@family}{\mddefault}{\updefault}%
+    \zf@fontspec{
+      Mapping=math-bold,
+      Script=Math, SizeFeatures={
+        {Size=-\sf@size,ScriptScriptStyle={}},
+        {Size=\sf@size-\tf@size,ScriptStyle={}},
+        {Size=\tf@size-}},
+      #1}{#2}%
+    \SetMathAlphabet\mathbf{normal}{\encodingdefault}{\zf@family}{\mddefault}{\updefault}%
+    \um@text@input{um@fam\theum@fam}%
+    \um@PackageWarning{Defining the default maths font as `#2'}%
+    \def\UnicodeMathSymbol##1##2##3##4{%
+      \DeclareUnicodeMathSymbol
+        {##2}{##3}{um@fam\theum@fam}{##1}}%
   \else
 %    \end{macrocode}
 % If the \feat{Range} font feature has been used, then only
 % a subset of the unicode glyphs are to be defined.
 % See \secref{rangeproc} for the code that enables this.
 %    \begin{macrocode}
-    \def\unicode@math@symbol##1##2##3##4{%
+    \def\UnicodeMathSymbol##1##2##3##4{%
       \um@parse@term{##1}{##2}{##3}{%
-        \PackageWarning{unicode-math}{Defining \string##2 as mathchar ##1 from font `#2'}
+        \um@PackageWarning{Defining \string##2 as mathchar ##1 from font `#2'}%
         \DeclareUnicodeMathSymbol
           {##2}{##3}{um@fam\theum@fam}{##1}}}%      
   \fi
@@ -431,7 +489,9 @@ This work consists of the file  \jobname.dtx
 % the source to |unicode-math.tex|.
 %    \begin{macrocode}
   \input uniadd.tex
-  \input unicode-math.tex}
+  \input unicode-math.tex
+%  \endgroup
+}
 \let\setmathsfont\setmathfont
 %    \end{macrocode}
 % \end{macro}
@@ -445,11 +505,9 @@ This work consists of the file  \jobname.dtx
 % And an example of the \feat{Range} feature:
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
-%   $(a, \alpha, \scrM, \aleph, \scrH, \BbbH)$
-%   \setmathfont[Range={"2133-"2135, \scrH,\BbbH}]{Lucida Sans}
-%   $(a, \alpha, \scrM, \aleph, \scrH, \BbbH)$
-%   \setmathfont[Range={"2133-"2135, \scrH,\BbbH}]{Apple Symbols}
-%   $(a, \alpha, \scrM, \aleph, \scrH, \BbbH)$
+%   $(a, \ita, \mathbf{a}, \bfa, \alpha, \aleph)$
+%   \setmathfont[Range={"2133-"2135,\alpha}]{Lucida Sans}
+%   $(a, \ita, \mathbf{a}, \bfa, \alpha, \aleph)$
 % \end{example}
 %
 % A less useful (perhaps) example of the \feat{Range} feature:
@@ -459,33 +517,41 @@ This work consists of the file  \jobname.dtx
 %   \setmathfont[Range={\mathrel}, Colour=009900]{Cambria Math}
 %   \setmathfont[Range={\mathopen,\mathclose}, 
 %             Colour=0000FF]{Cambria Math}
-%   \[ F(s)=\scrL\{f(t)\}=\int_0^\infty e^{-st}f(t)\,\upd t \]
+%   \[ 
+%   F(s)=\scrL\{f(t)\}=\int_0^\infty e^{-st}f(t)\,\upd t 
+%   \]
 % \end{example}
 %
-% \subsection{Big operators and radicals}
+% \subsection{(Big) operators}
 %
 % Turns out that \XeTeX\ is clever enough to deal with big operators for us automatically
 % with \cmd\XeTeXmathchardef. Amazing!
 %
-% However, the limits aren't set automatically; that is, we want to define, a la Plain \TeX \&c, \verb|\def\int{\nolimits\intop}|, so there needs to be a transformation from \cmd\int\ to \cmd\intop\ during the expansion of \cmd\unicode@math@symbol\ in the appropriate contexts.
+% However, the limits aren't set automatically; that is, we want to define, a la Plain \TeX\ \&c, \verb|\def\int{\intop\nolimits}|, so there needs to be a transformation from \cmd\int\ to \cmd\intop\ during the expansion of \cmd\UnicodeMathSymbol\ in the appropriate contexts.
+%
+% TODO use |\mathchar| |"8000| to create active operators that have \cmd\nolimits\ suffices.
 %
 % Following is a table of every math operator (\cmd\mathop) defined in |unicode-maths.tex|, from which a subset need to be flagged for \cmd\nolimits\ adjustments. The limits as specified by \pkg{unicode-math} are shown (in grey).
-% \note{But why does the first line --- which shouldn't at all --- show up half-complete?}
+% 
 % \begingroup
 % \setmathsfont[SizeFeatures={
 %     {Size=-10, Colour=888888},
 %     {Size=10-, Colour=FF0000}}]{Code2000}
-% \renewcommand\unicode@math@symbol[4]{
-%   \ifx#3\mathop\relax
-%     \scshape\MakeLowercase{#1} & $\displaystyle#2^1_0$ & \cmd#2 & \scshape#4\\
+% \newcommand\UnicodeMathSymbol[4]{
+%   \ifx\mathop#3\relax
+%     \scshape\MakeLowercase{\@gobble#1} & $\displaystyle#2^1_0$ & \small\cmd#2 & \scshape#4\\
 %   \fi}
 % \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \toprule
+% USV & Ex. & Macro & Description \\
+% \midrule
 % \input unicode-math.tex
+% \bottomrule
 % \end{longtable}
 % \endgroup
 %
 % \begin{macro}{\um@nolimits}
-% This macro is a commalist containing those maths operators that require a \cmd\nolimits\ suffix. This list is used when processing |unicode-math.tex| to define such commands automatically. I've chosen essentially just the operators that look like integrals; hopefully a better mathematician can help me out here. I've a feeling that it's more useful \emph{not} to include the multiple integrals such as $\iiiint$, but that might be a matter of preference.
+% This macro is a commalist containing those maths operators that require a \cmd\nolimits\ suffix. This list is used when processing |unicode-math.tex| to define such commands automatically (see the macro \cmd\um@set@mathsymbol\ on page~\pageref{mac:um@set@mathsymbol}). I've chosen essentially just the operators that look like integrals; hopefully a better mathematician can help me out here. I've a feeling that it's more useful \emph{not} to include the multiple integrals such as $\iiiint$, but that might be a matter of preference.
 %    \begin{macrocode}
 \def\um@nolimits{%
   \int,\iint,\iiint,\iiiint,\oint,\oiint,\oiiint,%
@@ -513,8 +579,18 @@ This work consists of the file  \jobname.dtx
 %      \right)\right)}{A^{B^C}_{D_E}}\right) \]
 % \end{example}
 %
+% \subsection{Radicals}
 %
-% The radical for square root is organised in \cmd\um@set@mathsymbol\ on page~\pageref{page:radical}. I think it's the only radical ever, so a more general scheme isn't really necessary. But what about right-to-left square roots?
+% The radical for square root is organised in \cmd\um@set@mathsymbol\ on page~\pageref{page:radical}. I think it's the only radical ever. But what about right-to-left square roots?
+%
+% \begin{macro}{\um@radicals}
+% We organise radicals in the same way as nolimits-operators; that is, in a comma-list.
+%    \begin{macrocode}
+\def\um@radicals{\sqrt}
+%    \end{macrocode}
+% \changes{v0.01}{2006/11/27}{Implemented for more general radicals processing.}
+% \end{macro}
+%
 % \iffalse
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
@@ -524,27 +600,79 @@ This work consists of the file  \jobname.dtx
 %    \sqrt{1+x}}}}}}} \]
 % \end{example}
 % \fi
+%
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
 %   \[ \sqrt{1+\sqrt{1+x}} \]
 % \end{example}
 %
 % \subsection{Delimiters}
-% [TODO]
+% \begin{macro}{\left} We redefine the primitive to be preceded by \cmd\mathopen; this gives much better spacing in cases such as \cmd\sin\cmd\left\dots. Courtesy of Frank Mittelbach: \url{http://www.latex-project.org/cgi-bin/ltxbugs2html?pr=latex/3853&prlatex/3754}
+%    \begin{macrocode}
+\let\left@primitive\left
+\def\left{\mathopen{}\left@primitive}
+%    \end{macrocode}
+% \end{macro}
+% No re-definition is made for \cmd\right\ because I don't believe it to be necessary\dots
+%
+% TODO: `fences', e.g., \cmd\vert
 %
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
-%   \[ \left(\frac{%
-%      \left(\sum^N_{i=n}\left(\int^1_0
-%      \left(a\times b\right)
-%      \right)\right)}{A^{B^C}_{D_E}}\right) \]
+%   \[ \left(\left(\left(\left(\left( x
+%      \right)^1\right)^2\right)^3\right)^4\right)^5 \]
+%   \[ \left[\left[\left[\left[\left[ y
+%      \right]^1\right]^2\right]^3\right]^4\right]^5 \]
+%   \[ \left\{\left\{\left\{\left\{\left\{ z
+%      \right\}^1\right\}^2\right\}^3\right\}^4\right\}^5 \]
 % \end{example}
 %
+% Here are all \cmd\mathopen\ characters:
+% \begingroup
+% \setmathsfont[SizeFeatures={
+%     {Size=-10, Colour=888888},
+%     {Size=10-, Colour=FF0000}}]{Code2000}
+% \newcommand\UnicodeMathSymbol[4]{
+%   \ifx\mathopen#3\relax
+%     \scshape\MakeLowercase{\@gobble#1} & $\displaystyle#2^1_0$ & \small\cmd#2 & \scshape#4\\
+%   \fi}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \toprule
+% USV & Ex. & Macro & Description \\
+% \midrule
+% \input unicode-math.tex
+% \bottomrule
+% \end{longtable}
+% \endgroup
+%
+% And \cmd\mathclose:
+%
+% Here are all \cmd\mathopen\ characters:
+% \begingroup
+% \setmathsfont[SizeFeatures={
+%     {Size=-10, Colour=888888},
+%     {Size=10-, Colour=FF0000}}]{Code2000}
+% \newcommand\UnicodeMathSymbol[4]{
+%   \ifx\mathclose#3\relax
+%     \scshape\MakeLowercase{\@gobble#1} & $\displaystyle#2^1_0$ & \small\cmd#2 & \scshape#4\\
+%   \fi}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \toprule
+% USV & Ex. & Macro & Description \\
+% \midrule
+% \input unicode-math.tex
+% \bottomrule
+% \end{longtable}
+% \endgroup
+%
+%
 % \subsection{Maths accents}
-% [TODO]
+% TODO
 %
 %
 % \subsection{Setting up the \ascii\ ranges}
+%
+% TODO replace this section with font mappings instead, I think
 %
 % We want it to be convenient for users to actually type in maths.
 % The \ascii\ Latin characters should be used for italic maths,
@@ -591,6 +719,7 @@ This work consists of the file  \jobname.dtx
     \um@mathcode@offset{#1}{945}{120572}%
   }%
 }
+\renewcommand\um@text@input[1]{}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -630,21 +759,19 @@ This work consists of the file  \jobname.dtx
       \PackageError{fontspec/unicode-math}
         {The `#1' font feature can only be used for maths fonts}
         {The feature you tried to use can only be in commands
-          like \protect\setmathsfont}
+          like \protect\setmathsfont}%
     \fi}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \subsection{OpenType maths font features}
 % These aren't defined in \pkg{fontspec} because they aren't useful
-% in non-maths contexts.
+% in non-maths contexts. (Actually, that might be a lie.)
 %    \begin{macrocode}
 \um@zf@feature{ScriptStyle}{%
-  \zf@update@ff{+ssty=0}%
-}
+  \zf@update@ff{+ssty=0}}
 \um@zf@feature{ScriptScriptStyle}{%
-  \zf@update@ff{+ssty=1}%
-}
+  \zf@update@ff{+ssty=1}}
 %    \end{macrocode}
 %
 %
@@ -671,12 +798,13 @@ This work consists of the file  \jobname.dtx
 % Character ranges are passed to \cmd\um@parse@range, which accepts input in the form shown in \tabref{ranges}.
 %
 % \begin{table}[htbp]
+% \centering
 % \begin{tabular}{>{\ttfamily}cc}
 % \textrm{Input} & Range \\
 % \hline
 % x & $r=x$ \\
 % x- & $r\geq x$ \\
-% -x & $r\leq x$ \\
+% -y & $r\leq y$ \\
 % x-y & $x \leq r \leq y$ \\
 % \end{tabular}
 % \caption{Ranges accepted by \cmd\um@parse@range}
@@ -690,8 +818,8 @@ This work consists of the file  \jobname.dtx
     \unless\ifx\@ii\@empty
       \@tempswafalse
 %    \end{macrocode}
-% If |\if\relax\noexpand##| is true if |##| is a control sequence;
-% then match to either the character macro or the math type:
+% |\if\relax\noexpand##| is true if |##| is a control sequence;
+% then match to either the character macro (\cmd\alpha) or the math type (\cmd\mathbin):
 %    \begin{macrocode}
       \expandafter\if\expandafter\relax\expandafter\noexpand\@ii
         \expandafter\ifx\@ii#2
@@ -771,7 +899,7 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % \begin{tabular}{@{}ll}
 % \hline
-% Range & $r\leq x$ \\
+% Range & $r\leq y$ \\
 % C-list input & \cmd\@ii=|-Y|  \\
 % Macro input & |\um@parse@range -Y-\@marker-\@nil#1\@nil|\\
 % Arguments & 
@@ -828,41 +956,58 @@ This work consists of the file  \jobname.dtx
 % \fi
 %
 %
-% \part{STIX table data extraction}\label{part:awk-script}
+% \part{\STIX\ table data extraction}\label{part:awk-script}
 %\iffalse
 %<*awk-script>
 %\fi
 %
 % The source for the \TeX\ names for the very large number of mathematical
-% glyphs are provided via Barbara Beeton's table file for the STIX project
+% glyphs are provided via Barbara Beeton's table file for the \STIX\ project
 % (|ams.org/STIX|). A version is located at
 % \url{http://www.ams.org/STIX/bnb/stix-tbl.asc}
-% but it's not currently up to date.
+% but check \url{http://www.ams.org/STIX/} for more up-to-date info.
 %
 % A single file is produced containing all (more than 3298) symbols.
 % Future optimisations might include generating various (possibly overlapping) subsets
-% so not all definitions must be read just to redefine a small range of symbols..
+% so not all definitions must be read just to redefine a small range of symbols.
+% Performance for now seems to be acceptable without such measures.
 %
 %    \begin{macrocode}
 #!/bin/sh
 
-cat stix-tbl.asc | 
+cat stix-tbl.asc |
 awk '
- BEGIN {OFS="|"} 
- {if (usv != substr($0,2,5) ) 
-   {if (substr($0,2,1) != " ")
+%    \end{macrocode}
+% If the USV isn't repeated (TODO: check this is valid!) and the entry isn't one of the weird ones in the big block at the end of the \STIX\ table (TODO: check that out!)\dots
+%    \begin{macrocode}
+ {if (usv != substr($0,2,5) && substr($0,2,1) != " ")
     {usv = substr($0,2,5);
      texname = substr($0,84,25);
      class = substr($0,57,1);
      description = tolower(substr($0,233,350));
-     {if (texname ~ /[\\]/)
-       print usv, texname, class, description;}}}}' - | 
-awk -F"|" ' 
-  ($3 != " ") {
-    print "\\unicode@math@symbol{" "\"" $1 "}{" $2 "}{" $3 "}{" $4 "}";
- }' - |
+%    \end{macrocode}
+% If the USV has a macro name, and a class, and it isn't reserved (\ie, doubled up with a previously assigned glyph)\dots
+%    \begin{macrocode}
+     if (texname      ~ /[\\]/ && 
+         class       != " "    && 
+         description !~ /<reserved>/ )
+%    \end{macrocode}
+% Print the actual entry corresponding to the unicode character:
+%    \begin{macrocode}
+     print "\\UnicodeMathSymbol{\"" \
+           usv "}{" \
+           texname "}{" \
+           class "}{" \
+           description "}";
+    }}' - |
+%    \end{macrocode}
+% Now replace the \STIX\ class abbreviations with their \TeX\ macro names.
+%    \begin{macrocode}
 sed -e ' s/{N}/{\\mathord}/   ' \
-    -e ' s/{F}/{\\mathord}/ ' \
+%    \end{macrocode}
+% A `fence' defined by the \STIX\ table is something like \cmd\vert; in \XeTeX\ this is just a \cmd\mathord\ that will grow with the magic of \cmd\XeTeXmathchardef.
+%    \begin{macrocode}
+    -e ' s/{F}/{\\mathord}/   ' \
     -e ' s/{A}/{\\mathalpha}/ ' \
     -e ' s/{P}/{\\mathpunct}/ ' \
     -e ' s/{B}/{\\mathbin}/   ' \
@@ -871,6 +1016,7 @@ sed -e ' s/{N}/{\\mathord}/   ' \
     -e ' s/{O}/{\\mathopen}/  ' \
     -e ' s/{C}/{\\mathclose}/ ' > unicode-math.tex
 %    \end{macrocode}
+% \changes{v0.01}{2006/12/19}{Tidied up awk code}
 %\iffalse
 %</awk-script>
 %\fi
@@ -916,13 +1062,13 @@ sed -e ' s/{N}/{\\mathord}/   ' \
 % \begin{description}
 % \item[Delimiters] A special class of maths symbol which enlarge themselves in certain contexts.
 %
-% \cmd\DeclareMathDelimiter\marg{symbol}\marg{type}\meta{sym.\ font}\meta{slot}\meta{sym.\ font}\meta{slot}
+% \cmd\DeclareMathDelimiter\marg{symbol}\marg{type}\marg{sym.\ font}\marg{slot}\marg{sym.\ font}\marg{slot}
 %
-% \item{Radicals} Similar to delimiters (\cmd\DeclareMathRadical\ takes the same syntax) but
+% \item[Radicals] Similar to delimiters (\cmd\DeclareMathRadical\ takes the same syntax) but
 % behave `weirdly'. \cmd\sqrt\ might very well be the only one.
 % \end{description}
 % In those cases, glyph slots in \emph{two} symbol fonts are required; one for the small (`regular') case,
-% the other for situations when the glyph is larger.
+% the other for situations when the glyph is larger. This is not the case in \XeTeX.
 %
 % Accents are not included yet.
 %
@@ -1437,7 +1583,7 @@ sed -e ' s/{N}/{\\mathord}/   ' \
      \def\pfill{\hspace*{\fill}}}
   {\endlist}
 
-\usepackage[dvipdfm,svgnames]{xcolor}
+\usepackage[svgnames]{xcolor}
 \usepackage{array,booktabs,calc,enumitem,fancyvrb,graphicx,ifthen,longtable,refstyle,url,varioref}
 \usepackage{fontspec,xltxtra,xunicode,unicode-math}
 
@@ -1515,20 +1661,20 @@ sed -e ' s/{N}/{\\mathord}/   ' \
 \def\ie{\latin{i.e.}}
 \def\etc{\@ifnextchar.{\latin{etc}}{\latin{etc.}\@}}
 
+\def\STIX{\textsc{stix}}
 \def\MacOSX{Mac~OS~X}
 \def\ascii{\textsc{ascii}}
-
-\def\OMEGA{Ω}
+\def\OMEGA{Omega}
 
 \makeatletter
 \newcounter{argument}
 \g@addto@macro\endmacro{\setcounter{argument}{0}}
 \newcommand*\darg[1]{%
   \stepcounter{argument}%
-  \noindent{\ttfamily\char`\#\theargument~:~}#1\par}
+  {\ttfamily\char`\#\theargument~:~}#1\par\noindent\ignorespaces}
 \newcommand*\doarg[1]{%
   \stepcounter{argument}%
-  \noindent{\ttfamily\makebox[0pt][r]{[}\char`\#\theargument]:~}#1\par}
+  {\ttfamily\makebox[0pt][r]{[}\char`\#\theargument]:~}#1\par\noindent\ignorespaces}
 \makeatother
 \newcommand\codeline[1]{\par{\hspace{2\parindent}#1\par\noindent}\ignorespaces}
 

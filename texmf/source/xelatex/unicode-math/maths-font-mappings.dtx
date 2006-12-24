@@ -1,0 +1,1306 @@
+% \iffalse meta-comment
+%
+%!TEX encoding = UTF-8 Unicode
+%!TEX TS-program = xelatex
+%
+% Copyright 2005 by Will Robertson <wspr81@gmail.com>
+% 
+% Distributable under the LaTeX Project Public License,
+% version 1.3a or higher (your choice). The latest version of
+% this license is at: http://www.latex-project.org/lppl.txt
+%
+% This work is "maintained" (as per LPPL maintenance status) 
+% by Will Robertson.
+% 
+% This work consists of the file  .dtx
+%           and the derived files .sty and .pdf.
+%
+%
+%<*dtxinfo>
+\ProvidesFile{maths-font-mappings.dtx}
+  [2006/08/22 v0.1 Experimental math font mappings]
+%</dtxinfo>
+%
+%<*internalbatchfile>
+\begingroup
+%</internalbatchfile>
+%<*batchfile>
+\input docstrip.tex
+\keepsilent
+\preamble
+
+  ________________________________
+  (C) 2006          Will Robertson
+
+  License information appended.
+
+
+\endpreamble
+\postamble
+
+Copyright 2006 by Will Robertson <wspr81@gmail.com>
+
+Distributable under the LaTeX Project Public License,
+version 1.3c or higher (your choice). The latest version of
+this license is at: http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status) 
+by Will Robertson.
+
+This work consists of the files ...
+
+\endpostamble
+\askforoverwritefalse
+\generate{\file{mmap-example.ltx}{\from{maths-font-mappings.dtx}{example}}}
+\generate{\file{maths-font-mappings.ins}{\from{maths-font-mappings.dtx}{batchfile}}}
+\nopreamble
+\nopostamble
+\generate{\file{maths-map.sh}{\from{maths-font-mappings.dtx}{shellscript}}}
+\generate{\file{math-italic.map}{\from{maths-font-mappings.dtx}{italic}}}
+\generate{\file{math-bold.map}{\from{maths-font-mappings.dtx}{bold}}}
+\generate{\file{math-italic-bold.map}{\from{maths-font-mappings.dtx}{bold-italic}}}
+\generate{\file{math-script.map}{\from{maths-font-mappings.dtx}{script}}}
+\generate{\file{math-script-bold.map}{\from{maths-font-mappings.dtx}{script-bold}}}
+\generate{\file{math-blackboard.map}{\from{maths-font-mappings.dtx}{blackboard}}}
+\generate{\file{math-fraktur.map}{\from{maths-font-mappings.dtx}{fractur}}}
+\generate{\file{math-fraktur-bold.map}{\from{maths-font-mappings.dtx}{fractur-bold}}}
+\generate{\file{math-sans.map}{\from{maths-font-mappings.dtx}{sans}}}
+\generate{\file{math-sans-bold.map}{\from{maths-font-mappings.dtx}{sans-bold}}}
+\generate{\file{math-sans-italic.map}{\from{maths-font-mappings.dtx}{sans-italic}}}
+\generate{\file{math-sans-italic-bold.map}{\from{maths-font-mappings.dtx}{sans-italic-bold}}}
+\generate{\file{math-typewriter.map}{\from{maths-font-mappings.dtx}{typewriter}}}
+%</batchfile>
+%<batchfile>\endbatchfile
+%<*internalbatchfile>
+\endgroup
+%</internalbatchfile>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+%\OnlyDescription
+\usepackage{dtx-style}
+\begin{document}
+  \DocInput{maths-font-mappings.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \title{Alphabetic maths font mappings}
+% \author{Will Robertson}
+% \maketitle
+% \tableofcontents
+%
+% \section{Introduction}
+%
+% This is an attempt to access maths characters in \XeTeX\ conveniently.
+% As it stands, process this file or \texttt{\jobname.ins} with \texttt{xelatex} or equivalent to obtain
+% a whole bunch of \XeTeX\ font mappings that convert \textsc{ascii} input to various
+% ranges in the mathematical part of Unicode Plane~1. They need to be processed
+% with \verb|teckit_compile| before they can be used, for which a shell script is provided.
+%
+% \section{Covered ranges and future work}
+%
+% For now, only Latin characters [a--zA--Z] and arabic numbers [0--9] are covered.
+% There are no italic numbers; italic mappings correspond to their upright numbers in 
+% an equivalent style, if possible. I'll add Greek letters [alpha--omega, etc.] 
+% at a later date. Mappings are provided for
+% \begin{multicols}{2}
+% \begin{itemize}[nolistsep]
+% \item italic
+% \item bold
+% \item italic-bold
+% \item script
+% \item script-bold
+% \item blackboard
+% \item fraktur
+% \item fraktur-bold
+% \item sans
+% \item sans-bold
+% \item sans-italic
+% \item sans-italic-bold
+% \item typewriter
+% \end{itemize}
+% \end{multicols}
+% Luckily, \XeTeX\ allows more than 16 maths families, or we'd be mighty squeezed for space.
+%
+% \section{Testing}
+% \begingroup
+% \setromanfont{Cambria Math}
+% \setlength\parindent{0pt}
+% \setlength\parskip{1ex}
+% \newcommand\test[1]{%
+%   \addfontfeature{#1}
+%    abc def ghi jkl mno pqr stu vw xyz\\
+%    ABC DEF GHI JKL MNO PQR STU VW XYZ\\
+%    1234567890\par}
+% \test{Mapping = math-italic}
+% \test{Mapping = math-bold}
+% \test{Mapping = math-italic-bold}
+% \test{Mapping = math-script}
+% \test{Mapping = math-script-bold}
+% \test{Mapping = math-blackboard}
+% \test{Mapping = math-fraktur}
+% \test{Mapping = math-fraktur-bold}
+% \test{Mapping = math-sans}
+% \test{Mapping = math-sans-bold}
+% \test{Mapping = math-sans-italic}
+% \test{Mapping = math-sans-italic-bold}
+% \test{Mapping = math-typewriter}
+% \endgroup
+%
+% \StopEventually{}
+%
+% \clearpage
+% \begingroup
+% \makeatletter
+% \renewenvironment{theglossary}
+%   {\small\list{}{}
+%      \item\relax
+%      \glossary@prologue\GlossaryParms 
+%      \let\item\@idxitem \ignorespaces 
+%      \def\pfill{\hspace*{\fill}}}
+%   {\endlist}
+% \PrintChanges
+% \endgroup
+%
+% \clearpage
+% \part{Example}
+% \iffalse
+%<*example> 
+% \fi
+%    \begin{macrocode}
+\documentclass[12pt]{article} 
+\usepackage{fontspec}
+\setromanfont{Cambria Math}
+\setlength\parindent{0pt}
+\setlength\parskip{1ex}
+\newcommand\test[1]{%
+  \addfontfeature{#1}
+   abc def ghi jkl mno pqr stu vw xyz\\
+   ABC DEF GHI JKL MNO PQR STU VW XYZ\\
+   1234567890\par}
+\begin{document} 
+\test{Mapping = math-italic}
+\test{Mapping = math-bold}
+\test{Mapping = math-italic-bold}
+\test{Mapping = math-script}
+\test{Mapping = math-script-bold}
+\test{Mapping = math-blackboard}
+\test{Mapping = math-fraktur}
+\test{Mapping = math-fraktur-bold}
+\test{Mapping = math-sans}
+\test{Mapping = math-sans-bold}
+\test{Mapping = math-sans-italic}
+\test{Mapping = math-sans-italic-bold}
+\test{Mapping = math-typewriter}
+\end{document}
+%    \end{macrocode} 
+% \iffalse
+%</example>
+% \fi
+%
+% \section{The font mappings}
+% 
+% \subsection{Mapping compilation shell script}
+% Run the following shell script |sh maths-map.sh| to compile the following
+% font mappings definitions to their binary (useable) form.
+% \iffalse
+%<*shellscript>
+% \fi
+%    \begin{macrocode}
+teckit_compile  math-italic
+teckit_compile  math-bold
+teckit_compile  math-italic-bold
+teckit_compile  math-script
+teckit_compile  math-script-bold
+teckit_compile  math-blackboard
+teckit_compile  math-fraktur
+teckit_compile  math-fraktur-bold
+teckit_compile  math-sans
+teckit_compile  math-sans-bold
+teckit_compile  math-sans-italic
+teckit_compile  math-sans-italic-bold
+teckit_compile  math-typewriter
+%    \end{macrocode}
+% \iffalse
+%</shellscript>
+% \fi
+%
+% \subsection{The font mappings}
+% Note that various characters had to be omitted, due to those characters
+% being reserved, for whatever reason, in Unicode.
+%
+% \paragraph{Italic/\cmd\it (regular variables)}
+% \iffalse
+%<*italic>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-italic-maths"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_italic_small_a
+latin_small_letter_b <> mathematical_italic_small_b
+latin_small_letter_c <> mathematical_italic_small_c
+latin_small_letter_d <> mathematical_italic_small_d
+latin_small_letter_e <> mathematical_italic_small_e
+latin_small_letter_f <> mathematical_italic_small_f
+latin_small_letter_g <> mathematical_italic_small_g
+
+; latin_small_letter_h <> mathematical_italic_small_h
+latin_small_letter_h <> planck_constant
+
+latin_small_letter_i <> mathematical_italic_small_i
+latin_small_letter_j <> mathematical_italic_small_j
+latin_small_letter_k <> mathematical_italic_small_k
+latin_small_letter_l <> mathematical_italic_small_l
+latin_small_letter_m <> mathematical_italic_small_m
+latin_small_letter_n <> mathematical_italic_small_n
+latin_small_letter_o <> mathematical_italic_small_o
+latin_small_letter_p <> mathematical_italic_small_p
+latin_small_letter_q <> mathematical_italic_small_q
+latin_small_letter_r <> mathematical_italic_small_r
+latin_small_letter_s <> mathematical_italic_small_s
+latin_small_letter_t <> mathematical_italic_small_t
+latin_small_letter_u <> mathematical_italic_small_u
+latin_small_letter_v <> mathematical_italic_small_v
+latin_small_letter_w <> mathematical_italic_small_w
+latin_small_letter_x <> mathematical_italic_small_x
+latin_small_letter_y <> mathematical_italic_small_y
+latin_small_letter_z <> mathematical_italic_small_z
+
+latin_capital_letter_a <> mathematical_italic_capital_a
+latin_capital_letter_b <> mathematical_italic_capital_b
+latin_capital_letter_c <> mathematical_italic_capital_c
+latin_capital_letter_d <> mathematical_italic_capital_d
+latin_capital_letter_e <> mathematical_italic_capital_e
+latin_capital_letter_f <> mathematical_italic_capital_f
+latin_capital_letter_g <> mathematical_italic_capital_g
+latin_capital_letter_h <> mathematical_italic_capital_h
+latin_capital_letter_i <> mathematical_italic_capital_i
+latin_capital_letter_j <> mathematical_italic_capital_j
+latin_capital_letter_k <> mathematical_italic_capital_k
+latin_capital_letter_l <> mathematical_italic_capital_l
+latin_capital_letter_m <> mathematical_italic_capital_m
+latin_capital_letter_n <> mathematical_italic_capital_n
+latin_capital_letter_o <> mathematical_italic_capital_o
+latin_capital_letter_p <> mathematical_italic_capital_p
+latin_capital_letter_q <> mathematical_italic_capital_q
+latin_capital_letter_r <> mathematical_italic_capital_r
+latin_capital_letter_s <> mathematical_italic_capital_s
+latin_capital_letter_t <> mathematical_italic_capital_t
+latin_capital_letter_u <> mathematical_italic_capital_u
+latin_capital_letter_v <> mathematical_italic_capital_v
+latin_capital_letter_w <> mathematical_italic_capital_w
+latin_capital_letter_x <> mathematical_italic_capital_x
+latin_capital_letter_y <> mathematical_italic_capital_y
+latin_capital_letter_z <> mathematical_italic_capital_z
+%    \end{macrocode}
+% \iffalse
+%</italic>
+% \fi
+%
+% \paragraph{Bold/\cmd\bf}
+% \iffalse
+%<*bold>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-bold-maths"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_bold_small_a
+latin_small_letter_b <> mathematical_bold_small_b
+latin_small_letter_c <> mathematical_bold_small_c
+latin_small_letter_d <> mathematical_bold_small_d
+latin_small_letter_e <> mathematical_bold_small_e
+latin_small_letter_f <> mathematical_bold_small_f
+latin_small_letter_g <> mathematical_bold_small_g
+latin_small_letter_h <> mathematical_bold_small_h
+latin_small_letter_i <> mathematical_bold_small_i
+latin_small_letter_j <> mathematical_bold_small_j
+latin_small_letter_k <> mathematical_bold_small_k
+latin_small_letter_l <> mathematical_bold_small_l
+latin_small_letter_m <> mathematical_bold_small_m
+latin_small_letter_n <> mathematical_bold_small_n
+latin_small_letter_o <> mathematical_bold_small_o
+latin_small_letter_p <> mathematical_bold_small_p
+latin_small_letter_q <> mathematical_bold_small_q
+latin_small_letter_r <> mathematical_bold_small_r
+latin_small_letter_s <> mathematical_bold_small_s
+latin_small_letter_t <> mathematical_bold_small_t
+latin_small_letter_u <> mathematical_bold_small_u
+latin_small_letter_v <> mathematical_bold_small_v
+latin_small_letter_w <> mathematical_bold_small_w
+latin_small_letter_x <> mathematical_bold_small_x
+latin_small_letter_y <> mathematical_bold_small_y
+latin_small_letter_z <> mathematical_bold_small_z
+
+latin_capital_letter_a <> mathematical_bold_capital_a
+latin_capital_letter_b <> mathematical_bold_capital_b
+latin_capital_letter_c <> mathematical_bold_capital_c
+latin_capital_letter_d <> mathematical_bold_capital_d
+latin_capital_letter_e <> mathematical_bold_capital_e
+latin_capital_letter_f <> mathematical_bold_capital_f
+latin_capital_letter_g <> mathematical_bold_capital_g
+latin_capital_letter_h <> mathematical_bold_capital_h
+latin_capital_letter_i <> mathematical_bold_capital_i
+latin_capital_letter_j <> mathematical_bold_capital_j
+latin_capital_letter_k <> mathematical_bold_capital_k
+latin_capital_letter_l <> mathematical_bold_capital_l
+latin_capital_letter_m <> mathematical_bold_capital_m
+latin_capital_letter_n <> mathematical_bold_capital_n
+latin_capital_letter_o <> mathematical_bold_capital_o
+latin_capital_letter_p <> mathematical_bold_capital_p
+latin_capital_letter_q <> mathematical_bold_capital_q
+latin_capital_letter_r <> mathematical_bold_capital_r
+latin_capital_letter_s <> mathematical_bold_capital_s
+latin_capital_letter_t <> mathematical_bold_capital_t
+latin_capital_letter_u <> mathematical_bold_capital_u
+latin_capital_letter_v <> mathematical_bold_capital_v
+latin_capital_letter_w <> mathematical_bold_capital_w
+latin_capital_letter_x <> mathematical_bold_capital_x
+latin_capital_letter_y <> mathematical_bold_capital_y
+latin_capital_letter_z <> mathematical_bold_capital_z
+
+digit_one <> mathematical_bold_digit_one
+digit_two <> mathematical_bold_digit_two
+digit_three <> mathematical_bold_digit_three
+digit_four <> mathematical_bold_digit_four
+digit_five <> mathematical_bold_digit_five
+digit_six <> mathematical_bold_digit_six
+digit_seven <> mathematical_bold_digit_seven
+digit_eight <> mathematical_bold_digit_eight
+digit_nine <> mathematical_bold_digit_nine
+digit_zero <> mathematical_bold_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</bold>
+% \fi
+%
+% \paragraph{Bold Italic/\cmd\bfit}
+% \iffalse
+%<*bold-italic>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-bold-italic-maths"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_bold_italic_small_a
+latin_small_letter_b <> mathematical_bold_italic_small_b
+latin_small_letter_c <> mathematical_bold_italic_small_c
+latin_small_letter_d <> mathematical_bold_italic_small_d
+latin_small_letter_e <> mathematical_bold_italic_small_e
+latin_small_letter_f <> mathematical_bold_italic_small_f
+latin_small_letter_g <> mathematical_bold_italic_small_g
+latin_small_letter_h <> mathematical_bold_italic_small_h
+latin_small_letter_i <> mathematical_bold_italic_small_i
+latin_small_letter_j <> mathematical_bold_italic_small_j
+latin_small_letter_k <> mathematical_bold_italic_small_k
+latin_small_letter_l <> mathematical_bold_italic_small_l
+latin_small_letter_m <> mathematical_bold_italic_small_m
+latin_small_letter_n <> mathematical_bold_italic_small_n
+latin_small_letter_o <> mathematical_bold_italic_small_o
+latin_small_letter_p <> mathematical_bold_italic_small_p
+latin_small_letter_q <> mathematical_bold_italic_small_q
+latin_small_letter_r <> mathematical_bold_italic_small_r
+latin_small_letter_s <> mathematical_bold_italic_small_s
+latin_small_letter_t <> mathematical_bold_italic_small_t
+latin_small_letter_u <> mathematical_bold_italic_small_u
+latin_small_letter_v <> mathematical_bold_italic_small_v
+latin_small_letter_w <> mathematical_bold_italic_small_w
+latin_small_letter_x <> mathematical_bold_italic_small_x
+latin_small_letter_y <> mathematical_bold_italic_small_y
+latin_small_letter_z <> mathematical_bold_italic_small_z
+
+latin_capital_letter_a <> mathematical_bold_italic_capital_a
+latin_capital_letter_b <> mathematical_bold_italic_capital_b
+latin_capital_letter_c <> mathematical_bold_italic_capital_c
+latin_capital_letter_d <> mathematical_bold_italic_capital_d
+latin_capital_letter_e <> mathematical_bold_italic_capital_e
+latin_capital_letter_f <> mathematical_bold_italic_capital_f
+latin_capital_letter_g <> mathematical_bold_italic_capital_g
+latin_capital_letter_h <> mathematical_bold_italic_capital_h
+latin_capital_letter_i <> mathematical_bold_italic_capital_i
+latin_capital_letter_j <> mathematical_bold_italic_capital_j
+latin_capital_letter_k <> mathematical_bold_italic_capital_k
+latin_capital_letter_l <> mathematical_bold_italic_capital_l
+latin_capital_letter_m <> mathematical_bold_italic_capital_m
+latin_capital_letter_n <> mathematical_bold_italic_capital_n
+latin_capital_letter_o <> mathematical_bold_italic_capital_o
+latin_capital_letter_p <> mathematical_bold_italic_capital_p
+latin_capital_letter_q <> mathematical_bold_italic_capital_q
+latin_capital_letter_r <> mathematical_bold_italic_capital_r
+latin_capital_letter_s <> mathematical_bold_italic_capital_s
+latin_capital_letter_t <> mathematical_bold_italic_capital_t
+latin_capital_letter_u <> mathematical_bold_italic_capital_u
+latin_capital_letter_v <> mathematical_bold_italic_capital_v
+latin_capital_letter_w <> mathematical_bold_italic_capital_w
+latin_capital_letter_x <> mathematical_bold_italic_capital_x
+latin_capital_letter_y <> mathematical_bold_italic_capital_y
+latin_capital_letter_z <> mathematical_bold_italic_capital_z
+
+digit_one <> mathematical_bold_digit_one
+digit_two <> mathematical_bold_digit_two
+digit_three <> mathematical_bold_digit_three
+digit_four <> mathematical_bold_digit_four
+digit_five <> mathematical_bold_digit_five
+digit_six <> mathematical_bold_digit_six
+digit_seven <> mathematical_bold_digit_seven
+digit_eight <> mathematical_bold_digit_eight
+digit_nine <> mathematical_bold_digit_nine
+digit_zero <> mathematical_bold_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</bold-italic>
+% \fi
+%
+% \paragraph{Script/\cmd\scr}
+% \iffalse
+%<*script>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-script"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_script_small_a
+latin_small_letter_b <> mathematical_script_small_b
+latin_small_letter_c <> mathematical_script_small_c
+latin_small_letter_d <> mathematical_script_small_d
+
+; latin_small_letter_e <> mathematical_script_small_e
+latin_small_letter_e <> script_small_e
+
+latin_small_letter_f <> mathematical_script_small_f
+
+latin_small_letter_g <> script_small_g
+; latin_small_letter_g <> mathematical_script_small_g
+
+latin_small_letter_h <> mathematical_script_small_h
+latin_small_letter_i <> mathematical_script_small_i
+latin_small_letter_j <> mathematical_script_small_j
+latin_small_letter_k <> mathematical_script_small_k
+
+; latin_small_letter_l <> mathematical_script_small_l
+latin_small_letter_l <> script_small_l
+
+latin_small_letter_m <> mathematical_script_small_m
+latin_small_letter_n <> mathematical_script_small_n
+
+; latin_small_letter_o <> mathematical_script_small_o
+latin_small_letter_o <> script_small_o
+
+latin_small_letter_p <> mathematical_script_small_p
+latin_small_letter_q <> mathematical_script_small_q
+latin_small_letter_r <> mathematical_script_small_r
+latin_small_letter_s <> mathematical_script_small_s
+latin_small_letter_t <> mathematical_script_small_t
+latin_small_letter_u <> mathematical_script_small_u
+latin_small_letter_v <> mathematical_script_small_v
+latin_small_letter_w <> mathematical_script_small_w
+latin_small_letter_x <> mathematical_script_small_x
+latin_small_letter_y <> mathematical_script_small_y
+latin_small_letter_z <> mathematical_script_small_z
+
+latin_capital_letter_a <> mathematical_script_capital_a
+
+; latin_capital_letter_b <> mathematical_script_capital_b
+latin_capital_letter_b <> script_capital_b
+
+latin_capital_letter_c <> mathematical_script_capital_c
+latin_capital_letter_d <> mathematical_script_capital_d
+
+; latin_capital_letter_e <> mathematical_script_capital_e
+latin_capital_letter_e <> script_capital_e
+
+; latin_capital_letter_f <> mathematical_script_capital_f
+latin_capital_letter_f <> script_capital_f
+
+latin_capital_letter_g <> mathematical_script_capital_g
+
+; latin_capital_letter_h <> mathematical_script_capital_h
+latin_capital_letter_h <> script_capital_h
+
+; latin_capital_letter_i <> mathematical_script_capital_i
+latin_capital_letter_i <> script_capital_i
+
+latin_capital_letter_j <> mathematical_script_capital_j
+latin_capital_letter_k <> mathematical_script_capital_k
+
+; latin_capital_letter_l <> mathematical_script_capital_l
+latin_capital_letter_l <> script_capital_l
+
+; latin_capital_letter_m <> mathematical_script_capital_m
+latin_capital_letter_m <> script_capital_m
+
+latin_capital_letter_n <> mathematical_script_capital_n
+latin_capital_letter_o <> mathematical_script_capital_o
+
+latin_capital_letter_p <> mathematical_script_capital_p
+;latin_capital_letter_p <> script_capital_p
+
+latin_capital_letter_q <> mathematical_script_capital_q
+
+; latin_capital_letter_r <> mathematical_script_capital_r
+latin_capital_letter_r <> script_capital_r
+
+latin_capital_letter_s <> mathematical_script_capital_s
+latin_capital_letter_t <> mathematical_script_capital_t
+latin_capital_letter_u <> mathematical_script_capital_u
+latin_capital_letter_v <> mathematical_script_capital_v
+latin_capital_letter_w <> mathematical_script_capital_w
+latin_capital_letter_x <> mathematical_script_capital_x
+latin_capital_letter_y <> mathematical_script_capital_y
+latin_capital_letter_z <> mathematical_script_capital_z
+%    \end{macrocode}
+% \iffalse
+%</script>
+% \fi
+%
+% \paragraph{Script Bold/\cmd\bfscr}
+% \iffalse
+%<*script-bold>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-script-bold"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_bold_script_small_a
+latin_small_letter_b <> mathematical_bold_script_small_b
+latin_small_letter_c <> mathematical_bold_script_small_c
+latin_small_letter_d <> mathematical_bold_script_small_d
+latin_small_letter_e <> mathematical_bold_script_small_e
+latin_small_letter_f <> mathematical_bold_script_small_f
+latin_small_letter_g <> mathematical_bold_script_small_g
+latin_small_letter_h <> mathematical_bold_script_small_h
+latin_small_letter_i <> mathematical_bold_script_small_i
+latin_small_letter_j <> mathematical_bold_script_small_j
+latin_small_letter_k <> mathematical_bold_script_small_k
+latin_small_letter_l <> mathematical_bold_script_small_l
+latin_small_letter_m <> mathematical_bold_script_small_m
+latin_small_letter_n <> mathematical_bold_script_small_n
+latin_small_letter_o <> mathematical_bold_script_small_o
+latin_small_letter_p <> mathematical_bold_script_small_p
+latin_small_letter_q <> mathematical_bold_script_small_q
+latin_small_letter_r <> mathematical_bold_script_small_r
+latin_small_letter_s <> mathematical_bold_script_small_s
+latin_small_letter_t <> mathematical_bold_script_small_t
+latin_small_letter_u <> mathematical_bold_script_small_u
+latin_small_letter_v <> mathematical_bold_script_small_v
+latin_small_letter_w <> mathematical_bold_script_small_w
+latin_small_letter_x <> mathematical_bold_script_small_x
+latin_small_letter_y <> mathematical_bold_script_small_y
+latin_small_letter_z <> mathematical_bold_script_small_z
+
+latin_capital_letter_a <> mathematical_bold_script_capital_a
+latin_capital_letter_b <> mathematical_bold_script_capital_b
+latin_capital_letter_c <> mathematical_bold_script_capital_c
+latin_capital_letter_d <> mathematical_bold_script_capital_d
+latin_capital_letter_e <> mathematical_bold_script_capital_e
+latin_capital_letter_f <> mathematical_bold_script_capital_f
+latin_capital_letter_g <> mathematical_bold_script_capital_g
+latin_capital_letter_h <> mathematical_bold_script_capital_h
+latin_capital_letter_i <> mathematical_bold_script_capital_i
+latin_capital_letter_j <> mathematical_bold_script_capital_j
+latin_capital_letter_k <> mathematical_bold_script_capital_k
+latin_capital_letter_l <> mathematical_bold_script_capital_l
+latin_capital_letter_m <> mathematical_bold_script_capital_m
+latin_capital_letter_n <> mathematical_bold_script_capital_n
+latin_capital_letter_o <> mathematical_bold_script_capital_o
+latin_capital_letter_p <> mathematical_bold_script_capital_p
+latin_capital_letter_q <> mathematical_bold_script_capital_q
+latin_capital_letter_r <> mathematical_bold_script_capital_r
+latin_capital_letter_s <> mathematical_bold_script_capital_s
+latin_capital_letter_t <> mathematical_bold_script_capital_t
+latin_capital_letter_u <> mathematical_bold_script_capital_u
+latin_capital_letter_v <> mathematical_bold_script_capital_v
+latin_capital_letter_w <> mathematical_bold_script_capital_w
+latin_capital_letter_x <> mathematical_bold_script_capital_x
+latin_capital_letter_y <> mathematical_bold_script_capital_y
+latin_capital_letter_z <> mathematical_bold_script_capital_z
+
+digit_one <> mathematical_bold_digit_one
+digit_two <> mathematical_bold_digit_two
+digit_three <> mathematical_bold_digit_three
+digit_four <> mathematical_bold_digit_four
+digit_five <> mathematical_bold_digit_five
+digit_six <> mathematical_bold_digit_six
+digit_seven <> mathematical_bold_digit_seven
+digit_eight <> mathematical_bold_digit_eight
+digit_nine <> mathematical_bold_digit_nine
+digit_zero <> mathematical_bold_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</script-bold>
+% \fi
+%
+%
+% \paragraph{Blackboard/\cmd\Bbb}
+%\iffalse
+%<*blackboard>
+%\fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-blackboard"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_double_struck_small_a
+latin_small_letter_b <> mathematical_double_struck_small_b
+latin_small_letter_c <> mathematical_double_struck_small_c
+latin_small_letter_d <> mathematical_double_struck_small_d
+latin_small_letter_e <> mathematical_double_struck_small_e
+latin_small_letter_f <> mathematical_double_struck_small_f
+latin_small_letter_g <> mathematical_double_struck_small_g
+latin_small_letter_h <> mathematical_double_struck_small_h
+latin_small_letter_i <> mathematical_double_struck_small_i
+latin_small_letter_j <> mathematical_double_struck_small_j
+latin_small_letter_k <> mathematical_double_struck_small_k
+latin_small_letter_l <> mathematical_double_struck_small_l
+latin_small_letter_m <> mathematical_double_struck_small_m
+latin_small_letter_n <> mathematical_double_struck_small_n
+latin_small_letter_o <> mathematical_double_struck_small_o
+latin_small_letter_p <> mathematical_double_struck_small_p
+latin_small_letter_q <> mathematical_double_struck_small_q
+latin_small_letter_r <> mathematical_double_struck_small_r
+latin_small_letter_s <> mathematical_double_struck_small_s
+latin_small_letter_t <> mathematical_double_struck_small_t
+latin_small_letter_u <> mathematical_double_struck_small_u
+latin_small_letter_v <> mathematical_double_struck_small_v
+latin_small_letter_w <> mathematical_double_struck_small_w
+latin_small_letter_x <> mathematical_double_struck_small_x
+latin_small_letter_y <> mathematical_double_struck_small_y
+latin_small_letter_z <> mathematical_double_struck_small_z
+
+latin_capital_letter_a <> mathematical_double_struck_capital_a
+latin_capital_letter_b <> mathematical_double_struck_capital_b
+
+; latin_capital_letter_c <> mathematical_double_struck_capital_c
+latin_capital_letter_c <> double_struck_capital_c
+
+latin_capital_letter_d <> mathematical_double_struck_capital_d
+latin_capital_letter_e <> mathematical_double_struck_capital_e
+latin_capital_letter_f <> mathematical_double_struck_capital_f
+latin_capital_letter_g <> mathematical_double_struck_capital_g
+
+; latin_capital_letter_h <> mathematical_double_struck_capital_h
+latin_capital_letter_h <> double_struck_capital_h
+
+latin_capital_letter_i <> mathematical_double_struck_capital_i
+latin_capital_letter_j <> mathematical_double_struck_capital_j
+latin_capital_letter_k <> mathematical_double_struck_capital_k
+latin_capital_letter_l <> mathematical_double_struck_capital_l
+latin_capital_letter_m <> mathematical_double_struck_capital_m
+
+; latin_capital_letter_n <> mathematical_double_struck_capital_n
+latin_capital_letter_n <> double_struck_capital_n
+
+latin_capital_letter_o <> mathematical_double_struck_capital_o
+
+; latin_capital_letter_p <> mathematical_double_struck_capital_p
+; latin_capital_letter_q <> mathematical_double_struck_capital_q
+; latin_capital_letter_r <> mathematical_double_struck_capital_r
+latin_capital_letter_p <> double_struck_capital_p
+latin_capital_letter_q <> double_struck_capital_q
+latin_capital_letter_r <> double_struck_capital_r
+
+latin_capital_letter_s <> mathematical_double_struck_capital_s
+latin_capital_letter_t <> mathematical_double_struck_capital_t
+latin_capital_letter_u <> mathematical_double_struck_capital_u
+latin_capital_letter_v <> mathematical_double_struck_capital_v
+latin_capital_letter_w <> mathematical_double_struck_capital_w
+latin_capital_letter_x <> mathematical_double_struck_capital_x
+latin_capital_letter_y <> mathematical_double_struck_capital_y
+
+; latin_capital_letter_z <> mathematical_double_struck_capital_z
+latin_capital_letter_z <> double_struck_capital_z
+
+digit_one <> mathematical_double_struck_digit_one
+digit_two <> mathematical_double_struck_digit_two
+digit_three <> mathematical_double_struck_digit_three
+digit_four <> mathematical_double_struck_digit_four
+digit_five <> mathematical_double_struck_digit_five
+digit_six <> mathematical_double_struck_digit_six
+digit_seven <> mathematical_double_struck_digit_seven
+digit_eight <> mathematical_double_struck_digit_eight
+digit_nine <> mathematical_double_struck_digit_nine
+digit_zero <> mathematical_double_struck_digit_zero
+%    \end{macrocode}
+%\iffalse
+%</blackboard>
+%\fi
+%
+% \paragraph{Fractur/\cmd\frak}
+% \iffalse
+%<*fractur>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-fraktur"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_fraktur_small_a
+latin_small_letter_b <> mathematical_fraktur_small_b
+latin_small_letter_c <> mathematical_fraktur_small_c
+latin_small_letter_d <> mathematical_fraktur_small_d
+latin_small_letter_e <> mathematical_fraktur_small_e
+latin_small_letter_f <> mathematical_fraktur_small_f
+latin_small_letter_g <> mathematical_fraktur_small_g
+latin_small_letter_h <> mathematical_fraktur_small_h
+latin_small_letter_i <> mathematical_fraktur_small_i
+latin_small_letter_j <> mathematical_fraktur_small_j
+latin_small_letter_k <> mathematical_fraktur_small_k
+latin_small_letter_l <> mathematical_fraktur_small_l
+latin_small_letter_m <> mathematical_fraktur_small_m
+latin_small_letter_n <> mathematical_fraktur_small_n
+latin_small_letter_o <> mathematical_fraktur_small_o
+latin_small_letter_p <> mathematical_fraktur_small_p
+latin_small_letter_q <> mathematical_fraktur_small_q
+latin_small_letter_r <> mathematical_fraktur_small_r
+latin_small_letter_s <> mathematical_fraktur_small_s
+latin_small_letter_t <> mathematical_fraktur_small_t
+latin_small_letter_u <> mathematical_fraktur_small_u
+latin_small_letter_v <> mathematical_fraktur_small_v
+latin_small_letter_w <> mathematical_fraktur_small_w
+latin_small_letter_x <> mathematical_fraktur_small_x
+latin_small_letter_y <> mathematical_fraktur_small_y
+latin_small_letter_z <> mathematical_fraktur_small_z
+
+latin_capital_letter_a <> mathematical_fraktur_capital_a
+latin_capital_letter_b <> mathematical_fraktur_capital_b
+
+; latin_capital_letter_c <> mathematical_fraktur_capital_c
+latin_capital_letter_c <> black_letter_capital_c
+
+latin_capital_letter_d <> mathematical_fraktur_capital_d
+latin_capital_letter_e <> mathematical_fraktur_capital_e
+latin_capital_letter_f <> mathematical_fraktur_capital_f
+latin_capital_letter_g <> mathematical_fraktur_capital_g
+
+; latin_capital_letter_h <> mathematical_fraktur_capital_h
+; latin_capital_letter_i <> mathematical_fraktur_capital_i
+latin_capital_letter_h <> black_letter_capital_h
+latin_capital_letter_i <> black_letter_capital_i
+
+latin_capital_letter_j <> mathematical_fraktur_capital_j
+latin_capital_letter_k <> mathematical_fraktur_capital_k
+latin_capital_letter_l <> mathematical_fraktur_capital_l
+latin_capital_letter_m <> mathematical_fraktur_capital_m
+latin_capital_letter_n <> mathematical_fraktur_capital_n
+latin_capital_letter_o <> mathematical_fraktur_capital_o
+latin_capital_letter_p <> mathematical_fraktur_capital_p
+latin_capital_letter_q <> mathematical_fraktur_capital_q
+
+; latin_capital_letter_r <> mathematical_fraktur_capital_r
+latin_capital_letter_r <> black_letter_capital_r
+
+latin_capital_letter_s <> mathematical_fraktur_capital_s
+latin_capital_letter_t <> mathematical_fraktur_capital_t
+latin_capital_letter_u <> mathematical_fraktur_capital_u
+latin_capital_letter_v <> mathematical_fraktur_capital_v
+latin_capital_letter_w <> mathematical_fraktur_capital_w
+latin_capital_letter_x <> mathematical_fraktur_capital_x
+latin_capital_letter_y <> mathematical_fraktur_capital_y
+
+; latin_capital_letter_z <> mathematical_fraktur_capital_z
+latin_capital_letter_z <> black_letter_capital_z
+%    \end{macrocode}
+% \iffalse
+%</fractur>
+% \fi
+%
+% \paragraph{Fractur Bold/\cmd\bffrak}
+% \iffalse
+%<*fractur-bold>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-fraktur-bold"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_bold_fraktur_small_a
+latin_small_letter_b <> mathematical_bold_fraktur_small_b
+latin_small_letter_c <> mathematical_bold_fraktur_small_c
+latin_small_letter_d <> mathematical_bold_fraktur_small_d
+latin_small_letter_e <> mathematical_bold_fraktur_small_e
+latin_small_letter_f <> mathematical_bold_fraktur_small_f
+latin_small_letter_g <> mathematical_bold_fraktur_small_g
+latin_small_letter_h <> mathematical_bold_fraktur_small_h
+latin_small_letter_i <> mathematical_bold_fraktur_small_i
+latin_small_letter_j <> mathematical_bold_fraktur_small_j
+latin_small_letter_k <> mathematical_bold_fraktur_small_k
+latin_small_letter_l <> mathematical_bold_fraktur_small_l
+latin_small_letter_m <> mathematical_bold_fraktur_small_m
+latin_small_letter_n <> mathematical_bold_fraktur_small_n
+latin_small_letter_o <> mathematical_bold_fraktur_small_o
+latin_small_letter_p <> mathematical_bold_fraktur_small_p
+latin_small_letter_q <> mathematical_bold_fraktur_small_q
+latin_small_letter_r <> mathematical_bold_fraktur_small_r
+latin_small_letter_s <> mathematical_bold_fraktur_small_s
+latin_small_letter_t <> mathematical_bold_fraktur_small_t
+latin_small_letter_u <> mathematical_bold_fraktur_small_u
+latin_small_letter_v <> mathematical_bold_fraktur_small_v
+latin_small_letter_w <> mathematical_bold_fraktur_small_w
+latin_small_letter_x <> mathematical_bold_fraktur_small_x
+latin_small_letter_y <> mathematical_bold_fraktur_small_y
+latin_small_letter_z <> mathematical_bold_fraktur_small_z
+
+latin_capital_letter_a <> mathematical_bold_fraktur_capital_a
+latin_capital_letter_b <> mathematical_bold_fraktur_capital_b
+
+latin_capital_letter_c <> mathematical_bold_fraktur_capital_c
+
+latin_capital_letter_d <> mathematical_bold_fraktur_capital_d
+latin_capital_letter_e <> mathematical_bold_fraktur_capital_e
+latin_capital_letter_f <> mathematical_bold_fraktur_capital_f
+latin_capital_letter_g <> mathematical_bold_fraktur_capital_g
+
+latin_capital_letter_h <> mathematical_bold_fraktur_capital_h
+latin_capital_letter_i <> mathematical_bold_fraktur_capital_i
+
+latin_capital_letter_j <> mathematical_bold_fraktur_capital_j
+latin_capital_letter_k <> mathematical_bold_fraktur_capital_k
+latin_capital_letter_l <> mathematical_bold_fraktur_capital_l
+latin_capital_letter_m <> mathematical_bold_fraktur_capital_m
+latin_capital_letter_n <> mathematical_bold_fraktur_capital_n
+latin_capital_letter_o <> mathematical_bold_fraktur_capital_o
+latin_capital_letter_p <> mathematical_bold_fraktur_capital_p
+latin_capital_letter_q <> mathematical_bold_fraktur_capital_q
+
+latin_capital_letter_r <> mathematical_bold_fraktur_capital_r
+
+latin_capital_letter_s <> mathematical_bold_fraktur_capital_s
+latin_capital_letter_t <> mathematical_bold_fraktur_capital_t
+latin_capital_letter_u <> mathematical_bold_fraktur_capital_u
+latin_capital_letter_v <> mathematical_bold_fraktur_capital_v
+latin_capital_letter_w <> mathematical_bold_fraktur_capital_w
+latin_capital_letter_x <> mathematical_bold_fraktur_capital_x
+latin_capital_letter_y <> mathematical_bold_fraktur_capital_y
+
+latin_capital_letter_z <> mathematical_bold_fraktur_capital_z
+
+digit_one <> mathematical_bold_digit_one
+digit_two <> mathematical_bold_digit_two
+digit_three <> mathematical_bold_digit_three
+digit_four <> mathematical_bold_digit_four
+digit_five <> mathematical_bold_digit_five
+digit_six <> mathematical_bold_digit_six
+digit_seven <> mathematical_bold_digit_seven
+digit_eight <> mathematical_bold_digit_eight
+digit_nine <> mathematical_bold_digit_nine
+digit_zero <> mathematical_bold_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</fractur-bold>
+% \fi
+% \paragraph{Sans/\cmd\sans}
+% \iffalse
+%<*sans>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-sans-serif"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_sans_serif_small_a
+latin_small_letter_b <> mathematical_sans_serif_small_b
+latin_small_letter_c <> mathematical_sans_serif_small_c
+latin_small_letter_d <> mathematical_sans_serif_small_d
+latin_small_letter_e <> mathematical_sans_serif_small_e
+latin_small_letter_f <> mathematical_sans_serif_small_f
+latin_small_letter_g <> mathematical_sans_serif_small_g
+latin_small_letter_h <> mathematical_sans_serif_small_h
+latin_small_letter_i <> mathematical_sans_serif_small_i
+latin_small_letter_j <> mathematical_sans_serif_small_j
+latin_small_letter_k <> mathematical_sans_serif_small_k
+latin_small_letter_l <> mathematical_sans_serif_small_l
+latin_small_letter_m <> mathematical_sans_serif_small_m
+latin_small_letter_n <> mathematical_sans_serif_small_n
+latin_small_letter_o <> mathematical_sans_serif_small_o
+latin_small_letter_p <> mathematical_sans_serif_small_p
+latin_small_letter_q <> mathematical_sans_serif_small_q
+latin_small_letter_r <> mathematical_sans_serif_small_r
+latin_small_letter_s <> mathematical_sans_serif_small_s
+latin_small_letter_t <> mathematical_sans_serif_small_t
+latin_small_letter_u <> mathematical_sans_serif_small_u
+latin_small_letter_v <> mathematical_sans_serif_small_v
+latin_small_letter_w <> mathematical_sans_serif_small_w
+latin_small_letter_x <> mathematical_sans_serif_small_x
+latin_small_letter_y <> mathematical_sans_serif_small_y
+latin_small_letter_z <> mathematical_sans_serif_small_z
+
+latin_capital_letter_a <> mathematical_sans_serif_capital_a
+latin_capital_letter_b <> mathematical_sans_serif_capital_b
+latin_capital_letter_c <> mathematical_sans_serif_capital_c
+latin_capital_letter_d <> mathematical_sans_serif_capital_d
+latin_capital_letter_e <> mathematical_sans_serif_capital_e
+latin_capital_letter_f <> mathematical_sans_serif_capital_f
+latin_capital_letter_g <> mathematical_sans_serif_capital_g
+latin_capital_letter_h <> mathematical_sans_serif_capital_h
+latin_capital_letter_i <> mathematical_sans_serif_capital_i
+latin_capital_letter_j <> mathematical_sans_serif_capital_j
+latin_capital_letter_k <> mathematical_sans_serif_capital_k
+latin_capital_letter_l <> mathematical_sans_serif_capital_l
+latin_capital_letter_m <> mathematical_sans_serif_capital_m
+latin_capital_letter_n <> mathematical_sans_serif_capital_n
+latin_capital_letter_o <> mathematical_sans_serif_capital_o
+latin_capital_letter_p <> mathematical_sans_serif_capital_p
+latin_capital_letter_q <> mathematical_sans_serif_capital_q
+latin_capital_letter_r <> mathematical_sans_serif_capital_r
+latin_capital_letter_s <> mathematical_sans_serif_capital_s
+latin_capital_letter_t <> mathematical_sans_serif_capital_t
+latin_capital_letter_u <> mathematical_sans_serif_capital_u
+latin_capital_letter_v <> mathematical_sans_serif_capital_v
+latin_capital_letter_w <> mathematical_sans_serif_capital_w
+latin_capital_letter_x <> mathematical_sans_serif_capital_x
+latin_capital_letter_y <> mathematical_sans_serif_capital_y
+latin_capital_letter_z <> mathematical_sans_serif_capital_z
+
+digit_one <> mathematical_sans_serif_digit_one
+digit_two <> mathematical_sans_serif_digit_two
+digit_three <> mathematical_sans_serif_digit_three
+digit_four <> mathematical_sans_serif_digit_four
+digit_five <> mathematical_sans_serif_digit_five
+digit_six <> mathematical_sans_serif_digit_six
+digit_seven <> mathematical_sans_serif_digit_seven
+digit_eight <> mathematical_sans_serif_digit_eight
+digit_nine <> mathematical_sans_serif_digit_nine
+digit_zero <> mathematical_sans_serif_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</sans>
+% \fi
+%
+% \iffalse
+%<*sans-bold>
+% \fi
+% \paragraph{Sans Bold/\cmd\bfsans}
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-sans-bold"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_sans_serif_bold_small_a
+latin_small_letter_b <> mathematical_sans_serif_bold_small_b
+latin_small_letter_c <> mathematical_sans_serif_bold_small_c
+latin_small_letter_d <> mathematical_sans_serif_bold_small_d
+latin_small_letter_e <> mathematical_sans_serif_bold_small_e
+latin_small_letter_f <> mathematical_sans_serif_bold_small_f
+latin_small_letter_g <> mathematical_sans_serif_bold_small_g
+latin_small_letter_h <> mathematical_sans_serif_bold_small_h
+latin_small_letter_i <> mathematical_sans_serif_bold_small_i
+latin_small_letter_j <> mathematical_sans_serif_bold_small_j
+latin_small_letter_k <> mathematical_sans_serif_bold_small_k
+latin_small_letter_l <> mathematical_sans_serif_bold_small_l
+latin_small_letter_m <> mathematical_sans_serif_bold_small_m
+latin_small_letter_n <> mathematical_sans_serif_bold_small_n
+latin_small_letter_o <> mathematical_sans_serif_bold_small_o
+latin_small_letter_p <> mathematical_sans_serif_bold_small_p
+latin_small_letter_q <> mathematical_sans_serif_bold_small_q
+latin_small_letter_r <> mathematical_sans_serif_bold_small_r
+latin_small_letter_s <> mathematical_sans_serif_bold_small_s
+latin_small_letter_t <> mathematical_sans_serif_bold_small_t
+latin_small_letter_u <> mathematical_sans_serif_bold_small_u
+latin_small_letter_v <> mathematical_sans_serif_bold_small_v
+latin_small_letter_w <> mathematical_sans_serif_bold_small_w
+latin_small_letter_x <> mathematical_sans_serif_bold_small_x
+latin_small_letter_y <> mathematical_sans_serif_bold_small_y
+latin_small_letter_z <> mathematical_sans_serif_bold_small_z
+
+latin_capital_letter_a <> mathematical_sans_serif_bold_capital_a
+latin_capital_letter_b <> mathematical_sans_serif_bold_capital_b
+latin_capital_letter_c <> mathematical_sans_serif_bold_capital_c
+latin_capital_letter_d <> mathematical_sans_serif_bold_capital_d
+latin_capital_letter_e <> mathematical_sans_serif_bold_capital_e
+latin_capital_letter_f <> mathematical_sans_serif_bold_capital_f
+latin_capital_letter_g <> mathematical_sans_serif_bold_capital_g
+latin_capital_letter_h <> mathematical_sans_serif_bold_capital_h
+latin_capital_letter_i <> mathematical_sans_serif_bold_capital_i
+latin_capital_letter_j <> mathematical_sans_serif_bold_capital_j
+latin_capital_letter_k <> mathematical_sans_serif_bold_capital_k
+latin_capital_letter_l <> mathematical_sans_serif_bold_capital_l
+latin_capital_letter_m <> mathematical_sans_serif_bold_capital_m
+latin_capital_letter_n <> mathematical_sans_serif_bold_capital_n
+latin_capital_letter_o <> mathematical_sans_serif_bold_capital_o
+latin_capital_letter_p <> mathematical_sans_serif_bold_capital_p
+latin_capital_letter_q <> mathematical_sans_serif_bold_capital_q
+latin_capital_letter_r <> mathematical_sans_serif_bold_capital_r
+latin_capital_letter_s <> mathematical_sans_serif_bold_capital_s
+latin_capital_letter_t <> mathematical_sans_serif_bold_capital_t
+latin_capital_letter_u <> mathematical_sans_serif_bold_capital_u
+latin_capital_letter_v <> mathematical_sans_serif_bold_capital_v
+latin_capital_letter_w <> mathematical_sans_serif_bold_capital_w
+latin_capital_letter_x <> mathematical_sans_serif_bold_capital_x
+latin_capital_letter_y <> mathematical_sans_serif_bold_capital_y
+latin_capital_letter_z <> mathematical_sans_serif_bold_capital_z
+
+digit_one <> mathematical_sans_serif_bold_digit_one
+digit_two <> mathematical_sans_serif_bold_digit_two
+digit_three <> mathematical_sans_serif_bold_digit_three
+digit_four <> mathematical_sans_serif_bold_digit_four
+digit_five <> mathematical_sans_serif_bold_digit_five
+digit_six <> mathematical_sans_serif_bold_digit_six
+digit_seven <> mathematical_sans_serif_bold_digit_seven
+digit_eight <> mathematical_sans_serif_bold_digit_eight
+digit_nine <> mathematical_sans_serif_bold_digit_nine
+digit_zero <> mathematical_sans_serif_bold_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</sans-bold>
+% \fi
+% \paragraph{Sans Italic/\cmd\itsans}
+% \iffalse
+%<*sans-italic>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-sans-italic"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_sans_serif_italic_small_a
+latin_small_letter_b <> mathematical_sans_serif_italic_small_b
+latin_small_letter_c <> mathematical_sans_serif_italic_small_c
+latin_small_letter_d <> mathematical_sans_serif_italic_small_d
+latin_small_letter_e <> mathematical_sans_serif_italic_small_e
+latin_small_letter_f <> mathematical_sans_serif_italic_small_f
+latin_small_letter_g <> mathematical_sans_serif_italic_small_g
+latin_small_letter_h <> mathematical_sans_serif_italic_small_h
+latin_small_letter_i <> mathematical_sans_serif_italic_small_i
+latin_small_letter_j <> mathematical_sans_serif_italic_small_j
+latin_small_letter_k <> mathematical_sans_serif_italic_small_k
+latin_small_letter_l <> mathematical_sans_serif_italic_small_l
+latin_small_letter_m <> mathematical_sans_serif_italic_small_m
+latin_small_letter_n <> mathematical_sans_serif_italic_small_n
+latin_small_letter_o <> mathematical_sans_serif_italic_small_o
+latin_small_letter_p <> mathematical_sans_serif_italic_small_p
+latin_small_letter_q <> mathematical_sans_serif_italic_small_q
+latin_small_letter_r <> mathematical_sans_serif_italic_small_r
+latin_small_letter_s <> mathematical_sans_serif_italic_small_s
+latin_small_letter_t <> mathematical_sans_serif_italic_small_t
+latin_small_letter_u <> mathematical_sans_serif_italic_small_u
+latin_small_letter_v <> mathematical_sans_serif_italic_small_v
+latin_small_letter_w <> mathematical_sans_serif_italic_small_w
+latin_small_letter_x <> mathematical_sans_serif_italic_small_x
+latin_small_letter_y <> mathematical_sans_serif_italic_small_y
+latin_small_letter_z <> mathematical_sans_serif_italic_small_z
+
+latin_capital_letter_a <> mathematical_sans_serif_italic_capital_a
+latin_capital_letter_b <> mathematical_sans_serif_italic_capital_b
+latin_capital_letter_c <> mathematical_sans_serif_italic_capital_c
+latin_capital_letter_d <> mathematical_sans_serif_italic_capital_d
+latin_capital_letter_e <> mathematical_sans_serif_italic_capital_e
+latin_capital_letter_f <> mathematical_sans_serif_italic_capital_f
+latin_capital_letter_g <> mathematical_sans_serif_italic_capital_g
+latin_capital_letter_h <> mathematical_sans_serif_italic_capital_h
+latin_capital_letter_i <> mathematical_sans_serif_italic_capital_i
+latin_capital_letter_j <> mathematical_sans_serif_italic_capital_j
+latin_capital_letter_k <> mathematical_sans_serif_italic_capital_k
+latin_capital_letter_l <> mathematical_sans_serif_italic_capital_l
+latin_capital_letter_m <> mathematical_sans_serif_italic_capital_m
+latin_capital_letter_n <> mathematical_sans_serif_italic_capital_n
+latin_capital_letter_o <> mathematical_sans_serif_italic_capital_o
+latin_capital_letter_p <> mathematical_sans_serif_italic_capital_p
+latin_capital_letter_q <> mathematical_sans_serif_italic_capital_q
+latin_capital_letter_r <> mathematical_sans_serif_italic_capital_r
+latin_capital_letter_s <> mathematical_sans_serif_italic_capital_s
+latin_capital_letter_t <> mathematical_sans_serif_italic_capital_t
+latin_capital_letter_u <> mathematical_sans_serif_italic_capital_u
+latin_capital_letter_v <> mathematical_sans_serif_italic_capital_v
+latin_capital_letter_w <> mathematical_sans_serif_italic_capital_w
+latin_capital_letter_x <> mathematical_sans_serif_italic_capital_x
+latin_capital_letter_y <> mathematical_sans_serif_italic_capital_y
+latin_capital_letter_z <> mathematical_sans_serif_italic_capital_z
+
+digit_one <> mathematical_sans_serif_digit_one
+digit_two <> mathematical_sans_serif_digit_two
+digit_three <> mathematical_sans_serif_digit_three
+digit_four <> mathematical_sans_serif_digit_four
+digit_five <> mathematical_sans_serif_digit_five
+digit_six <> mathematical_sans_serif_digit_six
+digit_seven <> mathematical_sans_serif_digit_seven
+digit_eight <> mathematical_sans_serif_digit_eight
+digit_nine <> mathematical_sans_serif_digit_nine
+digit_zero <> mathematical_sans_serif_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</sans-italic>
+% \fi
+%
+% \paragraph{Sans Bold Italic/\cmd\bfitsans}
+% \iffalse
+%<*sans-italic-bold>
+% \fi
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-sans-italic-bold"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_sans_serif_bold_italic_small_a
+latin_small_letter_b <> mathematical_sans_serif_bold_italic_small_b
+latin_small_letter_c <> mathematical_sans_serif_bold_italic_small_c
+latin_small_letter_d <> mathematical_sans_serif_bold_italic_small_d
+latin_small_letter_e <> mathematical_sans_serif_bold_italic_small_e
+latin_small_letter_f <> mathematical_sans_serif_bold_italic_small_f
+latin_small_letter_g <> mathematical_sans_serif_bold_italic_small_g
+latin_small_letter_h <> mathematical_sans_serif_bold_italic_small_h
+latin_small_letter_i <> mathematical_sans_serif_bold_italic_small_i
+latin_small_letter_j <> mathematical_sans_serif_bold_italic_small_j
+latin_small_letter_k <> mathematical_sans_serif_bold_italic_small_k
+latin_small_letter_l <> mathematical_sans_serif_bold_italic_small_l
+latin_small_letter_m <> mathematical_sans_serif_bold_italic_small_m
+latin_small_letter_n <> mathematical_sans_serif_bold_italic_small_n
+latin_small_letter_o <> mathematical_sans_serif_bold_italic_small_o
+latin_small_letter_p <> mathematical_sans_serif_bold_italic_small_p
+latin_small_letter_q <> mathematical_sans_serif_bold_italic_small_q
+latin_small_letter_r <> mathematical_sans_serif_bold_italic_small_r
+latin_small_letter_s <> mathematical_sans_serif_bold_italic_small_s
+latin_small_letter_t <> mathematical_sans_serif_bold_italic_small_t
+latin_small_letter_u <> mathematical_sans_serif_bold_italic_small_u
+latin_small_letter_v <> mathematical_sans_serif_bold_italic_small_v
+latin_small_letter_w <> mathematical_sans_serif_bold_italic_small_w
+latin_small_letter_x <> mathematical_sans_serif_bold_italic_small_x
+latin_small_letter_y <> mathematical_sans_serif_bold_italic_small_y
+latin_small_letter_z <> mathematical_sans_serif_bold_italic_small_z
+
+latin_capital_letter_a <> mathematical_sans_serif_bold_italic_capital_a
+latin_capital_letter_b <> mathematical_sans_serif_bold_italic_capital_b
+latin_capital_letter_c <> mathematical_sans_serif_bold_italic_capital_c
+latin_capital_letter_d <> mathematical_sans_serif_bold_italic_capital_d
+latin_capital_letter_e <> mathematical_sans_serif_bold_italic_capital_e
+latin_capital_letter_f <> mathematical_sans_serif_bold_italic_capital_f
+latin_capital_letter_g <> mathematical_sans_serif_bold_italic_capital_g
+latin_capital_letter_h <> mathematical_sans_serif_bold_italic_capital_h
+latin_capital_letter_i <> mathematical_sans_serif_bold_italic_capital_i
+latin_capital_letter_j <> mathematical_sans_serif_bold_italic_capital_j
+latin_capital_letter_k <> mathematical_sans_serif_bold_italic_capital_k
+latin_capital_letter_l <> mathematical_sans_serif_bold_italic_capital_l
+latin_capital_letter_m <> mathematical_sans_serif_bold_italic_capital_m
+latin_capital_letter_n <> mathematical_sans_serif_bold_italic_capital_n
+latin_capital_letter_o <> mathematical_sans_serif_bold_italic_capital_o
+latin_capital_letter_p <> mathematical_sans_serif_bold_italic_capital_p
+latin_capital_letter_q <> mathematical_sans_serif_bold_italic_capital_q
+latin_capital_letter_r <> mathematical_sans_serif_bold_italic_capital_r
+latin_capital_letter_s <> mathematical_sans_serif_bold_italic_capital_s
+latin_capital_letter_t <> mathematical_sans_serif_bold_italic_capital_t
+latin_capital_letter_u <> mathematical_sans_serif_bold_italic_capital_u
+latin_capital_letter_v <> mathematical_sans_serif_bold_italic_capital_v
+latin_capital_letter_w <> mathematical_sans_serif_bold_italic_capital_w
+latin_capital_letter_x <> mathematical_sans_serif_bold_italic_capital_x
+latin_capital_letter_y <> mathematical_sans_serif_bold_italic_capital_y
+latin_capital_letter_z <> mathematical_sans_serif_bold_italic_capital_z
+
+digit_one <> mathematical_sans_serif_bold_digit_one
+digit_two <> mathematical_sans_serif_bold_digit_two
+digit_three <> mathematical_sans_serif_bold_digit_three
+digit_four <> mathematical_sans_serif_bold_digit_four
+digit_five <> mathematical_sans_serif_bold_digit_five
+digit_six <> mathematical_sans_serif_bold_digit_six
+digit_seven <> mathematical_sans_serif_bold_digit_seven
+digit_eight <> mathematical_sans_serif_bold_digit_eight
+digit_nine <> mathematical_sans_serif_bold_digit_nine
+digit_zero <> mathematical_sans_serif_bold_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</sans-italic-bold>
+% \fi
+% \iffalse
+%<*typewriter>
+% \fi
+% \paragraph{Typewriter/\cmd\tt}
+%    \begin{macrocode}
+LHSName	"ascii"
+RHSName	"unicode-maths-typewriter"
+
+pass(Unicode)
+
+latin_small_letter_a <> mathematical_monospace_small_a
+latin_small_letter_b <> mathematical_monospace_small_b
+latin_small_letter_c <> mathematical_monospace_small_c
+latin_small_letter_d <> mathematical_monospace_small_d
+latin_small_letter_e <> mathematical_monospace_small_e
+latin_small_letter_f <> mathematical_monospace_small_f
+latin_small_letter_g <> mathematical_monospace_small_g
+latin_small_letter_h <> mathematical_monospace_small_h
+latin_small_letter_i <> mathematical_monospace_small_i
+latin_small_letter_j <> mathematical_monospace_small_j
+latin_small_letter_k <> mathematical_monospace_small_k
+latin_small_letter_l <> mathematical_monospace_small_l
+latin_small_letter_m <> mathematical_monospace_small_m
+latin_small_letter_n <> mathematical_monospace_small_n
+latin_small_letter_o <> mathematical_monospace_small_o
+latin_small_letter_p <> mathematical_monospace_small_p
+latin_small_letter_q <> mathematical_monospace_small_q
+latin_small_letter_r <> mathematical_monospace_small_r
+latin_small_letter_s <> mathematical_monospace_small_s
+latin_small_letter_t <> mathematical_monospace_small_t
+latin_small_letter_u <> mathematical_monospace_small_u
+latin_small_letter_v <> mathematical_monospace_small_v
+latin_small_letter_w <> mathematical_monospace_small_w
+latin_small_letter_x <> mathematical_monospace_small_x
+latin_small_letter_y <> mathematical_monospace_small_y
+latin_small_letter_z <> mathematical_monospace_small_z
+
+latin_capital_letter_a <> mathematical_monospace_capital_a
+latin_capital_letter_b <> mathematical_monospace_capital_b
+latin_capital_letter_c <> mathematical_monospace_capital_c
+latin_capital_letter_d <> mathematical_monospace_capital_d
+latin_capital_letter_e <> mathematical_monospace_capital_e
+latin_capital_letter_f <> mathematical_monospace_capital_f
+latin_capital_letter_g <> mathematical_monospace_capital_g
+latin_capital_letter_h <> mathematical_monospace_capital_h
+latin_capital_letter_i <> mathematical_monospace_capital_i
+latin_capital_letter_j <> mathematical_monospace_capital_j
+latin_capital_letter_k <> mathematical_monospace_capital_k
+latin_capital_letter_l <> mathematical_monospace_capital_l
+latin_capital_letter_m <> mathematical_monospace_capital_m
+latin_capital_letter_n <> mathematical_monospace_capital_n
+latin_capital_letter_o <> mathematical_monospace_capital_o
+latin_capital_letter_p <> mathematical_monospace_capital_p
+latin_capital_letter_q <> mathematical_monospace_capital_q
+latin_capital_letter_r <> mathematical_monospace_capital_r
+latin_capital_letter_s <> mathematical_monospace_capital_s
+latin_capital_letter_t <> mathematical_monospace_capital_t
+latin_capital_letter_u <> mathematical_monospace_capital_u
+latin_capital_letter_v <> mathematical_monospace_capital_v
+latin_capital_letter_w <> mathematical_monospace_capital_w
+latin_capital_letter_x <> mathematical_monospace_capital_x
+latin_capital_letter_y <> mathematical_monospace_capital_y
+latin_capital_letter_z <> mathematical_monospace_capital_z
+
+digit_one <> mathematical_monospace_digit_one
+digit_two <> mathematical_monospace_digit_two
+digit_three <> mathematical_monospace_digit_three
+digit_four <> mathematical_monospace_digit_four
+digit_five <> mathematical_monospace_digit_five
+digit_six <> mathematical_monospace_digit_six
+digit_seven <> mathematical_monospace_digit_seven
+digit_eight <> mathematical_monospace_digit_eight
+digit_nine <> mathematical_monospace_digit_nine
+digit_zero <> mathematical_monospace_digit_zero
+%    \end{macrocode}
+% \iffalse
+%</typewriter>
+% \fi
+%
+% \PrintIndex
+% \Finale
+%
+\endinput
+  

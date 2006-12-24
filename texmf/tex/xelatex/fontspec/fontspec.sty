@@ -12,6 +12,7 @@
 %% 
 %%   License information appended.
 %% 
+%% 
 \ProvidesPackage{fontspec}
   [2006/12/21 v1.13 Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
@@ -28,8 +29,6 @@
 \newif\ifzf@math@lucida
 \newif\ifzf@package@euler@loaded
 \newif\ifzf@package@babel@loaded
-\newif\if@zf@configfile
-\newif\if@zf@euenc
 \newif\if@zf@configfile
 \newif\if@zf@euenc
 \newcount\c@zf@newff
@@ -72,10 +71,11 @@
   \zf@fontspec{#1}{#2}%
   \fontfamily\zf@family\selectfont
   \ignorespaces}
-\newcommand*\setromanfont[2][]{%
+\newcommand*\setmainfont[2][]{%
   \zf@fontspec{#1}{#2}%
   \let\rmdefault\zf@family
   \normalfont}
+\let\setromanfont\setmainfont
 \newcommand*\setsansfont[2][]{%
   \zf@fontspec{#1}{#2}%
   \let\sfdefault\zf@family
@@ -183,10 +183,13 @@
   \zf@init
   \edef\zf@fontname{#2}%
   \let\zf@family@long\zf@fontname
-  \setkeys*[zf]{preparse}{#1}%
+  \setkeys*[zf]{prepreparse}{#1}%
+  \edef\@tempa{\noexpand\setkeys*[zf]{preparse}{\XKV@rm}}\@tempa
   \let\zf@font@feat\XKV@rm
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
-  \zf@set@font@type
+  \unless\ifzf@icu
+    \zf@set@font@type
+  \fi
   \ifx\zf@suffix\@empty
     \ifzf@atsui
       \def\zf@suffix{/AAT}%
@@ -347,6 +350,7 @@
   \edef\@tempa{\noexpand\setkeys[zf]{options}{\zf@default@options#1}}%
   \@tempa}
 \newcommand*\zf@init{%
+  \zf@icufalse
   \let\zf@pre@ff      \@empty
   \let\zf@font@feat   \@empty
   \let\zf@font@str    \@empty
@@ -389,26 +393,40 @@
   \fi}
 \newcommand*\zf@make@feature[3]{%
   \ifzf@atsui
-    \zf@make@aat@feature@string{#1}{#2}%
+    \def\@tempa{#1}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        AAT feature '\XKV@tfam=\XKV@tkey'
-        (#1,#2) not available in font \fontname\zf@basefont}%
+        ‘\XKV@tfam=\XKV@tkey’ feature not supported
+         for AAT font ‘\fontname\zf@basefont’}%
     \else
-      \zf@update@family{+#1,#2}%
-      \zf@update@ff\@tempa
+      \zf@make@aat@feature@string{#1}{#2}%
+      \ifx\@tempa\@empty
+        \zf@PackageWarning{%
+          AAT feature '\XKV@tfam=\XKV@tkey'
+          (#1,#2) not available in font \fontname\zf@basefont}%
+      \else
+        \zf@update@family{+#1,#2}%
+        \zf@update@ff\@tempa
+      \fi
     \fi
   \fi
   \ifzf@icu
-    \zf@check@ot@feat{#3}%
-    \if@tempswa
-      \zf@update@family{#3}%
-      \zf@update@ff{#3}%
-    \else
+    \edef\@tempa{#3}%
+    \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
-        not available in font \fontname\zf@basefont, script
-        '\zf@script@name', language '\zf@language@name'}%
+        ‘\XKV@tfam=\XKV@tkey’ feature not supported
+        for ICU font ‘ \fontname\zf@basefont’}%
+    \else
+      \expandafter\zf@check@ot@feat\expandafter{\@tempa}%
+      \if@tempswa
+        \zf@update@family{#3}%
+        \zf@update@ff{#3}%
+      \else
+        \zf@PackageWarning{%
+          OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
+          not available in font \fontname\zf@basefont, script
+          '\zf@script@name', language '\zf@language@name'}%
+      \fi
     \fi
   \fi}
 \newcommand*\zf@define@font@feature[1]{%
@@ -498,7 +516,8 @@
       \advance\c@zf@index\@ne
     \fi
   \repeat}
-\define@key[zf]{preparse}{ExternalLocation}[]{%
+\define@key[zf]{prepreparse}{ExternalLocation}[]{%
+  \zf@icutrue
   \zf@nobftrue\zf@noittrue
   \gdef\zf@font@wrap##1{[#1##1]}}
 \define@choicekey[zf]{preparse}{Renderer}{AAT,ICU}{%
@@ -506,11 +525,13 @@
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +rend:#1}}
 \define@key[zf]{preparse}{Script}{%
+  \zf@icutrue
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +script:#1}%
   {\setkeys[zf@feat]{Script}{#1}}}
 \define@key[zf]{preparse}{Language}{%
+  \zf@icutrue
   \edef\zf@suffix{\zf@suffix/ICU}%
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +language:#1}%
@@ -767,12 +788,14 @@
 \define@key[zf]{options}{Alternate}{%
   \setkeys*[zf@feat]{Alternate}{#1}%
   \unless\ifx\XKV@rm\@empty
+    \def\XKV@tfam{Alternate}%
     \zf@make@feature{17}{#1}{}%
   \fi}
 \define@key[zf]{options}{Variant}{%
   \setkeys*[zf@feat]{Variant}{#1}%
   \unless\ifx\XKV@rm\@empty
-    \edef\@tempa{\noexpand\zf@make@feature{18}{#1}{+ss\two@digits{#1}}}\@tempa
+    \def\XKV@tfam{Variant}%
+    \zf@make@feature{18}{#1}{+ss\two@digits{#1}}%
   \fi}
 \zf@define@font@feature{Style}
 \zf@define@feature@option{Style}{Alternate}     {}  {} {+salt}
@@ -1008,6 +1031,9 @@
                          language '#1' for script '\zf@script@name'}%
     \fi
   \fi}
+\define@key[zf]{options}{RawFeature}{%
+  \zf@update@family{+Raw:#1}%
+  \zf@update@ff{#1}}
 \providecommand*{\sidefault}{si}
 \DeclareRobustCommand{\sishape}{%
   \not@math@alphabet\sishape\relax
