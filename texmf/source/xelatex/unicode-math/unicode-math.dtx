@@ -786,7 +786,7 @@ This work consists of the file  \jobname.dtx
 % \subsection{Delimiters}
 % \begin{macro}{\left} We redefine the primitive to be preceded by \cmd\mathopen; this gives much better spacing in cases such as \cmd\sin\cmd\left\dots. Courtesy of Frank Mittelbach:
 %
-% |http://www.latex-project.org/cgi-bin/ltxbugs2html?pr=latex/3853&prlatex/3754|
+% {\small |http://www.latex-project.org/cgi-bin/ltxbugs2html?pr=latex/3853&prlatex/3754|}
 %    \begin{macrocode}
 \let\left@primitive\left
 \def\left{\mathopen{}\left@primitive}
@@ -811,6 +811,8 @@ This work consists of the file  \jobname.dtx
 % \setmathfont[SizeFeatures={
 %     {Size=-10, Colour=888888},
 %     {Size=10-, Colour=FF0000}}]{Code2000}
+% \let\sqrt@old\sqrt
+% \def\sqrt{\sqrt@old{}}
 % \def\UnicodeMathSymbol#1#2#3#4{%
 %   \ifx\mathopen#3\relax
 %     \def\@tempa{\scshape\MakeLowercase{u+\@gobble#1} & $\displaystyle#2$ & \small\cmd#2 & \scshape#4 \\}\expandafter\@tempa
@@ -1788,32 +1790,32 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % Greek letters:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbf}{913}{"1D6A8}% ALPHA
-\MathAlphabetChar{\mathbf}{914}{"1D6A9}% BETA
-\MathAlphabetChar{\mathbf}{915}{"1D6AA}% GAMMA
-\MathAlphabetChar{\mathbf}{916}{"1D6AB}% delta
-\MathAlphabetChar{\mathbf}{917}{"1D6AC}% epsilon
-\MathAlphabetChar{\mathbf}{918}{"1D6AD}% zeta
-\MathAlphabetChar{\mathbf}{919}{"1D6AE}% eta
-\MathAlphabetChar{\mathbf}{920}{"1D6AF}% theta
-\MathAlphabetChar{\mathbf}{921}{"1D6B0}% iota
-\MathAlphabetChar{\mathbf}{922}{"1D6B1}% kappa
-\MathAlphabetChar{\mathbf}{923}{"1D6B2}% lambda
-\MathAlphabetChar{\mathbf}{924}{"1D6B3}% mu
-\MathAlphabetChar{\mathbf}{925}{"1D6B4}% nu
-\MathAlphabetChar{\mathbf}{926}{"1D6B5}% xi
-\MathAlphabetChar{\mathbf}{927}{"1D6B6}% omicron
-\MathAlphabetChar{\mathbf}{928}{"1D6B7}% pi
-\MathAlphabetChar{\mathbf}{929}{"1D6B8}% rho
-%\MathAlphabetChar{\mathbf}{??}{"1D6B9}% theta symbol
-\MathAlphabetChar{\mathbf}{931}{"1D6BA}% sigma
-\MathAlphabetChar{\mathbf}{932}{"1D6BB}% tau
-\MathAlphabetChar{\mathbf}{933}{"1D6BC}% upsilon
-\MathAlphabetChar{\mathbf}{934}{"1D6BD}% phi
-\MathAlphabetChar{\mathbf}{935}{"1D6BE}% chi
-\MathAlphabetChar{\mathbf}{936}{"1D6BF}% psi
-\MathAlphabetChar{\mathbf}{937}{"1D6C0}% omega
-\MathAlphabetChar{\mathbf}{"2207}{"1D6C1}% NABLA
+\MathAlphabetChar{\mathbf}{913}{"1D6A8}%
+\MathAlphabetChar{\mathbf}{914}{"1D6A9}%
+\MathAlphabetChar{\mathbf}{915}{"1D6AA}%
+\MathAlphabetChar{\mathbf}{916}{"1D6AB}%
+\MathAlphabetChar{\mathbf}{917}{"1D6AC}%
+\MathAlphabetChar{\mathbf}{918}{"1D6AD}%
+\MathAlphabetChar{\mathbf}{919}{"1D6AE}%
+\MathAlphabetChar{\mathbf}{920}{"1D6AF}%
+\MathAlphabetChar{\mathbf}{921}{"1D6B0}%
+\MathAlphabetChar{\mathbf}{922}{"1D6B1}%
+\MathAlphabetChar{\mathbf}{923}{"1D6B2}%
+\MathAlphabetChar{\mathbf}{924}{"1D6B3}%
+\MathAlphabetChar{\mathbf}{925}{"1D6B4}%
+\MathAlphabetChar{\mathbf}{926}{"1D6B5}%
+\MathAlphabetChar{\mathbf}{927}{"1D6B6}%
+\MathAlphabetChar{\mathbf}{928}{"1D6B7}%
+\MathAlphabetChar{\mathbf}{929}{"1D6B8}%
+%\MathAlphabetChar{\mathbf}{??}{"1D6B9}%
+\MathAlphabetChar{\mathbf}{931}{"1D6BA}%
+\MathAlphabetChar{\mathbf}{932}{"1D6BB}%
+\MathAlphabetChar{\mathbf}{933}{"1D6BC}%
+\MathAlphabetChar{\mathbf}{934}{"1D6BD}%
+\MathAlphabetChar{\mathbf}{935}{"1D6BE}%
+\MathAlphabetChar{\mathbf}{936}{"1D6BF}%
+\MathAlphabetChar{\mathbf}{937}{"1D6C0}%
+\MathAlphabetChar{\mathbf}{"2207}{"1D6C1}%
 %    \end{macrocode}
 % Greek lowercase:
 %    \begin{macrocode}      
@@ -1834,7 +1836,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbf}{959}{"1D6D0}%
 \MathAlphabetChar{\mathbf}{960}{"1D6D1}%
 \MathAlphabetChar{\mathbf}{961}{"1D6D2}%
-\MathAlphabetChar{\mathbf}{960}{"1D6D3}% VAR SIGMA
+\MathAlphabetChar{\mathbf}{960}{"1D6D3}%
 \MathAlphabetChar{\mathbf}{963}{"1D6D4}%
 \MathAlphabetChar{\mathbf}{964}{"1D6D5}%
 \MathAlphabetChar{\mathbf}{965}{"1D6D6}%
@@ -1842,7 +1844,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbf}{967}{"1D6D8}%
 \MathAlphabetChar{\mathbf}{968}{"1D6D9}%
 \MathAlphabetChar{\mathbf}{969}{"1D6DA}%
-\MathAlphabetChar{\mathbf}{"2202}{"1D6DB}% PARTIAL
+\MathAlphabetChar{\mathbf}{"2202}{"1D6DB}%
 %\MathAlphabetChar{\mathbf}{??}{"1D6DC}% VAR EPSILON
 %\MathAlphabetChar{\mathbf}{??}{"1D6DD}% VAR THETA
 %\MathAlphabetChar{\mathbf}{??}{"1D6DE}% VAR KAPPA
@@ -1936,32 +1938,32 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % Greek letters:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfit}{913}{"1D71C}% Alpha
-\MathAlphabetChar{\mathbfit}{914}{"1D71D}% Beta
-\MathAlphabetChar{\mathbfit}{915}{"1D71E}% Gamma
-\MathAlphabetChar{\mathbfit}{916}{"1D71F}% Delta
-\MathAlphabetChar{\mathbfit}{917}{"1D720}% Epsilon
-\MathAlphabetChar{\mathbfit}{918}{"1D721}% Zeta
-\MathAlphabetChar{\mathbfit}{919}{"1D722}% Eta
-\MathAlphabetChar{\mathbfit}{920}{"1D723}% theta
-\MathAlphabetChar{\mathbfit}{921}{"1D724}% iota
-\MathAlphabetChar{\mathbfit}{922}{"1D725}% kappa
-\MathAlphabetChar{\mathbfit}{923}{"1D726}% lambda
-\MathAlphabetChar{\mathbfit}{924}{"1D727}% mu
-\MathAlphabetChar{\mathbfit}{925}{"1D728}% nu
-\MathAlphabetChar{\mathbfit}{926}{"1D729}% xi
-\MathAlphabetChar{\mathbfit}{927}{"1D72A}% omicron
-\MathAlphabetChar{\mathbfit}{928}{"1D72B}% pi
-\MathAlphabetChar{\mathbfit}{929}{"1D72C}% rho
-%\MathAlphabetChar{\mathbfit}{??}{"1D72D}% VAR theta
-\MathAlphabetChar{\mathbfit}{931}{"1D72E}% sigma
-\MathAlphabetChar{\mathbfit}{932}{"1D72F}% tau
-\MathAlphabetChar{\mathbfit}{933}{"1D730}% upsilon
-\MathAlphabetChar{\mathbfit}{934}{"1D731}% phi
-\MathAlphabetChar{\mathbfit}{935}{"1D732}% chi
-\MathAlphabetChar{\mathbfit}{936}{"1D733}% psi
-\MathAlphabetChar{\mathbfit}{937}{"1D734}% omega
-\MathAlphabetChar{\mathbfit}{"2207}{"1D735}% NABLA
+\MathAlphabetChar{\mathbfit}{913}{"1D71C}%
+\MathAlphabetChar{\mathbfit}{914}{"1D71D}%
+\MathAlphabetChar{\mathbfit}{915}{"1D71E}%
+\MathAlphabetChar{\mathbfit}{916}{"1D71F}%
+\MathAlphabetChar{\mathbfit}{917}{"1D720}%
+\MathAlphabetChar{\mathbfit}{918}{"1D721}%
+\MathAlphabetChar{\mathbfit}{919}{"1D722}%
+\MathAlphabetChar{\mathbfit}{920}{"1D723}%
+\MathAlphabetChar{\mathbfit}{921}{"1D724}%
+\MathAlphabetChar{\mathbfit}{922}{"1D725}%
+\MathAlphabetChar{\mathbfit}{923}{"1D726}%
+\MathAlphabetChar{\mathbfit}{924}{"1D727}%
+\MathAlphabetChar{\mathbfit}{925}{"1D728}%
+\MathAlphabetChar{\mathbfit}{926}{"1D729}%
+\MathAlphabetChar{\mathbfit}{927}{"1D72A}%
+\MathAlphabetChar{\mathbfit}{928}{"1D72B}%
+\MathAlphabetChar{\mathbfit}{929}{"1D72C}%
+%\MathAlphabetChar{\mathbfit}{??}{"1D72D}%
+\MathAlphabetChar{\mathbfit}{931}{"1D72E}%
+\MathAlphabetChar{\mathbfit}{932}{"1D72F}%
+\MathAlphabetChar{\mathbfit}{933}{"1D730}%
+\MathAlphabetChar{\mathbfit}{934}{"1D731}%
+\MathAlphabetChar{\mathbfit}{935}{"1D732}%
+\MathAlphabetChar{\mathbfit}{936}{"1D733}%
+\MathAlphabetChar{\mathbfit}{937}{"1D734}%
+\MathAlphabetChar{\mathbfit}{"2207}{"1D735}%
 %    \end{macrocode}
 % Greek lowercase:
 %    \begin{macrocode}      
@@ -1982,7 +1984,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbfit}{959}{"1D744}%
 \MathAlphabetChar{\mathbfit}{960}{"1D745}%
 \MathAlphabetChar{\mathbfit}{961}{"1D746}%
-\MathAlphabetChar{\mathbfit}{960}{"1D747}% VAR SIGMA
+\MathAlphabetChar{\mathbfit}{960}{"1D747}%
 \MathAlphabetChar{\mathbfit}{963}{"1D748}%
 \MathAlphabetChar{\mathbfit}{964}{"1D749}%
 \MathAlphabetChar{\mathbfit}{965}{"1D74A}%
@@ -1990,7 +1992,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbfit}{967}{"1D74C}%
 \MathAlphabetChar{\mathbfit}{968}{"1D74D}%
 \MathAlphabetChar{\mathbfit}{969}{"1D74E}%
-\MathAlphabetChar{\mathbfit}{"2202}{"1D74F}% PARTIAL
+\MathAlphabetChar{\mathbfit}{"2202}{"1D74F}%
 %\MathAlphabetChar{\mathbfit}{??}{"1D750}% VAR EPSILON
 %\MathAlphabetChar{\mathbfit}{??}{"1D751}% VAR THETA
 %\MathAlphabetChar{\mathbfit}{??}{"1D752}% VAR KAPPA
@@ -2240,32 +2242,32 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % Greek letters:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsf}{913}{"1D756}% Alpha
-\MathAlphabetChar{\mathbfsf}{914}{"1D757}% Beta
-\MathAlphabetChar{\mathbfsf}{915}{"1D758}% Gamma
-\MathAlphabetChar{\mathbfsf}{916}{"1D759}% Delta
-\MathAlphabetChar{\mathbfsf}{917}{"1D75A}% Epsilon
-\MathAlphabetChar{\mathbfsf}{918}{"1D75B}% Zeta
-\MathAlphabetChar{\mathbfsf}{919}{"1D75C}% Eta
-\MathAlphabetChar{\mathbfsf}{920}{"1D75D}% theta
-\MathAlphabetChar{\mathbfsf}{921}{"1D75E}% iota
-\MathAlphabetChar{\mathbfsf}{922}{"1D75F}% kappa
-\MathAlphabetChar{\mathbfsf}{923}{"1D760}% lambda
-\MathAlphabetChar{\mathbfsf}{924}{"1D761}% mu
-\MathAlphabetChar{\mathbfsf}{925}{"1D762}% nu
-\MathAlphabetChar{\mathbfsf}{926}{"1D763}% xi
-\MathAlphabetChar{\mathbfsf}{927}{"1D764}% omicron
-\MathAlphabetChar{\mathbfsf}{928}{"1D765}% pi
-\MathAlphabetChar{\mathbfsf}{929}{"1D766}% rho
-%\MathAlphabetChar{\mathbfsf}{??}{"1D767}% VAR theta
-\MathAlphabetChar{\mathbfsf}{931}{"1D768}% sigma
-\MathAlphabetChar{\mathbfsf}{932}{"1D769}% tau
-\MathAlphabetChar{\mathbfsf}{933}{"1D76A}% upsilon
-\MathAlphabetChar{\mathbfsf}{934}{"1D76B}% phi
-\MathAlphabetChar{\mathbfsf}{935}{"1D76C}% chi
-\MathAlphabetChar{\mathbfsf}{936}{"1D76D}% psi
-\MathAlphabetChar{\mathbfsf}{937}{"1D76E}% omega
-\MathAlphabetChar{\mathbfsf}{"2207}{"1D76F}% NABLA
+\MathAlphabetChar{\mathbfsf}{913}{"1D756}%
+\MathAlphabetChar{\mathbfsf}{914}{"1D757}%
+\MathAlphabetChar{\mathbfsf}{915}{"1D758}%
+\MathAlphabetChar{\mathbfsf}{916}{"1D759}%
+\MathAlphabetChar{\mathbfsf}{917}{"1D75A}%
+\MathAlphabetChar{\mathbfsf}{918}{"1D75B}%
+\MathAlphabetChar{\mathbfsf}{919}{"1D75C}%
+\MathAlphabetChar{\mathbfsf}{920}{"1D75D}%
+\MathAlphabetChar{\mathbfsf}{921}{"1D75E}%
+\MathAlphabetChar{\mathbfsf}{922}{"1D75F}%
+\MathAlphabetChar{\mathbfsf}{923}{"1D760}%
+\MathAlphabetChar{\mathbfsf}{924}{"1D761}%
+\MathAlphabetChar{\mathbfsf}{925}{"1D762}%
+\MathAlphabetChar{\mathbfsf}{926}{"1D763}%
+\MathAlphabetChar{\mathbfsf}{927}{"1D764}%
+\MathAlphabetChar{\mathbfsf}{928}{"1D765}%
+\MathAlphabetChar{\mathbfsf}{929}{"1D766}%
+%\MathAlphabetChar{\mathbfsf}{??}{"1D767}%
+\MathAlphabetChar{\mathbfsf}{931}{"1D768}%
+\MathAlphabetChar{\mathbfsf}{932}{"1D769}%
+\MathAlphabetChar{\mathbfsf}{933}{"1D76A}%
+\MathAlphabetChar{\mathbfsf}{934}{"1D76B}%
+\MathAlphabetChar{\mathbfsf}{935}{"1D76C}%
+\MathAlphabetChar{\mathbfsf}{936}{"1D76D}%
+\MathAlphabetChar{\mathbfsf}{937}{"1D76E}%
+\MathAlphabetChar{\mathbfsf}{"2207}{"1D76F}%
 %    \end{macrocode}
 % Greek lowercase:
 %    \begin{macrocode}      
@@ -2286,7 +2288,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbfsf}{959}{"1D77E}%
 \MathAlphabetChar{\mathbfsf}{960}{"1D77F}%
 \MathAlphabetChar{\mathbfsf}{961}{"1D780}%
-\MathAlphabetChar{\mathbfsf}{960}{"1D781}% VAR SIGMA
+\MathAlphabetChar{\mathbfsf}{960}{"1D781}%
 \MathAlphabetChar{\mathbfsf}{963}{"1D782}%
 \MathAlphabetChar{\mathbfsf}{964}{"1D783}%
 \MathAlphabetChar{\mathbfsf}{965}{"1D784}%
@@ -2294,7 +2296,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbfsf}{967}{"1D786}%
 \MathAlphabetChar{\mathbfsf}{968}{"1D787}%
 \MathAlphabetChar{\mathbfsf}{969}{"1D788}%
-\MathAlphabetChar{\mathbfsf}{"2202}{"1D789}% PARTIAL
+\MathAlphabetChar{\mathbfsf}{"2202}{"1D789}%
 %\MathAlphabetChar{\mathbfsf}{??}{"1D78A}% VAR EPSILON
 %\MathAlphabetChar{\mathbfsf}{??}{"1D78B}% VAR THETA
 %\MathAlphabetChar{\mathbfsf}{??}{"1D78C}% VAR KAPPA
@@ -2387,32 +2389,32 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % Greek letters:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsfit}{913}{"1D790}% Alpha
-\MathAlphabetChar{\mathbfsfit}{914}{"1D791}% Beta
-\MathAlphabetChar{\mathbfsfit}{915}{"1D792}% Gamma
-\MathAlphabetChar{\mathbfsfit}{916}{"1D793}% Delta
-\MathAlphabetChar{\mathbfsfit}{917}{"1D794}% Epsilon
-\MathAlphabetChar{\mathbfsfit}{918}{"1D795}% Zeta
-\MathAlphabetChar{\mathbfsfit}{919}{"1D796}% Eta
-\MathAlphabetChar{\mathbfsfit}{920}{"1D797}% theta
-\MathAlphabetChar{\mathbfsfit}{921}{"1D798}% iota
-\MathAlphabetChar{\mathbfsfit}{922}{"1D799}% kappa
-\MathAlphabetChar{\mathbfsfit}{923}{"1D79A}% lambda
-\MathAlphabetChar{\mathbfsfit}{924}{"1D79B}% mu
-\MathAlphabetChar{\mathbfsfit}{925}{"1D79C}% nu
-\MathAlphabetChar{\mathbfsfit}{926}{"1D79D}% xi
-\MathAlphabetChar{\mathbfsfit}{927}{"1D79E}% omicron
-\MathAlphabetChar{\mathbfsfit}{928}{"1D79F}% pi
-\MathAlphabetChar{\mathbfsfit}{929}{"1D7A0}% rho
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7A1}% VAR theta
-\MathAlphabetChar{\mathbfsfit}{931}{"1D7A2}% sigma
-\MathAlphabetChar{\mathbfsfit}{932}{"1D7A3}% tau
-\MathAlphabetChar{\mathbfsfit}{933}{"1D7A4}% upsilon
-\MathAlphabetChar{\mathbfsfit}{934}{"1D7A5}% phi
-\MathAlphabetChar{\mathbfsfit}{935}{"1D7A6}% chi
-\MathAlphabetChar{\mathbfsfit}{936}{"1D7A7}% psi
-\MathAlphabetChar{\mathbfsfit}{937}{"1D7A8}% omega
-\MathAlphabetChar{\mathbfsfit}{"2207}{"1D7A9}% NABLA
+\MathAlphabetChar{\mathbfsfit}{913}{"1D790}%
+\MathAlphabetChar{\mathbfsfit}{914}{"1D791}%
+\MathAlphabetChar{\mathbfsfit}{915}{"1D792}%
+\MathAlphabetChar{\mathbfsfit}{916}{"1D793}%
+\MathAlphabetChar{\mathbfsfit}{917}{"1D794}%
+\MathAlphabetChar{\mathbfsfit}{918}{"1D795}%
+\MathAlphabetChar{\mathbfsfit}{919}{"1D796}%
+\MathAlphabetChar{\mathbfsfit}{920}{"1D797}%
+\MathAlphabetChar{\mathbfsfit}{921}{"1D798}%
+\MathAlphabetChar{\mathbfsfit}{922}{"1D799}%
+\MathAlphabetChar{\mathbfsfit}{923}{"1D79A}%
+\MathAlphabetChar{\mathbfsfit}{924}{"1D79B}%
+\MathAlphabetChar{\mathbfsfit}{925}{"1D79C}%
+\MathAlphabetChar{\mathbfsfit}{926}{"1D79D}%
+\MathAlphabetChar{\mathbfsfit}{927}{"1D79E}%
+\MathAlphabetChar{\mathbfsfit}{928}{"1D79F}%
+\MathAlphabetChar{\mathbfsfit}{929}{"1D7A0}%
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7A1}%
+\MathAlphabetChar{\mathbfsfit}{931}{"1D7A2}%
+\MathAlphabetChar{\mathbfsfit}{932}{"1D7A3}%
+\MathAlphabetChar{\mathbfsfit}{933}{"1D7A4}%
+\MathAlphabetChar{\mathbfsfit}{934}{"1D7A5}%
+\MathAlphabetChar{\mathbfsfit}{935}{"1D7A6}%
+\MathAlphabetChar{\mathbfsfit}{936}{"1D7A7}%
+\MathAlphabetChar{\mathbfsfit}{937}{"1D7A8}%
+\MathAlphabetChar{\mathbfsfit}{"2207}{"1D7A9}%
 %    \end{macrocode}
 % Greek lowercase:
 %    \begin{macrocode}      
@@ -2433,7 +2435,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbfsfit}{959}{"1D7B8}%
 \MathAlphabetChar{\mathbfsfit}{960}{"1D7B9}%
 \MathAlphabetChar{\mathbfsfit}{961}{"1D7BA}%
-\MathAlphabetChar{\mathbfsfit}{960}{"1D7BB}% VAR SIGMA
+\MathAlphabetChar{\mathbfsfit}{960}{"1D7BB}%
 \MathAlphabetChar{\mathbfsfit}{963}{"1D7BC}%
 \MathAlphabetChar{\mathbfsfit}{964}{"1D7BD}%
 \MathAlphabetChar{\mathbfsfit}{965}{"1D7BE}%
@@ -2441,7 +2443,7 @@ This work consists of the file  \jobname.dtx
 \MathAlphabetChar{\mathbfsfit}{967}{"1D7C0}%
 \MathAlphabetChar{\mathbfsfit}{968}{"1D7C1}%
 \MathAlphabetChar{\mathbfsfit}{969}{"1D7C2}%
-\MathAlphabetChar{\mathbfsfit}{"2202}{"1D7C3}% PARTIAL
+\MathAlphabetChar{\mathbfsfit}{"2202}{"1D7C3}%
 %\MathAlphabetChar{\mathbfsfit}{??}{"1D7C4}% VAR EPSILON
 %\MathAlphabetChar{\mathbfsfit}{??}{"1D7C5}% VAR THETA
 %\MathAlphabetChar{\mathbfsfit}{??}{"1D7C6}% VAR KAPPA
