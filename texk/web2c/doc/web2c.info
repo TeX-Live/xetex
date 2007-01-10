@@ -1,4 +1,4 @@
-This is web2c.info, produced by makeinfo version 4.7 from web2c.texi.
+This is web2c.info, produced by makeinfo version 4.8 from web2c.texi.
 
 INFO-DIR-SECTION TeX
 START-INFO-DIR-ENTRY
@@ -31,22 +31,22 @@ START-INFO-DIR-ENTRY
 * weave: (web2c)weave invocation.               WEB to TeX.
 END-INFO-DIR-ENTRY
 
-  This file documents the installation and use of the programs in Web2c,
-an implementation of Donald Knuth's TeX system.
+   This file documents the installation and use of the programs in
+Web2c, an implementation of Donald Knuth's TeX system.
 
-  Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
 Karl Berry & Olaf Weber.
 
-  Permission is granted to make and distribute verbatim copies of this
+   Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
 preserved on all copies.
 
-  Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that the
 entire resulting derived work is distributed under the terms of a
 permission notice identical to this one.
 
-  Permission is granted to copy and distribute translations of this
+   Permission is granted to copy and distribute translations of this
 manual into another language, under the above conditions for modified
 versions, except that this permission notice may be stated in a
 translation
@@ -59,7 +59,7 @@ Web2c
 
 This document describes how to install and use the programs in the Web2c
 implementation of the TeX system, especially for Unix systems.  It
-corresponds to Web2c version 7.5.3, released in August 2004.
+corresponds to Web2c version 7.5.5, released in June 2005.
 
 * Menu:
 
@@ -83,29 +83,29 @@ File: web2c.info,  Node: Introduction,  Next: Installation,  Prev: Top,  Up: Top
 1 Introduction
 **************
 
-This manual corresponds to version 7.5.3 of Web2c, released in
-August 2004.
+This manual corresponds to version 7.5.5 of Web2c, released in
+June 2005.
 
-  "Web2c" is the name of a TeX implementation, originally for Unix, but
-now also running under DOS, Amiga, and other operating systems. By "TeX
-implementation", we mean all of the standard programs developed by the
-Stanford TeX project directed by Donald E. Knuth: Metafont, DVItype,
-GFtoDVI, BibTeX, Tangle, etc., as well as TeX itself. Other programs
-are also included: DVIcopy, written by Peter Breitenlohner, MetaPost
-and its utilities (derived from Metafont), by John Hobby, etc.
+   "Web2c" is the name of a TeX implementation, originally for Unix,
+but now also running under DOS, Amiga, and other operating systems. By
+"TeX implementation", we mean all of the standard programs developed by
+the Stanford TeX project directed by Donald E. Knuth: Metafont,
+DVItype, GFtoDVI, BibTeX, Tangle, etc., as well as TeX itself. Other
+programs are also included: DVIcopy, written by Peter Breitenlohner,
+MetaPost and its utilities (derived from Metafont), by John Hobby, etc.
 
-  General strategy: Web2c works, as its name implies, by translating the
-WEB source in which TeX is written into C source code. Its output is
+   General strategy: Web2c works, as its name implies, by translating
+the WEB source in which TeX is written into C source code. Its output is
 not self-contained, however; it makes extensive use of many macros and
 functions in a library (the `web2c/lib' directory in the sources).
 Therefore, it will not work without change on an arbitrary WEB program.
 
-  Availability: All of Web2c is freely available--"free" both in the
+   Availability: All of Web2c is freely available--"free" both in the
 sense of no cost (free ice cream) and of having the source code to
 modify and/or redistribute (free speech).  *Note unixtex.ftp:
 (kpathsea)unixtex.ftp, for the practical details of how to obtain Web2c.
 
-  Different parts of the Web2c distribution have different licensing
+   Different parts of the Web2c distribution have different licensing
 terms, however, reflecting the different circumstances of their
 creation; consult each source file for exact details.  The main
 practical implication for redistributors of Web2c is that the
@@ -118,7 +118,7 @@ development of the Kpathsea library that Web2c uses.  The basic source
 files from Stanford, however, have their own copyright terms or are in
 the public domain, and are not covered by the GPL.
 
-  History: Tomas Rokicki originated the TeX-to-C system in 1987,
+   History: Tomas Rokicki originated the TeX-to-C system in 1987,
 working from the first change files for TeX under Unix, which were done
 primarily by Howard Trickey and Pavel Curtis. Tim Morgan then took over
 development and maintenance for a number of years; the name changed to
@@ -128,7 +128,7 @@ using the shorter name Web2c.  In 1997, Olaf Weber took over.  Dozens of
 other people have contributed; their names are listed in the
 `ChangeLog' files.
 
-  Other acknowledgements: The University of Massachusetts at Boston
+   Other acknowledgements: The University of Massachusetts at Boston
 (particularly Rick Martin and Bob Morris) has provided computers and ftp
 access to me for many years.  Richard Stallman at the Free Software
 Foundation employed me while I wrote the original path searching library
@@ -136,7 +136,7 @@ Foundation employed me while I wrote the original path searching library
 without which I cannot imagine developing Web2c.)  And, of course, TeX
 would not exist in the first place without Donald E. Knuth.
 
-  Further reading: *Note References::.
+   Further reading: *Note References::.
 
 
 File: web2c.info,  Node: Installation,  Next: Commonalities,  Prev: Introduction,  Up: Top
@@ -151,13 +151,13 @@ Kpathsea-using program.  Therefore, for the basic steps involved, see
 *Note Installation: (kpathsea)Installation.  (A copy is in the file
 `kpathsea/INSTALL'.)
 
-  One peculiarity to Web2c is that the source distribution comes in two
+   One peculiarity to Web2c is that the source distribution comes in two
 files: `web.tar.gz' and `web2c.tar.gz'.  You must retrieve and unpack
 them both.  (We have two because the former archive contains the very
 large and seldom-changing original WEB source files.)  *Note
 unixtex.ftp: (kpathsea)unixtex.ftp.
 
-  Another peculiarity is the MetaPost program.  Although it has been
+   Another peculiarity is the MetaPost program.  Although it has been
 installed previously as `mp', as of Web2c 7.0 the installed name is now
 `mpost', to avoid conflict with the `mp' program that does
 prettyprinting.  This approach was recommended by the MetaPost author,
@@ -165,12 +165,12 @@ John Hobby.  If you as the TeX administrator wish to make it available
 under its shorter name as well, you will have to set up a link or some
 such yourself.  And of course individual users can do the same.
 
-  For solutions to common installation problems and information on how
+   For solutions to common installation problems and information on how
 to report a bug, see the file `kpathsea/BUGS' (*note Bugs:
 (kpathsea)Bugs.).  See also the Web2c home page,
 `http://www.tug.org/web2c'.
 
-  Points worth repeating:
+   Points worth repeating:
 
    * Before starting the standard compilation and installation you must
      install the basic fonts, macros, and other library files.  *Note
@@ -201,11 +201,11 @@ This section gives pointers to descriptions of the `--with' and
 `--enable' `configure' arguments that Web2c accepts.  Some are specific
 to Web2c, others are generic to all Kpathsea-using programs.
 
-  For a list of all the options `configure' accepts, run `configure
+   For a list of all the options `configure' accepts, run `configure
 --help'.  The generic options are listed first, and the
 package-specific options come last.
 
-  For a description of the generic options (which mainly allow you to
+   For a description of the generic options (which mainly allow you to
 specify installation directories) and basic `configure' usage, see
 *Note Running `configure' scripts: (autoconf)Invoking configure, a copy
 is in the file `kpathsea/CONFIGURE'.
@@ -264,14 +264,14 @@ there are a few things that can be affected at compile-time with C
 definitions, rather than with `configure'.  Using any of these is
 unusual.
 
-  To specify extra compiler flags (`-DNAME' in this case), the simplest
-thing to do is:
+   To specify extra compiler flags (`-DNAME' in this case), the
+simplest thing to do is:
      make XCFLAGS="CCOPTIONS"
-  You can also set the `CFLAGS' environment variable before running
+   You can also set the `CFLAGS' environment variable before running
 `configure'.  *Note configure environment: (kpathsea)configure
 environment.
 
-  Anyway, here are the possibilities:
+   Anyway, here are the possibilities:
 
 `-DFIXPT'
 `-DNO_MF_ASM'
@@ -342,7 +342,7 @@ the files `triptrap/tripman.tex', `triptrap/trapman.tex', and
 `triptrap/mptrap.readme' for detailed information and background on the
 tests.
 
-  The differences between your executables' behavior and the standard
+   The differences between your executables' behavior and the standard
 values will show up on your terminal.  The usual differences (these are
 all acceptable) are:
 
@@ -358,19 +358,19 @@ Any other differences are trouble. The most common culprit in the past
 has been compiler bugs, especially when optimizing.  *Note TeX or
 Metafont failing: (kpathsea)TeX or Metafont failing.
 
-  The files `trip.diffs', `mftrap.diffs', and `mptrap.diffs' in the
+   The files `trip.diffs', `mftrap.diffs', and `mptrap.diffs' in the
 `triptrap' directory show the standard diffs against the original
 output.  If you diff your diffs against these files, you should come up
 clean.  For example
      make trip >&mytrip.diffs
      diff triptrap/trip.diffs mytrip.diffs
 
-  To run the tests separately, use the targets `trip', `trap', and
+   To run the tests separately, use the targets `trip', `trap', and
 `mptrap'.
 
-  To run simple tests for all the programs as well as the torture tests,
-run `make check'.  You can compare the output to the distributed file
-`tests/check.log' if you like.
+   To run simple tests for all the programs as well as the torture
+tests, run `make check'.  You can compare the output to the distributed
+file `tests/check.log' if you like.
 
 
 File: web2c.info,  Node: Runtime options,  Prev: Triptrap,  Up: Installation
@@ -383,7 +383,7 @@ previous sections, you can control a number of parameters (in
 particular, array sizes) in the `texmf.cnf' runtime file read by
 Kpathsea (*note Config files: (kpathsea)Config files.).
 
-  Rather than exhaustively listing them here, please see the last
+   Rather than exhaustively listing them here, please see the last
 section of the distributed `kpathsea/texmf.cnf'.  Some of the more
 interesting values:
 
@@ -408,7 +408,7 @@ interesting values:
      to set `hash_extra'.
 
 
-  Of course, ideally all arrays would be dynamically expanded as
+   Of course, ideally all arrays would be dynamically expanded as
 necessary, so the only limiting factor would be the amount of swap space
 available.  Unfortunately, implementing this is extremely difficult, as
 the fixed size of arrays is assumed in many places throughout the source
@@ -445,7 +445,7 @@ programs use the GNU function `getopt_long_only' to parse command
 lines.  However, we do use in a restricted mode, where all the options
 have to come before the rest of the arguments.
 
-  As a result, you can:
+   As a result, you can:
    * use `-' or `--' to start an option name;
 
    * use any unambiguous abbreviation for an option name;
@@ -456,13 +456,13 @@ have to come before the rest of the arguments.
    * use filenames that would otherwise look like options by putting
      them after an option `--'.
 
-  By convention, non-option arguments, if specified, generally define
+   By convention, non-option arguments, if specified, generally define
 the name of an input file, as documented for each program.
 
-  If a particular option with a value is given more than once, it is the
-last value that counts.
+   If a particular option with a value is given more than once, it is
+the last value that counts.
 
-  For example, the following command line specifies the options `foo',
+   For example, the following command line specifies the options `foo',
 `bar', and `verbose'; gives the value `baz' to the `abc' option, and
 the value `xyz' to the `quux' option; and specifies the filename
 `-myfile-'.
@@ -490,7 +490,7 @@ identical descriptions for every program, they are described here.
      Print the version number to standard output, then exit
      successfully.
 
-  TeX, Metafont, and MetaPost have a number of additional options in
+   TeX, Metafont, and MetaPost have a number of additional options in
 common:
 
 `-file-line-error'
@@ -597,7 +597,7 @@ Supported file formats: (kpathsea)Supported file formats.).  Reading
 `mktex...' scripts (*note mktex scripts: (kpathsea)mktex scripts.), and
 so on are all handled by Kpathsea.
 
-  The programs which read fonts make use of another Kpathsea feature:
+   The programs which read fonts make use of another Kpathsea feature:
 `texfonts.map', which allows arbitrary aliases for the actual names of
 font files; for example, `Times-Roman' for `ptmr8r.tfm'.  The
 distributed (and installed by default) `texfonts.map' includes aliases
@@ -614,15 +614,15 @@ Namely, they are placed in the directory current when the program is
 run, regardless of any input file location; or, in a few cases, output
 is to standard output.
 
-  For example, if you run `tex /tmp/foo', for example, the output will
+   For example, if you run `tex /tmp/foo', for example, the output will
 be in `./foo.dvi' and `./foo.log', not `/tmp/foo.dvi' and
 `/tmp/foo.log'.
 
-  You can use the `-output-directory' option to cause all output files
+   You can use the `-output-directory' option to cause all output files
 that would normally be written in the current directory to be written
 in the specified directory instead.  *Note Common options::.
 
-  If the current directory is not writable, and `-output-directory' is
+   If the current directory is not writable, and `-output-directory' is
 not specified, the main programs (TeX, Metafont, MetaPost, and BibTeX)
 make an exception: if the config file value `TEXMFOUTPUT' is set (it is
 not by default), output files are written to the directory specified.
@@ -657,21 +657,21 @@ called "initial" and "virgin".  As of Web2c 7, one executable suffices
 for both variants, and in fact, the `ini...' executables are no longer
 created.
 
-  The initial form is enabled if:
+   The initial form is enabled if:
   1. the `-ini' option was specified; or
 
   2. the program name is `initex' resp. `inimf' resp.  `inimpost'
      (these variants are no longer typically installed); or
 
   3. the first line of the main input file is `%&ini';
-       otherwise, the virgin form is used.
+        otherwise, the virgin form is used.
 
-  The "virgin" form is the one generally invoked for production use.
+   The "virgin" form is the one generally invoked for production use.
 The first thing it does is read a memory dump (*note Determining the
 memory dump to use::), and then proceeds on with the main job.
 
-  The "initial" form is generally used only to create memory dumps (see
-the next section).  It starts up more slowly than the virgin form,
+   The "initial" form is generally used only to create memory dumps
+(see the next section).  It starts up more slowly than the virgin form,
 because it must do lengthy initializations that are encapsulated in the
 memory dump file.
 
@@ -703,11 +703,11 @@ sections (references below).  The basic idea is to run the initial
 version of the program (*note Initial and virgin::), read the source
 file to define the macros, and then execute the `\dump' primitive.
 
-  Also, each program uses a different filename extension for its memory
+   Also, each program uses a different filename extension for its memory
 dumps, since although they are completely analogous they are not
 interchangeable (TeX cannot read a Metafont memory dump, for example).
 
-  Here is a list of filename extensions with references to examples of
+   Here is a list of filename extensions with references to examples of
 creating memory dumps:
 
 TeX
@@ -719,7 +719,7 @@ Metafont
 MetaPost
      (`.mem') *Note Initial MetaPost::.
 
-  When making memory dumps, the programs read environment variables and
+   When making memory dumps, the programs read environment variables and
 configuration files for path searching and other values as usual.  If
 you are making a new installation and have environment variables
 pointing to an old one, for example, you will probably run into
@@ -776,7 +776,7 @@ of the Web2c implementation, and is not true of all TeX
 implementations.)  If you specify `--disable-dump-share' to
 `configure', however, memory dumps will be endian-dependent.
 
-  The reason to do this is speed.  To achieve endian-independence, the
+   The reason to do this is speed.  To achieve endian-independence, the
 reading of memory dumps on LittleEndian architectures, such as PC's and
 DEC architectures, is somewhat slowed (all the multibyte values have to
 be swapped).  Usually, this is not noticeable, and the advantage of
@@ -785,7 +785,7 @@ outweighs the speed loss.  But if you're installing Web2c for use on
 LittleEndian machines only, perhaps on a PC being used only by you, you
 may wish to get maximum speed.
 
-  TeXnically, even without `--disable-dump-share', sharing of `.fmt'
+   TeXnically, even without `--disable-dump-share', sharing of `.fmt'
 files cannot be guaranteed to work.  Floating-point values are always
 written in native format, and hence will generally not be readable
 across platforms.  Fortunately, TeX uses floating point only to
@@ -793,12 +793,12 @@ represent glue ratios, and all common formats (plain, LaTeX, AMSTeX,
 ...) do not do any glue setting at `.fmt'-creation time.  Metafont and
 MetaPost do not use floating point in any dumped value at all.
 
-  Incidentally, different memory dump files will never compare equal
+   Incidentally, different memory dump files will never compare equal
 byte-for-byte, because the program always dumps the current date and
 time. So don't be alarmed by just a few bytes difference.
 
-  If you don't know what endianness your machine is, and you're curious,
-here is a little C program to tell you. (The `configure' script
+   If you don't know what endianness your machine is, and you're
+curious, here is a little C program to tell you. (The `configure' script
 contains a similar program.)  This is from the book `C: A Reference
 Manual', by Samuel P. Harbison and Guy L. Steele Jr. (*note
 References::).
@@ -832,13 +832,13 @@ TeX, Metafont, and MetaPost all (by default) stop and ask for user
 intervention at an error.  If the user responds with `e' or `E', the
 program invokes an editor.
 
-  Specifying `--with-editor=CMD' to `configure' sets the default editor
-command string to CMD.  The environment variables/configuration values
-`TEXEDIT', `MFEDIT', and `MPEDIT' (respectively) override this.  If
-`--with-editor' is not specified, the default is `vi +%d %s'.
+   Specifying `--with-editor=CMD' to `configure' sets the default
+editor command string to CMD.  The environment variables/configuration
+values `TEXEDIT', `MFEDIT', and `MPEDIT' (respectively) override this.
+If `--with-editor' is not specified, the default is `vi +%d %s'.
 
-  In this string, `%d' is replaced by the line number of the error, and
-`%s' is replaced by the name of the current input file.
+   In this string, `%d' is replaced by the line number of the error,
+and `%s' is replaced by the name of the current input file.
 
 
 File: web2c.info,  Node: \input filenames,  Prev: Editor invocation,  Up: Three programs
@@ -850,57 +850,57 @@ TeX, Metafont, and MetaPost source programs can all read other source
 files with the `\input' (TeX) and `input' (MF and MP) primitives:
      \input NAME % in TeX
 
-  The file NAME can always be terminated with whitespace; for Metafont
+   The file NAME can always be terminated with whitespace; for Metafont
 and MetaPost, the statement terminator `;' also works.  (LaTeX and
 other macro packages provide other interfaces to `\input' that allow
 different notation; here we are concerned only with the primitive
 operation.)
 
-  As of Web2c version 7.5.3, double-quote characters can be used to
+   As of Web2c version 7.5.3, double-quote characters can be used to
 include spaces or other special cases.  In typical use, the `"'
 characters surround the entire filename:
      \input "filename with spaces"
 
-  Technically, the quote characters can be used inside the name, and
+   Technically, the quote characters can be used inside the name, and
 can enclose any characters, as in:
      \input filename" "with" "spaces
 
-  One more point.  In LaTeX, the quotes are needed inside the braces,
+   One more point.  In LaTeX, the quotes are needed inside the braces,
 thus
      \input{a b}    % fails
      \input{"a b"}  % ok
 
-  This quoting mechanism comes into play _after_ TeX has tokenized and
+   This quoting mechanism comes into play _after_ TeX has tokenized and
 expanded the input.  So, multiple spaces and tabs may be seen as a
 single space, active characters such as `~' are expanded first, and so
 on.  (See below.)
 
-  On the other hand, various C library routines and Unix itself use the
-null byte (character code zero, ASCII NUL) to terminate strings.  So
+   On the other hand, various C library routines and Unix itself use
+the null byte (character code zero, ASCII NUL) to terminate strings.  So
 filenames in Web2c cannot contain nulls, even though TeX itself does
 not treat NUL specially.  In addition, some older Unix variants do not
 allow eight-bit characters (codes 128-255) in filenames.
 
-  For maximal portability of your document across systems, use only the
+   For maximal portability of your document across systems, use only the
 characters `a'-`z', `0'-`9', and `.', and restrict your filenames to at
 most eight characters (not including the extension), and at most a
 three-character extension.  Do not use anything but simple filenames,
 since directory separators vary among systems; instead, add the
 necessary directories to the appropriate search path.
 
-  Finally, the present Web2c implementation does `~' and `$' expansion
+   Finally, the present Web2c implementation does `~' and `$' expansion
 on NAME, unlike Knuth's original implementation and older versions of
 Web2c.  Thus:
      \input ~jsmith/$foo.bar
-  will dereference the environment variable or Kpathsea config file
+   will dereference the environment variable or Kpathsea config file
 value `foo' and read that file extended with `.bar' in user `jsmith''s
 home directory.  You can also use braces, as in `${foo}bar', if you
 want to follow the variable name with a letter, numeral, or `_'.
 
-  (So another way to get a program to read a filename containing
+   (So another way to get a program to read a filename containing
 whitespace is to define an environment variable and dereference it.)
 
-  In all the common TeX formats (plain TeX, LaTeX, AMSTeX), the
+   In all the common TeX formats (plain TeX, LaTeX, AMSTeX), the
 characters `~' and `$' have special category codes, so to actually use
 these in a document you have to change their catcodes or use `\string'.
 (The result is unportable anyway, see the suggestions above.)  The
@@ -916,7 +916,7 @@ File: web2c.info,  Node: TeX,  Next: Metafont,  Prev: Commonalities,  Up: Top
 TeX is a typesetting system: it was especially designed to handle
 complex mathematics, as well as most ordinary text typesetting.
 
-  TeX is a batch language, like C or Pascal, and not an interactive
+   TeX is a batch language, like C or Pascal, and not an interactive
 "word processor": you compile a TeX input file into a corresponding
 device-independent (DVI) file (and then translate the DVI file to the
 commands for a particular output device).  This approach has both
@@ -946,30 +946,30 @@ typeset document.  This section merely describes the options available
 in the Web2c implementation.  For a complete description of the TeX
 typesetting language, see `The TeXbook' (*note References::).
 
-  TeX, Metafont, and MetaPost process the command line (described here)
-and determine their memory dump (fmt) file in the same way (*note
+   TeX, Metafont, and MetaPost process the command line (described
+here) and determine their memory dump (fmt) file in the same way (*note
 Memory dumps::).  Synopses:
 
      tex [OPTION]... [TEXNAME[.tex]] [TEX-COMMANDS]
      tex [OPTION]... \FIRST-LINE
      tex [OPTION]... &FMT ARGS
 
-  TeX searches the usual places for the main input file TEXNAME (*note
+   TeX searches the usual places for the main input file TEXNAME (*note
 Supported file formats: (kpathsea)Supported file formats.), extending
 TEXNAME with `.tex' if necessary.  To see all the relevant paths, set
 the environment variable `KPATHSEA_DEBUG' to `-1' before running the
 program.
 
-  After TEXNAME is read, TeX processes any remaining TEX-COMMANDS on
+   After TEXNAME is read, TeX processes any remaining TEX-COMMANDS on
 the command line as regular TeX input.  Also, if the first non-option
 argument begins with a TeX escape character (usually `\'), TeX
 processes all non-option command-line arguments as a line of regular
 TeX input.
 
-  If no arguments or options are specified, TeX prompts for an input
+   If no arguments or options are specified, TeX prompts for an input
 file name with `**'.
 
-  TeX writes the main DVI output to the file `BASETEXNAME.dvi', where
+   TeX writes the main DVI output to the file `BASETEXNAME.dvi', where
 BASETEXNAME is the basename of TEXNAME, or `texput' if no input file
 was specified.  A DVI file is a device-independent binary
 representation of your TeX document.  The idea is that after running
@@ -978,14 +978,14 @@ commands for a particular output device, such as a PostScript printer
 (*note Introduction: (dvips)Top.) or an X Window System display (see
 xdvi(1)).
 
-  TeX also reads TFM files for any fonts you load in your document with
+   TeX also reads TFM files for any fonts you load in your document with
 the `\font' primitive.  By default, it runs an external program named
 `mktextfm' to create any nonexistent TFM files.  You can disable this
 at configure-time or runtime (*note mktex configuration:
 (kpathsea)mktex configuration.).  This is enabled mostly for the sake
 of the EC fonts, which can be generated at any size.
 
-  TeX can write output files, via the `\openout' primitive; this opens
+   TeX can write output files, via the `\openout' primitive; this opens
 a security hole vulnerable to Trojan horse attack: an unwitting user
 could run a TeX program that overwrites, say, `~/.rhosts'.  (MetaPost
 has a `write' primitive with similar implications).  To alleviate this,
@@ -1000,20 +1000,23 @@ level is forbidden (that is, paths may not contain a `..'  component).
 The paranoid setting is the default.  (For backwards compatibility, `y'
 and `1' are synonyms of `a', while `n' and `0' are synonyms for `r'.)
 
-  In any case, all `\openout' filenames are recorded in the log file,
+   In any case, all `\openout' filenames are recorded in the log file,
 except those opened on the first line of input, which is processed when
 the log file has not yet been opened.  (If you as a TeX administrator
 wish to implement more stringent rules on `\openout', modifying the
 function `openoutnameok' in `web2c/lib/texmfmp.c' is intended to
 suffice.)
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
+`-enc'
 `-[no]-file-line-error'
 `-fmt=FMTNAME'
 `-halt-on-error'
 `-ini'
 `-interaction=STRING'
+`-ipc'
+`-ipc-start'
 `-jobname=STRING'
 `-kpathsea-debug=NUMBER'
 `-[no]parse-first-line'
@@ -1122,24 +1125,24 @@ comparison of virgin and initial forms, *note Initial and virgin::.  In
 past releases, a separate program `initex' was installed to invoke the
 initial form, but this is no longer the case.
 
-  For a list of options and other information, *note tex invocation::.
+   For a list of options and other information, *note tex invocation::.
 
-  Unlike Metafont and MetaPost, many format files are commonly used with
-TeX.  The standard one implementing the features described in the
+   Unlike Metafont and MetaPost, many format files are commonly used
+with TeX.  The standard one implementing the features described in the
 `TeXbook' is `plain.fmt', also known as `tex.fmt' (again, *note Memory
 dumps::).  It is created by default during installation, but you can
 also do so by hand if necessary (e.g., if an update to `plain.tex' is
 issued):
      tex -ini '\input plain \dump'
-  (The quotes prevent interpretation of the backslashes from the shell.)
-Then install the resulting `plain.fmt' in `$(fmtdir)'
+   (The quotes prevent interpretation of the backslashes from the
+shell.)  Then install the resulting `plain.fmt' in `$(fmtdir)'
 (`/usr/local/share/texmf/web2c' by default), and link `tex.fmt' to it.
 
-  The necessary invocation for generating a format file differs for each
-format, so instructions that come with the format should explain.  The
-top-level `web2c' Makefile has targets for making most common formats:
-plain latex amstex texinfo eplain.  *Note Formats::, for more details
-on TeX formats.
+   The necessary invocation for generating a format file differs for
+each format, so instructions that come with the format should explain.
+The top-level `web2c' Makefile has targets for making most common
+formats: plain latex amstex texinfo eplain.  *Note Formats::, for more
+details on TeX formats.
 
 
 File: web2c.info,  Node: Formats,  Next: Languages and hyphenation,  Prev: Initial TeX,  Up: TeX
@@ -1155,8 +1158,8 @@ release.  You can change which formats are automatically built by
 setting the `fmts' Make variable; by default, only the `plain' and
 `latex' formats are made.
 
-  You can get the latest versions of most of these formats from the CTAN
-archives in subdirectories of `CTAN:/macros' (for CTAN info, *note
+   You can get the latest versions of most of these formats from the
+CTAN archives in subdirectories of `CTAN:/macros' (for CTAN info, *note
 unixtex.ftp: (kpathsea)unixtex.ftp.).  The archive
 `ftp://ftp.tug.org/tex/lib.tar.gz' (also available from CTAN) contains
 most of these formats (although perhaps not the absolute latest
@@ -1240,15 +1243,17 @@ additionally supports hyphenation of words containing an accented
 character glyph for fonts missing this glyph (e.g., Computer Modern).
 Standard TeX suppresses hyphenation in this case.
 
-  MLTeX works at `.fmt'-creation time: the basic idea is to specify the
-`-mltex' option to TeX when you `\dump' a format.  Then, when you
+   MLTeX works at `.fmt'-creation time: the basic idea is to specify
+the `-mltex' option to TeX when you `\dump' a format.  Then, when you
 subsequently invoke TeX and read that `.fmt' file, the MLTeX features
 described below will be enabled.
 
-  Generally, you use special macro files to create an MLTeX `.fmt' file.
+   Generally, you use special macro files to create an MLTeX `.fmt'
+file.
 
-  The sections below describe the two new primitives that MLTeX defines.
-Aside from these, MLTeX is completely compatible with standard TeX.
+   The sections below describe the two new primitives that MLTeX
+defines.  Aside from these, MLTeX is completely compatible with
+standard TeX.
 
 * Menu:
 
@@ -1265,36 +1270,36 @@ The most important primitive MLTeX adds is `\charsubdef', used in a way
 reminiscent of `\chardef':
      \charsubdef COMPOSITE [=] ACCENT BASE
 
-  Each of COMPOSITE, ACCENT, and BASE are font glyph numbers, expressed
-in the usual TeX syntax: `\e symbolically, '145 for octal, "65 for hex,
-101 for decimal.
+   Each of COMPOSITE, ACCENT, and BASE are font glyph numbers,
+expressed in the usual TeX syntax: `\e symbolically, '145 for octal,
+"65 for hex, 101 for decimal.
 
-  MLTeX's `\charsubdef' declares how to construct an accented character
-glyph (not necessarily existing in the current font) using two
+   MLTeX's `\charsubdef' declares how to construct an accented
+character glyph (not necessarily existing in the current font) using two
 character glyphs (that do exist).  Thus it defines whether a character
 glyph code, either typed as a single character or using the `\char'
 primitive, will be mapped to a font glyph or to an `\accent' glyph
 construction.
 
-  For example, if you assume glyph code 138 (decimal) for an
+   For example, if you assume glyph code 138 (decimal) for an
 e-circumflex and you are using the Computer Modern fonts, which have
 the circumflex accent in position 18 and lowercase `e' in the usual
 ASCII position 101 decimal, you would use `\charsubdef' as follows:
 
      \charsubdef 138 = 18 101
 
-  For the plain TeX format to make use of this substitution, you have
+   For the plain TeX format to make use of this substitution, you have
 to redefine the circumflex accent macro `\^' in such a way that if its
 argument is character `e' the expansion `\char138 ' is used instead of
 `\accent18 e'.  Similar `\charsubdef' declaration and macro
 redefinitions have to be done for all other accented characters.
 
-  To disable a previous `\charsubdef C', redefine C as a pair of zeros.
-For example:
+   To disable a previous `\charsubdef C', redefine C as a pair of
+zeros. For example:
      \charsubdef '321 = 0 0  % disable N tilde
-  (Octal '321 is the ISO Latin-1 value for the Spanish N tilde.)
+   (Octal '321 is the ISO Latin-1 value for the Spanish N tilde.)
 
-  `\charsubdef' commands should only be given once.  Although in
+   `\charsubdef' commands should only be given once.  Although in
 principle you can use `\charsubdef' at any time, the result is
 unspecified.  If `\charsubdef' declarations are changed, usually either
 incorrect character dimensions will be used or MLTeX will output
@@ -1316,9 +1321,9 @@ primitive parameter, `\tracingcharsubdef'.  If positive, every use of
 `\charsubdef' will be reported.  This can help track down when a
 character is redefined.
 
-  In addition, if the TeX parameter `\tracinglostchars' is 100 or more,
-the character substitutions actually performed at `\shipout'-time will
-be recorded.
+   In addition, if the TeX parameter `\tracinglostchars' is 100 or
+more, the character substitutions actually performed at `\shipout'-time
+will be recorded.
 
 
 File: web2c.info,  Node: TCX files,  Prev: patgen invocation,  Up: Languages and hyphenation
@@ -1331,23 +1336,24 @@ TCX (TeX character translation) files help TeX support direct input of
 being used.  Specifically, they map an input (keyboard) character code
 to the internal TeX character code (a superset of ASCII).
 
-  Of the various proposals for handling more than one input encoding,
+   Of the various proposals for handling more than one input encoding,
 TCX files were chosen because they follow Knuth's original ideas for
 the use of the `xchr' and `xord' tables.  He ventured that these would
 be changed in the WEB source in order to adjust the actual version to a
 given environment.  It turns out, however, that recompiling the WEB
-sources is not as simple a task as Knuth predicted; therefore, TCX
-files, providing the possibility of changing of the conversion tables
-on on-the-fly, has been implemented instead.
+sources is not as simple a task as Knuth may have imagined; therefore,
+TCX files, providing the possibility of changing of the conversion
+tables on on-the-fly, have been implemented instead.
 
-  This approach limits the portability of TeX documents, as some
+   This approach limits the portability of TeX documents, as some
 implementations do not support it (or use a different method for
-input-internal reencoding).  It may also be problematic to determine the
-encoding to use for a TeX document of unknown provenance; in the worst
-case, failure to do so correctly may result in subtle errors in the
-typeset output.
+input-internal reencoding).  It may also be problematic to determine
+the encoding to use for a TeX document of unknown provenance; in the
+worst case, failure to do so correctly may result in subtle errors in
+the typeset output.  But we feel the benefits outweigh these
+disadvantages.
 
-  This is entirely independent of the MLTeX extension (*note MLTeX::):
+   This is entirely independent of the MLTeX extension (*note MLTeX::):
 whereas a TCX file defines how an input keyboard character is mapped to
 TeX's internal code, MLTeX defines substitutions for a non-existing
 character glyph in a font with a `\accent' construction made out of two
@@ -1355,7 +1361,7 @@ separate character glyphs.  TCX files involve no new primitives; it is
 not possible to specify that an input (keyboard) character maps to more
 than one character.
 
-  Information on specifying TCX files:
+   Information on specifying TCX files:
 
    * The best way to specify a TCX file is to list it explicitly in the
      first line of the main document:
@@ -1368,13 +1374,24 @@ than one character.
 
    * Initial TeX (*note Initial TeX: Initial TeX.) ignores TCX files.
 
-  The Web2c distribution comes with a number of TCX files.  Two
+   The Web2c distribution comes with a number of TCX files.  Two
 important ones are `il1-t1.tcx' and `il2-t1.tcx', which support ISO
 Latin 1 and ISO Latin 2, respectively, with Cork-encoded fonts (a.k.a.
 the LaTeX T1 encoding).  TCX files for Czech, Polish, and Slovak are
 also provided.
 
-  Syntax of TCX files:
+   One other notable TCX file is `empty.tcx', which is, well, empty.
+Its purpose is to reset Web2C's behavior to the default (only visible
+ASCII being printable, as described below) when a format was dumped
+with another TCX being active--which is in fact the case for everything
+but plain TeX in the TeX Live and other distributions.  Thus:
+
+     latex somefile8.tex
+     => terminal etc. output with 8-bit chars
+     latex --translate-file=empty.tcx somefile8.tex
+     => terminal etc. output with ^^ notation
+
+   Syntax of TCX files:
   1. Line-oriented. Blank lines are ignored.
 
   2. Whitespace is ignored except as a separator.
@@ -1396,39 +1413,38 @@ also provided.
   7. If the same SRC code is specified more than once, it is the last
      definition that counts.
 
-  Finally, here's what happens: when TeX sees an input character with
-code SRC, it 1) changes SRC to DEST; and 2) makes code the DEST
-"printable", i.e., printed as-is in diagnostics and the log file
-instead of in `^^' notation.
+   Finally, here's what happens: when TeX sees an input character with
+code SRC, it 1) changes SRC to DEST; and 2) makes the DEST code
+"printable", i.e., printed as-is in diagnostics and the log file rather
+than in `^^' notation.
 
-  By default, no characters are translated, and character codes between
-32 and 126 inclusive (decimal) are printable.  It is not possible to
-make these (or any) characters unprintable.
+   By default, no characters are translated, and character codes
+between 32 and 126 inclusive (decimal) are printable.
 
-  Specifying translations for the printable ASCII characters (codes
+   Specifying translations for the printable ASCII characters (codes
 32-127) will yield unpredictable results.  Additionally you shouldn't
 make the following characters printable: `^^I' (TAB), `^^J' (line
 feed), `^^M' (carriage return), and `^^?' (delete), since TeX uses them
 in various ways.
 
-  Thus, the idea is to specify the input (keyboard) character code for
+   Thus, the idea is to specify the input (keyboard) character code for
 SRC, and the output (font) character code for DEST.
 
-  By default, only the printable ASCII characters are considered
+   By default, only the printable ASCII characters are considered
 printable by TeX.  If you specify the `-8bit' option, all characters are
 considered printable by default.  If you specify both the `-8bit'
 option and a TCX file, then the TCX can set specific characters to be
 non-printable.
 
-  Both the active TCX encoding and whether characters are printable are
-saved in the dump files (like `tex.fmt').  So by giving these options
-in combination with `-ini' you set the defaults seen by anyone who uses
-the resulting dump file.
+   Both the specified TCX encoding and whether characters are printable
+are saved in the dump files (like `tex.fmt').  So by giving these
+options in combination with `-ini', you control the defaults seen by
+anyone who uses the resulting dump file.
 
-  When loading a dump, if the `-8bit' option was given, then all
+   When loading a dump, if the `-8bit' option was given, then all
 characters become printable by default.
 
-  When loading a dump, if a TCX file was specified, then the TCX data
+   When loading a dump, if a TCX file was specified, then the TCX data
 from the dump is ignored and the data from the file used instead.
 
 
@@ -1442,15 +1458,15 @@ TeX. Synopsis:
 
      patgen DICTIONARY PATTERNS OUTPUT TRANSLATE
 
-  Each argument is a filename. No path searching is done. The output is
+   Each argument is a filename. No path searching is done. The output is
 written to the file OUTPUT.
 
-  In addition, Patgen prompts interactively for other values.
+   In addition, Patgen prompts interactively for other values.
 
-  For more information, see `Word hy-phen-a-tion by com-puter' by Frank
-Liang (*note References::), and also the `patgen.web' source file.
+   For more information, see `Word hy-phen-a-tion by com-puter' by
+Frank Liang (*note References::), and also the `patgen.web' source file.
 
-  The only options are `-help' and `-version' (*note Common options::).
+   The only options are `-help' and `-version' (*note Common options::).
 
 
 File: web2c.info,  Node: IPC and TeX,  Next: TeX extensions,  Prev: Languages and hyphenation,  Up: TeX
@@ -1461,11 +1477,11 @@ File: web2c.info,  Node: IPC and TeX,  Next: TeX extensions,  Prev: Languages an
 (Sorry, but I'm not going to write this unless someone actually uses
 this feature. Let me know.)
 
-  This functionality is available only if the `--enable-ipc' option was
-specified to `configure' during installation of Web2c (*note
+   This functionality is available only if the `--enable-ipc' option
+was specified to `configure' during installation of Web2c (*note
 Installation::).
 
-  If you define `IPC_DEBUG' before compilation (e.g., with `make
+   If you define `IPC_DEBUG' before compilation (e.g., with `make
 XCFLAGS=-DIPC_DEBUG'), TeX will print messages to standard error about
 its socket operations.  This may be helpful if you are, well, debugging.
 
@@ -1516,14 +1532,14 @@ complete typeface families, but it can also produce geometric designs,
 dingbats, etc.  And it has considerable mathematical and
 equation-solving capabilities which can be useful entirely on their own.
 
-  Metafont is a batch language, like C or Pascal: you compile a Metafont
-program into a corresponding font, rather than interactively drawing
-lines or curves.  This approach has both considerable disadvantages
-(people unfamiliar with conventional programming languages will be
-unlikely to find it usable) and considerable advantages (you can make
-your design intentions specific and parameterizable).  For a complete
-description of the Metafont language, see `The METAFONTbook' (*note
-References::).
+   Metafont is a batch language, like C or Pascal: you compile a
+Metafont program into a corresponding font, rather than interactively
+drawing lines or curves.  This approach has both considerable
+disadvantages (people unfamiliar with conventional programming
+languages will be unlikely to find it usable) and considerable
+advantages (you can make your design intentions specific and
+parameterizable).  For a complete description of the Metafont language,
+see `The METAFONTbook' (*note References::).
 
 * Menu:
 
@@ -1546,7 +1562,7 @@ corresponding font.  This section merely describes the options available
 in the Web2c implementation.  For a complete description of the Metafont
 language, see `The Metafontbook' (*note References::).
 
-  Metafont processes its command line and determines its memory dump
+   Metafont processes its command line and determines its memory dump
 (base) file in a way exactly analogous to MetaPost and TeX (*note tex
 invocation::, and *note Memory dumps::).  Synopses:
 
@@ -1554,11 +1570,11 @@ invocation::, and *note Memory dumps::).  Synopses:
      mf [OPTION]... \FIRST-LINE
      mf [OPTION]... &BASE ARGS
 
-  Most commonly, a Metafont invocation looks like this:
+   Most commonly, a Metafont invocation looks like this:
      mf '\mode:=MODE; mag:=MAGNIFICATION; input MFNAME'
-  (The single quotes avoid unwanted interpretation by the shell.)
+   (The single quotes avoid unwanted interpretation by the shell.)
 
-  Metafont searches the usual places for the main input file MFNAME
+   Metafont searches the usual places for the main input file MFNAME
 (*note Supported file formats: (kpathsea)Supported file formats.),
 extending MFNAME with `.mf' if necessary.  To see all the relevant
 paths, set the environment variable `KPATHSEA_DEBUG' to `-1' before
@@ -1568,7 +1584,7 @@ input.  You can disable this at configure-time or runtime (*note mktex
 configuration: (kpathsea)mktex configuration.).  This is mostly for the
 sake of the EC fonts, which can be generated at any size.
 
-  Metafont writes the main GF output to the file `BASEMFNAME.NNNgf',
+   Metafont writes the main GF output to the file `BASEMFNAME.NNNgf',
 where NNN is the font resolution in pixels per inch, and BASEMFNAME is
 the basename of MFNAME, or `mfput' if no input file was specified.  A
 GF file contains bitmaps of the actual character shapes.  Usually GF
@@ -1577,31 +1593,31 @@ invocation::), since PK files contain equivalent information, but are
 more compact.  (Metafont output in GF format rather than PK for only
 historical reasons.)
 
-  Metafont also usually writes a metric file in TFM format to
+   Metafont also usually writes a metric file in TFM format to
 `BASEMFNAME.tfm'.  A TFM file contains character dimensions, kerns, and
 ligatures, and spacing parameters.  TeX reads only this .tfm file, not
 the GF file.
 
-  The MODE in the example command above is a name referring to a device
-definition (*note Modes::); for example, `localfont' or `ljfour'.
-These device definitions must generally be precompiled into the base
-file.  If you leave this out, the default is `proof' mode, as stated in
-`The Metafontbook', in which Metafont outputs at a resolution of
-2602dpi; this is usually not what you want.  The remedy is simply to
+   The MODE in the example command above is a name referring to a
+device definition (*note Modes::); for example, `localfont' or
+`ljfour'.  These device definitions must generally be precompiled into
+the base file.  If you leave this out, the default is `proof' mode, as
+stated in `The Metafontbook', in which Metafont outputs at a resolution
+of 2602dpi; this is usually not what you want.  The remedy is simply to
 assign a different mode--`localfont', for example.
 
-  The MAGNIFICATION assignment in the example command above is a
+   The MAGNIFICATION assignment in the example command above is a
 magnification factor; for example, if the device is 600dpi and you
 specify `mag:=2', Metafont will produce output at 1200dpi.  Very often,
 the MAGNIFICATION is an expression such as `magstep(.5)', corresponding
 to a TeX "magstep", which are factors of 1.2 * sqrt(2).
 
-  After running Metafont, you can use the font in a TeX document as
+   After running Metafont, you can use the font in a TeX document as
 usual.  For example:
      \font\myfont = newfont
      \myfont Now I am typesetting in my new font (minimum hamburgers).
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-[no]-file-line-error'
 `-fmt=FMTNAME'
@@ -1637,22 +1653,22 @@ detailed comparison of virgin and initial forms, see *Note Initial and
 virgin::.  In past releases, a separate program `inimf' was installed
 to invoke the initial form, but this is no longer the case.
 
-  For a list of options and other information, see *Note mf
+   For a list of options and other information, see *Note mf
 invocation::.
 
-  The only memory dump file commonly used with Metafont is the default
+   The only memory dump file commonly used with Metafont is the default
 `plain.base', also known as `mf.base' (again, *note Memory dumps::).
 It is created by default during installation, but you can also do so by
 hand if necessary (e.g., if a Metafont update is issued):
      mf -ini '\input plain; input modes; dump'
-  (The quotes prevent interpretation of the backslashes from the shell.)
-Then install the resulting `plain.base' in `$(basedir)'
+   (The quotes prevent interpretation of the backslashes from the
+shell.)  Then install the resulting `plain.base' in `$(basedir)'
 (`/usr/local/share/texmf/web2c' by default), and link `mf.base' to it.
 
-  For an explanation of the additional `modes.mf' file, see *Note
+   For an explanation of the additional `modes.mf' file, see *Note
 Modes::.  This file has no counterpart in TeX or MetaPost.
 
-  In the past, it was sometimes useful to create a base file
+   In the past, it was sometimes useful to create a base file
 `cmmf.base' (a.k.a. `cm.base'), with the Computer Modern macros also
 included in the base file.  Nowadays, however, the additional time
 required to read `cmbase.mf' is exceedingly small, usually not enough
@@ -1671,11 +1687,12 @@ Running Metafont and creating Metafont base files requires information
 that TeX and MetaPost do not: "mode" definitions which specify device
 characteristics, so Metafont can properly rasterize the shapes.
 
-  When making a base file, a file containing modes for locally-available
-devices should be input after `plain.mf'.  One commonly used file is
-`ftp://ftp.tug.org/tex/modes.mf'; it includes all known definitions.
+   When making a base file, a file containing modes for
+locally-available devices should be input after `plain.mf'.  One
+commonly used file is `ftp://ftp.tug.org/tex/modes.mf'; it includes all
+known definitions.
 
-  If, however, for some reason you have decreased the memory available
+   If, however, for some reason you have decreased the memory available
 in your Metafont, you may need to copy `modes.mf' and remove the
 definitions irrelevant to you (probably most of them) instead of using
 it directly.  (Or, if you're a Metafont hacker, maybe you can suggest a
@@ -1683,20 +1700,20 @@ way to redefine `mode_def' and/or `mode_setup'; right now, the amount
 of memory used is approximately four times the total length of the
 `mode_def' names, and that's a lot.)
 
-  If you have a device not included in `modes.mf', please see comments
+   If you have a device not included in `modes.mf', please see comments
 in that file for how to create the new definition, and please send the
 definition to <tex-fonts@mail.tug.org> to get it included in the next
 release of `modes.mf'.
 
-  Usually, when you run Metafont you must supply the name of a mode that
-was dumped in the base file.  But you can also define the mode
+   Usually, when you run Metafont you must supply the name of a mode
+that was dumped in the base file.  But you can also define the mode
 characteristics dynamically, by invoking Metafont with an assignment to
 `smode' instead of `mode', like this:
      mf '\smode:="newmode.mf"; mag:=MAGNIFICATION; input MFNAME'
-  This is most useful when you are working on the definition of a new
+   This is most useful when you are working on the definition of a new
 mode.
 
-  The MAGNIFICATION and MFNAME arguments are explained in *Note mf
+   The MAGNIFICATION and MFNAME arguments are explained in *Note mf
 invocation::.  In the file `newmode.mf', you should have the following
 (with no `mode_def' or `enddef'), if you are using `modes.mf'
 conventions:
@@ -1705,9 +1722,9 @@ conventions:
      mode_param (fillin, F);
      mode_param (o_correction, O);
      mode_common_setup_;
-  (Of course, you should use real numbers for DPI, B, F, and O.)
+   (Of course, you should use real numbers for DPI, B, F, and O.)
 
-  For more information on the use of `smode', or if you are not using
+   For more information on the use of `smode', or if you are not using
 `modes.mf', see page 269 of `The Metafontbook'.
 
 
@@ -1721,12 +1738,12 @@ number of devices. (See the Metafont manual for more information about
 how to draw on your screen.)  By default, no graphics support is
 enabled.
 
-  Metafont examines the `MFTERM' environment variable or config file
+   Metafont examines the `MFTERM' environment variable or config file
 value at runtime, or the `TERM' environment variable if `MFTERM' is not
 set, to determine the device support to use.  Naturally, only the
 devices for which support has been compiled in can be selected.
 
-  Here is a table of the possibilities, showing the `MFTERM' value and
+   Here is a table of the possibilities, showing the `MFTERM' value and
 the corresponding `configure' option(s) in parentheses.
 
 `epsf'
@@ -1787,7 +1804,7 @@ the corresponding `configure' option(s) in parentheses.
      `DISPLAY' environment variable, as usual.
 
 
-  Writing support for a new device is straightforward. Aside from
+   Writing support for a new device is straightforward. Aside from
 defining the basic drawing routines that Metafont uses (see `mf.web'),
 you only have to add another entry to the tables on the last page of
 `web2c/lib/texmfmp.c'.  Or you can write an independent program and use
@@ -1805,22 +1822,22 @@ font designers or Metafont hackers.  Synopsis:
 
      gftodvi [OPTION]... GFNAME[gf]
 
-  The font GFNAME is searched for in the usual places (*note Glyph
+   The font GFNAME is searched for in the usual places (*note Glyph
 lookup: (kpathsea)Glyph lookup.).  To see all the relevant paths, set
 the environment variable `KPATHSEA_DEBUG' to `-1' before running the
 program.
 
-  The suffix `gf' is supplied if not already present.  This suffix is
+   The suffix `gf' is supplied if not already present.  This suffix is
 not an extension; no `.' precedes it: for instance `cmr10.600gf'.
 
-  The output filename is the basename of GFNAME extended with `.dvi',
+   The output filename is the basename of GFNAME extended with `.dvi',
 e.g., `gftodvi /wherever/foo.600gf' creates `./foo.dvi'.
 
-  The characters from GFNAME appear one per page in the DVI output,
+   The characters from GFNAME appear one per page in the DVI output,
 with labels, titles, and annotations, as specified in Appendix H
 (Hardcopy Proofs) of `The Metafontbook'.
 
-  GFtoDVI uses several fonts besides GFNAME itself:
+   GFtoDVI uses several fonts besides GFNAME itself:
 
    * "gray font" (default `gray'): for the pixels that actually make up
      the character.  Simply using black is not right, since then labels,
@@ -1836,10 +1853,10 @@ with labels, titles, and annotations, as specified in Appendix H
      simulated using horizontal and vertical rules.
 
 
-  To change the default fonts, you must use `special' commands in your
+   To change the default fonts, you must use `special' commands in your
 Metafont source file.
 
-  The program accepts the following option, as well as the standard
+   The program accepts the following option, as well as the standard
 `-verbose', `-help', and `-version' (*note Common options::):
 `-overflow-label-offset=POINTS'
      Typeset the so-called overflow labels, if any, POINTS TeX points
@@ -1860,19 +1877,19 @@ typesetting, with the aid of TeX macros defined in the file
 
      mft [OPTION]... MFNAME[.mf]
 
-  MFT searches the usual places for MFNAME (*note Supported file
+   MFT searches the usual places for MFNAME (*note Supported file
 formats: (kpathsea)Supported file formats.).  To see all the relevant
 paths, set the environment variable `KPATHSEA_DEBUG' to `-1' before
 running the program.  The output goes to the basename of MFNAME extended
 with `.tex', e.g., `mft /wherever/foo.mf' creates `./foo.tex'.
 
-  Line breaks in the input are carried over into the output; moreover,
+   Line breaks in the input are carried over into the output; moreover,
 blank spaces at the beginning of a line are converted to quads of
 indentation in the output. Thus, you have full control over the
 indentation and line breaks. Each line of input is translated
 independently of the others.
 
-  Further control is allowed via Metafont comments: 
+   Further control is allowed via Metafont comments: 
    * Metafont comments following a single `%' should be valid TeX
      input.  But Metafont material can be included within vertical bars
      in a comment; this will be translated by MFT as if it were regular
@@ -1906,10 +1923,10 @@ independently of the others.
 
    * Five or more `%' signs should not be used.
 
-  (The above description was edited from `mft.web', written by
+   (The above description was edited from `mft.web', written by
 D.E. Knuth.)
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-change=CHFILE[.ch]'
      Apply the change file CHFILE as with Tangle and Weave (*note
@@ -1932,8 +1949,8 @@ D.E. Knuth.)
      configure MFT for typesetting MetaPost sources.  However, MFT does
      not search the usual places for MetaPost input files.
 
-  If you use eight-bit characters in the input file, they are passed on
-verbatim to the TeX output file; it is up to you to configure TeX to
+   If you use eight-bit characters in the input file, they are passed
+on verbatim to the TeX output file; it is up to you to configure TeX to
 print these properly.
 
 
@@ -1947,8 +1964,8 @@ Metafont::), but instead of outputting bitmaps in a "font", it outputs
 PostScript commands.  It's primarily intended for creating technical
 illustrations.
 
-  MetaPost also provides for arbitrary integration of text and graphics
-in a natural way, using any typesetter (TeX and Troff are both
+   MetaPost also provides for arbitrary integration of text and
+graphics in a natural way, using any typesetter (TeX and Troff are both
 supported) and a number of other subsidiary programs, described below.
 
 * Menu:
@@ -1980,11 +1997,11 @@ structure.  See also:
    * `http://tug.org/metapost.html' (papers, packages, and
      related information).
 
-  Also, a standard MetaPost package for drawing graphs is documented in
+   Also, a standard MetaPost package for drawing graphs is documented in
 AT&T technical report CSTR-164, available as the file `mpgraph.ps',
 generally stored alongside `mpman.ps'.
 
-  MetaPost processes its command line and determines its memory dump
+   MetaPost processes its command line and determines its memory dump
 (mem) file in a way exactly analogous to Metafont and TeX (*note `tex'
 invocation: tex invocation, and *note Memory dumps::).  Synopses:
 
@@ -1992,13 +2009,13 @@ invocation: tex invocation, and *note Memory dumps::).  Synopses:
      mpost [OPTION]... \FIRST-LINE
      mpost [OPTION]... &MEM ARGS
 
-  MetaPost searches the usual places for the main input file MPNAME
+   MetaPost searches the usual places for the main input file MPNAME
 (*note Supported file formats: (kpathsea)Supported file formats.),
 extending MPNAME with `.mp' if necessary.  To see all the relevant
 paths, set the environment variable `KPATHSEA_DEBUG' to `-1' before
 running the program.
 
-  MetaPost writes its PostScript output to a series of files
+   MetaPost writes its PostScript output to a series of files
 `BASEMPNAME.NNN' (or perhaps `BASEMPNAME.ps', very occasionally
 `BASEMPNAME.tfm'), where NNN are the figure numbers specified in the
 input, typically to the `beginfig' macro, and BASEMPNAME is the
@@ -2006,40 +2023,40 @@ basename of MPNAME, or `mpout' if no input file was specified.
 MetaPost uses the `.ps' extension when the figure number is out of
 range, e.g., if you say `beginfig(-1)'.
 
-  You can use the output files as figures in a TeX document just as
+   You can use the output files as figures in a TeX document just as
 with any other PostScript figures. For example, with this TeX command:
      \special{psfile="FILENAME"}
-  or by using `epsf.tex' (*note EPSF macros: (dvips)EPSF macros.).
+   or by using `epsf.tex' (*note EPSF macros: (dvips)EPSF macros.).
 
-  The MetaPost construct
+   The MetaPost construct
      btex ... TEX-INPUT ... etex
-  calls MakeMPX to generate a MPX file containing a MetaPost picture
+   calls MakeMPX to generate a MPX file containing a MetaPost picture
 expression corresponding to TEX-INPUT (*note makempx invocation::).
 
-  The construct
+   The construct
      verbatimtex ... TEX-INPUT ... etex
-  simply passes the TEX-INPUT through to MakeMPX and thus to TeX. For
+   simply passes the TEX-INPUT through to MakeMPX and thus to TeX. For
 example, if you are using LaTeX, your MetaPost input file must start
 with a `verbatimtex' block that gives the necessary `\documentclass'
 (or `\documentstyle') `\begin{document}' command.  You will also need
 to set the enviroment variable `TEX' to `latex' (*note makempx
 invocation::).
 
-  TEX-INPUT need not be specifically TeX input; it could also be Troff.
-In that case, you will need the `-m pictures' Troff macro package
-(unfortunately absent from many Troff implementations), or an
+   TEX-INPUT need not be specifically TeX input; it could also be
+Troff.  In that case, you will need the `-m pictures' Troff macro
+package (unfortunately absent from many Troff implementations), or an
 equivalent such as the `-m pspic' macros from GNU groff described in
 grops(1).
 
-  Other typesetters can be supported with no change to MetaPost itself;
+   Other typesetters can be supported with no change to MetaPost itself;
 only MakeMPX needs to be updated.
 
-  Naturally, you must use fonts that are supported by the typesetter;
+   Naturally, you must use fonts that are supported by the typesetter;
 specifically, you'll probably want to use standard PostScript fonts with
 Troff.  And only the TeX system understands Computer Modern or other
 Metafont fonts; you can also use PostScript fonts with TeX, of course.
 
-  MetaPost-generated PostScript figures which do use Computer Modern
+   MetaPost-generated PostScript figures which do use Computer Modern
 fonts for labels cannot be directly previewed or printed.  Instead, you
 must include them in a TeX document and run the resulting DVI file
 through Dvips to arrange for the downloading of the required fonts
@@ -2047,18 +2064,18 @@ through Dvips to arrange for the downloading of the required fonts
 the MetaPost distribution provides a small TeX file `mproof.tex' which
 is typically called as:
      tex mproof MP-OUTPUT-FILES... ; dvips mproof -o
-  The resulting file `mproof.ps' can then be printed or previewed.
+   The resulting file `mproof.ps' can then be printed or previewed.
 
-  To generate EPSF files, set the internal MetaPost variable
+   To generate EPSF files, set the internal MetaPost variable
 `prologues' positive.  To make the output files self-contained, use
 only standard PostScript fonts.  MetaPost reads the same `psfonts.map'
 file as Dvips, to determine PostScript fonts that need to be downloaded
 (*note psfonts.map: (dvips)psfonts.map.).
 
-  MetaPost can write output files, via the `write' primitive; this
+   MetaPost can write output files, via the `write' primitive; this
 opens a security hole.  *Note tex invocation::.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-[no]-file-line-error'
 `-fmt=FMTNAME'
@@ -2099,19 +2116,19 @@ comparison of virgin and initial forms, see *Note Initial and virgin::.
 In past releases, a separate program `inimpost' was installed for the
 initial form, but this is no longer the case.
 
-  For a list of options and other information, see *Note mpost
+   For a list of options and other information, see *Note mpost
 invocation::.
 
-  The principal memory dump file used with MetaPost is the default,
+   The principal memory dump file used with MetaPost is the default,
 `plain.mem', also known as `mpost.mem' (again, *note Memory dumps::).
 It is created by default during installation, but you can also do so by
 hand if necessary (e.g., if a `plain.mp' update is issued):
      mpost -ini '\input plain dump'
-  (The quotes prevent interpretation of the backslashes from the shell.)
-Then install the resulting `plain.mem' in `$(memdir)'
+   (The quotes prevent interpretation of the backslashes from the
+shell.)  Then install the resulting `plain.mem' in `$(memdir)'
 (`/usr/local/share/texmf/web2c' by default), and link `mpost.mem' to it.
 
-  MetaPost also provides a mem file with all the features of plain
+   MetaPost also provides a mem file with all the features of plain
 Metafont, called `mfplain.mem'.  You can create that in the same way;
 just replace `plain' in the above command with `mfplain'.
 `mfplain.mem' file lets you directly process Metafont source files with
@@ -2119,7 +2136,7 @@ MetaPost, producing character proofs (one file for each character)
 similar to those produced with Metafont in proof mode and GFtoDVI
 (*note gftodvi invocation::).
 
-  Another MetaPost mem file, named MetaFun, provides many advanced
+   Another MetaPost mem file, named MetaFun, provides many advanced
 features.  It was developed and maintained by Pragma ADE.  The home
 page for MetaFun, and other MetaPost-related things from Pragma:
 `http://www.pragma-ade.com/metapost.htm'.
@@ -2144,7 +2161,7 @@ goes to MPXFILE.  However, if the file MPXFILE already exists, and is
 newer than MPFILE, then nothing is done (presumably the file is
 up-to-date).
 
-  Otherwise:
+   Otherwise:
   1. MPto is run to extract the label text from the MetaPost source
      file MPFILE (*note mpto invocation::).
 
@@ -2158,19 +2175,19 @@ up-to-date).
      (*note dvitomp invocation::) or DMP (*note dmp invocation::)
      respectively.
 
-  If any of the above steps fail, for example if there was a typesetting
-mistake in the original MPFILE, output may be left in files named
-`mpxerr.{log,tex,dvi}' (TeX) or `mpxerr{,.t}' (Troff), so you can
+   If any of the above steps fail, for example if there was a
+typesetting mistake in the original MPFILE, output may be left in files
+named `mpxerr.{log,tex,dvi}' (TeX) or `mpxerr{,.t}' (Troff), so you can
 diagnose the problem.
 
-  The `-troff' option to MPto selects the Troff commands, rather than
+   The `-troff' option to MPto selects the Troff commands, rather than
 TeX.  MetaPost supplies this automatically if the `-T' or `-troff'
 option was specified to MetaPost.
 
-  The MPX file created by MakeMPX is a sequence of MetaPost picture
+   The MPX file created by MakeMPX is a sequence of MetaPost picture
 expressions, one for every label in the original MetaPost input file.
 
-  The names of the commands run by MakeMPX, and the directory added to
+   The names of the commands run by MakeMPX, and the directory added to
 the shell search `PATH' for the commands' location, are overridden by
 environment variables.  Here is a list:
 
@@ -2230,7 +2247,7 @@ If MPXFILE is not specified, the output goes to the basename of DVIFILE
 extended with `.mpx', e.g., `dvitomp /wherever/foo.dvi' creates
 `./foo.mpx'.
 
-  The only options are `-help' and `-version' (*note Common options::).
+   The only options are `-help' and `-version' (*note Common options::).
 
 
 File: web2c.info,  Node: dmp invocation,  Next: mpto invocation,  Prev: dvitomp invocation,  Up: MetaPost
@@ -2247,16 +2264,16 @@ generally invoked by MakeMPX (*note makempx invocation::).  Synopsis:
 If DITROFF-FILE is not specified, input comes from standard input; and
 if MPXFILE is not specified, output goes to standard output.
 
-  DMP was written to process the output of a Troff pipeline fed the
+   DMP was written to process the output of a Troff pipeline fed the
 output of `mpto -troff' (*note mpto invocation::).  DMP understands all
 the `DC' graphics functions that `dpost' does, but it ignores `x X'
 device control functions such as `x X SetColor:...', `x X BeginPath:',
 and `x X DrawPath:...'.
 
-  The available font names are defined in the support file
+   The available font names are defined in the support file
 `trfonts.map', which DMP looks for along the `MPSUPPORT' path.
 
-  Another support file `trchars.adj', also looked for along the
+   Another support file `trchars.adj', also looked for along the
 `MPSUPPORT' path, contains a character adjustment table which should
 reflect the shift amounts found in the standard PostScript prologue for
 Troff and dpost found in the `TRFONTS' directory.  Such an adjustment
@@ -2264,7 +2281,7 @@ table is unnecessary for some Troff implementations, in which case
 `trchars.adj' should be replaced by an empty file--but it must still
 exist.
 
-  DMP was written for one particular Troff implementation, and it
+   DMP was written for one particular Troff implementation, and it
 unfortunately has many built-in assumptions about the output and fonts
 file formats used by Troff, which may not be satisfied in other
 environments.  In particular, GNU groff uses some extensions in its file
@@ -2273,7 +2290,7 @@ output completely unusable for DMP.  On the other hand, the Troff
 version found in Sun Solaris 2.x, and perhaps other systems derived from
 System V R4, works fine with the default settings.
 
-  If you run into trouble and want to adapt DMP to other systems, you
+   If you run into trouble and want to adapt DMP to other systems, you
 might have to try the following (this is primarily for hackers):
 
    * If DMP complains about a missing font table (e.g., `Cannot find
@@ -2314,10 +2331,10 @@ might have to try the following (this is primarily for hackers):
      work with GNU groff are welcome, of course.
 
 
-  (Some of the above description was edited from the `dmp.c' source
+   (Some of the above description was edited from the `dmp.c' source
 file, written by John Hobby.)
 
-  The only options are `--help' and `--version' (*note Common
+   The only options are `--help' and `--version' (*note Common
 options::).
 
 
@@ -2338,7 +2355,7 @@ goes to standard output.  Leading and trailing spaces and tabs are
 removed, and various predefined typesetter commands are included at the
 beginning of and end of the file and of each section.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-troff'
      Surround the MetaPost sections with Troff commands.
@@ -2355,18 +2372,24 @@ File: web2c.info,  Node: newer invocation,  Prev: mpto invocation,  Up: MetaPost
 
 Newer compares file modification times.  Synopsis:
 
-     newer SRC DEPENDENT
+     newer SRC1 [ SRC2 ... SRCN ] TARGET
 
-Newer exits successfully if the file SRC exists and is older as
-DEPENDENT, i.e., the modification time (mtime) of SRC is greater than
-that of DEPENDENT.  *Note Attribute Meanings: (libc)Attribute Meanings.
+Newer exits successfully if the files SRC1 ... SRCN exist and at least
+one of them is not older than DEPENDENT, i.e., the modification time
+(mtime) of at least one of the source files is greater than or the same
+as that of DEPENDENT.  Newer also exits successfully if the file
+DEPENDENT doesn't exist.  *Note Attribute Meanings: (libc)Attribute
+Meanings.
 
-  Although this could be written as a Perl script (see the perlop man
-page) or using the `--full-time' option supported by `ls' (*note ls
-invocation: (coreutils)ls invocation.), it seems undesirable to depend
-on such independent, and sadly non-universal, programs.
+   The program accepts the following option, as well as the standard
+`--help' and `--version' (*note Common options::):
+`--quiet'
+     Return result only, do not print any output.
 
-  This is used by MakeMPX (*note makempx invocation::).
+`--verbose'
+     List missing source files to STDERR.  This is the default.
+
+   This is used by MakeMPX (*note makempx invocation::).
 
 
 File: web2c.info,  Node: BibTeX,  Next: WEB,  Prev: MetaPost,  Up: Top
@@ -2400,14 +2423,14 @@ The output goes to the basename of AUXFILE extended with `.bbl'; for
 example, `bibtex /wherever/foo.aux' creates `./foo.bbl'.  BibTeX also
 writes a log file to the basename of AUXFILE extended with `.blg'.
 
-  The names of the `.bib' and `.bst' files are specified in the `.aux'
+   The names of the `.bib' and `.bst' files are specified in the `.aux'
 file as well, via the `\bibliography' and `\bibliographystyle' (La)TeX
 macros.  BibTeX searches for `.bib' files using the `BIBINPUTS' and
 `TEXBIB' paths, and for `.bst' files using `BSTINPUTS' (*note Supported
 file formats: (kpathsea)Supported file formats.).  It does no path
 searching for `.aux' files.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-terse'
      Suppress the program banner and progress reports normally output.
@@ -2422,7 +2445,7 @@ searching for `.aux' files.
      these automatic inclusions altogether; to do this, make N a
      sufficiently large number.
 
-  See also:
+   See also:
 `btxdoc.tex'
      Basic LaTeXable documentation for general BibTeX users.
 
@@ -2499,7 +2522,7 @@ programming".  (The Usenet newsgroup `comp.programming.literate' and
 the mailing list <litprog@shsu.edu> are devoted to this subject; they
 are gatewayed to each other.)
 
-  WEB-like languages have been implemented with many pairs of base
+   WEB-like languages have been implemented with many pairs of base
 languages: Cweb provides C and Troff (*note References::); CWEB provides
 C and TeX (`CTAN:/web/c_cpp/cweb'); Spiderweb provides C, C++, Awk,
 Ada, many others, and TeX (`CTAN:/web/spiderweb'); and, of course, the
@@ -2507,7 +2530,7 @@ original WEB provides Pascal and TeX, the implementation languages for
 the original TeX, Metafont, MetaPost, and related programs to come from
 the TeX project at Stanford.
 
-  The original WEB language is documented in the file `webman.tex',
+   The original WEB language is documented in the file `webman.tex',
 which is included in the `ftp://ftp.tug.org/tex/lib.tar.gz' archive
 (and available in many other places, of course).
 
@@ -2533,14 +2556,14 @@ The Pascal output is written to the basename of WEBFILE extended with
 Tangle applies CHANGEFILE to WEBFILE before writing the output; by
 default, there is no change file.
 
-  If the program makes use of the WEB string facility, Tangle writes the
-string pool to the basename of WEBFILE extended with `.pool'.
+   If the program makes use of the WEB string facility, Tangle writes
+the string pool to the basename of WEBFILE extended with `.pool'.
 
-  The Pascal output is packed into lines of 72 characters or less, with
+   The Pascal output is packed into lines of 72 characters or less, with
 the only concession to readability being the termination of lines at
 semicolons when this can be done conveniently.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `--help' and `--version' (*note Common options::):
 
 `-length=NUMBER'
@@ -2590,7 +2613,7 @@ example, `weave /wherever/foo.web' creates `./foo.tex'.  Weave applies
 CHANGEFILE to WEBFILE before writing the output; by default, there is
 no change file.
 
-  The program accepts the following option, as well as the standard
+   The program accepts the following option, as well as the standard
 `-verbose', `-help' and `-version' (*note Common options::):
 `-x'
      Omit the cross-reference information: the index, the list of WEB
@@ -2598,7 +2621,7 @@ no change file.
      file will still be written when the Weave output file is processed
      by TeX using the default `webmac.tex', though).
 
-  Conventionally, WEB programmers should define the TeX `\title' macro
+   Conventionally, WEB programmers should define the TeX `\title' macro
 at the beginning of the source file.  Also, to get output of only
 changed modules, one can say `\let\maybe=\iffalse' (usually as the
 first change in the change file).
@@ -2619,10 +2642,10 @@ WEB conventions to implementors of the TeX system.  Synopsis:
 
 No path searching is done for POOLFILE.  Output is to standard output.
 
-  The only options are `--help' and `--version' (*note Common
+   The only options are `--help' and `--version' (*note Common
 options::).
 
-  As an example of the output, here is the (edited) output for
+   As an example of the output, here is the (edited) output for
 `tex.pool':
      0: "^^@"
      1: "^^A"
@@ -2633,7 +2656,7 @@ options::).
      1314: "Using character substitution: "
      (23617 characters in all.)
 
-  In Metafont and MetaPost, the first 256 characters are actually
+   In Metafont and MetaPost, the first 256 characters are actually
 represented as single bytes (i.e., themselves), not in the `^^'
 notation.  Consider Pooltype as showing the results after conversion for
 output.
@@ -2652,10 +2675,10 @@ dvilj(1)), and X displays (see xdvi(1)).  In fact, DVI translators are
 available for virtually all common devices: see `CTAN:/dviware' (for
 CTAN info, *note unixtex.ftp: (kpathsea)unixtex.ftp.).
 
-  For the precise definition of the DVI file format, see (for example)
+   For the precise definition of the DVI file format, see (for example)
 the source file `web2c/dvitype.web'.
 
-  The DVI-processing programs in the Web2c distribution are not device
+   The DVI-processing programs in the Web2c distribution are not device
 drivers; they perform generic utility functions.
 
 * Menu:
@@ -2677,10 +2700,10 @@ DVIcopy first.  Synopsis:
 
      dvicopy [OPTION]... [INDVI[.dvi] [OUTDVI[.dvi]]]
 
-  DVIcopy reads standard input if INDVI is not specified, and writes
+   DVIcopy reads standard input if INDVI is not specified, and writes
 standard output if OUTDVI is not specified.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-magnification=INTEGER'
      Override existing magnification in INDVI with INTEGER; 1000
@@ -2715,9 +2738,9 @@ Supported file formats: (kpathsea)Supported file formats.).  To see all
 the relevant paths, set the environment variable `KPATHSEA_DEBUG' to
 `-1' before running the program.
 
-  Output goes to standard output.
+   Output goes to standard output.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-dpi=REAL'
      Do pixel movement calculations at REAL pixels per inch; default
@@ -2824,7 +2847,7 @@ the example in `The TeXbook', with `-output-level=4' and
      level 0:(h=0,v=43725786,w=0,x=0,y=0,z=0,hh=0,vv=2770)
      563: eop {140}
 
-  Explanation:
+   Explanation:
 
    * The DVItype options are recorded at the beginning, followed by
      global information about the document, including fonts used.
@@ -2851,7 +2874,7 @@ font formats; the first section below briefly describes the formats.
 GFtoPK is the only one that is routinely used, as Metafont outputs GF
 format, but it's most efficient for device drivers to use PK.
 
-  The precise definitions of the PK, GF, TFM, PL, VF, and VPL formats
+   The precise definitions of the PK, GF, TFM, PL, VF, and VPL formats
 mentioned below are in the source files that read them; `pktype.web',
 `gftype.web', `tftopl.web', etc.
 
@@ -2877,11 +2900,11 @@ File: web2c.info,  Node: Font file formats,  Next: gftopk invocation,  Up: Font 
 (For another perspective on this, *note Font concepts: (dvips)Font
 concepts.).
 
-  Font files come in several varieties, with suffixes like:
+   Font files come in several varieties, with suffixes like:
      .tfm  .*pk  .*gf  .*pxl (obsolete)  .pl  .mf  .vf  .vpl
-  Each represents a file format.
+   Each represents a file format.
 
-  A TFM (TeX font metric) file is a compact binary file that contains
+   A TFM (TeX font metric) file is a compact binary file that contains
 information about each character in a font, about combinations of
 characters within that font, and about the font as a whole.  The font
 metric information contained in TFM files is device-independent units is
@@ -2890,7 +2913,7 @@ described below, TFM font files contain no information about the shapes
 of characters.  They describe rectangular areas and combinations
 thereof, but not what will eventually be printed in those areas.
 
-  Since TeX does scaling calculations, one TFM file serves for all
+   Since TeX does scaling calculations, one TFM file serves for all
 magnifications of a given typeface.  On the other hand, the best printed
 results are obtained when magnified (or reduced fonts) are not produced
 geometrically (as done by PostScript, for example) but rather optically,
@@ -2898,7 +2921,7 @@ with each size a separate design (as done with Computer Modern and the
 EC fonts, for example); then a separate TFM file is needed for each
 size.
 
-  At any rate, TeX produces a DVI (DeVice Independent) file from your
+   At any rate, TeX produces a DVI (DeVice Independent) file from your
 source document.  In order to print DVI files on real devices, you need
 font files defining digitized character shapes and other data.  Then
 previewers and printer-driver programs can translate your DVI files into
@@ -2908,30 +2931,30 @@ the horizontal dots-per-inch resolution at which the font was produced,
 and the `pk' or `gf' or `pxl' indicates the font format.  Outline fonts
 in PostScript Type 1 format have suffixes such as `.pfa' or `.pfb'.
 
-  Fonts in pk (packed) format are in the tightly packed raster format
+   Fonts in pk (packed) format are in the tightly packed raster format
 that is pretty much the standard today.  They take up less space than
 fonts in the gf (generic font) format that Metafont generates, and far
 less space than fonts in pxl format.  Fonts in pxl format take up gross
 amounts of disk space and permit only 128 characters.  They are
 obsolete.
 
-  Font files with the `.pl' (property list) suffix are the plain text
+   Font files with the `.pl' (property list) suffix are the plain text
 (human-readable) analog of the binary `.tfm' files.  The TFtoPL and
 PLtoTF programs convert between the two formats (*note tftopl
 invocation:: and *Note pltotf invocation::).
 
-  Font files with the `.mf' suffix are in Metafont source format.
+   Font files with the `.mf' suffix are in Metafont source format.
 These are the files used by Metafont to generate rastered fonts for
 specific typefaces at specific magnifications for the specific
 resolution and type of mapping used by your device.
 
-  The suffix `.vf' identifies "virtual font" files, for which `.vpl' is
-the human-readable analog.  See *Note vftovp invocation::, and *Note
+   The suffix `.vf' identifies "virtual font" files, for which `.vpl'
+is the human-readable analog.  See *Note vftovp invocation::, and *Note
 vptovf invocation::.  For further discussion of virtual fonts, see
 `CTAN:/doc/virtual-fonts.knuth', `CTAN:/help/virtualfonts.txt', and
 *Note Virtual fonts: (dvips)Virtual fonts.
 
-  (This section is based on documentation in the original Unix TeX
+   (This section is based on documentation in the original Unix TeX
 distribution by Pierre MacKay and Elizabeth Tachikawa.)
 
 
@@ -2954,14 +2977,14 @@ lookup: (kpathsea)Glyph lookup.).  To see all the relevant paths, set
 the environment variable `KPATHSEA_DEBUG' to `-1' before running the
 program.
 
-  The suffix `gf' is supplied if not already present.  This suffix is
+   The suffix `gf' is supplied if not already present.  This suffix is
 not an extension; no `.' precedes it: for instance, `cmr10.600gf'.
 
-  If PKFILE is not specified, the output is written to the basename of
+   If PKFILE is not specified, the output is written to the basename of
 `GFNAME.DPIpk', e.g., `gftopk /wherever/cmr10.600gf' creates
 `./cmr10.600pk'.
 
-  The only options are `--verbose', `--help', and `--version' (*note
+   The only options are `--verbose', `--help', and `--version' (*note
 Common options::).
 
 
@@ -2983,14 +3006,14 @@ lookup: (kpathsea)Glyph lookup.).  To see all the relevant paths, set
 the environment variable `KPATHSEA_DEBUG' to `-1' before running the
 program.
 
-  The suffix `pk' is supplied if not already present.  This suffix is
+   The suffix `pk' is supplied if not already present.  This suffix is
 not an extension; no `.' precedes it: for instance, `cmr10.600pk'.
 
-  If GFFILE is not specified, the output is written to the basename of
+   If GFFILE is not specified, the output is written to the basename of
 `PKNAME.DPIgf', e.g., `pktogf /wherever/cmr10.600pk' creates
 `./cmr10.600gf'.
 
-  The only options are `--verbose', `--help', and `--version' (*note
+   The only options are `--verbose', `--help', and `--version' (*note
 Common options::).
 
 
@@ -3006,20 +3029,20 @@ correct.  Synopsis:
 
      pktype PKNAME.DPI[pk]
 
-  The font PKNAME is searched for in the usual places (*note Glyph
+   The font PKNAME is searched for in the usual places (*note Glyph
 lookup: (kpathsea)Glyph lookup.).  To see all the relevant paths, set
 the environment variable `KPATHSEA_DEBUG' to `-1' before running the
 program.
 
-  The suffix `pk' is supplied if not already present.  This suffix is
+   The suffix `pk' is supplied if not already present.  This suffix is
 not an extension; no `.' precedes it: for instance, `cmr10.600pk'.
 
-  The translation is written to standard output.
+   The translation is written to standard output.
 
-  The only options are `-help' and `-version' (*note Common options::).
+   The only options are `-help' and `-version' (*note Common options::).
 
-  As an example of the output, here is the (abridged) translation of the
-letter `K' in `cmr10', as rendered at 600dpi with the mode `ljfour'
+   As an example of the output, here is the (abridged) translation of
+the letter `K' in `cmr10', as rendered at 600dpi with the mode `ljfour'
 from `modes.mf' (available from `ftp://ftp.tug.org/tex/modes.mf').
 
      955:  Flag byte = 184  Character = 75  Packet length = 174
@@ -3085,17 +3108,17 @@ it's correct.  Synopsis:
 
      gftype [OPTION]... GFNAME.DPI[gf]
 
-  The font GFNAME is searched for in the usual places (*note Glyph
+   The font GFNAME is searched for in the usual places (*note Glyph
 lookup: (kpathsea)Glyph lookup.).  To see all the relevant paths, set
 the environment variable `KPATHSEA_DEBUG' to `-1' before running the
 program.
 
-  The suffix `gf' is supplied if not already present.  This suffix is
+   The suffix `gf' is supplied if not already present.  This suffix is
 not an extension; no `.' precedes it: for instance, `cmr10.600gf'.
 
-  The translation is written to standard output.
+   The translation is written to standard output.
 
-  The program accepts the following options, as well as the standard
+   The program accepts the following options, as well as the standard
 `-help' and `-version' (*note Common options::):
 `-images'
      Show the characters' bitmaps using asterisks and spaces.
@@ -3103,14 +3126,14 @@ not an extension; no `.' precedes it: for instance, `cmr10.600gf'.
 `-mnemonics'
      Translate all commands in the GF file.
 
-  As an example of the output, here is the (abrdiged) translation of the
-letter `K' in `cmr10', as rendered at 600dpi with the mode `ljfour'
+   As an example of the output, here is the (abrdiged) translation of
+the letter `K' in `cmr10', as rendered at 600dpi with the mode `ljfour'
 from `modes.mf' (available from `ftp://ftp.tug.org/tex/modes.mf'), with
 both `-mnemonics' and `-images' enabled.
 
-  GFtype outputs the information about a character in two places: a main
-definition and a one-line summary at the end. We show both.  Here is the
-main definition:
+   GFtype outputs the information about a character in two places: a
+main definition and a one-line summary at the end. We show both.  Here
+is the main definition:
 
      2033: beginning of char 75: 3<=m<=60 0<=n<=56
      (initially n=56) paint (0)24(12)20
@@ -3172,11 +3195,11 @@ Explanation:
      The end of the main character definition.
 
 
-  Here is the GF postamble information that GFtype outputs at the end:
+   Here is the GF postamble information that GFtype outputs at the end:
 
      Character 75: dx 4259840 (65), width 815562 (64.57289), loc 2033
 
-  Explanation:
+   Explanation:
 
 `dx'
      The device-dependent width, in "scaled pixels", i.e., units of
@@ -3208,17 +3231,17 @@ Synopsis:
 
      tftopl [OPTION]... TFMNAME[.tfm] [PLFILE[.pl]]
 
-  The font TFMNAME (extended with `.tfm' if necessary) is searched for
+   The font TFMNAME (extended with `.tfm' if necessary) is searched for
 in the usual places (*note Supported file formats: (kpathsea)Supported
 file formats.).  To see all the relevant paths, set the environment
 variable `KPATHSEA_DEBUG' to `-1' before running the program.
 
-  If PLFILE (which is extended with `.pl' if necessary) is not
+   If PLFILE (which is extended with `.pl' if necessary) is not
 specified, the property list file is written to standard output.  The
 property list file can be converted back to TFM format by the companion
 program TFtoPL (see the next section).
 
-  The program accepts the following option, as well as the standard
+   The program accepts the following option, as well as the standard
 `-verbose', `-help' and `-version' (*note Common options::):
 `-charcode-format=TYPE'
      Output character codes in the PL file according to TYPE: either
@@ -3237,7 +3260,7 @@ program TFtoPL (see the next section).
      where using ASCII characters for the character codes is merely
      confusing.
 
-  As an example of the output, here is the (abridged) property list
+   As an example of the output, here is the (abridged) property list
 translation of `cmr10.tfm':
 
      (FAMILY CMR)
@@ -3286,7 +3309,7 @@ translation of `cmr10.tfm':
         )
      ...
 
-  As you can see, the general format is a list of parenthesized
+   As you can see, the general format is a list of parenthesized
 "properties", nested where necessary.
 
    * The first few items (`FAMILY', `FACE', and so on) are the
@@ -3329,15 +3352,15 @@ Synopsis:
 
      pltotf [OPTION]... PLFILE[.pl] [TFMFILE[.tfm]]
 
-  If TFMFILE (extended with `.tfm' if necessary) is not specified, the
+   If TFMFILE (extended with `.tfm' if necessary) is not specified, the
 TFM file is written to the basename of `PLFILE.tfm', e.g., `pltotf
 /wherever/cmr10.pl' creates `./cmr10.tfm'.  (Since TFM files are
 binary, writing to standard output by default is undesirable.)
 
-  The only options are `-verbose', `-help', and `-version' (*note
+   The only options are `-verbose', `-help', and `-version' (*note
 Common options::).
 
-  For an example of property list format, see the previous section.
+   For an example of property list format, see the previous section.
 
 
 File: web2c.info,  Node: vftovp invocation,  Next: vptovf invocation,  Prev: pltotf invocation,  Up: Font utilities
@@ -3355,19 +3378,19 @@ Synopsis:
 
      vftovp [OPTION]... VFNAME[.vf] [TFMNAME[.tfm] [VPLFILE[.vpl]]]
 
-  The fonts VFNAME and TFMNAME (extended with `.vf' and `.tfm' if
+   The fonts VFNAME and TFMNAME (extended with `.vf' and `.tfm' if
 necessary) are searched for in the usual places (*note Supported file
 formats: (kpathsea)Supported file formats.).  To see all the relevant
 paths, set the environment variable `KPATHSEA_DEBUG' to `-1' before
 running the program.  If TFMNAME is not specified, VFNAME (without a
 trailing `.vf') is used.
 
-  If VPLFILE (extended with `.vpl' if necessary) is not specified, the
+   If VPLFILE (extended with `.vpl' if necessary) is not specified, the
 property list file is written to standard output.  The property list
 file can be converted back to VF and TFM format by the companion
 program VFtoVP (see the next section).
 
-  The program accepts the following option, as well as the standard
+   The program accepts the following option, as well as the standard
 `-verbose', `-help' and `-version' (*note Common options::):
 `-charcode-format=TYPE'
      Output character codes in the PL file according to TYPE: either
@@ -3402,12 +3425,12 @@ directly.  Synopsis:
 
      vptovf [OPTION]... VPLFILE[.vpl] [VFFILE[.vf] [TFMFILE[.tfm]]]
 
-  If VFFILE (extended with `.vf' if necessary) is not specified, the VF
-output is written to the basename of `VPLFILE.vf'; similarly for
+   If VFFILE (extended with `.vf' if necessary) is not specified, the
+VF output is written to the basename of `VPLFILE.vf'; similarly for
 TFMFILE.  For example, `vptovf /wherever/ptmr.vpl' creates `./ptmr.vf'
 and `./ptmr.tfm'.
 
-  The only options are `-verbose', `-help', and `-version' (*note
+   The only options are `-verbose', `-help', and `-version' (*note
 Common options::).
 
 
@@ -3474,26 +3497,24 @@ Appendix A Legalisms
 In general, each file has its own copyright notice stating the copying
 permissions for that file.  Following is a summary.
 
-  The Web2c system itself and most of the original WEB source files are
+   The Web2c system itself and most of the original WEB source files are
 public domain.
 
-  `tex.web', the MLTeX code, `mf.web', and `bibtex.web', are
+   `tex.web', the MLTeX code, `mf.web', and `bibtex.web', are
 copyrighted by their authors.  They may be copied verbatim, but may be
 modified only through a `.ch' file.
 
-  MetaPost-related files, including `mp.web' itself, are copyrighted
+   MetaPost-related files, including `mp.web' itself, are copyrighted
 under X-like terms; the precise notice is included below.
 
-  Finally, almost all of the Kpathsea library is covered by the GNU
-Library General Public License, but part of one file is covered by the
-regular GNU General Public License (*note Introduction:
-(kpathsea)Introduction.).  Therefore, the _binaries_ resulting from a
-standard Web2c compilation are also covered by the GPL; so if you
-(re)distribute the binaries, you must also (offer to) distribute the
-complete source that went into those binaries.  See the files `COPYING'
-and `COPYING.LIB' for complete details on the GPL and LGPL.
+   Finally, the Kpathsea library is covered by the GNU Lesser General
+Public License (*note Introduction: (kpathsea)Introduction.).
+Therefore, the _binaries_ resulting from a standard Web2c compilation
+are also covered by the LGPL; so if you (re)distribute the binaries,
+you must also (offer to) distribute the complete source that went into
+those binaries.  See the file `LGPL' for complete details on the LGPL.
 
-  The following notice must be included by the terms of the MetaPost
+   The following notice must be included by the terms of the MetaPost
 copyright.
 
      Permission to use, copy, modify, and distribute this software and
@@ -3641,8 +3662,10 @@ Index
 * -- starts option names:                Option conventions.  (line  11)
 * --disable-dump-share configure option: Hardware and memory dumps.
                                                               (line   6)
-* --enable-ipc configure option:         tex invocation.      (line  98)
+* --enable-ipc configure option:         tex invocation.      (line 101)
 * --help common option:                  Common options.      (line  11)
+* --quiet (newer):                       newer invocation.    (line  20)
+* --verbose (newer):                     newer invocation.    (line  23)
 * --verbose common option:               Common options.      (line  15)
 * --version common option:               Common options.      (line  18)
 * --with-editor=CMD:                     Editor invocation.   (line  10)
@@ -3680,7 +3703,7 @@ Index
 * -D compiler options:                   Compile-time options.
                                                               (line   6)
 * -dpi=REAL:                             dvitype invocation.  (line  24)
-* -enc:                                  tex invocation.      (line  92)
+* -enc:                                  tex invocation.      (line  95)
 * -file-line-error:                      Common options.      (line  25)
 * -file-line-error-style:                Common options.      (line  26)
 * -fmt=DUMPNAME:                         Common options.      (line  34)
@@ -3693,8 +3716,8 @@ Index
 * -ini <1>:                              Initial and virgin.  (line  12)
 * -ini:                                  Common options.      (line  45)
 * -interaction=STRING:                   Common options.      (line  51)
-* -ipc:                                  tex invocation.      (line  98)
-* -ipc-start:                            tex invocation.      (line  98)
+* -ipc:                                  tex invocation.      (line 101)
+* -ipc-start:                            tex invocation.      (line 101)
 * -jobname=STRING:                       Common options.      (line  56)
 * -kpathsea-debug=NUMBER:                Common options.      (line  60)
 * -length=NUMBER:                        tangle invocation.   (line  27)
@@ -3710,16 +3733,16 @@ Index
 * -min-crossrefs=N:                      bibtex invocation.   (line  31)
 * -mixedcase:                            tangle invocation.   (line  35)
 * -mktex=FILETYPE <1>:                   mf invocation.       (line  87)
-* -mktex=FILETYPE:                       tex invocation.      (line 108)
-* -mltex:                                tex invocation.      (line 112)
+* -mktex=FILETYPE:                       tex invocation.      (line 111)
+* -mltex:                                tex invocation.      (line 115)
 * -mnemonics:                            gftype invocation.   (line  29)
 * -no-file-line-error:                   Common options.      (line  26)
 * -no-mktex=FILETYPE <1>:                mf invocation.       (line  87)
-* -no-mktex=FILETYPE:                    tex invocation.      (line 108)
+* -no-mktex=FILETYPE:                    tex invocation.      (line 111)
 * -no-parse-first-line:                  Common options.      (line  78)
-* -no-shell-escape:                      tex invocation.      (line 125)
+* -no-shell-escape:                      tex invocation.      (line 128)
 * -oem:                                  Common options.      (line 108)
-* -output-comment=STRING:                tex invocation.      (line 117)
+* -output-comment=STRING:                tex invocation.      (line 120)
 * -output-directory <1>:                 Output file location.
                                                               (line  15)
 * -output-directory:                     Common options.      (line  67)
@@ -3732,7 +3755,7 @@ Index
                                                               (line  18)
 * -progname=STRING:                      Common options.      (line  83)
 * -recorder:                             Common options.      (line  90)
-* -shell-escape:                         tex invocation.      (line 124)
+* -shell-escape:                         tex invocation.      (line 127)
 * -show-opcodes:                         dvitype invocation.  (line  56)
 * -strict:                               tangle invocation.   (line  46)
 * -style=MFTFILE:                        mft invocation.      (line  68)
@@ -3781,7 +3804,7 @@ Index
 * \countN:                               dvicopy invocation.  (line  28)
 * \font and dynamic generation:          tex invocation.      (line  44)
 * \fontdimen:                            tftopl invocation.   (line 100)
-* \immediate\write18:                    tex invocation.      (line 125)
+* \immediate\write18:                    tex invocation.      (line 128)
 * \input filenames:                      \input filenames.    (line   6)
 * \mag <1>:                              dvitype invocation.  (line  28)
 * \mag:                                  dvicopy invocation.  (line  20)
@@ -3789,8 +3812,8 @@ Index
 * \string:                               \input filenames.    (line  60)
 * \tracingcharsubdef and MLTeX:          \tracingcharsubdef.  (line   6)
 * \tracinglostchars and MLTeX:           \tracingcharsubdef.  (line  11)
-* \write18 shell escape extension:       tex invocation.      (line 125)
-* ^^ notation, avoiding:                 TCX files.           (line  76)
+* \write18 shell escape extension:       tex invocation.      (line 128)
+* ^^ notation, avoiding:                 TCX files.           (line  88)
 * `Computer Modern Typefaces', production of: mft invocation. (line  75)
 * abbrv.bst:                             Basic BibTeX style files.
                                                               (line  16)
@@ -3853,8 +3876,8 @@ Index
 * BigEndian machines:                    Hardware and memory dumps.
                                                               (line   6)
 * binaries, linking:                     Common options.      (line  83)
-* blank lines, in TCX files:             TCX files.           (line  55)
-* Bourne shell commands in TeX:          tex invocation.      (line 125)
+* blank lines, in TCX files:             TCX files.           (line  67)
+* Bourne shell commands in TeX:          tex invocation.      (line 128)
 * boxes, memory for:                     Runtime options.     (line  20)
 * breakpoints, memory for:               Runtime options.     (line  20)
 * Breitenlohner, Peter:                  Introduction.        (line   9)
@@ -3877,7 +3900,7 @@ Index
 * changing error messages style:         Common options.      (line  26)
 * character codes, in GFtype output:     gftype invocation.   (line  79)
 * character codes, in PKtype output:     pktype invocation.   (line  47)
-* character codes, in TCX files:         TCX files.           (line  66)
+* character codes, in TCX files:         TCX files.           (line  78)
 * character proofs of fonts:             gftodvi invocation.  (line   6)
 * CHARACTER property:                    tftopl invocation.   (line 114)
 * character translation files:           TCX files.           (line   6)
@@ -3893,7 +3916,7 @@ Index
 * cmbase.mf:                             Initial Metafont.    (line  28)
 * cmbase.mft:                            mft invocation.      (line  75)
 * cmmf.base not recommended:             Initial Metafont.    (line  28)
-* comments, in TCX files:                TCX files.           (line  59)
+* comments, in TCX files:                TCX files.           (line  71)
 * comments, MFT control:                 mft invocation.      (line  24)
 * common options:                        Common options.      (line   6)
 * commonalities:                         Commonalities.       (line   6)
@@ -3922,7 +3945,7 @@ Index
 * conversion, TFM to property list:      tftopl invocation.   (line   6)
 * conversion, VF to VPL:                 vftovp invocation.   (line   6)
 * copyright notices:                     Legalisms.           (line   6)
-* Cork encoding and ISO input:           TCX files.           (line  48)
+* Cork encoding and ISO input:           TCX files.           (line  49)
 * creating memory dumps:                 Creating memory dumps.
                                                               (line   6)
 * cross-referenced bibliography items:   bibtex invocation.   (line  31)
@@ -3937,7 +3960,7 @@ Index
                                                               (line  30)
 * debugging DVI utilities:               dvitype invocation.  (line  56)
 * debugging flags, specifying:           Common options.      (line  60)
-* decimal character codes, in TCX files: TCX files.           (line  66)
+* decimal character codes, in TCX files: TCX files.           (line  78)
 * dependencies, hardware:                Hardware and memory dumps.
                                                               (line   6)
 * design-size units:                     tftopl invocation.   (line 102)
@@ -3960,7 +3983,7 @@ Index
 * DrawPath ditroff command:              dmp invocation.      (line  15)
 * dump file:                             Common options.      (line  34)
 * dumping memory:                        Memory dumps.        (line   6)
-* DVI comment, specifying:               tex invocation.      (line 117)
+* DVI comment, specifying:               tex invocation.      (line 120)
 * DVI files, converting to MPX:          dvitomp invocation.  (line   6)
 * DVI files, creating multiple:          TeX extensions.      (line  31)
 * DVI files, explained:                  Font file formats.   (line  30)
@@ -3979,7 +4002,7 @@ Index
 * dx horizontal escapement:              pktype invocation.   (line  57)
 * dy vertical escapement:                gftype invocation.   (line 107)
 * dynamic array allocation:              Runtime options.     (line  36)
-* dynamic Metafont mode definitions with smode: Modes.        (line  27)
+* dynamic Metafont mode definitions with smode: Modes.        (line  28)
 * dynamic packing variable:              pktype invocation.   (line  44)
 * e response at error prompt:            Editor invocation.   (line   6)
 * e-circumflex:                          \charsubdef.         (line  21)
@@ -3991,6 +4014,7 @@ Index
                                                               (line  23)
 * editor invoked at error:               Editor invocation.   (line   6)
 * eight-bit characters in filenames:     \input filenames.    (line  35)
+* empty.tcx:                             TCX files.           (line  49)
 * endian dependencies:                   Hardware and memory dumps.
                                                               (line   6)
 * eoc GF command:                        gftype invocation.   (line  97)
@@ -4033,7 +4057,7 @@ Index
                                                               (line   6)
 * fmts Make target:                      Additional targets.  (line  25)
 * font aliases:                          Path searching.      (line  15)
-* font character code, translating:      TCX files.           (line  91)
+* font character code, translating:      TCX files.           (line 102)
 * font design:                           Metafont.            (line   6)
 * font downloading for MetaPost labels:  mpost invocation.    (line  78)
 * font file formats:                     Font file formats.   (line   6)
@@ -4057,7 +4081,7 @@ Index
 * Free Software Foundation documentation system: Formats.     (line  47)
 * freedom of Web2c:                      Introduction.        (line  23)
 * ftp.math.utah.edu:                     bibtex invocation.   (line  54)
-* generating source specials:            tex invocation.      (line 143)
+* generating source specials:            tex invocation.      (line 146)
 * geometric designs:                     Metafont.            (line   6)
 * geometric font scaling:                Font file formats.   (line  22)
 * geometry for Metafont:                 Online Metafont graphics.
@@ -4095,7 +4119,7 @@ Index
 * Henry, Patrick:                        Introduction.        (line  23)
 * Herberts, Mathias:                     Online Metafont graphics.
                                                               (line  20)
-* hex character codes, in TCX files:     TCX files.           (line  66)
+* hex character codes, in TCX files:     TCX files.           (line  78)
 * history:                               Introduction.        (line  41)
 * Hobby, John <1>:                       dmp invocation.      (line  82)
 * Hobby, John:                           Introduction.        (line   9)
@@ -4120,8 +4144,8 @@ Index
 * identifiers with underlines:           tangle invocation.   (line  41)
 * ieeetr.bst:                            Basic BibTeX style files.
                                                               (line  31)
-* il1-t1.tcx:                            TCX files.           (line  48)
-* il2-t1.tcx:                            TCX files.           (line  48)
+* il1-t1.tcx:                            TCX files.           (line  49)
+* il2-t1.tcx:                            TCX files.           (line  49)
 * Info format:                           Formats.             (line  47)
 * initial form, enabling:                Common options.      (line  45)
 * initial Metafont:                      Initial Metafont.    (line   6)
@@ -4135,7 +4159,7 @@ Index
 * install-formats Make target:           Additional targets.  (line  17)
 * install-mems Make target:              Additional targets.  (line  34)
 * installation:                          Installation.        (line   6)
-* interaction between TCX files and -8bit.: TCX files.        (line  94)
+* interaction between TCX files and -8bit.: TCX files.        (line 105)
 * interaction mode:                      Common options.      (line  51)
 * international characters:              TCX files.           (line   6)
 * introduction:                          Introduction.        (line   6)
@@ -4145,7 +4169,7 @@ Index
                                                               (line  29)
 * job name:                              Common options.      (line  56)
 * kerning table, in TFM files:           tftopl invocation.   (line 102)
-* keyboard character code, translating:  TCX files.           (line  91)
+* keyboard character code, translating:  TCX files.           (line 102)
 * Knuth, Donald E. <1>:                  mft invocation.      (line  58)
 * Knuth, Donald E.:                      Introduction.        (line   9)
 * KPATHSEA_DEBUG:                        Common options.      (line  60)
@@ -4253,10 +4277,10 @@ Index
 * mktexmf, disabling:                    mf invocation.       (line  24)
 * mktextfM, disabling:                   tex invocation.      (line  44)
 * mltex:                                 MLTeX.               (line   6)
-* MLTeX, enabling:                       tex invocation.      (line 112)
+* MLTeX, enabling:                       tex invocation.      (line 115)
 * mode needed to run Metafont:           mf invocation.       (line  48)
-* mode_def:                              Modes.               (line  14)
-* mode_setup:                            Modes.               (line  14)
+* mode_def:                              Modes.               (line  15)
+* mode_setup:                            Modes.               (line  15)
 * modes file needed for Metafont:        Modes.               (line   6)
 * modes.mf recommended modes file:       Modes.               (line  10)
 * Morgan, Tim:                           Introduction.        (line  41)
@@ -4300,7 +4324,7 @@ Index
                                                               (line  56)
 * non-Unix system, compiling on:         Additional targets.  (line  12)
 * NUL, not allowed in filenames:         \input filenames.    (line  35)
-* octal character codes, in TCX files:   TCX files.           (line  66)
+* octal character codes, in TCX files:   TCX files.           (line  78)
 * offset for overflow labels:            gftodvi invocation.  (line  49)
 * older-than, file comparisons:          newer invocation.    (line   6)
 * Omega:                                 TeX extensions.      (line  16)
@@ -4316,7 +4340,7 @@ Index
 * output file location:                  Output file location.
                                                               (line   6)
 * output files, written by TeX programs: tex invocation.      (line  51)
-* output_comment for DVI files:          tex invocation.      (line 117)
+* output_comment for DVI files:          tex invocation.      (line 120)
 * overflow label offset:                 gftodvi invocation.  (line  49)
 * packet length:                         pktype invocation.   (line  50)
 * page, starting <1>:                    dvitype invocation.  (line  50)
@@ -4382,12 +4406,12 @@ Index
 * prettyprinting Metafont source:        mft invocation.      (line   6)
 * prettyprinting WEB programs:           weave invocation.    (line   6)
 * primitives, new:                       TeX extensions.      (line  11)
-* printable characters, specifying:      TCX files.           (line  76)
+* printable characters, specifying:      TCX files.           (line  88)
 * printer characteristics, for Metafont: Modes.               (line   6)
 * production use:                        Initial and virgin.  (line  20)
 * program name, determines memory dump:  Determining the memory dump to use.
                                                               (line  32)
-* program names, special <1>:            tex invocation.      (line 112)
+* program names, special <1>:            tex invocation.      (line 115)
 * program names, special:                Common options.      (line  45)
 * prologues:                             mpost invocation.    (line 117)
 * prologues and Troff in MetaPost:       makempx invocation.  (line  39)
@@ -4415,7 +4439,7 @@ Index
                                                               (line  39)
 * Regis graphics support:                Online Metafont graphics.
                                                               (line  40)
-* regression testing:                    tex invocation.      (line 117)
+* regression testing:                    tex invocation.      (line 120)
 * repeated rows:                         pktype invocation.   (line  76)
 * representation of strings:             pooltype invocation. (line  30)
 * right side bearing <1>:                gftype invocation.   (line  82)
@@ -4432,13 +4456,13 @@ Index
                                                               (line  42)
 * security, and \openout:                tex invocation.      (line  51)
 * security, and output files:            tex invocation.      (line  51)
-* security, and shell escapes:           tex invocation.      (line 125)
+* security, and shell escapes:           tex invocation.      (line 128)
 * SetColor ditroff command:              dmp invocation.      (line  15)
 * shapes:                                Metafont.            (line   6)
 * sharing memory dumps:                  Hardware and memory dumps.
                                                               (line   6)
-* shell commands in TeX:                 tex invocation.      (line 125)
-* shell_escape enabling in TeX:          tex invocation.      (line 125)
+* shell commands in TeX:                 tex invocation.      (line 128)
+* shell_escape enabling in TeX:          tex invocation.      (line 128)
 * siam.bst:                              Basic BibTeX style files.
                                                               (line  35)
 * side bearings <1>:                     gftype invocation.   (line  82)
@@ -4446,8 +4470,8 @@ Index
 * slant font:                            gftodvi invocation.  (line  39)
 * slides, producing:                     Formats.             (line  61)
 * SliTeX:                                Formats.             (line  61)
-* small Metafont memory and modes:       Modes.               (line  14)
-* smode and dynamic Metafont mode definition: Modes.          (line  27)
+* small Metafont memory and modes:       Modes.               (line  15)
+* smode and dynamic Metafont mode definition: Modes.          (line  28)
 * sockets:                               IPC and TeX.         (line   6)
 * space-terminated filenames:            \input filenames.    (line  10)
 * Spiderweb:                             WEB.                 (line  14)
@@ -4475,9 +4499,9 @@ Index
 * swap space, as array limit:            Runtime options.     (line  36)
 * swapping bytes:                        Hardware and memory dumps.
                                                               (line  13)
-* syntax of TCX files:                   TCX files.           (line  54)
-* system C library function:             tex invocation.      (line 125)
-* T1 encoding and ISO input:             TCX files.           (line  48)
+* syntax of TCX files:                   TCX files.           (line  66)
+* system C library function:             tex invocation.      (line 128)
+* T1 encoding and ISO input:             TCX files.           (line  49)
 * Tachikawa, Elizabeth:                  Font file formats.   (line  63)
 * tangle:                                tangle invocation.   (line   6)
 * targets, additional Make:              Additional targets.  (line   6)
@@ -4562,13 +4586,13 @@ Index
                                                               (line  42)
 * typesetting:                           TeX.                 (line   6)
 * Unicode:                               TeX extensions.      (line  16)
-* Unicode input:                         tex invocation.      (line  92)
+* Unicode input:                         tex invocation.      (line  95)
 * uniterm:                               Online Metafont graphics.
                                                               (line  50)
 * unsrt.bst:                             Basic BibTeX style files.
                                                               (line  39)
 * using local codepage to display messages: Common options.   (line 108)
-* UTF-8 input:                           tex invocation.      (line  92)
+* UTF-8 input:                           tex invocation.      (line  95)
 * validation, of DVI files:              dvitype invocation.  (line   6)
 * validation, of GF files:               gftype invocation.   (line   6)
 * validation, of PK files:               pktype invocation.   (line   6)
@@ -4593,11 +4617,11 @@ Index
 * WEB pool files, displaying:            pooltype invocation. (line   6)
 * WEB programs, compiling:               tangle invocation.   (line   6)
 * WEB programs, typesetting:             weave invocation.    (line   6)
-* WEB2C, search path for TCX files:      TCX files.           (line  35)
+* WEB2C, search path for TCX files:      TCX files.           (line  36)
 * Weber, Olaf:                           Introduction.        (line  41)
 * webmac.tex:                            weave invocation.    (line  22)
 * webman.tex:                            WEB.                 (line  14)
-* whitespace, in TCX files:              TCX files.           (line  57)
+* whitespace, in TCX files:              TCX files.           (line  69)
 * whitespace-terminated filenames:       \input filenames.    (line  10)
 * width, device-independent <1>:         gftype invocation.   (line 113)
 * width, device-independent:             pktype invocation.   (line  53)
@@ -4638,78 +4662,78 @@ Index
 
 
 Tag Table:
-Node: Top2962
-Node: Introduction3959
-Node: Installation7131
-Node: configure options9291
-Node: Compile-time options11371
-Node: Additional targets12494
-Node: Triptrap13775
-Node: Runtime options15300
-Node: Commonalities17070
-Node: Option conventions17675
-Node: Common options18895
-Node: Path searching23406
-Node: Output file location24427
-Node: Three programs25464
-Node: Initial and virgin26223
-Node: Memory dumps27319
-Node: Creating memory dumps27786
-Node: Determining the memory dump to use29044
-Node: Hardware and memory dumps30668
-Node: Editor invocation33133
-Node: \input filenames33862
-Node: TeX36844
-Node: tex invocation37933
-Node: Initial TeX45829
-Node: Formats47314
-Node: Languages and hyphenation50252
-Node: MLTeX50680
-Node: \charsubdef52171
-Node: \tracingcharsubdef54490
-Node: TCX files55064
-Node: patgen invocation59955
-Node: IPC and TeX60668
-Node: TeX extensions61267
-Node: Metafont62568
-Node: mf invocation63855
-Node: Initial Metafont67727
-Node: Modes69474
-Node: Online Metafont graphics71721
-Node: gftodvi invocation74991
-Node: mft invocation77243
-Node: MetaPost81292
-Node: mpost invocation82312
-Node: Initial MetaPost87478
-Node: makempx invocation89284
-Node: dvitomp invocation92779
-Node: dmp invocation93407
-Node: mpto invocation97421
-Node: newer invocation98402
-Node: BibTeX99181
-Node: bibtex invocation99542
-Node: Basic BibTeX style files101864
-Node: WEB103206
-Node: tangle invocation104487
-Node: weave invocation106607
-Node: pooltype invocation108013
-Node: DVI utilities109140
-Node: dvicopy invocation110082
-Node: dvitype invocation111378
-Node: dvitype output example113731
-Node: Font utilities116781
-Node: Font file formats117960
-Node: gftopk invocation121249
-Node: pktogf invocation122450
-Node: pktype invocation123626
-Node: gftype invocation126456
-Node: tftopl invocation130964
-Node: pltotf invocation135593
-Node: vftovp invocation136655
-Node: vptovf invocation138936
-Node: Font utilities available elsewhere139988
-Node: Legalisms142408
-Node: References144694
-Node: Index149079
+Node: Top2967
+Node: Introduction3962
+Node: Installation7139
+Node: configure options9303
+Node: Compile-time options11385
+Node: Additional targets12511
+Node: Triptrap13792
+Node: Runtime options15321
+Node: Commonalities17093
+Node: Option conventions17698
+Node: Common options18922
+Node: Path searching23434
+Node: Output file location24456
+Node: Three programs25496
+Node: Initial and virgin26255
+Node: Memory dumps27355
+Node: Creating memory dumps27822
+Node: Determining the memory dump to use29083
+Node: Hardware and memory dumps30707
+Node: Editor invocation33176
+Node: \input filenames33906
+Node: TeX36899
+Node: tex invocation37989
+Node: Initial TeX45921
+Node: Formats47410
+Node: Languages and hyphenation50349
+Node: MLTeX50777
+Node: \charsubdef52272
+Node: \tracingcharsubdef54598
+Node: TCX files55173
+Node: patgen invocation60597
+Node: IPC and TeX61314
+Node: TeX extensions61915
+Node: Metafont63216
+Node: mf invocation64504
+Node: Initial Metafont68387
+Node: Modes70140
+Node: Online Metafont graphics72395
+Node: gftodvi invocation75668
+Node: mft invocation77927
+Node: MetaPost81982
+Node: mpost invocation83003
+Node: Initial MetaPost88188
+Node: makempx invocation90000
+Node: dvitomp invocation93500
+Node: dmp invocation94129
+Node: mpto invocation98150
+Node: newer invocation99132
+Node: BibTeX100069
+Node: bibtex invocation100430
+Node: Basic BibTeX style files102755
+Node: WEB104097
+Node: tangle invocation105380
+Node: weave invocation107503
+Node: pooltype invocation108911
+Node: DVI utilities110041
+Node: dvicopy invocation110985
+Node: dvitype invocation112283
+Node: dvitype output example114638
+Node: Font utilities117689
+Node: Font file formats118869
+Node: gftopk invocation122168
+Node: pktogf invocation123372
+Node: pktype invocation124551
+Node: gftype invocation127386
+Node: tftopl invocation131902
+Node: pltotf invocation136536
+Node: vftovp invocation137601
+Node: vptovf invocation139885
+Node: Font utilities available elsewhere140939
+Node: Legalisms143359
+Node: References145530
+Node: Index149915
 
 End Tag Table

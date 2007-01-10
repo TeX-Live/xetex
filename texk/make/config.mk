@@ -16,7 +16,7 @@
 @MAINT@  $(kpathsea_srcdir)/withenable.ac $(kpathsea_srcdir)/xt.ac \
 @MAINT@  $(kpathsea_srcdir_parent)/libtool.m4
 @MAINT@$(srcdir)/configure: $(configure_in) $(autoconf)
-@MAINT@	cd $(srcdir) && autoconf -m $(ac_dir)
+@MAINT@	cd $(srcdir) && $(top_srcdir)/../autoconf2.13 -m $(ac_dir)
 
 config.status: $(srcdir)/configure
 	$(SHELL) $@ --recheck

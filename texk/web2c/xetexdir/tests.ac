@@ -4,7 +4,6 @@ AC_DEFUN([AC_HAS_CARBON], [
 #
 #   Check for Carbon framework on Mac OS X
 #
-  _cppflags=$CPPFLAGS _ldflags=$LDFLAGS
   AC_MSG_CHECKING([for Apple Carbon framework])
   AC_TRY_COMPILE(
     [
@@ -28,7 +27,6 @@ AC_DEFUN([AC_HAS_QUICKTIME], [
 #
 #   Check for QuickTime framework on Mac OS X
 #
-  _cppflags=$CPPFLAGS _ldflags=$LDFLAGS
   AC_MSG_CHECKING([for Apple QuickTime framework])
   AC_TRY_COMPILE(
     [
@@ -44,6 +42,42 @@ ImageDescriptionHandle h;
     [ AC_MSG_RESULT(no)
       LDQUICKTIME=
       has_quicktime=no
+    ]
+  )
+])
+
+AC_DEFUN([AC_HAS_LIBFONTCONFIG], [
+#
+#   Check for libfontconfig
+#
+  _cppflags=$CPPFLAGS _ldflags=$LDFLAGS
+  AC_ARG_WITH(fontconfig,
+    [  --with-fontconfig=DIR   use fontconfig include/library files from DIR],
+    [
+if test -d "$withval"; then
+  CPPFLAGS="$CPPFLAGS -I$withval/include"
+  LDFLAGS="$LDFLAGS -L$withval/lib"
+  FONTCONFIGCPPFLAGS="-I$withval/include"
+  FONTCONFIGLDFLAGS="-L$withval/lib"
+fi
+    ]
+  )
+  AC_MSG_CHECKING([for fontconfig header files])
+  AC_TRY_COMPILE(
+    [
+#include <fontconfig/fontconfig.h>
+      ], [
+FcObjectSet *os;
+    ],
+    [ AC_MSG_RESULT(yes)
+      AC_CHECK_LIB(fontconfig, FcInit, [
+        AC_DEFINE(HAVE_LIBFONTCONFIG, 1, [Define if you have libfontconfig])
+        LDFONTCONFIG="-lfontconfig"
+      ])
+    ],
+    [ AC_MSG_RESULT(no)
+      CPPFLAGS=$_cppflags LDFLAGS=$_ldflags
+      LDFONTCONFIG=
     ]
   )
 ])

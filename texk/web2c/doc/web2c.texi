@@ -11,8 +11,8 @@ The latest version is available from ftp://ftp.tug.org/tex/texinfo.tex.}
 \fi
 @end tex
 
-@set version 7.5.3
-@set month-year August 2004
+@set version 7.5.6
+@set month-year January 2007
 
 @c Define new indices for commands in auxiliary files, filenames, and options.
 @defcodeindex cm
@@ -64,7 +64,7 @@ This file documents the installation and use of the programs in Web2c,
 an implementation of Donald Knuth's TeX system.
 
 Copyright @copyright{} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-2004 Karl Berry & Olaf Weber.
+2004, 2005, 2007 Karl Berry & Olaf Weber.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -1004,11 +1004,14 @@ to suffice.)
 The program accepts the following options, as well as the standard
 @samp{-help} and @samp{-version} (@pxref{Common options}):
 @table @samp
-@item -[no]-file-line-error
+@item -enc
+@itemx -[no]-file-line-error
 @itemx -fmt=@var{fmtname}
 @itemx -halt-on-error
 @itemx -ini
 @itemx -interaction=@var{string}
+@itemx -ipc
+@itemx -ipc-start
 @itemx -jobname=@var{string}
 @itemx -kpathsea-debug=@var{number}
 @itemx -[no]parse-first-line
@@ -1415,16 +1418,17 @@ TCX files were chosen because they follow Knuth's original ideas for
 the use of the @samp{xchr} and @samp{xord} tables.  He ventured that
 these would be changed in the WEB source in order to adjust the actual
 version to a given environment.  It turns out, however, that
-recompiling the WEB sources is not as simple a task as Knuth
-predicted; therefore, TCX files, providing the possibility of changing
-of the conversion tables on on-the-fly, has been implemented instead.
+recompiling the WEB sources is not as simple a task as Knuth may have
+imagined; therefore, TCX files, providing the possibility of changing
+of the conversion tables on on-the-fly, have been implemented instead.
 
 This approach limits the portability of @TeX{} documents, as some
 implementations do not support it (or use a different method for
-input-internal reencoding).  It may also be problematic to determine the
-encoding to use for a @TeX{} document of unknown provenance; in the
-worst case, failure to do so correctly may result in subtle errors in
-the typeset output.
+input-internal reencoding).  It may also be problematic to determine
+the encoding to use for a @TeX{} document of unknown provenance; in
+the worst case, failure to do so correctly may result in subtle errors
+in the typeset output.  But we feel the benefits outweigh these
+disadvantages.
 
 This is entirely independent of the ML@TeX{} extension (@pxref{MLTeX}):
 whereas a TCX file defines how an input keyboard character is mapped to
@@ -1458,6 +1462,7 @@ Initial @TeX{} (@pxref{Initial TeX,,Initial @TeX{}}) ignores TCX files.
 
 @flindex il1-t1.tcx
 @flindex il2-t1.tcx
+@flindex empty.tcx
 @cindex Cork encoding and ISO input
 @cindex T1 encoding and ISO input
 The Web2c distribution comes with a number of TCX files.  Two
@@ -1465,6 +1470,20 @@ important ones are @file{il1-t1.tcx} and @file{il2-t1.tcx}, which
 support ISO Latin 1 and ISO Latin 2, respectively, with Cork-encoded
 fonts (a.k.a.@ the @LaTeX{} T1 encoding).  TCX files for Czech,
 Polish, and Slovak are also provided.
+
+One other notable TCX file is @file{empty.tcx}, which is, well,
+empty.  Its purpose is to reset Web2C's behavior to the default (only
+visible ASCII being printable, as described below) when a format was
+dumped with another TCX being active---which is in fact the case for
+everything but plain @TeX{} in the TeX Live and other distributions.
+Thus:
+
+@example
+latex somefile8.tex
+@result{} terminal etc. output with 8-bit chars
+latex --translate-file=empty.tcx somefile8.tex
+@result{} terminal etc. output with ^^ notation
+@end example
 
 @cindex syntax of TCX files
 Syntax of TCX files:
@@ -1510,13 +1529,12 @@ definition that counts.
 @cindex printable characters, specifying
 @kindex ^^ @r{notation, avoiding}
 Finally, here's what happens: when @TeX{} sees an input character with
-code @var{src}, it 1) changes @var{src} to @var{dest}; and 2) makes code
-the @var{dest} ``printable'', i.e., printed as-is in diagnostics and the
-log file instead of in @samp{^^} notation.
+code @var{src}, it 1) changes @var{src} to @var{dest}; and 2) makes the
+@var{dest} code ``printable'', i.e., printed as-is in diagnostics and the
+log file rather than in @samp{^^} notation.
 
 By default, no characters are translated, and character codes between 32
-and 126 inclusive (decimal) are printable.  It is not possible to make
-these (or any) characters unprintable.
+and 126 inclusive (decimal) are printable.
 
 Specifying translations for the printable ASCII characters (codes
 32--127) will yield unpredictable results.  Additionally you shouldn't
@@ -1536,16 +1554,17 @@ considered printable by default.  If you specify both the @samp{-8bit}
 option and a TCX file, then the TCX can set specific characters to be
 non-printable.
 
-Both the active TCX encoding and whether characters are printable are
-saved in the dump files (like @file{tex.fmt}).  So by giving these
-options in combination with @samp{-ini} you set the defaults seen by
-anyone who uses the resulting dump file.
+Both the specified TCX encoding and whether characters are printable
+are saved in the dump files (like @file{tex.fmt}).  So by giving these
+options in combination with @samp{-ini}, you control the defaults seen
+by anyone who uses the resulting dump file.
 
 When loading a dump, if the @samp{-8bit} option was given, then all
 characters become printable by default.
 
 When loading a dump, if a TCX file was specified, then the TCX data from
 the dump is ignored and the data from the file used instead.
+
 
 @node patgen invocation
 @subsection Patgen: Creating hyphenation patterns
@@ -2608,9 +2627,11 @@ The command run to convert @TeX{} output back to MetaPost; default is
 Likewise, for Troff; default is @samp{dmp}.
 
 @item TEX
-The command run to typeset the labels in @TeX{}; default is @samp{tex}.
-If you use @LaTeX{}, set this to @code{latex}, and supply an appropriate
-@code{verbatimtex} header in the MP source (@pxref{mpost invocation}).
+The command run to typeset the labels in @TeX{}; the default is
+@samp{etex}, set in @file{texmf.cnf}.  If you use @LaTeX{}, set this to
+@code{latex}, and supply an appropriate @code{verbatimtex} header in
+the MP source (@pxref{mpost invocation}).  Or put @samp{%&latex} as
+the first line of your @LaTeX{} source.
 
 @item TROFF
 Likewise, for Troff; default is @samp{'eqn -d\$\$ | troff -Tpost'}.  You
@@ -2621,6 +2642,14 @@ e.g., @samp{ps} or @samp{psc}; see troff(1).
 If you change this, you will also need to set the @code{TRFONTS}
 environment variable or configuration value to point to the appropriate
 font directory, traditionally @file{/usr/lib/font/dev@var{term}}.
+
+One more complication is whether the troff programs have a @samp{g}
+prefix.  On Windows, @TeX{} Live supports both ways:
+@file{makempx.exe} is built to use @file{gsoelim.exe},
+@file{geqn.exe}, and @file{gtroff.exe}, while
+@file{makempx-without-g-prefix.exe} is built to use @file{soelim.exe},
+@file{eqn.exe}, and @file{troff.exe}.  MetaPost users on Windows using
+troff for their labels should arrange to run the proper binary.
 
 @end vtable
 
@@ -2810,20 +2839,27 @@ Surround the MetaPost sections with @TeX{} commands. This is the default.
 Newer compares file modification times.  Synopsis:
 
 @example
-newer @var{src} @var{dependent}
+newer @var{src1} [ @var{src2} ... @var{srcN} ] @var{target}
 @end example
 
 @noindent
-Newer exits successfully if the file @var{src} exists and is older as
-@var{dependent}, i.e., the modification time (mtime) of @var{src} is
-greater than that of @var{dependent}.  @xref{Attribute Meanings,,, libc,
-GNU C Library}.
+Newer exits successfully if the files @var{src1} ... @var{srcN} exist
+and at least one of them is not older than @var{dependent}, i.e., the
+modification time (mtime) of at least one of the source files
+is greater than or the same as that of @var{dependent}.  Newer also
+exits successfully if the file @var{dependent} doesn't exist.
+@xref{Attribute Meanings,,, libc, GNU C Library}.
 
-Although this could be written as a Perl script (see the perlop man
-page) or using the @samp{--full-time} option supported by @code{ls}
-(@pxref{ls invocation,,,coreutils, GNU core utilities}), it seems
-undesirable to depend on such independent, and sadly non-universal,
-programs.
+The program accepts the following option, as well as the standard
+@samp{--help} and @samp{--version} (@pxref{Common options}):
+@table @samp
+@item --quiet
+@opindex --quiet (newer)
+Return result only, do not print any output.
+@item --verbose
+@opindex --verbose (newer)
+List missing source files to STDERR.  This is the default.
+@end table
 
 This is used by MakeMPX (@pxref{makempx invocation}).
 
@@ -4311,14 +4347,12 @@ be modified only through a @file{.ch} file.
 MetaPost-related files, including @file{mp.web} itself, are copyrighted
 under X-like terms; the precise notice is included below.
 
-Finally, almost all of the Kpathsea library is covered by the GNU
-Library General Public License, but part of one file is covered by the
-regular GNU General Public License (@pxref{Introduction,,, kpathsea,
-Kpathsea}).  Therefore, the @emph{binaries} resulting from a standard
-Web2c compilation are also covered by the GPL; so if you (re)distribute
-the binaries, you must also (offer to) distribute the complete source that
-went into those binaries.  See the files @file{COPYING} and
-@file{COPYING.LIB} for complete details on the GPL and LGPL.
+Finally, the Kpathsea library is covered by the GNU Lesser General
+Public License (@pxref{Introduction,,, kpathsea, Kpathsea}).  Therefore,
+the @emph{binaries} resulting from a standard Web2c compilation are also
+covered by the LGPL; so if you (re)distribute the binaries, you must
+also (offer to) distribute the complete source that went into those
+binaries.  See the file @file{LGPL} for complete details on the LGPL.
 
 The following notice must be included by the terms of the MetaPost
 copyright.

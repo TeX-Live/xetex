@@ -22,7 +22,6 @@ Modifications:
     test -z "$MAKE_TERMINFO" && SRC_SUBDIRS="$SRC_SUBDIRS misc"
     test "$cf_with_cxx_binding" != no && SRC_SUBDIRS="$SRC_SUBDIRS c++"
 
-
   include/Makefile.in
     add symlink to AUTO_SRC variable
     add a rule
@@ -42,6 +41,8 @@ Modifications:
      with_debug=no (instead of yes)
      move one line below (after CF_DIRS_TO_MAKE):
        CF_SRC_MODULES($modules_to_build) 
+     remove the line
+       test "$use_database" = yes && SUB_MAKEFILES="$SUB_MAKEFILES misc/run_tic.sh:misc/run_tic.in"
 
 Run autoconf with version 2.52.20011227. Patch available at
   http://invisible-island.net/autoconf/

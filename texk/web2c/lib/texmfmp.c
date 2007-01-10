@@ -44,8 +44,7 @@
 #include <etexdir/etexextra.h>
 #elif defined (pdfTeX)
 #include <pdftexdir/pdftexextra.h>
-#elif defined (pdfeTeX)
-#include <pdfetexdir/pdfetexextra.h>
+#include <pdftexdir/ptexlib.h>
 #elif defined (Omega)
 #include <omegadir/omegaextra.h>
 #elif defined (eOmega)
@@ -88,7 +87,7 @@
 #define edit_var "MFEDIT"
 #endif /* MF */
 #ifdef MP
-#define BANNER "This is MetaPost, Version 0.901"
+#define BANNER "This is MetaPost, Version 0.993"
 #define COPYRIGHT_HOLDER "AT&T Bell Laboratories"
 #define AUTHOR "John Hobby"
 #define PROGRAM_HELP MPHELP
@@ -187,7 +186,7 @@ maininit P2C(int, ac, string *, av)
   /* Must be initialized before options are parsed.  */
   interactionoption = 4;
 
-#if defined(pdfTeX) || defined(pdfeTeX)
+#if defined(pdfTeX)
   ptexbanner = BANNER;
 #endif
 
@@ -273,7 +272,7 @@ maininit P2C(int, ac, string *, av)
     }
 #endif
 #endif
-#if defined(eTeX) || defined(pdfeTeX) || defined(Aleph) || defined(XeTeX)
+#if defined(eTeX) || defined(Aleph) || defined(XeTeX)
     if (etexp) {
       fprintf(stderr, "-etex only works with -ini\n");
     }
@@ -591,7 +590,6 @@ ipcpage P1C(int, is_eof)
 {
   static boolean begun = false;
   unsigned len = 0;
-  unsigned i;
   string p = "";
 
   if (!begun) {
@@ -607,10 +605,13 @@ ipcpage P1C(int, is_eof)
 #endif
     name = (string)xmalloc (len + 1);
 #if !defined(Omega) && !defined(eOmega) && !defined(Aleph)
-    strncpy (name, &strpool[strstart[outputfilename]], len);
+    strncpy (name, (string)&strpool[strstart[outputfilename]], len);
 #else
+    {
+    unsigned i;
     for (i=0; i<len; i++)
       name[i] =  strpool[i+strstartar[outputfilename - 65536L]];
+    }
 #endif
     name[len] = 0;
     
@@ -686,7 +687,7 @@ readtcxfile P1H(void)
     string line;
     unsigned line_count = 0;
     FILE *translate_file = xfopen (translate_filename, FOPEN_R_MODE);
-    while (line = read_line (translate_file)) {
+    while ((line = read_line (translate_file))) {
       int first;
       string start2;
       string comment_loc = strchr (line, '%');
@@ -878,14 +879,15 @@ static struct option long_options[]
       { "enc",                       0, &enctexp, 1 },
 #endif /* !XeTeX */
 #endif /* !Omega && !eOmega && !Aleph */
-#if defined (eTeX) || defined(pdfeTeX) || defined(Aleph) || defined(XeTeX)
+#if defined (eTeX) || defined(pdfTeX) || defined(Aleph) || defined(XeTeX)
       { "etex",                      0, &etexp, 1 },
-#endif /* eTeX || pdfeTeX || Aleph */
+#endif /* eTeX || pdfTeX || Aleph */
       { "output-comment",            1, 0, 0 },
       { "output-directory",          1, 0, 0 },
-#if defined(pdfTeX) || defined(pdfeTeX)
+#if defined(pdfTeX)
+      { "draftmode",                 0, 0, 0 },
       { "output-format",             1, 0, 0 },
-#endif /* pdfTeX or pdfeTeX */
+#endif /* pdfTeX */
       { "shell-escape",              0, &shellenabledp, 1 },
       { "no-shell-escape",           0, &shellenabledp, -1 },
       { "debug-format",              0, &debugformatfile, 1 },
@@ -1015,7 +1017,7 @@ parse_options P2C(int, argc,  string *, argv)
           parse_src_specials_option(optarg);
        }
 #endif /* TeX */
-#if defined(pdfTeX) || defined(pdfeTeX)
+#if defined(pdfTeX)
     } else if (ARGUMENT_IS ("output-format")) {
        pdfoutputoption = 1;
        if (strcmp(optarg, "dvi") == 0) {
@@ -1026,7 +1028,10 @@ parse_options P2C(int, argc,  string *, argv)
          WARNING1 ("Ignoring unknown value `%s' for --output-format", optarg);
          pdfoutputoption = 0;
        }
-#endif /* pdfTeX || pdfeTeX */
+    } else if (ARGUMENT_IS ("draftmode")) {
+      pdfdraftmodeoption = 1;
+      pdfdraftmodevalue = 1;
+#endif /* pdfTeX */
 #if defined (TeX) || defined (MF) || defined (MP)
     } else if (ARGUMENT_IS ("translate-file")) {
       translate_filename = optarg;
@@ -1067,7 +1072,13 @@ parse_options P2C(int, argc,  string *, argv)
         usagehelp (PROGRAM_HELP, BUG_ADDRESS);
 
     } else if (ARGUMENT_IS ("version")) {
-      printversionandexit (BANNER, COPYRIGHT_HOLDER, AUTHOR);
+        char *versions;
+#if defined (pdfTeX) || defined(XeTeX)
+        initversionstring(&versions); 
+#else
+        versions = NULL;
+#endif
+        printversionandexit (BANNER, COPYRIGHT_HOLDER, AUTHOR, versions);
 
     } /* Else it was a flag; getopt has already done the assignment.  */
   }
@@ -1339,8 +1350,8 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
     if (shellenabledp && *(nameoffile+1) == '|') {
       /* the user requested a pipe */
       *f_ptr = NULL;
-      fname = (string)xmalloc(strlen(nameoffile+1));
-      strcpy(fname,nameoffile+1);
+      fname = (string)xmalloc(strlen((const_string)(nameoffile+1))+1);
+      strcpy(fname,(const_string)(nameoffile+1));
 #if !defined(pdfTeX) && !defined(pdfeTeX)
       if (fullnameoffile)
          free (fullnameoffile);
@@ -1378,8 +1389,8 @@ open_out_or_pipe P2C(FILE **, f_ptr,  const_string, fopen_mode)
 	
     if (shellenabledp && *(nameoffile+1) == '|') {
       /* the user requested a pipe */
-      fname = (string)xmalloc(strlen(nameoffile+1));
-      strcpy(fname,nameoffile+1);
+      fname = (string)xmalloc(strlen((const_string)(nameoffile+1))+1);
+      strcpy(fname,(const_string)(nameoffile+1));
       if (strchr (fname,' ')==NULL && strchr(fname,'>')==NULL) {
         /* mp and mf currently do not use this code, but it 
            is better to be prepared */
@@ -1602,7 +1613,7 @@ input_line P1C(FILE *, f)
 
     return true;
 }
-#endif /* !XeTeX */
+#endif /* !XeTeX */
 
 /* This string specifies what the `e' option does in response to an
    error message.  */ 
@@ -1656,7 +1667,7 @@ calledit P4C(packedASCIIcode *, filename,
 	    case 'd':
 	      if (ddone)
                 FATAL ("call_edit: `%%d' appears twice in editor command");
-              sprintf (temp, "%ld", linenumber);
+              sprintf (temp, "%ld", (long int)linenumber);
               while (*temp != '\0')
                 temp++;
               ddone = 1;
@@ -1852,6 +1863,7 @@ setupboundvariable P3C(integer *, var,  const_string, var_name,  integer, dflt)
 
 /* FIXME -- some (most?) of this can/should be moved to the Pascal/WEB side. */
 #if defined(TeX) || defined(MP) || defined(MF)
+#if !defined(pdfTeX)
 static void
 checkpoolpointer (poolpointer poolptr, size_t len)
 {
@@ -1862,7 +1874,6 @@ checkpoolpointer (poolpointer poolptr, size_t len)
   }
 }
 
-#if !defined(pdfTeX) && !defined(pdfeTeX)
 #ifndef XeTeX	/* XeTeX uses this from XeTeX_mac.c */
 static
 #endif
@@ -1949,7 +1960,7 @@ compare_paths P2C(const_string, p1, const_string, p2)
 string
 gettexstring P1C(strnumber, s)
 {
-  poolpointer i, len;
+  poolpointer len;
   string name;
 #if !defined(Omega) && !defined(eOmega) && !defined(Aleph) && !defined(XeTeX)
   len = strstart[s + 1] - strstart[s];
@@ -1960,8 +1971,11 @@ gettexstring P1C(strnumber, s)
 #if !defined(Omega) && !defined(eOmega) && !defined(Aleph) && !defined(XeTeX)
   strncpy (name, (string)&strpool[strstart[s]], len);
 #else
+  {
+  poolpointer i;
   /* Don't use strncpy.  The strpool is not made up of chars. */
   for (i=0; i<len; i++) name[i] =  strpool[i+strstartar[s - 65536L]];
+  }
 #endif
   name[len] = 0;
   return name;
@@ -1996,7 +2010,6 @@ makesrcspecial P2C(strnumber, srcfilename,
   char *filename = gettexstring(srcfilename);
   /* FIXME: Magic number. */
   char buf[40];
-  size_t len = strlen(filename);
   char * s = buf;
 
   /* Always put a space after the number, which makes things easier

@@ -66,13 +66,13 @@ set_maketex_mag P1H(void)
 
           if (f > 1) {
               if (r > 0) {
-                  sprintf(q, "%u+%u/(%u*%u + %u)",
+                  sprintf(q, "%u+%u/(%u*%u+%u)",
                           dpi/bdpi, dpi%bdpi, f, (bdpi - r)/f, r);
               } else {
                   sprintf(q, "%u+%u/(%u*%u)", dpi/bdpi, dpi%bdpi, f, bdpi/f);
               }
           } else {
-              sprintf(q, "%u+%u/(4000 + %u)", dpi/bdpi, dpi%bdpi, bdpi, r);
+              sprintf(q, "%u+%u/(4000+%u)", dpi/bdpi, dpi%bdpi, r);
           }
       }
   } else {
@@ -409,7 +409,6 @@ maketex P2C(kpse_file_format_type, format, string*, args)
       /* Parent */
       char buf[1024+1];
       int num;
-      int status;
 
       /* Clean up child file descriptors that we won't use anyway. */
       close(childin);

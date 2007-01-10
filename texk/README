@@ -23,8 +23,8 @@ mailing list yourself, and how to receive announcements only.)
 
 For general documentation on the coding and usage standards this
 distribution follows, see the GNU standards document
-ftp://prep.ai.mit.edu/pub/gnu/standards/standards.text, especially the
-`Makefile Conventions', `Configuration', and `User Interfaces' sections.
+http://www.gnu.org/prep/standards, especially the `Makefile
+Conventions', `Configuration', and `User Interfaces' sections.
 
 The files in the etc/ directory are present for informational purposes.
 They are not used or installed by the programs.  For example, a copy of
@@ -42,12 +42,9 @@ courses for all levels of TeX users, throughout the world.  Contact:
     USA
     phone: +1 503 223-9994
     fax:   +1 503 223-3960
-    email: tug@tug.org
     url:   http://www.tug.org
 
 This is free software.  See the files COPYING* for copying permissions.
 
-kb@mail.tug.org
-Member of the League for Programming Freedom -- write lpf@uunet.uu.net.
-
-olaf@infovore.xs4all.nl
+Karl Berry
+Olaf Weber

@@ -7,8 +7,8 @@ programs = web2c $(ESUBDIRS)
 kpathsea_dir = kpathsea
 all_dirs = $(programs) $(kpathsea_dir)
 
-ac_include make/paths.mk
-ac_include make/makevars.mk
+kpse_include make/paths.mk
+kpse_include make/makevars.mk
 
 # It's too bad we have to pass all these down, but I see no alternative,
 # if we are to propagate changes at the top level.
@@ -20,10 +20,10 @@ installargs = INSTALL_DATA='$(INSTALL_DATA)' \
 # Not everything from common.mk is relevant to this top-level
 # Makefile, but most of it is, and it doesn't seem worth separating the
 # compilation-specific stuff.
-ac_include make/common.mk
+kpse_include make/common.mk
 
 # Get more of the default setup.
-ac_include make/programs.mk
+kpse_include make/programs.mk
 
 # kpathsea is not a sibling, it's a child.
 kpathsea_parent = .
@@ -47,11 +47,14 @@ info dvi check depend::
 	  (cd $$d && $(MAKE) $(makeargs) $@) || exit 1; else true; fi; done
 
 distclean::
+	rm -rf conftest*
+
+distclean::
 	for d in $(all_dirs); do if test -f $$d/Makefile; then \
 	  (cd $$d && $(MAKE) $(makeargs) $@) || exit 1; else true; fi; done
 
 distclean realclean::
-	rm -f Makefile config.status config.cache config.log libtool
+	rm -f Makefile Makefile.aux config.status config.cache config.log libtool kpse_empty
 
 # Unconditionally remake the library, since we don't want to write out
 # the dependencies here.
@@ -69,7 +72,7 @@ install-links c-sources: do-kpathsea
 @MAINT@autoconf = $(ac_dir)/acspecific.m4 $(ac_dir)/acgeneral.m4 $(ac_dir)/acsite.m4
 @MAINT@configure_in = $(srcdir)/configure.in
 @MAINT@$(srcdir)/configure: $(configure_in) $(srcdir)/withenable.ac $(autoconf)
-@MAINT@	cd $(srcdir) && autoconf -m $(ac_dir)
+@MAINT@	cd $(srcdir) && $(srcdir)/autoconf2.13 -m $(ac_dir)
 @MAINT@
 @MAINT@# And make sure that --enable-maintainer-mode is used if configure is
 @MAINT@# called from the makefiles.  We do not try to do this through the

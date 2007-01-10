@@ -1,3 +1,12 @@
+2005-02-05  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* ctie.1: Correct header from TIE to CTIE.
+
+2005-01-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* ctie.1 (ctie.1): Man page correction from Eric S. Raymond
+	<esr@thyrsus.com>.
+
 2003-04-20  Julian Gilbey  <jdg@debian.org>
 
 	* Remove documented need for any change files - they're not

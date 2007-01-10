@@ -7,13 +7,25 @@ cd lib && make -w CC='gcc' CFLAGS='-g ' LDFLAGS=''
 make[2]: Entering directory `/home/olaf/web2c/src/texk/texk/web2c/lib'
 make[2]: Nothing to be done for `default'.
 make[2]: Leaving directory `/home/olaf/web2c/src/texk/texk/web2c/lib'
+cd web2c && make -w CC='gcc' CFLAGS='-g ' LDFLAGS=''  fixwrites
+make[2]: Entering directory `/home/olaf/web2c/src/texk/texk/web2c/web2c'
+make[2]: `fixwrites' is up to date.
+make[2]: Leaving directory `/home/olaf/web2c/src/texk/texk/web2c/web2c'
+cd web2c && make -w CC='gcc' CFLAGS='-g ' LDFLAGS=''  splitup
+make[2]: Entering directory `/home/olaf/web2c/src/texk/texk/web2c/web2c'
+make[2]: `splitup' is up to date.
+make[2]: Leaving directory `/home/olaf/web2c/src/texk/texk/web2c/web2c'
+cd web2c && make -w CC='gcc' CFLAGS='-g ' LDFLAGS=''  web2c
+make[2]: Entering directory `/home/olaf/web2c/src/texk/texk/web2c/web2c'
+make[2]: `web2c' is up to date.
+make[2]: Leaving directory `/home/olaf/web2c/src/texk/texk/web2c/web2c'
 test -f tests/exampl.aux || \
   cp ./tests/exampl.aux tests/exampl.aux
-TEXMFCNF=../kpathsea/texmf.cnf \
+TEXMFCNF=../kpathsea \
   BSTINPUTS=./tests \
   BIBINPUTS=./tests \
   ./bibtex tests/exampl
-This is BibTeX, Version 0.99c (Web2C 7.5.3)
+This is BibTeX, Version 0.99c (Web2C 7.5.5)
 The top-level auxiliary file: tests/exampl.aux
 The style file: apalike.bst
 Database file #1: xampl.bib
@@ -26,14 +38,15 @@ Warning--empty year in unpublished-minimal
 Warning--empty year in random-note-crossref
 (There were 7 warnings)
 CWEBINPUTS=./cwebdir ./cweave common.w
-This is CWEAVE, Version 3.64 (Web2C 7.5.3)
+This is CWEAVE, Version 3.64 (Web2C 7.5.5)
 *1*5*7*27*56*67*77*82
 Writing the output file...*1*5*7*27*56*67*77*82
 Writing the index...
 Done.
 (No errors were found.)
-./dvicopy ./tests/story tests/xstory.dvi
-This is DVIcopy, Version 1.5 (Web2C 7.5.3)
+TEXMFCNF=../kpathsea \
+  ./dvicopy ./tests/story tests/xstory.dvi
+This is DVIcopy, Version 1.5 (Web2C 7.5.5)
 Copyright (C) 1990,95 Peter Breitenlohner
 Distributed under terms of GNU General Public License
 DVI file: ' TeX output 1992.05.17:0844',
@@ -56,7 +69,7 @@ OUT file: 692 bytes, 1 page written.
 (TFMFONTS=./tests VFFONTS=./tests ./dvicopy \
   <./tests/pplr.dvi \
   >tests/xpplr.dvi) 2>&1
-This is DVIcopy, Version 1.5 (Web2C 7.5.3)
+This is DVIcopy, Version 1.5 (Web2C 7.5.5)
 Copyright (C) 1990,95 Peter Breitenlohner
 Distributed under terms of GNU General Public License
 DVI file: ' TeX output 1995.05.27:1708',
@@ -88,7 +101,8 @@ TFM: font 0 = pplr.
 OUT: font 0 = pplr.
 OUT file: 10540 bytes, 1 page written.
 (No errors were found.)
-./dvitomp ./tests/story.dvi tests/xstory.mpx
+TEXMFCNF=../kpathsea \
+  ./dvitomp ./tests/story.dvi tests/xstory.mpx
 TFMFONTS=./tests VFFONTS=./tests: \
   ./dvitomp ./tests/ptmr 
 mv ptmr.mpx tests/xptmr.mpx
@@ -96,7 +110,7 @@ mv ptmr.mpx tests/xptmr.mpx
 ./dvitype --p=\*.\*.2 ./tests/pagenum.dvi >tests/xpagenum.typ
 TFMFONTS=./tests ./gftodvi -verbose \
   ./tests/cmr10.600gf
-This is GFtoDVI, Version 3.0 (Web2C 7.5.3)
+This is GFtoDVI, Version 3.0 (Web2C 7.5.5)
 [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] 
 [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] [25] [26] 
 [27] [28] [29] [30] [31] [32] [33] [34] [35] [36] [37] [38] [39] 
@@ -109,19 +123,19 @@ This is GFtoDVI, Version 3.0 (Web2C 7.5.3)
 [118] [119] [120] [121] [122] [123] [124] [125] [126] [127] [128]  
 mv cmr10.dvi tests/xcmr10.dvi
 ./gftopk -verbose ./tests/cmr10.600gf tests/xcmr10.pk
-This is GFtoPK, Version 2.3 (Web2C 7.5.3)
+This is GFtoPK, Version 2.3 (Web2C 7.5.5)
 'METAFONT output 1993.11.11:0921'
 24148 bytes packed to 11048 bytes.
 ./gftopk ./tests/cmr10.600gf cmr10.pk && rm cmr10.pk
 ./gftype ./tests/cmr10.600gf >tests/xcmr10.gft1
 ./gftype -m -i ./tests/cmr10.600gf >tests/xcmr10.gft2
 ./mft ./tests/io; mv io.tex tests/io.tex
-This is MFT, Version 2.0 (Web2C 7.5.3)
+This is MFT, Version 2.0 (Web2C 7.5.5)
 
 (No errors were found.)
 ./patgen ./tests/dict ./tests/patterns tests/xpatout \
    ./tests/translate <./tests/patgen.in
-This is PATGEN, Version 2.3 (Web2C 7.5.3)
+This is PATGEN, Version 2.3 (Web2C 7.5.5)
 left_hyphen_min = 2, right_hyphen_min = 2, 30 letters
 14 patterns read in
 pattern trie has 285 nodes, trie_max = 308, 5 outputs
@@ -263,7 +277,7 @@ This is PKtoGF, Version 1.1
 ./pktogf ./tests/cmr10.pk && rm cmr10.gf
 ./pktype ./tests/cmr10.pk >tests/xcmr10.pktyp
 ./pltotf -verbose ./tests/cmr10 tests/xcmr10
-This is PLtoTF, Version 3.5 (Web2C 7.5.3)
+This is PLtoTF, Version 3.5 (Web2C 7.5.5)
 '000 '001 '002 '003 '004 '005 '006 '007 
 '010 '011 '012 '013 '014 '015 '016 '017 
 '020 '021 '022 '023 '024 '025 '026 '027 
@@ -285,7 +299,7 @@ This is PLtoTF, Version 3.5 (Web2C 7.5.3)
 TFMFONTS=./tests ./vftovp -verbose ./tests/ptmr ptmr tests/xptmr
 10.0010.00./vptovf ./tests/ptmr tests/xptmr tests/xptmr
 ./weave ./pooltype
-This is WEAVE, Version 4.4 (Web2C 7.5.3)
+This is WEAVE, Version 4.4 (Web2C 7.5.5)
 *1*4*12*21*22
 Writing the output file...*1*4*12*21*22
 Writing the index...Done.
@@ -301,17 +315,17 @@ diff ./triptrap/mftrapin.log mftrapin.log
 1c1
 < This is METAFONT, Version 2.71828 (INIMF)  23 DEC 2002 11:57
 ---
-> This is METAFONT, Version 2.71828 (Web2C 7.5.3) (INIMF)  7 SEP 2004 14:41
+> This is METAFONT, Version 2.71828 (Web2C 7.5.5) (INIMF)  3 AUG 2005 10:50
 150c150
 < String usage 26&83 (1895&21534 still untouched)
 ---
-> String usage 30&98 (6388&79506 still untouched)
+> String usage 30&98 (6387&79485 still untouched)
 176,177c176,177
 <  (preloaded base=trap 98.8.8)
 < 1113 strings of total length 20515
 ---
->  (base=trap 2004.9.7)
-> 1121 strings of total length 20544
+>  (base=trap 2005.8.3)
+> 1122 strings of total length 20565
 /bin/sh -c 'TEXMFCNF=./triptrap ./mf --progname=inimf <./triptrap/mftrap2.in >mftrap.fot'
 mv trap.log mftrap.log
 mv trap.tfm mftrap.tfm
@@ -321,21 +335,21 @@ diff ./triptrap/mftrap.fot mftrap.fot
 < ** &trap  trap 
 < (trap.mf
 ---
-> This is METAFONT, Version 2.71828 (Web2C 7.5.3) (INIMF)
+> This is METAFONT, Version 2.71828 (Web2C 7.5.5) (INIMF)
 > **(trap.mf
 39c38
 < String usage 42&168 (1818&17726 still untouched)
 ---
-> String usage 50&202 (6302&75663 still untouched)
+> String usage 50&202 (6301&75642 still untouched)
 diff ./triptrap/mftrap.log mftrap.log
 1c1
 < This is METAFONT, Version 2.71828 (preloaded base=trap 2002.12.23)  23 DEC 2002 11:57
 ---
-> This is METAFONT, Version 2.71828 (Web2C 7.5.3) (base=trap 2004.9.7)  7 SEP 2004 14:41
+> This is METAFONT, Version 2.71828 (Web2C 7.5.5) (base=trap 2005.8.3)  3 AUG 2005 10:50
 1825c1825
 < String usage 24&92 (1863&21408 still untouched)
 ---
-> String usage 30&119 (6348&79331 still untouched)
+> String usage 30&119 (6347&79310 still untouched)
 2738c2738
 < Calling BLANKRECTANGLE(100,100,0,1)
 ---
@@ -343,13 +357,13 @@ diff ./triptrap/mftrap.log mftrap.log
 4235c4235
 < String usage 42&168 (1818&17726 still untouched)
 ---
-> String usage 50&202 (6302&75663 still untouched)
+> String usage 50&202 (6301&75642 still untouched)
 4251,4252c4251,4252
 <  69 strings out of 1887
 <  3759 string characters out of 21485
 ---
->  77 strings out of 6379
->  3793 string characters out of 79456
+>  77 strings out of 6378
+>  3793 string characters out of 79435
 4254,4255c4254,4255
 <  289 symbolic tokens out of 2100
 <  8i,43n,14r,8p,167b stack positions out of 30i,100n,300r,150p,500b
@@ -367,26 +381,26 @@ diff ./triptrap/trap.typ trap.typ
 1c1
 < This is GFtype, Version 3.1
 ---
-> This is GFtype, Version 3.1 (Web2C 7.5.3)
+> This is GFtype, Version 3.1 (Web2C 7.5.5)
 3c3
 < ' METAFONT output 2002.12.23:1157'
 ---
-> ' METAFONT output 2004.09.07:1441'
+> ' METAFONT output 2005.08.03:1050'
 ./mf --progname=mf '&./mf \tracingstats:=1; end.'
-This is METAFONT, Version 2.71828 (Web2C 7.5.3)
+This is METAFONT, Version 2.71828 (Web2C 7.5.5)
 Transcript written on mfput.log.
 ./mf --progname=mf ./tests/online
-This is METAFONT, Version 2.71828 (Web2C 7.5.3)
+This is METAFONT, Version 2.71828 (Web2C 7.5.5)
 (./tests/online.mf [0] )
 Output written on online.2602gf (1 character, 248 bytes).
 Transcript written on online.log.
 ./mf --progname=mf ./tests/one.two
-This is METAFONT, Version 2.71828 (Web2C 7.5.3)
+This is METAFONT, Version 2.71828 (Web2C 7.5.5)
 (./tests/one.two.mf
 one.two )
 Transcript written on one.two.log.
 ./mf --progname=mf ./tests/uno.dos
-This is METAFONT, Version 2.71828 (Web2C 7.5.3)
+This is METAFONT, Version 2.71828 (Web2C 7.5.5)
 (./tests/uno.dos )
 Transcript written on uno.log.
 rm -f mtrap.mp mtrap.mem trapf.tfm
@@ -401,201 +415,296 @@ rm -f mptrap.pl
 ln -s ./triptrap/mtrap.mp . # get same filename in log
 ./pltotf ./triptrap/trapf.pl trapf.tfm
 /bin/sh -c 'TEXMFCNF=./triptrap ./mpost --progname=inimpost mtrap'
-This is MetaPost, Version 0.641 (Web2C 7.5.3) (INIMP)
+This is MetaPost, Version 0.901 (Web2C 7.5.5) (INIMP)
 (mtrap.mp
 diff ./triptrap/mtrap.log mtrap.log
 1,2c1,2
 < This is MetaPost, C Version 0.64 (INIMP)  28 JAN 1998 11:18
 < **mtrap 
 ---
-> This is MetaPost, Version 0.641 (Web2C 7.5.3) (INIMP)  7 SEP 2004 14:41
+> This is MetaPost, Version 0.901 (Web2C 7.5.5) (INIMP)  3 AUG 2005 10:50
 > **mtrap
 5c5
 < String usage 4&24 (1306&9877 now untouched)
 ---
-> String usage 5&29 (1301&17865 now untouched)
-300c300
+> String usage 5&29 (1297&17816 now untouched)
+300,306c300,306
 < String usage 8&32 (1302&9869 now untouched)
----
-> String usage 9&37 (1297&17857 now untouched)
-302c302
+< Memory usage 109&13 (3358 still untouched)
 < String usage 10&42 (1300&9859 now untouched)
----
-> String usage 11&47 (1295&17847 now untouched)
-304c304
+< Memory usage 116&13 (3358 still untouched)
 < String usage 11&45 (1299&9856 now untouched)
----
-> String usage 12&50 (1294&17844 now untouched)
-306c306
+< Memory usage 139&56 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-317c317
+> String usage 9&37 (1293&17808 now untouched)
+> Memory usage 120&13 (3358 still untouched)
+> String usage 11&47 (1291&17798 now untouched)
+> Memory usage 127&13 (3358 still untouched)
+> String usage 12&50 (1290&17795 now untouched)
+> Memory usage 150&56 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+316,317c316,317
+< Memory usage 152&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-342c342
+> Memory usage 163&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+341,342c341,342
+< Memory usage 220&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-359c359
+> Memory usage 239&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+358,359c358,359
+< Memory usage 245&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-375c375
+> Memory usage 267&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+374,375c374,375
+< Memory usage 293&72 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-405c405
+> Memory usage 318&72 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+404,405c404,405
+< Memory usage 314&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-443c443
+> Memory usage 342&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+442,443c442,443
+< Memory usage 339&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-481c481
+> Memory usage 370&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+480,481c480,481
+< Memory usage 339&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-497c497
+> Memory usage 370&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+496,497c496,497
+< Memory usage 345&70 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-538c538
+> Memory usage 376&70 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+537,538c537,538
+< Memory usage 364&59 (3358 still untouched)
 < String usage 14&51 (1296&9850 now untouched)
 ---
-> String usage 15&56 (1291&17838 now untouched)
-551c551
+> Memory usage 398&59 (3358 still untouched)
+> String usage 15&56 (1287&17789 now untouched)
+550,551c550,551
+< Memory usage 355&64 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-595c595
+> Memory usage 386&64 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+594,595c594,595
+< Memory usage 365&59 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-611c611
+> Memory usage 396&59 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+610,611c610,611
+< Memory usage 390&73 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-660c660
+> Memory usage 424&73 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+659,660c659,660
+< Memory usage 409&59 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-669c669
+> Memory usage 446&59 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+668,671c668,671
+< Memory usage 409&59 (3358 still untouched)
 < String usage 18&75 (1292&9826 now untouched)
----
-> String usage 19&80 (1287&17814 now untouched)
-671c671
+< Memory usage 308&13 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-722c722
+> Memory usage 446&59 (3358 still untouched)
+> String usage 19&80 (1283&17765 now untouched)
+> Memory usage 339&13 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+721,722c721,722
+< Memory usage 308&13 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-725c725
+> Memory usage 339&13 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+724,725c724,725
+< Memory usage 563&13 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-818c818
+> Memory usage 622&13 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+817,818c817,818
+< Memory usage 747&13 (3358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-848c848
+> Memory usage 826&13 (3358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+847,848c847,848
+< Memory usage 1003&85 (2358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-873c873
+> Memory usage 1110&85 (2358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+872,873c872,873
+< Memory usage 873&85 (2358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-898c898
+> Memory usage 966&85 (2358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+897,898c897,898
+< Memory usage 786&85 (2358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-920c920
+> Memory usage 868&85 (2358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+919,920c919,920
+< Memory usage 773&85 (2358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-943c943
+> Memory usage 852&85 (2358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+942,943c942,943
+< Memory usage 788&85 (2358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-950c950
+> Memory usage 870&85 (2358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+949,950c949,950
+< Memory usage 319&13 (2358 still untouched)
 < String usage 17&64 (1293&9837 now untouched)
 ---
-> String usage 18&69 (1288&17825 now untouched)
-953c953
+> Memory usage 350&13 (2358 still untouched)
+> String usage 18&69 (1284&17776 now untouched)
+952,953c952,953
+< Memory usage 325&13 (2358 still untouched)
 < String usage 20&78 (1287&9809 now untouched)
 ---
-> String usage 21&83 (1282&17797 now untouched)
-989c989
+> Memory usage 356&13 (2358 still untouched)
+> String usage 21&83 (1278&17748 now untouched)
+956c956,957
+< >> "%%Creator: MetaPost"
+---
+> >> "%%HiResBoundingBox: -36 -24 84 84"
+> >> "%%Creator: MetaPost 0.901"
+958a960
+> >> "%%BeginProlog"
+988,989c990,991
+< Memory usage 325&13 (2358 still untouched)
 < String usage 22&84 (1247&8769 now untouched)
 ---
-> String usage 23&89 (1242&16757 now untouched)
-994c994
+> Memory usage 356&13 (2358 still untouched)
+> String usage 23&89 (1236&16656 now untouched)
+992,994c994,996
+< >> 40
+< Memory usage 325&13 (2358 still untouched)
 < String usage 22&84 (1206&7603 now untouched)
 ---
-> String usage 23&89 (1201&15591 now untouched)
-1000c1000,1004
+> >> 42
+> Memory usage 356&13 (2358 still untouched)
+> String usage 23&89 (1193&15438 now untouched)
+998,1002c1000,1008
+< >> "%%Creator: MetaPost"
+< Memory usage 325&13 (2358 still untouched)
 < String usage 24&110 (1197&7522 now untouched)
+< Memory usage 325&13 (2358 still untouched)
+< String usage 26&125 (1148&7358 now untouched)
 ---
-> String usage 25&115 (1192&15510 now untouched)
+> >> "%%HiResBoundingBox: -36 -24 84 84"
+> Memory usage 356&13 (2358 still untouched)
+> String usage 25&129 (1184&15343 now untouched)
 > write0 = `writeo'.
 > 
 > write1 = `writeo.2'.
 > 
-1002c1006
-< String usage 26&125 (1148&7358 now untouched)
+> Memory usage 356&13 (2358 still untouched)
+> String usage 27&144 (1135&15179 now untouched)
+1004c1010
+< >> "%%Pages: 1"
 ---
-> String usage 27&130 (1143&15346 now untouched)
-1010c1014,1016
+> >> "%%CreationDate: 2005.08.03:1050"
+1006c1012
+< >> "%*Font: trapf 9.9628 9.96265 35:c008"
+---
+> >> "%%Pages: 1"
+1008,1010c1014,1018
+< >> "%%EndProlog"
+< Memory usage 325&13 (2358 still untouched)
 < String usage 25&135 (1144&7308 now untouched)
 ---
-> String usage 26&140 (1139&15296 now untouched)
+> >> "%*Font: trapf 9.9628 9.96265 35:c008"
+> Memory usage 356&13 (2358 still untouched)
+> String usage 26&134 (1131&15135 now untouched)
 > write0 = `writeo'.
 > 
-1014c1020
+1013,1014c1021,1022
+< Memory usage 325&13 (2358 still untouched)
 < String usage 26&141 (1195&1840 now untouched)
 ---
-> String usage 27&146 (1264&16488 now untouched)
-1039c1045
+> Memory usage 356&13 (2358 still untouched)
+> String usage 27&140 (1258&16265 now untouched)
+1038,1039c1046,1047
+< Memory usage 325&13 (2358 still untouched)
 < String usage 26&141 (1195&1840 now untouched)
 ---
-> String usage 27&146 (1264&16488 now untouched)
-1049c1055
+> Memory usage 356&13 (2358 still untouched)
+> String usage 27&140 (1258&16265 now untouched)
+1048,1049c1056,1057
+< Memory usage 327&13 (2358 still untouched)
 < String usage 27&149 (1194&1832 now untouched)
 ---
-> String usage 28&154 (1263&16480 now untouched)
-1098c1104
+> Memory usage 358&13 (2358 still untouched)
+> String usage 28&148 (1257&16257 now untouched)
+1097,1098c1105,1106
+< Memory usage 327&13 (2358 still untouched)
 < String usage 27&149 (1193&1824 now untouched)
 ---
-> String usage 28&154 (1262&16472 now untouched)
-1101,1102c1107,1108
+> Memory usage 358&13 (2358 still untouched)
+> String usage 28&148 (1256&16249 now untouched)
+1101,1102c1109,1110
 <  32 strings out of 1310
 <  561 string characters out of 9901
 ---
->  33 strings out of 1306
->  566 string characters out of 17894
-1104,1106c1110,1112
+>  33 strings out of 1302
+>  560 string characters out of 17845
+1104,1106c1112,1114
 <  237 symbolic tokens out of 2100
 <  5i,33n,6p,100b stack positions out of 30i,100n,150p,500b
 <  3 string compactions (moved 1368 characters, 89 strings)
 ---
->  237 symbolic tokens out of 9500
+>  238 symbolic tokens out of 9500
 >  5i,33n,6p,99b stack positions out of 300i,300n,1500p,500b
->  2 string compactions (moved 892 characters, 63 strings)
+>  2 string compactions (moved 880 characters, 63 strings)
 diff ./triptrap/mtrap.0 mtrap.0
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -36 -24 84 84 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+6a8
+> %%BeginProlog
 diff ./triptrap/mtrap.1 mtrap.1
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -84 -36 24 84 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+6a8
+> %%BeginProlog
 diff ./triptrap/writeo writeo
 diff ./triptrap/writeo.2 writeo.2
 ln -s ./triptrap/trap.mp .
@@ -606,128 +715,304 @@ diff ./triptrap/mptrapin.log mptrapin.log
 1c1
 < This is MetaPost, C Version 0.632 (INIMP)  24 JAN 1997 11:13
 ---
-> This is MetaPost, Version 0.641 (Web2C 7.5.3) (INIMP)  7 SEP 2004 14:41
+> This is MetaPost, Version 0.901 (Web2C 7.5.5) (INIMP)  3 AUG 2005 10:50
 162c162
 < String usage 28&93 (1282&9362 now untouched)
 ---
-> String usage 29&97 (1276&17792 now untouched)
-195,196c195,196
+> String usage 29&97 (1272&17743 now untouched)
+195,198c195,198
 <  (preloaded mem=trap 97.1.24)
 < at most 1226 strings of total length 22670
----
->  (mem=trap 2004.9.7)
-> at most 1232 strings of total length 22227
-198c198
+< 398 memory locations dumped; current usage is 318&68
 < 279 symbolic tokens
 ---
-> 280 symbolic tokens
+>  (mem=trap 2005.8.3)
+> at most 1236 strings of total length 22276
+> 400 memory locations dumped; current usage is 320&68
+> 281 symbolic tokens
 /bin/sh -c 'TEXMFCNF=./triptrap ./mpost --progname=inimpost <./triptrap/mptrap2.in >mptrap.fot'
 mv trap.log mptrap.log
 mv trap.tfm mptrap.tfm
 diff ./triptrap/mptrap.fot mptrap.fot
 0a1
-> This is MetaPost, Version 0.641 (Web2C 7.5.3) (INIMP)
-35c36
+> This is MetaPost, Version 0.901 (Web2C 7.5.5) (INIMP)
+34,35c35,36
+< Memory usage 2147&536 (39 still untouched)
 < String usage 73&277 (1110&5373 now untouched)
 ---
-> String usage 74&281 (1107&13815 now untouched)
+> Memory usage 2315&536 (39 still untouched)
+> String usage 74&281 (1103&13766 now untouched)
 diff ./triptrap/mptrap.log mptrap.log
 1c1
 < This is MetaPost, C Version 0.632 (preloaded mem=trap 97.1.24)  24 JAN 1997 11:13
 ---
-> This is MetaPost, Version 0.641 (Web2C 7.5.3) (mem=trap 2004.9.7)  7 SEP 2004 14:41
-1622c1622
+> This is MetaPost, Version 0.901 (Web2C 7.5.5) (mem=trap 2005.8.3)  3 AUG 2005 10:50
+1621,1622c1621,1622
+< Memory usage 1178&115 (2344 still untouched)
 < String usage 22&84 (1244&9177 now untouched)
 ---
-> String usage 23&88 (1240&17618 now untouched)
+> Memory usage 1244&115 (2344 still untouched)
+> String usage 23&88 (1236&17569 now untouched)
+2612c2612
+< >> unknown path %CAPSULE1695
+---
+> >> unknown path %CAPSULE1901
 2665c2665
 < dashed (on 3 off 0) shifted 0
 ---
 > dashed (on 0 off 0) shifted 0
-3510c3510
+2816,2818c2816,2818
+< xpart %CAPSULE2512=xx
+< %CAPSULE2520=2yy-2
+< %CAPSULE2528 = 3.3333xx+3.3333
+---
+> xpart %CAPSULE2366=xx
+> %CAPSULE2374=2yy-2
+> %CAPSULE2382 = 3.3333xx+3.3333
+2877,2880c2877,2880
+< %CAPSULE2440 = 3ooo-0.01o3
+< %CAPSULE2460 = 8000o2-4000o1+1000o3+9
+< xpart %CAPSULE2536=xpart '
+< ypart %CAPSULE2536=ypart '
+---
+> %CAPSULE2294 = 3ooo-0.01o3
+> %CAPSULE2314 = 8000o2-4000o1+1000o3+9
+> xpart %CAPSULE2390=xpart '
+> ypart %CAPSULE2390=ypart '
+2883,2884c2883,2884
+< ### 4000o1 = -%CAPSULE2460+8000o2+1000o3+9
+< ### -4.87383o2 = -oo-0.0004%CAPSULE2460+0.39673o3-17.99643
+---
+> ### 4000o1 = -%CAPSULE2314+8000o2+1000o3+9
+> ### -4.87383o2 = -oo-0.0004%CAPSULE2314+0.39673o3-17.99643
+2888c2888
+< ### 0.22894o5 = -%CAPSULE2440+0.10689oo+3ooo+1.92412
+---
+> ### 0.22894o5 = -%CAPSULE2294+0.10689oo+3ooo+1.92412
+2891c2891
+< ### -alfa=-%CAPSULE2428
+---
+> ### -alfa=-%CAPSULE2282
+2893,2900c2893,2900
+< ### -%CAPSULE2428=-xpart %CAPSULE2426
+< {xpart((xpart %CAPSULE2426,0))}
+< ### -xpart %CAPSULE9=-%CAPSULE2416
+< {endgroup}
+< {(%CAPSULE2440)+(%CAPSULE2416)}
+< ### -%CAPSULE2440=-%CAPSULE2404+%CAPSULE2416
+< ### -%CAPSULE2404=-ypart %CAPSULE2402
+< ### -%CAPSULE2460=-xpart %CAPSULE2402
+---
+> ### -%CAPSULE2282=-xpart %CAPSULE2280
+> {xpart((xpart %CAPSULE2280,0))}
+> ### -xpart %CAPSULE9=-%CAPSULE2270
+> {endgroup}
+> {(%CAPSULE2294)+(%CAPSULE2270)}
+> ### -%CAPSULE2294=-%CAPSULE2258+%CAPSULE2270
+> ### -%CAPSULE2258=-ypart %CAPSULE2256
+> ### -%CAPSULE2314=-xpart %CAPSULE2256
+2905c2905
+< ### p$=-ypart %CAPSULE2368+1
+---
+> ### p$=-ypart %CAPSULE2222+1
+2907,2919c2907,2919
+< {(2/3)*((-ypart %CAPSULE2368+1,ypart %CAPSULE2368))}
+< ### ypart %CAPSULE2368=-xpart %CAPSULE2368+1
+< ### -0.66667xpart %CAPSULE2368=-xpart %CAPSULE2360
+< {-((xpart %CAPSULE2360,-xpart %CAPSULE2360+0.66667))}
+< ### xpart %CAPSULE2360=-xpart %CAPSULE2340
+< {((xpart %CAPSULE2402,ypart %CAPSULE2402))=((xpart %CAPSULE2340,-xpart %
+< CAPSULE2340-0.66667))}
+< ## xpart %CAPSULE2340=-ypart %CAPSULE2402-0.66667
+< ## xpart %CAPSULE2402=-ypart %CAPSULE2402-0.66667
+< ### ypart %CAPSULE2402=-xpart %CAPSULE2402-0.66667
+< ### -xpart %CAPSULE2402=-xpart %CAPSULE2340
+< {((xpart ',ypart '))=((xpart %CAPSULE2340,-xpart %CAPSULE2340-0.66667))}
+< ## xpart %CAPSULE2340=-ypart '-0.66667
+---
+> {(2/3)*((-ypart %CAPSULE2222+1,ypart %CAPSULE2222))}
+> ### ypart %CAPSULE2222=-xpart %CAPSULE2222+1
+> ### -0.66667xpart %CAPSULE2222=-xpart %CAPSULE2214
+> {-((xpart %CAPSULE2214,-xpart %CAPSULE2214+0.66667))}
+> ### xpart %CAPSULE2214=-xpart %CAPSULE2194
+> {((xpart %CAPSULE2256,ypart %CAPSULE2256))=((xpart %CAPSULE2194,-xpart %
+> CAPSULE2194-0.66667))}
+> ## xpart %CAPSULE2194=-ypart %CAPSULE2256-0.66667
+> ## xpart %CAPSULE2256=-ypart %CAPSULE2256-0.66667
+> ### ypart %CAPSULE2256=-xpart %CAPSULE2256-0.66667
+> ### -xpart %CAPSULE2256=-xpart %CAPSULE2194
+> {((xpart ',ypart '))=((xpart %CAPSULE2194,-xpart %CAPSULE2194-0.66667))}
+> ## xpart %CAPSULE2194=-ypart '-0.66667
+2925c2925
+< ### -ooo=-%CAPSULE2302
+---
+> ### -ooo=-%CAPSULE2156
+2927,2936c2927,2936
+< {(%CAPSULE2302)+(1)}
+< ### -%CAPSULE2302=-%CAPSULE2290+1
+< {(1/2)*(%CAPSULE2290)}
+< ### -0.5%CAPSULE2290=-%CAPSULE2282
+< {-(%CAPSULE2282)}
+< ### %CAPSULE2282=-%CAPSULE2274
+< {(2)*(%CAPSULE2274)}
+< ### -2%CAPSULE2274=-%CAPSULE2266
+< {(-0.5%CAPSULE2266-0.5)=(%CAPSULE2266)}
+< ## %CAPSULE2266=-0.33333
+---
+> {(%CAPSULE2156)+(1)}
+> ### -%CAPSULE2156=-%CAPSULE2144+1
+> {(1/2)*(%CAPSULE2144)}
+> ### -0.5%CAPSULE2144=-%CAPSULE2136
+> {-(%CAPSULE2136)}
+> ### %CAPSULE2136=-%CAPSULE2128
+> {(2)*(%CAPSULE2128)}
+> ### -2%CAPSULE2128=-%CAPSULE2120
+> {(-0.5%CAPSULE2120-0.5)=(%CAPSULE2120)}
+> ## %CAPSULE2120=-0.33333
+3509,3510c3509,3510
+< Memory usage 3017&264 (273 still untouched)
 < String usage 68&249 (1155&8794 now untouched)
 ---
-> String usage 69&253 (1151&17235 now untouched)
-3521c3521
+> Memory usage 3275&264 (273 still untouched)
+> String usage 69&253 (1147&17186 now untouched)
+3520,3521c3520,3521
+< Memory usage 2267&264 (273 still untouched)
 < String usage 66&241 (1154&8790 now untouched)
 ---
-> String usage 67&245 (1150&17231 now untouched)
-4379c4379
+> Memory usage 2446&264 (273 still untouched)
+> String usage 67&245 (1146&17182 now untouched)
+3990a3991,3992
+>  ..(10,10)
+>    ..controls (10,10) and (10,10)
+4378,4379c4380,4381
+< Memory usage 2744&607 (39 still untouched)
 < String usage 73&279 (1138&8717 now untouched)
 ---
-> String usage 74&283 (1134&17158 now untouched)
-4385c4385
+> Memory usage 2959&607 (39 still untouched)
+> String usage 74&283 (1130&17109 now untouched)
+4384,4385c4386,4387
+< Memory usage 2704&536 (39 still untouched)
 < String usage 73&279 (1138&8717 now untouched)
 ---
-> String usage 74&283 (1134&17158 now untouched)
-4674c4674
+> Memory usage 2919&536 (39 still untouched)
+> String usage 74&283 (1130&17109 now untouched)
+4673,4674c4675,4676
+< Memory usage 2147&536 (39 still untouched)
 < String usage 73&277 (1110&5373 now untouched)
 ---
-> String usage 74&281 (1107&13815 now untouched)
-4739,4740c4739,4740
+> Memory usage 2315&536 (39 still untouched)
+> String usage 74&281 (1103&13766 now untouched)
+4739,4740c4741,4742
 <  75 strings out of 1277
 <  768 string characters out of 9330
 ---
->  76 strings out of 1272
->  772 string characters out of 17773
-4742,4743c4742,4743
+>  76 strings out of 1268
+>  772 string characters out of 17724
+4742,4743c4744,4745
 <  337 symbolic tokens out of 2100
 <  8i,35n,8p,167b stack positions out of 30i,100n,150p,500b
 ---
->  338 symbolic tokens out of 9500
+>  339 symbolic tokens out of 9500
 >  8i,35n,8p,167b stack positions out of 300i,300n,1500p,500b
-4752c4752
+4752c4754
 <   out of 256w,16h,16d,64i,5000l,500k,256e,50p)
 ---
 >   out of 256w,16h,16d,64i,15000l,2500k,256e,50p)
 diff ./triptrap/trap.5 trap.5
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -150.99219 -2 168.99219 20.00024 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+5a7
+> %%BeginProlog
 diff ./triptrap/trap.6 trap.6
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: 3 0 6 2.25 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+5a7
+> %%BeginProlog
 diff ./triptrap/trap.148 trap.148
-4c4
+2,4c2,5
+< %%BoundingBox: -5 -5 13 5 
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%BoundingBox: -4 -6 13 6 
+> %%HiResBoundingBox: -3.5 -5.5 12.5 5.5 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+5a7
+> %%BeginProlog
 diff ./triptrap/trap.149 trap.149
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -27.5 -27.5 51.6906 36.71318 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+5a7
+> %%BeginProlog
 diff ./triptrap/trap.150 trap.150
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -5 -5 33 25 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+5a7
+> %%BeginProlog
+28c30
+< 15 10 lineto
+---
+> 10 5 lineto
 diff ./triptrap/trap.151 trap.151
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -4095.49998 -101.96362 4095.49998 261 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+5a7
+> %%BeginProlog
 diff ./triptrap/trap.197 trap.197
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -1.99254 -3.98508 7.97011 3.98506 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+6a8
+> %%BeginProlog
 diff ./triptrap/trap.200 trap.200
-4c4
+3,4c3,5
+< %%Creator: MetaPost
 < %%CreationDate: 1998.01.28:1118
 ---
-> %%CreationDate: 2004.09.07:1441
+> %%HiResBoundingBox: -6.2132 -5.9851 36.21318 37.00375 
+> %%Creator: MetaPost 0.901
+> %%CreationDate: 2005.08.03:1050
+7a9
+> %%BeginProlog
 ./tftopl ./mptrap.tfm mptrap.pl
 diff ./triptrap/mptrap.pl mptrap.pl
 ./mpost --progname=mpost '&./mpost \tracingstats:=1; end.'
-This is MetaPost, Version 0.641 (Web2C 7.5.3)
+This is MetaPost, Version 0.901 (Web2C 7.5.5)
 Transcript written on mpout.log.
-MAKEMPX_BINDIR=`pwd`:`pwd`/mpware MPXCOMMAND=mpware/makempx \
+TEXMFCNF=../kpathsea \
+  MAKEMPX_BINDIR=`pwd`:`pwd`/mpware MPXCOMMAND=mpware/makempx \
   ./mpost --progname=mpost ./tests/mptest
-This is MetaPost, Version 0.641 (Web2C 7.5.3)
+This is MetaPost, Version 0.901 (Web2C 7.5.5)
 (./tests/mptest.mp
 * Test for string length bug:
 Length of string "^^I"
@@ -737,12 +1022,12 @@ Length of string "^^I"
 * Test for big numbers in btex...etex: )
 Transcript written on mptest.log.
 ./mpost --progname=mpost ./tests/one.two
-This is MetaPost, Version 0.641 (Web2C 7.5.3)
+This is MetaPost, Version 0.901 (Web2C 7.5.5)
 (./tests/one.two.mp
 one.two )
 Transcript written on one.two.log.
 ./mpost --progname=mpost ./tests/uno.dos
-This is MetaPost, Version 0.641 (Web2C 7.5.3)
+This is MetaPost, Version 0.901 (Web2C 7.5.5)
 (./tests/uno.dos )
 Transcript written on uno.log.
 rm -f trip.tfm trip.pl trip.tex trip.fmt tripin.fot tripin.log
@@ -758,7 +1043,7 @@ diff ./triptrap/tripin.log tripin.log
 1c1
 < This is TeX, Version 3.141592 (INITEX)  20 DEC 2002 20:24
 ---
-> This is TeX, Version 3.141592 (Web2C 7.5.3) (INITEX)  7 SEP 2004 14:41
+> This is TeX, Version 3.141592 (Web2C 7.5.5) (INITEX)  3 AUG 2005 10:50
 3c3
 < (trip.tex
 ---
@@ -767,8 +1052,8 @@ diff ./triptrap/tripin.log tripin.log
 <  (preloaded format=trip 2002.12.20)
 < 1320 strings of total length 23539
 ---
->  (format=trip 2004.9.7)
-> 1358 strings of total length 24212
+>  (format=trip 2005.8.3)
+> 1364 strings of total length 24385
 461c461
 < Hyphenation trie of length 273 has 9 ops out of 500
 ---
@@ -780,13 +1065,13 @@ diff ./triptrap/trip.fot trip.fot
 < ** &trip  trip 
 < (trip.tex ##
 ---
-> This is TeX, Version 3.141592 (Web2C 7.5.3)
+> This is TeX, Version 3.141592 (Web2C 7.5.5)
 > **(./trip.tex ##
 diff  ./triptrap/trip.log trip.log
 1c1
 < This is TeX, Version 3.141592 (preloaded format=trip 2002.12.20)  20 DEC 2002 21:28
 ---
-> This is TeX, Version 3.141592 (Web2C 7.5.3) (format=trip 2004.9.7)  7 SEP 2004 14:41
+> This is TeX, Version 3.141592 (Web2C 7.5.5) (format=trip 2005.8.3)  3 AUG 2005 10:50
 3c3
 < (trip.tex ##
 ---
@@ -840,8 +1125,8 @@ diff  ./triptrap/trip.log trip.log
 <  47 strings out of 1674
 <  251 string characters out of 8353
 ---
->  44 strings out of 1642
->  261 string characters out of 15788
+>  44 strings out of 1636
+>  261 string characters out of 15615
 7290c7294
 <  372 multiletter control sequences out of 2100
 ---
@@ -857,11 +1142,11 @@ diff  ./triptrap/trip.typ trip.typ
 1c1
 < This is DVItype, Version 3.6
 ---
-> This is DVItype, Version 3.6 (Web2C 7.5.3)
+> This is DVItype, Version 3.6 (Web2C 7.5.5)
 9c9
 < ' TeX output 2002.12.20:2128'
 ---
-> ' TeX output 2004.09.07:1441'
+> ' TeX output 2005.08.03:1050'
 419c419
 < 1121: down4 639342208 
 ---
@@ -877,44 +1162,51 @@ diff  ./triptrap/trip.typ trip.typ
 ./tex --progname=tex --output-comment="`cat ./PROJECTS`" \
     ./tests/hello 2>/dev/null \
   && ./dvitype hello.dvi | grep olaf@infovore.xs4all.nl >/dev/null
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 (./tests/hello.tex [1] )
 Output written on hello.dvi (1 page, 456 bytes).
 Transcript written on hello.log.
 ./tex --progname=tex ./tests/openout && grep xfoo openout.log
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 (./tests/openout.tex )
 No pages of output.
 Transcript written on openout.log.
 \openout0 = `xfoo.out'.
 ./tex --progname=tex ./tests/one.two && ls -l one.two.log
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 (./tests/one.two.tex jobname = one.two )
 No pages of output.
 Transcript written on one.two.log.
--rw-r--r--    1 olaf     olaf          163 Sep  7 14:42 one.two.log
+-rw-r--r--  1 olaf olaf 190 Aug  3 10:50 one.two.log
 ./tex --progname=tex ./tests/uno.dos && ls -l uno.log
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 (./tests/uno.dos )
 No pages of output.
 Transcript written on uno.log.
--rw-r--r--    1 olaf     olaf          141 Sep  7 14:42 uno.log
+-rw-r--r--  1 olaf olaf 168 Aug  3 10:50 uno.log
 ./tex --progname=tex ./tests/just.texi && ls -l just.log
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 (./tests/just.texi )
 No pages of output.
 Transcript written on just.log.
--rw-r--r--    1 olaf     olaf          145 Sep  7 14:42 just.log
+-rw-r--r--  1 olaf olaf 172 Aug  3 10:50 just.log
 ./tex --progname=tex ./tests/batch.tex
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 (./tests/batch.tex
  )
 No pages of output.
 Transcript written on batch.log.
 ./tex --progname=tex --shell ./tests/write18 | grep echo
 (./tests/write18.texthis is write18 output from echo
-./tex --mltex --progname=initex --ini ./tests/mltextst
-This is TeX, Version 3.141592 (Web2C 7.5.3) (INITEX)
+TEXMFCNF=../kpathsea \
+  ./tex --mltex --progname=initex --ini ./tests/mltextst
+This is TeX, Version 3.141592 (Web2C 7.5.5) (INITEX)
 MLTeX v2.2 enabled
 (./tests/mltextst.tex
 
@@ -940,13 +1232,15 @@ Congratulations, you have a MLTeX version with all known bugs fixed.
 No pages of output.
 Transcript written on mltextst.log.
 ./tex </dev/null
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 **
 ! End of file on the terminal... why?
 PATH=`pwd`:../kpathsea:./../kpathsea:$PATH \
   WEB2C=./../kpathsea TMPDIR=.. \
   ./tex --progname=tex '\nonstopmode\font\foo=nonesuch\end'
-This is TeX, Version 3.141592 (Web2C 7.5.3)
+This is TeXk, Version 3.141592 (Web2C 7.5.5)
+ %&-line parsing enabled.
 
 ! Font \foo=nonesuch not loadable: Metric (TFM) file not found.
 <to be read again> 
@@ -975,7 +1269,7 @@ diff ./triptrap/tripin.log ctripin.log
 1c1
 < This is TeX, Version 3.141592 (INITEX)  20 DEC 2002 20:24
 ---
-> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3) (INITEX)  7 SEP 2004 14:42
+> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5) (INITEX)  3 AUG 2005 10:50
 3c3
 < (trip.tex
 ---
@@ -984,8 +1278,8 @@ diff ./triptrap/tripin.log ctripin.log
 <  (preloaded format=trip 2002.12.20)
 < 1320 strings of total length 23539
 ---
->  (format=trip 2004.9.7)
-> 1473 strings of total length 25689
+>  (format=trip 2005.8.3)
+> 1479 strings of total length 25862
 461c461
 < Hyphenation trie of length 273 has 9 ops out of 500
 ---
@@ -998,13 +1292,13 @@ diff ./triptrap/trip.fot ctrip.fot
 < ** &trip  trip 
 < (trip.tex ##
 ---
-> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5)
 > **(./trip.tex ##
 diff  ./triptrap/trip.log ctrip.log
 1c1
 < This is TeX, Version 3.141592 (preloaded format=trip 2002.12.20)  20 DEC 2002 21:28
 ---
-> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3) (format=trip 2004.9.7)  7 SEP 2004 14:42
+> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5) (format=trip 2005.8.3)  3 AUG 2005 10:50
 3c3
 < (trip.tex ##
 ---
@@ -1058,8 +1352,8 @@ diff  ./triptrap/trip.log ctrip.log
 <  47 strings out of 1674
 <  251 string characters out of 8353
 ---
->  44 strings out of 1827
->  261 string characters out of 8311
+>  44 strings out of 1821
+>  261 string characters out of 8138
 7290c7294
 <  372 multiletter control sequences out of 2100
 ---
@@ -1075,11 +1369,11 @@ diff  ./triptrap/trip.typ ctrip.typ
 1c1
 < This is DVItype, Version 3.6
 ---
-> This is DVItype, Version 3.6 (Web2C 7.5.3)
+> This is DVItype, Version 3.6 (Web2C 7.5.5)
 9c9
 < ' TeX output 2002.12.20:2128'
 ---
-> ' TeX output 2004.09.07:1442'
+> ' TeX output 2005.08.03:1050'
 419c419
 < 1121: down4 639342208 
 ---
@@ -1215,7 +1509,7 @@ diff ./etexdir/etrip/etripin.log etripin.log
 1c1
 < This is e-TeX, Version 3.141592-2.2 (INITEX)  6 SEP 2004 23:13
 ---
-> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3) (INITEX)  7 SEP 2004 14:42
+> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5) (INITEX)  3 AUG 2005 10:50
 4c4,5
 < (etrip.tex This is the e-Trip test [2004-09-06] for e-TeX v3.141592-2.2.
 ---
@@ -1225,8 +1519,8 @@ diff ./etexdir/etrip/etripin.log etripin.log
 <  (preloaded format=etrip 2004.9.6)
 < 1435 strings of total length 24590
 ---
->  (format=etrip 2004.9.7)
-> 1474 strings of total length 25720
+>  (format=etrip 2005.8.3)
+> 1480 strings of total length 25893
 35c36
 < Hyphenation trie of length 434 has 12 ops out of 500
 ---
@@ -1239,7 +1533,7 @@ diff ./etexdir/etrip/etrip.fot etrip.fot
 < entering extended mode
 < (etrip.tex e-IniTeX: e-Trip format loaded.
 ---
-> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5)
 > **entering extended mode
 > (./etrip.tex e-IniTeX: e-Trip format loaded.
 46a46,47
@@ -1249,7 +1543,7 @@ diff  ./etexdir/etrip/etrip.log etrip.log
 1c1
 < This is e-TeX, Version 3.141592-2.2 (preloaded format=etrip 2004.9.6)  6 SEP 2004 23:13
 ---
-> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3) (format=etrip 2004.9.7)  7 SEP 2004 14:42
+> This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5) (format=etrip 2005.8.3)  3 AUG 2005 10:50
 4c4
 < (etrip.tex e-IniTeX: e-Trip format loaded.
 ---
@@ -1269,8 +1563,8 @@ diff  ./etexdir/etrip/etrip.log etrip.log
 <  22 strings out of 1665
 <  132 string characters out of 8410
 ---
->  18 strings out of 1826
->  140 string characters out of 8280
+>  18 strings out of 1820
+>  140 string characters out of 8107
 4276c4278
 <  408 multiletter control sequences out of 2100
 ---
@@ -1285,49 +1579,55 @@ diff  ./etexdir/etrip/etrip.typ etrip.typ
 1c1
 < This is DVItype, Version 3.6
 ---
-> This is DVItype, Version 3.6 (Web2C 7.5.3)
+> This is DVItype, Version 3.6 (Web2C 7.5.5)
 9c9
 < ' TeX output 2004.09.06:2313'
 ---
-> ' TeX output 2004.09.07:1442'
+> ' TeX output 2005.08.03:1050'
 ./etex --progname=etex --output-comment="`cat ./PROJECTS`" \
   ./tests/hello 2>/dev/null \
   && ./dvitype hello.dvi | grep olaf@infovore.xs4all.nl >/dev/null
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 (./tests/hello.tex [1] )
 Output written on hello.dvi (1 page, 456 bytes).
 Transcript written on hello.log.
 ./etex --progname=etex ./tests/openout && grep xfoo openout.log
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 (./tests/openout.tex )
 No pages of output.
 Transcript written on openout.log.
 \openout0 = `xfoo.out'.
 ./etex --progname=etex ./tests/one.two && ls -l one.two.log
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 (./tests/one.two.tex jobname = one.two )
 No pages of output.
 Transcript written on one.two.log.
--rw-r--r--    1 olaf     olaf          193 Sep  7 14:42 one.two.log
+-rw-r--r--  1 olaf olaf 220 Aug  3 10:50 one.two.log
 ./etex --progname=etex ./tests/uno.dos && ls -l uno.log
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 (./tests/uno.dos )
 No pages of output.
 Transcript written on uno.log.
--rw-r--r--    1 olaf     olaf          171 Sep  7 14:42 uno.log
+-rw-r--r--  1 olaf olaf 198 Aug  3 10:50 uno.log
 ./etex --progname=etex ./tests/just.texi && ls -l just.log
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 (./tests/just.texi )
 No pages of output.
 Transcript written on just.log.
--rw-r--r--    1 olaf     olaf          175 Sep  7 14:42 just.log
+-rw-r--r--  1 olaf olaf 202 Aug  3 10:50 just.log
 ./etex --progname=etex ./tests/batch.tex
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 (./tests/batch.tex
  )
@@ -1335,8 +1635,9 @@ No pages of output.
 Transcript written on batch.log.
 ./etex --progname=etex --shell ./tests/write18 | grep echo
 (./tests/write18.texthis is write18 output from echo
-./etex --mltex --progname=einitex ./tests/mltextst
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3) (INITEX)
+TEXMFCNF=../kpathsea \
+  ./etex --mltex --progname=einitex ./tests/mltextst
+This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.5) (INITEX)
 MLTeX v2.2 enabled
 (./tests/mltextst.tex
 
@@ -1362,13 +1663,15 @@ Congratulations, you have a MLTeX version with all known bugs fixed.
 No pages of output.
 Transcript written on mltextst.log.
 ./etex --progname=etex </dev/null
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 **
 ! End of file on the terminal... why?
 PATH=`pwd`:../kpathsea:./../kpathsea:$PATH \
   WEB2C=./../kpathsea TMPDIR=.. \
   ./etex --progname=etex '\nonstopmode\font\foo=nonesuch\end'
-This is e-TeX, Version 3.141592-2.2 (Web2C 7.5.3)
+This is e-TeXk, Version 3.141592-2.2 (Web2C 7.5.5)
+ %&-line parsing enabled.
 entering extended mode
 
 ! Font \foo=nonesuch not loadable: Metric (TFM) file not found.

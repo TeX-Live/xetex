@@ -16,7 +16,7 @@ dnl to build part of the distribution may not have any given program.
 dnl Even main.c isn't guaranteed, but then nothing is, really ...
 AC_INIT(web2c/main.c)
 
-WEB2CVERSION=7.5.5
+WEB2CVERSION=7.5.6
 AC_SUBST(WEB2CVERSION)
 AC_DEFINE_UNQUOTED(WEB2CVERSION," (Web2C $WEB2CVERSION)")
 
@@ -95,6 +95,7 @@ sinclude(../../libs/libpng/withenable.ac)
 sinclude(../../libs/zlib/zlib.ac)
 sinclude(../../libs/libpng/libpng.ac)
 sinclude(../../libs/xpdf/libxpdf.ac)
+sinclude(../../libs/obsdcompat/libobsd-compat.ac)
 sinclude(../../libs/freetype2/withenable.ac)
 sinclude(../../libs/freetype2/freetype2.ac)
 sinclude(../../libs/teckit/withenable.ac)
@@ -122,7 +123,9 @@ else
 fi
 if test "x$with_omega" = xyes; then
   OMEGA=
-#  KPSE_CONFIG_FILES([omegafonts/Makefile otps/Makefile])
+  if test -d $srcdir/omegafonts; then
+    KPSE_CONFIG_FILES([omegafonts/Makefile otps/Makefile])
+  fi
 else
   OMEGA='#! '
 fi
@@ -157,8 +160,7 @@ else
 fi
 
 # For pdfeTeX
-if test -d $srcdir/pdfetexdir && test -d $srcdir/pdftexdir \
-    && test -d $srcdir/etexdir; then
+if test -d $srcdir/pdftexdir; then
   test "${with_pdfetex+set}" = set || with_pdfetex=yes
 else
   if test "x$with_pdfetex" = xyes; then
@@ -287,18 +289,46 @@ else
 fi
 AC_SUBST(XETEX)
 
+sinclude(xetexdir/withenable.ac)
 sinclude(xetexdir/tests.ac)
-AC_HAS_CARBON
 
-if test "x$has_carbon" = "xyes"; then
-  XETEX_MACOSX=
-  XETEX_GENERIC='#! '
-else
-  XETEX_MACOSX='#! '
-  XETEX_GENERIC=
+sinclude(xetexdir/acx_pthread.m4)
+ACX_PTHREAD
+
+# the following is for OpenBSD, where the PTHREAD_CFLAGS setting is defeated by -nodefaultlibs in the xetex link;
+# similar hackery might be needed on other systems (groan) -- JK 2007-01-07
+case "${host}" in
+*-*-*bsd*)
+  if test "x$PTHREAD_LIBS" = "x"; then
+    PTHREAD_LIBS="-lpthread"
+  fi ;;
+esac
+
+if test "x$with_xetex" = xyes; then
+  AC_HAS_CARBON
+
+  if test "x$has_carbon" = "xyes"; then
+    XETEX_MACOSX=
+    XETEX_GENERIC='#! '
+  else
+    XETEX_MACOSX='#! '
+    XETEX_GENERIC=
+
+    AC_HAS_LIBFONTCONFIG
+    if test "x$LDFONTCONFIG" = "x"; then
+      AC_MSG_ERROR([
+Cannot build XeTeX without libfontconfig.
+Use the --with-fontconfig=DIR option to specify the prefix where
+fontconfig is installed.
+      ])
+    fi
+    AC_SUBST(FONTCONFIGCPPFLAGS)
+    AC_SUBST(FONTCONFIGLDFLAGS)
+    AC_SUBST(LDFONTCONFIG)
+  fi
+  AC_SUBST(XETEX_MACOSX)
+  AC_SUBST(XETEX_GENERIC)
 fi
-AC_SUBST(XETEX_MACOSX)
-AC_SUBST(XETEX_GENERIC)
 
 # For e-TeX, three choices: no, yes, and tex.  In the latter case, we
 # have to comment out the normal TeX build (TEX), as well as enable the
@@ -370,11 +400,6 @@ then
   KPSE_CONFIG_FILES([pdftexdir/Makefile])
 fi
 
-# Don't bother with pdfelib unless pdfeTeX is requested.
-if test "$with_pdfetex" = yes; then
-  AC_CONFIG_FILES([pdfetexdir/Makefile])
-fi
-
 dnl Create tests subdirectory.
 test -d tests || mkdir tests
 
@@ -404,6 +429,6 @@ KPSE_CROSS_PATH_PROG(OTANGLE, otangle, ./otangle)
 fi
 
 dnl Generate `Makefile's, `config.status', and our header file.
-KPSE_CONFIG_FILES([Makefile doc/Makefile lib/Makefile web2c/Makefile])
+KPSE_CONFIG_FILES([Makefile lib/Makefile web2c/Makefile])
 AC_CONFIG_FILES([fmtutil.cnf:fmtutil.in])
 AC_OUTPUT

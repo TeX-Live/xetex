@@ -141,7 +141,7 @@ if ini_version then
 @d ssup_max_strings ==200000
 {Larger values may be used, but then the arrays consume much more memory.}
 @d ssup_trie_opcode == 65535
-@d ssup_trie_size == 262143
+@d ssup_trie_size == @"3FFFFF
 
 @d ssup_hyph_size == 65535 {Changing this requires changing (un)dumping!}
 @d iinf_hyphen_size == 610 {Must be not less than |hyph_prime|!}
@@ -188,7 +188,7 @@ if ini_version then
 @!engine_name=TEXMF_ENGINE_NAME; {the name of this engine}
 @#
 @!inf_main_memory = 2000000;
-@!sup_main_memory = 16000000;
+@!sup_main_memory = 32000000;
 
 @!inf_trie_size = 80000;
 @!sup_trie_size = ssup_trie_size;
@@ -212,7 +212,7 @@ if ini_version then
 @!sup_param_size = 600;
 
 @!inf_save_size = 600;
-@!sup_save_size = 40000;
+@!sup_save_size = 80000;
 
 @!inf_stack_size = 200;
 @!sup_stack_size = 3000;
@@ -973,6 +973,16 @@ begin input_ptr:=0; max_in_stack:=0;
 source_filename_stack[0]:=0;full_source_filename_stack[0]:=0;
 @z
 
+@x [28.501] l.9747 - \eof18
+if_eof_code: begin scan_four_bit_int; b:=(read_open[cur_val]=closed);
+  end;
+@y
+if_eof_code: begin scan_four_bit_int_or_18;
+  if cur_val=18 then b:=not shell_enabled_p
+  else b:=(read_open[cur_val]=closed);
+  end;
+@z
+
 @x [29.513] l.9951 - Area and extension rules for filenames.
 @ The file names we shall deal with for illustrative purposes have the
 following structure:  If the name contains `\.>' or `\.:', the file area
@@ -1379,7 +1389,7 @@ begin old_setting:=selector;
 if job_name=0 then job_name:="texput";
 @y
 begin old_setting:=selector;
-if job_name=0 then job_name:="texput";
+if job_name=0 then job_name:=get_job_name("texput");
 pack_job_name(".ofl");
 recorder_change_filename(stringcast(name_of_file+1));
 @z
@@ -1412,7 +1422,7 @@ loop@+  begin begin_file_reading; {set up |cur_file| and new level of input}
     if a_open_in(cur_file) then goto done;
     end;
 @y
-var temp_str: str_number; k: integer;
+var temp_str: str_number;
 begin scan_file_name; {set |cur_name| to desired file name}
 pack_cur_name;
 loop@+begin
@@ -1445,7 +1455,7 @@ if name=str_ptr-1 then {we can try to conserve string pool space now}
 @x [29.537] l.10352 - start_input: use different heuristic for initex.
   begin job_name:=cur_name; open_log_file;
 @y
-  begin job_name:=get_job_name; open_log_file;
+  begin job_name:=get_job_name(cur_name); open_log_file;
 @z
 
 @x [29.537] l.10359 - start_input: don't return filename to string pool.
@@ -1900,7 +1910,7 @@ flushable_string:=str_ptr-1;
 @y
 @z
 
-% If you don't want to remove code with the following change,
+% If you don't want to remove code with the following two changes,
 % please replace the former change by
 %
 % @x
@@ -2507,9 +2517,7 @@ begin @<Expand macros in the token list
 @x [53.1370] l.24773 - system: (write_out) \write18{foo} => system(foo).
 if write_open[j] then selector:=j
 @y
-if shell_enabled_p and (j=18) then
-  begin selector := new_string;
-  end
+if j=18 then selector := new_string
 else if write_open[j] then selector:=j
 @z
 
@@ -2522,6 +2530,9 @@ if j=18 then
   begin if (tracing_online<=0) then
     selector:=log_only  {Show what we're doing in the log file.}
   else selector:=term_and_log;  {Show what we're doing.}
+  {If the log file isn't open yet, we can only send output to the terminal.
+   Calling |open_log_file| from here seems to result in bad data in the log.}
+  if not log_opened then selector:=term_only;
   print_nl("system(");
   for d:=0 to cur_length-1 do
     begin {|print| gives up if passed |str_ptr|, so do it by hand.}
@@ -2548,11 +2559,11 @@ if j=18 then
       system(stringcast(outside_string_array));
       print("executed");
       end;
-    pool_ptr:=str_start(str_ptr);  {erase the string}
     end
   else begin print("disabled");
   end;
   print_char("."); print_nl(""); print_ln;
+  pool_ptr:=str_start(str_ptr);  {erase the string}
 end;
 selector:=old_setting;
 @z
@@ -2667,6 +2678,22 @@ begin
     if level=in_open then print_int (line)
     else print_int (line_stack[index+1-(in_open-level)]);
     print (": ");
+  end;
+end;
+
+@ To be able to determine whether \.{\\write18} is enabled from within
+\TeX\ we also implement \.{\\eof18}.  We sort of cheat by having an
+additional route |scan_four_bit_int_or_18| which is the same as
+|scan_four_bit_int| except it also accepts the value 18.
+
+@<Declare procedures that scan restricted classes of integers@>=
+procedure scan_four_bit_int_or_18;
+begin scan_int;
+if (cur_val<0)or((cur_val>15)and(cur_val<>18)) then
+  begin print_err("Bad number");
+@.Bad number@>
+  help2("Since I expected to read a number between 0 and 15,")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
 end;
 

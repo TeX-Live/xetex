@@ -1,3 +1,115 @@
+2006-12-05  Karl Berry  <karl@tug.org>
+
+	* configure: trying dvipng again.
+
+2006-08-24  Karl Berry  <karl@tug.org>
+
+	* configure: don't descend into dvipng for now, update needs to be
+	finished, accidentally checked in partial update in revision 2009
+	... sigh.
+
+2005-08-03  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* config.sub: Update to 2005-07-08.
+
+	* config.guess: Update to 2005-08-03.
+
+2005-07-27  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* etc/COPYING: Replace full GPL text with reference to the LGPL
+	and GPL files.
+
+	* etc/GPL: GPL text.
+
+	* etc/LGPL: LGPL 2.1 text.
+
+2005-07-25  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* etc/autoconf/acgeneral.m4: Have AC_CHECK_TYPE include stdint.h
+	if (through HAVE_STDINT_H) we've determined it is available.  The
+	prevents some configure-related misbehaviour.  From Karl Berry.
+
+2005-06-28  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* m4/maintainer-mode.m4: Add copyright.
+
+2005-06-26  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* etc/autoconf/acsite.m4: Remove some duplicate definitions
+	(AC_UNSET_CC, AC_RESET_CC).  Fully quote defn of
+	pb_AC_ASM_UNDERSCORE, define KPSE_CONFIG_FILES.  This makes
+	everything more compatible with autoconf2.5x.  From Peter
+	Breitenlohner.
+
+	* etc/autoconf/acgeneral.m4: Make ENVVAR=VALUE as argument work
+	with our autoconf2.13.  Modify accepted syntax for some commands
+	to match autoconf2.5x.  Change name of ac_include to kpse_include.
+	From Peter Breitenlohner.
+
+	* withenable.ac: Do m4-style quoting of the first argument of
+	AC_ARG_WITH because autoconf2.5x likes it that way.  From Peter
+	Breitenlohner.
+
+	* configure.in: Make syntax compatible with autoconf2.5x.  From
+	Peter Breitenlohner.  Remove setting of with_odvipsk (odvipsk was
+	merged with dvipsk).  Reformat PKGS list so changes are easier to
+	spot.
+
+	* Makefile.in: Replace ac_include with kpse_include.  From Peter
+	Breitenlohner.
+	[MAINT] Call the autoconf2.13 script we've bundled in the source tree
+	to regenerate configure from configure.in.
+
+	* m4/maintainer-mode.m4: Files containing definitions needed when
+	using autoconf2.5x or later.
+
+	* m4/kpse-include.m4: Files containing definitions needed when
+	using autoconf2.5x or later.
+
+	* m4/kpse-cross.m4: Files containing definitions needed when using
+	autoconf2.5x or later.
+
+	* m4/acsite.m4.not: Files containing definitions needed when using
+	autoconf2.5x or later.
+
+	* m4/ac-xxset-cc.m4: Files containing definitions needed when
+	using autoconf2.5x or later.
+
+	* autoconf2.13: The autoconf2.13 script which is needed to
+	regenerate some of the configure scripts in the subdirectories.
+
+2005-06-22  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* etc/autoconf/acsite.m4: Add KPSE_STRUCT_ST_MTIM.
+
+	* etc/autoconf/acconfig.h: Add HAVE_ST_MTIM for
+	KPSE_STRUCT_ST_MTIM.
+
+2005-06-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* README: Remove email addresses: one less location to keep
+	everything up-to-date.
+
+	* config.sub: Update to 2005-06-02.
+
+	* config.guess: Update to 2005-05-27.
+
+	* add-info-toc: Update copyright notice (is in public domain).
+
+2005-01-21  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* Makefile.in (distclean): Clean up contest* files.  From Thomas.
+
+2004-12-29  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* config.sub: To 2004-11-30.
+
+2004-11-28  Olaf Weber  <olaf@infovore.xs4all.nl>
+
+	* config.sub: Update to 2004-11-17.
+
+	* config.guess: Update to 2004-11-12.
+
 2004-09-07  Olaf Weber  <olaf@infovore.xs4all.nl>
 
 	* config.guess: Update to 2004-09-07.

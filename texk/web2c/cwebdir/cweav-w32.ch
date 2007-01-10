@@ -1,11 +1,11 @@
 This is the change file for CWEB's CWEAVE under Win32
 (Contributed by Fabrice Popineau, February 2002)
 
- @x section 1
- @d banner "This is CWEAVE (Version 3.64)\n"
- @y
- @d banner "This is CWEAVE (Version 3.64win32)\n"
- @z
+@x section 1
+@d banner "This is CWEAVE (Version 3.64)\n"
+@y
+@d banner "This is CWEAVE (Version 3.64win32)\n"
+@z
 
 @x
 @ We predeclare several standard system functions here instead of including

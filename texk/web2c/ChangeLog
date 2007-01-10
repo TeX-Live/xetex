@@ -1,3 +1,40 @@
+2007-01-01  Karl Berry  <karl@tug.org>
+
+	* config.h (inline) [__cplusplus]: #undef inline under C++, since
+	inline is a keyword.  It should never be #define'd, but
+	c-auto.in->h can do so.  Found by vvv on AIX.
+
+2006-12-30  Karl Berry  <karl@tug.org>
+
+	* configure.in: bump version to 7.5.6.
+
+2006-12-27  Karl Berry  <karl@tug.org>
+
+	* fmtutil.in: the binary name is pdftex now.
+
+2006-12-10  Karl Berry  <karl@tug.org>
+
+	* omegaware/odvicopy.ch (int_8): rename the type to int_8_odvicopy,
+	and @d int_8 itself to that, so that we don't end up with int8 in
+	the C file.  AIX inttypes.h declares that.  (Reported by vvv.)
+
+2006-09-05  Karl Berry  <karl@tug.org>
+
+	* bibtex.ch (BUF_SIZE): increase to 20000 per Lee Samuel Finn, via
+	3 Sep 2006 10:32:53 +0200 mail from Gerben.
+
+2006-07-10  Karl Berry  <karl@tug.org>
+
+	* tex.ch (sup_font_mem_size): double again, to 4000000.
+	(actually, it seems we could set all the sup_* to the absolute
+	maximums from TeX's architecture, since texmf.cnf determines what
+	is allocated.  A patch for that would be welcome. :)
+
+2006-06-20  Jonathan Kew  <jonathan_kew@sil.org>
+
+	* texmfmem.h, texmfmp.h, texmfmp-help.h, lib/texmfmp.c: Added
+	conditional fragments needed for building XeTeX.
+
 2005-09-02  Olaf Weber  <olaf@infovore.xs4all.nl>
 
 	* tex.ch [53.1370]: Since we generate a string in all cases, we

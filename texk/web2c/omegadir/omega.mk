@@ -72,7 +72,7 @@ otangle-clean:
 	$(LIBTOOL) --mode=clean $(RM) otangle
 	rm -f otangle.o otangle.c otangle.h otangle.p
 
-
+# 
 # Omega itself.
 
 # We build omega
@@ -174,7 +174,7 @@ omega-clean:
 	rm -f omega.c omegabis.c omegamem.h
 	rm -f omega.p omega.pool omega.web omega.ch
 
-
+# 
 # Dumps.
 all_ofmts = @FMU@ omega.fmt $(ofmts)
 
@@ -194,7 +194,7 @@ lambda.fmt: omega
 	$(dumpenv) ./omega --progname=lambda --jobname=lambda --ini \\input lambda.tex </dev/null
 
 
-
+# 
 # Some additional programs for Omega: the programs themselves are named
 # in the variable otps_programs, defined above.
 otps/otp2ocp:
@@ -203,7 +203,7 @@ otps/outocp:
 	cd otps && $(MAKE) $(common_makeargs) outocp
 omegafonts/omfonts:
 	cd omegafonts && $(MAKE) $(common_makeargs) omfonts
-
+# 
 # Installation.
 install-omega: install-omega-exec install-omega-data
 install-omega-exec: install-omega-links

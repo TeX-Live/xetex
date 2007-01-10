@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 1997 Karl Berry.
+# Public domain.  Originally written 1994, Karl Berry.
 	
 temp=${TMPDIR-/tmp}/ait.$$
 

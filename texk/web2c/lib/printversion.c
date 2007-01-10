@@ -16,8 +16,10 @@ This is PROGRAM, Version VERSION-NUMBER
    program, but tangle doesn't allow multiline string constants ...  */
 
 void
-printversionandexit P3C(const_string, banner,
-                        const_string, copyright_holder,  const_string, author)
+printversionandexit P4C(const_string, banner,
+                        const_string, copyright_holder,  
+                        const_string, author,
+                        char*, extra_info)
 {
   extern string versionstring;           /* from web2c/lib/version.c */
   extern KPSEDLL string kpathsea_version_string;/* from kpathsea/version.c */
@@ -38,12 +40,12 @@ printversionandexit P3C(const_string, banner,
   puts (kpathsea_version_string);
 
   if (copyright_holder) {
-    printf ("Copyright 2005 %s.\n", copyright_holder);
+    printf ("Copyright 2007 %s.\n", copyright_holder);
     if (!author)
       author = copyright_holder;
   }
 
-  puts ("Kpathsea is copyright 2005 Karl Berry and Olaf Weber.");
+  puts ("Kpathsea is copyright 2007 Karl Berry and Olaf Weber.");
 
   puts ("There is NO warranty.  Redistribution of this software is");
   fputs ("covered by the terms of ", stdout);
@@ -53,6 +55,10 @@ printversionandexit P3C(const_string, banner,
   printf ("named COPYING and the %s source.\n", prog_name);
   printf ("Primary author of %s: %s.\n", prog_name, author);
   puts ("Kpathsea written by Karl Berry, Olaf Weber, and others.\n");
+
+  if (extra_info) {
+    puts (extra_info);
+  }
 
   uexit (0);
 }

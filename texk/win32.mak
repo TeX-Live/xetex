@@ -43,7 +43,6 @@ subdirs= kpathsea	\
 	 tetex		\
 	 tex4htk	\
 	 texlive	\
-	 ttf2pfb	\
 	 ttf2pt1	\
 	 ttf2pk		\
 	 ttfdump	\

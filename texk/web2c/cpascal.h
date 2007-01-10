@@ -15,10 +15,6 @@
 /* We must include this first, to resolve many C issues.  */
 #include "config.h"
 
-/* avoid clash between 'readline' from web programs and possible stdio.h declaration
-   included via config.h above */
-#define readline pascal_readline
-
 /* We only use getopt in the applications, not in web2c itself.  */
 #include <kpathsea/getopt.h>
 
@@ -27,6 +23,7 @@
 #include <kpathsea/progname.h>
 #include <kpathsea/proginit.h>
 #include <kpathsea/tex-file.h>
+#include <kpathsea/variable.h>
 
 /* Help messages.  */
 #include "help.h"
@@ -257,7 +254,7 @@ extern boolean eoln P1H(FILE *);
 extern void readln P1H(FILE *);
 extern void fprintreal P4H(FILE *, double, int, int);
 extern integer inputint P1H(FILE *);
-extern void printversionandexit P3H(const_string, const_string, const_string);
+extern void printversionandexit P4H(const_string, const_string, const_string, char*);
 extern void zinput2ints P2H(integer *, integer *);
 extern void zinput3ints P3H(integer *, integer *, integer *);
 extern integer zround P1H(double);

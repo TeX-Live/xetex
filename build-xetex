@@ -18,9 +18,9 @@ bash ./runConfigure.sh
 
 # make libraries first (not handled by the xetex makefile)
 if [ "`uname`" = "Darwin" ]; then
-	LIBS="zlib teckit icu-xetex freetype2"
+	LIBS="teckit icu-xetex freetype2"
 else
-	LIBS="zlib teckit icu-xetex freetype2 libpng xpdf"
+	LIBS="teckit icu-xetex freetype2 libpng xpdf"
 fi
 for f in ${LIBS}; do
 	(cd Work/libs/${f} && make)
