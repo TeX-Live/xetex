@@ -510,6 +510,15 @@ public:
      */
     static UClassID getStaticClassID();
 
+    /**
+     * Returns kern value for a glyph pair, if the font has a kern pair list.
+     */
+    virtual void getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const;
+
+    /**
+     * Returns true if writing direction is vertical.
+     */
+    virtual inline bool getLayoutDirVertical() const;
 };
 
 inline float LEFontInstance::fixedToFloat(le_int32 fixed)
@@ -520,6 +529,11 @@ inline float LEFontInstance::fixedToFloat(le_int32 fixed)
 inline le_int32 LEFontInstance::floatToFixed(float theFloat)
 {
     return (le_int32) (theFloat * 65536.0);
+}
+
+inline bool LEFontInstance::getLayoutDirVertical() const
+{
+    return false;
 }
 
 U_NAMESPACE_END

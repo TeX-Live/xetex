@@ -256,26 +256,26 @@ le_int32 HangulOpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[]
                 if ((transition.actionFlags & AF_T) != 0) {
                     outChars[outCharCount] = trail;
                     glyphStorage.setCharIndex(outCharCount, i-offset, success);
-                    glyphStorage.setAuxData(outCharCount++, nullFeatures, success);
+                    glyphStorage.setAuxData(outCharCount++, nullFeatures, NULL, success);
                 }
             } else {
                 /* Any Hangul will be fully decomposed. Output the decomposed characters. */
                 if ((transition.actionFlags & AF_L) != 0) {
                     outChars[outCharCount] = lead;
                     glyphStorage.setCharIndex(outCharCount, i-offset, success);
-                    glyphStorage.setAuxData(outCharCount++, ljmoFeatures, success);
+                    glyphStorage.setAuxData(outCharCount++, ljmoFeatures, NULL, success);
                 }
 
                 if ((transition.actionFlags & AF_V) != 0) {
                     outChars[outCharCount] = vowel;
                     glyphStorage.setCharIndex(outCharCount, i-offset, success);
-                    glyphStorage.setAuxData(outCharCount++, vjmoFeatures, success);
+                    glyphStorage.setAuxData(outCharCount++, vjmoFeatures, NULL, success);
                 }
 
                 if ((transition.actionFlags & AF_T) != 0) {
                     outChars[outCharCount] = trail;
                     glyphStorage.setCharIndex(outCharCount, i-offset, success);
-                    glyphStorage.setAuxData(outCharCount++, tjmoFeatures, success);
+                    glyphStorage.setAuxData(outCharCount++, tjmoFeatures, NULL, success);
                 }
             }
 
@@ -317,7 +317,7 @@ le_int32 HangulOpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[]
                 outCharCount = outStart;
                 outChars[outCharCount] = syllable;
                 glyphStorage.setCharIndex(outCharCount, inStart-offset, success);
-                glyphStorage.setAuxData(outCharCount++, nullFeatures, success);
+                glyphStorage.setAuxData(outCharCount++, nullFeatures, NULL, success);
 
                 /*
                  * Replace the rest of the input characters with DEL.
@@ -325,7 +325,7 @@ le_int32 HangulOpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[]
                 for(le_int32 d = inStart + 1; d < i; d += 1) {
                     outChars[outCharCount] = 0xFFFF;
                     glyphStorage.setCharIndex(outCharCount, d - offset, success);
-                    glyphStorage.setAuxData(outCharCount++, nullFeatures, success);
+                    glyphStorage.setAuxData(outCharCount++, nullFeatures, NULL, success);
                 }
             }
         }

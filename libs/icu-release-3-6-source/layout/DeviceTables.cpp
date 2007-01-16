@@ -22,7 +22,7 @@ le_int16 DeviceTable::getAdjustment(le_uint16 ppem) const
     le_uint16 format = SWAPW(deltaFormat) - 1;
     le_int16 result = 0;
     
-    if (ppem >= start && ppem <= SWAPW(endSize)) {
+    if (ppem >= start && ppem <= SWAPW(endSize) && format < 3) {
         le_uint16 sizeIndex = ppem - start;
         le_uint16 bits = fieldBits[format];
         le_uint16 count = 16 / bits;

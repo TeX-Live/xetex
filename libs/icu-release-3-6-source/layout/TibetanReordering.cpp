@@ -153,7 +153,7 @@ public:
         fOutChars[fOutIndex] = ch;
 
         fGlyphStorage.setCharIndex(fOutIndex, charIndex, success);
-        fGlyphStorage.setAuxData(fOutIndex, featureMask, success);
+        fGlyphStorage.setAuxData(fOutIndex, featureMask, NULL, success);
 
         fOutIndex += 1;
     }

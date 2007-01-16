@@ -145,5 +145,10 @@ le_int32 LEFontInstance::getLineHeight() const
     return getAscent() + getDescent() + getLeading();
 }
 
+void LEFontInstance::getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const
+{
+    kern.fX = kern.fY = 0;
+}
+
 U_NAMESPACE_END
 

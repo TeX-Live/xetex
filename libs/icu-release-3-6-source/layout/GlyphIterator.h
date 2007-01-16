@@ -28,7 +28,7 @@ public:
 
     GlyphIterator(GlyphIterator &that);
 
-    GlyphIterator(GlyphIterator &that, FeatureMask newFeatureMask);
+    GlyphIterator(GlyphIterator &that, FeatureMask newFeatureMask, le_int32 featureParam = 0);
 
     GlyphIterator(GlyphIterator &that, le_uint16 newLookupFlags);
 
@@ -51,6 +51,8 @@ public:
     le_int32  getMarkComponent(le_int32 markPosition) const;
     le_bool   findMark2Glyph();
 
+    le_int32  getFeatureParam() const;
+
     void getCursiveEntryPoint(LEPoint &entryPoint) const;
     void getCursiveExitPoint(LEPoint &exitPoint) const;
 
@@ -72,7 +74,7 @@ public:
 
 private:
     le_bool filterGlyph(le_uint32 index) const;
-    le_bool hasFeatureTag() const;
+    le_bool hasFeatureTag();
     le_bool nextInternal(le_uint32 delta = 1);
     le_bool prevInternal(le_uint32 delta = 1);
 
@@ -89,6 +91,7 @@ private:
     le_uint16   lookupFlags;
     FeatureMask featureMask;
 
+    le_int32 featureParam;
     const GlyphClassDefinitionTable *glyphClassDefinitionTable;
     const MarkAttachClassDefinitionTable *markAttachClassDefinitionTable;
 

@@ -19,7 +19,7 @@ GlyphIterator::GlyphIterator(LEGlyphStorage &theGlyphStorage, GlyphPositionAdjus
                              FeatureMask theFeatureMask, const GlyphDefinitionTableHeader *theGlyphDefinitionTableHeader)
   : direction(1), position(-1), nextLimit(-1), prevLimit(-1),
     glyphStorage(theGlyphStorage), glyphPositionAdjustments(theGlyphPositionAdjustments),
-    srcIndex(-1), destIndex(-1), lookupFlags(theLookupFlags), featureMask(theFeatureMask),
+    srcIndex(-1), destIndex(-1), lookupFlags(theLookupFlags), featureMask(theFeatureMask), featureParam(0),
     glyphClassDefinitionTable(NULL), markAttachClassDefinitionTable(NULL)
 
 {
@@ -53,11 +53,12 @@ GlyphIterator::GlyphIterator(GlyphIterator &that)
     destIndex = that.destIndex;
     lookupFlags = that.lookupFlags;
     featureMask = that.featureMask;
+    featureParam = that.featureParam;
     glyphClassDefinitionTable = that.glyphClassDefinitionTable;
     markAttachClassDefinitionTable = that.markAttachClassDefinitionTable;
 }
 
-GlyphIterator::GlyphIterator(GlyphIterator &that, FeatureMask newFeatureMask)
+GlyphIterator::GlyphIterator(GlyphIterator &that, FeatureMask newFeatureMask, le_int32 newFeatureParam)
   : glyphStorage(that.glyphStorage)
 {
     direction    = that.direction;
@@ -70,6 +71,7 @@ GlyphIterator::GlyphIterator(GlyphIterator &that, FeatureMask newFeatureMask)
     destIndex = that.destIndex;
     lookupFlags = that.lookupFlags;
     featureMask = newFeatureMask;
+    featureParam = newFeatureParam;
     glyphClassDefinitionTable = that.glyphClassDefinitionTable;
     markAttachClassDefinitionTable = that.markAttachClassDefinitionTable;
 }
@@ -87,6 +89,7 @@ GlyphIterator::GlyphIterator(GlyphIterator &that, le_uint16 newLookupFlags)
     destIndex = that.destIndex;
     lookupFlags = newLookupFlags;
     featureMask = that.featureMask;
+    featureParam = that.featureParam;
     glyphClassDefinitionTable = that.glyphClassDefinitionTable;
     markAttachClassDefinitionTable = that.markAttachClassDefinitionTable;
 }
@@ -100,6 +103,7 @@ void GlyphIterator::reset(le_uint16 newLookupFlags, FeatureMask newFeatureMask)
 {
     position     = prevLimit;
     featureMask  = newFeatureMask;
+    featureParam = 0;
     lookupFlags  = newLookupFlags;
 }
 
@@ -124,6 +128,11 @@ le_int32 GlyphIterator::applyInsertions()
 le_int32 GlyphIterator::getCurrStreamPosition() const
 {
     return position;
+}
+
+le_int32 GlyphIterator::getFeatureParam() const
+{
+	return featureParam;
 }
 
 le_bool GlyphIterator::isRightToLeft() const
@@ -366,8 +375,10 @@ le_bool GlyphIterator::filterGlyph(le_uint32 index) const
     }
 }
 
-le_bool GlyphIterator::hasFeatureTag() const
+le_bool GlyphIterator::hasFeatureTag()
 {
+    featureParam = 0;
+
     if (featureMask == 0) {
         return TRUE;
     }
@@ -375,7 +386,20 @@ le_bool GlyphIterator::hasFeatureTag() const
     LEErrorCode success = LE_NO_ERROR;
     FeatureMask fm = glyphStorage.getAuxData(position, success);
 
-    return (fm & featureMask) != 0;
+    if ((fm & featureMask) != 0) {
+    	const le_int32 *paramList = (const le_int32 *) glyphStorage.getAuxParam(position, success);
+        if (paramList != NULL) {
+            fm = featureMask;
+            while ((fm & 0x80000000UL) == 0) {
+            	++paramList;
+            	fm <<= 1;
+            }
+            featureParam = *paramList;
+        }
+        return TRUE;
+    }
+    
+    return FALSE;
 }
 
 le_bool GlyphIterator::findFeatureTag()

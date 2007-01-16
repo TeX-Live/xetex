@@ -159,6 +159,7 @@ protected:
      * @internal
      */
     const FeatureMap *fFeatureMap;
+    const le_int32 *fFeatureParamList;
 
     /**
      * The length of the feature map.
