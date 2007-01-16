@@ -113,8 +113,8 @@ xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/xetex.version
 
 # The C sources.
-xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
-xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o
+xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c xetex_pool.c
+xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o xetex_pool.o
 xetex_add_o = trans.o XeTeX_ext.o $(xetex_platform_o)
 
 # these compilations require the path to TECkit headers;
@@ -129,6 +129,8 @@ xetex1.o: xetex1.c $(srcdir)/xetexdir/XeTeX_ext.h
 xetex2.o: xetex2.c $(srcdir)/xetexdir/XeTeX_ext.h
 	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 xetexextra.o: xetexextra.c $(srcdir)/xetexdir/XeTeX_ext.h
+	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
+xetex_pool.o: xetex_pool.c $(srcdir)/xetexdir/XeTeX_ext.h
 	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # image support
@@ -145,7 +147,7 @@ jpegimage.o: $(srcdir)/xetexdir/jpegimage.c $(srcdir)/xetexdir/jpegimage.h
 	$(compile) $(ALL_CFLAGS) -c $< -o $@
 
 pngimage.o: $(srcdir)/xetexdir/pngimage.c $(srcdir)/xetexdir/pngimage.h
-	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) $(ZLIBCPPFLAGS) -c $< -o $@
 
 pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp $(srcdir)/xetexdir/pdfimage.h
 	$(CXX) $(ALL_CFLAGS) $(LIBXPDFCPPFLAGS) -c $< -o $@
@@ -191,7 +193,7 @@ XeTeXOTMath.o: $(srcdir)/xetexdir/XeTeXOTMath.cpp $(XeTeXFontHdrs)
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(LIBPNGCPPFLAGS) $(LIBXPDFCPPFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(LIBPNGCPPFLAGS) $(LIBXPDFCPPFLAGS) $(ZLIBCPPFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
 	$(compile) $(ICUCFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
@@ -213,6 +215,9 @@ xetexdir/xetexextra.h: xetexdir/xetexextra.in xetexdir/xetex.version
 	test -d xetexdir || mkdir xetexdir
 	sed s/XETEX-VERSION/`cat xetexdir/xetex.version`/ \
 	  $(srcdir)/xetexdir/xetexextra.in >$@
+
+xetex_pool.c: xetex.pool
+	perl $(srcdir)/xetexdir/pool2c.pl $< > $@
 
 # Tangling
 xetex.p xetex.pool: ./otangle xetex.web # xetex.ch

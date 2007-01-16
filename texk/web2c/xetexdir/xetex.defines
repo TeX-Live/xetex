@@ -59,6 +59,7 @@ authorization from SIL International.
 @define procedure printutf8str();
 @define procedure setinputfileencoding();
 @define procedure terminatefontmanager;
+@define function initpool();
 
 @define procedure memcpy();
 @define function casttoptr();
