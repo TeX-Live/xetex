@@ -112,6 +112,12 @@ xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 	grep '^@d XeTeX_version_string==' $(srcdir)/xetexdir/xetex-new.ch \
 	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/xetex.version
 
+# Extract etex version
+xetexdir/etex.version: $(srcdir)/etexdir/etex.ch
+	test -d xetexdir || mkdir xetexdir
+	grep '^@d eTeX_version_string==' $(srcdir)/etexdir/etex.ch \
+	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/etex.version
+
 # The C sources.
 xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
 xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o
@@ -211,9 +217,10 @@ $(xetex_c) xetexcoerce.h xetexd.h: xetex.p $(web2c_texmf)
 	$(web2c) xetex
 xetexextra.c: lib/texmfmp.c xetexdir/xetexextra.h
 	sed s/TEX-OR-MF-OR-MP/xetex/ $(srcdir)/lib/texmfmp.c >$@
-xetexdir/xetexextra.h: xetexdir/xetexextra.in xetexdir/xetex.version
+xetexdir/xetexextra.h: xetexdir/xetexextra.in xetexdir/xetex.version xetexdir/etex.version
 	test -d xetexdir || mkdir xetexdir
-	sed s/XETEX-VERSION/`cat xetexdir/xetex.version`/ \
+	sed -e s/XETEX-VERSION/`cat xetexdir/xetex.version`/ \
+	    -e s/ETEX-VERSION/`cat xetexdir/etex.version`/ \
 	  $(srcdir)/xetexdir/xetexextra.in >$@
 
 xetex_pool.c: xetex.pool
