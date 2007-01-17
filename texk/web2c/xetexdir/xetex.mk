@@ -267,7 +267,7 @@ xetex.web: tie xetexdir/xetex.mk $(xetex_web_srcs)
 clean:: xetex-clean
 xetex-clean: # etrip-clean
 	$(LIBTOOL) --mode=clean $(RM) xetex
-	rm -f $(xetex_o) $(xetex_c) xetexextra.c xetexcoerce.h xetexd.h
+	rm -f $(xetex_o) $(xetex_c) xetexextra.c xetex_pool.c xetexcoerce.h xetexd.h
 	rm -f xetexdir/xetexextra.h xetexdir/xetex.version
 	rm -f xetex.p xetex.pool xetex.web xetex.ch
 	rm -f xetex.fmt xetex.log
@@ -298,7 +298,7 @@ xelatex.fmt: xetex
 # Install
 install-xetex: install-xetex-exec install-xetex-data
 install-xetex-exec: install-xetex-programs install-xetex-links
-install-xetex-data: install-xetex-pool @FMU@ install-xetex-dumps
+install-xetex-data: @FMU@ install-xetex-dumps
 install-xetex-dumps: install-xetex-fmts
 
 install-programs: @XETEX@ install-xetex-programs
@@ -319,7 +319,5 @@ install-xetex-fmts: xefmts $(xefmtdir)
 	    (cd $(bindir) && (rm -f $$base; $(LN) xetex $$base)); done
 
 install-data:: @XETEX@ install-xetex-data
-install-xetex-pool: xetex.pool $(texpooldir)
-	$(INSTALL_DATA) xetex.pool $(texpooldir)/xetex.pool
 
 # end of xetex.mk
