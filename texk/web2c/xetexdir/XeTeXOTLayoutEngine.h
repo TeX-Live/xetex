@@ -1,6 +1,6 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
- copyright (c) 1994-2006 by SIL International
+ copyright (c) 1994-2007 by SIL International
  written by Jonathan Kew
 
 Permission is hereby granted, free of charge, to any person obtaining  
@@ -50,8 +50,8 @@ public:
 
 	virtual void adjustFeatures(const LETag* addTags, const le_int32* addParams, const LETag* removeTags);
 
-    virtual inline UClassID getDynamicClassID() const { return getStaticClassID(); }
-    static inline UClassID getStaticClassID() { return (UClassID)&fgClassID; }
+    virtual UClassID getDynamicClassID() const;
+    static UClassID getStaticClassID();
 
     static LayoutEngine* LayoutEngineFactory
 				(const XeTeXFontInst* fontInstance,
@@ -61,11 +61,9 @@ public:
 					LEErrorCode &success);
 
 protected:
-	const LETag*	fDefaultFeatures;
+	const FeatureMap*	fDefaultFeatureMap;
 	
 private:
-    static const char fgClassID;
-	
 };
 
 class XeTeXHanLayoutEngine : public XeTeXOTLayoutEngine
@@ -78,11 +76,8 @@ public:
 
     virtual ~XeTeXHanLayoutEngine();
 
-    virtual inline UClassID getDynamicClassID() const { return getStaticClassID(); }
-    static inline UClassID getStaticClassID() { return (UClassID)&fgClassID; }
-
-private:
-    static const char fgClassID;
+    virtual UClassID getDynamicClassID() const;
+    static UClassID getStaticClassID();
 };
 
 #endif

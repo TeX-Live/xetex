@@ -1,6 +1,6 @@
 % /****************************************************************************\
 %  Part of the XeTeX typesetting system
-%  copyright (c) 1994-2006 by SIL International
+%  copyright (c) 1994-2007 by SIL International
 %  written by Jonathan Kew
 % 
 % Permission is hereby granted, free of charge, to any person obtaining  
@@ -55,8 +55,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".996"
-@d XeTeX_version_string=='-0.996' {current \XeTeX\ version}
+@d XeTeX_revision==".997-dev"
+@d XeTeX_version_string=='-0.997-dev' {current \XeTeX\ version}
 @z
 
 @x
