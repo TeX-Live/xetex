@@ -1,16 +1,21 @@
 #! /usr/bin/perl
 
 # convert web .pool file into an array of C strings
-# usage: perl pool2c.pl NAME.pool > NAME_pool.c
+# usage: perl pool2c.pl NAME.pool
+# writes output to ${NAME}_pool.c if only one arg provided
 
-die "expected pool name as argument" unless $#ARGV == 0;
+die "expected pool name as argument" unless $#ARGV >= 0;
+die "too many arguments" if $#ARGV > 1;
 
 $prog = `basename $ARGV[0] .pool`;
 chomp($prog);
 
-open IN, "< $ARGV[0]" or die "can't open input $ARGV[0]";
+$outfile = ($#ARGV == 1) ? $ARGV[1] : "${prog}_pool.c";
 
-print <<__EOT__;
+open IN, "< $ARGV[0]" or die "can't open input $ARGV[0]";
+open OUT, "> $outfile" or die "can't open output $outfile";
+
+print OUT <<__EOT__;
 /* This file is auto-generated from $ARGV[0] by pool2c.pl */
 #define EXTERN extern
 #include "${prog}d.h"
@@ -29,7 +34,7 @@ while (<IN>) {
 		}
 		$str =~ s/(["\\])/\\$1/g;
 		$str =~ s/\?\?\?/\\?\\?\\?/g;
-		printf "\t\"\\x%02X\" \"%s\"\n", $len, $str;
+		printf OUT "\t\"\\x%02X\" \"%s\"\n", $len, $str;
 		$pool_len += $len + 1;
 	}
 	elsif (m/^\*[0-9]+$/) {
@@ -42,7 +47,7 @@ while (<IN>) {
 
 close IN;
 
-print <<__EOT__;
+print OUT <<__EOT__;
 	;
 
 #define POOL_LEN $pool_len
@@ -62,3 +67,5 @@ int initpool(int limit) {
 	return g;
 }
 __EOT__
+
+close OUT;

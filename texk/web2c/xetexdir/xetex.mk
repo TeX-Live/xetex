@@ -113,9 +113,9 @@ xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
 	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/xetex.version
 
 # The C sources.
-xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c xetex_pool.c
-xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o xetex_pool.o
-xetex_add_o = trans.o XeTeX_ext.o $(xetex_platform_o)
+xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
+xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o
+xetex_add_o = trans.o XeTeX_ext.o xetex_pool.o $(xetex_platform_o)
 
 # these compilations require the path to TECkit headers;
 # just setting it in XCFLAGS doesn't seem to work when we're called
@@ -217,7 +217,7 @@ xetexdir/xetexextra.h: xetexdir/xetexextra.in xetexdir/xetex.version
 	  $(srcdir)/xetexdir/xetexextra.in >$@
 
 xetex_pool.c: xetex.pool
-	perl $(srcdir)/xetexdir/pool2c.pl $< > $@
+	perl $(srcdir)/xetexdir/pool2c.pl $< $@
 
 # Tangling
 xetex.p xetex.pool: ./otangle xetex.web # xetex.ch
