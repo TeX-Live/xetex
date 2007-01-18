@@ -722,6 +722,12 @@ if max_quarterword-min_quarterword<255 then bad:=19;
 if max_quarterword-min_quarterword<@"FFFF then bad:=19;
 @z
 
+@x use compressed dump files
+@!word_file = file of memory_word;
+@y
+@!word_file = gzFile;
+@z
+
 @x
 @* \[9] Dynamic memory allocation.
 @y
@@ -4695,6 +4701,21 @@ k:=256;
 @y
 init for k:=0 to biggest_lang do trie_used[k]:=min_quarterword;@+tini@;@/
 k:=biggest_lang+1;
+@z
+
+@x
+undump_int(x);
+if (x<>69069)or feof(fmt_file) then goto bad_fmt
+@y
+undump_int(x);
+if (x<>69069) then goto bad_fmt;
+if not w_eof(fmt_file) then goto bad_fmt
+@z
+
+@x
+@* \[51] The main program.
+@y
+@* \[51] The main program.
 @z
 
 @x

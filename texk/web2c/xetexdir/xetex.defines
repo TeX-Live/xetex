@@ -60,6 +60,8 @@ authorization from SIL International.
 @define procedure setinputfileencoding();
 @define procedure terminatefontmanager;
 @define function initpool();
+@define type gzFile;
+@define function weof();
 
 @define procedure memcpy();
 @define function casttoptr();

@@ -1802,13 +1802,21 @@ swap_items P3C(char *, p,  int, nitems,  int, size)
    OUT_FILE.  */
 
 void
+#ifdef XeTeX
+do_dump P4C(char *, p,  int, item_size,  int, nitems,  gzFile, out_file)
+#else
 do_dump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, out_file)
+#endif
 {
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_DUMP_SHARE)
   swap_items (p, nitems, item_size);
 #endif
 
+#ifdef XeTeX
+  if (gzwrite (out_file, p, item_size * nitems) != item_size * nitems)
+#else
   if (fwrite (p, item_size, nitems, out_file) != nitems)
+#endif
     {
       fprintf (stderr, "! Could not write %d %d-byte item(s).\n",
                nitems, item_size);
@@ -1826,9 +1834,17 @@ do_dump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, out_file)
 /* Here is the dual of the writing routine.  */
 
 void
+#ifdef XeTeX
+do_undump P4C(char *, p,  int, item_size,  int, nitems,  gzFile, in_file)
+#else
 do_undump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, in_file)
+#endif
 {
+#ifdef XeTeX
+  if (gzread (in_file, p, item_size * nitems) != item_size * nitems)
+#else
   if (fread (p, item_size, nitems, in_file) != nitems)
+#endif
     FATAL2 ("Could not undump %d %d-byte item(s)", nitems, item_size);
 
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_DUMP_SHARE)
