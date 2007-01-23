@@ -2356,6 +2356,7 @@ get_uni_c(UFILE* f)
 					case 1: rval <<= 6;	rval += getc(f->f);
 					case 0:	;
 				};
+				rval -= offsetsFromUTF8[extraBytes];
 			}
 			break;
 
