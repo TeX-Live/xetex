@@ -2356,12 +2356,6 @@ get_uni_c(UFILE* f)
 					case 1: rval <<= 6;	rval += getc(f->f);
 					case 0:	;
 				};
-				rval -= offsetsFromUTF8[extraBytes];
-				if (rval > 0xFFFF) {
-					rval -= 0x10000;
-					f->savedChar = 0xdc00 + rval % 0x0400;
-					rval = 0xd800 + rval / 0x0400;
-				}
 			}
 			break;
 
@@ -2369,11 +2363,36 @@ get_uni_c(UFILE* f)
 			rval = getc(f->f);
 			rval <<= 8;
 			rval += getc(f->f);
+			if (rval >= 0xd800 && rval <= 0xdbff) {
+				int	lo = getc(f->f);
+				lo <<= 8;
+				lo += getc(f->f);
+				if (lo >= 0xdc00 && lo <= 0xdfff)
+					rval = 0x10000 + (rval - 0xd800) * 0x400 + (lo - 0xdc00);
+				else {
+					rval = 0xfffd;
+					f->savedChar = lo;
+				}
+			}
+			else if (rval >= 0xdc00 && rval <= 0xdfff)
+				rval = 0xfffd;
 			break;
 
 		case UTF16LE:
 			rval = getc(f->f);
 			rval += (getc(f->f) << 8);
+			if (rval >= 0xd800 && rval <= 0xdbff) {
+				int	lo = getc(f->f);
+				lo += (getc(f->f) << 8);
+				if (lo >= 0xdc00 && lo <= 0xdfff)
+					rval = 0x10000 + (rval - 0xd800) * 0x400 + (lo - 0xdc00);
+				else {
+					rval = 0xfffd;
+					f->savedChar = lo;
+				}
+			}
+			else if (rval >= 0xdc00 && rval <= 0xdfff)
+				rval = 0xfffd;
 			break;
 
 		case RAW:

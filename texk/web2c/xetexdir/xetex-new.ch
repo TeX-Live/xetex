@@ -115,9 +115,11 @@
 
 @d biggest_char=65535 {the largest allowed character number;
    must be |<=max_quarterword|}
+@d biggest_usv=@"10FFFF {the largest Unicode Scalar Value}
 @d too_big_char=65536 {|biggest_char+1|}
 @d special_char=65537 {|biggest_char+2|}
 @d number_chars=65536 {|biggest_char+1|}
+@d number_usvs=@"110000
 @d biggest_reg=255 {the largest allowed register number;
    must be |<=max_quarterword|}
 @d number_regs=256 {|biggest_reg+1|}
@@ -183,6 +185,12 @@ system libraries.
 @!name_length:0..file_name_size;@/{this many characters are actually
   relevant in |name_of_file| (the rest are blank)}
 @!name_length16:0..file_name_size;
+@z
+
+@x
+@!buffer:^ASCII_code; {lines of characters being read}
+@y
+@!buffer:^UnicodeScalar; {lines of characters being read}
 @z
 
 @x
@@ -501,11 +509,16 @@ when it comes to determining whether a character is printable.
   if l<10 then print_visible_char(l+"0")@+else print_visible_char(l-10+"a")
 
 @<Basic printing...@>=
-procedure print_char(@!s:ASCII_code); {prints a single character}
+procedure print_char(@!s:integer); {prints a single character}
 label exit;
 var l: small_number;
-begin if (selector>pseudo) and (not doing_special) then {"printing" to a new string, don't encode chars}
-  begin print_visible_char(s); return;
+begin if (selector>pseudo) and (not doing_special) then
+  {"printing" to a new string, encode as UTF-16 rather than UTF-8}
+  begin if s>=@"10000 then begin
+      print_visible_char(@"D800 + (s - @"10000) div @"400);
+      print_visible_char(@"DC00 + (s - @"10000) mod @"400);
+    end else print_visible_char(s);
+    return;
   end;
 if @<Character |s| is the current new-line character@> then
  if selector<pseudo then
@@ -532,10 +545,15 @@ end else begin
 		print_visible_char(@"C0 + s div @"40);
 		print_visible_char(@"80 + s mod @"40);
 	end
-	else begin
-		print_visible_char(@"E0 + s div @"1000);
+	else if s<@"10000 then begin
+		print_visible_char(@"E0 + (s div @"1000));
 		print_visible_char(@"80 + (s mod @"1000) div @"40);
-		print_visible_char(@"80 + (s mod @"1000) mod @"40);
+		print_visible_char(@"80 + (s mod @"40));
+	end else begin
+		print_visible_char(@"F0 + (s div @"40000));
+		print_visible_char(@"80 + (s mod @"40000) div @"1000);
+		print_visible_char(@"80 + (s mod @"1000) div @"40);
+		print_visible_char(@"80 + (s mod @"40));
 	end
 end;
 exit:end;
@@ -1002,9 +1020,9 @@ single-character control sequences.
 @d single_base=active_base+256 {equivalents of one-character control sequences}
 @d null_cs=single_base+256 {equivalent of \.{\\csname\\endcsname}}
 @y
-@d single_base=active_base+number_chars
+@d single_base=active_base+number_usvs
    {equivalents of one-character control sequences}
-@d null_cs=single_base+number_chars {equivalent of \.{\\csname\\endcsname}}
+@d null_cs=single_base+number_usvs {equivalent of \.{\\csname\\endcsname}}
 @z
 
 @x
@@ -1108,12 +1126,12 @@ primitive("XeTeXlinebreakskip",assign_glue,glue_base+XeTeX_linebreak_skip_code);
 @d math_font_base=xprn_code_base+1
 @d cat_code_base=math_font_base+number_math_fonts
   {table of number_chars command codes (the ``catcodes'')}
-@d lc_code_base=cat_code_base+number_chars {table of number_chars lowercase mappings}
-@d uc_code_base=lc_code_base+number_chars {table of number_chars uppercase mappings}
-@d sf_code_base=uc_code_base+number_chars {table of number_chars spacefactor mappings}
-@d math_code_base=sf_code_base+number_chars {table of number_chars math mode mappings}
-@d char_sub_code_base=math_code_base+number_chars {table of character substitutions}
-@d int_base=char_sub_code_base+number_chars {beginning of region 5}
+@d lc_code_base=cat_code_base+number_usvs {table of number_chars lowercase mappings}
+@d uc_code_base=lc_code_base+number_usvs {table of number_chars uppercase mappings}
+@d sf_code_base=uc_code_base+number_usvs {table of number_chars spacefactor mappings}
+@d math_code_base=sf_code_base+number_usvs {table of number_chars math mode mappings}
+@d char_sub_code_base=math_code_base+number_usvs {table of character substitutions}
+@d int_base=char_sub_code_base+number_usvs {beginning of region 5}
 @z
 
 @x
@@ -1146,7 +1164,7 @@ for k:=math_font_base to math_font_base+number_math_fonts-1 do eqtb[k]:=eqtb[cur
 @x
 for k:=0 to 255 do
 @y
-for k:=0 to number_chars-1 do
+for k:=0 to number_usvs-1 do
 @z
 
 @x
@@ -1326,6 +1344,24 @@ the sequential searching in one of the 128 token lists.
 @z
 
 @x
+  else print(p-active_base)
+@y
+  else print_char(p-active_base)
+@z
+
+@x
+  if p<single_base then print(p-active_base)
+@y
+  if p<single_base then print_char(p-active_base)
+@z
+
+@x
+begin if s<256 then cur_val:=s+single_base
+@y
+begin if s<number_usvs then cur_val:=s+single_base
+@z
+
+@x
 else  begin k:=str_start[s]; l:=str_start[s+1]-k;
 @y
 else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
@@ -1490,29 +1526,69 @@ thus, a token fits comfortably in a halfword.
 @d end_match_token=@'7000 {$2^8\cdot|end_match|$}
 @d protected_token=@'7001 {$2^8\cdot|end_match|+1$}
 @y
-@d cs_token_flag=@"FFFFF {amount added to the |eqtb| location in a
+@d cs_token_flag=    @"1FFFFFF {@"FFFFF amount added to the |eqtb| location in a
   token that stands for a control sequence; is a multiple of~65536, less~1}
-@d max_char_val=@"10000 {to separate char and command code}
-@d left_brace_token=@"10000 {$2^16\cdot|left_brace|$}
-@d left_brace_limit=@"20000 {$2^16\cdot(|left_brace|+1)$}
-@d right_brace_token=@"20000 {$2^16\cdot|right_brace|$}
-@d right_brace_limit=@"30000 {$2^16\cdot(|right_brace|+1)$}
-@d math_shift_token=@"30000 {$2^16\cdot|math_shift|$}
-@d tab_token=@"40000 {$2^16\cdot|tab_mark|$}
-@d out_param_token=@"50000 {$2^16\cdot|out_param|$}
-@d space_token=@"A0020 {$2^16\cdot|spacer|+|" "|$}
-@d letter_token=@"B0000 {$2^16\cdot|letter|$}
-@d other_token=@"C0000 {$2^16\cdot|other_char|$}
-@d match_token=@"D0000 {$2^16\cdot|match|$}
-@d end_match_token=@"E0000 {$2^16\cdot|end_match|$}
+@d max_char_val=      @"200000 {@"10000 to separate char and command code}
+@d left_brace_token=  @"200000 {@"10000 $2^16\cdot|left_brace|$}
+@d left_brace_limit=  @"400000 {@"20000 $2^16\cdot(|left_brace|+1)$}
+@d right_brace_token= @"400000 {@"20000 $2^16\cdot|right_brace|$}
+@d right_brace_limit= @"600000 {@"30000 $2^16\cdot(|right_brace|+1)$}
+@d math_shift_token=  @"600000 {@"30000 $2^16\cdot|math_shift|$}
+@d tab_token=         @"800000 {@"40000 $2^16\cdot|tab_mark|$}
+@d out_param_token=   @"A00000 {@"50000 $2^16\cdot|out_param|$}
+@d space_token=      @"1400020 {@"A0020 $2^16\cdot|spacer|+|" "|$}
+@d letter_token=     @"1600000 {@"B0000 $2^16\cdot|letter|$}
+@d other_token=      @"1800000 {@"C0000 $2^16\cdot|other_char|$}
+@d match_token=      @"1A00000 {@"D0000 $2^16\cdot|match|$}
+@d end_match_token=  @"1C00000 {@"E0000 $2^16\cdot|end_match|$}
 
 @d protected_token=end_match_token+1 {$2^8\cdot|end_match|+1$}
+@z
+
+@x
+procedure show_token_list(@!p,@!q:integer;@!l:integer);
+label exit;
+var m,@!c:integer; {pieces of a token}
+@!match_chr:ASCII_code; {character used in a `|match|'}
+@y
+procedure show_token_list(@!p,@!q:integer;@!l:integer);
+label exit;
+var m,@!c:integer; {pieces of a token}
+@!match_chr:integer; {character used in a `|match|'}
 @z
 
 @x
 else  begin m:=info(p) div @'400; c:=info(p) mod @'400;
 @y
 else  begin m:=info(p) div max_char_val; c:=info(p) mod max_char_val;
+@z
+
+@x
+@<Display the token ...@>=
+case m of
+left_brace,right_brace,math_shift,tab_mark,sup_mark,sub_mark,spacer,
+  letter,other_char: print(c);
+mac_param: begin print(c); print(c);
+  end;
+out_param: begin print(match_chr);
+  if c<=9 then print_char(c+"0")
+  else  begin print_char("!"); return;
+    end;
+  end;
+match: begin match_chr:=c; print(c); incr(n); print_char(n);
+@y
+@<Display the token ...@>=
+case m of
+left_brace,right_brace,math_shift,tab_mark,sup_mark,sub_mark,spacer,
+  letter,other_char: print_char(c);
+mac_param: begin print_char(c); print_char(c);
+  end;
+out_param: begin print_char(match_chr);
+  if c<=9 then print_char(c+"0")
+  else  begin print_char("!"); return;
+    end;
+  end;
+match: begin match_chr:=c; print_char(c); incr(n); print_char(n);
 @z
 
 @x
@@ -1787,7 +1863,7 @@ def_code: @<Fetch a character code from some table@>;
 def_code: @<Fetch a character code from some table@>;
 XeTeX_def_code:
   begin
-    scan_char_num;
+    scan_usv_num;
     if m=math_code_base then begin
       scanned_result(ho(math_code(cur_val)))(int_val)
     end
@@ -1806,6 +1882,14 @@ XeTeX_def_code:
       scanned_result(0)(int_val);
     end;
   end;
+@z
+
+@x
+@ @<Fetch a character code from some table@>=
+begin scan_char_num;
+@y
+@ @<Fetch a character code from some table@>=
+begin scan_usv_num;
 @z
 
 @x
@@ -1964,7 +2048,7 @@ end;
 @x
 if cur_val>255 then
 @y
-if cur_val>biggest_char then
+if cur_val>biggest_usv then
 @z
 
 @x
@@ -2543,11 +2627,13 @@ loop@+begin if (cur_cmd>other_char)or(cur_chr>biggest_char) then
 @x
 @d non_char==qi(256) {a |halfword| code that can't match a real character}
 @y
+@d gr_font_flag=65533
 @d ot_font_flag=65534
 @d aat_font_flag=65535
 @d is_atsu_font(#)==(font_area[#]=aat_font_flag)
 @d is_ot_font(#)==(font_area[#]=ot_font_flag)
-@d is_native_font(#)==(is_atsu_font(#) or is_ot_font(#))
+@d is_gr_font(#)==(font_area[#]=gr_font_flag)
+@d is_native_font(#)==(is_atsu_font(#) or is_ot_font(#) or is_gr_font(#))
 	{native fonts have font_area = 65534 or 65535,
 	 which would be a string containing an invalid Unicode character}
 
@@ -2894,7 +2980,7 @@ p:=list_ptr(this_box);
 @y
 @ Extra stuff for justifiable AAT text; need to merge runs of words and normal spaces.
 
-@d is_native_word_node(#) == (not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = native_word_node)
+@d is_native_word_node(#) == ((not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = native_word_node))
 
 @<Merge sequences of words using AAT fonts and inter-word spaces into single nodes@>=
 p := list_ptr(this_box);
@@ -4452,17 +4538,18 @@ def_family: print_size(chr_code-math_font_base);
 
 @x
 def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
+  p:=cur_chr; scan_char_num;
 @y
 XeTeX_def_code: begin
     if cur_chr = math_code_base then begin
-      p:=cur_chr; scan_char_num;
+      p:=cur_chr; scan_usv_num;
       p:=p+cur_val;
       scan_optional_equals;
       scan_xetex_math_char_int;
       define(p,data,hi(cur_val));
     end
     else if cur_chr = math_code_base+1 then begin
-      p:=cur_chr-1; scan_char_num;
+      p:=cur_chr-1; scan_usv_num;
       p:=p+cur_val;
       scan_optional_equals;
       scan_math_class_int; n := set_class_field(cur_val);
@@ -4471,7 +4558,7 @@ XeTeX_def_code: begin
       define(p,data,hi(n));
     end
     else if cur_chr = del_code_base then begin
-      p:=cur_chr; scan_char_num;
+      p:=cur_chr; scan_usv_num;
       p:=p+cur_val;
       scan_optional_equals;
       scan_int; {scan_xetex_del_code_int; !!FIXME!!}
@@ -4484,7 +4571,7 @@ extended:        @"40000000                      FLAG
                  +  ff << 21 (mult by @"200000)  FAMILY
                  +   1ccccc (21 bits)            USV
 }
-      p:=cur_chr-1; scan_char_num;
+      p:=cur_chr-1; scan_usv_num;
       p:=p+cur_val;
       scan_optional_equals;
       n := @"40000000; {extended delcode flag}
@@ -4494,6 +4581,7 @@ extended:        @"40000000                      FLAG
     end;
   end;
 def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
+  p:=cur_chr; scan_usv_num;
 @z
 
 @x
@@ -4532,7 +4620,7 @@ def_code: begin @<Let |n| be the largest legal code value, based on |cur_chr|@>;
 @x
 else n:=255
 @y
-else n:=biggest_char
+else n:=biggest_usv
 @z
 
 @x
@@ -4593,7 +4681,7 @@ set_font:begin print("select font ");
 @x
 @!c:eight_bits; {character code}
 @y
-@!c:ASCII_code; {character code}
+@!c:integer; {character code}
 @z
 
 @x
@@ -4726,6 +4814,12 @@ if not w_eof(fmt_file) then goto bad_fmt
 @z
 
 @x
+  buffer:=xmalloc_array (ASCII_code, buf_size);
+@y
+  buffer:=xmalloc_array (UnicodeScalar, buf_size);
+@z
+
+@x
   input_file:=xmalloc_array (alpha_file, max_in_open);
 @y
   input_file:=xmalloc_array (unicode_file, max_in_open);
@@ -4832,9 +4926,24 @@ pdf_save_pos_node: @<Implement \.{\\pdfsavepos}@>;
 @ @<Display the whatsit...@>=
 @y
 procedure print_native_word(@!p:pointer);
-var i:integer;
+var i,c,cc:integer;
 begin
-	for i:=0 to native_length(p) - 1 do print_char(get_native_char(p,i));
+	for i:=0 to native_length(p) - 1 do begin
+		c:=get_native_char(p,i);
+		if (c >= @"D800) and (c <= @"DBFF) then begin
+			if i < native_length(p) - 1 then begin
+				cc:=get_native_char(p, i+1);
+				if (cc >= @"DC00) and (cc <= @"DFFF) then begin
+					c := @"10000 + (c - @"D800) * @"400 + (cc - @"DC00);
+					print_char(c);
+					incr(i);
+				end else
+					print(".");
+			end else
+				print(".");
+		end	else
+			print_char(c);
+	end
 end;
 
 @ @<Display the whatsit...@>=
@@ -5811,8 +5920,8 @@ XeTeX_OT_script_code:
   begin
     scan_font_ident; n:=cur_val;
     if is_ot_font(n) then begin
-      scan_int; k:=cur_val;
-      cur_val:=ot_font_get_1(m - XeTeX_int, font_layout_engine[n], k);
+      scan_int;
+      cur_val:=ot_font_get_1(m - XeTeX_int, font_layout_engine[n], cur_val);
     end else begin
       not_ot_font_error(last_item, m, n); cur_val:=-1;
     end;
@@ -5864,10 +5973,9 @@ XeTeX_font_type_code:
   begin
     scan_font_ident; n:=cur_val;
     if is_atsu_font(n) then cur_val:=1
-    else begin
-      if is_ot_font(n) then cur_val:=2
-      else cur_val:=0
-    end
+    else if is_ot_font(n) then cur_val:=2
+    else if is_gr_font(n) then cur_val:=3
+    else cur_val:=0;
   end;
 
 XeTeX_first_char_code,XeTeX_last_char_code:
@@ -6078,6 +6186,12 @@ whatsit_node:
 str_pool[pool_ptr]:=si(" "); l:=str_start[s];
 @y
 str_pool[pool_ptr]:=si(" "); l:=str_start_macro(s);
+@z
+
+@x
+  buffer[m]:=info(p) mod @'400; incr(m); p:=link(p);
+@y
+  buffer[m]:=info(p) mod max_char_val; incr(m); p:=link(p);
 @z
 
 @x

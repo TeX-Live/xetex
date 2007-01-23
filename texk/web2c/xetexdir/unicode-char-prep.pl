@@ -35,7 +35,7 @@
 while (<>) {
 	chomp;
 	@u = split(/;/);
-	last if length($u[0]) > 4;
+#	last if length($u[0]) > 4;
 	if ($u[1] =~ /First>/) {
 		$start = hex "0x$u[0]";
 		$_ = <>;
@@ -51,9 +51,9 @@ while (<>) {
 		}
 	}
 	else {
-		$lccode{$u[0]} = $u[13] if $u[13] ne '' and length($u[13]) <= 4;
+		$lccode{$u[0]} = $u[13] if $u[13] ne '';# and length($u[13]) <= 4;
 		$lccode{$u[0]} = $u[0]  if $u[13] eq '' and $u[2] =~ /^L/;
-		$uccode{$u[0]} = $u[12] if $u[12] ne '' and length($u[12]) <= 4;
+		$uccode{$u[0]} = $u[12] if $u[12] ne '';# and length($u[12]) <= 4;
 		$uccode{$u[0]} = $u[0]  if $u[12] eq '' and $u[2] =~ /^L/;
 		if ($u[2] =~ /^L/) {
 			push(@letters, $u[0]);
