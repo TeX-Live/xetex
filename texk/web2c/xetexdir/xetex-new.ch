@@ -1356,12 +1356,6 @@ the sequential searching in one of the 128 token lists.
 @z
 
 @x
-begin if s<256 then cur_val:=s+single_base
-@y
-begin if s<number_usvs then cur_val:=s+single_base
-@z
-
-@x
 else  begin k:=str_start[s]; l:=str_start[s+1]-k;
 @y
 else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
