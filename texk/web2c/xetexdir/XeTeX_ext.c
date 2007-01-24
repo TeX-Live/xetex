@@ -324,7 +324,7 @@ static char* byteBuffer = NULL;
 	
 	/* now apply the mapping to turn external bytes into Unicode characters in buffer */
 	cnv = (UConverter*)(f->conversionData);
-#if WORDS_BIGENDIAN
+#ifdef WORDS_BIGENDIAN
 #define UCNV_UTF32_NativeEndian	UCNV_UTF32_BigEndian
 #else
 #define UCNV_UTF32_NativeEndian	UCNV_UTF32_LittleEndian
