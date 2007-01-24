@@ -11,8 +11,7 @@
 %% 
 %%   License information appended.
 %% 
-%% 
-\ProvidesFile{eu1enc.def}[2006/08/13 v0.1 Experimental unicode font encoding]
+\ProvidesFile{eu1enc.def}[2006/08/13 v0.1a Experimental unicode font encoding]
 \DeclareFontEncoding{EU1}{}{}
 \DeclareErrorFont{EU1}{lmr}{m}{n}{10}
 \DeclareFontSubstitution{EU1}{lmr}{m}{n}

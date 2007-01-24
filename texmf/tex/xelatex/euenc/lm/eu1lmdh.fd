@@ -1,0 +1,19 @@
+% This file belongs to the Latin Modern package. The work is released under
+% the GUST Font License. See the MANIFEST.txt and README.eng files
+% for the details. For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+
+\ProvidesFile{eu1lmdh.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
+\DeclareFontFamily{EU1}{lmdh}{\hyphenchar\font45 }
+\DeclareFontShape{EU1}{lmdh}{m}{n}{%
+      <-> "[lmroman10-dunhill]"
+    }{}
+\DeclareFontShape{EU1}{lmdh}{m}{it}
+      {<->sub*lmdh/m/sl}{}
+\DeclareFontShape{EU1}{lmdh}{m}{sl}{%
+      <-> "[lmroman10-dunhilloblique]"
+    }{}
+\endinput
+%%
+%% End of file `eu1lmdh.fd'.

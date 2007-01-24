@@ -1,7 +1,7 @@
 _______________________
-THE EU ENCODING(S) v0.1
+THE EU ENCODING(S) v0.1a
 
-This package is the first release of the first step towards offering a 
+This package is the first release of the first step towards offering a
 LaTeX font encoding based on unicode. XeTeX is the only engine currently
 utilising it to the best of my knowledge. No macro support is offered (the
 encoding is just a placeholder for now) but an EU1 Latin Modern encoding is
@@ -23,4 +23,4 @@ See the accompanying file <test-eu1lm.ltx> for a complete example.
 
 ______________
 Will Robertson
-2006
+2007
