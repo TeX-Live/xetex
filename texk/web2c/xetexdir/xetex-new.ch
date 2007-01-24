@@ -274,9 +274,20 @@ incr(str_ptr); str_start_macro(str_ptr):=pool_ptr;
 @x
 begin j:=str_start[s];
 while j<str_start[s+1] do
+  begin if so(str_pool[j])<>buffer[k] then
 @y
 begin j:=str_start_macro(s);
 while j<str_start_macro(s+1) do
+  begin
+    if buffer[k]>=@"10000 then
+      if so(str_pool[j])<>@"D800+(buffer[k]-@"10000)div@"400 then
+        begin result:=false; goto not_found;
+        end
+      else if so(str_pool[j+1])<>@"DC00+(buffer[k]-@"10000)mod@"400 then
+        begin result:=false; goto not_found;
+        end
+      else incr(j)
+    else if so(str_pool[j])<>buffer[k] then
 @z
 
 @x
@@ -627,7 +638,13 @@ else if s<biggest_char then
     end;
 j:=str_start_macro(s);
 while j<str_start_macro(s+1) do
-  begin print_char(so(str_pool[j])); incr(j);
+  if (so(str_pool[j])>=@"D800) and (so(str_pool[j])<=@"DFFF) then
+  begin if (so(str_pool[j])<=@"DBFF) and (j+1<str_start_macro(s+1))
+    and (so(str_pool[j+1])>=@"DC00) and (so(str_pool[j+1])<=@"DFFF) then
+    begin print_char(@"10000 + (so(str_pool[j])-@"D800) * @"400
+                     + so(str_pool[j+1])-@"DC00); j:=j+2;
+    end
+  end else begin print_char(so(str_pool[j])); incr(j);
   end;
 exit:end;
 @z
@@ -661,7 +678,7 @@ begin  @<Set variable |c| to the current escape character@>;
 if c>=0 then if c<256 then print(c);
 @y
 begin  @<Set variable |c| to the current escape character@>;
-if c>=0 then if c<=biggest_char then print_char(c);
+if c>=0 then if c<=biggest_usv then print_char(c);
 @z
 
 @x
@@ -1325,9 +1342,35 @@ for q:=active_base to box_base+biggest_reg do
 @z
 
 @x
+begin @<Compute the hash code |h|@>;
+p:=h+hash_base; {we start searching here; note that |0<=h<hash_prime|}
+loop@+begin if text(p)>0 then if length(text(p))=l then
+@y
+@!ll:integer; {length in utf16 code units}
+begin @<Compute the hash code |h|@>;
+p:=h+hash_base; {we start searching here; note that |0<=h<hash_prime|}
+ll:=l; for d:=0 to l-1 do if buffer[j+d]>=@"10000 then incr(ll);
+loop@+begin if text(p)>0 then if length(text(p))=ll then
+@z
+
+@x
+str_room(l); d:=cur_length;
 while pool_ptr>str_start[str_ptr] do
 @y
+str_room(ll); d:=cur_length;
 while pool_ptr>str_start_macro(str_ptr) do
+@z
+
+@x
+for k:=j to j+l-1 do append_char(buffer[k]);
+@y
+for k:=j to j+l-1 do begin
+  if buffer[k]<@"10000 then append_char(buffer[k])
+  else begin
+    append_char(@"D800+(buffer[k]-@"10000)div@"400);
+    append_char(@"DC00+(buffer[k]-@"10000)mod@"400);
+  end
+end;
 @z
 
 @x
