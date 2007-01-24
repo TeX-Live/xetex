@@ -324,11 +324,19 @@ static char* byteBuffer = NULL;
 	
 	/* now apply the mapping to turn external bytes into Unicode characters in buffer */
 	cnv = (UConverter*)(f->conversionData);
-	outLen = ucnv_toUChars(cnv, &buffer[first], (bufsize - first), byteBuffer, bytesRead, &errorCode);
+#if WORDS_BIGENDIAN
+#define UCNV_UTF32_NativeEndian	UCNV_UTF32_BigEndian
+#else
+#define UCNV_UTF32_NativeEndian	UCNV_UTF32_LittleEndian
+#endif
+	outLen = ucnv_toAlgorithmic(UCNV_UTF32_NativeEndian, cnv,
+								(char*)&buffer[first], sizeof(*buffer) * (bufsize - first),
+								byteBuffer, bytesRead, &errorCode);
 	if (errorCode != 0) {
 		fprintf(stderr, "! Unicode conversion failed: error code = %d\n", (int)errorCode);
 		return false;
 	}
+	outLen /= sizeof(*buffer);
 	last = first + outLen;
 	buffer[last] = ' ';
 
