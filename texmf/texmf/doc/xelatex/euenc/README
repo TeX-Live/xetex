@@ -1,0 +1,26 @@
+_______________________
+THE EU ENCODING(S) v0.1a
+
+This package is the first release of the first step towards offering a
+LaTeX font encoding based on unicode. XeTeX is the only engine currently
+utilising it to the best of my knowledge. No macro support is offered (the
+encoding is just a placeholder for now) but an EU1 Latin Modern encoding is
+offered in order to access the OpenType versions of those fonts.
+
+N.B. This will only work when xdvipdfmx is used as the output driver for
+XeTeX; xdv2pdf (Mac OS X only) does not support OpenType fonts that aren't
+installed in the system itself.
+
+Example of use:
+\documentclass{article}
+\usepackage[EU1]{fontenc}
+\usepackage{lmodern}
+\begin{document}
+...
+\end{document}
+
+See the accompanying file <test-eu1lm.ltx> for a complete example.
+
+______________
+Will Robertson
+2007

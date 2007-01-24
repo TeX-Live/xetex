@@ -1,0 +1,48 @@
+% Copyright 2006 by Will Robertson <wspr81@gmail.com>
+% 
+% Distributable under the LaTeX Project Public License,
+% version 1.3c or higher (your choice). The latest version of
+% this license is at: http://www.latex-project.org/lppl.txt
+%
+% This work is "maintained" (as per LPPL maintenance status) 
+% by Will Robertson.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The ifxetex package, version 0.2
+%%
+%% Usage:     LaTeX - \usepackage{ifxetex}
+%%            Plain - \input ifxetex.sty
+%%
+%% Function:  Provides the \ifxetex boolean for testing
+%%            whether XeTeX is being used for typesetting.
+%%
+%%            Provides the \RequireXeTeX command which throws
+%%            an error if XeTeX is not the engine in use.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\expandafter\ifx\csname ProvidesPackage\endcsname\relax\else
+  \ProvidesPackage{ifxetex}
+    [2006/08/12 v0.2 Provides ifxetex conditional]
+\fi
+
+\expandafter\ifx\csname ifxetex\endcsname\relax
+  \newif\ifxetex
+\fi
+
+\expandafter\ifx\csname XeTeXrevision\endcsname\relax\else
+  \xetextrue
+\fi
+
+\def\RequireXeTeX{%
+  \ifxetex\else
+    \begingroup
+      \errorcontextlines=-1\relax
+      \newlinechar=10\relax
+      \errmessage{^^J
+      ********************************************^^J
+      * XeTeX is required to compile this document.^^J
+      * Sorry!^^J
+      ********************************************}%
+    \endgroup
+  \fi}

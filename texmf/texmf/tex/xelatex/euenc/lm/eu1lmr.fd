@@ -1,0 +1,50 @@
+% This file belongs to the Latin Modern package. The work is released under
+% the GUST Font License. See the MANIFEST.txt and README.eng files
+% for the details. For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+
+\ProvidesFile{eu1lmr.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
+\DeclareFontFamily{EU1}{lmr}{}
+\DeclareFontShape{EU1}{lmr}{m}{n}%
+     {<-5.5>    "[lmroman5-regular]"     <5.5-6.5> "[lmroman6-regular]"
+      <6.5-7.5> "[lmroman7-regular]"     <7.5-8.5> "[lmroman8-regular]"
+      <8.5-9.5> "[lmroman9-regular]"     <9.5-11>  "[lmroman10-regular]"
+      <11-15>   "[lmroman12-regular]"
+      <15-> "[lmroman17-regular]"
+      }{}
+\DeclareFontShape{EU1}{lmr}{m}{sl}%
+     {<-8.5>    "[lmroman8-oblique]"    <8.5-9.5> "[lmroman9-oblique]"
+      <9.5-11>  "[lmroman10-oblique]"   <11-15>   "[lmroman12-oblique]"
+      <15-> "[lmroman17-oblique]"
+      }{}
+\DeclareFontShape{EU1}{lmr}{m}{it}%
+     {<-7.5>    "[lmroman7-italic]"
+      <7.5-8.5> "[lmroman8-italic]"    <8.5-9.5> "[lmroman9-italic]"
+      <9.5-11>  "[lmroman10-italic]"   <11->   "[lmroman12-italic]"
+      }{}
+\DeclareFontShape{EU1}{lmr}{m}{sc}%
+     {<-> "[lmroman10-capsregular]"}{}
+%
+% Is this the right 'shape'?:
+\DeclareFontShape{EU1}{lmr}{m}{scsl}%
+     {<-> "[lmroman10-capsoblique]"}{}
+%%%%%%% bold series
+\DeclareFontShape{EU1}{lmr}{b}{n}
+     {<-> "[lmroman10-demi]"}{}
+\DeclareFontShape{EU1}{lmr}{b}{sl}
+     {<-> "[lmroman10-demioblique]"}{}
+%%%%%%%% bold extended series
+\DeclareFontShape{EU1}{lmr}{bx}{n}
+     {<-5.5>   "[lmroman5-bold]"      <5.5-6.5> "[lmroman6-bold]"
+      <6.5-7.5> "[lmroman7-bold]"      <7.5-8.5> "[lmroman8-bold]"
+      <8.5-9.5> "[lmroman9-bold]"      <9.5-11>  "[lmroman10-bold]"
+      <11->   "[lmroman12-bold]"
+      }{}
+\DeclareFontShape{EU1}{lmr}{bx}{it}
+     {<-> "[lmroman10-bolditalic]"}{}
+\DeclareFontShape{EU1}{lmr}{bx}{sl}
+     {<-> "[lmroman10-boldoblique]"}{}
+\endinput
+%%
+%% End of file `eu1lmr.fd'.

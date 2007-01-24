@@ -1,0 +1,36 @@
+% This file belongs to the Latin Modern package. The work is released under
+% the GUST Font License. See the MANIFEST.txt and README.eng files
+% for the details. For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+
+\ProvidesFile{eu1lmvtt.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
+\DeclareFontFamily{EU1}{lmvtt}{\hyphenchar \font\m@ne}
+\DeclareFontShape{EU1}{lmvtt}{m}{n}
+     {<-> "[lmtypewritervarwd10-regular]"}{}
+\DeclareFontShape{EU1}{lmvtt}{m}{sl}
+     {<-> "[lmtypewritervarwd10-oblique]"}{}
+\DeclareFontShape{EU1}{lmvtt}{m}{it}
+     {<->sub*lmvtt/m/sl}{}
+%%%%%%%% light (l) and dark (b) variants:
+\DeclareFontShape{EU1}{lmvtt}{l}{n}
+     {<-> "[lmtypewritervarwd10-light]"}{}
+\DeclareFontShape{EU1}{lmvtt}{l}{sl}
+     {<-> "[lmtypewritervarwd10-lightoblique]"}{}
+\DeclareFontShape{EU1}{lmvtt}{l}{it}
+     {<->sub*lmvtt/l/sl}{}
+\DeclareFontShape{EU1}{lmvtt}{b}{n}
+     {<-> "[lmtypewritervarwd10-dark]"}{}
+\DeclareFontShape{EU1}{lmvtt}{b}{sl}
+     {<-> "[lmtypewritervarwd10-darkoblique]"}{}
+\DeclareFontShape{EU1}{lmvtt}{b}{it}
+     {<->sub*lmvtt/b/sl}{}
+\DeclareFontShape{EU1}{lmvtt}{bx}{n}
+     {<->ssub*lmvtt/b/n}{}
+\DeclareFontShape{EU1}{lmvtt}{bx}{sl}
+     {<->ssub*lmvtt/b/sl}{}
+\DeclareFontShape{EU1}{lmvtt}{bx}{it}
+     {<->sub*lmvtt/b/sl}{}
+\endinput
+%%
+%% End of file `eu1lmvtt.fd'.

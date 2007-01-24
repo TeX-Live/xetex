@@ -1,0 +1,3217 @@
+% \iffalse meta-comment
+%
+%!TEX encoding = UTF-8 Unicode
+%
+% Copyright 2005 by Will Robertson <wspr81@gmail.com>
+% 
+% Distributable under the LaTeX Project Public License,
+% version 1.3c or higher (your choice). The latest version of
+% this license is at: http://www.latex-project.org/lppl.txt
+%
+% This work is "maintained" (as per LPPL maintenance status) 
+% by Will Robertson.
+% 
+% This work consists of the file  unicode-math.dtx
+%           and the derived files unicode-math.sty and unicode-math.pdf.
+%
+%
+%<*internalbatchfile>
+\begingroup
+%</internalbatchfile>
+%<*batchfile>
+\input docstrip.tex
+\keepsilent
+\preamble
+
+  ________________________________
+  Copyright © 2006  Will Robertson
+
+  License information appended.
+
+
+\endpreamble
+\postamble
+
+Copyright © 2006 by Will Robertson <wspr81@gmail.com>
+
+Distributable under the LaTeX Project Public License,
+version 1.3c or higher (your choice). The latest version of
+this license is at: http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status) 
+by Will Robertson.
+
+This work consists of the file  \jobname.dtx
+          and the derived files \jobname.sty and \jobname.pdf.
+
+\endpostamble
+\askforoverwritefalse
+\generate{\file{\jobname.sty}{\from{\jobname.dtx}{package}}}
+\generate{\file{\jobname.ins}{\from{\jobname.dtx}{batchfile}}}
+\nopreamble\nopostamble
+\generate{\file{\jobname-alphabets.tex}{\from{\jobname.dtx}{alphabets}}}
+\generate{\file{dtx-style.sty}{\from{\jobname.dtx}{dtx-style}}}
+\generate{\file{stix-extract.sh}{\from{\jobname.dtx}{awk-script}}}
+%</batchfile>
+%<batchfile>\endbatchfile
+%<*internalbatchfile>
+\endgroup
+%</internalbatchfile>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+%\OnlyDescription
+\usepackage{dtx-style}
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+%
+% \fi
+%
+% \GetFileInfo{\jobname.sty}
+% \CheckSum{0}
+% \makeatletter
+%
+% \setmathfont{Cambria Math}
+%
+% \title{Experimental unicode mathematical typesetting: The \pkg{unicode-math} package}
+% \author{Will Robertson}
+% \date{\filedate \qquad \fileversion}
+%
+% \maketitle
+%
+% \tableofcontents
+%
+% \section{Introduction}
+%
+% This document describes the \pkg{unicode-math} package, which is an
+% \emph{experimental} implementation of a macro to unicode glyph encoding for 
+% mathematical characters. Its intended use is for \XeTeX, although it is conjectured 
+% that small effect needs to be spent to create a cross-format package that would 
+% also work with \OMEGA.
+%
+% As of \XeTeX\ v.\,0.995, maths characters can be accessed in unicode 
+% ranges. Now, a proper method must be invented for real unicode maths support. Before
+% any code is written, I'm writing a specification in order to work out what is required.
+% Fairly significant pieces of the NFSS may have to be re-written, and I'm a little unsure where to start.
+%
+% \section{Specification}
+%
+% This section will turn into `User Interface' in time, presumably.
+%
+% In the ideal case, a single unicode font will contain all maths glyphs we need.
+% Barbara Beeton's \STIX\ table provides the mapping between unicode maths glyphs 
+% and macro names (all 3298 — or however many — of them!).
+% A single command \codeline{\cmd\setmathfont\oarg{font features}\marg{font name}} would implement this
+% for every every symbol and alphabetic variant.
+% That means |x| to $x$, |\xi| to $\xi$, |\leq| to $\leq$, etc., 
+% |\mathcal{H}| to $\mathcal{H}$ and so on, all for unicode glyphs within a single font.
+%
+% Furthermore, this package should deal well with unicode characters for maths input, as well.
+% This includes using literal Greek letters in formulae, resolving to upright or italic depending on preference.
+%
+% Finally, maths versions must also be provided for. While I guess version selection in
+% \LaTeX\ will remain the same, the specification for choosing the version fonts will
+% probably be an optional argument:
+% \codeline{\cmd\setmathfont|[Version=Bold,|\meta{font features}|]|\marg{font name}}
+% 
+% Instances above of 
+% \codeline{\oarg{font features}\marg{font name}} 
+% follow from my \pkg{fontspec} package, and therefore any additional \meta{font features}
+% specific to maths fonts will hook into \pkg{fontspec}'s methods.
+%
+% \subsection{Using multiple fonts}
+%
+% There will probably be few cases where a single unicode maths font suffices. The upcoming \STIX\ font comes to mind as a possible exception. It will therefore be necessary to delegate specific unicode ranges of glyphs to separate fonts. This syntax will also hook into the \pkg{fontspec} font feature processing:
+%\codeline{\cmd\setmathfont|[Range=|\meta{unicode range}|,|\meta{font features}|]|\marg{font name}}
+% where \meta{unicode range} is a comma-separated list of unicode slots and ranges such as |{27D0-27EB, 27FF, 295B-297F}|. Furthermore, preset names ranges could be used, such as |MiscMathSymbolsA|, with such ranges based on unicode chunks. The amount of optimisation required here to achieve acceptable performance has yet to be determined. Techniques such as saving out unicode subsets based on \meta{unicode range} data to be \cmd\input\ in the next \LaTeX\ run are a possibility, but at this stage, performance without such measures seems acceptable.
+%
+% \subsection{Script and scriptscript fonts/features}
+% Cambria Math uses OpenType font features to activate smaller optical sizes for scriptsize and scriptscriptsize symbols (the $B$ and $C$, respectively, in $A_{B_C}$.
+%
+% Other fonts will no doubt use entirely separate fonts. Both of these options must be taken into account. I hope this will be mostly automatic from the users' points of view. The |+ssty| feature can be detected and applied automatically, and appropriate optical size information embedded in the fonts will ensure this latter case. Fine tuning should be possible automatically with \pkg{fontspec} options. We might have to wait until MnMath, for example, before we really know.
+%
+% \StopEventually{}
+%
+% \part{The \pkg{unicode-math} package}
+%\iffalse
+%<*package>
+%\fi
+% This is the package.
+%    \begin{macrocode}
+\ProvidesPackage{unicode-math}
+  [2007/01/03 v0.1 Unicode maths in XeLaTeX]  
+%    \end{macrocode}
+%
+% \section{Things we need}
+%
+% \paragraph{Packages}
+%    \begin{macrocode}
+\RequirePackage{fontspec}
+%    \end{macrocode}
+%
+% \paragraph{Counters and conditionals}
+%    \begin{macrocode}
+\newcounter{um@fam}
+\newif\if@um@fontspec@feature
+%    \end{macrocode} 
+%
+% \paragraph{Shortcuts}
+%    \begin{macrocode}
+\newcommand\um@PackageError[2]{\PackageError{unicode-math}{#1}{#2}}
+\newcommand\um@PackageWarning[1]{\PackageWarning{unicode-math}{#1}}
+\newcommand\um@PackageInfo[1]{\PackageInfo{unicode-math}{#1}}
+%    \end{macrocode}
+%
+% \subsection{Programming macros}
+% \begin{macro}{\um@Loop}
+% \begin{macro}{\um@Break}
+% See Kees van der Laan's various articles on \TeX\ programming:
+%    \begin{macrocode}
+\def\um@Loop#1\um@Pool{#1\um@Loop#1\um@Pool} 
+\def\um@Break#1\um@Pool{} 
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\um@FOR}
+% A simple `for' loop implemented with the above.
+% Takes a (predefined) counter \cmd\csname\ and increments it between two integers, iterating as we go.
+%    \begin{macrocode}
+\long\def\um@FOR #1 = [#2:#3] #4{%
+   \csname#1\endcsname =#2\relax
+   \um@Loop #4%
+     \expandafter\advance\csname#1\endcsname\@ne
+     \expandafter\ifnum\csname#1\endcsname>#3\relax
+       \expandafter\um@Break
+     \fi 
+   \um@Pool}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{example}{}
+%   \newcount\@ii
+%   \um@FOR @ii = [7:13] {\@alph\@ii/}
+% \end{example}
+%
+% \subsection{Overcoming \cmd\@onlypreamble}
+%
+% TODO: This will be refined later! Sort out which macros actually have to be removed from the \cmd\@preamblecmds\ token list.
+%    \begin{macrocode}
+\def\@preamblecmds{}
+%    \end{macrocode}
+%
+% \section{Fundamentals}
+%
+% \subsection{Enlarging the number of maths families}
+%
+% To start with, we've got a power of two as many \cmd\fam s as before. So (from |ltfssbas.dtx|) we want to redefine
+%    \begin{macrocode}
+\def\new@mathgroup{\alloc@8\mathgroup\chardef\@cclvi}
+\let\newfam\new@mathgroup
+%    \end{macrocode}
+%
+% \begin{example}{}
+%   \um@FOR @tempcnta = [1:20]
+%     {\expandafter\newfam
+%        \csname mt\@alph\@tempcnta\endcsname}
+%   Up to math fam \the\mtt\ of 255. 
+% \end{example}
+%
+% This is sufficient for \LaTeX's \cmd\DeclareSymbolFont-type commands to be able
+% to define 256 named maths fonts. Now we need a new \cmd\DeclareMathSymbol.
+%
+% \subsection{\cmd\DeclareMathSymbol\ for unicode ranges}
+%
+% This is mostly an adaptation from \LaTeX's definition.
+%
+% \begin{macro}{\DeclareUnicodeMathSymbol}
+% \darg{Symbol, \eg, \cmd\alpha\ or |a|}
+% \darg{Type, \eg, \cmd\mathalpha}
+% \darg{Math font name, \eg, \texttt{operators}}
+% \darg{Slot, \eg, \texttt{"221E}}
+%    \begin{macrocode}
+\def\DeclareUnicodeMathSymbol#1#2#3#4{%
+%    \end{macrocode}
+% First ensure the math font (\eg, |operators|) exists:
+%    \begin{macrocode}
+  \expandafter\in@\csname sym#3\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+%    \end{macrocode}
+% No longer need here to perform the obfuscated hex conversion, since
+% \cmd\XeTeXmathchar\ (and friends) has a more simplified input than \TeX's \cmd\mathchar.
+%    \begin{macrocode}
+    \begingroup
+%    \end{macrocode}
+% The symbol to be defined can be either a command (|\alpha|) or a character (|a|).
+% Branch for the former:
+%    \begin{macrocode}
+      \if\relax\noexpand#1% is command?
+        \edef\reserved@a{\noexpand\in@{\string\XeTeXmathchar}{\meaning#1}}%
+        \reserved@a
+%    \end{macrocode}
+% If the symbol command definition contains \cmd\XeTeXmathchar, then
+% we can provide the info that a previous symbol definition is being overwritten:
+%    \begin{macrocode}
+        \ifin@
+          \expandafter\um@set@mathsymbol
+             \csname sym#3\endcsname#1#2{#4}%
+          \@font@info{Redeclaring math symbol \string#1}%
+%    \end{macrocode}
+% Otherwise, overwrite it if the symbol command definition contains plain old \cmd\mathchar:
+%    \begin{macrocode}
+        \else
+          %\edef\reserved@a{\noexpand\in@{\string\mathchar}{\meaning#1}}%
+          %\reserved@a
+          %\ifin@
+          %  \expandafter\set@xmathsymbol
+          %     \csname sym#3\endcsname#1#2{#4}%
+%    \end{macrocode}
+% Otherwise, throw an error if the command name is already taken by a non-symbol definition:
+%    \begin{macrocode}
+          %\else
+            %\expandafter\ifx
+            %\csname\expandafter\@gobble\string#1\endcsname
+            %\relax
+              \expandafter\um@set@mathsymbol
+                 \csname sym#3\endcsname#1#2{#4}%
+            %\else
+            %  \@latex@error{Command `\string#1' already defined}\@eha
+            %\fi
+          %\fi
+        \fi
+%    \end{macrocode}
+% And if the symbol input is a character:
+%    \begin{macrocode}
+      \else
+        \expandafter\um@set@mathchar
+          \csname sym#3\endcsname#1#2{#4}%
+      \fi
+    \endgroup
+%    \end{macrocode}
+% Everything previous was skipped if the maths font doesn't exist in the first place:
+%    \begin{macrocode}
+  \else
+    \@latex@error{Symbol font `#3' is not defined}\@eha
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% The final macros that actually define the maths symbol with \XeTeX\ primitives.
+%
+% \begin{macro}{\um@set@mathsymbol}
+% \label{mac:um@set@mathsymbol}
+% \darg{Symbol font number}
+% \darg{Symbol macro, \eg, \cmd\alpha}
+% \darg{Type, \eg, \cmd\mathalpha}
+% \darg{Slot, \eg, \texttt{"221E}}
+% If the symbol definition is for a macro.
+% There are a bunch of tests to perform to process the various characters.
+%    \begin{macrocode}
+\def\um@set@mathsymbol#1#2#3#4{%
+  \iftrue%\unless\ifx#3\mathalpha
+%    \end{macrocode}
+% \paragraph{Operators} First test if the character requires a \cmd\nolimits\ suffix. This is controlled by the \cmd\um@nolimits\ macro, which contains a commalist of such characters. If so, define the mathchar \cs{\meta{cs}op} (where |#2| is \cs{\meta{cs}}) and define \cs{\meta{cs}} as the wrapper around this control sequence.
+%    \begin{macrocode}
+  \expandafter\in@\expandafter#2\expandafter{\um@nolimits}%
+  \ifin@
+    \expandafter\global\expandafter\XeTeXmathchardef
+      \csname\expandafter\@gobble\string#2 op\endcsname
+      ="\mathchar@type#3 #1 #4\relax
+    \gdef#2{\csname\expandafter\@gobble\string#2 op\endcsname\nolimits}%
+  \else
+%    \end{macrocode}
+% \paragraph{Radicals}
+%    \begin{macrocode}
+    \expandafter\in@\expandafter#2\expandafter{\um@radicals,}%
+    \ifin@
+      \gdef#2{\XeTeXradical#1 #4\relax}%
+    \else
+%    \end{macrocode}
+% \paragraph{Delimiters}
+% TODO: sort out which of these three declarations are necessary!
+%    \begin{macrocode}
+      \ifx\mathopen#3\relax
+        \gdef#2{\XeTeXdelimiter "\mathchar@type#3 #1 #4}%
+        \global\XeTeXdelcode#4=#1 #4\relax        
+        \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
+      \else
+        \ifx\mathclose#3\relax
+          \gdef#2{\XeTeXdelimiter "\mathchar@type#3 #1 #4}%
+          \global\XeTeXdelcode#4=#1 #4\relax
+          \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
+        \else
+%    \end{macrocode}
+% And finally, the general case. We define both the macro and the unicode mathcode; this only works for 16-bit unicode scalar values, however. TODO: make all higher plane maths characters math-active so that spacing works for literal unicode input.
+%    \begin{macrocode}
+          \global\XeTeXmathchardef#2="\mathchar@type#3 #1 #4\relax
+          \ifnum#4<"FFFF
+            \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@set@mathchar}
+% \darg{Symbol font number}
+% \darg{Symbol, \eg, \cmd\alpha\ or |a|}
+% \darg{Type, \eg, \cmd\mathalpha}
+% \darg{Slot, \eg, \texttt{"221E}}
+% Or if it's for a character:
+%    \begin{macrocode}
+\def\um@set@mathchar#1#2#3#4{%
+  \global\XeTeXmathcode`#2="\mathchar@type#3 #1 #4\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{example}{firstline=2}
+%   \Huge
+%   \zf@fontspec{}{Cambria Math}
+%   \let\glb@currsize\relax
+%   \DeclareSymbolFont{test}{EU1}{\zf@family}{m}{n}
+%   \DeclareUnicodeMathSymbol{\infinity}{\mathord}{test}{"221E}
+%   $\infinity$
+% \end{example}
+%
+% \begin{macro}{\SetMathCode}
+% [For later] or if it's for a character code (just  a wrapper around the primitive).
+% Note that this declaration \emph{isn't} global so that it can be constrained by grouping.
+%    \begin{macrocode}
+\newcommand\SetMathCode[4]{%
+  \XeTeXmathcode#1=
+    "\mathchar@type#2 \csname sym#3\endcsname #4\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{example}{firstline=2}
+%   \Huge
+%   \zf@fontspec{}{Cambria Math}
+%   \let\glb@currsize\relax
+%   \DeclareSymbolFont{test2}{EU1}{\zf@family}{m}{n}
+%   \SetMathCode{65}{\mathalpha}{test2}{119860}
+%   $A$
+% \end{example}
+%
+% \subsection{User interface to \cmd\DeclareSymbolFont}
+%
+% Here's the simplest usage:
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $Ax \eqdef \nabla \times \scrZ$
+% \end{example}
+%
+% And an example of the \feat{Range} feature:
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $(a, \ita, \mathbf{a}, \bfa, \alpha, \aleph)$
+%   \setmathfont[Range={"2133-"2135,\alpha}]{Lucida Sans}
+%   $(a, \ita, \mathbf{a}, \bfa, \alpha, \aleph)$
+% \end{example}
+%
+% A less useful (perhaps) example of the \feat{Range} feature:
+% \begin{example}{}
+%   \setmathfont[Colour=000000]{Cambria Math}
+%   \setmathfont[Range={\mathop}, Colour=FF0000]{Cambria Math}
+%   \setmathfont[Range={\equal}, Colour=009900]{Cambria Math}
+%   \setmathfont[Range={\mathopen,\mathclose}, 
+%             Colour=0000FF]{Cambria Math}
+%   \[ 
+%   F(s)=\scrL\{f(t)\}=\int_0^\infty e^{-st}f(t)\,\upd t 
+%   \]
+% \end{example}
+%
+% Using a |Range| including large character sets such as \cmd\mathrel, \cmd\mathalpha, \etc, it \emph{very slow}! I hope to improve the performance somehow.
+%
+% \begin{macro}{\setmathfont}
+% \doarg{font features}
+% \darg{font name}
+%    \begin{macrocode}
+\newcommand\setmathfont[2][]{%
+%    \end{macrocode}
+% \paragraph{Init}
+% \begin{itemize}
+% \item Erase any conception \LaTeX\ has of previously defined math symbol fonts;
+% this allows \cmd\DeclareSymbolFont\ at any point in the document.
+% \item To start with, assume we're defining every math symbol character.
+% \item Bump up the um@fam counter to assign a new maths symbol font.
+% \item Tell \pkg{fontspec} that maths font features are actually allowed.
+% \item Grab the current size information (is this robust enough? Maybe it should be preceded by \cmd\normalsize\dots).
+% \item Set the name of the math version being defined
+% \end{itemize}
+%    \begin{macrocode}
+  \let\glb@currsize\relax
+  \let\um@char@range\@empty
+  \let\um@char@num@range\@empty
+  \stepcounter{um@fam}%
+  \@um@fontspec@featuretrue
+  \csname S@\f@size\endcsname
+  \def\um@mversion{normal}%
+  \DeclareMathVersion{\um@mversion}%
+%    \end{macrocode}
+% Now when the list of unicode symbols is input, we want a suitable definition of 
+% its internal macro. By default, we want to define every single math char.
+%
+% Use \pkg{fontspec} to select a font to use. The macro \cmd\S@\meta{size} 
+% contains the definitions of the sizes used for maths letters, subscripts and subsubscripts in
+% \cmd\tf@size, \cmd\sf@size, and \cmd\ssf@size, respectively.
+%
+% Probably in the future we want options to change the hard-coded \pkg{fontspec}
+% maths-related features. 
+%    \begin{macrocode}
+  \zf@fontspec{
+    Script=Math, SizeFeatures={
+      {Size=\tf@size-},
+      {Size=\sf@size-\tf@size,ScriptStyle={}},
+      {Size=-\sf@size,ScriptScriptStyle={}}},
+      #1}{#2}%
+%    \end{macrocode}
+% Probably want to check there that we're not creating multiple symbol fonts
+% with the same NFSS declaration. On that note, \pkg{fontspec} doesn't seem to
+% be keeping track of that, either |:(| (check that out!)
+%    \begin{macrocode}
+  \edef\um@symfont{um@fam\theum@fam}%
+  \DeclareSymbolFont{\um@symfont}
+      {\encodingdefault}{\zf@family}{\mddefault}{\updefault}%
+  \ifx\um@char@range\@empty
+    \um@PackageInfo{Defining the default maths font as '#2'}%
+    \let\UnicodeMathSymbol\um@mathsymbol@noparse
+  \else
+    \let\UnicodeMathSymbol\um@mathsymbol@parse
+  \fi
+%    \end{macrocode}
+% And now we input every single maths char. See File~\ref{part:awk-script} for
+% the source to |unicode-math.tex|.
+%    \begin{macrocode}
+  \input unicode-math.tex
+  \input unicode-math-add.tex
+%    \end{macrocode}
+% 
+%    \begin{macrocode}
+  \ifx\um@char@range\@empty
+    \let\um@mathbb\@empty
+    \let\um@mathbf\@empty
+    \let\um@mathfrak\@empty
+    \let\um@mathup\@empty
+    \let\um@mathscr\@empty
+    \let\um@mathsf\@empty
+    \let\um@mathsfit\@empty
+    \let\um@mathtt\@empty
+    \let\um@mathbf\@empty
+    \let\um@mathbfit\@empty
+    \let\um@mathbffrak\@empty
+    \let\um@mathbfscr\@empty
+    \let\um@mathbfsf\@empty
+    \let\um@mathbfsfit\@empty
+    \let\MathAlphabetChar\um@mathmap@noparse
+  \else
+    \let\MathAlphabetChar\um@mathmap@parse
+  \fi
+%    \end{macrocode}
+%
+% \subsection{Maths alphabets' character mapping}
+% \seclabel{mathmap}
+%
+% We want it to be convenient for users to actually type in maths.
+% The \ascii\ Latin characters should be used for italic maths,
+% and the text Greek characters should be used for upright/italic
+% (depending on preference) Greek, if desired.
+%
+% Numbers, zero to nine (from \unichar{30}{DIGIT ZERO}):
+%    \begin{macrocode}
+  \ifx\um@char@range\@empty
+  \um@FOR @tempcnta = [0:9] {%
+    \SetMathCode
+      {\numexpr\the\@tempcnta+"30\relax}
+      {\mathalpha}{\um@symfont}
+      {\numexpr\the\@tempcnta+"30\relax}}%
+%    \end{macrocode}
+% Latin alphabet, uppercase and lowercase:
+%    \begin{macrocode}
+  \um@FOR @tempcnta = [0:25] {%
+      \SetMathCode
+        {\numexpr\the\@tempcnta+`\A\relax}
+        {\mathalpha}{\um@symfont}
+        {\numexpr\the\@tempcnta+"1D434\relax}
+      \SetMathCode
+        {\numexpr\the\@tempcnta+`\a\relax}
+        {\mathalpha}{\um@symfont}
+        {\numexpr\the\@tempcnta+"1D44E\relax}}%
+%    \end{macrocode}
+% Filling a hole for `h', which maps to \unichar{210E}{PLANCK CONSTANT}
+% instead of the expected \unichar{1D455}{MATHEMATICAL ITALIC SMALL H} (which is not assigned on account of the overlap):
+%    \begin{macrocode}
+  \SetMathCode{`\h}{\mathalpha}{\um@symfont}{"210E}%
+%    \end{macrocode}
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $0123456789$ \\
+%   $ABCDEFGHIJKLMNOPQRSTUVWXYZ$ \\
+%   $abcdefghijklmnopqrstuvwxyz$ \\
+% \end{example}
+%
+% Greek alphabet, italic uppercase and lowercase respectively:
+%    \begin{macrocode}
+  \um@FOR @tempcnta = [0:23] {%
+      \SetMathCode
+        {\numexpr\the\@tempcnta+913\relax}
+        {\mathalpha}{\um@symfont}
+        {\numexpr\the\@tempcnta+"1D6E2\relax}
+      \SetMathCode
+        {\numexpr\the\@tempcnta+945\relax}
+        {\mathalpha}{\um@symfont}
+        {\numexpr\the\@tempcnta+"1D6FC\relax}}%
+  \fi
+%    \end{macrocode}
+%
+% TODO: switches for upright Greek if desired.
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ$ \\
+%   $αβγδεζηθικλμνξοπρστυφχψω$ \\
+% \end{example}
+%
+% Set up the maths alphabets:
+%    \begin{macrocode}
+    \input unicode-math-alphabets.tex
+%    \end{macrocode}
+% End of the \cmd\setmathfont\ macro.
+%    \begin{macrocode}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\um@mathsymbol@noparse}
+%    \begin{macrocode}
+\newcommand\um@mathsymbol@noparse[4]{
+  \DeclareUnicodeMathSymbol
+    {#2}{#3}{\um@symfont}{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@mathsymbol@parse}
+% If the \feat{Range} font feature has been used, then only
+% a subset of the unicode glyphs are to be defined.
+% See \secref{rangeproc} for the code that enables this.
+%    \begin{macrocode}
+\newcommand\um@mathsymbol@parse[4]{
+  \um@parse@term{#1}{#2}{#3}{%
+    %\um@PackageInfo{Defining \string#2 as mathchar #1}%
+    \DeclareUnicodeMathSymbol
+      {#2}{#3}{\um@symfont}{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@mk@alph}
+% Wrapper to define maths alphabets.
+%    \begin{macrocode}
+\newcommand\um@mk@math[1]{%
+  \expandafter\def\csname math#1\endcsname##1{%
+    \begingroup
+      \csname um@math#1\endcsname
+      ##1
+    \endgroup}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@prep@math}
+% Macro to set up mathcode mapping within maths alphabets.
+%    \begin{macrocode}
+\newcommand\um@prep@math[2]{}
+%    \end{macrocode}
+% \end{macro}
+%  
+% Maths alphabets' base definition. See \secref{mathmap} for the internal definitions.
+%    \begin{macrocode}
+\um@mk@math{up}
+\um@mk@math{scr}
+\um@mk@math{bb}
+\um@mk@math{frak}
+\um@mk@math{sf}
+\um@mk@math{sfit}
+\um@mk@math{tt}    
+%    \end{macrocode}
+% And bold maths alphabets. See \secref{bfmathmap} for the internal definitions.
+%    \begin{macrocode}
+\um@mk@math{bf}
+\um@mk@math{bfit}
+\um@mk@math{bfscr}
+\um@mk@math{bffrak}
+\um@mk@math{bfsf}
+\um@mk@math{bfsfit}
+%    \end{macrocode}
+%
+% \begin{macro}{\mathcal}
+%    \begin{macrocode}
+\let\mathcal\mathscr
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@mathmap@noparse}
+% \darg{Maths alphabet, \eg, \cmd\mathbb}
+% \darg{Input slot, \eg, the slot for `A'}
+% \darg{Output slot, \eg, the slot for `$\mathbb{A}$'}
+% Adds \cmd\SetMathCode\ declaractions to the specified maths alphabet's definition (\eg, \cmd\um@mathscr).
+% Uses \cmd\um@addto@mathmap\ (below) to expand the name of the current symbol font.
+%    \begin{macrocode}
+\newcommand\um@mathmap@noparse[3]{%
+  \expandafter\um@addto@mathmap\expandafter{\um@symfont}{#1}{#2}{#3}}%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@mathmap@parse}
+% \darg{Maths alphabet, \eg, \cmd\mathbb}
+% \darg{Input slot, \eg, the slot for `A'}
+% \darg{Output slot, \eg, the slot for `$\mathbb{A}$'}
+% When \cmd\um@parse@term\ is executed, it populates the \cmd\um@char@num@range\
+% macro with slot numbers corresponding to the specified range. This range is used to
+% conditionally add \cmd\SetMathCode\ declaractions to the maths alphabet definition (\eg, \cmd\um@mathscr).
+%    \begin{macrocode}
+\newcommand\um@mathmap@parse[3]{%
+  \@for\@ii:=\um@char@num@range\do{%
+    \ifnum\@ii=#3\relax
+      \expandafter\um@addto@mathmap\expandafter{\um@symfont}{#1}{#2}{#3}%
+    \fi}}%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@addto@mathmap}
+% \darg{Math symbol font, always/usually the expansion of \cmd\um@symfont}
+% \darg{Maths alphabet, \eg, \cmd\mathbb}
+% \darg{Input slot, \eg, the slot for `A'}
+% \darg{Output slot, \eg, the slot for `$\mathbb{A}$'}
+% This macro is used so that \cmd\um@symfont\ can be expanded before entering the \cmd\g@addto@macro\ command.
+%    \begin{macrocode}
+\newcommand\um@addto@mathmap[4]{%
+  \expandafter\g@addto@macro\csname um@\expandafter\@gobble\string#2\endcsname{%
+    \SetMathCode{#3}{\mathalpha}{#1}{#4}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{(Big) operators}
+%
+% Turns out that \XeTeX\ is clever enough to deal with big operators for us automatically
+% with \cmd\XeTeXmathchardef. Amazing!
+%
+% However, the limits aren't set automatically; that is, we want to define, a la Plain \TeX\ \etc, \verb|\def\int{\intop\nolimits}|, so there needs to be a transformation from \cmd\int\ to \cmd\intop\ during the expansion of \cmd\UnicodeMathSymbol\ in the appropriate contexts.
+%
+% TODO use |\mathchar| |"8000| to create active operators that have \cmd\nolimits\ suffices.
+%
+% Following is a table of every math operator (\cmd\mathop) defined in |unicode-maths.tex|, from which a subset need to be flagged for \cmd\nolimits\ adjustments. The limits as specified by \pkg{unicode-math} are shown (in grey).
+% 
+% \begingroup
+% \setmathfont[SizeFeatures={
+%     {Size=-10, Colour=888888},
+%     {Size=10-, Colour=FF0000}}]{Code2000}
+% \def\UnicodeMathSymbol#1#2#3#4{%
+%   \ifx\mathop#3\relax
+%     \def\@tempa{\scshape\MakeLowercase{u+\@gobble#1} & $\displaystyle#2$ & \small\cmd#2 & \scshape#4 \\}\expandafter\@tempa
+%   \fi}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \toprule
+% USV & Ex. & Macro & Description \\
+% \midrule
+% \input unicode-math.tex
+% \bottomrule
+% \end{longtable}
+% \endgroup
+%
+% \begin{macro}{\um@nolimits}
+% This macro is a commalist containing those maths operators that require a \cmd\nolimits\ suffix. This list is used when processing |unicode-math.tex| to define such commands automatically (see the macro \cmd\um@set@mathsymbol\ on page~\pageref{mac:um@set@mathsymbol}). I've chosen essentially just the operators that look like integrals; hopefully a better mathematician can help me out here. I've a feeling that it's more useful \emph{not} to include the multiple integrals such as $\iiiint$, but that might be a matter of preference.
+%    \begin{macrocode}
+\def\um@nolimits{%
+  \int,\iint,\iiint,\iiiint,\oint,\oiint,\oiiint,%
+  \intclockwise,\varointclockwise,\ointctrclockwise,%
+  \sumint,\intbar,\intBar,\fint,%
+  \cirfnint,\awint,\rppolint,\scpolint,\npolint,\pointint,\sqint,%
+  \intlarhk,\intx,\intcap,\intcup,\upint,\lowint}
+%    \end{macrocode}
+% \changes{v0.01}{2006/11/26}{Implemented for \cmd\nolimits\ processing}
+% \end{macro}
+%
+% \begin{macro}{\addnolimits}
+% This macro appends material to the macro containing the list of operators that don't take limits. Items must be removed manually, at this stage; I'm working on a macro for this too, but it's a bit harder!
+%    \begin{macrocode}
+\newcommand\addnolimits[1]{\g@addto@macro\um@nolimits{,#1}}
+%    \end{macrocode}
+% \changes{v0.01}{2006/11/26}{Implemented for \cmd\nolimits\ processing}
+% \end{macro}
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   \[ \int_0^1 \sum_0^N \left(\frac{%
+%      \left(\sum^N_{i=n}\left(\int^1_0
+%      \left(a\times b\right)
+%      \right)\right)}{A^{B^C}_{D_E}}\right) \]
+% \end{example}
+%
+% \subsection{Radicals}
+%
+% The radical for square root is organised in \cmd\um@set@mathsymbol\ on page~\pageref{page:radical}. I think it's the only radical ever. But what about right-to-left square roots?
+%
+% \begin{macro}{\um@radicals}
+% We organise radicals in the same way as nolimits-operators; that is, in a comma-list.
+%    \begin{macrocode}
+\def\um@radicals{\sqrt}
+%    \end{macrocode}
+% \changes{v0.01}{2006/11/27}{Implemented for more general radicals processing.}
+% \end{macro}
+%
+% \iffalse
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   \[ \sqrt{1+\sqrt{1+
+%    \sqrt{1+ \sqrt{1+
+%    \sqrt{1+\sqrt{1+
+%    \sqrt{1+x}}}}}}} \]
+% \end{example}
+% \fi
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   \[ \sqrt{1+\sqrt{1+x}} \]
+% \end{example}
+%
+% \subsection{Delimiters}
+% \begin{macro}{\left} We redefine the primitive to be preceded by \cmd\mathopen; this gives much better spacing in cases such as \cmd\sin\cmd\left\dots. Courtesy of Frank Mittelbach:
+%
+% {\small |http://www.latex-project.org/cgi-bin/ltxbugs2html?pr=latex/3853&prlatex/3754|}
+%    \begin{macrocode}
+\let\left@primitive\left
+\def\left{\mathopen{}\left@primitive}
+%    \end{macrocode}
+% \end{macro}
+% No re-definition is made for \cmd\right\ because I don't believe it to be necessary\dots
+%
+% TODO: `fences', e.g., \cmd\vert
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   \[ \left(\left(\left(\left(\left( x
+%      \right)^1\right)^2\right)^3\right)^4\right)^5 \]
+%   \[ \left[\left[\left[\left[\left[ y
+%      \right]^1\right]^2\right]^3\right]^4\right]^5 \]
+%   \[ \left\{\left\{\left\{\left\{\left\{ z
+%      \right\}^1\right\}^2\right\}^3\right\}^4\right\}^5 \]
+% \end{example}
+%
+% Here are all \cmd\mathopen\ characters:
+% \begingroup
+% \setmathfont[SizeFeatures={
+%     {Size=-10, Colour=888888},
+%     {Size=10-, Colour=FF0000}}]{Code2000}
+% \let\sqrt@old\sqrt
+% \def\sqrt{\sqrt@old{}}
+% \def\UnicodeMathSymbol#1#2#3#4{%
+%   \ifx\mathopen#3\relax
+%     \def\@tempa{\scshape\MakeLowercase{u+\@gobble#1} & $\displaystyle#2$ & \small\cmd#2 & \scshape#4 \\}\expandafter\@tempa
+%   \fi}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \toprule
+% USV & Ex. & Macro & Description \\
+% \midrule
+% \input unicode-math.tex
+% \bottomrule
+% \end{longtable}
+% \endgroup
+%
+% And \cmd\mathclose:
+% \begingroup
+% \setmathfont[SizeFeatures={
+%     {Size=-10, Colour=888888},
+%     {Size=10-, Colour=FF0000}}]{Code2000}
+% \renewcommand\UnicodeMathSymbol[4]{%
+%   \ifx\mathclose#3\relax
+%     \def\@tempa{\scshape\MakeLowercase{u+\@gobble#1} & $\displaystyle#2$ & \small\cmd#2 & \scshape#4 \\}\expandafter\@tempa
+%   \fi}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \toprule
+% USV & Ex. & Macro & Description \\
+% \midrule
+% \input unicode-math.tex
+% \bottomrule
+% \end{longtable}
+% \endgroup
+%
+%
+% \subsection{Maths accents}
+% TODO
+%
+%
+% \section{\pkg{fontspec} feature hooks}
+%
+% \begin{macro}{\um@zf@feature}
+% Use the same method as \pkg{fontspec} for feature definition
+% (\ie, using \pkg{xkeyval}) but with a conditional to restrict
+% the scope of these features to \pkg{unicode-math} commands.
+%    \begin{macrocode}
+\newcommand\um@zf@feature[2]{%
+  \define@key[zf]{options}{#1}{%
+    \if@um@fontspec@feature
+      #2
+    \else
+      \PackageError{fontspec/unicode-math}
+        {The `#1' font feature can only be used for maths fonts}
+        {The feature you tried to use can only be in commands
+          like \protect\setmathfont}%
+    \fi}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{OpenType maths font features}
+% These aren't defined in \pkg{fontspec} because they aren't useful
+% in non-maths contexts. (Actually, that might be a lie.)
+%    \begin{macrocode}
+\um@zf@feature{ScriptStyle}{%
+  \zf@update@ff{+ssty=0}}
+\um@zf@feature{ScriptScriptStyle}{%
+  \zf@update@ff{+ssty=1}}
+%    \end{macrocode}
+%
+%
+% \subsection{Range processing}\seclabel{rangeproc}
+%
+%    \begin{macrocode}
+\um@zf@feature{Range}{\xdef\um@char@range{\zap@space#1 \@empty}}
+%    \end{macrocode}
+%
+% Pretty basic comma separated range processing.
+% Donald Arseneau's \pkg{selectp} package has a cleverer technique.
+%
+% \begin{macro}{\um@parse@term}
+% \darg{unicode character slot}
+% \darg{control sequence (character macro)}
+% \darg{control sequence (math type)}
+% \darg{code to execute}
+% This macro expands to \verb|#4| \note{Unless I've got my terminology twisted again.}
+% if any of its arguments are contained in the commalist \cmd\um@char@range. 
+% This list can contain either character ranges (for checking with \verb|#1|) or control sequences. 
+% These latter can either be the command name of a specific character, \emph{or} the math 
+% type of one (\eg, \cmd\mathbin).
+%
+% Character ranges are passed to \cmd\um@parse@range, which accepts input in the form shown in \tabref{ranges}.
+%
+% \begin{table}[htbp]
+% \centering
+% \begin{tabular}{>{\ttfamily}cc}
+% \textrm{Input} & Range \\
+% \hline
+% x & $r=x$ \\
+% x- & $r\geq x$ \\
+% -y & $r\leq y$ \\
+% x-y & $x \leq r \leq y$ \\
+% \end{tabular}
+% \caption{Ranges accepted by \cmd\um@parse@range}
+% \label{tab:ranges}
+% \end{table}
+%
+% Start by iterating over the commalist, ignoring empties, and initialising the scratch conditional:
+%    \begin{macrocode}
+\newcommand\um@parse@term[4]{%
+  \@for\@ii:=\um@char@range\do{%
+    \unless\ifx\@ii\@empty
+      \@tempswafalse
+%    \end{macrocode}
+% |\if\relax\noexpand##| is true if |##| is a control sequence;
+% then match to either the character macro (\cmd\alpha) or the math type (\cmd\mathbin):
+%    \begin{macrocode}
+      \expandafter\if\expandafter\relax\expandafter\noexpand\@ii
+        \expandafter\ifx\@ii#2
+          \@tempswatrue
+        \else
+          \expandafter\ifx\@ii#3
+            \@tempswatrue
+          \fi
+        \fi
+%    \end{macrocode}
+% Otherwise, we have a number range, which is passed to another macro:
+%    \begin{macrocode}
+      \else
+        \expandafter\um@parse@range\@ii-\@marker-\@nil#1\@nil
+      \fi
+%    \end{macrocode}
+% If we have a match, execute the code!
+% It also populates the
+% \cmd\um@char@num@range\ macro, which is used when defining
+% \cmd\mathbf\ (\etc) \cmd\mathchar\ remappings.
+%    \begin{macrocode}
+      \if@tempswa
+        \ifx\um@char@num@range\@empty
+          \g@addto@macro\um@char@num@range{#1}%        
+        \else
+          \g@addto@macro\um@char@num@range{,#1}%
+        \fi
+        #4
+      \fi
+    \fi}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{example}{}
+%   \def\um@char@range{\a,2-4,\c}
+%   \um@parse@term{1}{\a}{\b}
+%      {`1' or `\string\a' or `\string\b' is included}
+%   \um@parse@term{1}{\b}{\c}
+%      {`1' or `\string\b' or `\string\c' is included}
+%   \um@parse@term{3}{\a}{\b}
+%      {`3' or `\string\a' or `\string\b' is included}
+% \end{example}
+%
+% \begin{macro}{\um@parse@range}
+% Weird syntax. 
+% As shown previously in \tabref{ranges}, this macro can be passed four different input types via \cmd\um@parse@term.
+%    \begin{macrocode}
+\def\um@parse@range#1-#2-#3\@nil#4\@nil{%
+  \def\@tempa{#1}%
+  \def\@tempb{#2}%
+%    \end{macrocode}
+% \begin{tabular}{@{}ll}
+% \hline
+% Range & $r=x$ \\
+% C-list input & \cmd\@ii=|X| \\
+% Macro input & |\um@parse@range X-\@marker-\@nil#1\@nil| \\
+% Arguments & 
+%     \texttt{\textcolor{red}{\char`\#1}-\textcolor{blue}{\char`\#2}-\textcolor{Green}{\char`\#3}}
+%   = \texttt{\textcolor{red}{X}-\textcolor{blue}{\cmd\@marker}-\textcolor{Green}{\char`\{\char`\}}} \\
+% \hline
+% \end{tabular}
+%    \begin{macrocode}
+  \ifx\@marker\@tempb\relax
+    \ifnum#4=#1\relax
+      \@tempswatrue
+    \fi
+  \else
+%    \end{macrocode}
+% \begin{tabular}{@{}ll}
+% \hline
+% Range & $r\geq x$ \\
+% C-list input & \cmd\@ii=|X-| \\
+% Macro input & |\um@parse@range X--\@marker-\@nil#1\@nil|\\
+% Arguments & 
+%    \texttt{\textcolor{red}{\char`\#1}-\textcolor{blue}{\char`\#2}-\textcolor{Green}{\char`\#3}}
+% = \texttt{\textcolor{red}{X}-\textcolor{blue}{\char`\{\char`\}}-\textcolor{Green}{\cmd\@marker-}} \\
+% \hline
+% \end{tabular}
+%    \begin{macrocode}
+    \ifx\@empty\@tempb
+      \ifnum#4>\numexpr#1-1\relax
+        \@tempswatrue
+      \fi
+    \else
+%    \end{macrocode}
+% \begin{tabular}{@{}ll}
+% \hline
+% Range & $r\leq y$ \\
+% C-list input & \cmd\@ii=|-Y|  \\
+% Macro input & |\um@parse@range -Y-\@marker-\@nil#1\@nil|\\
+% Arguments & 
+%    \texttt{\textcolor{red}{\char`\#1}-\textcolor{blue}{\char`\#2}-\textcolor{Green}{\char`\#3}}
+% = \texttt{\textcolor{red}{\char`\{\char`\}}-\textcolor{blue}{Y}-\textcolor{Green}{\cmd\@marker-}}\\
+% \hline
+% \end{tabular}
+%    \begin{macrocode}
+      \ifx\@empty\@tempa
+        \ifnum#4<\numexpr#2+1\relax
+          \@tempswatrue
+        \fi
+%    \end{macrocode}
+% \begin{tabular}{@{}ll}
+% \hline
+% Range & $x \leq r \leq y$  \\
+% C-list input & \cmd\@ii=|X-Y|  \\
+% Macro input & |\um@parse@range X-Y-\@marker-\@nil#1\@nil|\\
+% Arguments & 
+%     \texttt{\textcolor{red}{\char`\#1}-\textcolor{blue}{\char`\#2}-\textcolor{Green}{\char`\#3}}
+% =  \texttt{\textcolor{red}{X}-\textcolor{blue}{Y}-\textcolor{Green}{\cmd\@marker-}}\\
+% \hline
+% \end{tabular}
+%    \begin{macrocode}
+      \else
+        \ifnum#4>\numexpr#1-1\relax
+          \ifnum#4<\numexpr#2+1\relax
+            \@tempswatrue
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Resolving Greek letters}
+% TODO add switch for upright if desired.
+%
+%    \begin{macrocode}
+\AtBeginDocument{\def\Alpha{\itAlpha}
+\def\Beta{\itBeta}
+\def\Gamma{\itGamma}
+\def\Delta{\itDelta}
+\def\Epsilon{\itEpsilon}
+\def\Zeta{\itZeta}
+\def\Eta{\itEta}
+\def\Theta{\itTheta}
+\def\Iota{\itIota}
+\def\Kappa{\itKappa}
+\def\Lambda{\itLambda}
+\def\Mu{\itMu}
+\def\Nu{\itNu}
+\def\Xi{\itXi}
+\def\Omicron{\itOmicron}
+\def\Pi{\itPi}
+\def\Rho{\itRho}
+\def\varTheta{\itvarTheta}
+\def\Sigma{\itSigma}
+\def\Tau{\itTau}
+\def\Upsilon{\itUpsilon}
+\def\Phi{\itPhi}
+\def\Chi{\itChi}
+\def\Psi{\itPsi}
+\def\Omega{\itOmega}
+\def\nabla{\itnabla}
+\def\alpha{\italpha}
+\def\beta{\itbeta}
+\def\gamma{\itgamma}
+\def\delta{\itdelta}
+\def\varepsilon{\itvarepsilon}
+\def\zeta{\itzeta}
+\def\eta{\iteta}
+\def\theta{\ittheta}
+\def\iota{\itiota}
+\def\kappa{\itkappa}
+\def\lambda{\itlambda}
+\def\mu{\itmu}
+\def\nu{\itnu}
+\def\xi{\itxi}
+\def\omicron{\itomicron}
+\def\pi{\itpi}
+\def\rho{\itrho}
+\def\varsigma{\itvarsigma}
+\def\sigma{\itsigma}
+\def\tau{\ittau}
+\def\upsilon{\itupsilon}
+\def\phi{\itphi}
+\def\chi{\itchi}
+\def\psi{\itpsi}
+\def\omega{\itomega}
+\def\partial{\uppartial}
+\def\varepsilon{\itvarepsilon}
+\def\vartheta{\itvartheta}
+\def\varkappa{\itvarkappa}
+\def\varphi{\itvarphi}
+\def\varrho{\itvarrho}
+\def\varpi{\itvarpi}}
+%    \end{macrocode}
+%
+% TODO: digamma
+%
+%\iffalse
+%</package>
+%\fi
+%
+%
+% \part{Maths alphabets mapping definitions}\label{part:mathmap}
+%\iffalse
+%<*alphabets>
+%\fi
+%
+% TODO: everything
+%
+% \subsubsection{Upright: \cmd\mathup}
+%
+% Can't call it \cmd\mathrm\ any more because it contains Greek as well!
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathup{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathup{abcdefghijklmnopqrstuvwxyz}$ \\
+%   $\mathup{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
+%   $\mathup{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+% \end{example}
+%    \begin{macrocode}
+%    \end{macrocode}
+% Roman uppercase:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathup}{`\A}{`\A}%
+\MathAlphabetChar{\mathup}{`\B}{`\B}%
+\MathAlphabetChar{\mathup}{`\C}{`\C}%
+\MathAlphabetChar{\mathup}{`\D}{`\D}%
+\MathAlphabetChar{\mathup}{`\E}{`\E}%
+\MathAlphabetChar{\mathup}{`\F}{`\F}%
+\MathAlphabetChar{\mathup}{`\G}{`\G}%
+\MathAlphabetChar{\mathup}{`\H}{`\H}%
+\MathAlphabetChar{\mathup}{`\I}{`\I}%
+\MathAlphabetChar{\mathup}{`\J}{`\J}%
+\MathAlphabetChar{\mathup}{`\K}{`\K}%
+\MathAlphabetChar{\mathup}{`\L}{`\L}%
+\MathAlphabetChar{\mathup}{`\M}{`\M}%
+\MathAlphabetChar{\mathup}{`\N}{`\N}%
+\MathAlphabetChar{\mathup}{`\O}{`\O}%
+\MathAlphabetChar{\mathup}{`\P}{`\P}%
+\MathAlphabetChar{\mathup}{`\Q}{`\Q}%
+\MathAlphabetChar{\mathup}{`\R}{`\R}%
+\MathAlphabetChar{\mathup}{`\S}{`\S}%
+\MathAlphabetChar{\mathup}{`\T}{`\T}%
+\MathAlphabetChar{\mathup}{`\U}{`\U}%
+\MathAlphabetChar{\mathup}{`\V}{`\V}%
+\MathAlphabetChar{\mathup}{`\W}{`\W}%
+\MathAlphabetChar{\mathup}{`\X}{`\X}%
+\MathAlphabetChar{\mathup}{`\Y}{`\Y}%
+\MathAlphabetChar{\mathup}{`\Z}{`\Z}%
+%    \end{macrocode}
+% Roman lowercase:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathup}{`\a}{`\a}%
+\MathAlphabetChar{\mathup}{`\b}{`\b}%
+\MathAlphabetChar{\mathup}{`\c}{`\c}%
+\MathAlphabetChar{\mathup}{`\d}{`\d}%
+\MathAlphabetChar{\mathup}{`\e}{`\e}%
+\MathAlphabetChar{\mathup}{`\f}{`\f}%
+\MathAlphabetChar{\mathup}{`\g}{`\g}%
+\MathAlphabetChar{\mathup}{`\h}{`\h}%
+\MathAlphabetChar{\mathup}{`\i}{`\i}%
+\MathAlphabetChar{\mathup}{`\j}{`\j}%
+\MathAlphabetChar{\mathup}{`\k}{`\k}%
+\MathAlphabetChar{\mathup}{`\l}{`\l}%
+\MathAlphabetChar{\mathup}{`\m}{`\m}%
+\MathAlphabetChar{\mathup}{`\n}{`\n}%
+\MathAlphabetChar{\mathup}{`\o}{`\o}%
+\MathAlphabetChar{\mathup}{`\p}{`\p}%
+\MathAlphabetChar{\mathup}{`\q}{`\q}%
+\MathAlphabetChar{\mathup}{`\r}{`\r}%
+\MathAlphabetChar{\mathup}{`\s}{`\s}%
+\MathAlphabetChar{\mathup}{`\t}{`\t}%
+\MathAlphabetChar{\mathup}{`\u}{`\u}%
+\MathAlphabetChar{\mathup}{`\v}{`\v}%
+\MathAlphabetChar{\mathup}{`\w}{`\w}%
+\MathAlphabetChar{\mathup}{`\x}{`\x}%
+\MathAlphabetChar{\mathup}{`\y}{`\y}%
+\MathAlphabetChar{\mathup}{`\z}{`\z}%
+%    \end{macrocode}
+% Greek uppercase:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathup}{913}{913}%
+\MathAlphabetChar{\mathup}{914}{914}%
+\MathAlphabetChar{\mathup}{915}{915}%
+\MathAlphabetChar{\mathup}{916}{916}%
+\MathAlphabetChar{\mathup}{917}{917}%
+\MathAlphabetChar{\mathup}{918}{918}%
+\MathAlphabetChar{\mathup}{919}{919}%
+\MathAlphabetChar{\mathup}{920}{920}%
+\MathAlphabetChar{\mathup}{921}{921}%
+\MathAlphabetChar{\mathup}{922}{922}%
+\MathAlphabetChar{\mathup}{923}{923}%
+\MathAlphabetChar{\mathup}{924}{924}%
+\MathAlphabetChar{\mathup}{925}{925}%
+\MathAlphabetChar{\mathup}{926}{926}%
+\MathAlphabetChar{\mathup}{927}{927}%
+\MathAlphabetChar{\mathup}{928}{928}%
+\MathAlphabetChar{\mathup}{929}{929}%
+\MathAlphabetChar{\mathup}{930}{930}%
+\MathAlphabetChar{\mathup}{931}{931}%
+\MathAlphabetChar{\mathup}{932}{932}%
+\MathAlphabetChar{\mathup}{933}{933}%
+\MathAlphabetChar{\mathup}{934}{934}%
+\MathAlphabetChar{\mathup}{935}{935}%
+\MathAlphabetChar{\mathup}{936}{936}%
+%    \end{macrocode}
+% Greek lowercase:
+%    \begin{macrocode}      
+\MathAlphabetChar{\mathup}{945}{945}%
+\MathAlphabetChar{\mathup}{946}{946}%
+\MathAlphabetChar{\mathup}{947}{947}%
+\MathAlphabetChar{\mathup}{948}{948}%
+\MathAlphabetChar{\mathup}{949}{949}%
+\MathAlphabetChar{\mathup}{950}{950}%
+\MathAlphabetChar{\mathup}{951}{951}%
+\MathAlphabetChar{\mathup}{952}{952}%
+\MathAlphabetChar{\mathup}{953}{953}%
+\MathAlphabetChar{\mathup}{954}{954}%
+\MathAlphabetChar{\mathup}{955}{955}%
+\MathAlphabetChar{\mathup}{956}{956}%
+\MathAlphabetChar{\mathup}{957}{957}%
+\MathAlphabetChar{\mathup}{958}{958}%
+\MathAlphabetChar{\mathup}{959}{959}%
+\MathAlphabetChar{\mathup}{960}{960}%
+\MathAlphabetChar{\mathup}{961}{961}%
+\MathAlphabetChar{\mathup}{962}{962}%
+\MathAlphabetChar{\mathup}{963}{963}%
+\MathAlphabetChar{\mathup}{964}{964}%
+\MathAlphabetChar{\mathup}{965}{965}%
+\MathAlphabetChar{\mathup}{966}{966}%
+\MathAlphabetChar{\mathup}{967}{967}%
+\MathAlphabetChar{\mathup}{968}{968}%
+%    \end{macrocode}
+% TODO: nabla and others
+%
+%
+% \subsubsection{Blackboard or double-struck: \cmd\mathbb}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbb{0123456789}$ \\
+%   $\mathbb{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbb{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+%    \begin{macrocode}
+%    \end{macrocode}
+% Numbers: (always upright)
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbb}{`\0}{"1D7D8}%
+\MathAlphabetChar{\mathbb}{`\1}{"1D7D9}%
+\MathAlphabetChar{\mathbb}{`\2}{"1D7DA}%
+\MathAlphabetChar{\mathbb}{`\3}{"1D7DB}%
+\MathAlphabetChar{\mathbb}{`\4}{"1D7DC}%
+\MathAlphabetChar{\mathbb}{`\5}{"1D7DD}%
+\MathAlphabetChar{\mathbb}{`\6}{"1D7DE}%
+\MathAlphabetChar{\mathbb}{`\7}{"1D7DF}%
+\MathAlphabetChar{\mathbb}{`\8}{"1D7E0}%
+\MathAlphabetChar{\mathbb}{`\9}{"1D7E1}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbb}{`\A}{"1D538}%
+\MathAlphabetChar{\mathbb}{`\B}{"1D539}%
+\MathAlphabetChar{\mathbb}{`\C}{"2102}%
+\MathAlphabetChar{\mathbb}{`\D}{"1D53B}%
+\MathAlphabetChar{\mathbb}{`\E}{"1D53C}%
+\MathAlphabetChar{\mathbb}{`\F}{"1D53D}%
+\MathAlphabetChar{\mathbb}{`\G}{"1D53E}%
+\MathAlphabetChar{\mathbb}{`\H}{"210D}%
+\MathAlphabetChar{\mathbb}{`\I}{"1D540}%
+\MathAlphabetChar{\mathbb}{`\J}{"1D541}%
+\MathAlphabetChar{\mathbb}{`\K}{"1D542}%
+\MathAlphabetChar{\mathbb}{`\L}{"1D543}%
+\MathAlphabetChar{\mathbb}{`\M}{"1D544}%
+\MathAlphabetChar{\mathbb}{`\N}{"2115}%
+\MathAlphabetChar{\mathbb}{`\O}{"1D546}%
+\MathAlphabetChar{\mathbb}{`\P}{"2119}%
+\MathAlphabetChar{\mathbb}{`\Q}{"211A}%
+\MathAlphabetChar{\mathbb}{`\R}{"211D}%
+\MathAlphabetChar{\mathbb}{`\S}{"1D54A}%
+\MathAlphabetChar{\mathbb}{`\T}{"1D54B}%
+\MathAlphabetChar{\mathbb}{`\U}{"1D54C}%
+\MathAlphabetChar{\mathbb}{`\V}{"1D54D}%
+\MathAlphabetChar{\mathbb}{`\W}{"1D54E}%
+\MathAlphabetChar{\mathbb}{`\X}{"1D54F}%
+\MathAlphabetChar{\mathbb}{`\Y}{"1D550}%
+\MathAlphabetChar{\mathbb}{`\Z} {"2124}%
+%    \end{macrocode}
+% Roman lowercase:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbb}{`\a}{"1D552}%
+\MathAlphabetChar{\mathbb}{`\b}{"1D553}%
+\MathAlphabetChar{\mathbb}{`\c}{"1D554}%
+\MathAlphabetChar{\mathbb}{`\d}{"1D555}%
+\MathAlphabetChar{\mathbb}{`\e}{"1D556}%
+\MathAlphabetChar{\mathbb}{`\f}{"1D557}%
+\MathAlphabetChar{\mathbb}{`\g}{"1D558}%
+\MathAlphabetChar{\mathbb}{`\h}{"1D559}%
+\MathAlphabetChar{\mathbb}{`\i}{"1D55A}%
+\MathAlphabetChar{\mathbb}{`\j}{"1D55B}%
+\MathAlphabetChar{\mathbb}{`\k}{"1D55C}%
+\MathAlphabetChar{\mathbb}{`\l}{"1D55D}%
+\MathAlphabetChar{\mathbb}{`\m}{"1D55E}%
+\MathAlphabetChar{\mathbb}{`\n}{"1D55F}%
+\MathAlphabetChar{\mathbb}{`\o}{"1D560}%
+\MathAlphabetChar{\mathbb}{`\p}{"1D561}%
+\MathAlphabetChar{\mathbb}{`\q}{"1D562}%
+\MathAlphabetChar{\mathbb}{`\r}{"1D563}%
+\MathAlphabetChar{\mathbb}{`\s}{"1D564}%
+\MathAlphabetChar{\mathbb}{`\t}{"1D565}%
+\MathAlphabetChar{\mathbb}{`\u}{"1D566}%
+\MathAlphabetChar{\mathbb}{`\v}{"1D567}%
+\MathAlphabetChar{\mathbb}{`\w}{"1D568}%
+\MathAlphabetChar{\mathbb}{`\x}{"1D569}%
+\MathAlphabetChar{\mathbb}{`\y}{"1D56A}%
+\MathAlphabetChar{\mathbb}{`\z}{"1D56B}%
+%    \end{macrocode}
+% TODO: some Greek letters and symbols.
+%
+% \subsubsection{Script or caligraphic: \cmd\mathscr\ and \cmd\mathcal}
+% \cmd\mathcal\ and \cmd\mathscr\ are aliases.
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathscr{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathscr{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+%    \begin{macrocode}
+\MathAlphabetChar{\mathscr}{`\A}{"1D49C}%
+\MathAlphabetChar{\mathscr}{`\B}{8492}%
+\MathAlphabetChar{\mathscr}{`\C}{119966}%
+\MathAlphabetChar{\mathscr}{`\D}{119967}%
+\MathAlphabetChar{\mathscr}{`\E}{8496}%
+\MathAlphabetChar{\mathscr}{`\F}{8497}%
+\MathAlphabetChar{\mathscr}{`\G}{119970}%
+\MathAlphabetChar{\mathscr}{`\H}{8459}%
+\MathAlphabetChar{\mathscr}{`\I}{8464}%
+\MathAlphabetChar{\mathscr}{`\J}{119973}%
+\MathAlphabetChar{\mathscr}{`\K}{119974}%
+\MathAlphabetChar{\mathscr}{`\L}{8466}%
+\MathAlphabetChar{\mathscr}{`\M}{8499}%
+\MathAlphabetChar{\mathscr}{`\N}{119977}%
+\MathAlphabetChar{\mathscr}{`\O}{119978}%
+\MathAlphabetChar{\mathscr}{`\P}{119979}%
+\MathAlphabetChar{\mathscr}{`\Q}{119980}%
+\MathAlphabetChar{\mathscr}{`\R}{8475}%
+\MathAlphabetChar{\mathscr}{`\S}{119982}%
+\MathAlphabetChar{\mathscr}{`\T}{119983}%
+\MathAlphabetChar{\mathscr}{`\U}{119984}%
+\MathAlphabetChar{\mathscr}{`\V}{119985}%
+\MathAlphabetChar{\mathscr}{`\W}{119986}%
+\MathAlphabetChar{\mathscr}{`\X}{119987}%
+\MathAlphabetChar{\mathscr}{`\Y}{119988}%
+\MathAlphabetChar{\mathscr}{`\Z}{119989}%
+%    \end{macrocode}
+%    \begin{macrocode}
+\MathAlphabetChar{\mathscr}{`\a}{"1D4B6}%
+\MathAlphabetChar{\mathscr}{`\b}{"1D4B7}%
+\MathAlphabetChar{\mathscr}{`\c}{"1D4B8}%
+\MathAlphabetChar{\mathscr}{`\d}{"1D4B9}%
+\MathAlphabetChar{\mathscr}{`\e}{"212F}%
+\MathAlphabetChar{\mathscr}{`\f}{"1D4BB}%
+\MathAlphabetChar{\mathscr}{`\g}{"210A}%
+\MathAlphabetChar{\mathscr}{`\h}{"1D4BD}%
+\MathAlphabetChar{\mathscr}{`\i}{"1D4BE}%
+\MathAlphabetChar{\mathscr}{`\j}{"1D4BF}%
+\MathAlphabetChar{\mathscr}{`\k}{"1D4C0}%
+\MathAlphabetChar{\mathscr}{`\l}{"1D4C1}%
+\MathAlphabetChar{\mathscr}{`\m}{"1D4C2}%
+\MathAlphabetChar{\mathscr}{`\n}{"1D4C3}%
+\MathAlphabetChar{\mathscr}{`\o}{"2134}%
+\MathAlphabetChar{\mathscr}{`\p}{"1D4C5}%
+\MathAlphabetChar{\mathscr}{`\q}{"1D4C6}%
+\MathAlphabetChar{\mathscr}{`\r}{"1D4C7}%
+\MathAlphabetChar{\mathscr}{`\s}{"1D4C8}%
+\MathAlphabetChar{\mathscr}{`\t}{"1D4C9}%
+\MathAlphabetChar{\mathscr}{`\u}{"1D4CA}%
+\MathAlphabetChar{\mathscr}{`\v}{"1D4CB}%
+\MathAlphabetChar{\mathscr}{`\w}{"1D4CC}%
+\MathAlphabetChar{\mathscr}{`\x}{"1D4CD}%
+\MathAlphabetChar{\mathscr}{`\y}{"1D4CE}%
+\MathAlphabetChar{\mathscr}{`\z}{"1D4CF}%
+%    \end{macrocode}
+%
+% \subsubsection{Fractur or fraktur or blackletter: \cmd\mathfrak}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathfrak{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathfrak{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+%
+% Letters, with exceptions $\{\mathfrak{C,H,I,R,Z}\}$:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathfrak}{`\A}{"1D504}%
+\MathAlphabetChar{\mathfrak}{`\B}{"1D505}%
+\MathAlphabetChar{\mathfrak}{`\C}{"212D}%
+\MathAlphabetChar{\mathfrak}{`\D}{"1D507}%
+\MathAlphabetChar{\mathfrak}{`\E}{"1D508}%
+\MathAlphabetChar{\mathfrak}{`\F}{"1D509}%
+\MathAlphabetChar{\mathfrak}{`\G}{"1D50A}%
+\MathAlphabetChar{\mathfrak}{`\H}{"210C}%
+\MathAlphabetChar{\mathfrak}{`\I}{"2111}%
+\MathAlphabetChar{\mathfrak}{`\J}{"1D50D}%
+\MathAlphabetChar{\mathfrak}{`\K}{"1D50E}%
+\MathAlphabetChar{\mathfrak}{`\L}{"1D50F}%
+\MathAlphabetChar{\mathfrak}{`\M}{"1D510}%
+\MathAlphabetChar{\mathfrak}{`\N}{"1D511}%
+\MathAlphabetChar{\mathfrak}{`\O}{"1D512}%
+\MathAlphabetChar{\mathfrak}{`\P}{"1D513}%
+\MathAlphabetChar{\mathfrak}{`\Q}{"1D514}%
+\MathAlphabetChar{\mathfrak}{`\R}{"211C}%
+\MathAlphabetChar{\mathfrak}{`\S}{"1D516}%
+\MathAlphabetChar{\mathfrak}{`\T}{"1D517}%
+\MathAlphabetChar{\mathfrak}{`\U}{"1D518}%
+\MathAlphabetChar{\mathfrak}{`\V}{"1D519}%
+\MathAlphabetChar{\mathfrak}{`\W}{"1D51A}%
+\MathAlphabetChar{\mathfrak}{`\X}{"1D51B}%
+\MathAlphabetChar{\mathfrak}{`\Y}{"1D51C}%
+\MathAlphabetChar{\mathfrak}{`\Z}{"2128}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathfrak}{`\a}{"1D51E}%
+\MathAlphabetChar{\mathfrak}{`\b}{"1D51F}%
+\MathAlphabetChar{\mathfrak}{`\c}{"1D520}%
+\MathAlphabetChar{\mathfrak}{`\d}{"1D521}%
+\MathAlphabetChar{\mathfrak}{`\e}{"1D522}%
+\MathAlphabetChar{\mathfrak}{`\f}{"1D523}%
+\MathAlphabetChar{\mathfrak}{`\g}{"1D524}%
+\MathAlphabetChar{\mathfrak}{`\h}{"1D525}%
+\MathAlphabetChar{\mathfrak}{`\i}{"1D526}%
+\MathAlphabetChar{\mathfrak}{`\j}{"1D527}%
+\MathAlphabetChar{\mathfrak}{`\k}{"1D528}%
+\MathAlphabetChar{\mathfrak}{`\l}{"1D529}%
+\MathAlphabetChar{\mathfrak}{`\m}{"1D52A}%
+\MathAlphabetChar{\mathfrak}{`\n}{"1D52B}%
+\MathAlphabetChar{\mathfrak}{`\o}{"1D52C}%
+\MathAlphabetChar{\mathfrak}{`\p}{"1D52D}%
+\MathAlphabetChar{\mathfrak}{`\q}{"1D52E}%
+\MathAlphabetChar{\mathfrak}{`\r}{"1D52F}%
+\MathAlphabetChar{\mathfrak}{`\s}{"1D530}%
+\MathAlphabetChar{\mathfrak}{`\t}{"1D531}%
+\MathAlphabetChar{\mathfrak}{`\u}{"1D532}%
+\MathAlphabetChar{\mathfrak}{`\v}{"1D533}%
+\MathAlphabetChar{\mathfrak}{`\w}{"1D534}%
+\MathAlphabetChar{\mathfrak}{`\x}{"1D535}%
+\MathAlphabetChar{\mathfrak}{`\y}{"1D536}%
+\MathAlphabetChar{\mathfrak}{`\z}{"1D537}%
+%    \end{macrocode}
+%
+% \subsubsection{Sans serif: \cmd\mathsf}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathsf{0123456789}$ \\
+%   $\mathsf{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathsf{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+% Numbers:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathsf}{`\0}{"1D7E2}%
+\MathAlphabetChar{\mathsf}{`\1}{"1D7E3}%
+\MathAlphabetChar{\mathsf}{`\2}{"1D7E4}%
+\MathAlphabetChar{\mathsf}{`\3}{"1D7E5}%
+\MathAlphabetChar{\mathsf}{`\4}{"1D7E6}%
+\MathAlphabetChar{\mathsf}{`\5}{"1D7E7}%
+\MathAlphabetChar{\mathsf}{`\6}{"1D7E8}%
+\MathAlphabetChar{\mathsf}{`\7}{"1D7E9}%
+\MathAlphabetChar{\mathsf}{`\8}{"1D7EA}%
+\MathAlphabetChar{\mathsf}{`\9}{"1D7EB}%
+%    \end{macrocode}
+% Roman letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathsf}{`\A}{"1D5A0}%
+\MathAlphabetChar{\mathsf}{`\B}{"1D5A1}%
+\MathAlphabetChar{\mathsf}{`\C}{"1D5A2}%
+\MathAlphabetChar{\mathsf}{`\D}{"1D5A3}%
+\MathAlphabetChar{\mathsf}{`\E}{"1D5A4}%
+\MathAlphabetChar{\mathsf}{`\F}{"1D5A5}%
+\MathAlphabetChar{\mathsf}{`\G}{"1D5A6}%
+\MathAlphabetChar{\mathsf}{`\H}{"1D5A7}%
+\MathAlphabetChar{\mathsf}{`\I}{"1D5A8}%
+\MathAlphabetChar{\mathsf}{`\J}{"1D5A9}%
+\MathAlphabetChar{\mathsf}{`\K}{"1D5AA}%
+\MathAlphabetChar{\mathsf}{`\L}{"1D5AB}%
+\MathAlphabetChar{\mathsf}{`\M}{"1D5AC}%
+\MathAlphabetChar{\mathsf}{`\N}{"1D5AD}%
+\MathAlphabetChar{\mathsf}{`\O}{"1D5AE}%
+\MathAlphabetChar{\mathsf}{`\P}{"1D5AF}%
+\MathAlphabetChar{\mathsf}{`\Q}{"1D5B0}%
+\MathAlphabetChar{\mathsf}{`\R}{"1D5B1}%
+\MathAlphabetChar{\mathsf}{`\S}{"1D5B2}%
+\MathAlphabetChar{\mathsf}{`\T}{"1D5B3}%
+\MathAlphabetChar{\mathsf}{`\U}{"1D5B4}%
+\MathAlphabetChar{\mathsf}{`\V}{"1D5B5}%
+\MathAlphabetChar{\mathsf}{`\W}{"1D5B6}%
+\MathAlphabetChar{\mathsf}{`\X}{"1D5B7}%
+\MathAlphabetChar{\mathsf}{`\Y}{"1D5B8}%
+\MathAlphabetChar{\mathsf}{`\Z}{"1D5B9}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathsf}{`\a}{"1D5BA}%
+\MathAlphabetChar{\mathsf}{`\b}{"1D5BB}%
+\MathAlphabetChar{\mathsf}{`\c}{"1D5BC}%
+\MathAlphabetChar{\mathsf}{`\d}{"1D5BD}%
+\MathAlphabetChar{\mathsf}{`\e}{"1D5BE}%
+\MathAlphabetChar{\mathsf}{`\f}{"1D5BF}%
+\MathAlphabetChar{\mathsf}{`\g}{"1D5C0}%
+\MathAlphabetChar{\mathsf}{`\h}{"1D5C1}%
+\MathAlphabetChar{\mathsf}{`\i}{"1D5C2}%
+\MathAlphabetChar{\mathsf}{`\j}{"1D5C3}%
+\MathAlphabetChar{\mathsf}{`\k}{"1D5C4}%
+\MathAlphabetChar{\mathsf}{`\l}{"1D5C5}%
+\MathAlphabetChar{\mathsf}{`\m}{"1D5C6}%
+\MathAlphabetChar{\mathsf}{`\n}{"1D5C7}%
+\MathAlphabetChar{\mathsf}{`\o}{"1D5C8}%
+\MathAlphabetChar{\mathsf}{`\p}{"1D5C9}%
+\MathAlphabetChar{\mathsf}{`\q}{"1D5CA}%
+\MathAlphabetChar{\mathsf}{`\r}{"1D5CB}%
+\MathAlphabetChar{\mathsf}{`\s}{"1D5CC}%
+\MathAlphabetChar{\mathsf}{`\t}{"1D5CD}%
+\MathAlphabetChar{\mathsf}{`\u}{"1D5CE}%
+\MathAlphabetChar{\mathsf}{`\v}{"1D5CF}%
+\MathAlphabetChar{\mathsf}{`\w}{"1D5D0}%
+\MathAlphabetChar{\mathsf}{`\x}{"1D5D1}%
+\MathAlphabetChar{\mathsf}{`\y}{"1D5D2}%
+\MathAlphabetChar{\mathsf}{`\z}{"1D5D3}%
+%    \end{macrocode}
+%
+% \subsubsection{Sans serif italic: \cmd\mathsfit}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathsfit{0123456789}$ \\
+%   $\mathsfit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathsfit{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+% Numbers (always upright):
+%    \begin{macrocode}
+\MathAlphabetChar{\mathsfit}{`\0}{"1D7E2}%
+\MathAlphabetChar{\mathsfit}{`\1}{"1D7E3}%
+\MathAlphabetChar{\mathsfit}{`\2}{"1D7E4}%
+\MathAlphabetChar{\mathsfit}{`\3}{"1D7E5}%
+\MathAlphabetChar{\mathsfit}{`\4}{"1D7E6}%
+\MathAlphabetChar{\mathsfit}{`\5}{"1D7E7}%
+\MathAlphabetChar{\mathsfit}{`\6}{"1D7E8}%
+\MathAlphabetChar{\mathsfit}{`\7}{"1D7E9}%
+\MathAlphabetChar{\mathsfit}{`\8}{"1D7EA}%
+\MathAlphabetChar{\mathsfit}{`\9}{"1D7EB}%
+%    \end{macrocode}
+% Roman letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathsfit}{`\A}{"1D608}%
+\MathAlphabetChar{\mathsfit}{`\B}{"1D609}%
+\MathAlphabetChar{\mathsfit}{`\C}{"1D60A}%
+\MathAlphabetChar{\mathsfit}{`\D}{"1D60B}%
+\MathAlphabetChar{\mathsfit}{`\E}{"1D60C}%
+\MathAlphabetChar{\mathsfit}{`\F}{"1D60D}%
+\MathAlphabetChar{\mathsfit}{`\G}{"1D60E}%
+\MathAlphabetChar{\mathsfit}{`\H}{"1D60F}%
+\MathAlphabetChar{\mathsfit}{`\I}{"1D610}%
+\MathAlphabetChar{\mathsfit}{`\J}{"1D611}%
+\MathAlphabetChar{\mathsfit}{`\K}{"1D612}%
+\MathAlphabetChar{\mathsfit}{`\L}{"1D613}%
+\MathAlphabetChar{\mathsfit}{`\M}{"1D614}%
+\MathAlphabetChar{\mathsfit}{`\N}{"1D615}%
+\MathAlphabetChar{\mathsfit}{`\O}{"1D616}%
+\MathAlphabetChar{\mathsfit}{`\P}{"1D617}%
+\MathAlphabetChar{\mathsfit}{`\Q}{"1D618}%
+\MathAlphabetChar{\mathsfit}{`\R}{"1D619}%
+\MathAlphabetChar{\mathsfit}{`\S}{"1D61A}%
+\MathAlphabetChar{\mathsfit}{`\T}{"1D61B}%
+\MathAlphabetChar{\mathsfit}{`\U}{"1D61C}%
+\MathAlphabetChar{\mathsfit}{`\V}{"1D61D}%
+\MathAlphabetChar{\mathsfit}{`\W}{"1D61E}%
+\MathAlphabetChar{\mathsfit}{`\X}{"1D61F}%
+\MathAlphabetChar{\mathsfit}{`\Y}{"1D620}%
+\MathAlphabetChar{\mathsfit}{`\Z}{"1D621}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathsfit}{`\a}{"1D622}%
+\MathAlphabetChar{\mathsfit}{`\b}{"1D623}%
+\MathAlphabetChar{\mathsfit}{`\c}{"1D624}%
+\MathAlphabetChar{\mathsfit}{`\d}{"1D625}%
+\MathAlphabetChar{\mathsfit}{`\e}{"1D626}%
+\MathAlphabetChar{\mathsfit}{`\f}{"1D627}%
+\MathAlphabetChar{\mathsfit}{`\g}{"1D628}%
+\MathAlphabetChar{\mathsfit}{`\h}{"1D629}%
+\MathAlphabetChar{\mathsfit}{`\i}{"1D62A}%
+\MathAlphabetChar{\mathsfit}{`\j}{"1D62B}%
+\MathAlphabetChar{\mathsfit}{`\k}{"1D62C}%
+\MathAlphabetChar{\mathsfit}{`\l}{"1D62D}%
+\MathAlphabetChar{\mathsfit}{`\m}{"1D62E}%
+\MathAlphabetChar{\mathsfit}{`\n}{"1D62F}%
+\MathAlphabetChar{\mathsfit}{`\o}{"1D630}%
+\MathAlphabetChar{\mathsfit}{`\p}{"1D631}%
+\MathAlphabetChar{\mathsfit}{`\q}{"1D632}%
+\MathAlphabetChar{\mathsfit}{`\r}{"1D633}%
+\MathAlphabetChar{\mathsfit}{`\s}{"1D634}%
+\MathAlphabetChar{\mathsfit}{`\t}{"1D635}%
+\MathAlphabetChar{\mathsfit}{`\u}{"1D636}%
+\MathAlphabetChar{\mathsfit}{`\v}{"1D637}%
+\MathAlphabetChar{\mathsfit}{`\w}{"1D638}%
+\MathAlphabetChar{\mathsfit}{`\x}{"1D639}%
+\MathAlphabetChar{\mathsfit}{`\y}{"1D63A}%
+\MathAlphabetChar{\mathsfit}{`\z}{"1D63B}%
+%    \end{macrocode}
+%
+% \subsubsection{Typewriter or monospaced: \cmd\mathtt}
+% \begin{example}{}
+%   \setmathfont{Code2001}% ugly
+%   $\mathtt{0123456789}$ \\
+%   $\mathtt{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathtt{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+% Numbers:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathtt}{`\0}{"1D7F6}%
+\MathAlphabetChar{\mathtt}{`\1}{"1D7F7}%
+\MathAlphabetChar{\mathtt}{`\2}{"1D7F8}%
+\MathAlphabetChar{\mathtt}{`\3}{"1D7F9}%
+\MathAlphabetChar{\mathtt}{`\4}{"1D7FA}%
+\MathAlphabetChar{\mathtt}{`\5}{"1D7FB}%
+\MathAlphabetChar{\mathtt}{`\6}{"1D7FC}%
+\MathAlphabetChar{\mathtt}{`\7}{"1D7FD}%
+\MathAlphabetChar{\mathtt}{`\8}{"1D7FE}%
+\MathAlphabetChar{\mathtt}{`\9}{"1D7FF}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathtt}{`\A}{"1D670}%
+\MathAlphabetChar{\mathtt}{`\B}{"1D671}%
+\MathAlphabetChar{\mathtt}{`\C}{"1D672}%
+\MathAlphabetChar{\mathtt}{`\D}{"1D673}%
+\MathAlphabetChar{\mathtt}{`\E}{"1D674}%
+\MathAlphabetChar{\mathtt}{`\F}{"1D675}%
+\MathAlphabetChar{\mathtt}{`\G}{"1D676}%
+\MathAlphabetChar{\mathtt}{`\H}{"1D677}%
+\MathAlphabetChar{\mathtt}{`\I}{"1D678}%
+\MathAlphabetChar{\mathtt}{`\J}{"1D679}%
+\MathAlphabetChar{\mathtt}{`\K}{"1D67A}%
+\MathAlphabetChar{\mathtt}{`\L}{"1D67B}%
+\MathAlphabetChar{\mathtt}{`\M}{"1D67C}%
+\MathAlphabetChar{\mathtt}{`\N}{"1D67D}%
+\MathAlphabetChar{\mathtt}{`\O}{"1D67E}%
+\MathAlphabetChar{\mathtt}{`\P}{"1D67F}%
+\MathAlphabetChar{\mathtt}{`\Q}{"1D680}%
+\MathAlphabetChar{\mathtt}{`\R}{"1D681}%
+\MathAlphabetChar{\mathtt}{`\S}{"1D682}%
+\MathAlphabetChar{\mathtt}{`\T}{"1D683}%
+\MathAlphabetChar{\mathtt}{`\U}{"1D684}%
+\MathAlphabetChar{\mathtt}{`\V}{"1D685}%
+\MathAlphabetChar{\mathtt}{`\W}{"1D686}%
+\MathAlphabetChar{\mathtt}{`\X}{"1D687}%
+\MathAlphabetChar{\mathtt}{`\Y}{"1D688}%
+\MathAlphabetChar{\mathtt}{`\Z}{"1D689}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathtt}{`\a}{"1D68A}%
+\MathAlphabetChar{\mathtt}{`\b}{"1D68B}%
+\MathAlphabetChar{\mathtt}{`\c}{"1D68C}%
+\MathAlphabetChar{\mathtt}{`\d}{"1D68D}%
+\MathAlphabetChar{\mathtt}{`\e}{"1D68E}%
+\MathAlphabetChar{\mathtt}{`\f}{"1D68F}%
+\MathAlphabetChar{\mathtt}{`\g}{"1D690}%
+\MathAlphabetChar{\mathtt}{`\h}{"1D691}%
+\MathAlphabetChar{\mathtt}{`\i}{"1D692}%
+\MathAlphabetChar{\mathtt}{`\j}{"1D693}%
+\MathAlphabetChar{\mathtt}{`\k}{"1D694}%
+\MathAlphabetChar{\mathtt}{`\l}{"1D695}%
+\MathAlphabetChar{\mathtt}{`\m}{"1D696}%
+\MathAlphabetChar{\mathtt}{`\n}{"1D697}%
+\MathAlphabetChar{\mathtt}{`\o}{"1D698}%
+\MathAlphabetChar{\mathtt}{`\p}{"1D699}%
+\MathAlphabetChar{\mathtt}{`\q}{"1D69A}%
+\MathAlphabetChar{\mathtt}{`\r}{"1D69B}%
+\MathAlphabetChar{\mathtt}{`\s}{"1D69C}%
+\MathAlphabetChar{\mathtt}{`\t}{"1D69D}%
+\MathAlphabetChar{\mathtt}{`\u}{"1D69E}%
+\MathAlphabetChar{\mathtt}{`\v}{"1D69F}%
+\MathAlphabetChar{\mathtt}{`\w}{"1D6A0}%
+\MathAlphabetChar{\mathtt}{`\x}{"1D6A1}%
+\MathAlphabetChar{\mathtt}{`\y}{"1D6A2}%
+\MathAlphabetChar{\mathtt}{`\z}{"1D6A3}%
+%    \end{macrocode}
+%
+% \subsection{Bold alphabets' character mappings}
+% \seclabel{bfmathmap}
+%
+% \subsubsection{Bold: \cmd\mathbf}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbf{0123456789}$ \\
+%   $\mathbf{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbf{abcdefghijklmnopqrstuvwxyz}$ \\
+%   $\mathbf{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
+%   $\mathbf{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+% \end{example}
+%
+% Numbers:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbf}{`\0}{"1D7CE}%
+\MathAlphabetChar{\mathbf}{`\1}{"1D7CF}%
+\MathAlphabetChar{\mathbf}{`\2}{"1D7D0}%
+\MathAlphabetChar{\mathbf}{`\3}{"1D7D1}%
+\MathAlphabetChar{\mathbf}{`\4}{"1D7D2}%
+\MathAlphabetChar{\mathbf}{`\5}{"1D7D3}%
+\MathAlphabetChar{\mathbf}{`\6}{"1D7D4}%
+\MathAlphabetChar{\mathbf}{`\7}{"1D7D5}%
+\MathAlphabetChar{\mathbf}{`\8}{"1D7D6}%
+\MathAlphabetChar{\mathbf}{`\9}{"1D7D7}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbf}{`\A}{"1D400}%
+\MathAlphabetChar{\mathbf}{`\B}{"1D401}%
+\MathAlphabetChar{\mathbf}{`\C}{"1D402}%
+\MathAlphabetChar{\mathbf}{`\D}{"1D403}%
+\MathAlphabetChar{\mathbf}{`\E}{"1D404}%
+\MathAlphabetChar{\mathbf}{`\F}{"1D405}%
+\MathAlphabetChar{\mathbf}{`\G}{"1D406}%
+\MathAlphabetChar{\mathbf}{`\H}{"1D407}%
+\MathAlphabetChar{\mathbf}{`\I}{"1D408}%
+\MathAlphabetChar{\mathbf}{`\J}{"1D409}%
+\MathAlphabetChar{\mathbf}{`\K}{"1D40A}%
+\MathAlphabetChar{\mathbf}{`\L}{"1D40B}%
+\MathAlphabetChar{\mathbf}{`\M}{"1D40C}%
+\MathAlphabetChar{\mathbf}{`\N}{"1D40D}%
+\MathAlphabetChar{\mathbf}{`\O}{"1D40E}%
+\MathAlphabetChar{\mathbf}{`\P}{"1D40F}%
+\MathAlphabetChar{\mathbf}{`\Q}{"1D410}%
+\MathAlphabetChar{\mathbf}{`\R}{"1D411}%
+\MathAlphabetChar{\mathbf}{`\S}{"1D412}%
+\MathAlphabetChar{\mathbf}{`\T}{"1D413}%
+\MathAlphabetChar{\mathbf}{`\U}{"1D414}%
+\MathAlphabetChar{\mathbf}{`\V}{"1D415}%
+\MathAlphabetChar{\mathbf}{`\W}{"1D416}%
+\MathAlphabetChar{\mathbf}{`\X}{"1D417}%
+\MathAlphabetChar{\mathbf}{`\Y}{"1D418}%
+\MathAlphabetChar{\mathbf}{`\Z}{"1D419}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbf}{`\a}{"1D41A}%
+\MathAlphabetChar{\mathbf}{`\b}{"1D41B}%
+\MathAlphabetChar{\mathbf}{`\c}{"1D41C}%
+\MathAlphabetChar{\mathbf}{`\d}{"1D41D}%
+\MathAlphabetChar{\mathbf}{`\e}{"1D41E}%
+\MathAlphabetChar{\mathbf}{`\f}{"1D41F}%
+\MathAlphabetChar{\mathbf}{`\g}{"1D420}%
+\MathAlphabetChar{\mathbf}{`\h}{"1D421}%
+\MathAlphabetChar{\mathbf}{`\i}{"1D422}%
+\MathAlphabetChar{\mathbf}{`\j}{"1D423}%
+\MathAlphabetChar{\mathbf}{`\k}{"1D424}%
+\MathAlphabetChar{\mathbf}{`\l}{"1D425}%
+\MathAlphabetChar{\mathbf}{`\m}{"1D426}%
+\MathAlphabetChar{\mathbf}{`\n}{"1D427}%
+\MathAlphabetChar{\mathbf}{`\o}{"1D428}%
+\MathAlphabetChar{\mathbf}{`\p}{"1D429}%
+\MathAlphabetChar{\mathbf}{`\q}{"1D42A}%
+\MathAlphabetChar{\mathbf}{`\r}{"1D42B}%
+\MathAlphabetChar{\mathbf}{`\s}{"1D42C}%
+\MathAlphabetChar{\mathbf}{`\t}{"1D42D}%
+\MathAlphabetChar{\mathbf}{`\u}{"1D42E}%
+\MathAlphabetChar{\mathbf}{`\v}{"1D42F}%
+\MathAlphabetChar{\mathbf}{`\w}{"1D430}%
+\MathAlphabetChar{\mathbf}{`\x}{"1D431}%
+\MathAlphabetChar{\mathbf}{`\y}{"1D432}%
+\MathAlphabetChar{\mathbf}{`\z}{"1D433}%
+%    \end{macrocode}
+% Greek letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbf}{913}{"1D6A8}%
+\MathAlphabetChar{\mathbf}{914}{"1D6A9}%
+\MathAlphabetChar{\mathbf}{915}{"1D6AA}%
+\MathAlphabetChar{\mathbf}{916}{"1D6AB}%
+\MathAlphabetChar{\mathbf}{917}{"1D6AC}%
+\MathAlphabetChar{\mathbf}{918}{"1D6AD}%
+\MathAlphabetChar{\mathbf}{919}{"1D6AE}%
+\MathAlphabetChar{\mathbf}{920}{"1D6AF}%
+\MathAlphabetChar{\mathbf}{921}{"1D6B0}%
+\MathAlphabetChar{\mathbf}{922}{"1D6B1}%
+\MathAlphabetChar{\mathbf}{923}{"1D6B2}%
+\MathAlphabetChar{\mathbf}{924}{"1D6B3}%
+\MathAlphabetChar{\mathbf}{925}{"1D6B4}%
+\MathAlphabetChar{\mathbf}{926}{"1D6B5}%
+\MathAlphabetChar{\mathbf}{927}{"1D6B6}%
+\MathAlphabetChar{\mathbf}{928}{"1D6B7}%
+\MathAlphabetChar{\mathbf}{929}{"1D6B8}%
+%\MathAlphabetChar{\mathbf}{??}{"1D6B9}%
+\MathAlphabetChar{\mathbf}{931}{"1D6BA}%
+\MathAlphabetChar{\mathbf}{932}{"1D6BB}%
+\MathAlphabetChar{\mathbf}{933}{"1D6BC}%
+\MathAlphabetChar{\mathbf}{934}{"1D6BD}%
+\MathAlphabetChar{\mathbf}{935}{"1D6BE}%
+\MathAlphabetChar{\mathbf}{936}{"1D6BF}%
+\MathAlphabetChar{\mathbf}{937}{"1D6C0}%
+\MathAlphabetChar{\mathbf}{"2207}{"1D6C1}%
+%    \end{macrocode}
+% Greek lowercase:
+%    \begin{macrocode}      
+\MathAlphabetChar{\mathbf}{945}{"1D6C2}%
+\MathAlphabetChar{\mathbf}{946}{"1D6C3}%
+\MathAlphabetChar{\mathbf}{947}{"1D6C4}%
+\MathAlphabetChar{\mathbf}{948}{"1D6C5}%
+\MathAlphabetChar{\mathbf}{949}{"1D6C6}%
+\MathAlphabetChar{\mathbf}{950}{"1D6C7}%
+\MathAlphabetChar{\mathbf}{951}{"1D6C8}%
+\MathAlphabetChar{\mathbf}{952}{"1D6C9}%
+\MathAlphabetChar{\mathbf}{953}{"1D6CA}%
+\MathAlphabetChar{\mathbf}{954}{"1D6CB}%
+\MathAlphabetChar{\mathbf}{955}{"1D6CC}%
+\MathAlphabetChar{\mathbf}{956}{"1D6CD}%
+\MathAlphabetChar{\mathbf}{957}{"1D6CE}%
+\MathAlphabetChar{\mathbf}{958}{"1D6CF}%
+\MathAlphabetChar{\mathbf}{959}{"1D6D0}%
+\MathAlphabetChar{\mathbf}{960}{"1D6D1}%
+\MathAlphabetChar{\mathbf}{961}{"1D6D2}%
+\MathAlphabetChar{\mathbf}{960}{"1D6D3}%
+\MathAlphabetChar{\mathbf}{963}{"1D6D4}%
+\MathAlphabetChar{\mathbf}{964}{"1D6D5}%
+\MathAlphabetChar{\mathbf}{965}{"1D6D6}%
+\MathAlphabetChar{\mathbf}{966}{"1D6D7}%
+\MathAlphabetChar{\mathbf}{967}{"1D6D8}%
+\MathAlphabetChar{\mathbf}{968}{"1D6D9}%
+\MathAlphabetChar{\mathbf}{969}{"1D6DA}%
+\MathAlphabetChar{\mathbf}{"2202}{"1D6DB}%
+%\MathAlphabetChar{\mathbf}{??}{"1D6DC}% VAR EPSILON
+%\MathAlphabetChar{\mathbf}{??}{"1D6DD}% VAR THETA
+%\MathAlphabetChar{\mathbf}{??}{"1D6DE}% VAR KAPPA
+%\MathAlphabetChar{\mathbf}{??}{"1D6DF}% VAR PHI
+%\MathAlphabetChar{\mathbf}{??}{"1D6E0}% VAR RHO
+%\MathAlphabetChar{\mathbf}{??}{"1D6E1}% VAR PI
+%    \end{macrocode}
+% TODO: nabla and others
+%
+%
+% \subsubsection{Bold Italic: \cmd\mathbfit}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbfit{0123456789}$ \\
+%   $\mathbfit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbfit{abcdefghijklmnopqrstuvwxyz}$ \\
+%   $\mathbfit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
+%   $\mathbfit{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+% \end{example}
+%
+% Bold numbers: (always upright)
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfit}{`\0}{"1D7CE}%
+\MathAlphabetChar{\mathbfit}{`\1}{"1D7CF}%
+\MathAlphabetChar{\mathbfit}{`\2}{"1D7D0}%
+\MathAlphabetChar{\mathbfit}{`\3}{"1D7D1}%
+\MathAlphabetChar{\mathbfit}{`\4}{"1D7D2}%
+\MathAlphabetChar{\mathbfit}{`\5}{"1D7D3}%
+\MathAlphabetChar{\mathbfit}{`\6}{"1D7D4}%
+\MathAlphabetChar{\mathbfit}{`\7}{"1D7D5}%
+\MathAlphabetChar{\mathbfit}{`\8}{"1D7D6}%
+\MathAlphabetChar{\mathbfit}{`\9}{"1D7D7}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfit}{`\A}{"1D468}%
+\MathAlphabetChar{\mathbfit}{`\B}{"1D469}%
+\MathAlphabetChar{\mathbfit}{`\C}{"1D46A}%
+\MathAlphabetChar{\mathbfit}{`\D}{"1D46B}%
+\MathAlphabetChar{\mathbfit}{`\E}{"1D46C}%
+\MathAlphabetChar{\mathbfit}{`\F}{"1D46D}%
+\MathAlphabetChar{\mathbfit}{`\G}{"1D46E}%
+\MathAlphabetChar{\mathbfit}{`\H}{"1D46F}%
+\MathAlphabetChar{\mathbfit}{`\I}{"1D470}%
+\MathAlphabetChar{\mathbfit}{`\J}{"1D471}%
+\MathAlphabetChar{\mathbfit}{`\K}{"1D472}%
+\MathAlphabetChar{\mathbfit}{`\L}{"1D473}%
+\MathAlphabetChar{\mathbfit}{`\M}{"1D474}%
+\MathAlphabetChar{\mathbfit}{`\N}{"1D475}%
+\MathAlphabetChar{\mathbfit}{`\O}{"1D476}%
+\MathAlphabetChar{\mathbfit}{`\P}{"1D477}%
+\MathAlphabetChar{\mathbfit}{`\Q}{"1D478}%
+\MathAlphabetChar{\mathbfit}{`\R}{"1D479}%
+\MathAlphabetChar{\mathbfit}{`\S}{"1D47A}%
+\MathAlphabetChar{\mathbfit}{`\T}{"1D47B}%
+\MathAlphabetChar{\mathbfit}{`\U}{"1D47C}%
+\MathAlphabetChar{\mathbfit}{`\V}{"1D47D}%
+\MathAlphabetChar{\mathbfit}{`\W}{"1D47E}%
+\MathAlphabetChar{\mathbfit}{`\X}{"1D47F}%
+\MathAlphabetChar{\mathbfit}{`\Y}{"1D480}%
+\MathAlphabetChar{\mathbfit}{`\Z}{"1D481}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfit}{`\a}{"1D482}%
+\MathAlphabetChar{\mathbfit}{`\b}{"1D483}%
+\MathAlphabetChar{\mathbfit}{`\c}{"1D484}%
+\MathAlphabetChar{\mathbfit}{`\d}{"1D485}%
+\MathAlphabetChar{\mathbfit}{`\e}{"1D486}%
+\MathAlphabetChar{\mathbfit}{`\f}{"1D487}%
+\MathAlphabetChar{\mathbfit}{`\g}{"1D488}%
+\MathAlphabetChar{\mathbfit}{`\h}{"1D489}%
+\MathAlphabetChar{\mathbfit}{`\i}{"1D48A}%
+\MathAlphabetChar{\mathbfit}{`\j}{"1D48B}%
+\MathAlphabetChar{\mathbfit}{`\k}{"1D48C}%
+\MathAlphabetChar{\mathbfit}{`\l}{"1D48D}%
+\MathAlphabetChar{\mathbfit}{`\m}{"1D48E}%
+\MathAlphabetChar{\mathbfit}{`\n}{"1D48F}%
+\MathAlphabetChar{\mathbfit}{`\o}{"1D490}%
+\MathAlphabetChar{\mathbfit}{`\p}{"1D491}%
+\MathAlphabetChar{\mathbfit}{`\q}{"1D492}%
+\MathAlphabetChar{\mathbfit}{`\r}{"1D493}%
+\MathAlphabetChar{\mathbfit}{`\s}{"1D494}%
+\MathAlphabetChar{\mathbfit}{`\t}{"1D495}%
+\MathAlphabetChar{\mathbfit}{`\u}{"1D496}%
+\MathAlphabetChar{\mathbfit}{`\v}{"1D497}%
+\MathAlphabetChar{\mathbfit}{`\w}{"1D498}%
+\MathAlphabetChar{\mathbfit}{`\x}{"1D499}%
+\MathAlphabetChar{\mathbfit}{`\y}{"1D49A}%
+\MathAlphabetChar{\mathbfit}{`\z}{"1D49B}%
+%    \end{macrocode}
+% Greek letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfit}{913}{"1D71C}%
+\MathAlphabetChar{\mathbfit}{914}{"1D71D}%
+\MathAlphabetChar{\mathbfit}{915}{"1D71E}%
+\MathAlphabetChar{\mathbfit}{916}{"1D71F}%
+\MathAlphabetChar{\mathbfit}{917}{"1D720}%
+\MathAlphabetChar{\mathbfit}{918}{"1D721}%
+\MathAlphabetChar{\mathbfit}{919}{"1D722}%
+\MathAlphabetChar{\mathbfit}{920}{"1D723}%
+\MathAlphabetChar{\mathbfit}{921}{"1D724}%
+\MathAlphabetChar{\mathbfit}{922}{"1D725}%
+\MathAlphabetChar{\mathbfit}{923}{"1D726}%
+\MathAlphabetChar{\mathbfit}{924}{"1D727}%
+\MathAlphabetChar{\mathbfit}{925}{"1D728}%
+\MathAlphabetChar{\mathbfit}{926}{"1D729}%
+\MathAlphabetChar{\mathbfit}{927}{"1D72A}%
+\MathAlphabetChar{\mathbfit}{928}{"1D72B}%
+\MathAlphabetChar{\mathbfit}{929}{"1D72C}%
+%\MathAlphabetChar{\mathbfit}{??}{"1D72D}%
+\MathAlphabetChar{\mathbfit}{931}{"1D72E}%
+\MathAlphabetChar{\mathbfit}{932}{"1D72F}%
+\MathAlphabetChar{\mathbfit}{933}{"1D730}%
+\MathAlphabetChar{\mathbfit}{934}{"1D731}%
+\MathAlphabetChar{\mathbfit}{935}{"1D732}%
+\MathAlphabetChar{\mathbfit}{936}{"1D733}%
+\MathAlphabetChar{\mathbfit}{937}{"1D734}%
+\MathAlphabetChar{\mathbfit}{"2207}{"1D735}%
+%    \end{macrocode}
+% Greek lowercase:
+%    \begin{macrocode}      
+\MathAlphabetChar{\mathbfit}{945}{"1D736}%
+\MathAlphabetChar{\mathbfit}{946}{"1D737}%
+\MathAlphabetChar{\mathbfit}{947}{"1D738}%
+\MathAlphabetChar{\mathbfit}{948}{"1D739}%
+\MathAlphabetChar{\mathbfit}{949}{"1D73A}%
+\MathAlphabetChar{\mathbfit}{950}{"1D73B}%
+\MathAlphabetChar{\mathbfit}{951}{"1D73C}%
+\MathAlphabetChar{\mathbfit}{952}{"1D73D}%
+\MathAlphabetChar{\mathbfit}{953}{"1D73E}%
+\MathAlphabetChar{\mathbfit}{954}{"1D73F}%
+\MathAlphabetChar{\mathbfit}{955}{"1D740}%
+\MathAlphabetChar{\mathbfit}{956}{"1D741}%
+\MathAlphabetChar{\mathbfit}{957}{"1D742}%
+\MathAlphabetChar{\mathbfit}{958}{"1D743}%
+\MathAlphabetChar{\mathbfit}{959}{"1D744}%
+\MathAlphabetChar{\mathbfit}{960}{"1D745}%
+\MathAlphabetChar{\mathbfit}{961}{"1D746}%
+\MathAlphabetChar{\mathbfit}{960}{"1D747}%
+\MathAlphabetChar{\mathbfit}{963}{"1D748}%
+\MathAlphabetChar{\mathbfit}{964}{"1D749}%
+\MathAlphabetChar{\mathbfit}{965}{"1D74A}%
+\MathAlphabetChar{\mathbfit}{966}{"1D74B}%
+\MathAlphabetChar{\mathbfit}{967}{"1D74C}%
+\MathAlphabetChar{\mathbfit}{968}{"1D74D}%
+\MathAlphabetChar{\mathbfit}{969}{"1D74E}%
+\MathAlphabetChar{\mathbfit}{"2202}{"1D74F}%
+%\MathAlphabetChar{\mathbfit}{??}{"1D750}% VAR EPSILON
+%\MathAlphabetChar{\mathbfit}{??}{"1D751}% VAR THETA
+%\MathAlphabetChar{\mathbfit}{??}{"1D752}% VAR KAPPA
+%\MathAlphabetChar{\mathbfit}{??}{"1D753}% VAR PHI
+%\MathAlphabetChar{\mathbfit}{??}{"1D754}% VAR RHO
+%\MathAlphabetChar{\mathbfit}{??}{"1D755}% VAR PI
+%    \end{macrocode}
+%
+% \subsubsection{Bold fractur or fraktur or blackletter: \cmd\mathbffrak}
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbffrak{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbffrak{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+%
+% Bold numbers: (always upright)
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbffrak}{`\0}{"1D7CE}%
+\MathAlphabetChar{\mathbffrak}{`\1}{"1D7CF}%
+\MathAlphabetChar{\mathbffrak}{`\2}{"1D7D0}%
+\MathAlphabetChar{\mathbffrak}{`\3}{"1D7D1}%
+\MathAlphabetChar{\mathbffrak}{`\4}{"1D7D2}%
+\MathAlphabetChar{\mathbffrak}{`\5}{"1D7D3}%
+\MathAlphabetChar{\mathbffrak}{`\6}{"1D7D4}%
+\MathAlphabetChar{\mathbffrak}{`\7}{"1D7D5}%
+\MathAlphabetChar{\mathbffrak}{`\8}{"1D7D6}%
+\MathAlphabetChar{\mathbffrak}{`\9}{"1D7D7}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbffrak}{`\A}{"1D56C}%
+\MathAlphabetChar{\mathbffrak}{`\B}{"1D56D}%
+\MathAlphabetChar{\mathbffrak}{`\C}{"1D56E}%
+\MathAlphabetChar{\mathbffrak}{`\D}{"1D56F}%
+\MathAlphabetChar{\mathbffrak}{`\E}{"1D570}%
+\MathAlphabetChar{\mathbffrak}{`\F}{"1D571}%
+\MathAlphabetChar{\mathbffrak}{`\G}{"1D572}%
+\MathAlphabetChar{\mathbffrak}{`\H}{"1D573}%
+\MathAlphabetChar{\mathbffrak}{`\I}{"1D574}%
+\MathAlphabetChar{\mathbffrak}{`\J}{"1D575}%
+\MathAlphabetChar{\mathbffrak}{`\K}{"1D576}%
+\MathAlphabetChar{\mathbffrak}{`\L}{"1D577}%
+\MathAlphabetChar{\mathbffrak}{`\M}{"1D578}%
+\MathAlphabetChar{\mathbffrak}{`\N}{"1D579}%
+\MathAlphabetChar{\mathbffrak}{`\O}{"1D57A}%
+\MathAlphabetChar{\mathbffrak}{`\P}{"1D57B}%
+\MathAlphabetChar{\mathbffrak}{`\Q}{"1D57C}%
+\MathAlphabetChar{\mathbffrak}{`\R}{"1D57D}%
+\MathAlphabetChar{\mathbffrak}{`\S}{"1D57E}%
+\MathAlphabetChar{\mathbffrak}{`\T}{"1D57F}%
+\MathAlphabetChar{\mathbffrak}{`\U}{"1D580}%
+\MathAlphabetChar{\mathbffrak}{`\V}{"1D581}%
+\MathAlphabetChar{\mathbffrak}{`\W}{"1D582}%
+\MathAlphabetChar{\mathbffrak}{`\X}{"1D583}%
+\MathAlphabetChar{\mathbffrak}{`\Y}{"1D584}%
+\MathAlphabetChar{\mathbffrak}{`\Z}{"1D585}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbffrak}{`\a}{"1D586}%
+\MathAlphabetChar{\mathbffrak}{`\b}{"1D587}%
+\MathAlphabetChar{\mathbffrak}{`\c}{"1D588}%
+\MathAlphabetChar{\mathbffrak}{`\d}{"1D589}%
+\MathAlphabetChar{\mathbffrak}{`\e}{"1D58A}%
+\MathAlphabetChar{\mathbffrak}{`\f}{"1D58B}%
+\MathAlphabetChar{\mathbffrak}{`\g}{"1D58C}%
+\MathAlphabetChar{\mathbffrak}{`\h}{"1D58D}%
+\MathAlphabetChar{\mathbffrak}{`\i}{"1D58E}%
+\MathAlphabetChar{\mathbffrak}{`\j}{"1D58F}%
+\MathAlphabetChar{\mathbffrak}{`\k}{"1D590}%
+\MathAlphabetChar{\mathbffrak}{`\l}{"1D591}%
+\MathAlphabetChar{\mathbffrak}{`\m}{"1D592}%
+\MathAlphabetChar{\mathbffrak}{`\n}{"1D593}%
+\MathAlphabetChar{\mathbffrak}{`\o}{"1D594}%
+\MathAlphabetChar{\mathbffrak}{`\p}{"1D595}%
+\MathAlphabetChar{\mathbffrak}{`\q}{"1D596}%
+\MathAlphabetChar{\mathbffrak}{`\r}{"1D597}%
+\MathAlphabetChar{\mathbffrak}{`\s}{"1D598}%
+\MathAlphabetChar{\mathbffrak}{`\t}{"1D599}%
+\MathAlphabetChar{\mathbffrak}{`\u}{"1D59A}%
+\MathAlphabetChar{\mathbffrak}{`\v}{"1D59B}%
+\MathAlphabetChar{\mathbffrak}{`\w}{"1D59C}%
+\MathAlphabetChar{\mathbffrak}{`\x}{"1D59D}%
+\MathAlphabetChar{\mathbffrak}{`\y}{"1D59E}%
+\MathAlphabetChar{\mathbffrak}{`\z}{"1D59F}%
+%    \end{macrocode}
+%
+% \subsubsection{Bold script or calligraphic: \cmd\mathbfscr}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbfscr{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbfscr{abcdefghijklmnopqrstuvwxyz}$ \\
+% \end{example}
+% Bold numbers: (always upright)
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfscr}{`\0}{"1D7CE}%
+\MathAlphabetChar{\mathbfscr}{`\1}{"1D7CF}%
+\MathAlphabetChar{\mathbfscr}{`\2}{"1D7D0}%
+\MathAlphabetChar{\mathbfscr}{`\3}{"1D7D1}%
+\MathAlphabetChar{\mathbfscr}{`\4}{"1D7D2}%
+\MathAlphabetChar{\mathbfscr}{`\5}{"1D7D3}%
+\MathAlphabetChar{\mathbfscr}{`\6}{"1D7D4}%
+\MathAlphabetChar{\mathbfscr}{`\7}{"1D7D5}%
+\MathAlphabetChar{\mathbfscr}{`\8}{"1D7D6}%
+\MathAlphabetChar{\mathbfscr}{`\9}{"1D7D7}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfscr}{`\A}{"1D4D0}%
+\MathAlphabetChar{\mathbfscr}{`\B}{"1D4D1}%
+\MathAlphabetChar{\mathbfscr}{`\C}{"1D4D2}%
+\MathAlphabetChar{\mathbfscr}{`\D}{"1D4D3}%
+\MathAlphabetChar{\mathbfscr}{`\E}{"1D4D4}%
+\MathAlphabetChar{\mathbfscr}{`\F}{"1D4D5}%
+\MathAlphabetChar{\mathbfscr}{`\G}{"1D4D6}%
+\MathAlphabetChar{\mathbfscr}{`\H}{"1D4D7}%
+\MathAlphabetChar{\mathbfscr}{`\I}{"1D4D8}%
+\MathAlphabetChar{\mathbfscr}{`\J}{"1D4D9}%
+\MathAlphabetChar{\mathbfscr}{`\K}{"1D4DA}%
+\MathAlphabetChar{\mathbfscr}{`\L}{"1D4DB}%
+\MathAlphabetChar{\mathbfscr}{`\M}{"1D4DC}%
+\MathAlphabetChar{\mathbfscr}{`\N}{"1D4DD}%
+\MathAlphabetChar{\mathbfscr}{`\O}{"1D4DE}%
+\MathAlphabetChar{\mathbfscr}{`\P}{"1D4DF}%
+\MathAlphabetChar{\mathbfscr}{`\Q}{"1D4E0}%
+\MathAlphabetChar{\mathbfscr}{`\R}{"1D4E1}%
+\MathAlphabetChar{\mathbfscr}{`\S}{"1D4E2}%
+\MathAlphabetChar{\mathbfscr}{`\T}{"1D4E3}%
+\MathAlphabetChar{\mathbfscr}{`\U}{"1D4E4}%
+\MathAlphabetChar{\mathbfscr}{`\V}{"1D4E5}%
+\MathAlphabetChar{\mathbfscr}{`\W}{"1D4E6}%
+\MathAlphabetChar{\mathbfscr}{`\X}{"1D4E7}%
+\MathAlphabetChar{\mathbfscr}{`\Y}{"1D4E8}%
+\MathAlphabetChar{\mathbfscr}{`\Z}{"1D4E9}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfscr}{`\a}{"1D4EA}%
+\MathAlphabetChar{\mathbfscr}{`\b}{"1D4EB}%
+\MathAlphabetChar{\mathbfscr}{`\c}{"1D4EC}%
+\MathAlphabetChar{\mathbfscr}{`\d}{"1D4ED}%
+\MathAlphabetChar{\mathbfscr}{`\e}{"1D4EE}%
+\MathAlphabetChar{\mathbfscr}{`\f}{"1D4EF}%
+\MathAlphabetChar{\mathbfscr}{`\g}{"1D4F0}%
+\MathAlphabetChar{\mathbfscr}{`\h}{"1D4F1}%
+\MathAlphabetChar{\mathbfscr}{`\i}{"1D4F2}%
+\MathAlphabetChar{\mathbfscr}{`\j}{"1D4F3}%
+\MathAlphabetChar{\mathbfscr}{`\k}{"1D4F4}%
+\MathAlphabetChar{\mathbfscr}{`\l}{"1D4F5}%
+\MathAlphabetChar{\mathbfscr}{`\m}{"1D4F6}%
+\MathAlphabetChar{\mathbfscr}{`\n}{"1D4F7}%
+\MathAlphabetChar{\mathbfscr}{`\o}{"1D4F8}%
+\MathAlphabetChar{\mathbfscr}{`\p}{"1D4F9}%
+\MathAlphabetChar{\mathbfscr}{`\q}{"1D4FA}%
+\MathAlphabetChar{\mathbfscr}{`\r}{"1D4FB}%
+\MathAlphabetChar{\mathbfscr}{`\s}{"1D4FC}%
+\MathAlphabetChar{\mathbfscr}{`\t}{"1D4FD}%
+\MathAlphabetChar{\mathbfscr}{`\u}{"1D4FE}%
+\MathAlphabetChar{\mathbfscr}{`\v}{"1D4FF}%
+\MathAlphabetChar{\mathbfscr}{`\w}{"1D500}%
+\MathAlphabetChar{\mathbfscr}{`\x}{"1D501}%
+\MathAlphabetChar{\mathbfscr}{`\y}{"1D502}%
+\MathAlphabetChar{\mathbfscr}{`\z}{"1D503}%
+%    \end{macrocode}
+%
+% \subsubsection{Bold sans serif: \cmd\mathbfsf}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbfsf{0123456789}$ \\
+%   $\mathbfsf{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbfsf{abcdefghijklmnopqrstuvwxyz}$ \\
+%   $\mathbfsf{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
+%   $\mathbfsf{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+% \end{example}
+%
+% Numbers: (always upright)
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsf}{`\0}{"1D7EC}%
+\MathAlphabetChar{\mathbfsf}{`\1}{"1D7ED}%
+\MathAlphabetChar{\mathbfsf}{`\2}{"1D7EE}%
+\MathAlphabetChar{\mathbfsf}{`\3}{"1D7EF}%
+\MathAlphabetChar{\mathbfsf}{`\4}{"1D7F0}%
+\MathAlphabetChar{\mathbfsf}{`\5}{"1D7F1}%
+\MathAlphabetChar{\mathbfsf}{`\6}{"1D7F2}%
+\MathAlphabetChar{\mathbfsf}{`\7}{"1D7F3}%
+\MathAlphabetChar{\mathbfsf}{`\8}{"1D7F4}%
+\MathAlphabetChar{\mathbfsf}{`\9}{"1D7F5}%
+%    \end{macrocode}
+% Letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsf}{`\A}{"1D5D4}%
+\MathAlphabetChar{\mathbfsf}{`\B}{"1D5D5}%
+\MathAlphabetChar{\mathbfsf}{`\C}{"1D5D6}%
+\MathAlphabetChar{\mathbfsf}{`\D}{"1D5D7}%
+\MathAlphabetChar{\mathbfsf}{`\E}{"1D5D8}%
+\MathAlphabetChar{\mathbfsf}{`\F}{"1D5D9}%
+\MathAlphabetChar{\mathbfsf}{`\G}{"1D5DA}%
+\MathAlphabetChar{\mathbfsf}{`\H}{"1D5DB}%
+\MathAlphabetChar{\mathbfsf}{`\I}{"1D5DC}%
+\MathAlphabetChar{\mathbfsf}{`\J}{"1D5DD}%
+\MathAlphabetChar{\mathbfsf}{`\K}{"1D5DE}%
+\MathAlphabetChar{\mathbfsf}{`\L}{"1D5DF}%
+\MathAlphabetChar{\mathbfsf}{`\M}{"1D5E0}%
+\MathAlphabetChar{\mathbfsf}{`\N}{"1D5E1}%
+\MathAlphabetChar{\mathbfsf}{`\O}{"1D5E2}%
+\MathAlphabetChar{\mathbfsf}{`\P}{"1D5E3}%
+\MathAlphabetChar{\mathbfsf}{`\Q}{"1D5E4}%
+\MathAlphabetChar{\mathbfsf}{`\R}{"1D5E5}%
+\MathAlphabetChar{\mathbfsf}{`\S}{"1D5E6}%
+\MathAlphabetChar{\mathbfsf}{`\T}{"1D5E7}%
+\MathAlphabetChar{\mathbfsf}{`\U}{"1D5E8}%
+\MathAlphabetChar{\mathbfsf}{`\V}{"1D5E9}%
+\MathAlphabetChar{\mathbfsf}{`\W}{"1D5EA}%
+\MathAlphabetChar{\mathbfsf}{`\X}{"1D5EB}%
+\MathAlphabetChar{\mathbfsf}{`\Y}{"1D5EC}%
+\MathAlphabetChar{\mathbfsf}{`\Z}{"1D5ED}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsf}{`\a}{"1D5EE}%
+\MathAlphabetChar{\mathbfsf}{`\b}{"1D5EF}%
+\MathAlphabetChar{\mathbfsf}{`\c}{"1D5F0}%
+\MathAlphabetChar{\mathbfsf}{`\d}{"1D5F1}%
+\MathAlphabetChar{\mathbfsf}{`\e}{"1D5F2}%
+\MathAlphabetChar{\mathbfsf}{`\f}{"1D5F3}%
+\MathAlphabetChar{\mathbfsf}{`\g}{"1D5F4}%
+\MathAlphabetChar{\mathbfsf}{`\h}{"1D5F5}%
+\MathAlphabetChar{\mathbfsf}{`\i}{"1D5F6}%
+\MathAlphabetChar{\mathbfsf}{`\j}{"1D5F7}%
+\MathAlphabetChar{\mathbfsf}{`\k}{"1D5F8}%
+\MathAlphabetChar{\mathbfsf}{`\l}{"1D5F9}%
+\MathAlphabetChar{\mathbfsf}{`\m}{"1D5FA}%
+\MathAlphabetChar{\mathbfsf}{`\n}{"1D5FB}%
+\MathAlphabetChar{\mathbfsf}{`\o}{"1D5FC}%
+\MathAlphabetChar{\mathbfsf}{`\p}{"1D5FD}%
+\MathAlphabetChar{\mathbfsf}{`\q}{"1D5FE}%
+\MathAlphabetChar{\mathbfsf}{`\r}{"1D5FF}%
+\MathAlphabetChar{\mathbfsf}{`\s}{"1D600}%
+\MathAlphabetChar{\mathbfsf}{`\t}{"1D601}%
+\MathAlphabetChar{\mathbfsf}{`\u}{"1D602}%
+\MathAlphabetChar{\mathbfsf}{`\v}{"1D603}%
+\MathAlphabetChar{\mathbfsf}{`\w}{"1D604}%
+\MathAlphabetChar{\mathbfsf}{`\x}{"1D605}%
+\MathAlphabetChar{\mathbfsf}{`\y}{"1D606}%
+\MathAlphabetChar{\mathbfsf}{`\z}{"1D607}%
+%    \end{macrocode}
+% Greek letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsf}{913}{"1D756}%
+\MathAlphabetChar{\mathbfsf}{914}{"1D757}%
+\MathAlphabetChar{\mathbfsf}{915}{"1D758}%
+\MathAlphabetChar{\mathbfsf}{916}{"1D759}%
+\MathAlphabetChar{\mathbfsf}{917}{"1D75A}%
+\MathAlphabetChar{\mathbfsf}{918}{"1D75B}%
+\MathAlphabetChar{\mathbfsf}{919}{"1D75C}%
+\MathAlphabetChar{\mathbfsf}{920}{"1D75D}%
+\MathAlphabetChar{\mathbfsf}{921}{"1D75E}%
+\MathAlphabetChar{\mathbfsf}{922}{"1D75F}%
+\MathAlphabetChar{\mathbfsf}{923}{"1D760}%
+\MathAlphabetChar{\mathbfsf}{924}{"1D761}%
+\MathAlphabetChar{\mathbfsf}{925}{"1D762}%
+\MathAlphabetChar{\mathbfsf}{926}{"1D763}%
+\MathAlphabetChar{\mathbfsf}{927}{"1D764}%
+\MathAlphabetChar{\mathbfsf}{928}{"1D765}%
+\MathAlphabetChar{\mathbfsf}{929}{"1D766}%
+%\MathAlphabetChar{\mathbfsf}{??}{"1D767}%
+\MathAlphabetChar{\mathbfsf}{931}{"1D768}%
+\MathAlphabetChar{\mathbfsf}{932}{"1D769}%
+\MathAlphabetChar{\mathbfsf}{933}{"1D76A}%
+\MathAlphabetChar{\mathbfsf}{934}{"1D76B}%
+\MathAlphabetChar{\mathbfsf}{935}{"1D76C}%
+\MathAlphabetChar{\mathbfsf}{936}{"1D76D}%
+\MathAlphabetChar{\mathbfsf}{937}{"1D76E}%
+\MathAlphabetChar{\mathbfsf}{"2207}{"1D76F}%
+%    \end{macrocode}
+% Greek lowercase:
+%    \begin{macrocode}      
+\MathAlphabetChar{\mathbfsf}{945}{"1D770}%
+\MathAlphabetChar{\mathbfsf}{946}{"1D771}%
+\MathAlphabetChar{\mathbfsf}{947}{"1D772}%
+\MathAlphabetChar{\mathbfsf}{948}{"1D773}%
+\MathAlphabetChar{\mathbfsf}{949}{"1D774}%
+\MathAlphabetChar{\mathbfsf}{950}{"1D775}%
+\MathAlphabetChar{\mathbfsf}{951}{"1D776}%
+\MathAlphabetChar{\mathbfsf}{952}{"1D777}%
+\MathAlphabetChar{\mathbfsf}{953}{"1D778}%
+\MathAlphabetChar{\mathbfsf}{954}{"1D779}%
+\MathAlphabetChar{\mathbfsf}{955}{"1D77A}%
+\MathAlphabetChar{\mathbfsf}{956}{"1D77B}%
+\MathAlphabetChar{\mathbfsf}{957}{"1D77C}%
+\MathAlphabetChar{\mathbfsf}{958}{"1D77D}%
+\MathAlphabetChar{\mathbfsf}{959}{"1D77E}%
+\MathAlphabetChar{\mathbfsf}{960}{"1D77F}%
+\MathAlphabetChar{\mathbfsf}{961}{"1D780}%
+\MathAlphabetChar{\mathbfsf}{960}{"1D781}%
+\MathAlphabetChar{\mathbfsf}{963}{"1D782}%
+\MathAlphabetChar{\mathbfsf}{964}{"1D783}%
+\MathAlphabetChar{\mathbfsf}{965}{"1D784}%
+\MathAlphabetChar{\mathbfsf}{966}{"1D785}%
+\MathAlphabetChar{\mathbfsf}{967}{"1D786}%
+\MathAlphabetChar{\mathbfsf}{968}{"1D787}%
+\MathAlphabetChar{\mathbfsf}{969}{"1D788}%
+\MathAlphabetChar{\mathbfsf}{"2202}{"1D789}%
+%\MathAlphabetChar{\mathbfsf}{??}{"1D78A}% VAR EPSILON
+%\MathAlphabetChar{\mathbfsf}{??}{"1D78B}% VAR THETA
+%\MathAlphabetChar{\mathbfsf}{??}{"1D78C}% VAR KAPPA
+%\MathAlphabetChar{\mathbfsf}{??}{"1D78D}% VAR PHI
+%\MathAlphabetChar{\mathbfsf}{??}{"1D78E}% VAR RHO
+%\MathAlphabetChar{\mathbfsf}{??}{"1D78F}% VAR PI
+%    \end{macrocode}
+%
+%
+%
+% \subsubsection{Bold italic sans serif: \cmd\mathbfsfit}
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathbfsfit{0123456789}$ \\
+%   $\mathbfsfit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathbfsfit{abcdefghijklmnopqrstuvwxyz}$ \\
+%   $\mathbfsfit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
+%   $\mathbfsfit{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+% \end{example}
+% Numbers (always upright):
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsfit}{`\0}{"1D7EC}%
+\MathAlphabetChar{\mathbfsfit}{`\1}{"1D7ED}%
+\MathAlphabetChar{\mathbfsfit}{`\2}{"1D7EE}%
+\MathAlphabetChar{\mathbfsfit}{`\3}{"1D7EF}%
+\MathAlphabetChar{\mathbfsfit}{`\4}{"1D7F0}%
+\MathAlphabetChar{\mathbfsfit}{`\5}{"1D7F1}%
+\MathAlphabetChar{\mathbfsfit}{`\6}{"1D7F2}%
+\MathAlphabetChar{\mathbfsfit}{`\7}{"1D7F3}%
+\MathAlphabetChar{\mathbfsfit}{`\8}{"1D7F4}%
+\MathAlphabetChar{\mathbfsfit}{`\9}{"1D7F5}%
+%    \end{macrocode}
+% Roman uppercase:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsfit}{`\A}{"1D63C}%
+\MathAlphabetChar{\mathbfsfit}{`\B}{"1D63D}%
+\MathAlphabetChar{\mathbfsfit}{`\C}{"1D63E}%
+\MathAlphabetChar{\mathbfsfit}{`\D}{"1D63F}%
+\MathAlphabetChar{\mathbfsfit}{`\E}{"1D640}%
+\MathAlphabetChar{\mathbfsfit}{`\F}{"1D641}%
+\MathAlphabetChar{\mathbfsfit}{`\G}{"1D642}%
+\MathAlphabetChar{\mathbfsfit}{`\H}{"1D643}%
+\MathAlphabetChar{\mathbfsfit}{`\I}{"1D644}%
+\MathAlphabetChar{\mathbfsfit}{`\J}{"1D645}%
+\MathAlphabetChar{\mathbfsfit}{`\K}{"1D646}%
+\MathAlphabetChar{\mathbfsfit}{`\L}{"1D647}%
+\MathAlphabetChar{\mathbfsfit}{`\M}{"1D648}%
+\MathAlphabetChar{\mathbfsfit}{`\N}{"1D649}%
+\MathAlphabetChar{\mathbfsfit}{`\O}{"1D64A}%
+\MathAlphabetChar{\mathbfsfit}{`\P}{"1D64B}%
+\MathAlphabetChar{\mathbfsfit}{`\Q}{"1D64C}%
+\MathAlphabetChar{\mathbfsfit}{`\R}{"1D64D}%
+\MathAlphabetChar{\mathbfsfit}{`\S}{"1D64E}%
+\MathAlphabetChar{\mathbfsfit}{`\T}{"1D64F}%
+\MathAlphabetChar{\mathbfsfit}{`\U}{"1D650}%
+\MathAlphabetChar{\mathbfsfit}{`\V}{"1D651}%
+\MathAlphabetChar{\mathbfsfit}{`\W}{"1D652}%
+\MathAlphabetChar{\mathbfsfit}{`\X}{"1D653}%
+\MathAlphabetChar{\mathbfsfit}{`\Y}{"1D654}%
+\MathAlphabetChar{\mathbfsfit}{`\Z}{"1D655}%
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsfit}{`\a}{"1D656}%
+\MathAlphabetChar{\mathbfsfit}{`\b}{"1D657}%
+\MathAlphabetChar{\mathbfsfit}{`\c}{"1D658}%
+\MathAlphabetChar{\mathbfsfit}{`\d}{"1D659}%
+\MathAlphabetChar{\mathbfsfit}{`\e}{"1D65A}%
+\MathAlphabetChar{\mathbfsfit}{`\f}{"1D65B}%
+\MathAlphabetChar{\mathbfsfit}{`\g}{"1D65C}%
+\MathAlphabetChar{\mathbfsfit}{`\h}{"1D65D}%
+\MathAlphabetChar{\mathbfsfit}{`\i}{"1D65E}%
+\MathAlphabetChar{\mathbfsfit}{`\j}{"1D65F}%
+\MathAlphabetChar{\mathbfsfit}{`\k}{"1D660}%
+\MathAlphabetChar{\mathbfsfit}{`\l}{"1D661}%
+\MathAlphabetChar{\mathbfsfit}{`\m}{"1D662}%
+\MathAlphabetChar{\mathbfsfit}{`\n}{"1D663}%
+\MathAlphabetChar{\mathbfsfit}{`\o}{"1D664}%
+\MathAlphabetChar{\mathbfsfit}{`\p}{"1D665}%
+\MathAlphabetChar{\mathbfsfit}{`\q}{"1D666}%
+\MathAlphabetChar{\mathbfsfit}{`\r}{"1D667}%
+\MathAlphabetChar{\mathbfsfit}{`\s}{"1D668}%
+\MathAlphabetChar{\mathbfsfit}{`\t}{"1D669}%
+\MathAlphabetChar{\mathbfsfit}{`\u}{"1D66A}%
+\MathAlphabetChar{\mathbfsfit}{`\v}{"1D66B}%
+\MathAlphabetChar{\mathbfsfit}{`\w}{"1D66C}%
+\MathAlphabetChar{\mathbfsfit}{`\x}{"1D66D}%
+\MathAlphabetChar{\mathbfsfit}{`\y}{"1D66E}%
+\MathAlphabetChar{\mathbfsfit}{`\z}{"1D66F}%
+%    \end{macrocode}
+% Greek letters:
+%    \begin{macrocode}
+\MathAlphabetChar{\mathbfsfit}{913}{"1D790}%
+\MathAlphabetChar{\mathbfsfit}{914}{"1D791}%
+\MathAlphabetChar{\mathbfsfit}{915}{"1D792}%
+\MathAlphabetChar{\mathbfsfit}{916}{"1D793}%
+\MathAlphabetChar{\mathbfsfit}{917}{"1D794}%
+\MathAlphabetChar{\mathbfsfit}{918}{"1D795}%
+\MathAlphabetChar{\mathbfsfit}{919}{"1D796}%
+\MathAlphabetChar{\mathbfsfit}{920}{"1D797}%
+\MathAlphabetChar{\mathbfsfit}{921}{"1D798}%
+\MathAlphabetChar{\mathbfsfit}{922}{"1D799}%
+\MathAlphabetChar{\mathbfsfit}{923}{"1D79A}%
+\MathAlphabetChar{\mathbfsfit}{924}{"1D79B}%
+\MathAlphabetChar{\mathbfsfit}{925}{"1D79C}%
+\MathAlphabetChar{\mathbfsfit}{926}{"1D79D}%
+\MathAlphabetChar{\mathbfsfit}{927}{"1D79E}%
+\MathAlphabetChar{\mathbfsfit}{928}{"1D79F}%
+\MathAlphabetChar{\mathbfsfit}{929}{"1D7A0}%
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7A1}%
+\MathAlphabetChar{\mathbfsfit}{931}{"1D7A2}%
+\MathAlphabetChar{\mathbfsfit}{932}{"1D7A3}%
+\MathAlphabetChar{\mathbfsfit}{933}{"1D7A4}%
+\MathAlphabetChar{\mathbfsfit}{934}{"1D7A5}%
+\MathAlphabetChar{\mathbfsfit}{935}{"1D7A6}%
+\MathAlphabetChar{\mathbfsfit}{936}{"1D7A7}%
+\MathAlphabetChar{\mathbfsfit}{937}{"1D7A8}%
+\MathAlphabetChar{\mathbfsfit}{"2207}{"1D7A9}%
+%    \end{macrocode}
+% Greek lowercase:
+%    \begin{macrocode}      
+\MathAlphabetChar{\mathbfsfit}{945}{"1D7AA}%
+\MathAlphabetChar{\mathbfsfit}{946}{"1D7AB}%
+\MathAlphabetChar{\mathbfsfit}{947}{"1D7AC}%
+\MathAlphabetChar{\mathbfsfit}{948}{"1D7AD}%
+\MathAlphabetChar{\mathbfsfit}{949}{"1D7AE}%
+\MathAlphabetChar{\mathbfsfit}{950}{"1D7AF}%
+\MathAlphabetChar{\mathbfsfit}{951}{"1D7B0}%
+\MathAlphabetChar{\mathbfsfit}{952}{"1D7B1}%
+\MathAlphabetChar{\mathbfsfit}{953}{"1D7B2}%
+\MathAlphabetChar{\mathbfsfit}{954}{"1D7B3}%
+\MathAlphabetChar{\mathbfsfit}{955}{"1D7B4}%
+\MathAlphabetChar{\mathbfsfit}{956}{"1D7B5}%
+\MathAlphabetChar{\mathbfsfit}{957}{"1D7B6}%
+\MathAlphabetChar{\mathbfsfit}{958}{"1D7B7}%
+\MathAlphabetChar{\mathbfsfit}{959}{"1D7B8}%
+\MathAlphabetChar{\mathbfsfit}{960}{"1D7B9}%
+\MathAlphabetChar{\mathbfsfit}{961}{"1D7BA}%
+\MathAlphabetChar{\mathbfsfit}{960}{"1D7BB}%
+\MathAlphabetChar{\mathbfsfit}{963}{"1D7BC}%
+\MathAlphabetChar{\mathbfsfit}{964}{"1D7BD}%
+\MathAlphabetChar{\mathbfsfit}{965}{"1D7BE}%
+\MathAlphabetChar{\mathbfsfit}{966}{"1D7BF}%
+\MathAlphabetChar{\mathbfsfit}{967}{"1D7C0}%
+\MathAlphabetChar{\mathbfsfit}{968}{"1D7C1}%
+\MathAlphabetChar{\mathbfsfit}{969}{"1D7C2}%
+\MathAlphabetChar{\mathbfsfit}{"2202}{"1D7C3}%
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C4}% VAR EPSILON
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C5}% VAR THETA
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C6}% VAR KAPPA
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C7}% VAR PHI
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C8}% VAR RHO
+%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C9}% VAR PI
+%    \end{macrocode}
+%
+%
+%\iffalse
+%</alphabets>
+%\fi
+%
+%
+% 
+% \iffalse
+% \section{Verification}
+%
+% \renewcommand\DeclareUnicodeMathSymbol[4]{
+%   \scshape\addfontfeature{Numbers=Monospaced}\MakeLowercase{#1} &
+%   #2 & \cmd#2 & \scshape#4\\}
+%
+% \subsection{Plane 0}
+% \setmathfont{Code2000}
+% \begin{longtable}[l]{@{}cccp{6cm}@{}}
+% \input unicode-math.tex
+% \end{longtable}
+% \fi
+%
+%
+% \part{\STIX\ table data extraction}\label{part:awk-script}
+%\iffalse
+%<*awk-script>
+%\fi
+%
+% The source for the \TeX\ names for the very large number of mathematical
+% glyphs are provided via Barbara Beeton's table file for the \STIX\ project
+% (|ams.org/STIX|). A version is located at
+% |http://www.ams.org/STIX/bnb/stix-tbl.asc|
+% but check |http://www.ams.org/STIX/| for more up-to-date info.
+%
+% A single file is produced containing all (more than 3298) symbols.
+% Future optimisations might include generating various (possibly overlapping) subsets
+% so not all definitions must be read just to redefine a small range of symbols.
+% Performance for now seems to be acceptable without such measures.
+%
+%    \begin{macrocode}
+#!/bin/sh
+
+cat stix-tbl.asc |
+awk '
+%    \end{macrocode}
+% If the USV isn't repeated (TODO: check this is valid!) and the entry isn't one of the weird ones in the big block at the end of the \STIX\ table (TODO: check that out!)\dots
+%    \begin{macrocode}
+ {if (usv != substr($0,2,5) && substr($0,2,1) != " ")
+    {usv = substr($0,2,5);
+     texname = substr($0,84,25);
+     class = substr($0,57,1);
+     description = tolower(substr($0,233,350));
+%    \end{macrocode}
+% If the USV has a macro name, and a class, and it isn't reserved (\ie, doubled up with a previously assigned glyph)\dots
+%    \begin{macrocode}
+     if (texname      ~ /[\\]/ && 
+         class       != " "    && 
+         description !~ /<reserved>/ )
+%    \end{macrocode}
+% Print the actual entry corresponding to the unicode character:
+%    \begin{macrocode}
+     print "\\UnicodeMathSymbol{\"" \
+           usv "}{" \
+           texname "}{" \
+           class "}{" \
+           description "}";
+    }}' - |
+%    \end{macrocode}
+% Now replace the \STIX\ class abbreviations with their \TeX\ macro names.
+%    \begin{macrocode}
+sed -e ' s/{N}/{\\mathord}/   ' \
+%    \end{macrocode}
+% A `fence' defined by the \STIX\ table is something like \cmd\vert; in \XeTeX\ this is just a \cmd\mathord\ that will grow with the magic of \cmd\XeTeXmathchardef.
+%    \begin{macrocode}
+    -e ' s/{F}/{\\mathord}/   ' \
+    -e ' s/{A}/{\\mathalpha}/ ' \
+    -e ' s/{P}/{\\mathpunct}/ ' \
+    -e ' s/{B}/{\\mathbin}/   ' \
+    -e ' s/{R}/{\\mathrel}/   ' \
+    -e ' s/{L}/{\\mathop}/    ' \
+    -e ' s/{O}/{\\mathopen}/  ' \
+    -e ' s/{C}/{\\mathclose}/ ' > unicode-math.tex
+%    \end{macrocode}
+% \changes{v0.01}{2006/12/19}{Tidied up awk code}
+%\iffalse
+%</awk-script>
+%\fi
+%
+% \appendix
+%
+% \section{Documenting maths support in the NFSS}
+% \subsection{Overview}
+% 
+% In the following, \meta{NFSS decl.} stands for something like |{T1}{lmr}{m}{n}|.
+%
+% \begin{description}
+% \item[Maths symbol fonts] Fonts for symbols: $\propto$, $\leq$, $\rightarrow$
+%
+% \cmd\DeclareSymbolFont\marg{name}\meta{NFSS decl.}\\
+% Declares a named maths font such as |operators| from which symbols are defined with \cmd\DeclareMathSymbol.
+%
+% \item[Maths alphabet fonts] Fonts for {\font\1=cmmi10 at 10pt\1 ABC}\,–\,{\font\1=cmmi10 at 10pt\1 xyz}, {\font\1=eufm10 at 10pt\1 ABC}\,–\,{\font\1=cmsy10 at 10pt\1 XYZ}, etc.
+%
+% \cmd\DeclareMathAlphabet\marg{cmd}\meta{NFSS decl.}
+%
+% For commands such as \cmd\mathbf, accessed
+% through maths mode that are unaffected by the current text font, and which are used for
+% alphabetic symbols in the \ascii\ range.
+%
+% \cmd\DeclareSymbolFontAlphabet\marg{cmd}\marg{name}
+%
+% Alternative (and optimisation) for \cmd\DeclareMathAlphabet\ if a single font is being used
+% for both alphabetic characters (as above) and symbols.
+%
+% \item[Maths `versions'] Different maths weights can be defined with the following, switched
+% in text with the \cmd\mathversion\marg{maths version} command.
+%
+% \cmd\SetSymbolFont\marg{name}\marg{maths version}\meta{NFSS decl.}\\
+% \cmd\SetMathAlphabet\marg{cmd}\marg{maths version}\meta{NFSS decl.}
+%
+% \item[Maths symbols] Symbol definitions in maths for both characters (=) and macros (\cmd\eqdef):
+% \cmd\DeclareMathSymbol\marg{symbol}\marg{type}\marg{named font}\marg{slot}
+% This is the macro that actually defines which font each symbol comes from and how they behave.
+% \end{description}
+% Delimiters and radicals use wrappers around \TeX's \cmd\delimiter/\cmd\radical\ primitives,
+% which are re-designed in \XeTeX. The syntax used in \LaTeX's NFSS is therefore not so relevant here.
+% \begin{description}
+% \item[Delimiters] A special class of maths symbol which enlarge themselves in certain contexts.
+%
+% \cmd\DeclareMathDelimiter\marg{symbol}\marg{type}\marg{sym.\ font}\marg{slot}\marg{sym.\ font}\marg{slot}
+%
+% \item[Radicals] Similar to delimiters (\cmd\DeclareMathRadical\ takes the same syntax) but
+% behave `weirdly'. \cmd\sqrt\ might very well be the only one.
+% \end{description}
+% In those cases, glyph slots in \emph{two} symbol fonts are required; one for the small (`regular') case,
+% the other for situations when the glyph is larger. This is not the case in \XeTeX.
+%
+% Accents are not included yet.
+%
+% \subsection{Detailed code investigation}
+% 
+% This section contains an abridged and documented version
+% of (bits and pieces of) \LaTeX's NFSS. Changes are mostly
+% cosmetic and omission of irrelevant things.
+% 
+%
+% \iffalse
+%<*neveroutput>
+% \fi
+%
+% \subsection{Maths symbols}
+%
+% \begin{macro}{\DeclareMathSymbol}
+% \darg{Symbol, e.g., \cmd\alpha\ or `a'}
+% \darg{Type, e.g., \cmd\mathalpha}
+% \darg{Math font name, e.g., \texttt{operators}}
+% \darg{Slot, e.g., \texttt{F1}}
+%
+ %   \begin{macrocode}
+\def\DeclareMathSymbol#1#2#3#4{%
+%    \end{macrocode}
+% First ensure the math font (e.g., |operators|) exists:
+%    \begin{macrocode}
+  \expandafter\in@\csname sym#3\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+%    \end{macrocode}
+% Convert the slot number to two hex digits stored in 
+% \cmd\count\cmd\z@\ and \cmd\count\cmd\tw@, respectively:
+%    \begin{macrocode}
+    \begingroup
+      \count\z@=#4\relax
+      \count\tw@\count\z@
+      \divide\count\z@\sixt@@n
+      \count@\count\z@
+      \multiply\count@\sixt@@n
+      \advance\count\tw@-\count@
+%    \end{macrocode}
+% The symbol to be defined can be either a command (|\alpha|) or a character (|a|).
+% Branch for the former:
+%    \begin{macrocode}
+      \if\relax\noexpand#1% is command?
+        \edef\reserved@a{\noexpand\in@{\string\mathchar}{\meaning#1}}%
+        \reserved@a
+%    \end{macrocode}
+% If the symbol command definition contains \cmd\mathchar, then
+% we can provide the info that a previous symbol definition is being overwritten:
+%    \begin{macrocode}
+        \ifin@
+          \expandafter\set@mathsymbol
+             \csname sym#3\endcsname#1#2%
+             {\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+          \@font@info{Redeclaring math symbol \string#1}%
+%    \end{macrocode}
+% Otherwise, throw an error if the command name is already taken by a non-symbol definition:
+%    \begin{macrocode}
+        \else
+            \expandafter\ifx
+            \csname\expandafter\@gobble\string#1\endcsname
+            \relax
+            \expandafter\set@mathsymbol
+               \csname sym#3\endcsname#1#2%
+               {\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+          \else
+            \@latex@error{Command `\string#1' already defined}\@eha
+          \fi
+        \fi
+%    \end{macrocode}
+% And if the symbol input is a character:
+%    \begin{macrocode}
+      \else
+        \expandafter\set@mathchar
+          \csname sym#3\endcsname#1#2
+          {\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+      \fi
+    \endgroup
+%    \end{macrocode}
+% Everything previous was skipped if the maths font doesn't exist in the first place:
+%    \begin{macrocode}
+  \else
+    \@latex@error{Symbol font `#3' is not defined}\@eha
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% The final macros that actually define the maths symbol with \TeX\ primitives.
+% If the symbol definition is for a macro:
+%    \begin{macrocode}
+\def\set@mathsymbol#1#2#3#4{%
+  \global\mathchardef#2"\mathchar@type#3\hexnumber@#1#4\relax}
+%    \end{macrocode}
+% Or if it's for a character:
+%    \begin{macrocode}
+\def\set@mathchar#1#2#3#4{%
+  \global\mathcode‘#2="\mathchar@type#3\hexnumber@#1#4\relax}
+%    \end{macrocode}
+%
+% \paragraph{Summary}
+% For symbols, something like:
+% \begin{verbatim}
+% \def\DeclareMathSymbol#1#2#3#4{%
+%   \global\mathchardef#1"\mathchar@type#2
+%     \expandafter\hexnumber@\csname sym#2\endcsname
+%     {\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}}
+% \end{verbatim}
+% For characters, something like:
+% \begin{verbatim}
+% \def\DeclareMathSymbol#1#2#3#4{%
+%   \global\mathcode`#1"\mathchar@type#2
+%     \expandafter\hexnumber@\csname sym#2\endcsname
+%     {\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}}
+% \end{verbatim}
+%
+% \subsection{Delimiters}
+% The code here is slightly better documented originally than the other maths commands.
+%
+% \begin{macro}{\DeclareMathDelimiter}
+%    \begin{macrocode}
+\def\DeclareMathDelimiter#1{%
+  \if\relax\noexpand#1%
+    \expandafter\@DeclareMathDelimiter
+  \else
+    \expandafter\@xxDeclareMathDelimiter
+  \fi
+  #1}
+\@onlypreamble\DeclareMathDelimiter
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@xxDeclareMathDelimiter}
+%    This macro checks if the second arg is a ``math type'' such 
+%    as |\mathopen|. The undocumented original code didn't use math
+%    types when the delimiter was a single letter.
+%    For this reason the coding is a bit strange as it tries to
+%    support the undocumented syntax for compatibility reasons.
+%    \begin{macrocode}
+\def\@xxDeclareMathDelimiter#1#2#3#4{%
+%    \end{macrocode}
+%    7 is the default value returned in the case that |\mathchar@type|
+%    is passed something unexpected, like a math symbol font name.
+%    We locally move |\mathalpha| out of the way so if you use that
+%    the right branch is taken. This will still fail if an explicit
+%    number |7| is used!
+%    \begin{macrocode}
+   \begingroup
+    \let\mathalpha\mathord
+    \ifnum7=\mathchar@type{#2}%
+      \endgroup
+%    \end{macrocode}
+%    If this branch is taken we have old syntax (5 arguments).
+%    \begin{macrocode}
+      \expandafter\@firstofone
+    \else
+%    \end{macrocode}
+%    If this branch is taken |\mathchar@type| is different from 7 so
+%    we assume new syntax. In this case we also use the arguments to
+%    set up the letter as a math symbol for the case where it is not
+%    used as a delimiter.
+%    \begin{macrocode}
+      \endgroup
+      \DeclareMathSymbol#1{#2}{#3}{#4}%
+%    \end{macrocode}
+%    Then we arrange that |\@xDeclareMathDelimiter| only gets |#1|, 
+%    |#3|, |#4| \ldots\ as it does not expect a math type as argument.
+%    \begin{macrocode}
+      \expandafter\@firstoftwo
+    \fi
+    {\@xDeclareMathDelimiter#1}{#2}{#3}{#4}}
+\@onlypreamble\@xxDeclareMathDelimiter
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@DeclareMathDelimiter}
+%    \begin{macrocode}
+\def\@DeclareMathDelimiter#1#2#3#4#5#6{%
+  \expandafter\in@\csname sym#3\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+    \expandafter\in@\csname sym#5\expandafter\endcsname
+       \expandafter{\group@list}%
+    \ifin@
+      \begingroup
+        \count\z@=#4\relax
+        \count\tw@\count\z@
+        \divide\count\z@\sixt@@n
+        \count@\count\z@
+        \multiply\count@\sixt@@n
+        \advance\count\tw@-\count@
+        \edef\reserved@c{\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+      %
+        \count\z@=#6\relax
+        \count\tw@\count\z@
+        \divide\count\z@\sixt@@n
+        \count@\count\z@
+        \multiply\count@\sixt@@n
+        \advance\count\tw@-\count@
+        \edef\reserved@d{\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+      %
+        \edef\reserved@a{\noexpand\in@{\string\delimiter}{\meaning#1}}%
+        \reserved@a
+        \ifin@
+          \expandafter\set@mathdelimiter
+             \csname sym#3\expandafter\endcsname
+             \csname sym#5\endcsname#1#2%
+             \reserved@c\reserved@d
+          \@font@info{Redeclaring math delimiter \string#1}%
+        \else
+            \expandafter\ifx
+            \csname\expandafter\@gobble\string#1\endcsname
+            \relax
+            \expandafter\set@mathdelimiter
+              \csname sym#3\expandafter\endcsname
+              \csname sym#5\endcsname#1#2%
+              \reserved@c\reserved@d
+          \else
+            \@latex@error{Command `\string#1' already defined}\@eha
+          \fi
+        \fi
+      \endgroup
+    \else
+      \@latex@error{Symbol font `#5' is not defined}\@eha
+    \fi
+  \else
+    \@latex@error{Symbol font `#3' is not defined}\@eha
+  \fi
+}
+\@onlypreamble\@DeclareMathDelimiter
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@xDeclareMathDelimiter}
+%    \begin{macrocode}
+\def\@xDeclareMathDelimiter#1#2#3#4#5{%
+  \expandafter\in@\csname sym#2\expandafter\endcsname
+     \expandafter{\group@list}%
+  \ifin@
+    \expandafter\in@\csname sym#4\expandafter\endcsname
+       \expandafter{\group@list}%
+    \ifin@
+      \begingroup
+        \count\z@=#3\relax
+        \count\tw@\count\z@
+        \divide\count\z@\sixt@@n
+        \count@\count\z@
+        \multiply\count@\sixt@@n
+        \advance\count\tw@-\count@
+        \edef\reserved@c{\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+      %
+        \count\z@=#5\relax
+        \count\tw@\count\z@
+        \divide\count\z@\sixt@@n
+        \count@\count\z@
+        \multiply\count@\sixt@@n
+        \advance\count\tw@-\count@
+        \edef\reserved@d{\hexnumber@{\count\z@}\hexnumber@{\count\tw@}}%
+        \expandafter\set@@mathdelimiter
+           \csname sym#2\expandafter\endcsname\csname sym#4\endcsname#1%
+           \reserved@c\reserved@d
+      \endgroup
+    \else
+      \@latex@error{Symbol font `#4' is not defined}\@eha
+    \fi
+  \else
+    \@latex@error{Symbol font `#2' is not defined}\@eha
+  \fi
+}
+\@onlypreamble\@xDeclareMathDelimiter
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\set@mathdelimiter}
+%    We have to end the definition of a math delimiter like |\lfloor|
+%    with a space and not with |\relax| as we did before, because
+%    otherwise contructs involving |\abovewithdelims| will prematurely
+%    end (pr/1329)
+%    \begin{macrocode}
+\def\set@mathdelimiter#1#2#3#4#5#6{%
+  \xdef#3{\delimiter"\mathchar@type#4\hexnumber@#1#5%
+                                     \hexnumber@#2#6 }}
+\@onlypreamble\set@mathdelimiter
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\set@@mathdelimiter}
+%    \begin{macrocode}
+\def\set@@mathdelimiter#1#2#3#4#5{%
+  \global\delcode`#3="\hexnumber@#1#4\hexnumber@#2#5\relax}
+\@onlypreamble\set@@mathdelimiter
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \subsection{Symbol fonts}
+%
+% \begin{macro}{\DeclareSymbolFont}
+% \darg{font name, \eg, \texttt{letters}}
+% \darg{font encoding, \eg, \texttt{OT1}}
+% \darg{font family, \eg, \texttt{cmr}}
+% \darg{font series, \eg, \texttt{m}}
+% \darg{font shape, \eg, \texttt{n}}
+%    \begin{macrocode}
+\def\DeclareSymbolFont#1#2#3#4#5{%
+%    \end{macrocode}
+% First check that the font encoding is defined.
+%    \begin{macrocode}
+ \@tempswafalse
+ \edef\reserved@b{#2}%
+ \def\cdp@elt##1##2##3##4{\def\reserved@c{##1}%
+      \ifx\reserved@b\reserved@c \@tempswatrue\fi}%
+ \cdp@list
+%    \end{macrocode}
+% So far so good. Now branch depending if this symbol font has been declared yet or not. If not,
+% the symbol font is defined as the macro |\sym#1|; \ie, for the |letters| symbol font,
+% the associated command name is |\symletters|. (Funny it's not |\sym@#1|.)
+%    \begin{macrocode}
+ \if@tempswa
+   \@ifundefined{sym#1}{%
+      \expandafter\new@mathgroup\csname sym#1\endcsname
+      \expandafter\new@symbolfont\csname sym#1\endcsname{#2}{#3}{#4}{#5}%
+   }%
+%    \end{macrocode}
+% If the symbol font has been already declared:
+%    \begin{macrocode}
+     {\@font@info{Redeclaring symbol font `#1'}%
+%    \end{macrocode}
+% 
+% [Update the group list.]
+%    \begin{macrocode}
+      \def\group@elt##1##2{%
+           \noexpand\group@elt\noexpand##1%
+           \expandafter\ifx\csname sym#1\endcsname##1%
+             \expandafter\noexpand\csname#2/#3/#4/#5\endcsname
+           \else
+               \noexpand##2%
+           \fi}%
+      \xdef\group@list{\group@list}%
+%    \end{macrocode}
+% [Update the version list.]
+%    \begin{macrocode}
+      \def\version@elt##1{%
+          \expandafter
+          \SetSymbolFont@\expandafter##1\csname#2/#3/#4/#5\expandafter
+              \endcsname \csname sym#1\endcsname
+          }%
+      \version@list
+     }%
+%    \end{macrocode}
+% If the font encoding wasn't defined, all of the above was skipped.
+%    \begin{macrocode}
+  \else
+    \@latex@error{Encoding scheme  `#2' unknown}\@eha
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\new@symbolfont}
+% \darg{internal symbol font name, \eg, \cmd\symletters}
+% \darg{font encoding, \eg, \texttt{OT1}}
+% \darg{font family, \eg, \texttt{cmr}}
+% \darg{font series, \eg, \texttt{m}}
+% \darg{font shape, \eg, \texttt{n}}
+%    \begin{macrocode}
+\def\new@symbolfont#1#2#3#4#5{%
+%    \end{macrocode}
+% Update the group list:
+%    \begin{macrocode}
+    \toks@\expandafter{\group@list}%
+    \edef\group@list{\the\toks@\noexpand\group@elt\noexpand#1%
+                     \expandafter\noexpand\csname#2/#3/#4/#5\endcsname}%
+%    \end{macrocode}
+% 
+%    \begin{macrocode}
+    \def\version@elt##1{\toks@\expandafter{##1}%
+                   \edef##1{\the\toks@\noexpand\getanddefine@fonts
+                   #1\expandafter\noexpand\csname#2/#3/#4/#5\endcsname}%
+                  \global\advance\csname c@\expandafter
+                                 \@gobble\string##1\endcsname\@ne
+                 }%
+    \version@list}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\SetSymbolFont}
+% \darg{math font version, \eg, \texttt{normal}}
+% \darg{font name, \eg, \texttt{letters}}
+% \darg{font encoding, \eg, \texttt{OT1}}
+% \darg{font family, \eg, \texttt{cmr}}
+% \darg{font series, \eg, \texttt{m}}
+% \darg{font shape, \eg, \texttt{n}}
+%    \begin{macrocode}
+\def\SetSymbolFont#1#2#3#4#5#6{%
+ \@tempswafalse
+ \edef\reserved@b{#3}%
+ \def\cdp@elt##1##2##3##4{\def\reserved@c{##1}%
+      \ifx\reserved@b\reserved@c \@tempswatrue\fi}%
+ \cdp@list
+ \if@tempswa
+  \expandafter\SetSymbolFont@
+    \csname mv@#2\expandafter\endcsname\csname#3/#4/#5/#6\expandafter
+    \endcsname \csname sym#1\endcsname
+ \else
+  \@latex@error{Encoding scheme  `#3' unknown}\@eha
+ \fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+%
+% \begin{macro}{\SetSymbolFont@}
+% \darg{internal math font version, \eg, \cmd\mv@normal}
+% \darg{NFSS font, \eg, \cs{OT1/cmr/m/n}}
+% \darg{internal symbol name, \eg, \cmd\symletters}
+%    \begin{macrocode}
+\def\SetSymbolFont@#1#2#3{%
+%    \end{macrocode}
+% If the maths version has been defined:
+%    \begin{macrocode}
+  \expandafter\in@\expandafter#1\expandafter{\version@list}%
+  \ifin@
+%    \end{macrocode}
+% If the symbol font has been defined:
+%    \begin{macrocode}
+    \expandafter\in@\expandafter#3\expandafter{\group@list}%
+    \ifin@
+      \begingroup
+        \expandafter\get@cdp\string#2\@nil\reserved@a
+        \toks@{}%
+        \def\install@mathalphabet##1##2{%
+             \addto@hook\toks@{\install@mathalphabet##1{##2}}%
+            }%
+        \def\getanddefine@fonts##1##2{%
+          \ifnum##1=#3%
+             \addto@hook\toks@{\getanddefine@fonts#3#2}%
+             \expandafter\get@cdp\string##2\@nil\reserved@b
+             \ifx\reserved@a\reserved@b\else
+                \@font@warning{Encoding `\reserved@b' has changed
+                    to `\reserved@a' for symbol font\MessageBreak
+                   `\expandafter\@gobblefour\string#3' in the
+                    math version `\expandafter
+                    \@gobblefour\string#1'}%
+             \fi
+             \@font@info{%
+                Overwriting symbol font
+                `\expandafter\@gobblefour\string#3' in
+                 version `\expandafter
+                \@gobblefour\string#1'\MessageBreak
+                \@spaces \expandafter\@gobble\string##2 -->
+                         \expandafter\@gobble\string#2}%
+          \else
+             \addto@hook\toks@{\getanddefine@fonts##1##2}%
+          \fi}%
+         #1%
+         \xdef#1{\the\toks@}%
+      \endgroup
+%    \end{macrocode}
+% If the symbol font wasn't defined, all of the above was skipped:
+%    \begin{macrocode}
+    \else
+       \@latex@error{Symbol font `\expandafter\@gobblefour\string#3' 
+                  not defined}\@eha
+    \fi
+%    \end{macrocode}
+% If the maths version wasn't defined, all of the above was skipped:
+%    \begin{macrocode}
+  \else
+    \@latex@error{Math version `\expandafter\@gobblefour\string#1' 
+       is not
+       defined}{You probably mispelled the name of the math
+       version.^^JOr you have to specify an additional package.}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \iffalse
+%</neveroutput>
+% \fi
+%
+% \clearpage
+% \PrintChanges
+%
+% \clearpage
+% \PrintIndex
+%
+% \Finale
+%
+%\iffalse
+%<*dtx-style>
+%    \begin{macrocode}
+\ProvidesPackage{dtx-style}
+
+\errorcontextlines=999
+
+\def\@dotsep{1000}
+\setcounter{tocdepth}{2}
+\setlength\columnseprule{0.4pt}
+\renewcommand\tableofcontents{\relax
+  \begin{multicols}{2}[\section*{\contentsname}]\relax
+    \@starttoc{toc}\relax
+  \end{multicols}}
+
+\setcounter{IndexColumns}{2}
+\renewenvironment{theglossary}
+  {\small\list{}{}
+     \item\relax
+     \glossary@prologue\GlossaryParms 
+     \let\item\@idxitem \ignorespaces 
+     \def\pfill{\hspace*{\fill}}}
+  {\endlist}
+
+\usepackage[svgnames]{xcolor}
+\usepackage{array,booktabs,calc,enumitem,fancyvrb,graphicx,ifthen,longtable,refstyle,varioref}
+\usepackage{fontspec,xltxtra,xunicode,unicode-math}
+
+%\usepackage[rm,small]{titlesec}
+
+\setromanfont[Mapping=tex-text,Numbers=Lowercase]{FPL Neu}
+\setsansfont[Scale=MatchLowercase,Mapping=tex-text]{Lucida Sans}
+\setmonofont[Scale=MatchLowercase]{Lucida Sans Typewriter}
+
+\linespread{1.069}      % A bit more space between lines
+\frenchspacing         % Remove ugly extra space after punctuation
+  
+\definecolor{niceblue}{rgb}{0.2,0.4,0.8}
+\newenvironment{example}[1]
+  {\VerbatimEnvironment
+   \def\Options{#1}%
+   \begin{VerbatimOut}[gobble=4]{\examplefilename}}
+  {\end{VerbatimOut}\relax
+   \typesetexample}
+
+\def\theCodelineNo{\textcolor{niceblue}{\sffamily\tiny\arabic{CodelineNo}}}
+
+\let\examplesize\normalsize
+\let\auxwidth\relax
+
+\newlength\examplewidth\newlength\verbatimwidth
+\newlength\exoutdent   \newlength\exverbgap
+\setlength\exverbgap{1em}
+\setlength\exoutdent{-0.15\textwidth}
+\newsavebox\verbatimbox
+\edef\examplefilename{\jobname.example}
+
+\newcommand\typesetexample{\relax
+   \smallskip
+   \noindent
+   \begin{minipage}{\linewidth}
+   \color{niceblue}
+   \hrulefill\par
+   \edef\@tempa{[gobble=0,fontsize=\noexpand\scriptsize,\Options]}%
+   \begin{lrbox}{\verbatimbox}\relax
+     \expandafter\BVerbatimInput\@tempa{\examplefilename}%
+   \end{lrbox}
+   \begin{list}{}{\setlength\itemindent{0pt}
+                  \setlength\leftmargin\exoutdent
+                  \setlength\rightmargin{0pt}}\item
+   \ifx\auxwidth\relax
+     \setlength\verbatimwidth{\wd\verbatimbox}%
+   \else
+     \setlength\verbatimwidth{\auxwidth}%
+   \fi
+   \begin{minipage}[c]{\textwidth-\exoutdent-\verbatimwidth-\exverbgap}
+     \catcode`\%=14\centering\input\examplefilename\relax
+   \end{minipage}\hfill
+   \begin{minipage}[c]{\verbatimwidth}
+     \usebox\verbatimbox
+   \end{minipage}
+   \end{list}
+   \par\noindent\hrulefill
+   \end{minipage}
+   \smallskip}
+
+\newcommand*\setverbwidth[1]{\def\auxwidth{#1}}
+
+\newcommand*\name[1]{{#1}}
+\newcommand*\pkg[1]{\textsf{#1}}
+\newcommand*\feat[1]{\texttt{#1}}
+
+\newcommand*\note[1]{\unskip\footnote{#1}}
+\renewcommand*\note[1]{\textcolor{gray}{\small (#1)}}
+
+\let\latin\textit
+\def\eg{\latin{e.g.}}
+\def\Eg{\latin{E.g.}}
+\def\ie{\latin{i.e.}}
+\def\etc{\@ifnextchar.{\latin{etc}}{\latin{etc.}\@}}
+
+\def\STIX{\textsc{stix}}
+\def\MacOSX{Mac~OS~X}
+\def\ascii{\textsc{ascii}}
+\def\OMEGA{Omega}
+
+\makeatletter
+\newcounter{argument}
+\g@addto@macro\endmacro{\setcounter{argument}{0}}
+\newcommand*\darg[1]{%
+  \stepcounter{argument}%
+  {\ttfamily\char`\#\theargument~:~}#1\par\noindent\ignorespaces}
+\newcommand*\doarg[1]{%
+  \stepcounter{argument}%
+  {\ttfamily\makebox[0pt][r]{[}\char`\#\theargument]:~}#1\par\noindent\ignorespaces}
+\makeatother
+\newcommand\codeline[1]{\par{\hspace{2\parindent}#1\par\noindent}\ignorespaces}
+
+\newcommand\unichar[2]{\textsc{\MakeLowercase{u+#1: #2}}}
+
+\setlength\parindent{2em}
+
+%    \end{macrocode}
+%</dtx-style>
+%\fi
+%
+% \typeout{*************************************************************}
+% \typeout{*}
+% \typeout{* To finish the installation you have to move the following}
+% \typeout{* file into a directory searched by XeTeX:}
+% \typeout{*}
+% \typeout{* \space\space\space unicode-math.sty}
+% \typeout{* \space\space\space unicode-math.tex}
+% \typeout{*}
+% \typeout{*************************************************************}
+%
+\endinput
+ 

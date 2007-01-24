@@ -1,0 +1,468 @@
+%!TEX TS-program = XeLaTeX=xdvipdfmx
+
+\documentclass[12pt]{article}
+
+\makeatletter
+\def\@dotsep{999}
+
+\usepackage{fontspec,xltxtra,xunicode}
+\usepackage{lmodern}
+\defaultfontfeatures{Mapping=tex-text, Scale=MatchLowercase}
+\setromanfont[Numbers=Lowercase]{FPL Neu}
+%\setsansfont{Lucida Sans}
+%\setmonofont{Lucida Sans Typewriter}
+
+\usepackage{calc,fancyvrb,hyperref}
+\usepackage{geometry}
+%\geometry{screen,margin=3cm}
+
+\usepackage[nofancy]{svninfo}
+\svnInfo $Id: XeTeX-reference.ltx 7 2006-10-25 12:06:06Z will $ 
+
+\usepackage[medium,rm]{titlesec}
+\usepackage{enumitem}
+\setlist{nolistsep}
+
+\newenvironment{optdesc}
+  {\begin{description}[font=\ttfamily,style=nextline,leftmargin=1.5cm]}
+  {\end{description}}
+
+\newcommand\cmd{%
+  \vspace{2ex plus 5pt minus 5pt}
+  \noindent
+  \SaveVerb[%
+    aftersave={%
+      \begin{minipage}{\linewidth}
+        \UseVerb{CMD}}]{CMD}}
+\DefineShortVerb{\|}
+\newcommand\xarg[1]{‹\textit{#1}›}
+\newcommand\desc[1]{\par#1}
+\def\endcmd{\end{minipage}}
+
+\newsavebox\verbatimbox
+\edef\examplefilename{\jobname.example}
+\newlength\exampleindent
+\setlength\exampleindent{1em}
+
+\newenvironment{example}
+  {\VerbatimEnvironment
+   \begin{VerbatimOut}{\examplefilename}}
+  {\end{VerbatimOut}
+   \typesetexample}
+   
+\newcommand\typesetexample{%
+  \vspace{2ex plus 5pt minus 5pt}
+  \vrule
+  \hspace{\exampleindent}
+  \begin{minipage}{\linewidth-\exampleindent}
+    \textit{Example:}\par
+    \vspace{0.4\baselineskip}
+    \BVerbatimInput[fontsize=\small]{\examplefilename}\par
+    \vspace{0.4\baselineskip}
+    \input\examplefilename\relax
+  \end{minipage}
+  \vspace{2ex plus 5pt minus 5pt}}
+
+\let\strong\textbf
+\providecommand\pdfTeX{pdf\/\TeX}
+\newcommand\hlink[2]{\href{#1}{#2}\footnote{\url{#1}}}
+
+\let\latin\textit
+\def\eg{\latin{e.g.}}
+\def\ie{\latin{i.e.}}
+\def\Eg{\latin{E.g.}}
+\def\Ie{\latin{I.e.}}
+\def\etc{\@ifnextchar.{\latin{etc}}{\latin{etc.}\@}}
+
+\setlength\parskip{0pt}
+\setlength\parindent{2em}
+\raggedbottom
+
+\begin{document}
+\title{The \XeTeX\ reference guide}
+\author{Will Robertson}
+\date{\svnInfoLongDate}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+This document serves to summarise \XeTeX's additional features without being so much as a `users' guide'. Note that much of the functionality addressed here is provided in abstracted form in various \LaTeX\ packages and Con\TeX{}t modules.
+
+\part{\XeTeX\ specifics}
+
+\section{The {\ttfamily\char`\\font} command}
+The |\font| command has seen significant addition in \XeTeX\ to facilitate rich font feature selection. Under \TeX, fonts were selected like so: |\font\1="|\xarg{font name}|"| with various options appended such as `|at 10pt|' or `|scaled 1.2|'. This syntax has been extended in \XeTeX\ by passing additions options through the \xarg{font name}.
+
+This syntax looks something like\par
+{\centering|\font\1="|\xarg{font name}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
+The \xarg{font name} is the actual name of the font; e.g., `|Charis SIL|'. 
+
+When using the |xdvipdfmx| driver (not yet the default in Mac~OS~X), it is possible to use fonts
+that aren't installed in the operating system by surrounding their name with square brackets. The current directory and the |texmf| trees are searched for files named in this way, or the path may be embedded in the
+font declaration. \Eg,
+\begin{quote}\small
+|\font\1="[fp9r8a]"| \hfill \emph{Selects `FPL Neu' in the current directory}
+|\font\1="[/myfonts/fp9r8a]"| \hfill \emph{Selects `FPL Neu' somewhere else}
+|\font\1="[lmroman10-regular]"| \hfill \emph{Selects a Latin Modern font in the \emph{TDS}}
+\end{quote}
+
+The other arguments are optional and described subsequently.
+
+\subsection{Font options}
+
+\xarg{Font options} may be an concatenation of the following: 
+\begin{optdesc}
+\item[/B] Use the bold version of the selected font.
+\item[/I] Use the italic version of the selected font.
+\item[/BI] Use the bold italic version of the selected font.
+\item[/IB] Same as \texttt{/BI}.
+\item[/S=$x$] Use the version of the selected font corresponding to the optical size $x$\,pt.
+\item[/AAT] Explicitly use the ATSUI renderer (Mac OS X only).
+\item[/ICU] Explicitly use the ICU OpenType renderer (only useful on Mac OS X).
+\end{optdesc}
+Font options aren't applicable when the font is selected locally (\ie, with square brackets).
+
+\subsection{Font features}
+
+The \xarg{font features} is a comma or semi-colon separated list activating or deactivating various AAT or OpenType font features, which will vary by font. 
+The \XeTeX\ documentation files \path{aat-info.tex} and \path{opentype-info.tex} provide per-font lists of supported features.
+
+\subsubsection{Arbitrary AAT or OpenType features.}
+OpenType font features are chosen with standard tags, registered with Adobe or Microsoft: see 
+\hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{this link}.
+
+\begin{example}
+\font\warnock="Warnock Pro/I/S=5:+smcp" at 12pt
+\warnock This is the OpenType font Warnock Pro in italic 
+         with small caps at a small optical size.
+\end{example}
+
+AAT font features are specified by strings within each font. Therefore, even equivalent features between different fonts can have different names.
+\begin{example}
+\font\hoefler="Hoefler Text/B:Letter Case=Small Caps" at 12pt
+\hoefler This is the AAT font Hoefler Text in bold with small caps.
+\end{example}
+
+Some font features may be applied for any font. These are
+\begin{optdesc}
+\item[mapping=\textsl{<font map>}] Uses the specified font mapping for this font.
+\item[color={\slshape RRGGBB}{[{\slshape TT}]}] Triple pair of hex values to specify the colour in RGB space, with an optional value for the transparency. 
+\item[letterspace=$x$] Adds $x/S$ space between letters in words, where $S$ is the font size.
+\end{optdesc}
+
+\subsubsection{OpenType script and language support}
+OpenType font features can vary by script (`alphabet') and by language.
+\begin{optdesc}
+\item[script=\textsl{<script tag>}] See \hlink{http://www.microsoft.com/typography/otspec/scripttags.htm}{this link}.
+\item[language=\textsl{<lang tag>}] See \hlink{http://www.microsoft.com/typography/otspec/languagetags.htm}{this link}.
+\end{optdesc}
+
+\subsubsection{Multiple Master and Variable Axes AAT font support}
+
+\begin{optdesc}
+\item[weight=$x$] Selects the normalised font weight, $x$.
+\item[width=$x$] Selects the normalised font width, $x$.
+\item[optical size=$x$] Selects the optical size, $x$. Note the difference between the \texttt{/S} font option, which selects discrete fonts.
+\end{optdesc}
+
+\section{\XeTeX's {\ttfamily\char`\\special}s}
+
+\textit{To be addressed. Hopefully not by me.}
+
+\part{New commands}
+
+\section{Font primitives}
+
+\cmd|\XeTeXuseglyphmetrics|
+\xarg{Integer}
+\desc{Boolean to specify if the height and depth of characters are taken into account ($\ge\mathtt1$). Otherwise ($<\mathtt1$), a single height and depth for the entire alphabet is used. When activated, by default, gives better output but is slower.}
+\endcmd
+
+\begin{example}
+\XeTeXuseglyphmetrics=0 \fbox{a}\fbox{A}\fbox{j}\fbox{J} vs.
+\XeTeXuseglyphmetrics=1 \fbox{a}\fbox{A}\fbox{j}\fbox{J}
+\end{example}
+
+\cmd|\XeTeXglyph|
+\xarg{Glyph slot}
+\desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font specific}, so will give different output for different fonts.}
+\endcmd
+
+\cmd|\XeTeXglyphindex|
+\xarg{Glyph name}
+\desc{Returns the \xarg{glyph slot} corresponding to the (possibly font specific) \xarg{glyph name} in the currently selected font. Only works for TrueType fonts (or TrueType-based OpenType fonts) at present. Use \texttt{fontforge} or similar to discover glyph names.}
+\endcmd
+
+\cmd|\XeTeXcharglyph|
+\xarg{Char code} 
+\desc{Returns the default glyph number of character \xarg{Char code} in the current font, or 0 if the character is not available in the font.}
+\endcmd
+
+\begin{example}
+\font\1="Charis SIL"\1
+The glyph slot in Charis SIL for the Yen symbol is:
+    \the\XeTeXglyphindex"yen". % the font-specific glyph name
+Or: \the\XeTeXcharglyph"00A5.  % the unicode character slot
+
+This glyph may be typeset with the font-specific glyph slot:
+\XeTeXglyph1458, 
+or the unicode character slot:
+\char"00A5.
+\end{example}
+
+\cmd|\XeTeXfonttype|
+\xarg{font}
+\desc{
+  Returns what renderer is used for a \xarg{font}:
+  \begin{optdesc}
+    \item [0] for \TeX\ (a legacy TFM-based font);
+    \item [1] for ATSUI (usually an AAT font);
+    \item [2] for ICU (an OpenType font).
+  \end{optdesc}
+}
+\endcmd
+
+\begin{example}
+\newcommand\whattype[1]{%
+  \texttt{\fontname#1} is rendered by
+  \ifcase\XeTeXfonttype#1\TeX\or ATSUI\or ICU\fi.\par}
+\font\1="cmr10"
+\font\2="Hoefler Text"
+\font\3="Charis SIL"
+\font\4="Charis SIL/AAT" 
+\whattype\1\whattype\2\whattype\3\whattype\4
+\end{example}
+
+\subsection{OpenType fonts}
+
+\cmd|\XeTeXOTcountscripts|
+\xarg{Font}
+\desc{Returns the number of scripts in a font.}
+\endcmd
+
+\cmd|\XeTeXOTscripttag|
+\xarg{Font}
+\xarg{Integer, $n$}
+\desc{Returns the $n$-th script tag of a font.}
+\endcmd
+
+\cmd|\XeTeXOTcountlanguages|
+\xarg{Font}
+\xarg{Script tag}
+\desc{Returns the number of languages in the script of a font.}
+\endcmd
+
+\cmd|\XeTeXOTlanguagetag|
+\xarg{Font}
+\xarg{Script tag}
+\xarg{Integer, $n$}
+\desc{Returns the $n$-th language tag in the script of a font.}
+\endcmd
+
+\cmd|\XeTeXOTcountfeatures|
+\xarg{Font}
+\xarg{Script tag}
+\xarg{Language tag}
+\desc{Returns the number of features in the language of a script of a font.}
+\endcmd
+
+\cmd|\XeTeXOTfeaturetag|
+\xarg{Font}
+\xarg{Script tag}
+\xarg{Language tag}
+\xarg{Integer, $n$}
+\desc{Returns the $n$-th feature tag in the language of a script of a font.}
+\endcmd
+
+
+\subsection{AAT fonts}
+
+\subsubsection{Features}
+
+\cmd|\XeTeXcountfeatures|
+\xarg{font}
+\desc{Returns the number of features in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXfeaturecode|
+\xarg{font}
+\xarg{integer, $n$}
+\desc{Returns the feature code for the $n$-th feature in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXfeaturename|
+\xarg{font}
+\xarg{feature code}
+\desc{Returns the name corresponding to the \xarg{feature code} in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXisexclusivefeature|
+\xarg{font}
+\xarg{feature code}
+\desc{Returns greater than zero if the feature of a font is exclusive (can only take a single selector).}
+\endcmd
+
+\subsubsection{Feature selectors}
+
+\cmd|\XeTeXcountselectors|
+\xarg{font}
+\xarg{feature}
+\desc{Returns the number of selectors in a \xarg{feature} of a \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXselectorcode|
+\xarg{font}
+\xarg{feature code}
+\xarg{integer, $n$}
+\desc{Returns the selector code for the $n$-th selector in a \xarg{feature} of a \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXselectorname|
+\xarg{font}
+\xarg{feature code}
+\xarg{selector code}
+\desc{Returns the name corresponding to the \xarg{selector code} of a feature of a \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXisdefaultselector|
+\xarg{font}
+\xarg{feature code}
+\xarg{selector code}
+\desc{Returns greater than zero if the selector of a feature of a font is on by default.}
+\endcmd
+
+\subsubsection{Variation axes}
+
+\cmd|\XeTeXcountvariations|
+\xarg{font}
+\desc{Returns the number of variation axes in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXvariation|
+\xarg{font}
+\xarg{integer, $n$}
+\desc{Returns the variation code for the $n$-th feature in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXvariationname|
+\xarg{font}
+\xarg{variation code}
+\desc{Returns the name corresponding to the \xarg{feature code} in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXvariationmin|
+\xarg{font}
+\xarg{variation code}
+\desc{Returns the minimum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXvariationmax|
+\xarg{font}
+\xarg{variation code}
+\desc{Returns the maximum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXvariationdefault|
+\xarg{font}
+\xarg{variation code}
+\desc{Returns the default value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\endcmd
+
+\subsection{Maths fonts}
+
+To be addressed. Still incomplete in \XeTeX.
+
+\section{Encodings}
+
+\cmd|\XeTeXinputencoding|
+\xarg{Charset name}
+\desc{Defines the input encoding of the following text.}
+\endcmd
+
+\cmd|\XeTeXdefaultencoding|
+\xarg{Charset name}
+\desc{Defines the input encoding of subsequent files to be read.}
+\endcmd
+
+\section{Line breaking}
+
+\cmd|\XeTeXdashbreakstate|
+\xarg{Integer}
+\desc{Specify whether line breaks after en- and em-dashes are allowed. On, 1, by default.}
+\endcmd
+
+\cmd|\XeTeXlinebreaklocale|
+\xarg{Locale ID}
+\desc{Defines how to break lines for multilingual text.}
+\endcmd
+
+\cmd|\XeTeXlinebreakskip|
+\xarg{Glue}
+\desc{Inter-character linebreak stretch}
+\endcmd
+
+\cmd|\XeTeXlinebreakpenalty|
+\xarg{Integer}
+\desc{Inter-character linebreak penalty}
+\endcmd
+
+\cmd|\XeTeXupwardsmode|
+\xarg{Integer} 
+\desc{If positive, successive lines of text (and rules, boxes, etc.) will be stacked upwards instead of downwards.}
+\endcmd
+
+\section{Graphics}
+
+\cmd|\XeTeXpicfile|
+\xarg{filename}
+\xarg{optional options}
+\desc{Insert an image.}
+\endcmd
+
+\cmd|\XeTeXpdffile|
+\xarg{filename}
+\xarg{optional options}
+\desc{Insert (pages of) a PDF.}
+\endcmd
+
+\subsection{Parity with \pdfTeX}
+
+\cmd|\pdfpageheight|
+\xarg{Number}
+\desc{The height of the PDF page.}
+\endcmd
+
+\cmd|\pdfpagewidth|
+\xarg{Number}
+\desc{The width of the PDF page.}
+\endcmd
+
+\cmd|\pdfsavepos|
+\desc{Saves the current location of the page in the typesetting stream.}
+\endcmd
+
+\cmd|\pdflastxpos|
+\desc{Retrieves the horizontal position saved by the above.}
+\endcmd
+
+\cmd|\pdflastypos|
+\desc{Retrieves the vertical position saved by the above.}
+\endcmd
+
+\section{Misc.}
+
+\cmd|\XeTeXversion|
+\desc{A number corresponding to the \XeTeX\ version.}
+\endcmd
+
+\cmd|\XeTeXrevision|
+\desc{A string corresponding to the \XeTeX\ revision number.}
+\endcmd
+
+\begin{example}
+The \XeTeX\ version is: \the\XeTeXversion\XeTeXrevision
+\end{example}
+
+
+
+\end{document}

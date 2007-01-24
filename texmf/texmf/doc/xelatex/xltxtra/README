@@ -1,0 +1,18 @@
+------------------------
+THE XLTXTRA PACKAGE v0.2
+
+This package provides a few small features that
+are useful for XeLaTeX.
+
+It loads the fixltx2e and etex packages, and
+patches a couple of other LaTeX commands: \-
+for discretionary hyphenation with variable
+hyphenation characters, and \textsuperscript/
+\textsubscript that use the fontspec to access
+real superior/inferior characters. It also
+provides a parameterised logos for \TeX,
+\LaTeX and \XeTeX.
+
+--------------
+Will Robertson
+2006

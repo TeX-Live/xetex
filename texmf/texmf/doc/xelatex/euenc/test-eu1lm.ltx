@@ -1,0 +1,128 @@
+%%
+%% This is file `test-eu1lm.ltx',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% euenc.dtx  (with options: `lmtest')
+%% 
+%%   ________________________________
+%%   Copyright © 2006  Will Robertson
+%% 
+%%   License information appended.
+%% 
+\documentclass[12pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\newenvironment{vrb}
+               {\begin{tabular}{@{}p{7cm}l@{}}}
+               {\end{tabular}}
+
+\usepackage{fancyvrb}
+\DefineShortVerb{\|}
+
+\usepackage{slantsc}
+\usepackage[EU1]{fontenc}
+\usepackage{lmodern}
+\begin{document}
+
+\title{Testing the Latin Modern \texttt{EU1} encoding}
+\author{Will Robertson}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+\section*{Roman}
+
+\fontfamily{lmr}\selectfont
+\begin{vrb}
+|\rmdefault| & {\selectfont Latin Modern Roman} \\
+|   \itshape| & {\itshape Latin Modern Roman Italic} \\
+|   \slshape| & {\slshape Latin Modern Roman Oblique} \\
+|   \scshape| & {\scshape Latin Modern Roman Small Caps} \\
+|     \slshape| & {\scshape\slshape Latin Modern Roman Oblique Small Caps} \\
+|   \bfseries| & {\bfseries Latin Modern Roman Bold Extended} \\
+|      \itshape| & {\bfseries\itshape Latin Modern Roman Bold Italic Extended} \\
+|      \slshape| & {\bfseries\slshape Latin Modern Roman Bold Oblique Extended} \\
+|   \fontseries{b}| & {\fontseries{b}\selectfont Latin Modern Roman Bold} \\
+|   \fontseries{b}\slshape| & {\fontseries{b}\slshape Latin Modern Roman Bold Oblique} \\
+\end{vrb}
+
+\section*{Dunhill}
+
+\fontfamily{lmdh}\selectfont
+\begin{vrb}
+|\fontfamily{lmdh}\selectfont| & {Latin Modern Dunhill} \\
+|   \slshape| & {\slshape Latin Modern Dunhill Oblique} \\
+\end{vrb}
+
+\section*{Sans}
+
+\fontfamily{lmss}\selectfont
+\begin{vrb}
+|\sffamily| & {\selectfont Latin Modern Sans} \\
+|   \slshape| & {\slshape Latin Modern Sans Oblique} \\
+|   \bfseries| & {\bfseries Latin Modern Sans Bold} \\
+|      \slshape| & {\bfseries\slshape Latin Modern Sans Bold Oblique} \\
+|   \fontseries{sbc}\selectfont| & {\fontseries{sbc}\selectfont Latin Modern Sans Demi Condensed} \\
+|      \slshape| & {\fontseries{sbc}\selectfont\slshape Latin Modern Sans Demi Condensed Oblique} \\
+\end{vrb}
+
+\section*{Sans Quotation}
+
+\fontfamily{lmssq}\selectfont
+\begin{vrb}
+|\renewcommand\sfdefault{lmssq}| \\
+|\sffamily      | & {\selectfont Latin Modern Sans Extended} \\
+|   \slshape    | & {\slshape Latin Modern Sans Extended Oblique} \\
+|   \bfseries   | & {\bfseries Latin Modern Sans Bold Extended} \\
+|      \slshape | & {\bfseries\slshape Latin Modern Sans Bold Extended Oblique} \\
+\end{vrb}
+
+\section*{Typewriter}
+
+\fontfamily{lmtt}\selectfont
+\begin{vrb}
+|\ttfamily      | & {\selectfont Latin Modern Typewriter} \\
+|   \itshape    | & {\itshape Latin Modern Typewriter Italic} \\
+|   \slshape    | & {\slshape Latin Modern Typewriter Oblique} \\
+|   \scshape    | & {\scshape Latin Modern Typewriter Small Caps} \\
+|   \scshape\slshape | & {\scshape\slshape Latin Modern Typewriter Oblique Small Caps} \\
+|   \bfseries   | & {\bfseries Latin Modern Typewriter Dark} \\
+|      \slshape | & {\bfseries\slshape Latin Modern Typewriter Dark Oblique} \\
+|   \fontseries{b}\selectfont | & {\fontfamily{lmtt}\fontseries{b}\selectfont Latin Modern Typewriter Dark} \\
+|   \fontseries{b}\slshape    | & {\fontfamily{lmtt}\fontseries{b}\slshape Latin Modern Typewriter Dark Oblique} \\
+|   \fontseries{l}\selectfont | & {\fontfamily{lmtt}\fontseries{l}\selectfont Latin Modern Typewriter Light} \\
+|   \fontseries{l}\slshape    | & {\fontfamily{lmtt}\fontseries{l}\slshape Latin Modern Typewriter Light Oblique} \\
+|   \fontseries{lc}\selectfont | & {\fontfamily{lmtt}\fontseries{lc}\selectfont Latin Modern Typewriter Light Condensed} \\
+|   \fontseries{lc}\slshape    | & {\fontfamily{lmtt}\fontseries{lc}\slshape Latin Modern Typewriter Light Condensed Oblique} \\
+\end{vrb}
+
+\section*{Variable-width Typewriter}
+
+\fontfamily{lmvtt}\selectfont
+\def\fixedspacing{\fontdimen3\font0pt\fontdimen4\font0pt}
+\begin{vrb}
+|\renewcommand\ttdefault{lmvtt}| \\
+|\ttfamily                     | & {\selectfont \fixedspacing Latin Modern Typewriter Proportional} \\
+|   \slshape                   | & {\slshape \fixedspacing Latin Modern Typewriter Proportional Oblique} \\
+|   \fontseries{l}\selectfont | & {\fontseries{l}\selectfont \fixedspacing Latin Modern Typewriter Proportional Light} \\
+|   \fontseries{l}\slshape    | & \mbox{\fontseries{l}\slshape \fixedspacing Latin Modern Typewriter Proportional Light Oblique} \\
+|   \fontseries{b}\selectfont | & {\fontseries{b}\selectfont \fixedspacing Latin Modern Typewriter Proportional Dark} \\
+|   \fontseries{b}\slshape    | & \mbox{\fontseries{b}\slshape \fixedspacing Latin Modern Typewriter Proportional Dark Oblique} \\
+\end{vrb}
+
+\end{document}
+%% 
+%% Copyright © 2006 by Will Robertson <wspr81@gmail.com>
+%% 
+%% Distributable under the LaTeX Project Public License,
+%% version 1.3c or higher (your choice). The latest version of
+%% this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status)
+%% by Will Robertson.
+%% 
+%% This work consists of the file  euenc.dtx and various derived files.
+%% 
+%%
+%% End of file `test-eu1lm.ltx'.

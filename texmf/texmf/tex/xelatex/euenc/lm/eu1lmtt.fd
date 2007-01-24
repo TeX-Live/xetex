@@ -1,0 +1,48 @@
+% This file belongs to the Latin Modern package. The work is released under
+% the GUST Font License. See the MANIFEST.txt and README.eng files
+% for the details. For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+
+\ProvidesFile{eu1lmtt.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
+\DeclareFontFamily{EU1}{lmtt}{\hyphenchar \font\m@ne}
+\DeclareFontShape{EU1}{lmtt}{m}{n}
+     {<-8.5>   "[lmtypewriter8-regular]"     <8.5-9.5> "[lmtypewriter9-regular]"
+      <9.5-11> "[lmtypewriter10-regular]"    <11->     "[lmtypewriter12-regular]"
+      }{}
+\DeclareFontShape{EU1}{lmtt}{m}{it}
+{<-> "[lmtypewriter10-italic]"}{}
+\DeclareFontShape{EU1}{lmtt}{m}{sl}
+{<-> "[lmtypewriter10-oblique]"}{}
+\DeclareFontShape{EU1}{lmtt}{m}{sc}
+{<-> "[lmtypewriter10-capsregular]"}{}
+\DeclareFontShape{EU1}{lmtt}{m}{scsl}
+{<-> "[lmtypewriter10-capsoblique]"}{}
+%%%%%%%% light (l), light condensed (lc), and dark (b) variants:
+\DeclareFontShape{EU1}{lmtt}{l}{n}
+{<-> "[lmtypewriter10-light]"}{}
+\DeclareFontShape{EU1}{lmtt}{l}{it}
+     {<->sub*lmtt/l/sl}{}
+\DeclareFontShape{EU1}{lmtt}{l}{sl}
+{<-> "[lmtypewriter10-lightoblique]"}{}
+\DeclareFontShape{EU1}{lmtt}{lc}{n}
+{<-> "[lmtypewriter10-lightcondensed]"}{}
+\DeclareFontShape{EU1}{lmtt}{lc}{it}
+     {<->sub*lmtt/lc/sl}{}
+\DeclareFontShape{EU1}{lmtt}{lc}{sl}
+{<-> "[lmtypewriter10-lightcondensedoblique]"}{}
+\DeclareFontShape{EU1}{lmtt}{b}{n}
+{<-> "[lmtypewriter10-dark]"}{}
+\DeclareFontShape{EU1}{lmtt}{b}{it}
+     {<->sub*lmtt/b/sl}{}
+\DeclareFontShape{EU1}{lmtt}{b}{sl}
+{<-> "[lmtypewriter10-darkoblique]"}{}
+\DeclareFontShape{EU1}{lmtt}{bx}{it}
+     {<->sub*lmtt/b/sl}{}
+\DeclareFontShape{EU1}{lmtt}{bx}{n}
+     {<->ssub*lmtt/b/n}{}
+\DeclareFontShape{EU1}{lmtt}{bx}{sl}
+     {<->ssub*lmtt/b/sl}{}
+\endinput
+%%
+%% End of file `eu1lmtt.fd'.

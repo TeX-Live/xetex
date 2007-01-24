@@ -1,0 +1,19 @@
+% This file belongs to the Latin Modern package. The work is released under
+% the GUST Font License. See the MANIFEST.txt and README.eng files
+% for the details. For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+
+\ProvidesFile{eu1lmssq.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
+\DeclareFontFamily{EU1}{lmssq}{\hyphenchar \font\m@ne}
+\DeclareFontShape{EU1}{lmssq}{m}{n}
+     {<-> "[lmsansquotation8-regular]"}{}
+\DeclareFontShape{EU1}{lmssq}{m}{sl}
+     {<-> "[lmsansquotation8-oblique]"}{}
+\DeclareFontShape{EU1}{lmssq}{bx}{n}
+     {<-> "[lmsansquotation8-bold]"}{}
+\DeclareFontShape{EU1}{lmssq}{bx}{sl}
+     {<-> "[lmsansquotation8-boldoblique]"}{}
+\endinput
+%%
+%% End of file `eu1lmssq.fd'.

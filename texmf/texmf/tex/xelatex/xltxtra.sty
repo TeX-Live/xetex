@@ -1,0 +1,216 @@
+%%
+%% This is file `xltxtra.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xltxtra.dtx  (with options: `package')
+%% 
+%%   ____________________________
+%%   The xltxtra package
+%%   (C) 2006  Will Robertson
+%%   License information appended
+%% 
+%% 
+\ProvidesPackage{xltxtra}
+  [2006/06/13 v0.2 Improvements for the XeTeX/LaTeX format]
+\RequirePackage{ifxetex}
+\RequireXeTeX
+\RequirePackage{graphicx}
+\RequirePackage{fontspec}
+\RequirePackage{xunicode}
+\newlength\xxt@kern@Te
+\newlength\xxt@kern@eX
+\newlength\xxt@lower@e
+\newlength\xxt@kern@La
+\newlength\xxt@kern@aT
+\newlength\xxt@kern@eL
+\newcommand*\TeX@logo@spacing[6]{%
+  \setlength\xxt@kern@Te{#1}%
+  \setlength\xxt@kern@eX{#2}%
+  \setlength\xxt@lower@e{#3}%
+  \setlength\xxt@kern@La{#4}%
+  \setlength\xxt@kern@aT{#5}%
+  \setlength\xxt@kern@eL{#6}%
+}
+\DeclareRobustCommand\TeX{%
+  \leavevmode
+  \smash{%
+    T\kern\xxt@kern@Te
+    \lower\xxt@lower@e\hbox{E}\kern\xxt@kern@eX X}%
+  \spacefactor1000\relax}
+\DeclareRobustCommand{\LaTeX}{%
+  \leavevmode
+  \smash{%
+  L\kern\xxt@kern@La
+  {\sbox\z@ T%
+    \vbox to\ht\z@{\hbox{\check@mathfonts
+      \fontsize\sf@size\z@
+      \math@fontsfalse\selectfont
+      A}%
+    \vss}%
+  }%
+  \kern\xxt@kern@aT
+  \TeX}}
+\DeclareRobustCommand\XeTeX{%
+  \leavevmode
+  \smash{%
+   X\lower\xxt@lower@e
+   \hbox{\kern\xxt@kern@eX
+     \ifnum\XeTeXfonttype\font>0
+       \ifnum\XeTeXcharglyph"018E>0
+         \char"018E\relax
+       \else
+         \ifdim\fontdimen1\font=0pt
+           \reflectbox{E}%
+         \else
+           \XeTeXuseglyphmetrics=1%
+           \setbox0=\hbox{E}\dimen0=\ht0\advance\dimen0by\dp0%
+           \raise\dimen0\hbox{\rotatebox{180}{\box0}}%
+         \fi
+       \fi
+     \else
+       \setbox0=\hbox{E}\dimen0=\ht0\advance\dimen0by\dp0%
+       \raise\dimen0\hbox{\rotatebox{180}{\box0}}%
+     \fi
+   }\kern\xxt@kern@Te\TeX}}%
+\DeclareRobustCommand\XeLaTeX{%
+   \leavevmode
+   \smash{%
+    X\lower\xxt@lower@e
+    \hbox{\kern\xxt@kern@eX
+      \ifnum\XeTeXfonttype\font>0\relax
+        \ifnum\XeTeXcharglyph"018E>0\relax
+          \char"018E\relax
+        \else
+          \ifdim\fontdimen1\font=0pt\relax
+            \reflectbox{E}%
+          \else
+            \XeTeXuseglyphmetrics=1\relax
+            \setbox0=\hbox{E}\dimen0=\ht0\advance\dimen0by\dp0\relax
+            \raise\dimen0\hbox{\rotatebox{180}{\box0}}%
+          \fi
+        \fi
+      \else
+        \setbox0=\hbox{E}\dimen0=\ht0\advance\dimen0by\dp0\relax
+        \raise\dimen0\hbox{\rotatebox{180}{\box0}}%
+      \fi}\kern\xxt@kern@eL\LaTeX}}
+\TeX@logo@spacing{-0.15em}{-0.15em}{0.5ex}{-0.36em}{-0.15em}{-0.1em}
+\RequirePackage{etex}
+\RequirePackage{fixltx2e}[2006/03/24]
+\DeclareRobustCommand\em
+  {\@nomath\em
+   \edef\@tempa{\f@shape}%
+   \edef\@tempb{\itdefault}%
+   \ifx\@tempa\@tempb
+     \eminnershape
+   \else
+     \emshape
+   \fi}
+\DeclareTextFontCommand{\emph}{\em}
+\let\emshape\itshape
+\let\eminnershape\upshape
+\newcommand*\robust@let@nc[2]{%
+  \expandafter\let\expandafter#1\csname #2 \endcsname}
+\DeclareRobustCommand{\-}{%
+  \discretionary{%
+    \char\ifnum\hyphenchar\font<\z@
+           \xlx@defaulthyphenchar
+         \else
+           \hyphenchar\font
+         \fi}{}{}}
+\def\xlx@defaulthyphenchar{`\-}
+\robust@let@nc\faketextsubscript{textsubscript}
+\robust@let@nc\faketextsuperscript{textsuperscript}
+\DeclareRobustCommand*\textsubscript{%
+  \@ifstar{\faketextsubscript}{\@@textsubscript}}
+\newcommand\@@textsubscript[1]{%
+  \begingroup
+    \c@zf@script 1818326126\relax
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@set@font@type
+    \ifzf@atsui
+      \zf@make@aat@feature@string{10}{2}%
+      \unless\ifx\zf@thisfontfeature\@empty
+        {\addfontfeature{VerticalPosition=Inferior}#1}%
+      \else
+        \faketextsubscript{#1}%
+      \fi
+    \fi
+    \ifzf@icu
+      \zf@check@ot@feat{+subs}%
+      \if@tempswa
+        {\addfontfeature{VerticalPosition=Inferior}#1}%
+      \else
+        \zf@check@ot@feat{+sinf}%
+        \if@tempswa
+          {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
+        \else
+          \faketextsubscript{#1}%
+        \fi
+      \fi
+    \fi
+  \endgroup}
+\DeclareRobustCommand*\textsuperscript{%
+  \@ifstar{\faketextsuperscript}{\@@textsuperscript}}
+\newcommand\@@textsuperscript[1]{%
+  \begingroup
+    \c@zf@script 1818326126\relax
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@set@font@type
+    \ifzf@atsui
+      \zf@make@aat@feature@string{10}{1}%
+      \unless\ifx\zf@thisfontfeature\@empty
+        {\addfontfeature{VerticalPosition=Superior}#1}%
+      \else
+        \faketextsuperscript{#1}%
+      \fi
+    \fi
+    \ifzf@icu
+      \zf@check@ot@feat{+sups}%
+      \if@tempswa
+        {\addfontfeature{VerticalPosition=Superior}#1}%
+      \else
+        \faketextsuperscript{#1}%
+      \fi
+    \fi
+  \endgroup}
+\newcommand*\vfrac[2]{%
+  \begingroup
+    \c@zf@script 1818326126\relax
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@set@font@type
+    \ifzf@atsui
+      {\addfontfeature{VerticalPosition=Superior}#1}%
+       \textfractionsolidus
+      {\addfontfeature{VerticalPosition=Inferior}#2}%
+    \fi
+    \ifzf@icu
+      {\addfontfeature{VerticalPosition=Numerator}#1}%
+       \textfractionsolidus
+      {\addfontfeature{VerticalPosition=Denominator}#2}%
+    \fi
+  \endgroup}
+\newcommand\namedglyph[1]{%
+  \@tempcnta=\XeTeXglyphindex "#1"\relax
+  \ifnum\@tempcnta>0
+    \XeTeXglyph\@tempcnta
+  \else
+    \xxt@namedglyph@fallback{#1}%
+  \fi}
+\newcommand\xxt@namedglyph@fallback[1]{[#1]}
+%% 
+%% Copyright (C) 2006 by Will Robertson <wspr81@gmail.com>
+%% 
+%% Distributable under the LaTeX Project Public License,
+%% version 1.3c or higher (your choice). The latest version of
+%% this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status)
+%% by Will Robertson.
+%% 
+%% This work consists of the file  xltxtra.dtx
+%%           and the derived files xltxtra.sty and xltxtra.pdf.
+%% 
+%%
+%% End of file `xltxtra.sty'.
