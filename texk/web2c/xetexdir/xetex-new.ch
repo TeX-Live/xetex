@@ -1905,7 +1905,7 @@ XeTeX_def_code:
       scanned_result(ho(math_code(cur_val)))(int_val)
     end
     else if m=math_code_base+1 then begin
-      print_err("Can't use \XeTeXmathcode as a number");
+      print_err("Can't use \XeTeXmathcode as a number (try \XeTeXmathcodenum)");
       help2("\XeTeXmathcode is for setting a mathcode from separate values;")@/
       ("use \XeTeXmathcodenum to access them as single values."); error;
       scanned_result(0)(int_val)
@@ -1913,7 +1913,7 @@ XeTeX_def_code:
     else if m=del_code_base then begin
       scanned_result(ho(del_code(cur_val)))(int_val)
     end else begin
-      print_err("Can't use \XeTeXdelcode as a number");
+      print_err("Can't use \XeTeXdelcode as a number (try \XeTeXdelcodenum)");
       help2("\XeTeXdelcode is for setting a delcode from separate values;")@/
       ("use \XeTeXdelcodenum to access them as single values."); error;
       scanned_result(0)(int_val);

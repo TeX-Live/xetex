@@ -30,8 +30,10 @@ echo "### running TeX Live configure script as:"
 echo "../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib"
 ../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib || exit
 
-if [ "`uname`" = "Darwin" && "`uname -p`" = "powerpc" ]; then
+if [ "`uname`" = "Darwin" ]; then
+  if [ "`uname -p`" = "powerpc" ]; then
 	# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available
 	# ....hoping for 10.2 compatibility :)
 	perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' libs/icu-xetex/common/unicode/platform.h
+  fi
 fi
