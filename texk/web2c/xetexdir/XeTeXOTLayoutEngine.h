@@ -43,6 +43,7 @@ class XeTeXOTLayoutEngine : public OpenTypeLayoutEngine
 public:
     XeTeXOTLayoutEngine(const LEFontInstance* fontInstance, LETag scriptTag, LETag languageTag,
                             const GlyphSubstitutionTableHeader* gsubTable,
+                            const GlyphPositioningTableHeader* gposTable,
 							const LETag* addFeatures, const le_int32* addParams,
 							const LETag* removeFeatures);
 
@@ -71,6 +72,7 @@ class XeTeXHanLayoutEngine : public XeTeXOTLayoutEngine
 public:
     XeTeXHanLayoutEngine(const XeTeXFontInst *fontInstance, LETag scriptTag, LETag languageTag,
                             const GlyphSubstitutionTableHeader *gsubTable,
+                            const GlyphPositioningTableHeader* gposTable,
 							const LETag* addFeatures, const le_int32* addParams,
 							const LETag* removeFeatures);
 

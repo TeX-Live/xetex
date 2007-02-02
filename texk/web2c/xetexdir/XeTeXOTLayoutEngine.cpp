@@ -68,11 +68,13 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
 					LEErrorCode &success)
 {
     static le_uint32 gsubTableTag = LE_GSUB_TABLE_TAG;
+    static le_uint32 gposTableTag = LE_GPOS_TABLE_TAG;
 
     if (LE_FAILURE(success))
         return NULL;
 
     const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)fontInstance->getFontTable(gsubTableTag);
+    const GlyphPositioningTableHeader* gposTable = (const GlyphPositioningTableHeader*)fontInstance->getFontTable(gposTableTag);
     LayoutEngine *result = NULL;
 	
 	le_uint32   scriptCode = getScriptCode(scriptTag);
@@ -80,7 +82,8 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
 
 	le_int32	typoFlags = 3;
 
-    if (gsubTable != NULL && gsubTable->coversScript(scriptTag)) {
+    if ((gsubTable != NULL && gsubTable->coversScript(scriptTag))
+    	|| (gposTable != NULL && gposTable->coversScript(scriptTag))) {
         switch (scriptCode) {
         case bengScriptCode:
         case devaScriptCode:
@@ -108,7 +111,7 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
         case hiraScriptCode:
         case kanaScriptCode:
         case hrktScriptCode:
-            result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, addParams, removeFeatures);
+            result = new XeTeXHanLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, gposTable, addFeatures, addParams, removeFeatures);
             break;
 
         case khmrScriptCode:
@@ -116,7 +119,7 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
             break;
 
         default:
-            result = new XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, addFeatures, addParams, removeFeatures);
+            result = new XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, gposTable, addFeatures, addParams, removeFeatures);
             break;
         }
     }
@@ -157,12 +160,10 @@ LayoutEngine* XeTeXOTLayoutEngine::LayoutEngineFactory
 
 XeTeXOTLayoutEngine::XeTeXOTLayoutEngine(
 	const LEFontInstance* fontInstance, LETag scriptTag, LETag languageTag,
-	const GlyphSubstitutionTableHeader* gsubTable,
+	const GlyphSubstitutionTableHeader* gsubTable, const GlyphPositioningTableHeader* gposTable,
 	const LETag* addFeatures, const le_int32* addParams, const LETag* removeFeatures)
 		: OpenTypeLayoutEngine(fontInstance, getScriptCode(scriptTag), getLanguageCode(languageTag), 3, gsubTable)
 {
-    static le_uint32 gposTableTag = LE_GPOS_TABLE_TAG;
-
 	fDefaultFeatureMap = fFeatureMap;
 	
 	// check the result of setScriptAndLanguageTags(), in case they were unknown to ICU
@@ -172,7 +173,6 @@ XeTeXOTLayoutEngine::XeTeXOTLayoutEngine(
 	
 		// reset the GPOS if the tags changed
 		fGPOSTable = NULL;
-		const GlyphPositioningTableHeader *gposTable = (const GlyphPositioningTableHeader *) getFontTable(gposTableTag);
 		if (gposTable != NULL && gposTable->coversScriptAndLanguage(fScriptTag, fLangSysTag)) {
 			fGPOSTable = gposTable;
 		}
@@ -317,10 +317,10 @@ static const le_int32 featureMapCount = LE_ARRAY_SIZE(featureMap);
 #define VERT_FEATURES  (loclFeatureMask|vertFeatureMask|vrt2FeatureMask)
 
 XeTeXHanLayoutEngine::XeTeXHanLayoutEngine(const XeTeXFontInst *fontInstance, LETag scriptTag, LETag languageTag,
-                            const GlyphSubstitutionTableHeader *gsubTable,
+                            const GlyphSubstitutionTableHeader *gsubTable, const GlyphPositioningTableHeader *gposTable,
 							const LETag *addFeatures, const le_int32* addParams,
 							const LETag *removeFeatures)
-	: XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, NULL, NULL, NULL)
+	: XeTeXOTLayoutEngine(fontInstance, scriptTag, languageTag, gsubTable, gposTable, NULL, NULL, NULL)
 {
 	// reset the feature map and default features
 	fFeatureMap = featureMap;
