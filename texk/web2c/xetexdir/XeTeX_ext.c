@@ -502,6 +502,41 @@ load_mapping_file(const char* s, const char* e)
 	return cnv;
 }
 
+double
+read_double(const char** s)
+{
+	int		neg = 0;
+	double	val = 0.0;
+	const char*	cp = *s;
+
+	while (*cp == ' '|| *cp == '\t')
+		++cp;
+	if (*cp == '-') {
+		neg = 1;
+		++cp;
+	}
+	else if (*cp == '+') {
+		++cp;
+	}
+
+	while (*cp >= '0' && *cp <= '9') {
+		val = val * 10.0 + *cp - '0';
+		++cp;
+	}
+	if (*cp == '.') {
+		double	dec = 10.0;
+		++cp;
+		while (*cp >= '0' && *cp <= '9') {
+			val = val + (*cp - '0') / dec;
+			++cp;
+			dec = dec * 10.0;
+		}
+	}
+	*s = cp;
+
+	return neg ? -val : val;
+}
+
 static UInt32
 read_tag(const char* cp)
 {
@@ -571,10 +606,13 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 
 	UInt32	rgbValue = 0x000000FF;
 
+	double	extend = 1.0;
+	double	slant = 0.0;
+
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
 		while (*cp1) {
-			if ((*cp1 == ':') || (*cp1 == ';') || (*cp1 == ','))
+			if ((*cp1 == ':') || (*cp1 == ';') /*|| (*cp1 == ',')*/ )
 				++cp1;
 			while ((*cp1 == ' ') || (*cp1 == '\t'))	/* skip leading whitespace */
 				++cp1;
@@ -582,7 +620,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				break;
 	
 			cp2 = cp1;
-			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
+			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') /*&& (*cp2 != ',')*/ )
 				++cp2;
 			
 			if (strncmp(cp1, "script", 6) == 0) {
@@ -606,6 +644,24 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				if (*cp3 != '=')
 					goto bad_option;
 				loadedfontmapping = load_mapping_file(cp3 + 1, cp2);
+				goto next_option;
+			}
+	
+			if (strncmp(cp1, "extend", 6) == 0) {
+				cp3 = cp1 + 6;
+				if (*cp3 != '=')
+					goto bad_option;
+				++cp3;
+				extend = read_double(&cp3);
+				goto next_option;
+			}
+	
+			if (strncmp(cp1, "slant", 5) == 0) {
+				cp3 = cp1 + 5;
+				if (*cp3 != '=')
+					goto bad_option;
+				++cp3;
+				slant = read_double(&cp3);
 				goto next_option;
 			}
 	
@@ -652,38 +708,13 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			}
 
 			if (strncmp(cp1, "letterspace", 11) == 0) {
-				int		sign = 1;
-				double	val = 0.0;
-
+				double	val;
 				cp3 = cp1 + 11;
 				if (*cp3 != '=')
 					goto bad_option;
 				++cp3;
-
-				if (*cp3 == '-') {
-					sign = -1;
-					++cp3;
-				}
-				else if (*cp3 == '+') {
-					++cp3;
-				}
-
-				while (*cp3 >= '0' && *cp3 <= '9') {
-					val = val * 10.0 + *cp3 - '0';
-					++cp3;
-				}
-				if (*cp3 == '.' || *cp3 == ',') {
-					double	dec = 10.0;
-					++cp3;
-					while (*cp3 >= '0' && *cp3 <= '9') {
-						val = val + (*cp3 - '0') / dec;
-						++cp3;
-						dec = dec * 10.0;
-					}
-				}
-				
-				loadedfontletterspace = sign * (val / 100.0) * scaled_size;
-				
+				val = read_double(&cp3);
+				loadedfontletterspace = (val / 100.0) * scaled_size;
 				goto next_option;
 			}
 			
@@ -753,7 +784,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		setFontLayoutDir(font, 1);
 
 	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag,
-					addFeatures, addParams, removeFeatures, rgbValue);
+					addFeatures, addParams, removeFeatures, rgbValue,
+					extend, slant);
 	if (engine == 0) {
 		deleteFont(font);
 		if (addFeatures)
@@ -964,7 +996,8 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 	*ascent = X2Fix(a);
 	*descent = X2Fix(d);
 
-	*slant = getSlant(getFont(engine));
+	*slant = X2Fix(Fix2X(getSlant(getFont(engine))) * getExtendFactor(engine)
+					+ getSlantFactor(engine));
 
 	glyphID = mapCharToGlyph(engine, 'x');
 	if (glyphID != 0) {
@@ -1059,6 +1092,8 @@ otfontget3(int what, void* pEngine, long param1, long param2, long param3)
 #define XDV_FLAG_COLORED		0x0200
 #define XDV_FLAG_FEATURES		0x0400
 #define XDV_FLAG_VARIATIONS		0x0800
+#define XDV_FLAG_EXTEND			0x1000
+#define XDV_FLAG_SLANT			0x2000
 
 #ifdef XETEX_MAC
 static UInt32
@@ -1160,6 +1195,8 @@ makefontdef(long f)
 	int		fontDefLength;
 	char*	cp;
 	PlatformFontRef	fontRef = 0;
+	float	extend = 1.0;
+	float	slant = 0.0;
 
 #ifdef XETEX_MAC
 	ATSUStyle	style = NULL;
@@ -1207,6 +1244,9 @@ makefontdef(long f)
 		if ((fontflags[f] & FONT_FLAGS_VERTICAL) != 0)
 			flags |= XDV_FLAG_VERTICAL;
 
+		extend = getExtendFactor(engine);
+		slant = getSlantFactor(engine);
+
 		size = X2Fix(getPointSize(engine));
 	}
 	else {
@@ -1250,7 +1290,16 @@ makefontdef(long f)
 		flags |= XDV_FLAG_VARIATIONS;
 	}
 #endif
-	
+
+	if (extend != 1.0) {
+		fontDefLength += 4;
+		flags |= XDV_FLAG_EXTEND;
+	}
+	if (slant != 0.0) {
+		fontDefLength += 4;
+		flags |= XDV_FLAG_SLANT;
+	}
+
 	if (fontDefLength > xdvBufSize) {
 		if (xdvbuffer != NULL)
 			free(xdvbuffer);
@@ -1304,6 +1353,17 @@ makefontdef(long f)
 		}
 	}
 #endif
+
+	if (flags & XDV_FLAG_EXTEND) {
+		Fixed	f = X2Fix(extend);
+		*(UInt32*)(cp) = SWAP32(f);
+		cp += 4;
+	}
+	if (flags & XDV_FLAG_SLANT) {
+		Fixed	f = X2Fix(slant);
+		*(UInt32*)(cp) = SWAP32(f);
+		cp += 4;
+	}
 	
 	return fontDefLength;
 }

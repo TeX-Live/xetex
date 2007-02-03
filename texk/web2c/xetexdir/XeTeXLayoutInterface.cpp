@@ -58,6 +58,8 @@ struct XeTeXLayoutEngine_rec
 	UInt32*			addedFeatures;
 	UInt32*			removedFeatures;
 	UInt32			rgbValue;
+	float			extend;
+	float			slant;
 };
 
 /*******************************************************************/
@@ -332,8 +334,19 @@ XeTeXFont getFont(XeTeXLayoutEngine engine)
 	return (XeTeXFont)(engine->font);
 }
 
+float getExtendFactor(XeTeXLayoutEngine engine)
+{
+	return engine->extend;
+}
+
+float getSlantFactor(XeTeXLayoutEngine engine)
+{
+	return engine->slant;
+}
+
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
-										UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue)
+										UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue,
+										float extend, float slant)
 {
 	LEErrorCode status = LE_NO_ERROR;
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
@@ -344,6 +357,8 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UI
 	result->addedFeatures = addFeatures;
 	result->removedFeatures = removeFeatures;
 	result->rgbValue = rgbValue;
+	result->extend = extend;
+	result->slant = slant;
 	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((XeTeXFontInst*)font, scriptTag, languageTag,
 						(LETag*)addFeatures, (le_int32*)addParams, (LETag*)removeFeatures, status);
 	if (LE_FAILURE(status) || result->layoutEngine == NULL) {
@@ -381,6 +396,11 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* stat
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	engine->layoutEngine->getGlyphPositions(positions, success);
+
+	if (engine->extend != 1.0 || engine->slant != 0.0)
+		for (int i = 0; i <= engine->layoutEngine->getGlyphCount(); ++i)
+			positions[2*i] = positions[2*i] * engine->extend - positions[2*i+1] * engine->slant;
+
 	*status = success;
 }
 
@@ -388,6 +408,10 @@ void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y
 {
 	LEErrorCode success = (LEErrorCode)*status;
 	engine->layoutEngine->getGlyphPosition(index, *x, *y, success);
+
+	if (engine->extend != 1.0 || engine->slant != 0.0)
+		*x = *x * engine->extend - *y * engine->slant;
+
 	*status = success;
 }
 
