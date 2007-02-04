@@ -17,7 +17,7 @@
 %\geometry{screen,margin=3cm}
 
 \usepackage[nofancy]{svninfo}
-\svnInfo $Id: XeTeX-reference.ltx 7 2006-10-25 12:06:06Z will $ 
+\svnInfo $Id: XeTeX-reference.ltx 8 2007-02-04 13:57:21Z will $ 
 
 \usepackage[medium,rm]{titlesec}
 \usepackage{enumitem}
@@ -110,7 +110,7 @@ The other arguments are optional and described subsequently.
 
 \subsection{Font options}
 
-\xarg{Font options} may be an concatenation of the following: 
+\xarg{Font options} may be any concatenation of the following: 
 \begin{optdesc}
 \item[/B] Use the bold version of the selected font.
 \item[/I] Use the italic version of the selected font.
@@ -190,12 +190,12 @@ OpenType font features can vary by script (`alphabet') and by language.
 
 \cmd|\XeTeXglyphindex|
 \xarg{Glyph name}
-\desc{Returns the \xarg{glyph slot} corresponding to the (possibly font specific) \xarg{glyph name} in the currently selected font. Only works for TrueType fonts (or TrueType-based OpenType fonts) at present. Use \texttt{fontforge} or similar to discover glyph names.}
+\desc{Expands to the \xarg{glyph slot} corresponding to the (possibly font specific) \xarg{glyph name} in the currently selected font. Only works for TrueType fonts (or TrueType-based OpenType fonts) at present. Use \texttt{fontforge} or similar to discover glyph names.}
 \endcmd
 
 \cmd|\XeTeXcharglyph|
 \xarg{Char code} 
-\desc{Returns the default glyph number of character \xarg{Char code} in the current font, or 0 if the character is not available in the font.}
+\desc{Expands to the default glyph number of character \xarg{Char code} in the current font, or 0 if the character is not available in the font.}
 \endcmd
 
 \begin{example}
@@ -213,7 +213,7 @@ or the unicode character slot:
 \cmd|\XeTeXfonttype|
 \xarg{font}
 \desc{
-  Returns what renderer is used for a \xarg{font}:
+  Expands to a number corresponding to which renderer is used for a \xarg{font}:
   \begin{optdesc}
     \item [0] for \TeX\ (a legacy TFM-based font);
     \item [1] for ATSUI (usually an AAT font);
@@ -237,33 +237,33 @@ or the unicode character slot:
 
 \cmd|\XeTeXOTcountscripts|
 \xarg{Font}
-\desc{Returns the number of scripts in a font.}
+\desc{Expands to the number of scripts in a font.}
 \endcmd
 
 \cmd|\XeTeXOTscripttag|
 \xarg{Font}
 \xarg{Integer, $n$}
-\desc{Returns the $n$-th script tag of a font.}
+\desc{Expands to the $n$-th script tag of a font.}
 \endcmd
 
 \cmd|\XeTeXOTcountlanguages|
 \xarg{Font}
 \xarg{Script tag}
-\desc{Returns the number of languages in the script of a font.}
+\desc{Expands to the number of languages in the script of a font.}
 \endcmd
 
 \cmd|\XeTeXOTlanguagetag|
 \xarg{Font}
 \xarg{Script tag}
 \xarg{Integer, $n$}
-\desc{Returns the $n$-th language tag in the script of a font.}
+\desc{Expands to the $n$-th language tag in the script of a font.}
 \endcmd
 
 \cmd|\XeTeXOTcountfeatures|
 \xarg{Font}
 \xarg{Script tag}
 \xarg{Language tag}
-\desc{Returns the number of features in the language of a script of a font.}
+\desc{Expands to the number of features in the language of a script of a font.}
 \endcmd
 
 \cmd|\XeTeXOTfeaturetag|
@@ -271,7 +271,7 @@ or the unicode character slot:
 \xarg{Script tag}
 \xarg{Language tag}
 \xarg{Integer, $n$}
-\desc{Returns the $n$-th feature tag in the language of a script of a font.}
+\desc{Expands to the $n$-th feature tag in the language of a script of a font.}
 \endcmd
 
 
@@ -281,25 +281,25 @@ or the unicode character slot:
 
 \cmd|\XeTeXcountfeatures|
 \xarg{font}
-\desc{Returns the number of features in the \xarg{font}.}
+\desc{Expands to the number of features in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXfeaturecode|
 \xarg{font}
 \xarg{integer, $n$}
-\desc{Returns the feature code for the $n$-th feature in the \xarg{font}.}
+\desc{Expands to the feature code for the $n$-th feature in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXfeaturename|
 \xarg{font}
 \xarg{feature code}
-\desc{Returns the name corresponding to the \xarg{feature code} in the \xarg{font}.}
+\desc{Expands to the name corresponding to the \xarg{feature code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXisexclusivefeature|
 \xarg{font}
 \xarg{feature code}
-\desc{Returns greater than zero if the feature of a font is exclusive (can only take a single selector).}
+\desc{Expands to a number greater than zero if the feature of a font is exclusive (can only take a single selector).}
 \endcmd
 
 \subsubsection{Feature selectors}
@@ -307,70 +307,70 @@ or the unicode character slot:
 \cmd|\XeTeXcountselectors|
 \xarg{font}
 \xarg{feature}
-\desc{Returns the number of selectors in a \xarg{feature} of a \xarg{font}.}
+\desc{Expands to the number of selectors in a \xarg{feature} of a \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXselectorcode|
 \xarg{font}
 \xarg{feature code}
 \xarg{integer, $n$}
-\desc{Returns the selector code for the $n$-th selector in a \xarg{feature} of a \xarg{font}.}
+\desc{Expands to the selector code for the $n$-th selector in a \xarg{feature} of a \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXselectorname|
 \xarg{font}
 \xarg{feature code}
 \xarg{selector code}
-\desc{Returns the name corresponding to the \xarg{selector code} of a feature of a \xarg{font}.}
+\desc{Expands to the name corresponding to the \xarg{selector code} of a feature of a \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXisdefaultselector|
 \xarg{font}
 \xarg{feature code}
 \xarg{selector code}
-\desc{Returns greater than zero if the selector of a feature of a font is on by default.}
+\desc{Expands to a number greater than zero if the selector of a feature of a font is on by default.}
 \endcmd
 
 \subsubsection{Variation axes}
 
 \cmd|\XeTeXcountvariations|
 \xarg{font}
-\desc{Returns the number of variation axes in the \xarg{font}.}
+\desc{Expands to the number of variation axes in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariation|
 \xarg{font}
 \xarg{integer, $n$}
-\desc{Returns the variation code for the $n$-th feature in the \xarg{font}.}
+\desc{Expands to the variation code for the $n$-th feature in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationname|
 \xarg{font}
 \xarg{variation code}
-\desc{Returns the name corresponding to the \xarg{feature code} in the \xarg{font}.}
+\desc{Expands to the name corresponding to the \xarg{feature code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationmin|
 \xarg{font}
 \xarg{variation code}
-\desc{Returns the minimum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\desc{Expands to the minimum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationmax|
 \xarg{font}
 \xarg{variation code}
-\desc{Returns the maximum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\desc{Expands to the maximum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationdefault|
 \xarg{font}
 \xarg{variation code}
-\desc{Returns the default value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\desc{Expands to the default value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
 \endcmd
 
 \subsection{Maths fonts}
 
-To be addressed. Still incomplete in \XeTeX.
+To be addressed. Not enough time.
 
 \section{Encodings}
 
@@ -408,7 +408,7 @@ To be addressed. Still incomplete in \XeTeX.
 
 \cmd|\XeTeXupwardsmode|
 \xarg{Integer} 
-\desc{If positive, successive lines of text (and rules, boxes, etc.) will be stacked upwards instead of downwards.}
+\desc{If greater than zero, successive lines of text (and rules, boxes, etc.) will be stacked upwards instead of downwards.}
 \endcmd
 
 \section{Graphics}
@@ -452,11 +452,11 @@ To be addressed. Still incomplete in \XeTeX.
 \section{Misc.}
 
 \cmd|\XeTeXversion|
-\desc{A number corresponding to the \XeTeX\ version.}
+\desc{Expands to a number corresponding to the \XeTeX\ version.}
 \endcmd
 
 \cmd|\XeTeXrevision|
-\desc{A string corresponding to the \XeTeX\ revision number.}
+\desc{Expands to a string corresponding to the \XeTeX\ revision number.}
 \endcmd
 
 \begin{example}
