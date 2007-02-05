@@ -66,6 +66,8 @@
 #define XDV_FLAG_COLORED		0x0200
 #define XDV_FLAG_FEATURES		0x0400
 #define XDV_FLAG_VARIATIONS		0x0800
+#define XDV_FLAG_EXTEND			0x1000
+#define XDV_FLAG_SLANT			0x2000
 
 #define pdfbox_crop	1
 #define pdfbox_media	2
@@ -135,8 +137,8 @@ paperSizeRec	gPaperSizes[] =
 	{ 0, 0, 0 }
 };
 
-static CGAffineTransform	horizontalMatrix = { 1.0,  0.0,  0.0,  1.0,  0.0,  0.0 };
-static CGAffineTransform	verticalMatrix   = { 0.0,  1.0, -1.0,  0.0,  0.0,  0.0 };
+static const CGAffineTransform	kHorizontalMatrix = { 1.0,  0.0,  0.0,  1.0,  0.0,  0.0 };
+static const CGAffineTransform	kVerticalMatrix   = { 0.0,  1.0, -1.0,  0.0,  0.0,  0.0 };
 
 struct nativeFont {
 				nativeFont()
@@ -145,6 +147,7 @@ struct nativeFont {
 					, atsuStyleH(0)
 					, atsuStyleV(0)
                     , size(Long2Fix(10))
+                    , matrix(kHorizontalMatrix)
                     , isColored(false)
                     , isVertical(false)
 						{
@@ -155,6 +158,7 @@ struct nativeFont {
 	ATSUStyle			atsuStyleV;
 	Fixed				size;
 	CGColorRef			color;
+	CGAffineTransform	matrix;
 	bool				isColored;
 	bool				isVertical;
 };
@@ -435,7 +439,7 @@ setChar(UInt32 c, bool adv)
 		flushGlyphs();
         CGContextSetFont(gCtx, gTeXFonts[f].cgFont);
         CGContextSetFontSize(gCtx, Fix2X(gTeXFonts[f].size) * gMagScale);
-		CGContextSetTextMatrix(gCtx, horizontalMatrix);
+		CGContextSetTextMatrix(gCtx, kHorizontalMatrix);
         cur_cgFont = f;
 	}
 
@@ -526,8 +530,7 @@ doGlyphArray(FILE* xdv, bool yLocs)
 	if (f != cur_cgFont) {
 		CGContextSetFont(gCtx, sNativeFonts[f].cgFont);
 		CGContextSetFontSize(gCtx, Fix2X(sNativeFonts[f].size));
-		CGContextSetTextMatrix(gCtx, sNativeFonts[f].isVertical
-										? verticalMatrix : horizontalMatrix);
+		CGContextSetTextMatrix(gCtx, sNativeFonts[f].matrix);
 		cur_cgFont = f;
 	}
 
@@ -1737,7 +1740,7 @@ doNativeFontDef(FILE* xdv)
 			delete[] axes;
 		}
 	}
-
+	
 	nativeFont	fontRec;
 	fontRec.cgFont = cgFont;
 	fontRec.atsFont = fontRef;
@@ -1770,6 +1773,23 @@ doNativeFontDef(FILE* xdv)
 		vert = kATSUStronglyVertical;
 		status = ATSUSetAttributes(style, numTags, tags, sizes, values);
 		fontRec.atsuStyleV = style;
+
+		fontRec.matrix = kVerticalMatrix;
+	}
+
+	if (flags & XDV_FLAG_EXTEND) {
+		Fixed	x = readUnsigned(xdv, 4);
+		if (fontRec.isVertical)
+			fontRec.matrix.c *= Fix2X(x);
+		else
+			fontRec.matrix.a *= Fix2X(x);
+	}
+	if (flags & XDV_FLAG_SLANT) {
+		Fixed	s = readSigned(xdv, 4);
+		if (fontRec.isVertical)
+			fontRec.matrix.d = Fix2X(s);
+		else
+			fontRec.matrix.c = Fix2X(s);
 	}
 
 	sNativeFonts.insert(std::pair<const UInt32,nativeFont>(f, fontRec));
