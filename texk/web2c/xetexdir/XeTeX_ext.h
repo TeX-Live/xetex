@@ -251,6 +251,9 @@ extern "C" {
 	int mapchartoglyph(int font, unsigned int ch);
 	int mapglyphtoindex(int font);
 
+	double read_double(const char** s);
+	unsigned int read_rgb_a(const char** cp);
+
 	const char* getGlyphNamePtr(const char* buffer, int tableSize, UInt16 gid, int* len);
 
 	int find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page);

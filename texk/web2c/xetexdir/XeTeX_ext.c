@@ -585,6 +585,42 @@ read_tag_with_param(const char* cp, SInt32* param)
 	return tag;
 }
 
+unsigned int
+read_rgb_a(const char** cp)
+{
+	UInt32	rgbValue = 0;
+	UInt32	alpha = 0;
+	int		i;
+	for (i = 0; i < 6; ++i) {
+		if ((**cp >= '0') && (**cp <= '9'))
+			rgbValue = (rgbValue << 4) + **cp - '0';
+		else if ((**cp >= 'A') && (**cp <= 'F'))
+			rgbValue = (rgbValue << 4) + **cp - 'A' + 10;
+		else if ((**cp >= 'a') && (**cp <= 'f'))
+			rgbValue = (rgbValue << 4) + **cp - 'a' + 10;
+		else
+			return 0x000000FF;
+		(*cp)++;
+	}
+	rgbValue <<= 8;
+	for (i = 0; i < 2; ++i) {
+		if ((**cp >= '0') && (**cp <= '9'))
+			alpha = (alpha << 4) + **cp - '0';
+		else if ((**cp >= 'A') && (**cp <= 'F'))
+			alpha = (alpha << 4) + **cp - 'A' + 10;
+		else if ((**cp >= 'a') && (**cp <= 'f'))
+			alpha = (alpha << 4) + **cp - 'a' + 10;
+		else
+			break;
+		(*cp)++;
+	}
+	if (i == 2)
+		rgbValue += alpha;
+	else
+		rgbValue += 0xFF;
+	return rgbValue;
+}
+
 static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
@@ -612,7 +648,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
 		while (*cp1) {
-			if ((*cp1 == ':') || (*cp1 == ';') /*|| (*cp1 == ',')*/ )
+			if ((*cp1 == ':') || (*cp1 == ';') || (*cp1 == ','))
 				++cp1;
 			while ((*cp1 == ' ') || (*cp1 == '\t'))	/* skip leading whitespace */
 				++cp1;
@@ -620,7 +656,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				break;
 	
 			cp2 = cp1;
-			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') /*&& (*cp2 != ',')*/ )
+			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
 				++cp2;
 			
 			if (strncmp(cp1, "script", 6) == 0) {
@@ -666,44 +702,17 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			}
 	
 			if (strncmp(cp1, "color", 5) == 0) {
-				unsigned	alpha = 0;
-				int i;
+				const char* s;
 				cp3 = cp1 + 5;
 				if (*cp3 != '=')
 					goto bad_option;
 				++cp3;
-
-				rgbValue = 0;
-				for (i = 0; i < 6; ++i) {
-					if ((*cp3 >= '0') && (*cp3 <= '9'))
-						rgbValue = (rgbValue << 4) + *cp3 - '0';
-					else if ((*cp3 >= 'A') && (*cp3 <= 'F'))
-						rgbValue = (rgbValue << 4) + *cp3 - 'A' + 10;
-					else if ((*cp3 >= 'a') && (*cp3 <= 'f'))
-						rgbValue = (rgbValue << 4) + *cp3 - 'a' + 10;
-					else
-						goto bad_option;
-					++cp3;
-				}
-				rgbValue <<= 8;
-				for (i = 0; i < 2; ++i) {
-					if ((*cp3 >= '0') && (*cp3 <= '9'))
-						alpha = (alpha << 4) + *cp3 - '0';
-					else if ((*cp3 >= 'A') && (*cp3 <= 'F'))
-						alpha = (alpha << 4) + *cp3 - 'A' + 10;
-					else if ((*cp3 >= 'a') && (*cp3 <= 'f'))
-						alpha = (alpha << 4) + *cp3 - 'a' + 10;
-					else
-						break;
-					++cp3;
-				}
-				if (i == 2)
-					rgbValue += alpha;
+				s = cp3;
+				rgbValue = read_rgb_a(&cp3);
+				if ((cp3 == s+6) || (cp3 == s+8))
+					loadedfontflags |= FONT_FLAGS_COLORED;
 				else
-					rgbValue += 0xFF;
-
-				loadedfontflags |= FONT_FLAGS_COLORED;
-
+					goto bad_option;
 				goto next_option;
 			}
 
@@ -1221,6 +1230,11 @@ makefontdef(long f)
 		ATSURGBAlphaColor	atsuColor;
 		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), &atsuColor, 0);
 		rgba = atsuColorToRGBA32(atsuColor);
+
+		CGAffineTransform	t;
+		ATSUGetAttribute(style, kATSUFontMatrixTag, sizeof(CGAffineTransform), &t, 0);
+		extend = t.a;
+		slant = t.b;
 
 		ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
 	}
@@ -1967,6 +1981,13 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 			free(post);
 		}
 	}
+
+	CGAffineTransform	t;
+	ATSUGetAttribute(style, kATSUFontMatrixTag, sizeof(CGAffineTransform), &t, 0);
+	if (t.a != 1.0)
+		*slant = X2Fix(Fix2X(*slant) * t.a);
+	if (t.b != 0.0)
+		*slant += X2Fix(t.b);
 
 	if (0 && metrics.xHeight != 0.0) {
 		/* currently not using this, as the values from ATS don't seem quite what I'd expect */
