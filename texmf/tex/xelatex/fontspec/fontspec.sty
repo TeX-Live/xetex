@@ -12,9 +12,8 @@
 %% 
 %%   License information appended.
 %% 
-%% 
 \ProvidesPackage{fontspec}
-  [2006/12/21 v1.13 Advanced font selection for XeLaTeX]
+  [2006/12/24 v1.13a Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \newif\ifzf@firsttime
@@ -55,7 +54,9 @@
 \RequirePackage{xkeyval}[2005/05/07]
 \if@zf@euenc
   \def\zf@enc{EU1}
-  \RequirePackage{lmodern}
+  \renewcommand{\rmdefault}{lmr}
+  \renewcommand{\sfdefault}{lmss}
+  \renewcommand{\ttdefault}{lmtt}
   \RequirePackage[\zf@enc]{fontenc}
 \else
   \def\zf@enc{U}
@@ -396,14 +397,14 @@
     \def\@tempa{#1}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        ‘\XKV@tfam=\XKV@tkey’ feature not supported
-         for AAT font ‘\fontname\zf@basefont’}%
+        '\XKV@tfam=\XKV@tkey' feature not supported
+         for AAT font '\fontname\zf@basefont'}%
     \else
       \zf@make@aat@feature@string{#1}{#2}%
       \ifx\@tempa\@empty
         \zf@PackageWarning{%
           AAT feature '\XKV@tfam=\XKV@tkey'
-          (#1,#2) not available in font \fontname\zf@basefont}%
+          (#1,#2) not available in font '\fontname\zf@basefont'}%
       \else
         \zf@update@family{+#1,#2}%
         \zf@update@ff\@tempa
@@ -414,8 +415,8 @@
     \edef\@tempa{#3}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        ‘\XKV@tfam=\XKV@tkey’ feature not supported
-        for ICU font ‘ \fontname\zf@basefont’}%
+        '\XKV@tfam=\XKV@tkey' feature not supported
+        for ICU font '\fontname\zf@basefont'}%
     \else
       \expandafter\zf@check@ot@feat\expandafter{\@tempa}%
       \if@tempswa

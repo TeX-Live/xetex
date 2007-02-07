@@ -77,7 +77,7 @@ This work consists of the file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2006/12/24 v1.13 Advanced font selection for XeLaTeX]
+  [2006/12/24 v1.13a Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -203,7 +203,7 @@ This work consists of the file  fontspec.dtx
 % \begin{Verbatim}[gobble=4]
 %   \usepackage{fontspec}
 %   \defaultfontfeatures{Scale=MatchLowercase}
-%   \setromanfont[Mapping=tex-text]{Baskerville}
+%   \setmainfont[Mapping=tex-text]{Baskerville}
 %   \setsansfont[Mapping=tex-text]{Skia}
 %   \setmonofont{Courier}
 % \end{Verbatim}
@@ -1747,7 +1747,9 @@ This work consists of the file  fontspec.dtx
 %    \begin{macrocode}
 \if@zf@euenc
   \def\zf@enc{EU1}
-  \RequirePackage{lmodern}
+  \renewcommand{\rmdefault}{lmr}
+  \renewcommand{\sfdefault}{lmss}
+  \renewcommand{\ttdefault}{lmtt}
   \RequirePackage[\zf@enc]{fontenc}
 \else
   \def\zf@enc{U}
@@ -2579,14 +2581,14 @@ This work consists of the file  fontspec.dtx
     \def\@tempa{#1}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        ‘\XKV@tfam=\XKV@tkey’ feature not supported
-         for AAT font ‘\fontname\zf@basefont’}%
+        '\XKV@tfam=\XKV@tkey' feature not supported
+         for AAT font '\fontname\zf@basefont'}%
     \else
       \zf@make@aat@feature@string{#1}{#2}%
       \ifx\@tempa\@empty
         \zf@PackageWarning{%
           AAT feature '\XKV@tfam=\XKV@tkey'
-          (#1,#2) not available in font \fontname\zf@basefont}%
+          (#1,#2) not available in font '\fontname\zf@basefont'}%
       \else
         \zf@update@family{+#1,#2}%
         \zf@update@ff\@tempa
@@ -2600,8 +2602,8 @@ This work consists of the file  fontspec.dtx
     \edef\@tempa{#3}%
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
-        ‘\XKV@tfam=\XKV@tkey’ feature not supported 
-        for ICU font ‘ \fontname\zf@basefont’}%
+        '\XKV@tfam=\XKV@tkey' feature not supported 
+        for ICU font '\fontname\zf@basefont'}%
     \else
       \expandafter\zf@check@ot@feat\expandafter{\@tempa}%
       \if@tempswa
@@ -3716,7 +3718,7 @@ This work consists of the file  fontspec.dtx
 % Here, the fonts used in math mode are redefined to correspond to the
 % default roman, sans serif and typewriter fonts. Unfortunately, you
 % can only define maths fonts in the preamble, otherwise I'd run this
-% code whenever \cs{setromanfont} and friends was run.
+% code whenever \cs{setmainfont} and friends was run.
 %
 % \begin{macro}{\AtBeginDocument}
 % \changes{v1.4}{2004/11/25}{Selects the default \cs{mathXX} fonts.}
@@ -3911,6 +3913,7 @@ This work consists of the file  fontspec.dtx
 \fi    
 %    \end{macrocode}
 % \changes{v1.9}{2006/01/31}{Package options \opt{(no)config}, \opt{quiet} implemented.}
+%
 % The end! Thanks for coming.
 %
 % \iffalse
@@ -3967,7 +3970,7 @@ This work consists of the file  fontspec.dtx
 \usepackage{xltxtra}
 
 \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
-\setromanfont[Numbers=Lowercase]{FPL Neu}
+\setmainfont[Numbers=Lowercase]{FPL Neu}
 \setsansfont{Lucida Sans}
 \setmonofont{Lucida Sans Typewriter}
 
@@ -3993,7 +3996,7 @@ As an example:
   My 1st example of Apple Chancery
 \end{center}
 
-The default roman, sans serif, and typewriter fonts may be set with the \verb|\setromanfont|, \verb|\setsansfont| and \verb|\setmonofont| commands, respectively, as shown in the preamble. They take the same syntax as the \verb|\fontspec| package. All expected font shapes are available:
+The default, sans serif, and typewriter fonts may be set with the \verb|\setmainfont|, \verb|\setsansfont| and \verb|\setmonofont| commands, respectively, as shown in the preamble. They take the same syntax as the \verb|\fontspec| package. All expected font shapes are available:
 
 \begin{center}
   {\itshape Italics and \scshape small caps\dots}\\
@@ -4194,7 +4197,7 @@ Please see the documentation for font feature explanation and further package ni
 \def\MacOSX{Mac~OS~X}
 
 %% fontspec declarations:
-\setromanfont[Mapping=tex-text,Numbers=OldStyle]{FPL Neu}
+\setmainfont[Mapping=tex-text,Numbers=OldStyle]{FPL Neu}
 \defaultfontfeatures{Scale=MatchLowercase}
 \setsansfont[Weight=1.2, Width=1.1,
              Mapping=tex-text,
