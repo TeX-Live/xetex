@@ -569,11 +569,22 @@ end else begin
 end;
 exit:end;
 
+@ @d native_room(#)==while native_text_size <= native_len+# do begin
+    native_text_size:=native_text_size+128;
+    native_text:=xrealloc(native_text, native_text_size * sizeof(UTF16_code));
+  end
+@d append_native(#)==begin native_text[native_len]:=#; incr(native_len); end
+
 @ @<Glob...@>=
-doing_special: boolean;
+@!doing_special: boolean;
+@!native_text: ^UTF16_code; { buffer for collecting native-font strings }
+@!native_text_size: integer; { size of buffer }
+@!native_len: integer;
 
 @ @<Set init...@>=
 doing_special:=false;
+native_text_size:=128;
+native_text:=xmalloc(native_text_size * sizeof(UTF16_code));
 @z
 
 @x
@@ -789,8 +800,7 @@ These have the same |width|, |depth|, and |height| fields as a |box_node|, at of
 and then a word containing a size field for the node, a font number, and a length.
 Then there is a field containing two halfwords, a glyph count and a C pointer to a glyph info array;
 these are set by |set_native_metrics|. Copying and freeing of these nodes needs to take account of this!
-This is followed by |length| bytes, for the actual characters of the string.
-(Yes, we count in bytes, even though what we store there is UTF-16.)
+This is followed by |2*length| bytes, for the actual characters of the string (in UTF-16).
 
 So |native_node_size|, which does not include any space for the actual text, is 6.}
 
@@ -3967,20 +3977,21 @@ if is_native_font(cur_font) then begin
 
 	main_h := 0;
 	main_f := cur_font;
-
+	native_len := 0;
+	
 collect_native:
 	adjust_space_factor;
 	if (cur_chr > @"FFFF) then begin
-		str_room(2);
-		append_char((cur_chr - @"10000) div 1024 + @"D800);
-		append_char((cur_chr - @"10000) mod 1024 + @"DC00);
+		native_room(2);
+		append_native((cur_chr - @"10000) div 1024 + @"D800);
+		append_native((cur_chr - @"10000) mod 1024 + @"DC00);
 	end else begin
-		str_room(1);
-		append_char(cur_chr);
+		native_room(1);
+		append_native(cur_chr);
 	end;
 	is_hyph := (cur_chr = hyphen_char[main_f])
 		or (XeTeX_dash_break_en and (cur_chr = @"2014) or (cur_chr = @"2013));
-	if (main_h = 0) and is_hyph then main_h := cur_length;
+	if (main_h = 0) and is_hyph then main_h := native_len;
 
 	{try to collect as many chars as possible in the same font}
 	get_next;
@@ -3994,27 +4005,26 @@ collect_native:
 	end;
 
 	if (font_mapping[main_f] <> 0) then begin
-		main_k := apply_mapping(font_mapping[main_f], address_of(str_pool[str_start_macro(str_ptr)]), cur_length);
-		pool_ptr := str_start_macro(str_ptr); { flush the string, as we'll be using the mapped text instead }
-		str_room(main_k);
+		main_k := apply_mapping(font_mapping[main_f], native_text, native_len);
+		native_len := 0;
+		native_room(main_k);
 		main_h := 0;
 		for main_p := 0 to main_k - 1 do begin
-			append_char(mapped_text[main_p]);
+			append_native(mapped_text[main_p]);
 			if (main_h = 0) and ((mapped_text[main_p] = hyphen_char[main_f])
 				or (XeTeX_dash_break_en and ((mapped_text[main_p] = @"2014) or (mapped_text[main_p] = @"2013)) ) )
-			then main_h := cur_length;
+			then main_h := native_len;
 		end
 	end;
 
 	if tracing_lost_chars > 0 then begin
-		temp_ptr := str_start_macro(str_ptr);
-		main_p := temp_ptr + cur_length;
-		while (temp_ptr < main_p) do begin
-			main_k := str_pool[temp_ptr];
+		temp_ptr := 0;
+		while (temp_ptr < native_len) do begin
+			main_k := native_text[temp_ptr];
 			incr(temp_ptr);
 			if (main_k >= @"D800) and (main_k < @"DC00) then begin
 				main_k := @"10000 + (main_k - @"D800) * 1024;
-				main_k := main_k + str_pool[temp_ptr] - @"DC00;
+				main_k := main_k + native_text[temp_ptr] - @"DC00;
 				incr(temp_ptr);
 			end;
 			if map_char_to_glyph(main_f, main_k) = 0 then
@@ -4022,12 +4032,12 @@ collect_native:
 		end
 	end;
 
-	main_k := cur_length;
+	main_k := native_len;
 	main_pp := tail;
 
 	if mode=hmode then begin
 
-		temp_ptr := str_start_macro(str_ptr);
+		temp_ptr := 0;
 		repeat
 			if main_h = 0 then main_h := main_k;
 
@@ -4035,24 +4045,24 @@ collect_native:
 
 				{ make a new temp string that contains the concatenated text of |tail| + the current word/fragment }
 				main_k := main_h + native_length(main_pp);
-				str_room(main_k);
+				native_room(main_k);
 				
-				temp_ptr := pool_ptr;
+				temp_ptr := native_len;
 				for main_p := 0 to native_length(main_pp) - 1 do
-					append_char(get_native_char(main_pp, main_p));
-				for main_p := str_start_macro(str_ptr) to temp_ptr - 1 do
-					append_char(str_pool[main_p]);
+					append_native(get_native_char(main_pp, main_p));
+				for main_p := 0 to temp_ptr - 1 do
+					append_native(native_text[main_p]);
 
 				do_locale_linebreaks(temp_ptr, main_k);
 
-				pool_ptr := temp_ptr;	{ discard the temp string }
-				main_k := cur_length - main_h;	{ and set main_k to remaining length of new word }
-				temp_ptr := str_start_macro(str_ptr) + main_h;	{ pointer to remaining fragment }
+				native_len := temp_ptr;	{ discard the temp string }
+				main_k := native_len - main_h;	{ and set main_k to remaining length of new word }
+				temp_ptr := main_h;	{ pointer to remaining fragment }
 
 				main_h := 0;
-				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f])
+				while (main_h < main_k) and (native_text[temp_ptr + main_h] <> hyphen_char[main_f])
 					and ( (not XeTeX_dash_break_en)
-						or ((str_pool[temp_ptr + main_h] <> @"2014) and (str_pool[temp_ptr + main_h] <> @"2013)) )
+						or ((native_text[temp_ptr + main_h] <> @"2014) and (native_text[temp_ptr + main_h] <> @"2013)) )
 				do incr(main_h);	{ look for next hyphen or end of text }
 				if (main_h < main_k) then incr(main_h);
 
@@ -4068,9 +4078,9 @@ collect_native:
 				main_k := main_k - main_h;	{ decrement remaining length }
 
 				main_h := 0;
-				while (main_h < main_k) and (str_pool[temp_ptr + main_h] <> hyphen_char[main_f])
+				while (main_h < main_k) and (native_text[temp_ptr + main_h] <> hyphen_char[main_f])
 					and ( (not XeTeX_dash_break_en)
-						or ((str_pool[temp_ptr + main_h] <> @"2014) and (str_pool[temp_ptr + main_h] <> @"2013)) )
+						or ((native_text[temp_ptr + main_h] <> @"2014) and (native_text[temp_ptr + main_h] <> @"2013)) )
 				do incr(main_h);	{ look for next hyphen or end of text }
 				if (main_h < main_k) then incr(main_h);
 
@@ -4094,7 +4104,7 @@ collect_native:
 				set_native_char(tail, main_p, get_native_char(main_pp, main_p));
 			{ append the new text }
 			for main_p := 0 to main_k - 1 do
-				set_native_char(tail, main_p + native_length(main_pp), str_pool[str_start_macro(str_ptr) + main_p]);
+				set_native_char(tail, main_p + native_length(main_pp), native_text[main_p]);
 			set_native_metrics(tail, XeTeX_use_glyph_metrics);
 
 			{ flag the previous node as no longer valid }
@@ -4105,12 +4115,11 @@ collect_native:
 			link(main_pp) := new_native_word_node(main_f, main_k);
 			tail := link(main_pp);
 			for main_p := 0 to main_k - 1 do
-				set_native_char(tail, main_p, str_pool[str_start_macro(str_ptr) + main_p]);
+				set_native_char(tail, main_p, native_text[main_p]);
 			set_native_metrics(tail, XeTeX_use_glyph_metrics);
 		end
 	end;
 	
-	pool_ptr := str_start_macro(str_ptr);
 	goto reswitch;
 end;
 { End of added code for native fonts }
@@ -6539,7 +6548,7 @@ begin
 done:
 end;
 
-procedure do_locale_linebreaks(s: pointer; len: integer);
+procedure do_locale_linebreaks(s: integer; len: integer);
 var
 	offs, prevOffs, i: integer;
 	use_penalty, use_skip: boolean;
@@ -6548,12 +6557,12 @@ begin
 		link(tail) := new_native_word_node(main_f, len);
 		tail := link(tail);
 		for i := 0 to len - 1 do
-			set_native_char(tail, i, str_pool[s + i]);
+			set_native_char(tail, i, native_text[s + i]);
 		set_native_metrics(tail, XeTeX_use_glyph_metrics);
 	end else begin
 		use_skip := XeTeX_linebreak_skip <> zero_glue;
 		use_penalty := XeTeX_linebreak_penalty <> 0 or not use_skip;
-		linebreak_start(XeTeX_linebreak_locale, address_of(str_pool[s]), len);
+		linebreak_start(XeTeX_linebreak_locale, native_text + s, len);
 		offs := 0;
 		repeat
 			prevOffs := offs;
@@ -6568,7 +6577,7 @@ begin
 				link(tail) := new_native_word_node(main_f, offs - prevOffs);
 				tail := link(tail);
 				for i := prevOffs to offs - 1 do
-					set_native_char(tail, i - prevOffs, str_pool[s + i]);
+					set_native_char(tail, i - prevOffs, native_text[s + i]);
 				set_native_metrics(tail, XeTeX_use_glyph_metrics);
 			end;
 		until offs < 0;
