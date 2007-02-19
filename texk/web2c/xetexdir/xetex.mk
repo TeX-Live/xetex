@@ -107,9 +107,9 @@ XeTeXImageHdrs = \
 	$(srcdir)/xetexdir/pngimage.h
 
 # Extract xetex version
-xetexdir/xetex.version: $(srcdir)/xetexdir/xetex-new.ch
+xetexdir/xetex.version: $(srcdir)/xetexdir/xetex.ch
 	test -d xetexdir || mkdir xetexdir
-	grep '^@d XeTeX_version_string==' $(srcdir)/xetexdir/xetex-new.ch \
+	grep '^@d XeTeX_version_string==' $(srcdir)/xetexdir/xetex.ch \
 	  | sed "s/^.*'-//;s/'.*$$//" >xetexdir/xetex.version
 
 # Extract etex version
@@ -227,10 +227,10 @@ xetex_pool.c: xetex.pool
 	perl $(srcdir)/xetexdir/pool2c.pl $< $@
 
 # Tangling
-xetex.p xetex.pool: ./otangle xetex.web # xetex.ch
-	./otangle xetex.web # xetex.ch
+xetex.p xetex.pool: ./otangle xetex.web
+	./otangle xetex.web
 
-# Generation of the web [and ch] file.
+# Generation of the web file.
 #   Sources for xetex.web:
 xetex_web_srcs = $(srcdir)/tex.web \
   $(srcdir)/etexdir/etex.ch \
@@ -238,10 +238,7 @@ xetex_web_srcs = $(srcdir)/tex.web \
   $(srcdir)/tex.ch \
   $(srcdir)/etexdir/tex.ch1 \
   $(srcdir)/etexdir/tex.ech \
-  $(srcdir)/xetexdir/xetex-new.ch \
-  $(srcdir)/xetexdir/xetex-noenc.ch \
-  $(srcdir)/xetexdir/xetex-upwards.ch \
-  $(srcdir)/xetexdir/xetex-otmath.ch
+  $(srcdir)/xetexdir/xetex.ch
 xetex.web: tie xetexdir/xetex.mk $(xetex_web_srcs)
 	$(TIE) -m xetex.web $(xetex_web_srcs)
 
