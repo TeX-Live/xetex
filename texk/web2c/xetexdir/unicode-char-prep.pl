@@ -187,16 +187,17 @@ print << '__EOT__';
 \gdef\xtxHanGlue{\hskip0pt plus 0.05em\relax}
 \gdef\xtxHanNegGlue{\kern-0.5em\vadjust{}\hskip0em plus 0.5em\relax}
 \gdef\xtxHanNegNB{\nobreak\hskip-0.5em plus 0.5em\relax}
+\gdef\xtxHanNegGlueBefore{\hskip0em plus 0.5em\vadjust{}\kern-0.5em\relax}
 
 \global\XeTeXcharspacing 0 1 = {\xtxHanGlue} % break before or after ideographs
 \global\XeTeXcharspacing 1 0 = {\xtxHanGlue}
 \global\XeTeXcharspacing 1 1 = {\xtxHanGlue}
 
-\global\XeTeXcharspacing 1 2 = {\xtxHanNegGlue} % break before opening punct
+\global\XeTeXcharspacing 1 2 = {\xtxHanNegGlueBefore} % break before opening punct
 \global\XeTeXcharspacing 2 1 = {\nobreak\xtxHanGlue} % but not after it
 \global\XeTeXcharspacing 2 2 = {\xtxHanNegNB} % and not between pairs
 
-\global\XeTeXcharspacing 3 2 = {\xtxHanNegGlue\xtxHanNegGlue} % break between closing & opening
+\global\XeTeXcharspacing 3 2 = {\xtxHanNegGlue\xtxHanNegGlueBefore} % break between closing & opening
 
 \global\XeTeXcharspacing 3 1 = {\xtxHanNegGlue} % and after closing
 \global\XeTeXcharspacing 1 3 = {\nobreak\xtxHanGlue} % but not before it
