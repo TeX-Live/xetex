@@ -2429,13 +2429,22 @@ if (cur_val<0)or(cur_val>255) then
 @.Bad register code@>
   help2("A register number must be between 0 and 255.")@/
 @y
+procedure scan_spacing_class;
+begin scan_int;
+if (cur_val<0)or(cur_val>256) then
+  begin print_err("Bad spacing class");
+@.Bad character code@>
+  help2("A character spacing class must be between 0 and 256.")@/
+    ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
+  end;
+end;
+
 procedure scan_eight_bit_int;
 begin scan_int;
 if (cur_val<0)or(cur_val>255) then
-  begin print_err("Bad register or spacing class code");
+  begin print_err("Bad register code");
 @.Bad register code@>
-  help3("An insertion number or character spacing class")
-    ("must be between 0 and 255.")@/
+  help2("A register code or spacing class must be between 0 and 255.")@/
 @z
 
 @x
@@ -5138,8 +5147,21 @@ collect_native:
 	cur_ptr:=null;
 	space_class:=sf_code(cur_chr) div @"10000;
 
-	if prev_class = 255 then begin {boundary}
-		if (state<>token_list) or (token_type<>backed_up_native_char) then begin
+	if space_class <> 256 then begin {class 256 = ignored (for combining marks etc)}
+		if prev_class = 255 then begin {boundary}
+			if (state<>token_list) or (token_type<>backed_up_native_char) then begin
+				find_sa_element(class_spacing_val, prev_class*@"100 + space_class, false);
+				if cur_ptr<>null then begin
+					if cur_cs=0 then begin
+						if cur_cmd=char_num then cur_cmd:=char_given;
+						cur_tok:=(cur_cmd*max_char_val)+cur_chr;
+					end else cur_tok:=cs_token_flag+cur_cs;
+					back_input; token_type:=backed_up_native_char;
+					begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
+					goto big_switch;
+				end
+			end
+		end else begin
 			find_sa_element(class_spacing_val, prev_class*@"100 + space_class, false);
 			if cur_ptr<>null then begin
 				if cur_cs=0 then begin
@@ -5148,22 +5170,11 @@ collect_native:
 				end else cur_tok:=cs_token_flag+cur_cs;
 				back_input; token_type:=backed_up_native_char;
 				begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
-				goto big_switch;
-			end
-		end
-	end else begin
-		find_sa_element(class_spacing_val, prev_class*@"100 + space_class, false);
-		if cur_ptr<>null then begin
-			if cur_cs=0 then begin
-				if cur_cmd=char_num then cur_cmd:=char_given;
-				cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-			end else cur_tok:=cs_token_flag+cur_cs;
-			back_input; token_type:=backed_up_native_char;
-			begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
-			goto collected;
+				goto collected;
+			end;
 		end;
+		prev_class:=space_class;
 	end;
-	prev_class:=space_class;
 
 	if (cur_chr > @"FFFF) then begin
 		native_room(2);
@@ -6032,7 +6043,7 @@ XeTeX_def_code: begin
       p:=p+cur_val;
 	  n:=sf_code(cur_val) mod @"10000;
       scan_optional_equals;
-      scan_eight_bit_int;
+      scan_spacing_class;
       define(p,data,cur_val*@"10000 + n);
     end
     else if cur_chr = math_code_base then begin
@@ -8237,7 +8248,7 @@ var
 	offs, prevOffs, i: integer;
 	use_penalty, use_skip: boolean;
 begin
-	if XeTeX_linebreak_locale = 0 then begin
+	if (XeTeX_linebreak_locale = 0) or (len = 1) then begin
 		link(tail) := new_native_word_node(main_f, len);
 		tail := link(tail);
 		for i := 0 to len - 1 do
