@@ -217,12 +217,12 @@ print << '__EOT__';
 \gdef\xtxHanSpace{\hskip0.2em plus 0.2em minus 0.1em\relax} % before/after runs of CJK
 
 \global\XeTeXcharspacing 0 1 = {\xtxHanSpace}
-\global\XeTeXcharspacing 0 2 = {\xtxHanGlue}
-\global\XeTeXcharspacing 0 3 = {\nobreak\xtxHanGlue}
+\global\XeTeXcharspacing 0 2 = {\xtxHanSpace}
+\global\XeTeXcharspacing 0 3 = {\nobreak\xtxHanSpace}
 
-\global\XeTeXcharspacing 1 0 = {\xtxHanGlue}
-\global\XeTeXcharspacing 2 0 = {\nobreak\xtxHanGlue}
-\global\XeTeXcharspacing 3 0 = {\xtxHanGlue}
+\global\XeTeXcharspacing 1 0 = {\xtxHanSpace}
+\global\XeTeXcharspacing 2 0 = {\nobreak\xtxHanSpace}
+\global\XeTeXcharspacing 3 0 = {\xtxHanSpace}
 
 \global\XeTeXcharspacing 1 1 = {\xtxHanGlue}
 \global\XeTeXcharspacing 1 2 = {\xtxHanGlue}
