@@ -5199,14 +5199,16 @@ collect_native:
 		goto collect_native;
 	end;
 
-	find_sa_element(class_spacing_val, space_class*@"100 + 255, false); {boundary}
-	if cur_ptr<>null then begin
-		if cur_cs=0 then begin
-			if cur_cmd=char_num then cur_cmd:=char_given;
-			cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-		end else cur_tok:=cs_token_flag+cur_cs;
-		back_input;
-		begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
+	if space_class <> 256 then begin
+		find_sa_element(class_spacing_val, space_class*@"100 + 255, false); {boundary}
+		if cur_ptr<>null then begin
+			if cur_cs=0 then begin
+				if cur_cmd=char_num then cur_cmd:=char_given;
+				cur_tok:=(cur_cmd*max_char_val)+cur_chr;
+			end else cur_tok:=cs_token_flag+cur_cs;
+			back_input;
+			begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
+		end;
 	end;
 
 collected:
