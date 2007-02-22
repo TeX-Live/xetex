@@ -1938,7 +1938,7 @@ mubyte_keep := mubyte_skeep; mubyte_start := mubyte_sstart
 @y
 if j>0 then for i:=start to j-1 do
   begin if i=loc then set_trick_count;
-  print(buffer[i]);
+  print_char(buffer[i]);
   end
 @z
 
@@ -1982,6 +1982,20 @@ primitive("par",par_end,too_big_char); {cf. |scan_file_name|}
 @z
 
 @x
+@d start_cs=26 {another}
+@y
+@d start_cs=26 {another}
+@d not_exp=27
+@z
+
+@x
+  exit; {go here when the next input token has been got}
+@y
+  not_exp, {go here when ^^ turned out not to start an expanded code}
+  exit; {go here when the next input token has been got}
+@z
+
+@x
 @!i,@!j: 0..buf_size; {more indexes for encTeX}
 @!mubyte_incs: boolean; {control sequence is converted by mubyte}
 @!p:pointer;  {for encTeX test if noexpanding}
@@ -1992,8 +2006,9 @@ primitive("par",par_end,too_big_char); {cf. |scan_file_name|}
 @!c,@!cc:ASCII_code; {constituents of a possible expanded code}
 @!d:2..3; {number of excess characters in an expanded code}
 @y
-@!c,@!cc,@!ccc,@!cccc:ASCII_code; {constituents of a possible expanded code}
-@!d:2..7; {number of excess characters in an expanded code}
+@!c:UnicodeScalar; {constituent of a possible expanded code}
+@!d:small_number; {number of excess characters in an expanded code}
+@!sup_count:small_number; {number of identical sup_mark characters}
 @z
 
 @x
@@ -2033,17 +2048,57 @@ primitive("par",par_end,too_big_char); {cf. |scan_file_name|}
 @z
 
 @x
+@<If this |sup_mark| starts an expanded character...@>=
+begin if cur_chr=buffer[loc] then if loc<limit then
   begin c:=buffer[loc+1]; @+if c<@'200 then {yes we have an expanded char}
+    begin loc:=loc+2;
+    if is_hex(c) then if loc<=limit then
+      begin cc:=buffer[loc]; @+if is_hex(cc) then
+        begin incr(loc); hex_to_cur_chr; goto reswitch;
+        end;
+      end;
+    if c<@'100 then cur_chr:=c+@'100 @+else cur_chr:=c-@'100;
+    goto reswitch;
+    end;
+  end;
+state:=mid_line;
+end
 @y
-  begin if (cur_chr=buffer[loc+1]) and (cur_chr=buffer[loc+2]) and
-           ((loc+6)<=limit) then
-     begin c:=buffer[loc+3]; cc:=buffer[loc+4];
-       ccc:=buffer[loc+5]; cccc:=buffer[loc+6];
-       if is_hex(c) and is_hex(cc) and is_hex(ccc) and is_hex(cccc) then
-       begin loc:=loc+7; long_hex_to_cur_chr; goto reswitch;
-       end;
-     end;
-  c:=buffer[loc+1]; @+if c<@'200 then {yes we have an expanded char}
+@<If this |sup_mark| starts an expanded character...@>=
+begin if cur_chr=buffer[loc] then if loc<limit then
+  begin sup_count:=2;
+  {we have ^^ and another char; check how many ^s we have altogether, up to a max of 6}
+  while (sup_count<6) and (loc+2*sup_count-2<=limit) and (cur_chr=buffer[loc+sup_count-1]) do
+    incr(sup_count);
+  {check whether we have enough hex chars for the number of ^s}
+  for d:=1 to sup_count do
+    if not is_hex(buffer[loc+sup_count-2+d]) then {found a non-hex char, so do single ^^X style}
+      begin c:=buffer[loc+1];
+      if c<@'200 then
+        begin loc:=loc+2;
+        if c<@'100 then cur_chr:=c+@'100 @+else cur_chr:=c-@'100;
+        goto reswitch;
+        end;
+      goto not_exp;
+      end;
+  {there were the right number of hex chars, so convert them}
+  cur_chr:=0;
+  for d:=1 to sup_count do
+    begin c:=buffer[loc+sup_count-2+d];
+    if c<="9" then cur_chr:=16*cur_chr+c-"0"
+    else cur_chr:=16*cur_chr+c-"a"+10;
+    end;
+  {check the resulting value is within the valid range}
+  if cur_chr>biggest_usv then
+    begin cur_chr:=buffer[loc];
+    goto not_exp;
+    end;
+  loc:=loc+2*sup_count-1;
+  goto reswitch;
+  end;
+not_exp:
+state:=mid_line;
+end
 @z
 
 @x
@@ -2085,6 +2140,7 @@ end;
 @z
 
 @x
+@<If an expanded...@>=
 begin if buffer[k]=cur_chr then @+if cat=sup_mark then @+if k<limit then
   begin c:=buffer[k+1]; @+if c<@'200 then {yes, one is indeed present}
     begin d:=2;
@@ -2105,38 +2161,45 @@ begin if buffer[k]=cur_chr then @+if cat=sup_mark then @+if k<limit then
   end;
 end
 @y
-begin if buffer[k]=cur_chr then @+if cat=sup_mark then @+if k<limit then
-  begin if (cur_chr=buffer[k+1]) and (cur_chr=buffer[k+2]) and
-           ((k+6)<=limit) then
-     begin c:=buffer[k+3]; cc:=buffer[k+4];
-       ccc:=buffer[k+5]; cccc:=buffer[k+6];
-       if is_hex(c) and is_hex(cc) and is_hex(ccc) and is_hex(cccc) then
-       begin d:=7; long_hex_to_cur_chr; buffer[k-1]:=cur_chr;
-             while k<=limit do
-                begin buffer[k]:=buffer[k+d]; incr(k);
-                end;
-             goto start_cs;
-       end
-     end
-     else begin
-       c:=buffer[k+1]; @+if c<@'200 then {yes, one is indeed present}
-       begin
-          d:=2;
-          if is_hex(c) then @+if k+2<=limit then
-            begin cc:=buffer[k+2]; @+if is_hex(cc) then incr(d);
-            end;
-          if d>2 then
-            begin hex_to_cur_chr; buffer[k-1]:=cur_chr;
-            end
-          else if c<@'100 then buffer[k-1]:=c+@'100
-          else buffer[k-1]:=c-@'100;
-          limit:=limit-d; first:=first-d;
-          while k<=limit do
-            begin buffer[k]:=buffer[k+d]; incr(k);
-            end;
-          goto start_cs;
-       end
-     end
+@<If an expanded...@>=
+begin if (cat=sup_mark) and (buffer[k]=cur_chr) and (k<limit) then
+  begin sup_count:=2;
+  {we have ^^ and another char; check how many ^s we have altogether, up to a max of 6}
+  while (sup_count<6) and (k+2*sup_count-2<=limit) and (buffer[k+sup_count-1]=cur_chr) do
+    incr(sup_count);
+  {check whether we have enough hex chars for the number of ^s}
+  for d:=1 to sup_count do
+    if not is_hex(buffer[k+sup_count-2+d]) then {found a non-hex char, so do single ^^X style}
+      begin c:=buffer[k+1];
+      if c<@'200 then
+        begin if c<@'100 then buffer[k-1]:=c+@'100 @+else buffer[k-1]:=c-@'100;
+        d:=2; limit:=limit-d;
+        while k<=limit do
+          begin buffer[k]:=buffer[k+d]; incr(k);
+          end;
+        goto start_cs;
+        end
+      else sup_count:=0;
+      end;
+  if sup_count>0 then {there were the right number of hex chars, so convert them}
+    begin cur_chr:=0;
+    for d:=1 to sup_count do
+      begin c:=buffer[k+sup_count-2+d];
+      if c<="9" then cur_chr:=16*cur_chr+c-"0"
+      else cur_chr:=16*cur_chr+c-"a"+10;
+      end;
+    {check the resulting value is within the valid range}
+    if cur_chr>biggest_usv then cur_chr:=buffer[k]
+    else  begin buffer[k-1]:=cur_chr;
+      d:=2*sup_count-1;
+      {shift the rest of the buffer left by |d| chars}
+      limit:=limit-d;
+      while k<=limit do
+        begin buffer[k]:=buffer[k+d]; incr(k);
+        end;
+      goto start_cs;
+      end
+    end
   end
 end
 @z
