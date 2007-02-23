@@ -50,8 +50,9 @@
 @#
 @d XeTeX_upwards_code = 2 {non-zero if the main vertical list is being built upwards}
 @d XeTeX_use_glyph_metrics_code = 3 {non-zero to use exact glyph height/depth}
+@d XeTeX_inter_char_tokens_code = 4 {non-zero to enable \\XeTeXinterchartokens insertion}
 @#
-@d XeTeX_default_input_mode_code    = 4 {input mode for newly opened files}
+@d XeTeX_default_input_mode_code    = 5 {input mode for newly opened files}
 @d XeTeX_input_mode_auto    = 0
 @d XeTeX_input_mode_utf8    = 1
 @d XeTeX_input_mode_utf16be = 2
@@ -59,9 +60,9 @@
 @d XeTeX_input_mode_raw     = 4
 @d XeTeX_input_mode_icu_mapping = 5
 @#
-@d XeTeX_default_input_encoding_code = 5 {str_number of encoding name if mode = ICU}
+@d XeTeX_default_input_encoding_code = 6 {str_number of encoding name if mode = ICU}
 @#
-@d eTeX_states=6 {number of \eTeX\ state variables in |eqtb|}
+@d eTeX_states=7 {number of \eTeX\ state variables in |eqtb|}
 @z
 
 @x
@@ -5229,7 +5230,7 @@ adjust_space_factor;@/
 	cur_ptr:=null;
 	space_class:=sf_code(cur_chr) div @"10000;
 
-	if space_class <> 256 then begin {class 256 = ignored (for combining marks etc)}
+	if XeTeX_inter_char_tokens_en and space_class <> 256 then begin {class 256 = ignored (for combining marks etc)}
 		if prev_class = 255 then begin {boundary}
 			if (state<>token_list) or (token_type<>backed_up_char) then begin
 				find_sa_element(inter_char_val, 255*@"100 + space_class, false);
@@ -5260,7 +5261,7 @@ adjust_space_factor;@/
 	end
 
 @d check_for_post_char_toks(#)==
-	if (space_class<>256) and (prev_class<>255) then begin
+	if XeTeX_inter_char_tokens_en and (space_class<>256) and (prev_class<>255) then begin
 		prev_class:=255;
 		find_sa_element(inter_char_val, space_class*@"100 + 255, false); {boundary}
 		if cur_ptr<>null then begin
@@ -7936,6 +7937,9 @@ font_char_ic_code: begin scan_font_ident; q:=cur_val; scan_usv_num;
 @d XeTeX_use_glyph_metrics_state==eTeX_state(XeTeX_use_glyph_metrics_code)
 @d XeTeX_use_glyph_metrics==(XeTeX_use_glyph_metrics_state>0)
 
+@d XeTeX_inter_char_tokens_state==eTeX_state(XeTeX_inter_char_tokens_code)
+@d XeTeX_inter_char_tokens_en==(XeTeX_inter_char_tokens_state>0)
+
 @d XeTeX_dash_break_state == eTeX_state(XeTeX_dash_break_code)
 @d XeTeX_dash_break_en == (XeTeX_dash_break_state>0)
 
@@ -7949,6 +7953,7 @@ eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 eTeX_state_code+XeTeX_upwards_code:print_esc("XeTeXupwardsmode");
 eTeX_state_code+XeTeX_use_glyph_metrics_code:print_esc("XeTeXuseglyphmetrics");
+eTeX_state_code+XeTeX_inter_char_tokens_code:print_esc("XeTeXinterchartokenstate");
 eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 @z
 
@@ -7962,6 +7967,8 @@ primitive("XeTeXupwardsmode",assign_int,eTeX_state_base+XeTeX_upwards_code);
 @!@:XeTeX_upwards_mode_}{\.{\\XeTeX_upwards_mode} primitive@>
 primitive("XeTeXuseglyphmetrics",assign_int,eTeX_state_base+XeTeX_use_glyph_metrics_code);
 @!@:XeTeX_use_glyph_metrics_}{\.{\\XeTeX_use_glyph_metrics} primitive@>
+primitive("XeTeXinterchartokenstate",assign_int,eTeX_state_base+XeTeX_inter_char_tokens_code);
+@!@:XeTeX_use_inter_char_tokens_}{\.{\\XeTeX_use_inter_char_tokens} primitive@>
 
 primitive("XeTeXdashbreakstate",assign_int,eTeX_state_base+XeTeX_dash_break_code);
 @!@:XeTeX_dash_break_state_}{\.{\\XeTeX_dash_break_state} primitive@>
