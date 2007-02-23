@@ -1262,8 +1262,8 @@ primitive("XeTeXlinebreakskip",assign_glue,glue_base+XeTeX_linebreak_skip_code);
 @x
 @d etex_toks=etex_toks_base+1 {end of \eTeX's token list parameters}
 @y
-@d XeTeX_char_spacing_loc=every_eof_loc+1 {not really used, but serves as a flag}
-@d etex_toks=XeTeX_char_spacing_loc+1 {end of \eTeX's token list parameters}
+@d XeTeX_inter_char_loc=every_eof_loc+1 {not really used, but serves as a flag}
+@d etex_toks=XeTeX_inter_char_loc+1 {end of \eTeX's token list parameters}
 @z
 
 @x
@@ -1882,7 +1882,7 @@ var n:integer; {temp variable}
 @#
 @d eTeX_text_offset=output_routine_loc-output_text
 @y
-@d backed_up_native_char=4 {special type of backed-up char}
+@d backed_up_char=4 {special code for backed-up char from \\XeTeXinterchartoks hook}
 @d inserted=5 {|token_type| code for inserted texts}
 @d macro=6 {|token_type| code for defined control sequences}
 @d output_text=7 {|token_type| code for output routines}
@@ -1894,21 +1894,21 @@ var n:integer; {temp variable}
 @d every_job_text=13 {|token_type| code for \.{\\everyjob}}
 @d every_cr_text=14 {|token_type| code for \.{\\everycr}}
 @d mark_text=15 {|token_type| code for \.{\\topmark}, etc.}
-@d char_spacing_text=16 {text from \XeTeXcharspacing}
+@d inter_char_text=16 {text from \\XeTeXinterchartoks}
 @#
-@d eTeX_text_offset=output_routine_loc-output_text-1 {1 more to make space for the char_spacing_text}
+@d eTeX_text_offset=output_routine_loc-output_text-1 {1 more to make space for the inter_char_text}
 @z
 
 @x
 backed_up: if loc=null then print_nl("<recently read> ")
 @y
-backed_up_native_char,backed_up: if loc=null then print_nl("<recently read> ")
+backed_up_char,backed_up: if loc=null then print_nl("<recently read> ")
 @z
 
 @x
 every_eof_text: print_nl("<everyeof> ");
 @y
-char_spacing_text: print_nl("<XeTeXcharspacing> ");
+inter_char_text: print_nl("<XeTeXinterchartoks> ");
 every_eof_text: print_nl("<everyeof> ");
 @z
 
@@ -2363,7 +2363,7 @@ while k<str_start_macro(s+1) do
 @d tok_val=5 {token lists}
 @y
 @d tok_val=5 {token lists}
-@d class_spacing_val=6 {character class spacing token lists}
+@d inter_char_val=6 {inter-character (class) token lists}
 @z
 
 @x
@@ -2465,10 +2465,10 @@ else if m<math_code_base then scanned_result(equiv(m+cur_val) mod @"10000)(int_v
 @x
   else cur_val:=equiv(m);
 @y
-  else if cur_chr=XeTeX_char_spacing_loc then begin
+  else if cur_chr=XeTeX_inter_char_loc then begin
     scan_eight_bit_int; cur_ptr:=cur_val;
     scan_eight_bit_int;
-    find_sa_element(class_spacing_val, cur_ptr * @"100 + cur_val, false);
+    find_sa_element(inter_char_val, cur_ptr * @"100 + cur_val, false);
     if cur_ptr=null then cur_val:=null
     else cur_val:=sa_ptr(cur_ptr);
   end else cur_val:=equiv(m);
@@ -2492,12 +2492,12 @@ if (cur_val<0)or(cur_val>255) then
 @.Bad register code@>
   help2("A register number must be between 0 and 255.")@/
 @y
-procedure scan_spacing_class;
+procedure scan_char_class;
 begin scan_int;
 if (cur_val<0)or(cur_val>256) then
-  begin print_err("Bad spacing class");
+  begin print_err("Bad character class");
 @.Bad character code@>
-  help2("A character spacing class must be between 0 and 256.")@/
+  help2("A character class must be between 0 and 256.")@/
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
 end;
@@ -2507,7 +2507,7 @@ begin scan_int;
 if (cur_val<0)or(cur_val>255) then
   begin print_err("Bad register code");
 @.Bad register code@>
-  help2("A register code or spacing class must be between 0 and 255.")@/
+  help2("A register code or char class must be between 0 and 255.")@/
 @z
 
 @x
@@ -5173,6 +5173,32 @@ hmode+char_num: begin scan_usv_num; cur_chr:=cur_val; goto main_loop;@+end;
 @z
 
 @x
+hmode+spacer: if space_factor=1000 then goto append_normal_space
+  else app_space;
+hmode+ex_space,mmode+ex_space: goto append_normal_space;
+@t\4@>@<Cases of |main_control| that are not part of the inner loop@>@;
+end; {of the big |case| statement}
+@y
+othercases begin
+  if abs(mode)=hmode then check_for_post_char_toks(big_switch);
+  case abs(mode)+cur_cmd of
+    hmode+spacer: if space_factor=1000 then goto append_normal_space
+      else app_space;
+    hmode+ex_space,mmode+ex_space: goto append_normal_space;
+    @t\4@>@<Cases of |main_control| that are not part of the inner loop@>
+    end
+  end
+endcases; {of the big |case| statement}
+@z
+
+@x
+append_normal_space:@<Append a normal inter-word space to the current list,
+@y
+append_normal_space:check_for_post_char_toks(big_switch);
+@<Append a normal inter-word space to the current list,
+@z
+
+@x
 @!main_p:pointer; {temporary register for list manipulation}
 @y
 @!main_p:pointer; {temporary register for list manipulation}
@@ -5192,8 +5218,68 @@ hmode+char_num: begin scan_usv_num; cur_chr:=cur_val; goto main_loop;@+end;
 @z
 
 @x
+@<Append character |cur_chr|...@>=
+if ((head=tail) and (mode>0)) then begin
+  if (insert_src_special_auto) then append_src_special;
+end;
 adjust_space_factor;@/
 @y
+@d check_for_inter_char_toks(#)=={check for a spacing token list, goto # if found,
+                               or big_switch in case of the initial letter of a run}
+	cur_ptr:=null;
+	space_class:=sf_code(cur_chr) div @"10000;
+
+	if space_class <> 256 then begin {class 256 = ignored (for combining marks etc)}
+		if prev_class = 255 then begin {boundary}
+			if (state<>token_list) or (token_type<>backed_up_char) then begin
+				find_sa_element(inter_char_val, 255*@"100 + space_class, false);
+				if cur_ptr<>null then begin
+					if cur_cs=0 then begin
+						if cur_cmd=char_num then cur_cmd:=char_given;
+						cur_tok:=(cur_cmd*max_char_val)+cur_chr;
+					end else cur_tok:=cs_token_flag+cur_cs; {can't happen?}
+					back_input; token_type:=backed_up_char;
+					begin_token_list(sa_ptr(cur_ptr), inter_char_text);
+					goto big_switch;
+				end
+			end
+		end else begin
+			find_sa_element(inter_char_val, prev_class*@"100 + space_class, false);
+			if cur_ptr<>null then begin
+				if cur_cs=0 then begin
+					if cur_cmd=char_num then cur_cmd:=char_given;
+					cur_tok:=(cur_cmd*max_char_val)+cur_chr;
+				end else cur_tok:=cs_token_flag+cur_cs; {can't happen?}
+				back_input; token_type:=backed_up_char;
+				begin_token_list(sa_ptr(cur_ptr), inter_char_text);
+				prev_class:=255;
+				goto #;
+			end;
+		end;
+		prev_class:=space_class;
+	end
+
+@d check_for_post_char_toks(#)==
+	if (space_class<>256) and (prev_class<>255) then begin
+		prev_class:=255;
+		find_sa_element(inter_char_val, space_class*@"100 + 255, false); {boundary}
+		if cur_ptr<>null then begin
+			if cur_cs=0 then begin
+				if cur_cmd=char_num then cur_cmd:=char_given;
+				cur_tok:=(cur_cmd*max_char_val)+cur_chr;
+			end else cur_tok:=cs_token_flag+cur_cs;
+			back_input;
+			begin_token_list(sa_ptr(cur_ptr), inter_char_text);
+			goto #;
+		end;
+	end
+
+@<Append character |cur_chr|...@>=
+if ((head=tail) and (mode>0)) then begin
+  if (insert_src_special_auto) then append_src_special;
+end;
+
+prev_class := 255; {boundary}
 
 { added code for native font support }
 if is_native_font(cur_font) then begin
@@ -5202,42 +5288,11 @@ if is_native_font(cur_font) then begin
 	main_h := 0;
 	main_f := cur_font;
 	native_len := 0;
-	prev_class := 255; {boundary}
 
 collect_native:
 	adjust_space_factor;
 
-	cur_ptr:=null;
-	space_class:=sf_code(cur_chr) div @"10000;
-
-	if space_class <> 256 then begin {class 256 = ignored (for combining marks etc)}
-		if prev_class = 255 then begin {boundary}
-			if (state<>token_list) or (token_type<>backed_up_native_char) then begin
-				find_sa_element(class_spacing_val, prev_class*@"100 + space_class, false);
-				if cur_ptr<>null then begin
-					if cur_cs=0 then begin
-						if cur_cmd=char_num then cur_cmd:=char_given;
-						cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-					end else cur_tok:=cs_token_flag+cur_cs;
-					back_input; token_type:=backed_up_native_char;
-					begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
-					goto big_switch;
-				end
-			end
-		end else begin
-			find_sa_element(class_spacing_val, prev_class*@"100 + space_class, false);
-			if cur_ptr<>null then begin
-				if cur_cs=0 then begin
-					if cur_cmd=char_num then cur_cmd:=char_given;
-					cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-				end else cur_tok:=cs_token_flag+cur_cs;
-				back_input; token_type:=backed_up_native_char;
-				begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
-				goto collected;
-			end;
-		end;
-		prev_class:=space_class;
-	end;
+	check_for_inter_char_toks(collected);
 
 	if (cur_chr > @"FFFF) then begin
 		native_room(2);
@@ -5262,17 +5317,7 @@ collect_native:
 		goto collect_native;
 	end;
 
-	if space_class <> 256 then begin
-		find_sa_element(class_spacing_val, space_class*@"100 + 255, false); {boundary}
-		if cur_ptr<>null then begin
-			if cur_cs=0 then begin
-				if cur_cmd=char_num then cur_cmd:=char_given;
-				cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-			end else cur_tok:=cs_token_flag+cur_cs;
-			back_input;
-			begin_token_list(sa_ptr(cur_ptr), char_spacing_text);
-		end;
-	end;
+	check_for_post_char_toks(collected);
 
 collected:
 	if (font_mapping[main_f] <> 0) then begin
@@ -5397,6 +5442,14 @@ end;
 { End of added code for native fonts }
 
 adjust_space_factor;@/
+check_for_inter_char_toks(big_switch);
+@z
+
+@x
+main_loop_lookahead+1: adjust_space_factor;
+@y
+main_loop_lookahead+1: adjust_space_factor;
+check_for_inter_char_toks(big_switch);
 @z
 
 @x
@@ -6027,10 +6080,10 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
     else e:=true;
 @y
     else e:=true
-  else if cur_chr=XeTeX_char_spacing_loc then begin
+  else if cur_chr=XeTeX_inter_char_loc then begin
     scan_eight_bit_int; cur_ptr:=cur_val;
     scan_eight_bit_int;
-    find_sa_element(class_spacing_val, cur_ptr*@"100 + cur_val, true);
+    find_sa_element(inter_char_val, cur_ptr*@"100 + cur_val, true);
     cur_chr:=cur_ptr; e:=true;
   end;
 @z
@@ -6038,10 +6091,10 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
 @x
   else q:=equiv(cur_chr);
 @y
-  else if cur_chr=XeTeX_char_spacing_loc then begin
+  else if cur_chr=XeTeX_inter_char_loc then begin
     scan_eight_bit_int; cur_ptr:=cur_val;
     scan_eight_bit_int;
-    find_sa_element(class_spacing_val, cur_ptr*@"100 + cur_val, false);
+    find_sa_element(inter_char_val, cur_ptr*@"100 + cur_val, false);
     if cur_ptr=null then q:=null
     else q:=sa_ptr(cur_ptr);
   end else q:=equiv(cur_chr);
@@ -6071,7 +6124,7 @@ primitive("delcode",def_code,del_code_base);
 @y
 primitive("sfcode",def_code,sf_code_base);
 @!@:sf_code_}{\.{\\sfcode} primitive@>
-primitive("XeTeXspacingclass",XeTeX_def_code,sf_code_base);
+primitive("XeTeXcharclass",XeTeX_def_code,sf_code_base);
 primitive("delcode",def_code,del_code_base);
 primitive("XeTeXdelcodenum",XeTeX_def_code,del_code_base);
 primitive("XeTeXdelcode",XeTeX_def_code,del_code_base+1);
@@ -6090,7 +6143,7 @@ def_code: if chr_code=cat_code_base then print_esc("catcode")
 def_family: print_size(chr_code-math_font_base);
 @y
 XeTeX_def_code:
-  if chr_code=sf_code_base then print_esc("XeTeXspacingclass")
+  if chr_code=sf_code_base then print_esc("XeTeXcharclass")
   else if chr_code=math_code_base then print_esc("XeTeXmathcodenum")
   else if chr_code=math_code_base+1 then print_esc("XeTeXmathcode")
   else if chr_code=del_code_base then print_esc("XeTeXdelcodenum")
@@ -6108,7 +6161,7 @@ XeTeX_def_code: begin
       p:=p+cur_val;
 	  n:=sf_code(cur_val) mod @"10000;
       scan_optional_equals;
-      scan_spacing_class;
+      scan_char_class;
       define(p,data,cur_val*@"10000 + n);
     end
     else if cur_chr = math_code_base then begin
@@ -6338,13 +6391,13 @@ undump_checked_things(0, pool_ptr, str_start_macro(too_big_char), str_ptr+1-too_
 @x
 if eTeX_ex then for k:=int_val to tok_val do dump_int(sa_root[k]);
 @y
-if eTeX_ex then for k:=int_val to class_spacing_val do dump_int(sa_root[k]);
+if eTeX_ex then for k:=int_val to inter_char_val do dump_int(sa_root[k]);
 @z
 
 @x
 if eTeX_ex then for k:=int_val to tok_val do
 @y
-if eTeX_ex then for k:=int_val to class_spacing_val do
+if eTeX_ex then for k:=int_val to inter_char_val do
 @z
 
 @x
@@ -6517,7 +6570,7 @@ primitive("XeTeXpicfile",extension,pic_file_code);@/
 primitive("XeTeXpdffile",extension,pdf_file_code);@/
 primitive("XeTeXglyph",extension,glyph_code);@/
 primitive("XeTeXlinebreaklocale", extension, XeTeX_linebreak_locale_extension_code);@/
-primitive("XeTeXcharspacing",assign_toks,XeTeX_char_spacing_loc);
+primitive("XeTeXinterchartoks",assign_toks,XeTeX_inter_char_loc);
 
 primitive("pdfsavepos",extension,pdf_save_pos_node);@/
 @z
@@ -7826,7 +7879,7 @@ dump_int(eTeX_mode);
 every_eof_loc: print_esc("everyeof");
 @y
 every_eof_loc: print_esc("everyeof");
-XeTeX_char_spacing_loc: print_esc("XeTeXcharspacing");
+XeTeX_inter_char_loc: print_esc("XeTeXinterchartoks");
 @z
 
 @x
@@ -7979,7 +8032,7 @@ if_font_char_code:begin scan_font_ident; n:=cur_val; scan_usv_num;
 @x
 for i:=int_val to tok_val do sa_root[i]:=null;
 @y
-for i:=int_val to class_spacing_val do sa_root[i]:=null;
+for i:=int_val to inter_char_val do sa_root[i]:=null;
 @z
 
 @x

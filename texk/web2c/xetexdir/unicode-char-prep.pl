@@ -160,11 +160,11 @@ close EAW;
 
 print << '__EOT__';
 
-% definitions for script classes based on LineBreaking.txt
+% definitions for script classes based on LineBreak.txt
 __EOT__
 
 foreach (keys %lineBreakClass) {
-	print "\\def\\$_ #1 #2 {\\set{#1}{#2}{\\global\\XeTeXspacingclass\\n=$lineBreakClass{$_}";
+	print "\\def\\$_ #1 #2 {\\set{#1}{#2}{\\global\\XeTeXcharclass\\n=$lineBreakClass{$_}";
 	print " \\global\\catcode\\n=11" if m/ID/;
 	print " }}\n";
 }
@@ -216,25 +216,25 @@ print << '__EOT__';
 \gdef\xtxHanGlue{\hskip0pt plus 0.1em\relax} % between ideographs
 \gdef\xtxHanSpace{\hskip0.2em plus 0.2em minus 0.1em\relax} % before/after runs of CJK
 
-\global\XeTeXcharspacing 0 1 = {\xtxHanSpace}
-\global\XeTeXcharspacing 0 2 = {\xtxHanSpace}
-\global\XeTeXcharspacing 0 3 = {\nobreak\xtxHanSpace}
+\global\XeTeXinterchartoks 0 1 = {\xtxHanSpace}
+\global\XeTeXinterchartoks 0 2 = {\xtxHanSpace}
+\global\XeTeXinterchartoks 0 3 = {\nobreak\xtxHanSpace}
 
-\global\XeTeXcharspacing 1 0 = {\xtxHanSpace}
-\global\XeTeXcharspacing 2 0 = {\nobreak\xtxHanSpace}
-\global\XeTeXcharspacing 3 0 = {\xtxHanSpace}
+\global\XeTeXinterchartoks 1 0 = {\xtxHanSpace}
+\global\XeTeXinterchartoks 2 0 = {\nobreak\xtxHanSpace}
+\global\XeTeXinterchartoks 3 0 = {\xtxHanSpace}
 
-\global\XeTeXcharspacing 1 1 = {\xtxHanGlue}
-\global\XeTeXcharspacing 1 2 = {\xtxHanGlue}
-\global\XeTeXcharspacing 1 3 = {\nobreak\xtxHanGlue}
+\global\XeTeXinterchartoks 1 1 = {\xtxHanGlue}
+\global\XeTeXinterchartoks 1 2 = {\xtxHanGlue}
+\global\XeTeXinterchartoks 1 3 = {\nobreak\xtxHanGlue}
 
-\global\XeTeXcharspacing 2 1 = {\nobreak\xtxHanGlue}
-\global\XeTeXcharspacing 2 2 = {\nobreak\xtxHanGlue}
-\global\XeTeXcharspacing 2 3 = {\xtxHanGlue}
+\global\XeTeXinterchartoks 2 1 = {\nobreak\xtxHanGlue}
+\global\XeTeXinterchartoks 2 2 = {\nobreak\xtxHanGlue}
+\global\XeTeXinterchartoks 2 3 = {\xtxHanGlue}
 
-\global\XeTeXcharspacing 3 1 = {\xtxHanGlue}
-\global\XeTeXcharspacing 3 2 = {\xtxHanGlue}
-\global\XeTeXcharspacing 3 3 = {\nobreak\xtxHanGlue}
+\global\XeTeXinterchartoks 3 1 = {\xtxHanGlue}
+\global\XeTeXinterchartoks 3 2 = {\xtxHanGlue}
+\global\XeTeXinterchartoks 3 3 = {\nobreak\xtxHanGlue}
 
 \endgroup
 
