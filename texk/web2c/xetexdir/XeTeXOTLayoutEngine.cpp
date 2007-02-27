@@ -198,21 +198,25 @@ void XeTeXOTLayoutEngine::adjustFeatures(const LETag* addTags, const le_int32* a
 	// figure out total tag count: initial set - removed tags + added tags omitting duplicates
 	le_int32	totalCount = 0;
 	for (le_int32 i = 0; i < fFeatureMapCount; ++i) {
-		bool	remove = false;
-		for (const LETag* r = removeTags; r != NULL && *r != emptyTag; ++r)
-			if (*r == fFeatureMap[i].tag) {
-				remove = true;
-				break;
-			}
-		if (!remove)
-			++totalCount;
+		// skip any that are disabled by the mask
+		if ((fFeatureMask & fFeatureMap[i].mask) != 0) {
+			bool	remove = false;
+			for (const LETag* r = removeTags; r != NULL && *r != emptyTag; ++r)
+				if (*r == fFeatureMap[i].tag) {
+					remove = true;
+					break;
+				}
+			if (!remove)
+				++totalCount;
+		}
 	}
 	for (const LETag* a = addTags; a != NULL && *a != emptyTag; ++a) {
-		// before counting an add tag, check original map
+		// before counting an add tag, check original map, and check for duplicates in list
 		bool	add = true;
 		for (le_int32 i = 0; i < fFeatureMapCount; ++i)
 			if (*a == fFeatureMap[i].tag) {
-				add = false;
+				if ((fFeatureMask & fFeatureMap[i].mask) != 0)
+					add = false;
 				break;
 			}
 		if (add) {
@@ -235,22 +239,25 @@ void XeTeXOTLayoutEngine::adjustFeatures(const LETag* addTags, const le_int32* a
 	le_int32*	newParamList = (addParams == NULL) ? NULL : LE_NEW_ARRAY(le_int32, totalCount);
 	
 	// copy the features into the map and assign mask bits
-	fFeatureMask = 0;
+	FeatureMask	newFeatureMask = 0;
 	FeatureMask	maskBit = 0x80000000UL;
 	for (le_int32 i = 0; i < fFeatureMapCount; ++i) {
 		bool	remove = false;
-		for (const LETag* r = removeTags; r != NULL && *r != emptyTag; ++r)
-			if (*r == fDefaultFeatureMap[i].tag) {
-				remove = true;
-				break;
-			}
+		if ((fFeatureMask & fFeatureMap[i].mask) == 0)
+			remove = true;
+		else
+			for (const LETag* r = removeTags; r != NULL && *r != emptyTag; ++r)
+				if (*r == fFeatureMap[i].tag) {
+					remove = true;
+					break;
+				}
 		if (!remove) {
-			newFeatureMap[newFeatureCount].tag = fDefaultFeatureMap[i].tag;
+			newFeatureMap[newFeatureCount].tag = fFeatureMap[i].tag;
 			newFeatureMap[newFeatureCount].mask = maskBit;
 			if (newParamList != NULL)
 				newParamList[newFeatureCount] = 0;
 			++newFeatureCount;
-			fFeatureMask |= maskBit;
+			newFeatureMask |= maskBit;
 			maskBit >>= 1;
 		}
 	}
@@ -258,8 +265,9 @@ void XeTeXOTLayoutEngine::adjustFeatures(const LETag* addTags, const le_int32* a
 	for (const LETag* a = addTags; a != NULL && *a != emptyTag; ++a) {
 		bool	add = true;
 		for (le_int32 i = 0; i < fFeatureMapCount; ++i)
-			if (*a == fDefaultFeatureMap[i].tag) {
-				add = false;
+			if (*a == fFeatureMap[i].tag) {
+				if ((fFeatureMask & fFeatureMap[i].mask) != 0)
+					add = false;
 				break;
 			}
 		if (add) {
@@ -275,11 +283,12 @@ void XeTeXOTLayoutEngine::adjustFeatures(const LETag* addTags, const le_int32* a
 			if (newParamList != NULL)
 				newParamList[newFeatureCount] = *param++;
 			++newFeatureCount;
-			fFeatureMask |= maskBit;
+			newFeatureMask |= maskBit;
 			maskBit >>= 1;
 		}
 	}
 
+	fFeatureMask = newFeatureMask;
 	fFeatureMap = newFeatureMap;
 	fFeatureMapCount = newFeatureCount;
 	fFeatureParamList = newParamList;
