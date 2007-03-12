@@ -49,13 +49,22 @@ This work consists of the file  \jobname.dtx
 \generate{\file{\jobname.sty}{\from{\jobname.dtx}{package}}}
 \generate{\file{\jobname.ins}{\from{\jobname.dtx}{batchfile}}}
 \nopreamble\nopostamble
-\generate{\file{\jobname-alphabets.tex}{\from{\jobname.dtx}{alphabets}}}
+\generate{\file{\jobname-test.ltx}{\from{\jobname.dtx}{test}}}
+\generate{\file{\jobname-test-iso.ltx}{\from{\jobname.dtx}{test-iso}}}
+\generate{\file{\jobname-test-tex.ltx}{\from{\jobname.dtx}{test-tex}}}
+\generate{\file{\jobname-test-french.ltx}{\from{\jobname.dtx}{test-french}}}
+\generate{\file{\jobname-testbf-iso.ltx}{\from{\jobname.dtx}{testbf-iso}}}
+\generate{\file{\jobname-testbf-tex.ltx}{\from{\jobname.dtx}{testbf-tex}}}
+\generate{\file{\jobname-testbf-french.ltx}{\from{\jobname.dtx}{testbf-french}}}
+\generate{\file{\jobname-test-bf.ltx}{\from{\jobname.dtx}{test-bf}}}
 \generate{\file{dtx-style.sty}{\from{\jobname.dtx}{dtx-style}}}
 \generate{\file{stix-extract.sh}{\from{\jobname.dtx}{awk-script}}}
 %</batchfile>
 %<batchfile>\endbatchfile
 %<*internalbatchfile>
 \endgroup
+\immediate\write18{makeindex -s gind.ist -o \jobname.ind  \jobname.idx}
+\immediate\write18{makeindex -s gglo.ist -o \jobname.gls  \jobname.glo}
 %</internalbatchfile>
 %
 %<*driver>
@@ -75,8 +84,6 @@ This work consists of the file  \jobname.dtx
 % \GetFileInfo{\jobname.sty}
 % \CheckSum{0}
 % \makeatletter
-%
-% \setmathfont{Cambria Math}
 %
 % \title{Experimental unicode mathematical typesetting: The \pkg{unicode-math} package}
 % \author{Will Robertson}
@@ -128,12 +135,139 @@ This work consists of the file  \jobname.dtx
 %
 % There will probably be few cases where a single unicode maths font suffices. The upcoming \STIX\ font comes to mind as a possible exception. It will therefore be necessary to delegate specific unicode ranges of glyphs to separate fonts. This syntax will also hook into the \pkg{fontspec} font feature processing:
 %\codeline{\cmd\setmathfont|[Range=|\meta{unicode range}|,|\meta{font features}|]|\marg{font name}}
-% where \meta{unicode range} is a comma-separated list of unicode slots and ranges such as |{27D0-27EB, 27FF, 295B-297F}|. Furthermore, preset names ranges could be used, such as |MiscMathSymbolsA|, with such ranges based on unicode chunks. The amount of optimisation required here to achieve acceptable performance has yet to be determined. Techniques such as saving out unicode subsets based on \meta{unicode range} data to be \cmd\input\ in the next \LaTeX\ run are a possibility, but at this stage, performance without such measures seems acceptable.
+% where \meta{unicode range} is a comma-separated list of unicode slots and ranges such as |{27D0-27EB,27FF,295B-297F}|. Furthermore, preset names ranges could be used, such as |MiscMathSymbolsA|, with such ranges based on unicode chunks. The amount of optimisation required here to achieve acceptable performance has yet to be determined. Techniques such as saving out unicode subsets based on \meta{unicode range} data to be \cmd\input\ in the next \LaTeX\ run are a possibility, but at this stage, performance without such measures seems acceptable.
 %
 % \subsection{Script and scriptscript fonts/features}
 % Cambria Math uses OpenType font features to activate smaller optical sizes for scriptsize and scriptscriptsize symbols (the $B$ and $C$, respectively, in $A_{B_C}$.
 %
 % Other fonts will no doubt use entirely separate fonts. Both of these options must be taken into account. I hope this will be mostly automatic from the users' points of view. The |+ssty| feature can be detected and applied automatically, and appropriate optical size information embedded in the fonts will ensure this latter case. Fine tuning should be possible automatically with \pkg{fontspec} options. We might have to wait until MnMath, for example, before we really know.
+% 
+% \section{Maths input}
+%
+% \XeTeX's unicode support allows maths input through two methods. Like classical \TeX, macros such as \cmd\alpha, \cmd\sum, \cmd\pm, \cmd\leq, and so on, provide verbose access to the entire repertoire of characters defined by unicode. The literal characters themselves may be used instead, for more readable input files.
+%
+%: TODO: describe alphabet inputs
+%
+% \section{Package options}
+%
+% \subsection{Math `style'}
+%
+% Classically, \TeX\ uses italic lowercase Greek letters and \emph{upright} uppercase Greek letters for variables in mathematics. This is contrary to the ISO standards of using italic forms for both upper- and lowercase. Furthermore, the French (contrary again, \emph{quelle surprise}) have been known to use upright uppercase \emph{Latin} letters as well as upright upper- and lowercase Greek.
+%
+% The \pkg{unicode-math} package accommodates these possibilities with an interface heavily inspired by Walter Schmidt's \pkg{lucimatx} package: a package option \opt{math-style} that takes one of three arguments: \opt{TeX}, \opt{ISO}, or \opt{French} (case \emph{in}-sensitive).
+%
+% The philosophy behind the interface to the mathematical alphabet symbols lies in \LaTeX's attempt of separating content and formatting. Because input source text may come from a variety of places, the upright and `mathematical' italic Latin and Greek alphabets are \emph{unified} from the point of view of having a specified meaning in the source text. That is, to get a mathematical ‘$x$’, either the ascii (`keyboard') letter |x| may be typed, or the actual unicode character may be used. Similarly for Greek letters. The upright or italic forms are then chosen based on the |math-style| package option.
+%
+% If glyphs are desired that do not map as per the package option (for example, an upright `g' is desired but typing |$g$| yields `$g$'), \emph{markup} is required to specify this; to follow from the example: |\mathup{g}|. Maths alphabets commands such as \cmd\mathup\ are detailed later.
+%
+% \paragraph{Alternative interface} However, some users may not like this convention. For them, an upright |x| is an upright `x' and that's that. (This will be the case when obtaining source text from copy/pasting PDF or Microsoft Word documents, for example.) For these users, the |literal| option to |math-style| will effect this behaviour. 
+%
+% The \opt{math-style} options' effects are shown in brief in \tabref{math-style}. \Tabref[vref]{math-style-check} shows every character under the effect of this package option.
+%
+% \begin{table}
+%   \centering
+%   \topcaption{Effects of the \opt{math-style} package option.}
+%   \tablabel{math-style}
+%   \begin{tabular}{@{}>{\ttfamily}lcc@{}}
+%     \toprule
+%       & \multicolumn{2}{c}{Example} \\ 
+%        \cmidrule(l){2-3}
+%       \rmfamily Package option & |(a,z,B,X)| & |(α,β,Γ,Ξ)| \\
+%     \midrule
+%       math-style=ISO & $(a,z,B,X)$ & $(\italpha,\itbeta,\itGamma,\itXi)$ \\
+%       math-style=TeX & $(a,z,B,X)$ & $(\italpha,\itbeta,\upGamma,\upXi)$ \\
+%       math-style=French & $(a,z,\upB,\upX)$ & $(\upalpha,\upbeta,\upGamma,\upXi)$ \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+%
+% \subsection{Bold switching}
+%
+% Similar as in the previous section, ISO standards differ somewhat to \TeX's conventions (and classical typesetting) for `boldness' in mathematics. In the past, it has been customary to use bold \emph{upright} letters to denote things like vectors and matrices. For example, \( \bfM = (\itM_x,\itM_y,\itM_z) \). Presumably, this was due to the relatively scarcity of bold italic fonts in the pre-digital typesetting era. It has been suggested that \emph{italic} bold symbols are used nowadays instead.
+%
+% Bold Greek letters have simply been bold variant glyphs of their regular weight, as in \( \bfitxi = (\itxi_x,\itxi_y,\itxi_z) \). Confusingly, the syntax in \LaTeX\ has been different for these two examples: \cmd\mathbf\ in the former (`$\bfM$'), and \cmd\bm\ (or \cmd\boldsymbol, deprecated) in the latter (`$\bfitxi$').
+%
+% In \pkg{unicode-math}, the \cmd\mathbf\ command works directly with both Greek and Latin maths alphabet characters and depending on package option either switches to upright for Latin letters (|bold-style=TeX|) as well or keeps them italic (|bold-style=ISO|).
+%
+% For completeness, for |bold-style=French| all bold characters are upright, and |bold-style=literal| does not change the upright/italic shape of the letter.
+%
+% Upright and italic bold mathematical letters input as direct unicode characters are normalised with the same rules.
+% Note that \opt{bold-style} is independent of \opt{math-style}, although if the former is not specified then sensible defaults are chosen based on the latter.
+% 
+% The \opt{bold-style} options' effects are shown in brief in \tabref{bold-style}. \Tabref[vref]{bold-style-check} shows every character under the effect of this package option.
+%
+% \begin{table}
+%   \centering
+%   \topcaption{Effects of the \opt{bold-style} package option.}
+%   \tablabel{bold-style}
+%   \begin{tabular}{@{}>{\ttfamily}lcc@{}}
+%     \toprule
+%       & \multicolumn{2}{c}{Example} \\ 
+%        \cmidrule(l){2-3}
+%       \rmfamily Package option & |(a,z,B,X)| & |(α,β,Γ,Ξ)| \\
+%     \midrule
+%       bold-style=ISO & $(\bfita,\bfitz,\bfitB,\bfitX)$ & $(\bfitalpha,\bfitbeta,\bfitGamma,\bfitXi)$ \\
+%       bold-style=TeX & $(\bfa,\bfz,\bfB,\bfX)$ & $(\bfitalpha,\bfitbeta,\bfGamma,\bfXi)$ \\
+%       bold-style=French & $(\bfa,\bfz,\bfB,\bfX)$ & $(\bfalpha,\bfbeta,\bfGamma,\bfXi)$ \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+%
+% \subsection{Other upright vs.\ italic symbols}
+%
+% \paragraph{Nabla} The symbol $\nabla$ comes in the six forms shown in \tabref{nabla}.
+%  We want an individual option to specify whether we want upright or italic nabla by default (when either upright or italic nabla is used in the source). \TeX\ classically uses an upright nabla, but \textsc{iso} standards differ (I think). The package options |[Nabla=upright]| and |[Nabla=italic]| switch between the two choices. This is then inherited through \cmd\mathbf; \cmd\mathit\ and \cmd\mathup\ can be used to force one way or the other.
+%
+% |Nabla=italic| is implicit when using |math-style=ISO| and |nabla=upright| follows both |math-style=TeX| and |math-style=French|.
+%
+% \begin{table}
+%   \centering
+%   \topcaption{The various forms of nabla.}
+%   \tablabel{nabla}
+%   \let \tmpshow\empty
+%   \begin{tabular}{@{}llc@{}}
+%       \toprule
+%     \multicolumn{2}{l}{Description} & Glyph
+%      \\ \cmidrule(r){1-2}\cmidrule(l){3-3}
+%     Upright & Serif & $\nabla$ \\
+%     & Bold serif & $\bfnabla$ \\
+%     & Bold sans & $\bfsansnabla$ \\
+%       \cmidrule(lr){1-2}\cmidrule(lr){3-3}
+%     Italic & Serif & $\itnabla$ \\
+%     & Bold serif & $\bfitnabla$ \\
+%     & Bold sans & $\bfitsansnabla$ \\
+%       \bottomrule
+%   \end{tabular}
+% \end{table}
+%
+% \paragraph{Partial}
+% Ditto with $\partial$: |partial=upright| and |partial=italic| package options. Similarly with the |math-style| defaults.
+%
+%
+% \begin{figure}
+% \immediate\write18{xelatex unicode-math-test-iso.ltx}
+% \immediate\write18{xelatex unicode-math-test-tex.ltx}
+% \immediate\write18{xelatex unicode-math-test-french.ltx}
+% \centering
+% \subfloat[Package option \texttt{[math-style=ISO]}]{\includegraphics{unicode-math-test-iso.pdf}}\\
+% \subfloat[Package option \texttt{[math-style=TeX]}]{\includegraphics{unicode-math-test-tex.pdf}}\\
+% \subfloat[Package option \texttt{[math-style=French]}]{\includegraphics{unicode-math-test-french.pdf}}
+% \caption{Example maths output demonstrating the \texttt{math-style} package option}.}
+% \label{fig:math-style-check}
+% \end{figure}
+%
+% \begin{figure}
+% \immediate\write18{xelatex unicode-math-testbf-iso.ltx}
+% \immediate\write18{xelatex unicode-math-testbf-tex.ltx}
+% \immediate\write18{xelatex unicode-math-testbf-french.ltx}
+% \centering
+% \subfloat[Package option \texttt{[bold-style=ISO]}]{\includegraphics{unicode-math-testbf-iso.pdf}}\\
+% \subfloat[Package option \texttt{[bold-style=TeX]}]{\includegraphics{unicode-math-testbf-tex.pdf}}\\
+% \subfloat[Package option \texttt{[bold-style=French]}]{\includegraphics{unicode-math-testbf-french.pdf}}
+% \caption{Example maths output demonstrating the \texttt{bold-style} package option.}
+% \label{fig:bold-style-check}
+% \end{figure}
+%
 %
 % \StopEventually{}
 %
@@ -144,7 +278,7 @@ This work consists of the file  \jobname.dtx
 % This is the package.
 %    \begin{macrocode}
 \ProvidesPackage{unicode-math}
-  [2007/01/03 v0.1 Unicode maths in XeLaTeX]  
+  [2007/01/03 v0.2 Unicode maths in XeLaTeX]  
 %    \end{macrocode}
 %
 % \section{Things we need}
@@ -158,16 +292,38 @@ This work consists of the file  \jobname.dtx
 %    \begin{macrocode}
 \newcounter{um@fam}
 \newif\if@um@fontspec@feature
+\newif\if@um@init
 %    \end{macrocode} 
-%
-% \paragraph{Shortcuts}
+% For \opt{math-style}:
 %    \begin{macrocode}
-\newcommand\um@PackageError[2]{\PackageError{unicode-math}{#1}{#2}}
-\newcommand\um@PackageWarning[1]{\PackageWarning{unicode-math}{#1}}
-\newcommand\um@PackageInfo[1]{\PackageInfo{unicode-math}{#1}}
+\newif\if@um@literal
+\newif\if@um@upGreek
+\newif\if@um@upgreek
+\newif\if@um@upLatin
+\newif\if@um@uplatin
+%    \end{macrocode}
+% For \opt{bold-style}:
+%    \begin{macrocode}
+\newif\if@um@bfliteral
+\newif\if@um@bfupGreek
+\newif\if@um@bfupgreek
+\newif\if@um@bfupLatin
+\newif\if@um@bfuplatin
+%    \end{macrocode}
+% For \opt{nabla} and \opt{partial}:
+%    \begin{macrocode}
+\newif\if@um@upNabla
+\newif\if@um@uppartial
 %    \end{macrocode}
 %
-% \subsection{Programming macros}
+% \paragraph{Programming niceties}
+% \begin{macro}{\def@cn}
+%    \begin{macrocode}
+\providecommand\def@cn[2]{%
+  \expandafter\def\csname#1\endcsname{#2}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\um@Loop}
 % \begin{macro}{\um@Break}
 % See Kees van der Laan's various articles on \TeX\ programming:
@@ -180,13 +336,13 @@ This work consists of the file  \jobname.dtx
 %
 % \begin{macro}{\um@FOR}
 % A simple `for' loop implemented with the above.
-% Takes a (predefined) counter \cmd\csname\ and increments it between two integers, iterating as we go.
+% Takes a (predefined) counter control sequence and increments it between two integers, iterating as we go.
 %    \begin{macrocode}
-\long\def\um@FOR #1 = [#2:#3] #4{%
-   \csname#1\endcsname =#2\relax
+\long\def\um@FOR#1=[#2:#3]\do#4{%
+   #1=#2\relax
    \um@Loop #4%
-     \expandafter\advance\csname#1\endcsname\@ne
-     \expandafter\ifnum\csname#1\endcsname>#3\relax
+     \advance#1\@ne
+     \ifnum#1>#3\relax
        \expandafter\um@Break
      \fi 
    \um@Pool}
@@ -195,12 +351,112 @@ This work consists of the file  \jobname.dtx
 %
 % \begin{example}{}
 %   \newcount\@ii
-%   \um@FOR @ii = [7:13] {\@alph\@ii/}
+%   \um@FOR\@ii=[7:13]\do{\@alph\@ii/}
 % \end{example}
+%
+% \paragraph{Shortcuts}
+%    \begin{macrocode}
+\newcommand\um@PackageError[2]{\PackageError{unicode-math}{#1}{#2}}
+\newcommand\um@PackageWarning[1]{\PackageWarning{unicode-math}{#1}}
+\newcommand\um@PackageInfo[1]{\PackageInfo{unicode-math}{#1}}
+%    \end{macrocode}
+%
+% \subsection{Package options}
+% xkeyval's package support is used here.
+%
+% \paragraph{math-style}
+%    \begin{macrocode}
+\define@choicekey*{unicode-math.sty}
+    {math-style}[\@tempa\@tempb]{iso,tex,french,literal}{%
+  \ifcase\@tempb\relax
+    \@um@upGreekfalse
+    \@um@upgreekfalse
+    \@um@upLatinfalse
+    \@um@uplatinfalse
+    \@um@bfupGreekfalse
+    \@um@bfupgreekfalse
+    \@um@bfupLatinfalse
+    \@um@bfuplatinfalse
+    \@um@upNablafalse
+    \@um@uppartialfalse
+  \or
+    \@um@upGreektrue
+    \@um@upgreekfalse
+    \@um@upLatinfalse
+    \@um@uplatinfalse
+    \@um@bfupGreektrue
+    \@um@bfupgreekfalse
+    \@um@bfupLatintrue
+    \@um@bfuplatintrue
+    \@um@upNablatrue
+    \@um@uppartialtrue
+  \or
+    \@um@upGreektrue
+    \@um@upgreektrue
+    \@um@upLatintrue  
+    \@um@uplatinfalse
+    \@um@bfupGreektrue
+    \@um@bfupgreektrue
+    \@um@bfupLatintrue  
+    \@um@bfuplatintrue
+    \@um@upNablatrue
+    \@um@uppartialtrue
+  \or
+    \@um@literaltrue
+  \fi}
+%    \end{macrocode}
+%
+% \paragraph{bold-style}
+%    \begin{macrocode}
+\define@choicekey*{unicode-math.sty}{bold-style}[\@tempa\@tempb]{iso,tex,french,literal}{%
+  \ifcase\@tempb\relax
+    \@um@bfupGreekfalse
+    \@um@bfupgreekfalse
+    \@um@bfupLatinfalse
+    \@um@bfuplatinfalse
+  \or
+    \@um@bfupGreektrue
+    \@um@bfupgreekfalse
+    \@um@bfupLatintrue
+    \@um@bfuplatintrue
+  \or
+    \@um@bfupGreektrue
+    \@um@bfupgreektrue
+    \@um@bfupLatintrue  
+    \@um@bfuplatintrue
+  \or
+    \@um@bfliteraltrue
+  \fi}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\define@choicekey*{unicode-math.sty}{Nabla}[\@tempa\@tempb]{upright,italic}{%
+  \ifcase\@tempb\relax
+    \@um@upNablatrue
+  \or
+    \@um@upNablafalse
+  \fi}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\define@choicekey*{unicode-math.sty}{partial}[\@tempa\@tempb]{upright,italic}{%
+  \ifcase\@tempb\relax
+    \@um@uppartialtrue
+  \or
+    \@um@uppartialfalse
+  \fi}
+%    \end{macrocode}
+%
+%
+%    \begin{macrocode}
+\ExecuteOptionsX{math-style=iso}
+\ProcessOptionsX
+%    \end{macrocode}
 %
 % \subsection{Overcoming \cmd\@onlypreamble}
 %
-% TODO: This will be refined later! Sort out which macros actually have to be removed from the \cmd\@preamblecmds\ token list.
+%: TODO: onlypreamble fixup.
+% This will be refined later! Sort out which macros actually have to be removed from the \cmd\@preamblecmds\ token list.
 %    \begin{macrocode}
 \def\@preamblecmds{}
 %    \end{macrocode}
@@ -214,13 +470,6 @@ This work consists of the file  \jobname.dtx
 \def\new@mathgroup{\alloc@8\mathgroup\chardef\@cclvi}
 \let\newfam\new@mathgroup
 %    \end{macrocode}
-%
-% \begin{example}{}
-%   \um@FOR @tempcnta = [1:20]
-%     {\expandafter\newfam
-%        \csname mt\@alph\@tempcnta\endcsname}
-%   Up to math fam \the\mtt\ of 255. 
-% \end{example}
 %
 % This is sufficient for \LaTeX's \cmd\DeclareSymbolFont-type commands to be able
 % to define 256 named maths fonts. Now we need a new \cmd\DeclareMathSymbol.
@@ -314,16 +563,17 @@ This work consists of the file  \jobname.dtx
 % There are a bunch of tests to perform to process the various characters.
 %    \begin{macrocode}
 \def\um@set@mathsymbol#1#2#3#4{%
-  \iftrue%\unless\ifx#3\mathalpha
 %    \end{macrocode}
-% \paragraph{Operators} First test if the character requires a \cmd\nolimits\ suffix. This is controlled by the \cmd\um@nolimits\ macro, which contains a commalist of such characters. If so, define the mathchar \cs{\meta{cs}op} (where |#2| is \cs{\meta{cs}}) and define \cs{\meta{cs}} as the wrapper around this control sequence.
+% \paragraph{Operators} Some of these require a \cmd\nolimits\ suffix. This is controlled by the \cmd\um@nolimits\ macro, which contains a list of such characters. This list is checked dynamically because we're not interested in efficiency. Or something. This allows the list to be updated in the middle of a document.
 %    \begin{macrocode}
-  \expandafter\in@\expandafter#2\expandafter{\um@nolimits}%
-  \ifin@
+  \ifx\mathop#3\relax
     \expandafter\global\expandafter\XeTeXmathchardef
       \csname\expandafter\@gobble\string#2 op\endcsname
       ="\mathchar@type#3 #1 #4\relax
-    \gdef#2{\csname\expandafter\@gobble\string#2 op\endcsname\nolimits}%
+    \gdef#2{%
+      \csname\expandafter\@gobble\string#2 op\endcsname
+      \expandafter\in@\expandafter#2\expandafter{\um@nolimits}%
+      \ifin@\expandafter\nolimits\fi}%
   \else
 %    \end{macrocode}
 % \paragraph{Radicals}
@@ -334,7 +584,7 @@ This work consists of the file  \jobname.dtx
     \else
 %    \end{macrocode}
 % \paragraph{Delimiters}
-% TODO: sort out which of these three declarations are necessary!
+%: TODO: sort out which of these three declarations are necessary!
 %    \begin{macrocode}
       \ifx\mathopen#3\relax
         \gdef#2{\XeTeXdelimiter "\mathchar@type#3 #1 #4}%
@@ -347,16 +597,13 @@ This work consists of the file  \jobname.dtx
           \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
         \else
 %    \end{macrocode}
-% And finally, the general case. We define both the macro and the unicode mathcode; this only works for 16-bit unicode scalar values, however. TODO: make all higher plane maths characters math-active so that spacing works for literal unicode input.
+% And finally, the general case. We define both the macro and the unicode mathcode for the character.
 %    \begin{macrocode}
+          \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
           \global\XeTeXmathchardef#2="\mathchar@type#3 #1 #4\relax
-          \ifnum#4<"FFFF
-            \global\XeTeXmathcode#4="\mathchar@type#3 #1 #4\relax
-          \fi
         \fi
       \fi
     \fi
-  \fi
   \fi}
 %    \end{macrocode}
 % \end{macro}
@@ -412,9 +659,9 @@ This work consists of the file  \jobname.dtx
 % And an example of the \feat{Range} feature:
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
-%   $(a, \ita, \mathbf{a}, \bfa, \alpha, \aleph)$
+%   $(a, \ita, \mathbf{a}, \bfa, \alpha)$
 %   \setmathfont[Range={"2133-"2135,\alpha}]{Lucida Sans}
-%   $(a, \ita, \mathbf{a}, \bfa, \alpha, \aleph)$
+%   $(a, \ita, \mathbf{a}, \bfa, \alpha)$
 % \end{example}
 %
 % A less useful (perhaps) example of the \feat{Range} feature:
@@ -429,7 +676,7 @@ This work consists of the file  \jobname.dtx
 %   \]
 % \end{example}
 %
-% Using a |Range| including large character sets such as \cmd\mathrel, \cmd\mathalpha, \etc, it \emph{very slow}! I hope to improve the performance somehow.
+% Using a |Range| including large character sets such as \cmd\mathrel, \cmd\mathalpha, \etc, is \emph{very slow}! I hope to improve the performance somehow.
 %
 % \begin{macro}{\setmathfont}
 % \doarg{font features}
@@ -441,24 +688,36 @@ This work consists of the file  \jobname.dtx
 % \begin{itemize}
 % \item Erase any conception \LaTeX\ has of previously defined math symbol fonts;
 % this allows \cmd\DeclareSymbolFont\ at any point in the document.
-% \item To start with, assume we're defining every math symbol character.
-% \item Bump up the um@fam counter to assign a new maths symbol font.
+%    \begin{macrocode}
+  \let\glb@currsize\relax
+%    \end{macrocode}
+% \item To start with, assume we're defining the font for every math symbol character.
+%    \begin{macrocode}
+  \let\um@char@range\@empty
+  \let\um@char@num@range\@empty
+  \@um@initfalse
+%    \end{macrocode}
 % \item Tell \pkg{fontspec} that maths font features are actually allowed.
+%    \begin{macrocode}
+  \@um@fontspec@featuretrue
+%    \end{macrocode}
 % \item Grab the current size information (is this robust enough? Maybe it should be preceded by \cmd\normalsize\dots).
+%    \begin{macrocode}
+  \csname S@\f@size\endcsname
+%    \end{macrocode}
 % \item Set the name of the math version being defined
 % \end{itemize}
 %    \begin{macrocode}
-  \let\glb@currsize\relax
-  \let\um@char@range\@empty
-  \let\um@char@num@range\@empty
-  \stepcounter{um@fam}%
-  \@um@fontspec@featuretrue
-  \csname S@\f@size\endcsname
   \def\um@mversion{normal}%
   \DeclareMathVersion{\um@mversion}%
 %    \end{macrocode}
-% Now when the list of unicode symbols is input, we want a suitable definition of 
-% its internal macro. By default, we want to define every single math char.
+% \item Define default font features for the script and scriptscript font.
+%    \begin{macrocode}
+  \def\um@ScriptFeatures{ScriptStyle}%
+  \def\um@ScriptScriptFeatures{ScriptScriptStyle}%
+  \def\um@ScriptFont{#2}%
+  \def\um@ScriptScriptFont{#2}%
+%    \end{macrocode}
 %
 % Use \pkg{fontspec} to select a font to use. The macro \cmd\S@\meta{size} 
 % contains the definitions of the sizes used for maths letters, subscripts and subsubscripts in
@@ -467,40 +726,58 @@ This work consists of the file  \jobname.dtx
 % Probably in the future we want options to change the hard-coded \pkg{fontspec}
 % maths-related features. 
 %    \begin{macrocode}
-  \zf@fontspec{
-    Script=Math, SizeFeatures={
-      {Size=\tf@size-},
-      {Size=\sf@size-\tf@size,ScriptStyle={}},
-      {Size=-\sf@size,ScriptScriptStyle={}}},
-      #1}{#2}%
+  \setkeys*[um]{options}{#1}%
+%\rule{1ex}{1ex}%
+  \edef\@tempa{\noexpand\zf@fontspec{%
+    Script=Math,SizeFeatures={%
+      {Size=\tf@size-},%
+      {Size=\sf@size-\tf@size,%
+        Font=\um@ScriptFont,%
+        \um@ScriptFeatures},%
+      {Size=-\sf@size,%
+        Font=\um@ScriptScriptFont,%
+        \um@ScriptScriptFeatures}},%
+    \XKV@rm}{#2}}\@tempa
+%\rule{1ex}{1ex}%
 %    \end{macrocode}
 % Probably want to check there that we're not creating multiple symbol fonts
 % with the same NFSS declaration. On that note, \pkg{fontspec} doesn't seem to
 % be keeping track of that, either |:(| (check that out!)
 %    \begin{macrocode}
-  \edef\um@symfont{um@fam\theum@fam}%
-  \DeclareSymbolFont{\um@symfont}
-      {\encodingdefault}{\zf@family}{\mddefault}{\updefault}%
   \ifx\um@char@range\@empty
+    \def\um@symfont{um@allsym}%
     \um@PackageInfo{Defining the default maths font as '#2'}%
     \let\UnicodeMathSymbol\um@mathsymbol@noparse
   \else
+    \stepcounter{um@fam}%
+    \edef\um@symfont{um@fam\theum@fam}%
     \let\UnicodeMathSymbol\um@mathsymbol@parse
   \fi
+%\rule{1ex}{1ex}%
+  \DeclareSymbolFont{\um@symfont}
+    {\encodingdefault}{\zf@family}{\mddefault}{\updefault}%
 %    \end{macrocode}
 % And now we input every single maths char. See File~\ref{part:awk-script} for
-% the source to |unicode-math.tex|.
+% the source to |unicode-math.tex|. There is an added space somewhere in here.
 %    \begin{macrocode}
-  \input unicode-math.tex
-  \input unicode-math-add.tex
+  \if@um@init
+    \input unicode-math.tex
+    \input unicode-math-add.tex
+  \fi
+  \unless\ifx\um@char@range\@empty
+    \input unicode-math.tex
+    \input unicode-math-add.tex
+  \fi
 %    \end{macrocode}
 % 
 %    \begin{macrocode}
+%\rule{1ex}{1ex}%
   \ifx\um@char@range\@empty
     \let\um@mathbb\@empty
     \let\um@mathbf\@empty
     \let\um@mathfrak\@empty
     \let\um@mathup\@empty
+    \let\um@mathit\@empty
     \let\um@mathscr\@empty
     \let\um@mathsf\@empty
     \let\um@mathsfit\@empty
@@ -511,9 +788,9 @@ This work consists of the file  \jobname.dtx
     \let\um@mathbfscr\@empty
     \let\um@mathbfsf\@empty
     \let\um@mathbfsfit\@empty
-    \let\MathAlphabetChar\um@mathmap@noparse
+    \let\SetMathAlphChar\um@mathmap@noparse
   \else
-    \let\MathAlphabetChar\um@mathmap@parse
+    \let\SetMathAlphChar\um@mathmap@parse
   \fi
 %    \end{macrocode}
 %
@@ -525,31 +802,37 @@ This work consists of the file  \jobname.dtx
 % and the text Greek characters should be used for upright/italic
 % (depending on preference) Greek, if desired.
 %
-% Numbers, zero to nine (from \unichar{30}{DIGIT ZERO}):
+%
+% Numbers:
 %    \begin{macrocode}
   \ifx\um@char@range\@empty
-  \um@FOR @tempcnta = [0:9] {%
-    \SetMathCode
-      {\numexpr\the\@tempcnta+"30\relax}
-      {\mathalpha}{\um@symfont}
-      {\numexpr\the\@tempcnta+"30\relax}}%
+    \um@def@numbers
 %    \end{macrocode}
-% Latin alphabet, uppercase and lowercase:
+% \paragraph{Normal weight}
 %    \begin{macrocode}
-  \um@FOR @tempcnta = [0:25] {%
-      \SetMathCode
-        {\numexpr\the\@tempcnta+`\A\relax}
-        {\mathalpha}{\um@symfont}
-        {\numexpr\the\@tempcnta+"1D434\relax}
-      \SetMathCode
-        {\numexpr\the\@tempcnta+`\a\relax}
-        {\mathalpha}{\um@symfont}
-        {\numexpr\the\@tempcnta+"1D44E\relax}}%
+    \if@um@literal
+      \um@setmathcodes{\um@usv@upLatin}{26}{\um@usv@upLatin}%
+      \um@setmathcodes{\um@usv@itLatin}{26}{\um@usv@itLatin}%
+      \um@setmathcodes{\um@usv@itlatin}{26}{\um@usv@itlatin}%
+      \SetMathCode{\um@usv@ith}{\mathalpha}{\um@symfont}{\um@usv@ith}%
+      \um@setmathcodes{\um@usv@uplatin}{26}{\um@usv@uplatin}%
+      \um@setmathcodes{\um@usv@upGreek}{25}{\um@usv@upGreek}%
+      \SetMathCode{\um@usv@varTheta}{\mathalpha}{\um@symfont}{\um@usv@varTheta}%
+      \um@setmathcodes{\um@usv@itGreek}{25}{\um@usv@itGreek}%
+      \um@setmathcodes{\um@usv@upgreek}{25}{\um@usv@upgreek}%
 %    \end{macrocode}
-% Filling a hole for `h', which maps to \unichar{210E}{PLANCK CONSTANT}
-% instead of the expected \unichar{1D455}{MATHEMATICAL ITALIC SMALL H} (which is not assigned on account of the overlap):
+%: TODO: other literal symbols? or are these redundant?
 %    \begin{macrocode}
-  \SetMathCode{`\h}{\mathalpha}{\um@symfont}{"210E}%
+      \SetMathCode{\um@usv@Nabla}{\mathalpha}{\um@symfont}{\um@usv@Nabla}%
+      \SetMathCode{\um@usv@itNabla}{\mathalpha}{\um@symfont}{\um@usv@itNabla}%
+      \SetMathCode{\um@usv@partial}{\mathalpha}{\um@symfont}{\um@usv@partial}%
+      \SetMathCode{\um@usv@itpartial}{\mathalpha}{\um@symfont}{\um@usv@itpartial}%      
+    \else
+%    \end{macrocode}
+% Latin letters:
+%    \begin{macrocode}
+      \if@um@upLatin\um@def@upLatin\else\um@def@itLatin\fi
+      \if@um@uplatin\um@def@uplatin\else\um@def@itlatin\fi
 %    \end{macrocode}
 %
 % \begin{example}{}
@@ -559,31 +842,91 @@ This work consists of the file  \jobname.dtx
 %   $abcdefghijklmnopqrstuvwxyz$ \\
 % \end{example}
 %
-% Greek alphabet, italic uppercase and lowercase respectively:
+% Normal weight Greek, italic uppercase and lowercase respectively:
 %    \begin{macrocode}
-  \um@FOR @tempcnta = [0:23] {%
-      \SetMathCode
-        {\numexpr\the\@tempcnta+913\relax}
-        {\mathalpha}{\um@symfont}
-        {\numexpr\the\@tempcnta+"1D6E2\relax}
-      \SetMathCode
-        {\numexpr\the\@tempcnta+945\relax}
-        {\mathalpha}{\um@symfont}
-        {\numexpr\the\@tempcnta+"1D6FC\relax}}%
+      \if@um@upGreek\um@def@upGreek\else\um@def@itGreek\fi
+      \if@um@upgreek\um@def@upgreek\else\um@def@itgreek\fi
+%    \end{macrocode}
+% Nabla and partial:
+%    \begin{macrocode}  
+      \if@um@upNabla
+        \SetMathCode{\um@usv@Nabla}{\mathalpha}{\um@symfont}{\um@usv@Nabla}%
+        \SetMathCode{\um@usv@itNabla}{\mathalpha}{\um@symfont}{\um@usv@Nabla}%
+      \else
+        \SetMathCode{\um@usv@Nabla}{\mathalpha}{\um@symfont}{\um@usv@itNabla}%    
+        \SetMathCode{\um@usv@itNabla}{\mathalpha}{\um@symfont}{\um@usv@itNabla}%    
+      \fi
+      \if@um@uppartial
+        \SetMathCode{\um@usv@partial}{\mathalpha}{\um@symfont}{\um@usv@partial}%
+        \SetMathCode{\um@usv@itpartial}{\mathalpha}{\um@symfont}{\um@usv@partial}%
+      \else
+        \SetMathCode{\um@usv@partial}{\mathalpha}{\um@symfont}{\um@usv@itpartial}%    
+        \SetMathCode{\um@usv@itpartial}{\mathalpha}{\um@symfont}{\um@usv@itpartial}%    
+      \fi
+    \fi
+%    \end{macrocode}
+% \paragraph{Bold}
+%: TODO: finish this off for the `var' symbols.
+%    \begin{macrocode}
+    \if@um@bfliteral
+      \um@setmathcodes{\um@usv@bfLatin}{26}{\um@usv@bfLatin}
+      \um@setmathcodes{\um@usv@bflatin}{26}{\um@usv@bflatin}
+      \um@setmathcodes{\um@usv@bfitLatin}{26}{\um@usv@bfitLatin}
+      \um@setmathcodes{\um@usv@bfitlatin}{26}{\um@usv@bfitlatin}
+      \um@setmathcodes{\um@usv@bfGreek}{25}{\um@usv@bfGreek}
+      \um@setmathcodes{\um@usv@bfgreek}{25}{\um@usv@bfgreek}
+      \um@setmathcodes{\um@usv@bfitGreek}{25}{\um@usv@bfitGreek}
+      \um@setmathcodes{\um@usv@bfitgreek}{25}{\um@usv@bfitgreek}
+    \else
+      \um@setmathcodes{\um@usv@bfLatin,\um@usv@bfitLatin}{26}{%
+        \if@um@bfupLatin\um@usv@bfLatin\else\um@usv@bfitLatin\fi}
+      \um@setmathcodes{\um@usv@bflatin,\um@usv@bfitlatin}{26}{%
+        \if@um@bfupLatin\um@usv@bflatin\else\um@usv@bfitlatin\fi}
+      \um@setmathcodes{\um@usv@bfGreek,\um@usv@bfitGreek}{25}{%
+        \if@um@bfupLatin\um@usv@bfGreek\else\um@usv@bfitGreek\fi}
+      \um@setmathcodes{\um@usv@bfGreek,\um@usv@bfitGreek}{25}{%
+        \if@um@bfupLatin\um@usv@bfGreek\else\um@usv@bfitGreek\fi}
+%    \end{macrocode}
+% Bold nabla and partial symbols:
+%    \begin{macrocode}
+      \if@um@upNabla
+        \SetMathCode{\um@usv@bfNabla}{\mathalpha}{\um@symfont}{\um@usv@bfNabla}%
+        \SetMathCode{\um@usv@bfitNabla}{\mathalpha}{\um@symfont}{\um@usv@bfNabla}%
+        \SetMathCode{\um@usv@bfsfNabla}{\mathalpha}{\um@symfont}{\um@usv@bfsfNabla}%
+        \SetMathCode{\um@usv@bfsfitNabla}{\mathalpha}{\um@symfont}{\um@usv@bfsfNabla}%
+      \else
+        \SetMathCode{\um@usv@bfNabla}{\mathalpha}{\um@symfont}{\um@usv@bfitNabla}%    
+        \SetMathCode{\um@usv@bfitNabla}{\mathalpha}{\um@symfont}{\um@usv@bfitNabla}%    
+        \SetMathCode{\um@usv@bfsfitNabla}{\mathalpha}{\um@symfont}{\um@usv@bfsfitNabla}%
+        \SetMathCode{\um@usv@bfsfitNabla}{\mathalpha}{\um@symfont}{\um@usv@bfsfitNabla}%
+      \fi
+      \if@um@uppartial
+        \SetMathCode{\um@usv@bfpartial}{\mathalpha}{\um@symfont}{\um@usv@bfpartial}%
+        \SetMathCode{\um@usv@bfitpartial}{\mathalpha}{\um@symfont}{\um@usv@bfpartial}%
+        \SetMathCode{\um@usv@bfsfpartial}{\mathalpha}{\um@symfont}{\um@usv@bfsfpartial}%
+        \SetMathCode{\um@usv@bfsfitpartial}{\mathalpha}{\um@symfont}{\um@usv@bfsfpartial}%
+      \else
+        \SetMathCode{\um@usv@bfpartial}{\mathalpha}{\um@symfont}{\um@usv@bfitpartial}%    
+        \SetMathCode{\um@usv@bfitpartial}{\mathalpha}{\um@symfont}{\um@usv@bfitpartial}%    
+        \SetMathCode{\um@usv@bfsfpartial}{\mathalpha}{\um@symfont}{\um@usv@bfsfitpartial}%    
+        \SetMathCode{\um@usv@bfsfitpartial}{\mathalpha}{\um@symfont}{\um@usv@bfsfitpartial}%    
+      \fi
+    \fi
+%    \end{macrocode}
+% %: TODO: implement behaviour when char@range is NOT empty
+%    \begin{macrocode}
   \fi
 %    \end{macrocode}
 %
-% TODO: switches for upright Greek if desired.
-%
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
-%   $ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ$ \\
-%   $αβγδεζηθικλμνξοπρστυφχψω$ \\
+%   $ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ$\quad$ϴ$ \\
+%   $αβγδεζηθικλμνξοπρστυφχψω$\quad$ϵϑϰϕϱϖ$ \\
 % \end{example}
 %
 % Set up the maths alphabets:
 %    \begin{macrocode}
-    \input unicode-math-alphabets.tex
+  \um@setup@alphabets
 %    \end{macrocode}
 % End of the \cmd\setmathfont\ macro.
 %    \begin{macrocode}
@@ -594,9 +937,8 @@ This work consists of the file  \jobname.dtx
 %
 % \begin{macro}{\um@mathsymbol@noparse}
 %    \begin{macrocode}
-\newcommand\um@mathsymbol@noparse[4]{
-  \DeclareUnicodeMathSymbol
-    {#2}{#3}{\um@symfont}{#1}}
+\newcommand\um@mathsymbol@noparse[4]{%
+  \DeclareUnicodeMathSymbol{#2}{#3}{\um@symfont}{#1}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -605,11 +947,10 @@ This work consists of the file  \jobname.dtx
 % a subset of the unicode glyphs are to be defined.
 % See \secref{rangeproc} for the code that enables this.
 %    \begin{macrocode}
-\newcommand\um@mathsymbol@parse[4]{
+\newcommand\um@mathsymbol@parse[4]{%
   \um@parse@term{#1}{#2}{#3}{%
     %\um@PackageInfo{Defining \string#2 as mathchar #1}%
-    \DeclareUnicodeMathSymbol
-      {#2}{#3}{\um@symfont}{#1}}}
+    \DeclareUnicodeMathSymbol{#2}{#3}{\um@symfont}{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -624,17 +965,11 @@ This work consists of the file  \jobname.dtx
     \endgroup}}
 %    \end{macrocode}
 % \end{macro}
-%
-% \begin{macro}{\um@prep@math}
-% Macro to set up mathcode mapping within maths alphabets.
-%    \begin{macrocode}
-\newcommand\um@prep@math[2]{}
-%    \end{macrocode}
-% \end{macro}
 %  
 % Maths alphabets' base definition. See \secref{mathmap} for the internal definitions.
 %    \begin{macrocode}
 \um@mk@math{up}
+\um@mk@math{it}
 \um@mk@math{scr}
 \um@mk@math{bb}
 \um@mk@math{frak}
@@ -660,19 +995,27 @@ This work consists of the file  \jobname.dtx
 %
 % \begin{macro}{\um@mathmap@noparse}
 % \darg{Maths alphabet, \eg, \cmd\mathbb}
-% \darg{Input slot, \eg, the slot for `A'}
+% \darg{Input slot(s), \eg, the slot for `A' (comma separated)}
 % \darg{Output slot, \eg, the slot for `$\mathbb{A}$'}
 % Adds \cmd\SetMathCode\ declaractions to the specified maths alphabet's definition (\eg, \cmd\um@mathscr).
 % Uses \cmd\um@addto@mathmap\ (below) to expand the name of the current symbol font.
 %    \begin{macrocode}
 \newcommand\um@mathmap@noparse[3]{%
-  \expandafter\um@addto@mathmap\expandafter{\um@symfont}{#1}{#2}{#3}}%
+  \@for\@ii:=#2\do{%
+    \expandafter\expandafter 
+    \expandafter\um@addto@mathmap 
+    \expandafter\expandafter 
+    \expandafter{%
+    \expandafter\um@symfont
+    \expandafter}%
+    \expandafter{\@ii}{#1}{#3}%
+   }}%
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\um@mathmap@parse}
 % \darg{Maths alphabet, \eg, \cmd\mathbb}
-% \darg{Input slot, \eg, the slot for `A'}
+% \darg{Input slot(s), \eg, the slot for `A' (comma separated)}
 % \darg{Output slot, \eg, the slot for `$\mathbb{A}$'}
 % When \cmd\um@parse@term\ is executed, it populates the \cmd\um@char@num@range\
 % macro with slot numbers corresponding to the specified range. This range is used to
@@ -681,21 +1024,28 @@ This work consists of the file  \jobname.dtx
 \newcommand\um@mathmap@parse[3]{%
   \@for\@ii:=\um@char@num@range\do{%
     \ifnum\@ii=#3\relax
-      \expandafter\um@addto@mathmap\expandafter{\um@symfont}{#1}{#2}{#3}%
+      \@for\@jj:=#2\do{
+        \expandafter\expandafter 
+        \expandafter\um@addto@mathmap 
+        \expandafter\expandafter 
+        \expandafter{%
+        \expandafter\um@symfont
+        \expandafter}%
+        \expandafter{\@jj}{#1}{#3}}%
     \fi}}%
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\um@addto@mathmap}
 % \darg{Math symbol font, always/usually the expansion of \cmd\um@symfont}
-% \darg{Maths alphabet, \eg, \cmd\mathbb}
 % \darg{Input slot, \eg, the slot for `A'}
+% \darg{Maths alphabet, \eg, \cmd\mathbb}
 % \darg{Output slot, \eg, the slot for `$\mathbb{A}$'}
 % This macro is used so that \cmd\um@symfont\ can be expanded before entering the \cmd\g@addto@macro\ command.
 %    \begin{macrocode}
 \newcommand\um@addto@mathmap[4]{%
-  \expandafter\g@addto@macro\csname um@\expandafter\@gobble\string#2\endcsname{%
-    \SetMathCode{#3}{\mathalpha}{#1}{#4}}}
+  \expandafter\g@addto@macro\csname um@\expandafter\@gobble\string#3\endcsname{%
+    \SetMathCode{#2}{\mathalpha}{#1}{#4}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -706,7 +1056,7 @@ This work consists of the file  \jobname.dtx
 %
 % However, the limits aren't set automatically; that is, we want to define, a la Plain \TeX\ \etc, \verb|\def\int{\intop\nolimits}|, so there needs to be a transformation from \cmd\int\ to \cmd\intop\ during the expansion of \cmd\UnicodeMathSymbol\ in the appropriate contexts.
 %
-% TODO use |\mathchar| |"8000| to create active operators that have \cmd\nolimits\ suffices.
+%: TODO use |\mathchar| |"8000| to create active operators that have \cmd\nolimits\ suffices.
 %
 % Following is a table of every math operator (\cmd\mathop) defined in |unicode-maths.tex|, from which a subset need to be flagged for \cmd\nolimits\ adjustments. The limits as specified by \pkg{unicode-math} are shown (in grey).
 % 
@@ -714,9 +1064,11 @@ This work consists of the file  \jobname.dtx
 % \setmathfont[SizeFeatures={
 %     {Size=-10, Colour=888888},
 %     {Size=10-, Colour=FF0000}}]{Code2000}
-% \def\UnicodeMathSymbol#1#2#3#4{%
-%   \ifx\mathop#3\relax
-%     \def\@tempa{\scshape\MakeLowercase{u+\@gobble#1} & $\displaystyle#2$ & \small\cmd#2 & \scshape#4 \\}\expandafter\@tempa
+% \def\UnicodeMathSymbol#1#2#3#4{\ifx\mathop#3\relax
+%     \def\@tempa{\scshape\MakeLowercase{u+\@gobble#1} & 
+%       $\displaystyle#2_0^1$ & 
+%       \small\cmd#2 & 
+%       \scshape#4 \\}\expandafter\@tempa
 %   \fi}
 % \begin{longtable}[l]{@{}cccp{6cm}@{}}
 % \toprule
@@ -731,29 +1083,47 @@ This work consists of the file  \jobname.dtx
 % This macro is a commalist containing those maths operators that require a \cmd\nolimits\ suffix. This list is used when processing |unicode-math.tex| to define such commands automatically (see the macro \cmd\um@set@mathsymbol\ on page~\pageref{mac:um@set@mathsymbol}). I've chosen essentially just the operators that look like integrals; hopefully a better mathematician can help me out here. I've a feeling that it's more useful \emph{not} to include the multiple integrals such as $\iiiint$, but that might be a matter of preference.
 %    \begin{macrocode}
 \def\um@nolimits{%
-  \int,\iint,\iiint,\iiiint,\oint,\oiint,\oiiint,%
-  \intclockwise,\varointclockwise,\ointctrclockwise,%
-  \sumint,\intbar,\intBar,\fint,%
-  \cirfnint,\awint,\rppolint,\scpolint,\npolint,\pointint,\sqint,%
-  \intlarhk,\intx,\intcap,\intcup,\upint,\lowint}
+  \@elt\int\@elt\iint\@elt\iiint\@elt\iiiint\@elt\oint\@elt\oiint\@elt\oiiint
+  \@elt\intclockwise\@elt\varointclockwise\@elt\ointctrclockwise\@elt\sumint
+  \@elt\intbar\@elt\intBar\@elt\fint\@elt\cirfnint\@elt\awint\@elt\rppolint
+  \@elt\scpolint\@elt\npolint\@elt\pointint\@elt\sqint\@elt\intlarhk\@elt\intx
+  \@elt\intcap\@elt\intcup\@elt\upint\@elt\lowint}
 %    \end{macrocode}
 % \changes{v0.01}{2006/11/26}{Implemented for \cmd\nolimits\ processing}
 % \end{macro}
 %
 % \begin{macro}{\addnolimits}
-% This macro appends material to the macro containing the list of operators that don't take limits. Items must be removed manually, at this stage; I'm working on a macro for this too, but it's a bit harder!
+% This macro appends material to the macro containing the list of operators that don't take limits. See example following for usage. Note at present that this command must have taken effect before \cmd\setmathfont.
 %    \begin{macrocode}
-\newcommand\addnolimits[1]{\g@addto@macro\um@nolimits{,#1}}
+\newcommand\addnolimits[1]{%
+  \expandafter\def 
+  \expandafter\um@nolimits 
+  \expandafter{\um@nolimits\@elt#1}}
 %    \end{macrocode}
 % \changes{v0.01}{2006/11/26}{Implemented for \cmd\nolimits\ processing}
 % \end{macro}
 %
+% \begin{macro}{\removenolimits}
+% Can this macro be given a better name? It removes (globally) an item from the nolimits list. See example following for usage. 
+%    \begin{macrocode}
+\def\removenolimits#1{%
+  \begingroup
+    \def\@elt##1{%
+      \ifx##1#1\else
+        \noexpand\@elt\noexpand##1
+     \fi}
+    \xdef\um@nolimits{\um@nolimits}%
+  \endgroup}
+%    \end{macrocode}
+% \changes{v0.2}{2007/01/22}{Implemented for \cmd\nolimits\ processing}
+% \end{macro}
+%
 % \begin{example}{}
-%   \setmathfont{Cambria Math}
-%   \[ \int_0^1 \sum_0^N \left(\frac{%
-%      \left(\sum^N_{i=n}\left(\int^1_0
-%      \left(a\times b\right)
-%      \right)\right)}{A^{B^C}_{D_E}}\right) \]
+%   \setmathfont{Cambria Math} \[\iiint_V\]
+%   \removenolimits\iiint
+%   \setmathfont{Cambria Math} \[\iiint_V\]
+%   \addnolimits\iiint
+%   \setmathfont{Cambria Math} \[\iiint_V\]
 % \end{example}
 %
 % \subsection{Radicals}
@@ -794,7 +1164,7 @@ This work consists of the file  \jobname.dtx
 % \end{macro}
 % No re-definition is made for \cmd\right\ because I don't believe it to be necessary\dots
 %
-% TODO: `fences', e.g., \cmd\vert
+%: TODO: `fences', e.g., \cmd\vert
 %
 % \begin{example}{}
 %   \setmathfont{Cambria Math}
@@ -846,10 +1216,9 @@ This work consists of the file  \jobname.dtx
 %
 %
 % \subsection{Maths accents}
-% TODO
+%: TODO: maths accents
 %
-%
-% \section{\pkg{fontspec} feature hooks}
+% \section{Font features}
 %
 % \begin{macro}{\um@zf@feature}
 % Use the same method as \pkg{fontspec} for feature definition
@@ -857,12 +1226,12 @@ This work consists of the file  \jobname.dtx
 % the scope of these features to \pkg{unicode-math} commands.
 %    \begin{macrocode}
 \newcommand\um@zf@feature[2]{%
-  \define@key[zf]{options}{#1}{%
+  \define@key[zf]{options}{#1}[]{%
     \if@um@fontspec@feature
       #2
     \else
       \PackageError{fontspec/unicode-math}
-        {The `#1' font feature can only be used for maths fonts}
+        {The ‘#1’ font feature can only be used for maths fonts}
         {The feature you tried to use can only be in commands
           like \protect\setmathfont}%
     \fi}}
@@ -870,8 +1239,6 @@ This work consists of the file  \jobname.dtx
 % \end{macro}
 %
 % \subsection{OpenType maths font features}
-% These aren't defined in \pkg{fontspec} because they aren't useful
-% in non-maths contexts. (Actually, that might be a lie.)
 %    \begin{macrocode}
 \um@zf@feature{ScriptStyle}{%
   \zf@update@ff{+ssty=0}}
@@ -879,11 +1246,22 @@ This work consists of the file  \jobname.dtx
   \zf@update@ff{+ssty=1}}
 %    \end{macrocode}
 %
+% \subsection{Script and scriptscript font options}
+%    \begin{macrocode}
+\define@cmdkey[um]{options}[um@]{ScriptFeatures}{}
+\define@cmdkey[um]{options}[um@]{ScriptScriptFeatures}{}
+\define@cmdkey[um]{options}[um@]{ScriptFont}{}
+\define@cmdkey[um]{options}[um@]{ScriptScriptFont}{}
+%    \end{macrocode}
 %
 % \subsection{Range processing}\seclabel{rangeproc}
 %
 %    \begin{macrocode}
-\um@zf@feature{Range}{\xdef\um@char@range{\zap@space#1 \@empty}}
+\define@choicekey+[um]{options}{Range}[\@tempa\@tempb]{ALL}{%
+  \ifcase\@tempb\relax
+    \@um@inittrue
+  \fi}{% else:
+    \xdef\um@char@range{\zap@space#1 \@empty}}
 %    \end{macrocode}
 %
 % Pretty basic comma separated range processing.
@@ -904,6 +1282,8 @@ This work consists of the file  \jobname.dtx
 %
 % \begin{table}[htbp]
 % \centering
+% \topcaption{Ranges accepted by \cmd\um@parse@range.}
+% \label{tab:ranges}
 % \begin{tabular}{>{\ttfamily}cc}
 % \textrm{Input} & Range \\
 % \hline
@@ -912,8 +1292,6 @@ This work consists of the file  \jobname.dtx
 % -y & $r\leq y$ \\
 % x-y & $x \leq r \leq y$ \\
 % \end{tabular}
-% \caption{Ranges accepted by \cmd\um@parse@range}
-% \label{tab:ranges}
 % \end{table}
 %
 % Start by iterating over the commalist, ignoring empties, and initialising the scratch conditional:
@@ -952,7 +1330,7 @@ This work consists of the file  \jobname.dtx
         \else
           \g@addto@macro\um@char@num@range{,#1}%
         \fi
-        #4
+        #4%
       \fi
     \fi}}
 %    \end{macrocode}
@@ -1041,91 +1419,318 @@ This work consists of the file  \jobname.dtx
         \ifnum#4>\numexpr#1-1\relax
           \ifnum#4<\numexpr#2+1\relax
             \@tempswatrue
-          \fi
-        \fi
-      \fi
-    \fi
-  \fi}
+          \fi\fi\fi\fi\fi}
 %    \end{macrocode}
 % \end{macro}
 %
 % \subsection{Resolving Greek letters}
-% TODO add switch for upright if desired.
 %
+% \paragraph{Alphabet unicode positions}
+% Before we begin, let's define the positions of the various unicode
+% alphabets so that our code is a little more readable.
 %    \begin{macrocode}
-\AtBeginDocument{\def\Alpha{\itAlpha}
-\def\Beta{\itBeta}
-\def\Gamma{\itGamma}
-\def\Delta{\itDelta}
-\def\Epsilon{\itEpsilon}
-\def\Zeta{\itZeta}
-\def\Eta{\itEta}
-\def\Theta{\itTheta}
-\def\Iota{\itIota}
-\def\Kappa{\itKappa}
-\def\Lambda{\itLambda}
-\def\Mu{\itMu}
-\def\Nu{\itNu}
-\def\Xi{\itXi}
-\def\Omicron{\itOmicron}
-\def\Pi{\itPi}
-\def\Rho{\itRho}
-\def\varTheta{\itvarTheta}
-\def\Sigma{\itSigma}
-\def\Tau{\itTau}
-\def\Upsilon{\itUpsilon}
-\def\Phi{\itPhi}
-\def\Chi{\itChi}
-\def\Psi{\itPsi}
-\def\Omega{\itOmega}
-\def\nabla{\itnabla}
-\def\alpha{\italpha}
-\def\beta{\itbeta}
-\def\gamma{\itgamma}
-\def\delta{\itdelta}
-\def\varepsilon{\itvarepsilon}
-\def\zeta{\itzeta}
-\def\eta{\iteta}
-\def\theta{\ittheta}
-\def\iota{\itiota}
-\def\kappa{\itkappa}
-\def\lambda{\itlambda}
-\def\mu{\itmu}
-\def\nu{\itnu}
-\def\xi{\itxi}
-\def\omicron{\itomicron}
-\def\pi{\itpi}
-\def\rho{\itrho}
-\def\varsigma{\itvarsigma}
-\def\sigma{\itsigma}
-\def\tau{\ittau}
-\def\upsilon{\itupsilon}
-\def\phi{\itphi}
-\def\chi{\itchi}
-\def\psi{\itpsi}
-\def\omega{\itomega}
-\def\partial{\uppartial}
-\def\varepsilon{\itvarepsilon}
-\def\vartheta{\itvartheta}
-\def\varkappa{\itvarkappa}
-\def\varphi{\itvarphi}
-\def\varrho{\itvarrho}
-\def\varpi{\itvarpi}}
+\def\um@usv@num{`\0}
+\def\um@usv@upLatin{`\A}
+\def\um@usv@uplatin{`\a}
+\def\um@usv@itLatin{"1D434}
+\def\um@usv@itlatin{"1D44E}
+\def\um@usv@upGreek{"391}
+\def\um@usv@upgreek{"3B1}
+\def\um@usv@itGreek{"1D6E2}
+\def\um@usv@itgreek{"1D6FC}
+\def\um@usv@bbnum{"1D7D8}
+\def\um@usv@bbLatin{"1D538}
+\def\um@usv@bblatin{"1D552}
+\def\um@usv@scrLatin{"1D49C}
+\def\um@usv@scrlatin{"1D4B6}
+\def\um@usv@frakLatin{"1D504}
+\def\um@usv@fraklatin{"1D51E}
+\def\um@usv@sfnum{"1D7E2}
+\def\um@usv@sfLatin{"1D5A0}
+\def\um@usv@sflatin{"1D5BA}
+\def\um@usv@sfitLatin{"1D608}
+\def\um@usv@sfitlatin{"1D622}
+\def\um@usv@ttnum{"1D7F6}
+\def\um@usv@ttLatin{"1D670}
+\def\um@usv@ttlatin{"1D68A}
+%    \end{macrocode}
+% Bold:
+%    \begin{macrocode}
+\def\um@usv@bfnum{"1D7CE}
+\def\um@usv@bfLatin{"1D400}
+\def\um@usv@bflatin{"1D41A}
+\def\um@usv@bfGreek{"1D6A8}
+\def\um@usv@bfgreek{"1D6C2}
+\def\um@usv@bfitLatin{"1D468}
+\def\um@usv@bfitlatin{"1D482}
+\def\um@usv@bfitGreek{"1D71C}
+\def\um@usv@bfitgreek{"1D736}
+\def\um@usv@bffrakLatin{"1D56C}
+\def\um@usv@bffraklatin{"1D586}
+\def\um@usv@bfscrLatin{"1D4D0}
+\def\um@usv@bfscrlatin{"1D4EA}
+\def\um@usv@bfsfnum{"1D7EC}
+\def\um@usv@bfsfLatin{"1D5D4}
+\def\um@usv@bfsflatin{"1D5EE}
+\def\um@usv@bfsfGreek{"1D756}
+\def\um@usv@bfsfgreek{"1D770}
+\def\um@usv@bfsfitLatin{"1D63C}
+\def\um@usv@bfsfitlatin{"1D656}
+\def\um@usv@bfsfitGreek{"1D790}
+\def\um@usv@bfsfitgreek{"1D7AA}
+%    \end{macrocode}
+% Greek variants:
+%    \begin{macrocode}
+\def\um@usv@varTheta{"3F4}
+\def\um@usv@Digamma{"3DC}
+\def\um@usv@varepsilon{"3F5}
+\def\um@usv@vartheta{"3D1}
+\def\um@usv@varkappa{"3F0}
+\def\um@usv@varphi{"3D5}
+\def\um@usv@varrho{"3F1}
+\def\um@usv@varpi{"3D6}
+\def\um@usv@digamma{"3DD}
+%    \end{macrocode}
+% Italic Greek variants:
+%    \begin{macrocode}
+\def\um@usv@ith{"210E}
+\def\um@usv@itvarTheta{"1D6F3}
+\def\um@usv@itvarepsilon{"1D716}
+\def\um@usv@itvartheta{"1D717}
+\def\um@usv@itvarkappa{"1D718}
+\def\um@usv@itvarphi{"1D719}
+\def\um@usv@itvarrho{"1D71A}
+\def\um@usv@itvarpi{"1D71B}
+%    \end{macrocode}
+% Nabla:
+%    \begin{macrocode}
+\def\um@usv@Nabla{"2207}
+\def\um@usv@itNabla{"1D6FB}
+\def\um@usv@bfNabla{"1D6C1}
+\def\um@usv@bfitNabla{"1D735}
+\def\um@usv@bfsfNabla{"1D76F}
+\def\um@usv@bfsfitNabla{"1D7A9}
+%    \end{macrocode}
+% Partial:
+%    \begin{macrocode}
+\def\um@usv@partial{"2202}
+\def\um@usv@itpartial{"1D715}
+\def\um@usv@bfpartial{"1D6DB}
+\def\um@usv@bfitpartial{"1D74F}
+\def\um@usv@bfsfpartial{"1D789}
+\def\um@usv@bfsfitpartial{"1D7C3}
 %    \end{macrocode}
 %
-% TODO: digamma
+% \begin{macro}{\um@setmathcodes}
+% \darg{Starting input char(s)}
+% \darg{Number of iterations}
+% \darg{Starting output char}
+% Loops through character ranges setting \cmd\mathcode.
+%    \begin{macrocode}
+\newcommand\um@setmathcodes[3]{%
+  \@for\um@inp:=#1\do{%
+    \um@FOR\@tempcnta=[1:#2]\do{%
+      \SetMathCode{\numexpr\um@inp+\@tempcnta-1\relax}
+        {\mathalpha}{\um@symfont}{\numexpr#3+\@tempcnta-1\relax}}}}
+%    \end{macrocode}
+% \changes{v0.2}{2007/02/25}{Beginning to sort out the input encoding.}
+% \end{macro}
 %
-%\iffalse
-%</package>
-%\fi
+% \begin{macro}{\um@setmathcodes}
+% \darg{Maths alphabet}
+% \darg{Starting input char(s)}
+% \darg{Number of iterations}
+% \darg{Starting output char}
+% Loops through character ranges setting \cmd\mathcode.
+%    \begin{macrocode}
+\newcommand\um@setmathalphs[4]{%
+  \@for\um@inp:=#2\do{%
+    \um@FOR\@tempcnta=[1:#3]\do{%
+      \edef\@tempa{%
+        \noexpand\SetMathAlphChar{\noexpand#1}{\number\numexpr\um@inp+\@tempcnta-1\relax}
+          {\number\numexpr#4+\@tempcnta-1\relax}}\@tempa}}}
+%    \end{macrocode}
+% \changes{v0.2}{2007/02/25}{Beginning to sort out the input encoding.}
+% \end{macro}
+%
+% 
+% \begin{example}{}
+%   {\um@setmathcodes{`\A,`\D}{3}{`\B}
+%   $ABCDEF$} $ABCDEF$
+% \end{example}
+%
+% \begin{macro}{\um@resolve@greek}
+% This macro defines \cmd\Alpha\dots\cmd\omega\ as their corresponding 
+% unicode (mathematical italic) character. Remember that the mapping
+% to upright or italic happens with the mathcode definitions, whereas these macros
+% just stand for the literal unicode characters.
+%    \begin{macrocode}
+\AtBeginDocument{\um@resolve@greek}%
+\newcommand\um@resolve@greek{%
+  \def\Alpha{\itAlpha}%
+  \def\Beta{\itBeta}%
+  \def\Gamma{\itGamma}%
+  \def\Delta{\itDelta}%
+  \def\Epsilon{\itEpsilon}%
+  \def\Zeta{\itZeta}%
+  \def\Eta{\itEta}%
+  \def\Theta{\itTheta}%
+  \def\Iota{\itIota}%
+  \def\Kappa{\itKappa}%
+  \def\Lambda{\itLambda}%
+  \def\Mu{\itMu}%
+  \def\Nu{\itNu}%
+  \def\Xi{\itXi}%
+  \def\Omicron{\itOmicron}%
+  \def\Pi{\itPi}%
+  \def\Rho{\itRho}%
+  \def\varTheta{\itvarTheta}%
+  \def\Sigma{\itSigma}%
+  \def\Tau{\itTau}%
+  \def\Upsilon{\itUpsilon}%
+  \def\Phi{\itPhi}%
+  \def\Chi{\itChi}%
+  \def\Psi{\itPsi}%
+  \def\Omega{\itOmega}%
+%    \end{macrocode}
+% Lowercase:
+%    \begin{macrocode}
+  \def\alpha{\italpha}%
+  \def\beta{\itbeta}%
+  \def\gamma{\itgamma}%
+  \def\delta{\itdelta}%
+  \def\varepsilon{\itvarepsilon}%
+  \def\zeta{\itzeta}%
+  \def\eta{\iteta}%
+  \def\theta{\ittheta}%
+  \def\iota{\itiota}%
+  \def\kappa{\itkappa}%
+  \def\lambda{\itlambda}%
+  \def\mu{\itmu}%
+  \def\nu{\itnu}%
+  \def\xi{\itxi}%
+  \def\omicron{\itomicron}%
+  \def\pi{\itpi}%
+  \def\rho{\itrho}%
+  \def\varsigma{\itvarsigma}%
+  \def\sigma{\itsigma}%
+  \def\tau{\ittau}%
+  \def\upsilon{\itupsilon}%
+  \def\phi{\itphi}%
+  \def\chi{\itchi}%
+  \def\psi{\itpsi}%
+  \def\omega{\itomega}%
+  \def\partial{\uppartial}%
+  \def\varepsilon{\itvarepsilon}%
+  \def\vartheta{\itvartheta}%
+  \def\varkappa{\itvarkappa}%
+  \def\varphi{\itvarphi}%
+  \def\varrho{\itvarrho}%
+  \def\varrho{\itvarsigma}%
+  \def\varpi{\itvarpi}}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\um@def@numbers}
+%    \begin{macrocode}
+\newcommand\um@def@numbers{%
+  \um@setmathcodes{\um@usv@num}{10}{\um@usv@num}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@upLatin}
+%    \begin{macrocode}
+\newcommand\um@def@upLatin{%
+    \um@setmathcodes{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@upLatin}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@itLatin}
+%    \begin{macrocode}
+\newcommand\um@def@itLatin{%
+    \um@setmathcodes{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@itLatin}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@itlatin}
+% Don't overlook `h', which maps to \unichar{210E}{PLANCK CONSTANT}
+% instead of the expected \unichar{1D455}{MATHEMATICAL ITALIC SMALL H}.
+%    \begin{macrocode}
+\newcommand\um@def@itlatin{%
+  \um@setmathcodes{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@itlatin}%
+  \SetMathCode{`\h}{\mathalpha}{\um@symfont}{\um@usv@ith}%
+  \SetMathCode{\um@usv@ith}{\mathalpha}{\um@symfont}{\um@usv@ith}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@uplatin}
+%    \begin{macrocode}
+\newcommand\um@def@uplatin{%
+  \um@setmathcodes{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@uplatin}%
+  \SetMathCode{\um@usv@ith}{\mathalpha}{\um@symfont}{`\h}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@upGreek}
+%    \begin{macrocode}
+\newcommand\um@def@upGreek{%
+    \um@setmathcodes{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@upGreek}%
+    \SetMathCode{\um@usv@varTheta}{\mathalpha}{\um@symfont}{\um@usv@varTheta}%
+    \SetMathCode{"1D6F3}{\mathalpha}{\um@symfont}{\um@usv@varTheta}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\um@def@itGreek}
+%    \begin{macrocode}
+\newcommand\um@def@itGreek{%
+    \um@setmathcodes{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@itGreek}%
+    \SetMathCode{\um@usv@varTheta}{\mathalpha}{\um@symfont}{"1D6F3}%    
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@upgreek}
+%    \begin{macrocode}
+\newcommand\um@def@upgreek{%
+    \um@setmathcodes{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@upgreek}%
+    \SetMathCode{\um@usv@varepsilon}{\mathalpha}{\um@symfont}{\um@usv@varepsilon}%
+    \SetMathCode{\um@usv@vartheta}{\mathalpha}{\um@symfont}{\um@usv@vartheta}%
+    \SetMathCode{\um@usv@varkappa}{\mathalpha}{\um@symfont}{\um@usv@varkappa}%
+    \SetMathCode{\um@usv@varphi}{\mathalpha}{\um@symfont}{\um@usv@varphi}%
+    \SetMathCode{\um@usv@varrho}{\mathalpha}{\um@symfont}{\um@usv@varrho}%
+    \SetMathCode{\um@usv@varpi}{\mathalpha}{\um@symfont}{\um@usv@varpi}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\um@def@itgreek}
+%    \begin{macrocode}
+\newcommand\um@def@itgreek{%
+    \um@setmathcodes{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@itgreek}%
+    \SetMathCode{\um@usv@varepsilon}{\mathalpha}{\um@symfont}{"1D716}%
+    \SetMathCode{\um@usv@vartheta}{\mathalpha}{\um@symfont}{"1D717}%
+    \SetMathCode{\um@usv@varkappa}{\mathalpha}{\um@symfont}{"1D718}%
+    \SetMathCode{\um@usv@varphi}{\mathalpha}{\um@symfont}{"1D719}%
+    \SetMathCode{\um@usv@varrho}{\mathalpha}{\um@symfont}{"1D71A}%
+    \SetMathCode{\um@usv@varpi}{\mathalpha}{\um@symfont}{"1D71B}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 %
 %
 % \part{Maths alphabets mapping definitions}\label{part:mathmap}
-%\iffalse
-%<*alphabets>
-%\fi
 %
-% TODO: everything
+%    \begin{macrocode}
+\newcommand\um@setup@alphabets{%
+%    \end{macrocode}
+%
+%: TODO: nested alphabets?
 %
 % \subsubsection{Upright: \cmd\mathup}
 %
@@ -1135,125 +1740,59 @@ This work consists of the file  \jobname.dtx
 %   \setmathfont{Cambria Math}
 %   $\mathup{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathup{abcdefghijklmnopqrstuvwxyz}$ \\
-%   $\mathup{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
-%   $\mathup{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+%   $\mathup{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$\quad$\mathup{ϴ}$ \\
+%   $\mathup{αβγδεζηθικλμνξοπρστυφχψω}$\quad$\mathup{ϵϑϰϕϱϖ}$ \\
 % \end{example}
-%    \begin{macrocode}
-%    \end{macrocode}
-% Roman uppercase:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathup}{`\A}{`\A}%
-\MathAlphabetChar{\mathup}{`\B}{`\B}%
-\MathAlphabetChar{\mathup}{`\C}{`\C}%
-\MathAlphabetChar{\mathup}{`\D}{`\D}%
-\MathAlphabetChar{\mathup}{`\E}{`\E}%
-\MathAlphabetChar{\mathup}{`\F}{`\F}%
-\MathAlphabetChar{\mathup}{`\G}{`\G}%
-\MathAlphabetChar{\mathup}{`\H}{`\H}%
-\MathAlphabetChar{\mathup}{`\I}{`\I}%
-\MathAlphabetChar{\mathup}{`\J}{`\J}%
-\MathAlphabetChar{\mathup}{`\K}{`\K}%
-\MathAlphabetChar{\mathup}{`\L}{`\L}%
-\MathAlphabetChar{\mathup}{`\M}{`\M}%
-\MathAlphabetChar{\mathup}{`\N}{`\N}%
-\MathAlphabetChar{\mathup}{`\O}{`\O}%
-\MathAlphabetChar{\mathup}{`\P}{`\P}%
-\MathAlphabetChar{\mathup}{`\Q}{`\Q}%
-\MathAlphabetChar{\mathup}{`\R}{`\R}%
-\MathAlphabetChar{\mathup}{`\S}{`\S}%
-\MathAlphabetChar{\mathup}{`\T}{`\T}%
-\MathAlphabetChar{\mathup}{`\U}{`\U}%
-\MathAlphabetChar{\mathup}{`\V}{`\V}%
-\MathAlphabetChar{\mathup}{`\W}{`\W}%
-\MathAlphabetChar{\mathup}{`\X}{`\X}%
-\MathAlphabetChar{\mathup}{`\Y}{`\Y}%
-\MathAlphabetChar{\mathup}{`\Z}{`\Z}%
-%    \end{macrocode}
-% Roman lowercase:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathup}{`\a}{`\a}%
-\MathAlphabetChar{\mathup}{`\b}{`\b}%
-\MathAlphabetChar{\mathup}{`\c}{`\c}%
-\MathAlphabetChar{\mathup}{`\d}{`\d}%
-\MathAlphabetChar{\mathup}{`\e}{`\e}%
-\MathAlphabetChar{\mathup}{`\f}{`\f}%
-\MathAlphabetChar{\mathup}{`\g}{`\g}%
-\MathAlphabetChar{\mathup}{`\h}{`\h}%
-\MathAlphabetChar{\mathup}{`\i}{`\i}%
-\MathAlphabetChar{\mathup}{`\j}{`\j}%
-\MathAlphabetChar{\mathup}{`\k}{`\k}%
-\MathAlphabetChar{\mathup}{`\l}{`\l}%
-\MathAlphabetChar{\mathup}{`\m}{`\m}%
-\MathAlphabetChar{\mathup}{`\n}{`\n}%
-\MathAlphabetChar{\mathup}{`\o}{`\o}%
-\MathAlphabetChar{\mathup}{`\p}{`\p}%
-\MathAlphabetChar{\mathup}{`\q}{`\q}%
-\MathAlphabetChar{\mathup}{`\r}{`\r}%
-\MathAlphabetChar{\mathup}{`\s}{`\s}%
-\MathAlphabetChar{\mathup}{`\t}{`\t}%
-\MathAlphabetChar{\mathup}{`\u}{`\u}%
-\MathAlphabetChar{\mathup}{`\v}{`\v}%
-\MathAlphabetChar{\mathup}{`\w}{`\w}%
-\MathAlphabetChar{\mathup}{`\x}{`\x}%
-\MathAlphabetChar{\mathup}{`\y}{`\y}%
-\MathAlphabetChar{\mathup}{`\z}{`\z}%
-%    \end{macrocode}
-% Greek uppercase:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathup}{913}{913}%
-\MathAlphabetChar{\mathup}{914}{914}%
-\MathAlphabetChar{\mathup}{915}{915}%
-\MathAlphabetChar{\mathup}{916}{916}%
-\MathAlphabetChar{\mathup}{917}{917}%
-\MathAlphabetChar{\mathup}{918}{918}%
-\MathAlphabetChar{\mathup}{919}{919}%
-\MathAlphabetChar{\mathup}{920}{920}%
-\MathAlphabetChar{\mathup}{921}{921}%
-\MathAlphabetChar{\mathup}{922}{922}%
-\MathAlphabetChar{\mathup}{923}{923}%
-\MathAlphabetChar{\mathup}{924}{924}%
-\MathAlphabetChar{\mathup}{925}{925}%
-\MathAlphabetChar{\mathup}{926}{926}%
-\MathAlphabetChar{\mathup}{927}{927}%
-\MathAlphabetChar{\mathup}{928}{928}%
-\MathAlphabetChar{\mathup}{929}{929}%
-\MathAlphabetChar{\mathup}{930}{930}%
-\MathAlphabetChar{\mathup}{931}{931}%
-\MathAlphabetChar{\mathup}{932}{932}%
-\MathAlphabetChar{\mathup}{933}{933}%
-\MathAlphabetChar{\mathup}{934}{934}%
-\MathAlphabetChar{\mathup}{935}{935}%
-\MathAlphabetChar{\mathup}{936}{936}%
-%    \end{macrocode}
-% Greek lowercase:
-%    \begin{macrocode}      
-\MathAlphabetChar{\mathup}{945}{945}%
-\MathAlphabetChar{\mathup}{946}{946}%
-\MathAlphabetChar{\mathup}{947}{947}%
-\MathAlphabetChar{\mathup}{948}{948}%
-\MathAlphabetChar{\mathup}{949}{949}%
-\MathAlphabetChar{\mathup}{950}{950}%
-\MathAlphabetChar{\mathup}{951}{951}%
-\MathAlphabetChar{\mathup}{952}{952}%
-\MathAlphabetChar{\mathup}{953}{953}%
-\MathAlphabetChar{\mathup}{954}{954}%
-\MathAlphabetChar{\mathup}{955}{955}%
-\MathAlphabetChar{\mathup}{956}{956}%
-\MathAlphabetChar{\mathup}{957}{957}%
-\MathAlphabetChar{\mathup}{958}{958}%
-\MathAlphabetChar{\mathup}{959}{959}%
-\MathAlphabetChar{\mathup}{960}{960}%
-\MathAlphabetChar{\mathup}{961}{961}%
-\MathAlphabetChar{\mathup}{962}{962}%
-\MathAlphabetChar{\mathup}{963}{963}%
-\MathAlphabetChar{\mathup}{964}{964}%
-\MathAlphabetChar{\mathup}{965}{965}%
-\MathAlphabetChar{\mathup}{966}{966}%
-\MathAlphabetChar{\mathup}{967}{967}%
-\MathAlphabetChar{\mathup}{968}{968}%
-%    \end{macrocode}
-% TODO: nabla and others
 %
+% Takes both upright and italic characters to be typeset as upright symbols.
+%
+%    \begin{macrocode}
+  \um@setmathalphs{\mathup}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@upLatin}%
+  \um@setmathalphs{\mathup}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@uplatin}%
+  \um@setmathalphs{\mathup}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@upGreek}%
+  \um@setmathalphs{\mathup}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@upgreek}%
+  \SetMathAlphChar{\mathup}{\um@usv@Nabla,\um@usv@itNabla}{\um@usv@Nabla}%
+  \SetMathAlphChar{\mathup}{\um@usv@partial,\um@usv@itpartial}{\um@usv@partial}%
+  \SetMathAlphChar{\mathup}{\um@usv@varTheta,\um@usv@itvarTheta}{\um@usv@varTheta}%
+  \SetMathAlphChar{\mathup}{\um@usv@varepsilon,\um@usv@itvarepsilon}{\um@usv@varepsilon}%
+  \SetMathAlphChar{\mathup}{\um@usv@vartheta,\um@usv@itvartheta}{\um@usv@vartheta}%
+  \SetMathAlphChar{\mathup}{\um@usv@varkappa,\um@usv@itvarkappa}{\um@usv@varkappa}%
+  \SetMathAlphChar{\mathup}{\um@usv@varphi,\um@usv@itvarphi}{\um@usv@varphi}%
+  \SetMathAlphChar{\mathup}{\um@usv@varrho,\um@usv@itvarrho}{\um@usv@varrho}%
+  \SetMathAlphChar{\mathup}{\um@usv@varpi,\um@usv@itvarpi}{\um@usv@varpi}%
+%    \end{macrocode}
+%
+% \subsubsection{Italic: \cmd\mathit}
+%
+% \begin{example}{}
+%   \setmathfont{Cambria Math}
+%   $\mathit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
+%   $\mathit{abcdefghijklmnopqrstuvwxyz}$ \\
+%   $\mathit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$\quad$\mathit{ϴ}$ \\
+%   $\mathit{αβγδεζηθικλμνξοπρστυφχψω}$\quad$\mathit{ϵϑϰϕϱϖ}$ \\
+% \end{example}
+%
+% Roman:
+%    \begin{macrocode}
+  \um@setmathalphs{\mathit}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@itLatin}%
+  \um@setmathalphs{\mathit}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@itlatin}%
+  \SetMathAlphChar{\mathit}{`\h}{\um@usv@ith}%
+  \SetMathAlphChar{\mathit}{\um@usv@ith}{\um@usv@ith}%
+%    \end{macrocode}
+% Greek:
+%    \begin{macrocode}
+  \um@setmathalphs{\mathit}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@itGreek}%
+  \um@setmathalphs{\mathit}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@itgreek}%
+  \SetMathAlphChar{\mathup}{\um@usv@Nabla,\um@usv@itNabla}{\um@usv@itNabla}%
+  \SetMathAlphChar{\mathup}{\um@usv@partial,\um@usv@itpartial}{\um@usv@itpartial}%
+  \SetMathAlphChar{\mathup}{\um@usv@varTheta,\um@usv@itvarTheta}{\um@usv@itvarTheta}%
+  \SetMathAlphChar{\mathup}{\um@usv@varepsilon,\um@usv@itvarepsilon}{\um@usv@itvarepsilon}%
+  \SetMathAlphChar{\mathup}{\um@usv@vartheta,\um@usv@itvartheta}{\um@usv@itvartheta}%
+  \SetMathAlphChar{\mathup}{\um@usv@varkappa,\um@usv@itvarkappa}{\um@usv@itvarkappa}%
+  \SetMathAlphChar{\mathup}{\um@usv@varphi,\um@usv@itvarphi}{\um@usv@itvarphi}%
+  \SetMathAlphChar{\mathup}{\um@usv@varrho,\um@usv@itvarrho}{\um@usv@itvarrho}%
+  \SetMathAlphChar{\mathup}{\um@usv@varpi,\um@usv@itvarpi}{\um@usv@itvarpi}%
+%    \end{macrocode}
 %
 % \subsubsection{Blackboard or double-struck: \cmd\mathbb}
 % \begin{example}{}
@@ -1266,76 +1805,23 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % Numbers: (always upright)
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbb}{`\0}{"1D7D8}%
-\MathAlphabetChar{\mathbb}{`\1}{"1D7D9}%
-\MathAlphabetChar{\mathbb}{`\2}{"1D7DA}%
-\MathAlphabetChar{\mathbb}{`\3}{"1D7DB}%
-\MathAlphabetChar{\mathbb}{`\4}{"1D7DC}%
-\MathAlphabetChar{\mathbb}{`\5}{"1D7DD}%
-\MathAlphabetChar{\mathbb}{`\6}{"1D7DE}%
-\MathAlphabetChar{\mathbb}{`\7}{"1D7DF}%
-\MathAlphabetChar{\mathbb}{`\8}{"1D7E0}%
-\MathAlphabetChar{\mathbb}{`\9}{"1D7E1}%
+  \um@setmathalphs{\mathbb}{\um@usv@num}{10}{\um@usv@bbnum}%
 %    \end{macrocode}
 % Letters:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbb}{`\A}{"1D538}%
-\MathAlphabetChar{\mathbb}{`\B}{"1D539}%
-\MathAlphabetChar{\mathbb}{`\C}{"2102}%
-\MathAlphabetChar{\mathbb}{`\D}{"1D53B}%
-\MathAlphabetChar{\mathbb}{`\E}{"1D53C}%
-\MathAlphabetChar{\mathbb}{`\F}{"1D53D}%
-\MathAlphabetChar{\mathbb}{`\G}{"1D53E}%
-\MathAlphabetChar{\mathbb}{`\H}{"210D}%
-\MathAlphabetChar{\mathbb}{`\I}{"1D540}%
-\MathAlphabetChar{\mathbb}{`\J}{"1D541}%
-\MathAlphabetChar{\mathbb}{`\K}{"1D542}%
-\MathAlphabetChar{\mathbb}{`\L}{"1D543}%
-\MathAlphabetChar{\mathbb}{`\M}{"1D544}%
-\MathAlphabetChar{\mathbb}{`\N}{"2115}%
-\MathAlphabetChar{\mathbb}{`\O}{"1D546}%
-\MathAlphabetChar{\mathbb}{`\P}{"2119}%
-\MathAlphabetChar{\mathbb}{`\Q}{"211A}%
-\MathAlphabetChar{\mathbb}{`\R}{"211D}%
-\MathAlphabetChar{\mathbb}{`\S}{"1D54A}%
-\MathAlphabetChar{\mathbb}{`\T}{"1D54B}%
-\MathAlphabetChar{\mathbb}{`\U}{"1D54C}%
-\MathAlphabetChar{\mathbb}{`\V}{"1D54D}%
-\MathAlphabetChar{\mathbb}{`\W}{"1D54E}%
-\MathAlphabetChar{\mathbb}{`\X}{"1D54F}%
-\MathAlphabetChar{\mathbb}{`\Y}{"1D550}%
-\MathAlphabetChar{\mathbb}{`\Z} {"2124}%
+\um@setmathalphs{\mathbb}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bbLatin}%
+\SetMathAlphChar{\mathbb}{`\C,"1D60A}{"2102}%
+\SetMathAlphChar{\mathbb}{`\H,"1D60F}{"210D}%
+\SetMathAlphChar{\mathbb}{`\N,"1D60F}{"2115}%
+\SetMathAlphChar{\mathbb}{`\P,"1D617}{"2119}%
+\SetMathAlphChar{\mathbb}{`\Q,"1D618}{"211A}%
+\SetMathAlphChar{\mathbb}{`\R,"1D619}{"211D}%
+\SetMathAlphChar{\mathbb}{`\Z,"1D621} {"2124}%
 %    \end{macrocode}
 % Roman lowercase:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbb}{`\a}{"1D552}%
-\MathAlphabetChar{\mathbb}{`\b}{"1D553}%
-\MathAlphabetChar{\mathbb}{`\c}{"1D554}%
-\MathAlphabetChar{\mathbb}{`\d}{"1D555}%
-\MathAlphabetChar{\mathbb}{`\e}{"1D556}%
-\MathAlphabetChar{\mathbb}{`\f}{"1D557}%
-\MathAlphabetChar{\mathbb}{`\g}{"1D558}%
-\MathAlphabetChar{\mathbb}{`\h}{"1D559}%
-\MathAlphabetChar{\mathbb}{`\i}{"1D55A}%
-\MathAlphabetChar{\mathbb}{`\j}{"1D55B}%
-\MathAlphabetChar{\mathbb}{`\k}{"1D55C}%
-\MathAlphabetChar{\mathbb}{`\l}{"1D55D}%
-\MathAlphabetChar{\mathbb}{`\m}{"1D55E}%
-\MathAlphabetChar{\mathbb}{`\n}{"1D55F}%
-\MathAlphabetChar{\mathbb}{`\o}{"1D560}%
-\MathAlphabetChar{\mathbb}{`\p}{"1D561}%
-\MathAlphabetChar{\mathbb}{`\q}{"1D562}%
-\MathAlphabetChar{\mathbb}{`\r}{"1D563}%
-\MathAlphabetChar{\mathbb}{`\s}{"1D564}%
-\MathAlphabetChar{\mathbb}{`\t}{"1D565}%
-\MathAlphabetChar{\mathbb}{`\u}{"1D566}%
-\MathAlphabetChar{\mathbb}{`\v}{"1D567}%
-\MathAlphabetChar{\mathbb}{`\w}{"1D568}%
-\MathAlphabetChar{\mathbb}{`\x}{"1D569}%
-\MathAlphabetChar{\mathbb}{`\y}{"1D56A}%
-\MathAlphabetChar{\mathbb}{`\z}{"1D56B}%
+\um@setmathalphs{\mathbb}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bblatin}%
 %    \end{macrocode}
-% TODO: some Greek letters and symbols.
 %
 % \subsubsection{Script or caligraphic: \cmd\mathscr\ and \cmd\mathcal}
 % \cmd\mathcal\ and \cmd\mathscr\ are aliases.
@@ -1345,60 +1831,19 @@ This work consists of the file  \jobname.dtx
 %   $\mathscr{abcdefghijklmnopqrstuvwxyz}$ \\
 % \end{example}
 %    \begin{macrocode}
-\MathAlphabetChar{\mathscr}{`\A}{"1D49C}%
-\MathAlphabetChar{\mathscr}{`\B}{8492}%
-\MathAlphabetChar{\mathscr}{`\C}{119966}%
-\MathAlphabetChar{\mathscr}{`\D}{119967}%
-\MathAlphabetChar{\mathscr}{`\E}{8496}%
-\MathAlphabetChar{\mathscr}{`\F}{8497}%
-\MathAlphabetChar{\mathscr}{`\G}{119970}%
-\MathAlphabetChar{\mathscr}{`\H}{8459}%
-\MathAlphabetChar{\mathscr}{`\I}{8464}%
-\MathAlphabetChar{\mathscr}{`\J}{119973}%
-\MathAlphabetChar{\mathscr}{`\K}{119974}%
-\MathAlphabetChar{\mathscr}{`\L}{8466}%
-\MathAlphabetChar{\mathscr}{`\M}{8499}%
-\MathAlphabetChar{\mathscr}{`\N}{119977}%
-\MathAlphabetChar{\mathscr}{`\O}{119978}%
-\MathAlphabetChar{\mathscr}{`\P}{119979}%
-\MathAlphabetChar{\mathscr}{`\Q}{119980}%
-\MathAlphabetChar{\mathscr}{`\R}{8475}%
-\MathAlphabetChar{\mathscr}{`\S}{119982}%
-\MathAlphabetChar{\mathscr}{`\T}{119983}%
-\MathAlphabetChar{\mathscr}{`\U}{119984}%
-\MathAlphabetChar{\mathscr}{`\V}{119985}%
-\MathAlphabetChar{\mathscr}{`\W}{119986}%
-\MathAlphabetChar{\mathscr}{`\X}{119987}%
-\MathAlphabetChar{\mathscr}{`\Y}{119988}%
-\MathAlphabetChar{\mathscr}{`\Z}{119989}%
-%    \end{macrocode}
-%    \begin{macrocode}
-\MathAlphabetChar{\mathscr}{`\a}{"1D4B6}%
-\MathAlphabetChar{\mathscr}{`\b}{"1D4B7}%
-\MathAlphabetChar{\mathscr}{`\c}{"1D4B8}%
-\MathAlphabetChar{\mathscr}{`\d}{"1D4B9}%
-\MathAlphabetChar{\mathscr}{`\e}{"212F}%
-\MathAlphabetChar{\mathscr}{`\f}{"1D4BB}%
-\MathAlphabetChar{\mathscr}{`\g}{"210A}%
-\MathAlphabetChar{\mathscr}{`\h}{"1D4BD}%
-\MathAlphabetChar{\mathscr}{`\i}{"1D4BE}%
-\MathAlphabetChar{\mathscr}{`\j}{"1D4BF}%
-\MathAlphabetChar{\mathscr}{`\k}{"1D4C0}%
-\MathAlphabetChar{\mathscr}{`\l}{"1D4C1}%
-\MathAlphabetChar{\mathscr}{`\m}{"1D4C2}%
-\MathAlphabetChar{\mathscr}{`\n}{"1D4C3}%
-\MathAlphabetChar{\mathscr}{`\o}{"2134}%
-\MathAlphabetChar{\mathscr}{`\p}{"1D4C5}%
-\MathAlphabetChar{\mathscr}{`\q}{"1D4C6}%
-\MathAlphabetChar{\mathscr}{`\r}{"1D4C7}%
-\MathAlphabetChar{\mathscr}{`\s}{"1D4C8}%
-\MathAlphabetChar{\mathscr}{`\t}{"1D4C9}%
-\MathAlphabetChar{\mathscr}{`\u}{"1D4CA}%
-\MathAlphabetChar{\mathscr}{`\v}{"1D4CB}%
-\MathAlphabetChar{\mathscr}{`\w}{"1D4CC}%
-\MathAlphabetChar{\mathscr}{`\x}{"1D4CD}%
-\MathAlphabetChar{\mathscr}{`\y}{"1D4CE}%
-\MathAlphabetChar{\mathscr}{`\z}{"1D4CF}%
+\um@setmathalphs{\mathscr}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@scrLatin}%
+\SetMathAlphChar{\mathscr}{`\B,"1D435}{"212C}%
+\SetMathAlphChar{\mathscr}{`\E,"1D438}{"2130}%
+\SetMathAlphChar{\mathscr}{`\F,"1D439}{"2131}%
+\SetMathAlphChar{\mathscr}{`\H,"1D43B}{"210B}%
+\SetMathAlphChar{\mathscr}{`\I,"1D43C}{"2110}%
+\SetMathAlphChar{\mathscr}{`\L,"1D43F}{"2112}%
+\SetMathAlphChar{\mathscr}{`\M,"1D440}{"2133}%
+\SetMathAlphChar{\mathscr}{`\R,"1D445}{"211B}%
+\um@setmathalphs{\mathscr}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@scrlatin}%
+\SetMathAlphChar{\mathscr}{`\e,"1D452}{"212F}%
+\SetMathAlphChar{\mathscr}{`\g,"1D454}{"210A}%
+\SetMathAlphChar{\mathscr}{`\o,"1D45C}{"2134}%
 %    \end{macrocode}
 %
 % \subsubsection{Fractur or fraktur or blackletter: \cmd\mathfrak}
@@ -1410,61 +1855,13 @@ This work consists of the file  \jobname.dtx
 %
 % Letters, with exceptions $\{\mathfrak{C,H,I,R,Z}\}$:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathfrak}{`\A}{"1D504}%
-\MathAlphabetChar{\mathfrak}{`\B}{"1D505}%
-\MathAlphabetChar{\mathfrak}{`\C}{"212D}%
-\MathAlphabetChar{\mathfrak}{`\D}{"1D507}%
-\MathAlphabetChar{\mathfrak}{`\E}{"1D508}%
-\MathAlphabetChar{\mathfrak}{`\F}{"1D509}%
-\MathAlphabetChar{\mathfrak}{`\G}{"1D50A}%
-\MathAlphabetChar{\mathfrak}{`\H}{"210C}%
-\MathAlphabetChar{\mathfrak}{`\I}{"2111}%
-\MathAlphabetChar{\mathfrak}{`\J}{"1D50D}%
-\MathAlphabetChar{\mathfrak}{`\K}{"1D50E}%
-\MathAlphabetChar{\mathfrak}{`\L}{"1D50F}%
-\MathAlphabetChar{\mathfrak}{`\M}{"1D510}%
-\MathAlphabetChar{\mathfrak}{`\N}{"1D511}%
-\MathAlphabetChar{\mathfrak}{`\O}{"1D512}%
-\MathAlphabetChar{\mathfrak}{`\P}{"1D513}%
-\MathAlphabetChar{\mathfrak}{`\Q}{"1D514}%
-\MathAlphabetChar{\mathfrak}{`\R}{"211C}%
-\MathAlphabetChar{\mathfrak}{`\S}{"1D516}%
-\MathAlphabetChar{\mathfrak}{`\T}{"1D517}%
-\MathAlphabetChar{\mathfrak}{`\U}{"1D518}%
-\MathAlphabetChar{\mathfrak}{`\V}{"1D519}%
-\MathAlphabetChar{\mathfrak}{`\W}{"1D51A}%
-\MathAlphabetChar{\mathfrak}{`\X}{"1D51B}%
-\MathAlphabetChar{\mathfrak}{`\Y}{"1D51C}%
-\MathAlphabetChar{\mathfrak}{`\Z}{"2128}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathfrak}{`\a}{"1D51E}%
-\MathAlphabetChar{\mathfrak}{`\b}{"1D51F}%
-\MathAlphabetChar{\mathfrak}{`\c}{"1D520}%
-\MathAlphabetChar{\mathfrak}{`\d}{"1D521}%
-\MathAlphabetChar{\mathfrak}{`\e}{"1D522}%
-\MathAlphabetChar{\mathfrak}{`\f}{"1D523}%
-\MathAlphabetChar{\mathfrak}{`\g}{"1D524}%
-\MathAlphabetChar{\mathfrak}{`\h}{"1D525}%
-\MathAlphabetChar{\mathfrak}{`\i}{"1D526}%
-\MathAlphabetChar{\mathfrak}{`\j}{"1D527}%
-\MathAlphabetChar{\mathfrak}{`\k}{"1D528}%
-\MathAlphabetChar{\mathfrak}{`\l}{"1D529}%
-\MathAlphabetChar{\mathfrak}{`\m}{"1D52A}%
-\MathAlphabetChar{\mathfrak}{`\n}{"1D52B}%
-\MathAlphabetChar{\mathfrak}{`\o}{"1D52C}%
-\MathAlphabetChar{\mathfrak}{`\p}{"1D52D}%
-\MathAlphabetChar{\mathfrak}{`\q}{"1D52E}%
-\MathAlphabetChar{\mathfrak}{`\r}{"1D52F}%
-\MathAlphabetChar{\mathfrak}{`\s}{"1D530}%
-\MathAlphabetChar{\mathfrak}{`\t}{"1D531}%
-\MathAlphabetChar{\mathfrak}{`\u}{"1D532}%
-\MathAlphabetChar{\mathfrak}{`\v}{"1D533}%
-\MathAlphabetChar{\mathfrak}{`\w}{"1D534}%
-\MathAlphabetChar{\mathfrak}{`\x}{"1D535}%
-\MathAlphabetChar{\mathfrak}{`\y}{"1D536}%
-\MathAlphabetChar{\mathfrak}{`\z}{"1D537}%
+\um@setmathalphs{\mathfrak}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@frakLatin}%
+\SetMathAlphChar{\mathfrak}{`\C,"1D436}{"212D}%
+\SetMathAlphChar{\mathfrak}{`\H,"1D43B}{"210C}%
+\SetMathAlphChar{\mathfrak}{`\I,"1D43C}{"2111}%
+\SetMathAlphChar{\mathfrak}{`\R,"1D445}{"211C}%
+\SetMathAlphChar{\mathfrak}{`\Z,"1D44D}{"2128}%
+\um@setmathalphs{\mathfrak}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@fraklatin}%
 %    \end{macrocode}
 %
 % \subsubsection{Sans serif: \cmd\mathsf}
@@ -1474,76 +1871,10 @@ This work consists of the file  \jobname.dtx
 %   $\mathsf{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathsf{abcdefghijklmnopqrstuvwxyz}$ \\
 % \end{example}
-% Numbers:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathsf}{`\0}{"1D7E2}%
-\MathAlphabetChar{\mathsf}{`\1}{"1D7E3}%
-\MathAlphabetChar{\mathsf}{`\2}{"1D7E4}%
-\MathAlphabetChar{\mathsf}{`\3}{"1D7E5}%
-\MathAlphabetChar{\mathsf}{`\4}{"1D7E6}%
-\MathAlphabetChar{\mathsf}{`\5}{"1D7E7}%
-\MathAlphabetChar{\mathsf}{`\6}{"1D7E8}%
-\MathAlphabetChar{\mathsf}{`\7}{"1D7E9}%
-\MathAlphabetChar{\mathsf}{`\8}{"1D7EA}%
-\MathAlphabetChar{\mathsf}{`\9}{"1D7EB}%
-%    \end{macrocode}
-% Roman letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathsf}{`\A}{"1D5A0}%
-\MathAlphabetChar{\mathsf}{`\B}{"1D5A1}%
-\MathAlphabetChar{\mathsf}{`\C}{"1D5A2}%
-\MathAlphabetChar{\mathsf}{`\D}{"1D5A3}%
-\MathAlphabetChar{\mathsf}{`\E}{"1D5A4}%
-\MathAlphabetChar{\mathsf}{`\F}{"1D5A5}%
-\MathAlphabetChar{\mathsf}{`\G}{"1D5A6}%
-\MathAlphabetChar{\mathsf}{`\H}{"1D5A7}%
-\MathAlphabetChar{\mathsf}{`\I}{"1D5A8}%
-\MathAlphabetChar{\mathsf}{`\J}{"1D5A9}%
-\MathAlphabetChar{\mathsf}{`\K}{"1D5AA}%
-\MathAlphabetChar{\mathsf}{`\L}{"1D5AB}%
-\MathAlphabetChar{\mathsf}{`\M}{"1D5AC}%
-\MathAlphabetChar{\mathsf}{`\N}{"1D5AD}%
-\MathAlphabetChar{\mathsf}{`\O}{"1D5AE}%
-\MathAlphabetChar{\mathsf}{`\P}{"1D5AF}%
-\MathAlphabetChar{\mathsf}{`\Q}{"1D5B0}%
-\MathAlphabetChar{\mathsf}{`\R}{"1D5B1}%
-\MathAlphabetChar{\mathsf}{`\S}{"1D5B2}%
-\MathAlphabetChar{\mathsf}{`\T}{"1D5B3}%
-\MathAlphabetChar{\mathsf}{`\U}{"1D5B4}%
-\MathAlphabetChar{\mathsf}{`\V}{"1D5B5}%
-\MathAlphabetChar{\mathsf}{`\W}{"1D5B6}%
-\MathAlphabetChar{\mathsf}{`\X}{"1D5B7}%
-\MathAlphabetChar{\mathsf}{`\Y}{"1D5B8}%
-\MathAlphabetChar{\mathsf}{`\Z}{"1D5B9}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathsf}{`\a}{"1D5BA}%
-\MathAlphabetChar{\mathsf}{`\b}{"1D5BB}%
-\MathAlphabetChar{\mathsf}{`\c}{"1D5BC}%
-\MathAlphabetChar{\mathsf}{`\d}{"1D5BD}%
-\MathAlphabetChar{\mathsf}{`\e}{"1D5BE}%
-\MathAlphabetChar{\mathsf}{`\f}{"1D5BF}%
-\MathAlphabetChar{\mathsf}{`\g}{"1D5C0}%
-\MathAlphabetChar{\mathsf}{`\h}{"1D5C1}%
-\MathAlphabetChar{\mathsf}{`\i}{"1D5C2}%
-\MathAlphabetChar{\mathsf}{`\j}{"1D5C3}%
-\MathAlphabetChar{\mathsf}{`\k}{"1D5C4}%
-\MathAlphabetChar{\mathsf}{`\l}{"1D5C5}%
-\MathAlphabetChar{\mathsf}{`\m}{"1D5C6}%
-\MathAlphabetChar{\mathsf}{`\n}{"1D5C7}%
-\MathAlphabetChar{\mathsf}{`\o}{"1D5C8}%
-\MathAlphabetChar{\mathsf}{`\p}{"1D5C9}%
-\MathAlphabetChar{\mathsf}{`\q}{"1D5CA}%
-\MathAlphabetChar{\mathsf}{`\r}{"1D5CB}%
-\MathAlphabetChar{\mathsf}{`\s}{"1D5CC}%
-\MathAlphabetChar{\mathsf}{`\t}{"1D5CD}%
-\MathAlphabetChar{\mathsf}{`\u}{"1D5CE}%
-\MathAlphabetChar{\mathsf}{`\v}{"1D5CF}%
-\MathAlphabetChar{\mathsf}{`\w}{"1D5D0}%
-\MathAlphabetChar{\mathsf}{`\x}{"1D5D1}%
-\MathAlphabetChar{\mathsf}{`\y}{"1D5D2}%
-\MathAlphabetChar{\mathsf}{`\z}{"1D5D3}%
+\um@setmathalphs{\mathsf}{\um@usv@num}{10}{\um@usv@sfnum}%
+\um@setmathalphs{\mathsf}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@sfLatin}%
+\um@setmathalphs{\mathsf}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@sflatin}%
 %    \end{macrocode}
 %
 % \subsubsection{Sans serif italic: \cmd\mathsfit}
@@ -1553,76 +1884,10 @@ This work consists of the file  \jobname.dtx
 %   $\mathsfit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathsfit{abcdefghijklmnopqrstuvwxyz}$ \\
 % \end{example}
-% Numbers (always upright):
 %    \begin{macrocode}
-\MathAlphabetChar{\mathsfit}{`\0}{"1D7E2}%
-\MathAlphabetChar{\mathsfit}{`\1}{"1D7E3}%
-\MathAlphabetChar{\mathsfit}{`\2}{"1D7E4}%
-\MathAlphabetChar{\mathsfit}{`\3}{"1D7E5}%
-\MathAlphabetChar{\mathsfit}{`\4}{"1D7E6}%
-\MathAlphabetChar{\mathsfit}{`\5}{"1D7E7}%
-\MathAlphabetChar{\mathsfit}{`\6}{"1D7E8}%
-\MathAlphabetChar{\mathsfit}{`\7}{"1D7E9}%
-\MathAlphabetChar{\mathsfit}{`\8}{"1D7EA}%
-\MathAlphabetChar{\mathsfit}{`\9}{"1D7EB}%
-%    \end{macrocode}
-% Roman letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathsfit}{`\A}{"1D608}%
-\MathAlphabetChar{\mathsfit}{`\B}{"1D609}%
-\MathAlphabetChar{\mathsfit}{`\C}{"1D60A}%
-\MathAlphabetChar{\mathsfit}{`\D}{"1D60B}%
-\MathAlphabetChar{\mathsfit}{`\E}{"1D60C}%
-\MathAlphabetChar{\mathsfit}{`\F}{"1D60D}%
-\MathAlphabetChar{\mathsfit}{`\G}{"1D60E}%
-\MathAlphabetChar{\mathsfit}{`\H}{"1D60F}%
-\MathAlphabetChar{\mathsfit}{`\I}{"1D610}%
-\MathAlphabetChar{\mathsfit}{`\J}{"1D611}%
-\MathAlphabetChar{\mathsfit}{`\K}{"1D612}%
-\MathAlphabetChar{\mathsfit}{`\L}{"1D613}%
-\MathAlphabetChar{\mathsfit}{`\M}{"1D614}%
-\MathAlphabetChar{\mathsfit}{`\N}{"1D615}%
-\MathAlphabetChar{\mathsfit}{`\O}{"1D616}%
-\MathAlphabetChar{\mathsfit}{`\P}{"1D617}%
-\MathAlphabetChar{\mathsfit}{`\Q}{"1D618}%
-\MathAlphabetChar{\mathsfit}{`\R}{"1D619}%
-\MathAlphabetChar{\mathsfit}{`\S}{"1D61A}%
-\MathAlphabetChar{\mathsfit}{`\T}{"1D61B}%
-\MathAlphabetChar{\mathsfit}{`\U}{"1D61C}%
-\MathAlphabetChar{\mathsfit}{`\V}{"1D61D}%
-\MathAlphabetChar{\mathsfit}{`\W}{"1D61E}%
-\MathAlphabetChar{\mathsfit}{`\X}{"1D61F}%
-\MathAlphabetChar{\mathsfit}{`\Y}{"1D620}%
-\MathAlphabetChar{\mathsfit}{`\Z}{"1D621}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathsfit}{`\a}{"1D622}%
-\MathAlphabetChar{\mathsfit}{`\b}{"1D623}%
-\MathAlphabetChar{\mathsfit}{`\c}{"1D624}%
-\MathAlphabetChar{\mathsfit}{`\d}{"1D625}%
-\MathAlphabetChar{\mathsfit}{`\e}{"1D626}%
-\MathAlphabetChar{\mathsfit}{`\f}{"1D627}%
-\MathAlphabetChar{\mathsfit}{`\g}{"1D628}%
-\MathAlphabetChar{\mathsfit}{`\h}{"1D629}%
-\MathAlphabetChar{\mathsfit}{`\i}{"1D62A}%
-\MathAlphabetChar{\mathsfit}{`\j}{"1D62B}%
-\MathAlphabetChar{\mathsfit}{`\k}{"1D62C}%
-\MathAlphabetChar{\mathsfit}{`\l}{"1D62D}%
-\MathAlphabetChar{\mathsfit}{`\m}{"1D62E}%
-\MathAlphabetChar{\mathsfit}{`\n}{"1D62F}%
-\MathAlphabetChar{\mathsfit}{`\o}{"1D630}%
-\MathAlphabetChar{\mathsfit}{`\p}{"1D631}%
-\MathAlphabetChar{\mathsfit}{`\q}{"1D632}%
-\MathAlphabetChar{\mathsfit}{`\r}{"1D633}%
-\MathAlphabetChar{\mathsfit}{`\s}{"1D634}%
-\MathAlphabetChar{\mathsfit}{`\t}{"1D635}%
-\MathAlphabetChar{\mathsfit}{`\u}{"1D636}%
-\MathAlphabetChar{\mathsfit}{`\v}{"1D637}%
-\MathAlphabetChar{\mathsfit}{`\w}{"1D638}%
-\MathAlphabetChar{\mathsfit}{`\x}{"1D639}%
-\MathAlphabetChar{\mathsfit}{`\y}{"1D63A}%
-\MathAlphabetChar{\mathsfit}{`\z}{"1D63B}%
+\um@setmathalphs{\mathsfit}{\um@usv@num}{10}{\um@usv@sfnum}%
+\um@setmathalphs{\mathsfit}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@sfitLatin}%
+\um@setmathalphs{\mathsfit}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@sfitlatin}%
 %    \end{macrocode}
 %
 % \subsubsection{Typewriter or monospaced: \cmd\mathtt}
@@ -1632,76 +1897,10 @@ This work consists of the file  \jobname.dtx
 %   $\mathtt{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathtt{abcdefghijklmnopqrstuvwxyz}$ \\
 % \end{example}
-% Numbers:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathtt}{`\0}{"1D7F6}%
-\MathAlphabetChar{\mathtt}{`\1}{"1D7F7}%
-\MathAlphabetChar{\mathtt}{`\2}{"1D7F8}%
-\MathAlphabetChar{\mathtt}{`\3}{"1D7F9}%
-\MathAlphabetChar{\mathtt}{`\4}{"1D7FA}%
-\MathAlphabetChar{\mathtt}{`\5}{"1D7FB}%
-\MathAlphabetChar{\mathtt}{`\6}{"1D7FC}%
-\MathAlphabetChar{\mathtt}{`\7}{"1D7FD}%
-\MathAlphabetChar{\mathtt}{`\8}{"1D7FE}%
-\MathAlphabetChar{\mathtt}{`\9}{"1D7FF}%
-%    \end{macrocode}
-% Letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathtt}{`\A}{"1D670}%
-\MathAlphabetChar{\mathtt}{`\B}{"1D671}%
-\MathAlphabetChar{\mathtt}{`\C}{"1D672}%
-\MathAlphabetChar{\mathtt}{`\D}{"1D673}%
-\MathAlphabetChar{\mathtt}{`\E}{"1D674}%
-\MathAlphabetChar{\mathtt}{`\F}{"1D675}%
-\MathAlphabetChar{\mathtt}{`\G}{"1D676}%
-\MathAlphabetChar{\mathtt}{`\H}{"1D677}%
-\MathAlphabetChar{\mathtt}{`\I}{"1D678}%
-\MathAlphabetChar{\mathtt}{`\J}{"1D679}%
-\MathAlphabetChar{\mathtt}{`\K}{"1D67A}%
-\MathAlphabetChar{\mathtt}{`\L}{"1D67B}%
-\MathAlphabetChar{\mathtt}{`\M}{"1D67C}%
-\MathAlphabetChar{\mathtt}{`\N}{"1D67D}%
-\MathAlphabetChar{\mathtt}{`\O}{"1D67E}%
-\MathAlphabetChar{\mathtt}{`\P}{"1D67F}%
-\MathAlphabetChar{\mathtt}{`\Q}{"1D680}%
-\MathAlphabetChar{\mathtt}{`\R}{"1D681}%
-\MathAlphabetChar{\mathtt}{`\S}{"1D682}%
-\MathAlphabetChar{\mathtt}{`\T}{"1D683}%
-\MathAlphabetChar{\mathtt}{`\U}{"1D684}%
-\MathAlphabetChar{\mathtt}{`\V}{"1D685}%
-\MathAlphabetChar{\mathtt}{`\W}{"1D686}%
-\MathAlphabetChar{\mathtt}{`\X}{"1D687}%
-\MathAlphabetChar{\mathtt}{`\Y}{"1D688}%
-\MathAlphabetChar{\mathtt}{`\Z}{"1D689}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathtt}{`\a}{"1D68A}%
-\MathAlphabetChar{\mathtt}{`\b}{"1D68B}%
-\MathAlphabetChar{\mathtt}{`\c}{"1D68C}%
-\MathAlphabetChar{\mathtt}{`\d}{"1D68D}%
-\MathAlphabetChar{\mathtt}{`\e}{"1D68E}%
-\MathAlphabetChar{\mathtt}{`\f}{"1D68F}%
-\MathAlphabetChar{\mathtt}{`\g}{"1D690}%
-\MathAlphabetChar{\mathtt}{`\h}{"1D691}%
-\MathAlphabetChar{\mathtt}{`\i}{"1D692}%
-\MathAlphabetChar{\mathtt}{`\j}{"1D693}%
-\MathAlphabetChar{\mathtt}{`\k}{"1D694}%
-\MathAlphabetChar{\mathtt}{`\l}{"1D695}%
-\MathAlphabetChar{\mathtt}{`\m}{"1D696}%
-\MathAlphabetChar{\mathtt}{`\n}{"1D697}%
-\MathAlphabetChar{\mathtt}{`\o}{"1D698}%
-\MathAlphabetChar{\mathtt}{`\p}{"1D699}%
-\MathAlphabetChar{\mathtt}{`\q}{"1D69A}%
-\MathAlphabetChar{\mathtt}{`\r}{"1D69B}%
-\MathAlphabetChar{\mathtt}{`\s}{"1D69C}%
-\MathAlphabetChar{\mathtt}{`\t}{"1D69D}%
-\MathAlphabetChar{\mathtt}{`\u}{"1D69E}%
-\MathAlphabetChar{\mathtt}{`\v}{"1D69F}%
-\MathAlphabetChar{\mathtt}{`\w}{"1D6A0}%
-\MathAlphabetChar{\mathtt}{`\x}{"1D6A1}%
-\MathAlphabetChar{\mathtt}{`\y}{"1D6A2}%
-\MathAlphabetChar{\mathtt}{`\z}{"1D6A3}%
+\um@setmathalphs{\mathtt}{\um@usv@num}{10}{\um@usv@ttnum}%
+\um@setmathalphs{\mathtt}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@ttLatin}%
+\um@setmathalphs{\mathtt}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@ttlatin}%
 %    \end{macrocode}
 %
 % \subsection{Bold alphabets' character mappings}
@@ -1713,146 +1912,79 @@ This work consists of the file  \jobname.dtx
 %   $\mathbf{0123456789}$ \\
 %   $\mathbf{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathbf{abcdefghijklmnopqrstuvwxyz}$ \\
-%   $\mathbf{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
-%   $\mathbf{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+%   $\mathbf{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$\quad$\mathbf{ϴϜ}$ \\
+%   $\mathbf{αβγδεζηθικλμνξοπρστυφχψω}$\quad$\mathbf{ϵϑϰϕϱϖϝ}$ \\
 % \end{example}
 %
-% Numbers:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbf}{`\0}{"1D7CE}%
-\MathAlphabetChar{\mathbf}{`\1}{"1D7CF}%
-\MathAlphabetChar{\mathbf}{`\2}{"1D7D0}%
-\MathAlphabetChar{\mathbf}{`\3}{"1D7D1}%
-\MathAlphabetChar{\mathbf}{`\4}{"1D7D2}%
-\MathAlphabetChar{\mathbf}{`\5}{"1D7D3}%
-\MathAlphabetChar{\mathbf}{`\6}{"1D7D4}%
-\MathAlphabetChar{\mathbf}{`\7}{"1D7D5}%
-\MathAlphabetChar{\mathbf}{`\8}{"1D7D6}%
-\MathAlphabetChar{\mathbf}{`\9}{"1D7D7}%
-%    \end{macrocode}
-% Letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbf}{`\A}{"1D400}%
-\MathAlphabetChar{\mathbf}{`\B}{"1D401}%
-\MathAlphabetChar{\mathbf}{`\C}{"1D402}%
-\MathAlphabetChar{\mathbf}{`\D}{"1D403}%
-\MathAlphabetChar{\mathbf}{`\E}{"1D404}%
-\MathAlphabetChar{\mathbf}{`\F}{"1D405}%
-\MathAlphabetChar{\mathbf}{`\G}{"1D406}%
-\MathAlphabetChar{\mathbf}{`\H}{"1D407}%
-\MathAlphabetChar{\mathbf}{`\I}{"1D408}%
-\MathAlphabetChar{\mathbf}{`\J}{"1D409}%
-\MathAlphabetChar{\mathbf}{`\K}{"1D40A}%
-\MathAlphabetChar{\mathbf}{`\L}{"1D40B}%
-\MathAlphabetChar{\mathbf}{`\M}{"1D40C}%
-\MathAlphabetChar{\mathbf}{`\N}{"1D40D}%
-\MathAlphabetChar{\mathbf}{`\O}{"1D40E}%
-\MathAlphabetChar{\mathbf}{`\P}{"1D40F}%
-\MathAlphabetChar{\mathbf}{`\Q}{"1D410}%
-\MathAlphabetChar{\mathbf}{`\R}{"1D411}%
-\MathAlphabetChar{\mathbf}{`\S}{"1D412}%
-\MathAlphabetChar{\mathbf}{`\T}{"1D413}%
-\MathAlphabetChar{\mathbf}{`\U}{"1D414}%
-\MathAlphabetChar{\mathbf}{`\V}{"1D415}%
-\MathAlphabetChar{\mathbf}{`\W}{"1D416}%
-\MathAlphabetChar{\mathbf}{`\X}{"1D417}%
-\MathAlphabetChar{\mathbf}{`\Y}{"1D418}%
-\MathAlphabetChar{\mathbf}{`\Z}{"1D419}%
+  \um@setmathalphs{\mathbf}{\um@usv@num}{10}{\um@usv@bfnum}%
+  \SetMathAlphChar{\mathbf}{\um@usv@Digamma}{"1D7CA}%
+  \SetMathAlphChar{\mathbf}{\um@usv@digamma}{"1D7CB}%
+\if@um@bfliteral
+  \um@setmathalphs{\mathbf}{\um@usv@upLatin}{26}{\um@usv@bfLatin}%
+  \um@setmathalphs{\mathbf}{\um@usv@itLatin}{26}{\um@usv@bfitLatin}%
+  \um@setmathalphs{\mathbf}{\um@usv@uplatin}{26}{\um@usv@bflatin}%
+  \um@setmathalphs{\mathbf}{\um@usv@itlatin}{26}{\um@usv@bfitlatin}%
+  \um@setmathalphs{\mathbf}{\um@usv@upGreek}{25}{\um@usv@bfGreek}%
+  \um@setmathalphs{\mathbf}{\um@usv@itGreek}{25}{\um@usv@bfitGreek}%
+  \um@setmathalphs{\mathbf}{\um@usv@upgreek}{25}{\um@usv@bfgreek}%
+  \um@setmathalphs{\mathbf}{\um@usv@itgreek}{25}{\um@usv@bfitgreek}%
+  \SetMathAlphChar{\mathbf}{\um@usv@ith}{"1D489}%
+  \SetMathAlphChar{\mathbf}{\um@usv@varTheta}{"1D6B9}%
+  \SetMathAlphChar{\mathbf}{\um@usv@Nabla}{"1D6C1}%
+  \SetMathAlphChar{\mathbf}{\um@usv@Digamma}{"1D7CA}%
+  \SetMathAlphChar{\mathbf}{\um@usv@partial}{"1D6DB}%
+  \SetMathAlphChar{\mathbf}{\um@usv@varepsilon}{"1D6DC}%
+  \SetMathAlphChar{\mathbf}{\um@usv@vartheta}{"1D6DD}%
+  \SetMathAlphChar{\mathbf}{\um@usv@varkappa}{"1D6DE}%
+  \SetMathAlphChar{\mathbf}{\um@usv@varphi}{"1D6DF}%
+  \SetMathAlphChar{\mathbf}{\um@usv@varrho}{"1D6E0}%
+  \SetMathAlphChar{\mathbf}{\um@usv@varpi}{"1D6E1}%
+  \SetMathAlphChar{\mathbf}{\um@usv@digamma}{"1D7CB}%
+\else
+  \if@um@bfupLatin
+    \um@setmathalphs{\mathbf}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bfLatin}%
+  \else
+    \um@setmathalphs{\mathbf}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bfitLatin}%  
+  \fi
+  \if@um@bfuplatin
+    \um@setmathalphs{\mathbf}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bflatin}%
+    \SetMathAlphChar{\mathbf}{\um@usv@ith}{"1D421}%
+  \else
+    \um@setmathalphs{\mathbf}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bfitlatin}%
+    \SetMathAlphChar{\mathbf}{\um@usv@ith}{"1D489}%
+  \fi  
+  \if@um@bfupGreek
+    \um@setmathalphs{\mathbf}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@bfGreek}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varTheta,\um@usv@itvarTheta}{"1D6B9}%
+  \else
+    \um@setmathalphs{\mathbf}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@bfitGreek}%  
+    \SetMathAlphChar{\mathbf}{\um@usv@varTheta,\um@usv@itvarTheta}{"1D72D}%
+  \fi
+  \if@um@bfupgreek
+    \um@setmathalphs{\mathbf}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@bfgreek}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varepsilon,\um@usv@itvarepsilon}{"1D6DC}%
+    \SetMathAlphChar{\mathbf}{\um@usv@vartheta,\um@usv@itvartheta}{"1D6DD}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varkappa,\um@usv@itvarkappa}{"1D6DE}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varphi,\um@usv@itvarphi}{"1D6DF}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varrho,\um@usv@itvarrho}{"1D6E0}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varpi,\um@usv@itvarpi}{"1D6E1}%
+  \else
+    \um@setmathalphs{\mathbf}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@bfitgreek}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varepsilon,\um@usv@itvarepsilon}{"1D750}%
+    \SetMathAlphChar{\mathbf}{\um@usv@vartheta,\um@usv@itvartheta}{"1D751}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varkappa,\um@usv@itvarkappa}{"1D752}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varphi,\um@usv@itvarphi}{"1D753}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varrho,\um@usv@itvarrho}{"1D754}%
+    \SetMathAlphChar{\mathbf}{\um@usv@varpi,\um@usv@itvarpi}{"1D755}%
+  \fi  
+\fi
+%  \SetMathAlphChar{\mathbf}{\um@usv@Nabla}{"1D6C1}%
+%  \SetMathAlphChar{\mathbf}{\um@usv@partial}{"1D6DB}%
+%  \SetMathAlphChar{\mathbf}{\um@usv@itNabla}{"1D6C1}%
+%  \SetMathAlphChar{\mathbf}{\um@usv@itpartial}{"1D6DB}%
 %    \end{macrocode}
 %
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbf}{`\a}{"1D41A}%
-\MathAlphabetChar{\mathbf}{`\b}{"1D41B}%
-\MathAlphabetChar{\mathbf}{`\c}{"1D41C}%
-\MathAlphabetChar{\mathbf}{`\d}{"1D41D}%
-\MathAlphabetChar{\mathbf}{`\e}{"1D41E}%
-\MathAlphabetChar{\mathbf}{`\f}{"1D41F}%
-\MathAlphabetChar{\mathbf}{`\g}{"1D420}%
-\MathAlphabetChar{\mathbf}{`\h}{"1D421}%
-\MathAlphabetChar{\mathbf}{`\i}{"1D422}%
-\MathAlphabetChar{\mathbf}{`\j}{"1D423}%
-\MathAlphabetChar{\mathbf}{`\k}{"1D424}%
-\MathAlphabetChar{\mathbf}{`\l}{"1D425}%
-\MathAlphabetChar{\mathbf}{`\m}{"1D426}%
-\MathAlphabetChar{\mathbf}{`\n}{"1D427}%
-\MathAlphabetChar{\mathbf}{`\o}{"1D428}%
-\MathAlphabetChar{\mathbf}{`\p}{"1D429}%
-\MathAlphabetChar{\mathbf}{`\q}{"1D42A}%
-\MathAlphabetChar{\mathbf}{`\r}{"1D42B}%
-\MathAlphabetChar{\mathbf}{`\s}{"1D42C}%
-\MathAlphabetChar{\mathbf}{`\t}{"1D42D}%
-\MathAlphabetChar{\mathbf}{`\u}{"1D42E}%
-\MathAlphabetChar{\mathbf}{`\v}{"1D42F}%
-\MathAlphabetChar{\mathbf}{`\w}{"1D430}%
-\MathAlphabetChar{\mathbf}{`\x}{"1D431}%
-\MathAlphabetChar{\mathbf}{`\y}{"1D432}%
-\MathAlphabetChar{\mathbf}{`\z}{"1D433}%
-%    \end{macrocode}
-% Greek letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbf}{913}{"1D6A8}%
-\MathAlphabetChar{\mathbf}{914}{"1D6A9}%
-\MathAlphabetChar{\mathbf}{915}{"1D6AA}%
-\MathAlphabetChar{\mathbf}{916}{"1D6AB}%
-\MathAlphabetChar{\mathbf}{917}{"1D6AC}%
-\MathAlphabetChar{\mathbf}{918}{"1D6AD}%
-\MathAlphabetChar{\mathbf}{919}{"1D6AE}%
-\MathAlphabetChar{\mathbf}{920}{"1D6AF}%
-\MathAlphabetChar{\mathbf}{921}{"1D6B0}%
-\MathAlphabetChar{\mathbf}{922}{"1D6B1}%
-\MathAlphabetChar{\mathbf}{923}{"1D6B2}%
-\MathAlphabetChar{\mathbf}{924}{"1D6B3}%
-\MathAlphabetChar{\mathbf}{925}{"1D6B4}%
-\MathAlphabetChar{\mathbf}{926}{"1D6B5}%
-\MathAlphabetChar{\mathbf}{927}{"1D6B6}%
-\MathAlphabetChar{\mathbf}{928}{"1D6B7}%
-\MathAlphabetChar{\mathbf}{929}{"1D6B8}%
-%\MathAlphabetChar{\mathbf}{??}{"1D6B9}%
-\MathAlphabetChar{\mathbf}{931}{"1D6BA}%
-\MathAlphabetChar{\mathbf}{932}{"1D6BB}%
-\MathAlphabetChar{\mathbf}{933}{"1D6BC}%
-\MathAlphabetChar{\mathbf}{934}{"1D6BD}%
-\MathAlphabetChar{\mathbf}{935}{"1D6BE}%
-\MathAlphabetChar{\mathbf}{936}{"1D6BF}%
-\MathAlphabetChar{\mathbf}{937}{"1D6C0}%
-\MathAlphabetChar{\mathbf}{"2207}{"1D6C1}%
-%    \end{macrocode}
-% Greek lowercase:
-%    \begin{macrocode}      
-\MathAlphabetChar{\mathbf}{945}{"1D6C2}%
-\MathAlphabetChar{\mathbf}{946}{"1D6C3}%
-\MathAlphabetChar{\mathbf}{947}{"1D6C4}%
-\MathAlphabetChar{\mathbf}{948}{"1D6C5}%
-\MathAlphabetChar{\mathbf}{949}{"1D6C6}%
-\MathAlphabetChar{\mathbf}{950}{"1D6C7}%
-\MathAlphabetChar{\mathbf}{951}{"1D6C8}%
-\MathAlphabetChar{\mathbf}{952}{"1D6C9}%
-\MathAlphabetChar{\mathbf}{953}{"1D6CA}%
-\MathAlphabetChar{\mathbf}{954}{"1D6CB}%
-\MathAlphabetChar{\mathbf}{955}{"1D6CC}%
-\MathAlphabetChar{\mathbf}{956}{"1D6CD}%
-\MathAlphabetChar{\mathbf}{957}{"1D6CE}%
-\MathAlphabetChar{\mathbf}{958}{"1D6CF}%
-\MathAlphabetChar{\mathbf}{959}{"1D6D0}%
-\MathAlphabetChar{\mathbf}{960}{"1D6D1}%
-\MathAlphabetChar{\mathbf}{961}{"1D6D2}%
-\MathAlphabetChar{\mathbf}{960}{"1D6D3}%
-\MathAlphabetChar{\mathbf}{963}{"1D6D4}%
-\MathAlphabetChar{\mathbf}{964}{"1D6D5}%
-\MathAlphabetChar{\mathbf}{965}{"1D6D6}%
-\MathAlphabetChar{\mathbf}{966}{"1D6D7}%
-\MathAlphabetChar{\mathbf}{967}{"1D6D8}%
-\MathAlphabetChar{\mathbf}{968}{"1D6D9}%
-\MathAlphabetChar{\mathbf}{969}{"1D6DA}%
-\MathAlphabetChar{\mathbf}{"2202}{"1D6DB}%
-%\MathAlphabetChar{\mathbf}{??}{"1D6DC}% VAR EPSILON
-%\MathAlphabetChar{\mathbf}{??}{"1D6DD}% VAR THETA
-%\MathAlphabetChar{\mathbf}{??}{"1D6DE}% VAR KAPPA
-%\MathAlphabetChar{\mathbf}{??}{"1D6DF}% VAR PHI
-%\MathAlphabetChar{\mathbf}{??}{"1D6E0}% VAR RHO
-%\MathAlphabetChar{\mathbf}{??}{"1D6E1}% VAR PI
-%    \end{macrocode}
-% TODO: nabla and others
 %
 %
 % \subsubsection{Bold Italic: \cmd\mathbfit}
@@ -1861,145 +1993,31 @@ This work consists of the file  \jobname.dtx
 %   $\mathbfit{0123456789}$ \\
 %   $\mathbfit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathbfit{abcdefghijklmnopqrstuvwxyz}$ \\
-%   $\mathbfit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
-%   $\mathbfit{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+%   $\mathbfit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$\quad$\mathbfit{ϴ}$ \\
+%   $\mathbfit{αβγδεζηθικλμνξοπρστυφχψω}$\quad$\mathbfit{ϵϑϰϕϱϖ}$ \\
 % \end{example}
 %
-% Bold numbers: (always upright)
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfit}{`\0}{"1D7CE}%
-\MathAlphabetChar{\mathbfit}{`\1}{"1D7CF}%
-\MathAlphabetChar{\mathbfit}{`\2}{"1D7D0}%
-\MathAlphabetChar{\mathbfit}{`\3}{"1D7D1}%
-\MathAlphabetChar{\mathbfit}{`\4}{"1D7D2}%
-\MathAlphabetChar{\mathbfit}{`\5}{"1D7D3}%
-\MathAlphabetChar{\mathbfit}{`\6}{"1D7D4}%
-\MathAlphabetChar{\mathbfit}{`\7}{"1D7D5}%
-\MathAlphabetChar{\mathbfit}{`\8}{"1D7D6}%
-\MathAlphabetChar{\mathbfit}{`\9}{"1D7D7}%
+\um@setmathalphs{\mathbfit}{\um@usv@num}{10}{\um@usv@bfnum}%
+\um@setmathalphs{\mathbfit}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bfitLatin}%
+\um@setmathalphs{\mathbfit}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bfitlatin}%
+\um@setmathalphs{\mathbfit}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@bfitGreek}%
+\um@setmathalphs{\mathbfit}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@bfitgreek}%
+\um@setmathalphs{\mathbfit}{\um@usv@bfLatin}{26}{\um@usv@bfitLatin}%
+\um@setmathalphs{\mathbfit}{\um@usv@bflatin}{26}{\um@usv@bfitlatin}%
+\um@setmathalphs{\mathbfit}{\um@usv@bfGreek}{25}{\um@usv@bfitGreek}%
+\um@setmathalphs{\mathbfit}{\um@usv@bfgreek}{25}{\um@usv@bfitgreek}%
+\SetMathAlphChar{\mathbfit}{\um@usv@varTheta}{"1D72D}%
+\SetMathAlphChar{\mathbfit}{\um@usv@Nabla}{\um@usv@bfitNabla}%
+\SetMathAlphChar{\mathbfit}{\um@usv@partial}{"1D74F}%
+\SetMathAlphChar{\mathbfit}{\um@usv@varepsilon}{"1D750}%
+\SetMathAlphChar{\mathbfit}{\um@usv@vartheta}{"1D751}%
+\SetMathAlphChar{\mathbfit}{\um@usv@varkappa}{"1D752}%
+\SetMathAlphChar{\mathbfit}{\um@usv@varphi}{"1D753}%
+\SetMathAlphChar{\mathbfit}{\um@usv@varrho}{"1D754}%
+\SetMathAlphChar{\mathbfit}{\um@usv@varpi}{"1D755}%
 %    \end{macrocode}
-% Letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbfit}{`\A}{"1D468}%
-\MathAlphabetChar{\mathbfit}{`\B}{"1D469}%
-\MathAlphabetChar{\mathbfit}{`\C}{"1D46A}%
-\MathAlphabetChar{\mathbfit}{`\D}{"1D46B}%
-\MathAlphabetChar{\mathbfit}{`\E}{"1D46C}%
-\MathAlphabetChar{\mathbfit}{`\F}{"1D46D}%
-\MathAlphabetChar{\mathbfit}{`\G}{"1D46E}%
-\MathAlphabetChar{\mathbfit}{`\H}{"1D46F}%
-\MathAlphabetChar{\mathbfit}{`\I}{"1D470}%
-\MathAlphabetChar{\mathbfit}{`\J}{"1D471}%
-\MathAlphabetChar{\mathbfit}{`\K}{"1D472}%
-\MathAlphabetChar{\mathbfit}{`\L}{"1D473}%
-\MathAlphabetChar{\mathbfit}{`\M}{"1D474}%
-\MathAlphabetChar{\mathbfit}{`\N}{"1D475}%
-\MathAlphabetChar{\mathbfit}{`\O}{"1D476}%
-\MathAlphabetChar{\mathbfit}{`\P}{"1D477}%
-\MathAlphabetChar{\mathbfit}{`\Q}{"1D478}%
-\MathAlphabetChar{\mathbfit}{`\R}{"1D479}%
-\MathAlphabetChar{\mathbfit}{`\S}{"1D47A}%
-\MathAlphabetChar{\mathbfit}{`\T}{"1D47B}%
-\MathAlphabetChar{\mathbfit}{`\U}{"1D47C}%
-\MathAlphabetChar{\mathbfit}{`\V}{"1D47D}%
-\MathAlphabetChar{\mathbfit}{`\W}{"1D47E}%
-\MathAlphabetChar{\mathbfit}{`\X}{"1D47F}%
-\MathAlphabetChar{\mathbfit}{`\Y}{"1D480}%
-\MathAlphabetChar{\mathbfit}{`\Z}{"1D481}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbfit}{`\a}{"1D482}%
-\MathAlphabetChar{\mathbfit}{`\b}{"1D483}%
-\MathAlphabetChar{\mathbfit}{`\c}{"1D484}%
-\MathAlphabetChar{\mathbfit}{`\d}{"1D485}%
-\MathAlphabetChar{\mathbfit}{`\e}{"1D486}%
-\MathAlphabetChar{\mathbfit}{`\f}{"1D487}%
-\MathAlphabetChar{\mathbfit}{`\g}{"1D488}%
-\MathAlphabetChar{\mathbfit}{`\h}{"1D489}%
-\MathAlphabetChar{\mathbfit}{`\i}{"1D48A}%
-\MathAlphabetChar{\mathbfit}{`\j}{"1D48B}%
-\MathAlphabetChar{\mathbfit}{`\k}{"1D48C}%
-\MathAlphabetChar{\mathbfit}{`\l}{"1D48D}%
-\MathAlphabetChar{\mathbfit}{`\m}{"1D48E}%
-\MathAlphabetChar{\mathbfit}{`\n}{"1D48F}%
-\MathAlphabetChar{\mathbfit}{`\o}{"1D490}%
-\MathAlphabetChar{\mathbfit}{`\p}{"1D491}%
-\MathAlphabetChar{\mathbfit}{`\q}{"1D492}%
-\MathAlphabetChar{\mathbfit}{`\r}{"1D493}%
-\MathAlphabetChar{\mathbfit}{`\s}{"1D494}%
-\MathAlphabetChar{\mathbfit}{`\t}{"1D495}%
-\MathAlphabetChar{\mathbfit}{`\u}{"1D496}%
-\MathAlphabetChar{\mathbfit}{`\v}{"1D497}%
-\MathAlphabetChar{\mathbfit}{`\w}{"1D498}%
-\MathAlphabetChar{\mathbfit}{`\x}{"1D499}%
-\MathAlphabetChar{\mathbfit}{`\y}{"1D49A}%
-\MathAlphabetChar{\mathbfit}{`\z}{"1D49B}%
-%    \end{macrocode}
-% Greek letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbfit}{913}{"1D71C}%
-\MathAlphabetChar{\mathbfit}{914}{"1D71D}%
-\MathAlphabetChar{\mathbfit}{915}{"1D71E}%
-\MathAlphabetChar{\mathbfit}{916}{"1D71F}%
-\MathAlphabetChar{\mathbfit}{917}{"1D720}%
-\MathAlphabetChar{\mathbfit}{918}{"1D721}%
-\MathAlphabetChar{\mathbfit}{919}{"1D722}%
-\MathAlphabetChar{\mathbfit}{920}{"1D723}%
-\MathAlphabetChar{\mathbfit}{921}{"1D724}%
-\MathAlphabetChar{\mathbfit}{922}{"1D725}%
-\MathAlphabetChar{\mathbfit}{923}{"1D726}%
-\MathAlphabetChar{\mathbfit}{924}{"1D727}%
-\MathAlphabetChar{\mathbfit}{925}{"1D728}%
-\MathAlphabetChar{\mathbfit}{926}{"1D729}%
-\MathAlphabetChar{\mathbfit}{927}{"1D72A}%
-\MathAlphabetChar{\mathbfit}{928}{"1D72B}%
-\MathAlphabetChar{\mathbfit}{929}{"1D72C}%
-%\MathAlphabetChar{\mathbfit}{??}{"1D72D}%
-\MathAlphabetChar{\mathbfit}{931}{"1D72E}%
-\MathAlphabetChar{\mathbfit}{932}{"1D72F}%
-\MathAlphabetChar{\mathbfit}{933}{"1D730}%
-\MathAlphabetChar{\mathbfit}{934}{"1D731}%
-\MathAlphabetChar{\mathbfit}{935}{"1D732}%
-\MathAlphabetChar{\mathbfit}{936}{"1D733}%
-\MathAlphabetChar{\mathbfit}{937}{"1D734}%
-\MathAlphabetChar{\mathbfit}{"2207}{"1D735}%
-%    \end{macrocode}
-% Greek lowercase:
-%    \begin{macrocode}      
-\MathAlphabetChar{\mathbfit}{945}{"1D736}%
-\MathAlphabetChar{\mathbfit}{946}{"1D737}%
-\MathAlphabetChar{\mathbfit}{947}{"1D738}%
-\MathAlphabetChar{\mathbfit}{948}{"1D739}%
-\MathAlphabetChar{\mathbfit}{949}{"1D73A}%
-\MathAlphabetChar{\mathbfit}{950}{"1D73B}%
-\MathAlphabetChar{\mathbfit}{951}{"1D73C}%
-\MathAlphabetChar{\mathbfit}{952}{"1D73D}%
-\MathAlphabetChar{\mathbfit}{953}{"1D73E}%
-\MathAlphabetChar{\mathbfit}{954}{"1D73F}%
-\MathAlphabetChar{\mathbfit}{955}{"1D740}%
-\MathAlphabetChar{\mathbfit}{956}{"1D741}%
-\MathAlphabetChar{\mathbfit}{957}{"1D742}%
-\MathAlphabetChar{\mathbfit}{958}{"1D743}%
-\MathAlphabetChar{\mathbfit}{959}{"1D744}%
-\MathAlphabetChar{\mathbfit}{960}{"1D745}%
-\MathAlphabetChar{\mathbfit}{961}{"1D746}%
-\MathAlphabetChar{\mathbfit}{960}{"1D747}%
-\MathAlphabetChar{\mathbfit}{963}{"1D748}%
-\MathAlphabetChar{\mathbfit}{964}{"1D749}%
-\MathAlphabetChar{\mathbfit}{965}{"1D74A}%
-\MathAlphabetChar{\mathbfit}{966}{"1D74B}%
-\MathAlphabetChar{\mathbfit}{967}{"1D74C}%
-\MathAlphabetChar{\mathbfit}{968}{"1D74D}%
-\MathAlphabetChar{\mathbfit}{969}{"1D74E}%
-\MathAlphabetChar{\mathbfit}{"2202}{"1D74F}%
-%\MathAlphabetChar{\mathbfit}{??}{"1D750}% VAR EPSILON
-%\MathAlphabetChar{\mathbfit}{??}{"1D751}% VAR THETA
-%\MathAlphabetChar{\mathbfit}{??}{"1D752}% VAR KAPPA
-%\MathAlphabetChar{\mathbfit}{??}{"1D753}% VAR PHI
-%\MathAlphabetChar{\mathbfit}{??}{"1D754}% VAR RHO
-%\MathAlphabetChar{\mathbfit}{??}{"1D755}% VAR PI
-%    \end{macrocode}
+%: TODO: bold symbols to bold+ symbols
 %
 % \subsubsection{Bold fractur or fraktur or blackletter: \cmd\mathbffrak}
 %
@@ -2009,76 +2027,10 @@ This work consists of the file  \jobname.dtx
 %   $\mathbffrak{abcdefghijklmnopqrstuvwxyz}$ \\
 % \end{example}
 %
-% Bold numbers: (always upright)
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbffrak}{`\0}{"1D7CE}%
-\MathAlphabetChar{\mathbffrak}{`\1}{"1D7CF}%
-\MathAlphabetChar{\mathbffrak}{`\2}{"1D7D0}%
-\MathAlphabetChar{\mathbffrak}{`\3}{"1D7D1}%
-\MathAlphabetChar{\mathbffrak}{`\4}{"1D7D2}%
-\MathAlphabetChar{\mathbffrak}{`\5}{"1D7D3}%
-\MathAlphabetChar{\mathbffrak}{`\6}{"1D7D4}%
-\MathAlphabetChar{\mathbffrak}{`\7}{"1D7D5}%
-\MathAlphabetChar{\mathbffrak}{`\8}{"1D7D6}%
-\MathAlphabetChar{\mathbffrak}{`\9}{"1D7D7}%
-%    \end{macrocode}
-% Letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbffrak}{`\A}{"1D56C}%
-\MathAlphabetChar{\mathbffrak}{`\B}{"1D56D}%
-\MathAlphabetChar{\mathbffrak}{`\C}{"1D56E}%
-\MathAlphabetChar{\mathbffrak}{`\D}{"1D56F}%
-\MathAlphabetChar{\mathbffrak}{`\E}{"1D570}%
-\MathAlphabetChar{\mathbffrak}{`\F}{"1D571}%
-\MathAlphabetChar{\mathbffrak}{`\G}{"1D572}%
-\MathAlphabetChar{\mathbffrak}{`\H}{"1D573}%
-\MathAlphabetChar{\mathbffrak}{`\I}{"1D574}%
-\MathAlphabetChar{\mathbffrak}{`\J}{"1D575}%
-\MathAlphabetChar{\mathbffrak}{`\K}{"1D576}%
-\MathAlphabetChar{\mathbffrak}{`\L}{"1D577}%
-\MathAlphabetChar{\mathbffrak}{`\M}{"1D578}%
-\MathAlphabetChar{\mathbffrak}{`\N}{"1D579}%
-\MathAlphabetChar{\mathbffrak}{`\O}{"1D57A}%
-\MathAlphabetChar{\mathbffrak}{`\P}{"1D57B}%
-\MathAlphabetChar{\mathbffrak}{`\Q}{"1D57C}%
-\MathAlphabetChar{\mathbffrak}{`\R}{"1D57D}%
-\MathAlphabetChar{\mathbffrak}{`\S}{"1D57E}%
-\MathAlphabetChar{\mathbffrak}{`\T}{"1D57F}%
-\MathAlphabetChar{\mathbffrak}{`\U}{"1D580}%
-\MathAlphabetChar{\mathbffrak}{`\V}{"1D581}%
-\MathAlphabetChar{\mathbffrak}{`\W}{"1D582}%
-\MathAlphabetChar{\mathbffrak}{`\X}{"1D583}%
-\MathAlphabetChar{\mathbffrak}{`\Y}{"1D584}%
-\MathAlphabetChar{\mathbffrak}{`\Z}{"1D585}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbffrak}{`\a}{"1D586}%
-\MathAlphabetChar{\mathbffrak}{`\b}{"1D587}%
-\MathAlphabetChar{\mathbffrak}{`\c}{"1D588}%
-\MathAlphabetChar{\mathbffrak}{`\d}{"1D589}%
-\MathAlphabetChar{\mathbffrak}{`\e}{"1D58A}%
-\MathAlphabetChar{\mathbffrak}{`\f}{"1D58B}%
-\MathAlphabetChar{\mathbffrak}{`\g}{"1D58C}%
-\MathAlphabetChar{\mathbffrak}{`\h}{"1D58D}%
-\MathAlphabetChar{\mathbffrak}{`\i}{"1D58E}%
-\MathAlphabetChar{\mathbffrak}{`\j}{"1D58F}%
-\MathAlphabetChar{\mathbffrak}{`\k}{"1D590}%
-\MathAlphabetChar{\mathbffrak}{`\l}{"1D591}%
-\MathAlphabetChar{\mathbffrak}{`\m}{"1D592}%
-\MathAlphabetChar{\mathbffrak}{`\n}{"1D593}%
-\MathAlphabetChar{\mathbffrak}{`\o}{"1D594}%
-\MathAlphabetChar{\mathbffrak}{`\p}{"1D595}%
-\MathAlphabetChar{\mathbffrak}{`\q}{"1D596}%
-\MathAlphabetChar{\mathbffrak}{`\r}{"1D597}%
-\MathAlphabetChar{\mathbffrak}{`\s}{"1D598}%
-\MathAlphabetChar{\mathbffrak}{`\t}{"1D599}%
-\MathAlphabetChar{\mathbffrak}{`\u}{"1D59A}%
-\MathAlphabetChar{\mathbffrak}{`\v}{"1D59B}%
-\MathAlphabetChar{\mathbffrak}{`\w}{"1D59C}%
-\MathAlphabetChar{\mathbffrak}{`\x}{"1D59D}%
-\MathAlphabetChar{\mathbffrak}{`\y}{"1D59E}%
-\MathAlphabetChar{\mathbffrak}{`\z}{"1D59F}%
+\um@setmathalphs{\mathbffrak}{\um@usv@num}{10}{\um@usv@bfnum}%
+\um@setmathalphs{\mathbffrak}{\um@usv@upLatin, \um@usv@itLatin,\um@usv@frakLatin}{26}{\um@usv@bffrakLatin}%
+\um@setmathalphs{\mathbffrak}{\um@usv@uplatin,\um@usv@itlatin,\um@usv@fraklatin}{26}{\um@usv@bffraklatin}%
 %    \end{macrocode}
 %
 % \subsubsection{Bold script or calligraphic: \cmd\mathbfscr}
@@ -2087,76 +2039,10 @@ This work consists of the file  \jobname.dtx
 %   $\mathbfscr{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathbfscr{abcdefghijklmnopqrstuvwxyz}$ \\
 % \end{example}
-% Bold numbers: (always upright)
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfscr}{`\0}{"1D7CE}%
-\MathAlphabetChar{\mathbfscr}{`\1}{"1D7CF}%
-\MathAlphabetChar{\mathbfscr}{`\2}{"1D7D0}%
-\MathAlphabetChar{\mathbfscr}{`\3}{"1D7D1}%
-\MathAlphabetChar{\mathbfscr}{`\4}{"1D7D2}%
-\MathAlphabetChar{\mathbfscr}{`\5}{"1D7D3}%
-\MathAlphabetChar{\mathbfscr}{`\6}{"1D7D4}%
-\MathAlphabetChar{\mathbfscr}{`\7}{"1D7D5}%
-\MathAlphabetChar{\mathbfscr}{`\8}{"1D7D6}%
-\MathAlphabetChar{\mathbfscr}{`\9}{"1D7D7}%
-%    \end{macrocode}
-% Letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbfscr}{`\A}{"1D4D0}%
-\MathAlphabetChar{\mathbfscr}{`\B}{"1D4D1}%
-\MathAlphabetChar{\mathbfscr}{`\C}{"1D4D2}%
-\MathAlphabetChar{\mathbfscr}{`\D}{"1D4D3}%
-\MathAlphabetChar{\mathbfscr}{`\E}{"1D4D4}%
-\MathAlphabetChar{\mathbfscr}{`\F}{"1D4D5}%
-\MathAlphabetChar{\mathbfscr}{`\G}{"1D4D6}%
-\MathAlphabetChar{\mathbfscr}{`\H}{"1D4D7}%
-\MathAlphabetChar{\mathbfscr}{`\I}{"1D4D8}%
-\MathAlphabetChar{\mathbfscr}{`\J}{"1D4D9}%
-\MathAlphabetChar{\mathbfscr}{`\K}{"1D4DA}%
-\MathAlphabetChar{\mathbfscr}{`\L}{"1D4DB}%
-\MathAlphabetChar{\mathbfscr}{`\M}{"1D4DC}%
-\MathAlphabetChar{\mathbfscr}{`\N}{"1D4DD}%
-\MathAlphabetChar{\mathbfscr}{`\O}{"1D4DE}%
-\MathAlphabetChar{\mathbfscr}{`\P}{"1D4DF}%
-\MathAlphabetChar{\mathbfscr}{`\Q}{"1D4E0}%
-\MathAlphabetChar{\mathbfscr}{`\R}{"1D4E1}%
-\MathAlphabetChar{\mathbfscr}{`\S}{"1D4E2}%
-\MathAlphabetChar{\mathbfscr}{`\T}{"1D4E3}%
-\MathAlphabetChar{\mathbfscr}{`\U}{"1D4E4}%
-\MathAlphabetChar{\mathbfscr}{`\V}{"1D4E5}%
-\MathAlphabetChar{\mathbfscr}{`\W}{"1D4E6}%
-\MathAlphabetChar{\mathbfscr}{`\X}{"1D4E7}%
-\MathAlphabetChar{\mathbfscr}{`\Y}{"1D4E8}%
-\MathAlphabetChar{\mathbfscr}{`\Z}{"1D4E9}%
-%    \end{macrocode}
-%
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbfscr}{`\a}{"1D4EA}%
-\MathAlphabetChar{\mathbfscr}{`\b}{"1D4EB}%
-\MathAlphabetChar{\mathbfscr}{`\c}{"1D4EC}%
-\MathAlphabetChar{\mathbfscr}{`\d}{"1D4ED}%
-\MathAlphabetChar{\mathbfscr}{`\e}{"1D4EE}%
-\MathAlphabetChar{\mathbfscr}{`\f}{"1D4EF}%
-\MathAlphabetChar{\mathbfscr}{`\g}{"1D4F0}%
-\MathAlphabetChar{\mathbfscr}{`\h}{"1D4F1}%
-\MathAlphabetChar{\mathbfscr}{`\i}{"1D4F2}%
-\MathAlphabetChar{\mathbfscr}{`\j}{"1D4F3}%
-\MathAlphabetChar{\mathbfscr}{`\k}{"1D4F4}%
-\MathAlphabetChar{\mathbfscr}{`\l}{"1D4F5}%
-\MathAlphabetChar{\mathbfscr}{`\m}{"1D4F6}%
-\MathAlphabetChar{\mathbfscr}{`\n}{"1D4F7}%
-\MathAlphabetChar{\mathbfscr}{`\o}{"1D4F8}%
-\MathAlphabetChar{\mathbfscr}{`\p}{"1D4F9}%
-\MathAlphabetChar{\mathbfscr}{`\q}{"1D4FA}%
-\MathAlphabetChar{\mathbfscr}{`\r}{"1D4FB}%
-\MathAlphabetChar{\mathbfscr}{`\s}{"1D4FC}%
-\MathAlphabetChar{\mathbfscr}{`\t}{"1D4FD}%
-\MathAlphabetChar{\mathbfscr}{`\u}{"1D4FE}%
-\MathAlphabetChar{\mathbfscr}{`\v}{"1D4FF}%
-\MathAlphabetChar{\mathbfscr}{`\w}{"1D500}%
-\MathAlphabetChar{\mathbfscr}{`\x}{"1D501}%
-\MathAlphabetChar{\mathbfscr}{`\y}{"1D502}%
-\MathAlphabetChar{\mathbfscr}{`\z}{"1D503}%
+\um@setmathalphs{\mathbfscr}{\um@usv@num}{10}{\um@usv@bfnum}%
+\um@setmathalphs{\mathbfscr}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bfscrLatin}%
+\um@setmathalphs{\mathbfscr}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bfscrlatin}%
 %    \end{macrocode}
 %
 % \subsubsection{Bold sans serif: \cmd\mathbfsf}
@@ -2165,146 +2051,36 @@ This work consists of the file  \jobname.dtx
 %   $\mathbfsf{0123456789}$ \\
 %   $\mathbfsf{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathbfsf{abcdefghijklmnopqrstuvwxyz}$ \\
-%   $\mathbfsf{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
-%   $\mathbfsf{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+%   $\mathbfsf{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$\quad$\mathbfsf{ϴ}$ \\
+%   $\mathbfsf{αβγδεζηθικλμνξοπρστυφχψω}$\quad$\mathbfsf{ϵϑϰϕϱϖ}$ \\
 % \end{example}
 %
 % Numbers: (always upright)
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsf}{`\0}{"1D7EC}%
-\MathAlphabetChar{\mathbfsf}{`\1}{"1D7ED}%
-\MathAlphabetChar{\mathbfsf}{`\2}{"1D7EE}%
-\MathAlphabetChar{\mathbfsf}{`\3}{"1D7EF}%
-\MathAlphabetChar{\mathbfsf}{`\4}{"1D7F0}%
-\MathAlphabetChar{\mathbfsf}{`\5}{"1D7F1}%
-\MathAlphabetChar{\mathbfsf}{`\6}{"1D7F2}%
-\MathAlphabetChar{\mathbfsf}{`\7}{"1D7F3}%
-\MathAlphabetChar{\mathbfsf}{`\8}{"1D7F4}%
-\MathAlphabetChar{\mathbfsf}{`\9}{"1D7F5}%
+\um@setmathalphs{\mathbfsf}{\um@usv@num}{10}{\um@usv@bfnum}%
+\um@setmathalphs{\mathbfsf}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bfsfLatin}%
+\um@setmathalphs{\mathbfsf}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bfsflatin}%
+\um@setmathalphs{\mathbfsf}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@bfsfGreek}%
+\um@setmathalphs{\mathbfsf}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@bfsfgreek}%
 %    \end{macrocode}
-% Letters:
+% Theta symbol:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsf}{`\A}{"1D5D4}%
-\MathAlphabetChar{\mathbfsf}{`\B}{"1D5D5}%
-\MathAlphabetChar{\mathbfsf}{`\C}{"1D5D6}%
-\MathAlphabetChar{\mathbfsf}{`\D}{"1D5D7}%
-\MathAlphabetChar{\mathbfsf}{`\E}{"1D5D8}%
-\MathAlphabetChar{\mathbfsf}{`\F}{"1D5D9}%
-\MathAlphabetChar{\mathbfsf}{`\G}{"1D5DA}%
-\MathAlphabetChar{\mathbfsf}{`\H}{"1D5DB}%
-\MathAlphabetChar{\mathbfsf}{`\I}{"1D5DC}%
-\MathAlphabetChar{\mathbfsf}{`\J}{"1D5DD}%
-\MathAlphabetChar{\mathbfsf}{`\K}{"1D5DE}%
-\MathAlphabetChar{\mathbfsf}{`\L}{"1D5DF}%
-\MathAlphabetChar{\mathbfsf}{`\M}{"1D5E0}%
-\MathAlphabetChar{\mathbfsf}{`\N}{"1D5E1}%
-\MathAlphabetChar{\mathbfsf}{`\O}{"1D5E2}%
-\MathAlphabetChar{\mathbfsf}{`\P}{"1D5E3}%
-\MathAlphabetChar{\mathbfsf}{`\Q}{"1D5E4}%
-\MathAlphabetChar{\mathbfsf}{`\R}{"1D5E5}%
-\MathAlphabetChar{\mathbfsf}{`\S}{"1D5E6}%
-\MathAlphabetChar{\mathbfsf}{`\T}{"1D5E7}%
-\MathAlphabetChar{\mathbfsf}{`\U}{"1D5E8}%
-\MathAlphabetChar{\mathbfsf}{`\V}{"1D5E9}%
-\MathAlphabetChar{\mathbfsf}{`\W}{"1D5EA}%
-\MathAlphabetChar{\mathbfsf}{`\X}{"1D5EB}%
-\MathAlphabetChar{\mathbfsf}{`\Y}{"1D5EC}%
-\MathAlphabetChar{\mathbfsf}{`\Z}{"1D5ED}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@varTheta}{"1D767}%
 %    \end{macrocode}
-%
+% Nabla:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsf}{`\a}{"1D5EE}%
-\MathAlphabetChar{\mathbfsf}{`\b}{"1D5EF}%
-\MathAlphabetChar{\mathbfsf}{`\c}{"1D5F0}%
-\MathAlphabetChar{\mathbfsf}{`\d}{"1D5F1}%
-\MathAlphabetChar{\mathbfsf}{`\e}{"1D5F2}%
-\MathAlphabetChar{\mathbfsf}{`\f}{"1D5F3}%
-\MathAlphabetChar{\mathbfsf}{`\g}{"1D5F4}%
-\MathAlphabetChar{\mathbfsf}{`\h}{"1D5F5}%
-\MathAlphabetChar{\mathbfsf}{`\i}{"1D5F6}%
-\MathAlphabetChar{\mathbfsf}{`\j}{"1D5F7}%
-\MathAlphabetChar{\mathbfsf}{`\k}{"1D5F8}%
-\MathAlphabetChar{\mathbfsf}{`\l}{"1D5F9}%
-\MathAlphabetChar{\mathbfsf}{`\m}{"1D5FA}%
-\MathAlphabetChar{\mathbfsf}{`\n}{"1D5FB}%
-\MathAlphabetChar{\mathbfsf}{`\o}{"1D5FC}%
-\MathAlphabetChar{\mathbfsf}{`\p}{"1D5FD}%
-\MathAlphabetChar{\mathbfsf}{`\q}{"1D5FE}%
-\MathAlphabetChar{\mathbfsf}{`\r}{"1D5FF}%
-\MathAlphabetChar{\mathbfsf}{`\s}{"1D600}%
-\MathAlphabetChar{\mathbfsf}{`\t}{"1D601}%
-\MathAlphabetChar{\mathbfsf}{`\u}{"1D602}%
-\MathAlphabetChar{\mathbfsf}{`\v}{"1D603}%
-\MathAlphabetChar{\mathbfsf}{`\w}{"1D604}%
-\MathAlphabetChar{\mathbfsf}{`\x}{"1D605}%
-\MathAlphabetChar{\mathbfsf}{`\y}{"1D606}%
-\MathAlphabetChar{\mathbfsf}{`\z}{"1D607}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@Nabla}{"1D76F}%
 %    \end{macrocode}
-% Greek letters:
+% Partial, epsilon symbol, theta symbol, kappa symbol, phi symbol, rho symbol, pi symbol:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsf}{913}{"1D756}%
-\MathAlphabetChar{\mathbfsf}{914}{"1D757}%
-\MathAlphabetChar{\mathbfsf}{915}{"1D758}%
-\MathAlphabetChar{\mathbfsf}{916}{"1D759}%
-\MathAlphabetChar{\mathbfsf}{917}{"1D75A}%
-\MathAlphabetChar{\mathbfsf}{918}{"1D75B}%
-\MathAlphabetChar{\mathbfsf}{919}{"1D75C}%
-\MathAlphabetChar{\mathbfsf}{920}{"1D75D}%
-\MathAlphabetChar{\mathbfsf}{921}{"1D75E}%
-\MathAlphabetChar{\mathbfsf}{922}{"1D75F}%
-\MathAlphabetChar{\mathbfsf}{923}{"1D760}%
-\MathAlphabetChar{\mathbfsf}{924}{"1D761}%
-\MathAlphabetChar{\mathbfsf}{925}{"1D762}%
-\MathAlphabetChar{\mathbfsf}{926}{"1D763}%
-\MathAlphabetChar{\mathbfsf}{927}{"1D764}%
-\MathAlphabetChar{\mathbfsf}{928}{"1D765}%
-\MathAlphabetChar{\mathbfsf}{929}{"1D766}%
-%\MathAlphabetChar{\mathbfsf}{??}{"1D767}%
-\MathAlphabetChar{\mathbfsf}{931}{"1D768}%
-\MathAlphabetChar{\mathbfsf}{932}{"1D769}%
-\MathAlphabetChar{\mathbfsf}{933}{"1D76A}%
-\MathAlphabetChar{\mathbfsf}{934}{"1D76B}%
-\MathAlphabetChar{\mathbfsf}{935}{"1D76C}%
-\MathAlphabetChar{\mathbfsf}{936}{"1D76D}%
-\MathAlphabetChar{\mathbfsf}{937}{"1D76E}%
-\MathAlphabetChar{\mathbfsf}{"2207}{"1D76F}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@partial}{"1D789}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@varepsilon}{"1D78A}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@vartheta}{"1D78B}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@varkappa}{"1D78C}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@varphi}{"1D78D}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@varrho}{"1D78E}%
+\SetMathAlphChar{\mathbfsf}{\um@usv@varpi}{"1D78F}%
 %    \end{macrocode}
-% Greek lowercase:
-%    \begin{macrocode}      
-\MathAlphabetChar{\mathbfsf}{945}{"1D770}%
-\MathAlphabetChar{\mathbfsf}{946}{"1D771}%
-\MathAlphabetChar{\mathbfsf}{947}{"1D772}%
-\MathAlphabetChar{\mathbfsf}{948}{"1D773}%
-\MathAlphabetChar{\mathbfsf}{949}{"1D774}%
-\MathAlphabetChar{\mathbfsf}{950}{"1D775}%
-\MathAlphabetChar{\mathbfsf}{951}{"1D776}%
-\MathAlphabetChar{\mathbfsf}{952}{"1D777}%
-\MathAlphabetChar{\mathbfsf}{953}{"1D778}%
-\MathAlphabetChar{\mathbfsf}{954}{"1D779}%
-\MathAlphabetChar{\mathbfsf}{955}{"1D77A}%
-\MathAlphabetChar{\mathbfsf}{956}{"1D77B}%
-\MathAlphabetChar{\mathbfsf}{957}{"1D77C}%
-\MathAlphabetChar{\mathbfsf}{958}{"1D77D}%
-\MathAlphabetChar{\mathbfsf}{959}{"1D77E}%
-\MathAlphabetChar{\mathbfsf}{960}{"1D77F}%
-\MathAlphabetChar{\mathbfsf}{961}{"1D780}%
-\MathAlphabetChar{\mathbfsf}{960}{"1D781}%
-\MathAlphabetChar{\mathbfsf}{963}{"1D782}%
-\MathAlphabetChar{\mathbfsf}{964}{"1D783}%
-\MathAlphabetChar{\mathbfsf}{965}{"1D784}%
-\MathAlphabetChar{\mathbfsf}{966}{"1D785}%
-\MathAlphabetChar{\mathbfsf}{967}{"1D786}%
-\MathAlphabetChar{\mathbfsf}{968}{"1D787}%
-\MathAlphabetChar{\mathbfsf}{969}{"1D788}%
-\MathAlphabetChar{\mathbfsf}{"2202}{"1D789}%
-%\MathAlphabetChar{\mathbfsf}{??}{"1D78A}% VAR EPSILON
-%\MathAlphabetChar{\mathbfsf}{??}{"1D78B}% VAR THETA
-%\MathAlphabetChar{\mathbfsf}{??}{"1D78C}% VAR KAPPA
-%\MathAlphabetChar{\mathbfsf}{??}{"1D78D}% VAR PHI
-%\MathAlphabetChar{\mathbfsf}{??}{"1D78E}% VAR RHO
-%\MathAlphabetChar{\mathbfsf}{??}{"1D78F}% VAR PI
-%    \end{macrocode}
-%
 %
 %
 % \subsubsection{Bold italic sans serif: \cmd\mathbfsfit}
@@ -2313,148 +2089,41 @@ This work consists of the file  \jobname.dtx
 %   $\mathbfsfit{0123456789}$ \\
 %   $\mathbfsfit{ABCDEFGHIJKLMNOPQRSTUVWXYZ}$ \\
 %   $\mathbfsfit{abcdefghijklmnopqrstuvwxyz}$ \\
-%   $\mathbfsfit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$ \\
-%   $\mathbfsfit{αβγδεζηθικλμνξοπρστυφχψω}$ \\
+%   $\mathbfsfit{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ}$\quad$\mathbfsfit{ϴ}$ \\
+%   $\mathbfsfit{αβγδεζηθικλμνξοπρστυφχψω}$\quad$\mathbfsfit{ϵϑϰϕϱϖ}$ \\
 % \end{example}
-% Numbers (always upright):
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsfit}{`\0}{"1D7EC}%
-\MathAlphabetChar{\mathbfsfit}{`\1}{"1D7ED}%
-\MathAlphabetChar{\mathbfsfit}{`\2}{"1D7EE}%
-\MathAlphabetChar{\mathbfsfit}{`\3}{"1D7EF}%
-\MathAlphabetChar{\mathbfsfit}{`\4}{"1D7F0}%
-\MathAlphabetChar{\mathbfsfit}{`\5}{"1D7F1}%
-\MathAlphabetChar{\mathbfsfit}{`\6}{"1D7F2}%
-\MathAlphabetChar{\mathbfsfit}{`\7}{"1D7F3}%
-\MathAlphabetChar{\mathbfsfit}{`\8}{"1D7F4}%
-\MathAlphabetChar{\mathbfsfit}{`\9}{"1D7F5}%
+\um@setmathalphs{\mathbfsfit}{\um@usv@num}{10}{\um@usv@bfnum}%
+\um@setmathalphs{\mathbfsfit}{\um@usv@upLatin,\um@usv@itLatin}{26}{\um@usv@bfsfitLatin}%
+\um@setmathalphs{\mathbfsfit}{\um@usv@uplatin,\um@usv@itlatin}{26}{\um@usv@bfsfitlatin}%
+\um@setmathalphs{\mathbfsfit}{\um@usv@upGreek,\um@usv@itGreek}{25}{\um@usv@bfsfitGreek}%
+\um@setmathalphs{\mathbfsfit}{\um@usv@upgreek,\um@usv@itgreek}{25}{\um@usv@bfsfitgreek}%
 %    \end{macrocode}
-% Roman uppercase:
+% Other symbols:
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsfit}{`\A}{"1D63C}%
-\MathAlphabetChar{\mathbfsfit}{`\B}{"1D63D}%
-\MathAlphabetChar{\mathbfsfit}{`\C}{"1D63E}%
-\MathAlphabetChar{\mathbfsfit}{`\D}{"1D63F}%
-\MathAlphabetChar{\mathbfsfit}{`\E}{"1D640}%
-\MathAlphabetChar{\mathbfsfit}{`\F}{"1D641}%
-\MathAlphabetChar{\mathbfsfit}{`\G}{"1D642}%
-\MathAlphabetChar{\mathbfsfit}{`\H}{"1D643}%
-\MathAlphabetChar{\mathbfsfit}{`\I}{"1D644}%
-\MathAlphabetChar{\mathbfsfit}{`\J}{"1D645}%
-\MathAlphabetChar{\mathbfsfit}{`\K}{"1D646}%
-\MathAlphabetChar{\mathbfsfit}{`\L}{"1D647}%
-\MathAlphabetChar{\mathbfsfit}{`\M}{"1D648}%
-\MathAlphabetChar{\mathbfsfit}{`\N}{"1D649}%
-\MathAlphabetChar{\mathbfsfit}{`\O}{"1D64A}%
-\MathAlphabetChar{\mathbfsfit}{`\P}{"1D64B}%
-\MathAlphabetChar{\mathbfsfit}{`\Q}{"1D64C}%
-\MathAlphabetChar{\mathbfsfit}{`\R}{"1D64D}%
-\MathAlphabetChar{\mathbfsfit}{`\S}{"1D64E}%
-\MathAlphabetChar{\mathbfsfit}{`\T}{"1D64F}%
-\MathAlphabetChar{\mathbfsfit}{`\U}{"1D650}%
-\MathAlphabetChar{\mathbfsfit}{`\V}{"1D651}%
-\MathAlphabetChar{\mathbfsfit}{`\W}{"1D652}%
-\MathAlphabetChar{\mathbfsfit}{`\X}{"1D653}%
-\MathAlphabetChar{\mathbfsfit}{`\Y}{"1D654}%
-\MathAlphabetChar{\mathbfsfit}{`\Z}{"1D655}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@varTheta}{"1D7A1}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@Nabla}{"1D7A9}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@partial}{"1D7C3}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@varepsilon}{"1D7C4}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@vartheta}{"1D7C5}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@varkappa}{"1D7C6}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@varphi}{"1D7C7}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@varrho}{"1D7C8}%
+\SetMathAlphChar{\mathbfsfit}{\um@usv@varpi}{"1D7C9}%
 %    \end{macrocode}
 %
+%
 %    \begin{macrocode}
-\MathAlphabetChar{\mathbfsfit}{`\a}{"1D656}%
-\MathAlphabetChar{\mathbfsfit}{`\b}{"1D657}%
-\MathAlphabetChar{\mathbfsfit}{`\c}{"1D658}%
-\MathAlphabetChar{\mathbfsfit}{`\d}{"1D659}%
-\MathAlphabetChar{\mathbfsfit}{`\e}{"1D65A}%
-\MathAlphabetChar{\mathbfsfit}{`\f}{"1D65B}%
-\MathAlphabetChar{\mathbfsfit}{`\g}{"1D65C}%
-\MathAlphabetChar{\mathbfsfit}{`\h}{"1D65D}%
-\MathAlphabetChar{\mathbfsfit}{`\i}{"1D65E}%
-\MathAlphabetChar{\mathbfsfit}{`\j}{"1D65F}%
-\MathAlphabetChar{\mathbfsfit}{`\k}{"1D660}%
-\MathAlphabetChar{\mathbfsfit}{`\l}{"1D661}%
-\MathAlphabetChar{\mathbfsfit}{`\m}{"1D662}%
-\MathAlphabetChar{\mathbfsfit}{`\n}{"1D663}%
-\MathAlphabetChar{\mathbfsfit}{`\o}{"1D664}%
-\MathAlphabetChar{\mathbfsfit}{`\p}{"1D665}%
-\MathAlphabetChar{\mathbfsfit}{`\q}{"1D666}%
-\MathAlphabetChar{\mathbfsfit}{`\r}{"1D667}%
-\MathAlphabetChar{\mathbfsfit}{`\s}{"1D668}%
-\MathAlphabetChar{\mathbfsfit}{`\t}{"1D669}%
-\MathAlphabetChar{\mathbfsfit}{`\u}{"1D66A}%
-\MathAlphabetChar{\mathbfsfit}{`\v}{"1D66B}%
-\MathAlphabetChar{\mathbfsfit}{`\w}{"1D66C}%
-\MathAlphabetChar{\mathbfsfit}{`\x}{"1D66D}%
-\MathAlphabetChar{\mathbfsfit}{`\y}{"1D66E}%
-\MathAlphabetChar{\mathbfsfit}{`\z}{"1D66F}%
-%    \end{macrocode}
-% Greek letters:
-%    \begin{macrocode}
-\MathAlphabetChar{\mathbfsfit}{913}{"1D790}%
-\MathAlphabetChar{\mathbfsfit}{914}{"1D791}%
-\MathAlphabetChar{\mathbfsfit}{915}{"1D792}%
-\MathAlphabetChar{\mathbfsfit}{916}{"1D793}%
-\MathAlphabetChar{\mathbfsfit}{917}{"1D794}%
-\MathAlphabetChar{\mathbfsfit}{918}{"1D795}%
-\MathAlphabetChar{\mathbfsfit}{919}{"1D796}%
-\MathAlphabetChar{\mathbfsfit}{920}{"1D797}%
-\MathAlphabetChar{\mathbfsfit}{921}{"1D798}%
-\MathAlphabetChar{\mathbfsfit}{922}{"1D799}%
-\MathAlphabetChar{\mathbfsfit}{923}{"1D79A}%
-\MathAlphabetChar{\mathbfsfit}{924}{"1D79B}%
-\MathAlphabetChar{\mathbfsfit}{925}{"1D79C}%
-\MathAlphabetChar{\mathbfsfit}{926}{"1D79D}%
-\MathAlphabetChar{\mathbfsfit}{927}{"1D79E}%
-\MathAlphabetChar{\mathbfsfit}{928}{"1D79F}%
-\MathAlphabetChar{\mathbfsfit}{929}{"1D7A0}%
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7A1}%
-\MathAlphabetChar{\mathbfsfit}{931}{"1D7A2}%
-\MathAlphabetChar{\mathbfsfit}{932}{"1D7A3}%
-\MathAlphabetChar{\mathbfsfit}{933}{"1D7A4}%
-\MathAlphabetChar{\mathbfsfit}{934}{"1D7A5}%
-\MathAlphabetChar{\mathbfsfit}{935}{"1D7A6}%
-\MathAlphabetChar{\mathbfsfit}{936}{"1D7A7}%
-\MathAlphabetChar{\mathbfsfit}{937}{"1D7A8}%
-\MathAlphabetChar{\mathbfsfit}{"2207}{"1D7A9}%
-%    \end{macrocode}
-% Greek lowercase:
-%    \begin{macrocode}      
-\MathAlphabetChar{\mathbfsfit}{945}{"1D7AA}%
-\MathAlphabetChar{\mathbfsfit}{946}{"1D7AB}%
-\MathAlphabetChar{\mathbfsfit}{947}{"1D7AC}%
-\MathAlphabetChar{\mathbfsfit}{948}{"1D7AD}%
-\MathAlphabetChar{\mathbfsfit}{949}{"1D7AE}%
-\MathAlphabetChar{\mathbfsfit}{950}{"1D7AF}%
-\MathAlphabetChar{\mathbfsfit}{951}{"1D7B0}%
-\MathAlphabetChar{\mathbfsfit}{952}{"1D7B1}%
-\MathAlphabetChar{\mathbfsfit}{953}{"1D7B2}%
-\MathAlphabetChar{\mathbfsfit}{954}{"1D7B3}%
-\MathAlphabetChar{\mathbfsfit}{955}{"1D7B4}%
-\MathAlphabetChar{\mathbfsfit}{956}{"1D7B5}%
-\MathAlphabetChar{\mathbfsfit}{957}{"1D7B6}%
-\MathAlphabetChar{\mathbfsfit}{958}{"1D7B7}%
-\MathAlphabetChar{\mathbfsfit}{959}{"1D7B8}%
-\MathAlphabetChar{\mathbfsfit}{960}{"1D7B9}%
-\MathAlphabetChar{\mathbfsfit}{961}{"1D7BA}%
-\MathAlphabetChar{\mathbfsfit}{960}{"1D7BB}%
-\MathAlphabetChar{\mathbfsfit}{963}{"1D7BC}%
-\MathAlphabetChar{\mathbfsfit}{964}{"1D7BD}%
-\MathAlphabetChar{\mathbfsfit}{965}{"1D7BE}%
-\MathAlphabetChar{\mathbfsfit}{966}{"1D7BF}%
-\MathAlphabetChar{\mathbfsfit}{967}{"1D7C0}%
-\MathAlphabetChar{\mathbfsfit}{968}{"1D7C1}%
-\MathAlphabetChar{\mathbfsfit}{969}{"1D7C2}%
-\MathAlphabetChar{\mathbfsfit}{"2202}{"1D7C3}%
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C4}% VAR EPSILON
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C5}% VAR THETA
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C6}% VAR KAPPA
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C7}% VAR PHI
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C8}% VAR RHO
-%\MathAlphabetChar{\mathbfsfit}{??}{"1D7C9}% VAR PI
+}
 %    \end{macrocode}
 %
+%
+%    \begin{macrocode}
+\AtBeginDocument{\setmathfont[Range=ALL]{Cambria Math}}
+%    \end{macrocode}
 %
 %\iffalse
-%</alphabets>
+%</package>
 %\fi
 %
 %
@@ -2497,6 +2166,7 @@ cat stix-tbl.asc |
 awk '
 %    \end{macrocode}
 % If the USV isn't repeated (TODO: check this is valid!) and the entry isn't one of the weird ones in the big block at the end of the \STIX\ table (TODO: check that out!)\dots
+% \changes{v0.1}{2007/01/21}{Ignore \cmd\text.. STIX commands.}
 %    \begin{macrocode}
  {if (usv != substr($0,2,5) && substr($0,2,1) != " ")
     {usv = substr($0,2,5);
@@ -2504,9 +2174,11 @@ awk '
      class = substr($0,57,1);
      description = tolower(substr($0,233,350));
 %    \end{macrocode}
-% If the USV has a macro name, and a class, and it isn't reserved (\ie, doubled up with a previously assigned glyph)\dots
+% If the USV has a macro name, which isn't \cs{text...}, and isn't a single character macro (e.g., \cmd\#, \cmd\S, \dots), and has a class, and it isn't reserved (\ie, doubled up with a previously assigned glyph):
 %    \begin{macrocode}
      if (texname      ~ /[\\]/ && 
+         substr(texname,0,5) != "\\text"    && 
+         substr(texname,3,1) != " "    &&
          class       != " "    && 
          description !~ /<reserved>/ )
 %    \end{macrocode}
@@ -2516,7 +2188,7 @@ awk '
            usv "}{" \
            texname "}{" \
            class "}{" \
-           description "}";
+           description "}%";
     }}' - |
 %    \end{macrocode}
 % Now replace the \STIX\ class abbreviations with their \TeX\ macro names.
@@ -3056,7 +2728,7 @@ sed -e ' s/{N}/{\\mathord}/   ' \
 % If the maths version wasn't defined, all of the above was skipped:
 %    \begin{macrocode}
   \else
-    \@latex@error{Math version `\expandafter\@gobblefour\string#1' 
+    \@latex@error{Math version ‘\expandafter\@gobblefour\string#1’
        is not
        defined}{You probably mispelled the name of the math
        version.^^JOr you have to specify an additional package.}%
@@ -3078,6 +2750,94 @@ sed -e ' s/{N}/{\\mathord}/   ' \
 % \Finale
 %
 %\iffalse
+%
+%<*test>
+%    \begin{macrocode}
+\documentclass{article}
+\usepackage[a6paper]{geometry}
+\usepackage{fontspec}
+\setmainfont{FPL Neu}
+\usepackage{unicode-math}
+\def\uplatin{abcdefghijklmnopqrstuvwxyz}
+\def\upLatin{ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+\def\upGreek{ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩϴ}
+\def\upgreek{αβγδεζηθικλμνξοπρςστυφχψωϵϑϰϕϱϖ}
+\def\itLatin{𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍}
+\def\itlatin{𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧}
+\def\itGreek{𝛢𝛣𝛤𝛥𝛦𝛧𝛨𝛩𝛪𝛫𝛬𝛭𝛮𝛯𝛰𝛱𝛲𝛴𝛵𝛶𝛷𝛸𝛹𝛺𝛳}
+\def\itgreek{𝛼𝛽𝛾𝛿𝜀𝜁𝜂𝜃𝜄𝜅𝜆𝜇𝜈𝜉𝜊𝜋𝜌𝜍𝜎𝜏𝜐𝜑𝜒𝜓𝜔𝜖𝜗𝜘𝜙𝜚𝜛}
+\providecommand\mathalphabet[1]{#1}
+\def\testmath#1{%
+  \makebox[\linewidth][l]{%
+    \makebox[0pt][l]{$\mathalphabet{\csname up#1\endcsname}$}%
+    \makebox[0pt][l]{$\mathalphabet{\csname it#1\endcsname}$}}}
+\begin{document}
+\setmathfont[Colour=2255FF55]{Cambria Math}
+\parindent=0pt
+\voffset=-1in
+\hoffset=-1in
+\setbox0=\vbox{%
+\testmath{Latin}\\
+\testmath{latin}\\
+\testmath{Greek}\\
+\testmath{greek}}
+\dimen0=\ht0
+\advance\dimen0\dp0
+\edef\papersize{papersize=\the\wd0,\the\dimen0}
+\setbox255=\vbox{\special{\papersize}\box0}
+\shipout\box255
+\end{document}
+%    \end{macrocode}
+%</test>
+%
+%<*test-iso>
+%    \begin{macrocode}
+\PassOptionsToPackage{math-style=ISO}{unicode-math}
+\input unicode-math-test.ltx
+%    \end{macrocode}
+%</test-iso>
+%
+%<*test-tex>
+%    \begin{macrocode}
+\PassOptionsToPackage{math-style=TeX}{unicode-math}
+\input unicode-math-test.ltx
+%    \end{macrocode}
+%</test-tex>
+%
+%<*test-french>
+%    \begin{macrocode}
+\PassOptionsToPackage{math-style=French}{unicode-math}
+\input unicode-math-test.ltx
+%    \end{macrocode}
+%</test-french>
+%
+%<*testbf-iso>
+%    \begin{macrocode}
+\PassOptionsToPackage{bold-style=ISO}{unicode-math}
+\def\mathalphabet{\mathbf}
+\input unicode-math-test.ltx
+%    \end{macrocode}
+%</testbf-iso>
+%
+%<*testbf-tex>
+%    \begin{macrocode}
+\PassOptionsToPackage{bold-style=TeX}{unicode-math}
+\def\mathalphabet{\mathbf}
+\input unicode-math-test.ltx
+%    \end{macrocode}
+%</testbf-tex>
+%
+%<*testbf-french>
+%    \begin{macrocode}
+\PassOptionsToPackage{bold-style=French}{unicode-math}
+\def\mathalphabet{\mathbf}
+\input unicode-math-test.ltx
+%    \end{macrocode}
+%</testbf-french>
+%
+%
+%
+%
 %<*dtx-style>
 %    \begin{macrocode}
 \ProvidesPackage{dtx-style}
@@ -3102,7 +2862,7 @@ sed -e ' s/{N}/{\\mathord}/   ' \
   {\endlist}
 
 \usepackage[svgnames]{xcolor}
-\usepackage{array,booktabs,calc,enumitem,fancyvrb,graphicx,ifthen,longtable,refstyle,varioref}
+\usepackage{array,booktabs,calc,enumitem,fancyvrb,graphicx,ifthen,longtable,refstyle,subfig,topcapt,varioref}
 \usepackage{fontspec,xltxtra,xunicode,unicode-math}
 
 %\usepackage[rm,small]{titlesec}
@@ -3168,9 +2928,9 @@ sed -e ' s/{N}/{\\mathord}/   ' \
 \newcommand*\name[1]{{#1}}
 \newcommand*\pkg[1]{\textsf{#1}}
 \newcommand*\feat[1]{\texttt{#1}}
+\newcommand*\opt[1]{\texttt{#1}}
 
 \newcommand*\note[1]{\unskip\footnote{#1}}
-\renewcommand*\note[1]{\textcolor{gray}{\small (#1)}}
 
 \let\latin\textit
 \def\eg{\latin{e.g.}}
