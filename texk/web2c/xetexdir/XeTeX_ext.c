@@ -1650,7 +1650,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
-											(dir == UBIDI_RTL), x, y, &status);
+											(dir == UBIDI_RTL), 0, 0, &status);
 	
 					getGlyphs(engine, glyphs, &status);
 					getGlyphPositions(engine, positions, &status);
@@ -1658,13 +1658,13 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					for (i = 0; i < nGlyphs; ++i) {
 						if (glyphs[i] < 0xfffe) {
 							glyphIDs[realGlyphCount] = glyphs[i];
-							locations[realGlyphCount].x = X2Fix(positions[2*i]);
-							locations[realGlyphCount].y = X2Fix(positions[2*i+1]);
+							locations[realGlyphCount].x = X2Fix(positions[2*i] + x);
+							locations[realGlyphCount].y = X2Fix(positions[2*i+1] + y);
 							++realGlyphCount;
 						}
 					}
-					x = positions[2*i];
-					y = positions[2*i+1];
+					x += positions[2*i];
+					y += positions[2*i+1];
 				}
 				wid = x;
 			}
