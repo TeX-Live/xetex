@@ -79,7 +79,7 @@ public:
 	* Value is the same as that returned by getFontMetrics()
 	* @return the font descent in device co-ordinates
 	*/
-	virtual float descent() { return fXeTeXFont->getExactDescent(); }
+	virtual float descent() { return - fXeTeXFont->getExactDescent(); }
 
 	/**
 	* Returns the total height of the font. 

@@ -750,34 +750,36 @@ getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float
 {
 	gr::GlyphIterator	i = engine->grSegment->glyphs().first + index;
 	*glyphID = i->glyphID();
-	*x = i->origin();
-	*y = i->yOffset();
+	if (engine->extend != 1.0 || engine->slant != 0.0)
+		*x = i->origin() * engine->extend + i->yOffset() * engine->slant;
+	else
+		*x = i->origin();
+	*y = - i->yOffset();
 }
 
 float
 graphiteSegmentWidth(XeTeXLayoutEngine engine)
 {
 	//return engine->grSegment->advanceWidth(); // can't use this because it ignores trailing WS
-	return engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
+	return engine->extend * engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
 }
 
 /* line-breaking uses its own private textsource and segment, not the engine's ones */
-static gr::ITextSource*	lbSource = NULL;
-static gr::Segment*		lbSegment = NULL;
+static XeTeXGrTextSource*	lbSource = NULL;
+static gr::Segment*			lbSegment = NULL;
 	
 void
 initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 {
+	if (lbSource == NULL)
+		lbSource = new XeTeXGrTextSource();
+
 	if (lbSegment != NULL) {
 		delete lbSegment;
 		lbSegment = NULL;
 	}
-	if (lbSource != NULL) {
-		delete lbSource;
-		lbSource = NULL;
-	}
-	
-	lbSource = new XeTeXGrTextSource(txtPtr, txtLen, false, 0, NULL);
+
+	lbSource->setText(txtPtr, txtLen, false, 0, NULL);
 	lbSegment = new gr::RangeSegment(engine->grFont, lbSource, NULL);
 }
 

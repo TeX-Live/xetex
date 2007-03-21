@@ -815,24 +815,17 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 {
 	XeTeXLayoutEngine   engine;
 	
-	UInt32*	addFeatures = 0;
-	UInt32*	removeFeatures = 0;
-	SInt32* addParams = 0;
-	
-	int	nAdded = 0;
-	int nRemoved = 0;
-	
 	const char*	cp2;
 	const char*	cp3;
 
 	UInt32	tag;
 
 	UInt32	rgbValue = 0x000000FF;
+	UInt32	languageTag = 0;
 
 	double	extend = 1.0;
 	double	slant = 0.0;
 
-#if 0
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
 		while (*cp1) {
@@ -846,14 +839,6 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 			cp2 = cp1;
 			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
 				++cp2;
-			
-			if (strncmp(cp1, "script", 6) == 0) {
-				cp3 = cp1 + 6;
-				if (*cp3 != '=')
-					goto bad_option;
-				scriptTag = read_tag(cp3 + 1);
-				goto next_option;
-			}
 			
 			if (strncmp(cp1, "language", 8) == 0) {
 				cp3 = cp1 + 8;
@@ -915,34 +900,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 				goto next_option;
 			}
 			
-			if (*cp1 == '+') {
-				SInt32	param = 0;
-				tag = read_tag_with_param(cp1 + 1, &param);
-				++nAdded;
-				if (nAdded == 1) {
-					addFeatures = xmalloc(sizeof(UInt32));
-					addParams = xmalloc(sizeof(SInt32));
-				}
-				else {
-					addFeatures = xrealloc(addFeatures, nAdded * sizeof(UInt32));
-					addParams = xrealloc(addParams, nAdded * sizeof(SInt32));
-				}
-				addFeatures[nAdded-1] = tag;
-				addParams[nAdded-1] = param;
-				goto next_option;
-			}
-			
-			if (*cp1 == '-') {
-				tag = read_tag(cp1 + 1);
-				++nRemoved;
-				if (nRemoved == 1)
-					removeFeatures = xmalloc(sizeof(UInt32));
-				else
-					removeFeatures = xrealloc(removeFeatures, nRemoved * sizeof(UInt32));
-				removeFeatures[nRemoved-1] = tag;
-				goto next_option;
-			}
-
+/*
 			if (strncmp(cp1, "vertical", 8) == 0) {
 				cp3 = cp2;
 				if (*cp3 == ';' || *cp3 == ':')
@@ -956,7 +914,8 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 					goto next_option;
 				}
 			}
-			
+*/
+
 		bad_option:
 			fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
 		
@@ -964,16 +923,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 			cp1 = cp2;
 		}
 		
-		if (addFeatures != 0) {
-			addFeatures = realloc(addFeatures, (nAdded + 1) * sizeof(UInt32));
-			addFeatures[nAdded] = 0;
-		}
-		if (removeFeatures != 0) {
-			removeFeatures = realloc(removeFeatures, (nRemoved + 1) * sizeof(UInt32));
-			removeFeatures[nRemoved] = 0;
-		}
 	}
-#endif
 	
 	if ((loadedfontflags & FONT_FLAGS_COLORED) == 0)
 		rgbValue = 0x000000FF;
@@ -983,15 +933,8 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 
 	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue,
 					extend, slant);
-	if (engine == 0) {
+	if (engine == 0)
 		deleteFont(font);
-		if (addFeatures)
-			free(addFeatures);
-		if (addParams)
-			free(addParams);
-		if (removeFeatures)
-			free(removeFeatures);
-	}
 	else
 		nativefonttypeflag = OTGR_FONT_FLAG;
 

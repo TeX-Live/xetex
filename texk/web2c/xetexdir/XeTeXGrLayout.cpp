@@ -92,10 +92,11 @@ XeTeXGrFont::getFontMetrics(float * pAscent, float * pDescent, float * pEmSquare
 	if (pAscent)
 		*pAscent = fXeTeXFont->getExactAscent();
 	if (pDescent)
-		*pDescent = fXeTeXFont->getExactDescent();
+		*pDescent = - fXeTeXFont->getExactDescent();
 	if (pEmSquare)
 		*pEmSquare = fXeTeXFont->getXPixelsPerEm();
 }
+
 
 #pragma mark XeTeXGrTextSource
 
