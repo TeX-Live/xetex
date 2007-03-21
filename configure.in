@@ -119,6 +119,7 @@ FONTCONFIGDIR=libs/fontconfig
 EXPATDIR=libs/expat
 TECKITDIR=libs/teckit
 ICUDIR=libs/icu-xetex
+GRAPHITEDIR=libs/graphite-engine
 
 test "$no_x" = yes && { with_xdvik=no; with_oxdvik=no; }
 export with_xdvik with_oxdvik
@@ -193,6 +194,12 @@ test "$with_xetex"   != no    && : ${needs_icu=yes}
 : ${needs_icu=no}
 export needs_icu
 
+# we need graphite for xetex
+test ! -d $srcdir/$GRAPHITEDIR && : ${needs_graphite=no}
+test "$with_xetex"   != no     && : ${needs_graphite=yes}
+: ${needs_graphite=no}
+export needs_graphite
+
 dnl We cannot use variables (e.g. $LIBPNGDIR) for sinclude, so...
 sinclude(libs/libpng/libpng.ac)
 sinclude(libs/zlib/zlib.ac)
@@ -204,9 +211,10 @@ dnl sinclude(libs/freetype/freetype.ac)
 sinclude(libs/freetype2/freetype2.ac)
 sinclude(libs/teckit/teckit.ac)
 sinclude(libs/icu-xetex/icu-xetex.ac)
+sinclude(libs/graphite-engine/graphite-engine.ac)
 dnl sinclude(libs/expat/expat.ac)
 
-LIBSDEP="$CURSESDEP $ZLIBDEP $LIBPNGDEP $LIBXPDFDEP $LIBT1DEP $GDDEP $FREETYPEDEP $FREETYPE2DEP $TECKITDEP $ICUDEP"
+LIBSDEP="$CURSESDEP $ZLIBDEP $LIBPNGDEP $LIBXPDFDEP $LIBT1DEP $GDDEP $FREETYPEDEP $FREETYPE2DEP $TECKITDEP $ICUDEP $GRAPHITEDEP"
 
 LIBSDIRS=
 test "$needs_ncurses" = yes && test "$using_system_ncurses" != yes \
@@ -229,6 +237,8 @@ test "$needs_teckit" = yes \
   && LIBSDIRS="$TECKITDIR $LIBSDIRS"
 test "$needs_icu" = yes \
   && LIBSDIRS="$ICUDIR $LIBSDIRS"
+test "$needs_graphite" = yes \
+  && LIBSDIRS="$GRAPHITEDIR $LIBSDIRS"
 
 AC_CONFIG_SUBDIRS([libs])
 

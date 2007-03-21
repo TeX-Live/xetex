@@ -3210,13 +3210,13 @@ if translate_filename then begin
 @x
 @d non_char==qi(256) {a |halfword| code that can't match a real character}
 @y
-@d gr_font_flag=65533
-@d ot_font_flag=65534
-@d aat_font_flag=65535
+@d otgr_font_flag=@"FFFE
+@d aat_font_flag=@"FFFF
 @d is_atsu_font(#)==(font_area[#]=aat_font_flag)
-@d is_ot_font(#)==(font_area[#]=ot_font_flag)
-@d is_gr_font(#)==(font_area[#]=gr_font_flag)
-@d is_native_font(#)==(is_atsu_font(#) or is_ot_font(#) or is_gr_font(#))
+@d is_ot_font(#)==((font_area[#]=otgr_font_flag) and (usingOpenType(font_layout_engine[#])))
+@d is_gr_font(#)==((font_area[#]=otgr_font_flag) and (usingGraphite(font_layout_engine[#])))
+@d is_otgr_font(#)==(font_area[#]=otgr_font_flag)
+@d is_native_font(#)==(is_atsu_font(#) or is_otgr_font(#))
 	{native fonts have font_area = 65534 or 65535,
 	 which would be a string containing an invalid Unicode character}
 
@@ -7616,7 +7616,7 @@ XeTeX_count_glyphs_code:
     scan_font_ident; n:=cur_val;
     if is_atsu_font(n) then
       cur_val:=atsu_font_get(m - XeTeX_int, font_layout_engine[n])
-    else if is_ot_font(n) then
+    else if is_otgr_font(n) then
       cur_val:=ot_font_get(m - XeTeX_int, font_layout_engine[n])
     else
       cur_val:=0;
@@ -8382,25 +8382,48 @@ begin
 	end else begin
 		use_skip := XeTeX_linebreak_skip <> zero_glue;
 		use_penalty := XeTeX_linebreak_penalty <> 0 or not use_skip;
-		linebreak_start(XeTeX_linebreak_locale, native_text + s, len);
-		offs := 0;
-		repeat
-			prevOffs := offs;
-			offs := linebreak_next;
-			if offs > 0 then begin
-				if prevOffs <> 0 then begin
-					if use_penalty then
-						tail_append(new_penalty(XeTeX_linebreak_penalty));
-					if use_skip then
-						tail_append(new_param_glue(XeTeX_linebreak_skip_code));
+		if (is_gr_font(main_f)) and (str_eq_str(XeTeX_linebreak_locale, "G")) then begin
+			initGraphiteBreaking(font_layout_engine[main_f], native_text + s, len);
+			offs := 0;
+			repeat
+				prevOffs := offs;
+				offs := findNextGraphiteBreak(offs, 15); {klbWordBreak = 15}
+				if offs > 0 then begin
+					if prevOffs <> 0 then begin
+						if use_penalty then
+							tail_append(new_penalty(XeTeX_linebreak_penalty));
+						if use_skip then
+							tail_append(new_param_glue(XeTeX_linebreak_skip_code));
+					end;
+					link(tail) := new_native_word_node(main_f, offs - prevOffs);
+					tail := link(tail);
+					for i := prevOffs to offs - 1 do
+						set_native_char(tail, i - prevOffs, native_text[s + i]);
+					set_native_metrics(tail, XeTeX_use_glyph_metrics);
 				end;
-				link(tail) := new_native_word_node(main_f, offs - prevOffs);
-				tail := link(tail);
-				for i := prevOffs to offs - 1 do
-					set_native_char(tail, i - prevOffs, native_text[s + i]);
-				set_native_metrics(tail, XeTeX_use_glyph_metrics);
-			end;
-		until offs < 0;
+			until offs < 0;
+		end
+		else begin
+			linebreak_start(XeTeX_linebreak_locale, native_text + s, len);
+			offs := 0;
+			repeat
+				prevOffs := offs;
+				offs := linebreak_next;
+				if offs > 0 then begin
+					if prevOffs <> 0 then begin
+						if use_penalty then
+							tail_append(new_penalty(XeTeX_linebreak_penalty));
+						if use_skip then
+							tail_append(new_param_glue(XeTeX_linebreak_skip_code));
+					end;
+					link(tail) := new_native_word_node(main_f, offs - prevOffs);
+					tail := link(tail);
+					for i := prevOffs to offs - 1 do
+						set_native_char(tail, i - prevOffs, native_text[s + i]);
+					set_native_metrics(tail, XeTeX_use_glyph_metrics);
+				end;
+			until offs < 0;
+		end
 	end
 end;
 

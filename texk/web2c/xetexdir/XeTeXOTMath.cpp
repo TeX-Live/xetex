@@ -75,7 +75,7 @@ getotmathconstant(int f, int n)
 {
 	int	rval = 0;
 
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 		rval = X2Fix(getMathConstant(font, (mathConstantIndex)n) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
@@ -196,7 +196,7 @@ getotmathvariant(int f, int g, int v, int* adv)
 	int	rval = g;
 	*adv = -1;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
 		const char* table = (const char*)font->getFontTable(kMATHTableTag);
@@ -233,7 +233,7 @@ getotassemblyptr(int f, int g)
 {
 	void*	rval = NULL;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
 		const char* table = (const char*)font->getFontTable(kMATHTableTag);
@@ -268,7 +268,7 @@ getotmathitalcorr(int f, int g)
 {
 	int	rval = 0;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
 		const char* table = (const char*)font->getFontTable(kMATHTableTag);
@@ -303,7 +303,7 @@ otminconnectoroverlap(int f)
 {
 	int	rval = 0;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
 		const char* table = (const char*)font->getFontTable(kMATHTableTag);
@@ -344,7 +344,7 @@ otpartstartconnector(int f, const GlyphAssembly* a, int i)
 {
 	int	rval = 0;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 		rval = X2Fix(SWAPW(a->partRecords[i].startConnectorLength) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
@@ -357,7 +357,7 @@ otpartendconnector(int f, const GlyphAssembly* a, int i)
 {
 	int	rval = 0;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 		rval = X2Fix(SWAPW(a->partRecords[i].endConnectorLength) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
@@ -370,7 +370,7 @@ otpartfulladvance(int f, const GlyphAssembly* a, int i)
 {
 	int	rval = 0;
 	
-	if (fontarea[f] == OT_FONT_FLAG) {
+	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 		rval = X2Fix(SWAPW(a->partRecords[i].fullAdvance) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}

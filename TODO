@@ -56,4 +56,6 @@
 
 + specify (uninstalled) fonts by file name
 
-- \XeTeXcharspacing for TFM as well as native fonts
++ \XeTeXinterchartoks for TFM as well as native fonts
+
+- \XeTeXpdffilepages

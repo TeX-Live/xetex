@@ -63,6 +63,8 @@ extern "C" {
 
 class XeTeXFontInst : public LEFontInstance, protected FontTableCache
 {
+	friend class XeTeXGrFont;
+
 protected:
     float    fPointSize;
 

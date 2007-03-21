@@ -85,7 +85,14 @@ ZLIBSRCDIR = $(srcdir)/$(ZLIBDIR)
 FONTCONFIGCPPFLAGS = @FONTCONFIGCPPFLAGS@
 FONTCONFIGLDFLAGS  = @FONTCONFIGLDFLAGS@
 
-xetexlibs = $(LDICU) $(LDTECKIT) $(LDFREETYPE2) $(LDZLIB)
+GRAPHITEDIR = ../../libs/graphite-engine
+GRAPHITESRCDIR = $(srcdir)/$(GRAPHITEDIR)
+
+GRAPHITEFLAGS = @GRAPHITECPPFLAGS@
+LDGRAPHITE = @LDGRAPHITE@
+GRAPHITEDEP = @GRAPHITEDEP@
+
+xetexlibs = $(LDICU) $(LDTECKIT) $(LDFREETYPE2) $(LDGRAPHITE) $(LDZLIB)
 
 # Font-related headers
 XeTeXFontHdrs = \
@@ -167,10 +174,11 @@ xetex_ot_layout_o = \
 		XeTeXLayoutInterface.o XeTeXOTLayoutEngine.o \
 		XeTeXFontInst.o cmaps.o FontTableCache.o \
 		XeTeXOTMath.o \
+		XeTeXGrLayout.o \
 		$(xetex_platform_layout_o) 
 
 XeTeXLayoutInterface.o: $(srcdir)/xetexdir/XeTeXLayoutInterface.cpp $(XeTeXFontHdrs)
-	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(FONTCONFIGCPPFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(GRAPHITEFLAGS) $(FONTCONFIGCPPFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeXOTLayoutEngine.o: $(srcdir)/xetexdir/XeTeXOTLayoutEngine.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(FONTCONFIGCPPFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
@@ -196,6 +204,9 @@ XeTeXFontInst_FT2.o: $(srcdir)/xetexdir/XeTeXFontInst_FT2.cpp $(XeTeXFontHdrs)
 
 XeTeXOTMath.o: $(srcdir)/xetexdir/XeTeXOTMath.cpp $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(FONTCONFIGCPPFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+
+XeTeXGrLayout.o: $(srcdir)/xetexdir/XeTeXGrLayout.cpp $(srcdir)/xetexdir/XeTeXGrLayout.h $(XeTeXFontHdrs)
+	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(GRAPHITEFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h

@@ -41,6 +41,8 @@ authorization from SIL International.
 
 #include "XeTeXswap.h"
 
+#include "XeTeXGrLayout.h"
+
 #include "Features.h"
 #include "ScriptAndLanguage.h"
 
@@ -49,6 +51,9 @@ authorization from SIL International.
 #include <math.h>
 
 struct XeTeXLayoutEngine_rec
+	/* this is used for both ICU and Graphite, because so much of the font stuff is common;
+	   however, it is not possible to call ICU-specific things like layoutChars for a
+	   Graphite-based engine, or Graphite functions for an ICU one! */
 {
 	LayoutEngine*	layoutEngine;
 	XeTeXFontInst*	font;
@@ -60,6 +65,9 @@ struct XeTeXLayoutEngine_rec
 	UInt32			rgbValue;
 	float			extend;
 	float			slant;
+	gr::Segment*		grSegment;
+	XeTeXGrFont*		grFont;
+	XeTeXGrTextSource*	grSource;
 };
 
 /*******************************************************************/
@@ -359,6 +367,11 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UI
 	result->rgbValue = rgbValue;
 	result->extend = extend;
 	result->slant = slant;
+
+	result->grSegment = NULL;
+	result->grSource = NULL;
+	result->grFont = NULL;
+
 	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((XeTeXFontInst*)font, scriptTag, languageTag,
 						(LETag*)addFeatures, (le_int32*)addParams, (LETag*)removeFeatures, status);
 	if (LE_FAILURE(status) || result->layoutEngine == NULL) {
@@ -373,6 +386,9 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
 	delete engine->layoutEngine;
 	delete engine->font;
+	delete engine->grSegment;
+	delete engine->grSource;
+	delete engine->grFont;
 }
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
@@ -688,3 +704,109 @@ GetFontCharRange_AAT(ATSUStyle style, int reqFirst)
 	}
 }
 #endif
+
+/* Graphite interface */
+
+XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
+										const char* name,
+										UInt32 rgbValue,
+										float extend, float slant)
+{
+	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
+	result->fontRef = fontRef;
+	result->font = (XeTeXFontInst*)font;
+	result->scriptTag = 0;
+	result->languageTag = 0;
+	result->addedFeatures = NULL;
+	result->removedFeatures = NULL;
+	result->rgbValue = rgbValue;
+	result->extend = extend;
+	result->slant = slant;
+	result->layoutEngine = NULL;
+
+	result->grFont = new XeTeXGrFont(result->font, name);
+	result->grSource = new XeTeXGrTextSource();
+	result->grSegment = NULL;
+
+	return result;
+}
+
+int
+makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
+{
+	if (engine->grSegment) {
+		delete engine->grSegment;
+		engine->grSegment = NULL;
+	}
+
+	engine->grSource->setText(txtPtr, txtLen, false, 0, NULL);
+	engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, NULL);
+
+	return engine->grSegment->glyphs().second - engine->grSegment->glyphs().first;
+}
+
+void
+getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y)
+{
+	gr::GlyphIterator	i = engine->grSegment->glyphs().first + index;
+	*glyphID = i->glyphID();
+	*x = i->origin();
+	*y = i->yOffset();
+}
+
+float
+graphiteSegmentWidth(XeTeXLayoutEngine engine)
+{
+	//return engine->grSegment->advanceWidth(); // can't use this because it ignores trailing WS
+	return engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
+}
+
+/* line-breaking uses its own private textsource and segment, not the engine's ones */
+static gr::ITextSource*	lbSource = NULL;
+static gr::Segment*		lbSegment = NULL;
+	
+void
+initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
+{
+	if (lbSegment != NULL) {
+		delete lbSegment;
+		lbSegment = NULL;
+	}
+	if (lbSource != NULL) {
+		delete lbSource;
+		lbSource = NULL;
+	}
+	
+	lbSource = new XeTeXGrTextSource(txtPtr, txtLen, false, 0, NULL);
+	lbSegment = new gr::RangeSegment(engine->grFont, lbSource, NULL);
+}
+
+int
+findNextGraphiteBreak(int iOffset, int iBrkVal)
+{
+	if (iOffset < lbSource->getLength()) {
+		while (++iOffset < lbSource->getLength()) {
+			const gr::GlyphIterator&	gi = lbSegment->charToGlyphs(iOffset).first;
+			if (gi == lbSegment->charToGlyphs(iOffset).second)
+				continue;
+			if (gi->breakweight() < gr::klbNoBreak && gi->breakweight() >= -(gr::LineBrk)iBrkVal)
+				return iOffset;
+			if (gi->breakweight() > gr::klbNoBreak && gi->breakweight() <= (gr::LineBrk)iBrkVal)
+				return iOffset + 1;
+		}
+		return lbSource->getLength();
+	}
+	else
+		return -1;
+}
+
+
+int usingOpenType(XeTeXLayoutEngine engine)
+{
+	return engine->layoutEngine != NULL;
+}
+
+int usingGraphite(XeTeXLayoutEngine engine)
+{
+	return engine->grFont != NULL;
+}

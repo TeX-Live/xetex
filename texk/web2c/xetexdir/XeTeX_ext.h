@@ -58,8 +58,8 @@ typedef INTEGER_TYPE integer;
 typedef struct UFILE* unicodefile;
 #endif
 
-#define AAT_FONT_FLAG	65535
-#define	OT_FONT_FLAG	65534
+#define AAT_FONT_FLAG	0xFFFFU
+#define	OTGR_FONT_FLAG	0xFFFEU
 
 #define FONT_FLAGS_COLORED	0x01
 #define FONT_FLAGS_VERTICAL	0x02

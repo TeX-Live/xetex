@@ -140,6 +140,20 @@ const char* getGlyphName(XeTeXFont font, UInt16 gid, int* len);
 
 int getFontCharRange(XeTeXLayoutEngine engine, int reqFirst);
 
+/* graphite interface functions... */
+XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
+										const char* name,
+										UInt32 rgbValue,
+										float extend, float slant);
+int makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
+void getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y);
+float graphiteSegmentWidth(XeTeXLayoutEngine engine);
+void initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
+int findNextGraphiteBreak(int iOffset, int iBrkVal);
+
+int usingOpenType(XeTeXLayoutEngine engine);
+int usingGraphite(XeTeXLayoutEngine engine);
+
 #ifdef __cplusplus
 };
 #endif

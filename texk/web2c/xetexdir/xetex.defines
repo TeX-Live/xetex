@@ -63,6 +63,11 @@ authorization from SIL International.
 @define type gzFile;
 @define function weof();
 
+@define procedure initGraphiteBreaking();
+@define function findNextGraphiteBreak();
+@define function usingOpenType();
+@define function usingGraphite();
+
 @define procedure memcpy();
 @define function casttoptr();
 @define function casttointeger();
