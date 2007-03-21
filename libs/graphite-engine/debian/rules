@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+#DEB_AUTO_UPDATE_DEBIAN_CONTROL:=yes
+
+DEB_TAR_SRCDIR := silgraphite-2.1.0
+include /usr/share/cdbs/1/rules/tarball.mk
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-final
+DEB_DH_MAKESHLIBS_ARGS_libgraphite2 := -V"libgraphite2 (>= 2.1-1)"
+DEB_COMPRESS_EXCLUDE := .rtf

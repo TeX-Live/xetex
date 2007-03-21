@@ -1,0 +1,3 @@
+priv_includedir=@abs_srcdir@/src
+includedir=@abs_srcdir@/include -I${priv_includedir}/segment -I${priv_includedir}/font
+libdir=@abs_builddir@/src

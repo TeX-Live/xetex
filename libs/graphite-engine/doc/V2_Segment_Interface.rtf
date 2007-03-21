@@ -1,0 +1,688 @@
+{\rtf1\ansi\ansicpg1252\uc1 \deff0\deflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman{\*\falt Times};}{\f1\fswiss\fcharset0\fprq2{\*\panose 020b0604020202020204}Arial;}
+{\f2\fmodern\fcharset0\fprq1{\*\panose 02070309020205020404}Courier New;}{\f3\froman\fcharset2\fprq2{\*\panose 05050102010706020507}Symbol;}{\f14\fnil\fcharset2\fprq2{\*\panose 05000000000000000000}Wingdings;}
+{\f333\froman\fcharset238\fprq2 Times New Roman CE{\*\falt Times};}{\f334\froman\fcharset204\fprq2 Times New Roman Cyr{\*\falt Times};}{\f336\froman\fcharset161\fprq2 Times New Roman Greek{\*\falt Times};}
+{\f337\froman\fcharset162\fprq2 Times New Roman Tur{\*\falt Times};}{\f338\froman\fcharset177\fprq2 Times New Roman (Hebrew){\*\falt Times};}{\f339\froman\fcharset178\fprq2 Times New Roman (Arabic){\*\falt Times};}
+{\f340\froman\fcharset186\fprq2 Times New Roman Baltic{\*\falt Times};}{\f341\fswiss\fcharset238\fprq2 Arial CE;}{\f342\fswiss\fcharset204\fprq2 Arial Cyr;}{\f344\fswiss\fcharset161\fprq2 Arial Greek;}{\f345\fswiss\fcharset162\fprq2 Arial Tur;}
+{\f346\fswiss\fcharset177\fprq2 Arial (Hebrew);}{\f347\fswiss\fcharset178\fprq2 Arial (Arabic);}{\f348\fswiss\fcharset186\fprq2 Arial Baltic;}{\f349\fmodern\fcharset238\fprq1 Courier New CE;}{\f350\fmodern\fcharset204\fprq1 Courier New Cyr;}
+{\f352\fmodern\fcharset161\fprq1 Courier New Greek;}{\f353\fmodern\fcharset162\fprq1 Courier New Tur;}{\f354\fmodern\fcharset177\fprq1 Courier New (Hebrew);}{\f355\fmodern\fcharset178\fprq1 Courier New (Arabic);}
+{\f356\fmodern\fcharset186\fprq1 Courier New Baltic;}}{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;
+\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{
+\ql \li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \snext0 Normal;}{\s1\ql \fi-432\li432\ri0\sb600\keepn\widctlpar
+\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 \b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext21 heading 1;}{\s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar
+\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 \b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext21 heading 2;}{\s3\ql \fi-720\li720\ri0\sb360\widctlpar
+\jclisttab\tx720\aspalpha\aspnum\faauto\ls80\ilvl2\outlinelevel2\adjustright\rin0\lin720\itap0 \b\f1\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext21 heading 3;}{\s4\ql \fi-864\li864\ri0\sb120\widctlpar
+\jclisttab\tx864\aspalpha\aspnum\faauto\ls80\ilvl3\outlinelevel3\adjustright\rin0\lin864\itap0 \b\f1\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext4 heading 4;}{\s5\ql \fi-1008\li1008\ri0\sb120\widctlpar
+\jclisttab\tx1440\aspalpha\aspnum\faauto\ls80\ilvl4\outlinelevel4\adjustright\rin0\lin1008\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 5;}{
+\s6\ql \li0\ri0\sb240\sa60\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \i\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 6;}{
+\s7\ql \li0\ri0\sb240\sa60\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \f1\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 7;}{
+\s8\ql \li0\ri0\sb240\sa60\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \i\f1\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 8;}{
+\s9\ql \li0\ri0\sb240\sa60\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \b\i\f1\fs18\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 9;}{\*\cs10 \additive Default Paragraph Font;}{
+\s15\ql \fi720\li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \f2\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext15 Body Text 2;}{
+\s16\ql \li0\ri0\sb240\sa360\widctlpar\aspalpha\aspnum\faauto\outlinelevel0\adjustright\rin0\lin0\itap0 \b\f1\fs32\lang1033\langfe1033\kerning28\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext16 Title;}{
+\s17\ql \li0\ri0\sa60\widctlpar\aspalpha\aspnum\faauto\outlinelevel1\adjustright\rin0\lin0\itap0 \i\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext17 Subtitle;}{
+\s18\ql \li0\ri0\sa120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext18 Body Text,Body Text Bullet;}{
+\s19\ql \fi210\li0\ri0\sa120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon18 \snext19 Body Text First Indent;}{
+\s20\ql \fi-200\li200\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin200\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 \sautoupd index 1;}{
+\s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon18 \snext21 Paragraph;}{
+\s22\ql \li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon21 \snext21 ParaContd;}{\s23\ql \li360\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin360\itap0 
+\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext23 Body Text Indent 2;}{\s24\ql \fi-576\li576\ri0\sb180\sa60\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\f1\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon2 \snext21 StepWNumber;}{\s25\ql \li432\ri0\widctlpar\tx864\tx1728\tx2592\tx3456\tx4320\tx5184\aspalpha\aspnum\faauto\adjustright\rin0\lin432\itap0 
+\f2\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon21 \snext25 CCode;}{\s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon21 \snext26 
+ParaIndent;}{\s27\ql \li0\ri0\widctlpar\tqc\tx4320\tqr\tx8640\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext27 header;}{\s28\ql \li0\ri0\widctlpar
+\tqc\tx4320\tqr\tx8640\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext28 footer;}{\s29\ql \li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 
+\f2\fs18\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \snext29 HTML Body;}{\s30\ql \li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon21 \snext21 ParaLabeled;}{
+\s31\ql \li1440\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin1440\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon21 \snext31 Comment;}{\s32\ql \fi-360\li1440\ri0\widctlpar
+\jclisttab\tx1440\aspalpha\aspnum\faauto\ls83\adjustright\rin0\lin1440\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext32 \sautoupd List Bullet;}{\s33\ql \li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 
+\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext33 Style1;}{\s34\ql \fi-720\li720\ri0\widctlpar\jclisttab\tx576\jclisttab\tx720{\*\pn \pnlvlbody\ilvl1\ls16\pnrnot0\pndec }
+\aspalpha\aspnum\faauto\ls16\ilvl1\adjustright\rin0\lin720\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext34 VersionNumber;}{\s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar
+\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext26 FunctionHdr;}{\s36\ql \fi-1440\li1440\ri0\sb240\keep\nowidctlpar
+\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin1440\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon35 \snext36 StructField;}{\s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn 
+\pnlvlbody\ilvl0\ls13\pnrnot0\pndec }\aspalpha\aspnum\faauto\ls13\adjustright\rin0\lin1320\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon32 \snext37 List Bullet Indent;}{\s38\ql \fi-360\li720\ri0\widctlpar
+\jclisttab\tx432\jclisttab\tx720{\*\pn \pnlvlbody\ilvl0\ls22\pnrnot0\pndec }\aspalpha\aspnum\faauto\ls22\adjustright\rin0\lin720\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext38 \sautoupd List Bullet 2;}}{\*\listtable
+{\list\listtemplateid-915764400\listsimple{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\u-3913 ?;}{\levelnumbers;}\f3\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 
+\fi-360\li1800\jclisttab\tx1800 }{\listname ;}\listid-128}{\list\listtemplateid176084144\listsimple{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\u-3913 ?;}{\levelnumbers;}\f3
+\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li720\jclisttab\tx720 }{\listname ;}\listid-125}{\list\listtemplateid808995652\listsimple{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360
+\levelindent0{\leveltext\'01\u-3913 ?;}{\levelnumbers;}\f3\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li1320\jclisttab\tx1320 }{\listname ;}\listid-119}{\list\listtemplateid1398572816{\listlevel\levelnfc0\levelnfcn0\leveljc0
+\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\'00;}{\levelnumbers\'01;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \s1\fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0
+\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'03\'00.\'01;}{\levelnumbers\'01\'03;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \s2\fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0
+\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \s3\fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0
+\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \s4\fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0
+\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \s5\fi-1008\li1008
+\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers
+\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1440\li1440\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1584\li1584\jclisttab\tx1584 }
+{\listname ;}\listid65032020}{\list\listtemplateid614644902{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\'00;}{\levelnumbers\'01;}\b\i0\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\b\i0\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\b\i0\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers
+\'01\'03\'05\'07\'09;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0
+\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0
+\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440\jclisttab\tx1440 }{\listlevel
+\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584\jclisttab\tx1584 }{\listname ;}\listid100760789}{\list\listtemplateid-1823801636{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1008 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0
+\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440
+\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584\jclisttab\tx1584 }{\listname ;}\listid184250857}{\list\listtemplateid1915660536{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1008 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0
+\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440
+\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584\jclisttab\tx1584 }{\listname ;}\listid194973280}{\list\listtemplateid-1383451572{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0
+{\leveltext\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1008 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0
+\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440
+\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584\jclisttab\tx1584 }{\listname ;}\listid1036544252}{\list\listtemplateid1640773504{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0
+{\leveltext\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1008 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0
+\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440
+\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584\jclisttab\tx1584 }{\listname ;}\listid1157645830}{\list\listtemplateid67698711\listsimple{\listlevel\levelnfc4\levelnfcn4\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0
+{\leveltext\'02\'00);}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li360\jclisttab\tx360 }{\listname ;}\listid1337146905}{\list\listtemplateid-1650960566{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0
+\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\'00;}{\levelnumbers\'01;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'03\'00.\'01;}{\levelnumbers\'01\'03;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace0\levelindent0{\leveltext\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0
+\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\b\i0\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \s5\fi-1008\li1008\jclisttab\tx1440 }{\listlevel\levelnfc0
+\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }
+{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 
+\fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584\jclisttab\tx1584 }{\listname ;}\listid1366174190}{\list\listtemplateid67698703
+\listsimple{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'02\'00.;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li360\jclisttab\tx360 }
+{\listname ;}\listid1487355350}{\list\listtemplateid-994168546{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1008 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers
+\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1
+\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584
+\jclisttab\tx1584 }{\listname ;}\listid1703744164}{\list\listtemplateid-1934717386{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-432\li432\jclisttab\tx432 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-576\li576\jclisttab\tx576 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1 \fi-864\li864\jclisttab\tx864 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1008\li1008\jclisttab\tx1008 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers
+\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1152\li1152\jclisttab\tx1152 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1296\li1296\jclisttab\tx1296 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1
+\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1440\li1440\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1 \fi-1584\li1584
+\jclisttab\tx1584 }{\listname ;}\listid1717271031}{\list\listtemplateid-2076032732\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\leveltext\leveltemplateid1929540790
+\'01\u-3913 ?;}{\levelnumbers;}\f3\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \s32\fi-360\li720\jclisttab\tx720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\leveltext
+\leveltemplateid67698691\'01o;}{\levelnumbers;}\f2\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li1440\jclisttab\tx1440 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0
+{\leveltext\leveltemplateid67698693\'01\u-3929 ?;}{\levelnumbers;}\f14\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li2160\jclisttab\tx2160 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1
+\levelspace360\levelindent0{\leveltext\leveltemplateid67698689\'01\u-3913 ?;}{\levelnumbers;}\f3\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li2880\jclisttab\tx2880 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0
+\levelstartat1\levelspace360\levelindent0{\leveltext\leveltemplateid67698691\'01o;}{\levelnumbers;}\f2\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li3600\jclisttab\tx3600 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0
+\levelfollow0\levelstartat1\levelspace360\levelindent0{\leveltext\leveltemplateid67698693\'01\u-3929 ?;}{\levelnumbers;}\f14\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li4320\jclisttab\tx4320 }{\listlevel\levelnfc23\levelnfcn23
+\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\leveltext\leveltemplateid67698689\'01\u-3913 ?;}{\levelnumbers;}\f3\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li5040\jclisttab\tx5040 }{\listlevel
+\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\leveltext\leveltemplateid67698691\'01o;}{\levelnumbers;}\f2\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li5760\jclisttab\tx5760 }
+{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\leveltext\leveltemplateid67698693\'01\u-3929 ?;}{\levelnumbers;}\f14\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li6480
+\jclisttab\tx6480 }{\listname ;}\listid1756777129}{\list\listtemplateid67698711\listsimple{\listlevel\levelnfc4\levelnfcn4\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'02\'00);}{\levelnumbers\'01;}\chbrdr
+\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-360\li360\jclisttab\tx360 }{\listname ;}\listid2020767601}{\list\listtemplateid230602966{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelspace0\levelindent0
+{\leveltext\'01\'00;}{\levelnumbers\'01;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'03\'00.\'01;}{\levelnumbers\'01\'03;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'05\'00.\'01.\'02;}{\levelnumbers\'01\'03\'05;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext
+\'07\'00.\'01.\'02.\'03;}{\levelnumbers\'01\'03\'05\'07;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0
+{\leveltext\'09\'00.\'01.\'02.\'03.\'04;}{\levelnumbers\'01\'03\'05\'07\'09;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-720\li720\jclisttab\tx720 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1
+\levelspace0\levelindent0{\leveltext\'0b\'00.\'01.\'02.\'03.\'04.\'05;}{\levelnumbers\'01\'03\'05\'07\'09\'0b;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1080\li1080\jclisttab\tx1080 }{\listlevel\levelnfc0\levelnfcn0\leveljc0
+\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0d\'00.\'01.\'02.\'03.\'04.\'05.\'06;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1080\li1080\jclisttab\tx1080 }
+{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'0f\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07;}{\levelnumbers\'01\'03\'05\'07\'09\'0b\'0d\'0f;}\chbrdr\brdrnone\brdrcf1 
+\chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1440\li1440\jclisttab\tx1440 }{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace0\levelindent0{\leveltext\'11\'00.\'01.\'02.\'03.\'04.\'05.\'06.\'07.\'08;}{\levelnumbers
+\'01\'03\'05\'07\'09\'0b\'0d\'0f\'11;}\chbrdr\brdrnone\brdrcf1 \chshdng0\chcfpat1\chcbpat1\fbias0 \fi-1440\li1440\jclisttab\tx1440 }{\listname ;}\listid2110150742}}{\*\listoverridetable{\listoverride\listid-119\listoverridecount0\ls1}
+{\listoverride\listid-125\listoverridecount0\ls2}{\listoverride\listid-119\listoverridecount0\ls3}{\listoverride\listid-125\listoverridecount0\ls4}{\listoverride\listid-119\listoverridecount0\ls5}{\listoverride\listid-125\listoverridecount0\ls6}
+{\listoverride\listid-119\listoverridecount0\ls7}{\listoverride\listid-125\listoverridecount0\ls8}{\listoverride\listid-119\listoverridecount0\ls9}{\listoverride\listid-125\listoverridecount0\ls10}{\listoverride\listid-119\listoverridecount0\ls11}
+{\listoverride\listid-125\listoverridecount0\ls12}{\listoverride\listid-119\listoverridecount0\ls13}{\listoverride\listid-125\listoverridecount0\ls14}{\listoverride\listid-119\listoverridecount0\ls15}{\listoverride\listid-125\listoverridecount0\ls16}
+{\listoverride\listid-119\listoverridecount0\ls17}{\listoverride\listid-125\listoverridecount0\ls18}{\listoverride\listid-119\listoverridecount0\ls19}{\listoverride\listid-125\listoverridecount0\ls20}{\listoverride\listid-119\listoverridecount0\ls21}
+{\listoverride\listid-125\listoverridecount0\ls22}{\listoverride\listid-119\listoverridecount0\ls23}{\listoverride\listid-125\listoverridecount0\ls24}{\listoverride\listid-119\listoverridecount0\ls25}{\listoverride\listid-125\listoverridecount0\ls26}
+{\listoverride\listid-119\listoverridecount0\ls27}{\listoverride\listid-125\listoverridecount0\ls28}{\listoverride\listid-119\listoverridecount0\ls29}{\listoverride\listid-125\listoverridecount0\ls30}{\listoverride\listid-119\listoverridecount0\ls31}
+{\listoverride\listid-125\listoverridecount0\ls32}{\listoverride\listid-119\listoverridecount0\ls33}{\listoverride\listid-125\listoverridecount0\ls34}{\listoverride\listid-119\listoverridecount0\ls35}{\listoverride\listid-125\listoverridecount0\ls36}
+{\listoverride\listid-119\listoverridecount0\ls37}{\listoverride\listid-125\listoverridecount0\ls38}{\listoverride\listid-119\listoverridecount0\ls39}{\listoverride\listid-125\listoverridecount0\ls40}{\listoverride\listid-119\listoverridecount0\ls41}
+{\listoverride\listid-125\listoverridecount0\ls42}{\listoverride\listid-119\listoverridecount0\ls43}{\listoverride\listid-125\listoverridecount0\ls44}{\listoverride\listid-119\listoverridecount0\ls45}{\listoverride\listid-125\listoverridecount0\ls46}
+{\listoverride\listid-119\listoverridecount0\ls47}{\listoverride\listid-125\listoverridecount0\ls48}{\listoverride\listid-119\listoverridecount0\ls49}{\listoverride\listid-125\listoverridecount0\ls50}{\listoverride\listid-119\listoverridecount0\ls51}
+{\listoverride\listid-125\listoverridecount0\ls52}{\listoverride\listid-119\listoverridecount0\ls53}{\listoverride\listid-125\listoverridecount0\ls54}{\listoverride\listid-119\listoverridecount0\ls55}{\listoverride\listid-125\listoverridecount0\ls56}
+{\listoverride\listid-119\listoverridecount0\ls57}{\listoverride\listid-125\listoverridecount0\ls58}{\listoverride\listid-119\listoverridecount0\ls59}{\listoverride\listid-125\listoverridecount0\ls60}{\listoverride\listid-119\listoverridecount0\ls61}
+{\listoverride\listid-125\listoverridecount0\ls62}{\listoverride\listid1337146905\listoverridecount0\ls63}{\listoverride\listid2020767601\listoverridecount0\ls64}{\listoverride\listid184250857\listoverridecount0\ls65}{\listoverride\listid1487355350
+\listoverridecount0\ls66}{\listoverride\listid1717271031\listoverridecount0\ls67}{\listoverride\listid1157645830\listoverridecount0\ls68}{\listoverride\listid1703744164\listoverridecount0\ls69}{\listoverride\listid1036544252\listoverridecount0\ls70}
+{\listoverride\listid194973280\listoverridecount0\ls71}{\listoverride\listid100760789\listoverridecount0\ls72}{\listoverride\listid-119\listoverridecount0\ls73}{\listoverride\listid100760789\listoverridecount0\ls74}{\listoverride\listid100760789
+\listoverridecount2{\lfolevel\listoverridestartat\levelstartat0}{\lfolevel\listoverridestartat\levelstartat1}\ls75}{\listoverride\listid2110150742\listoverridecount0\ls76}{\listoverride\listid2110150742\listoverridecount2{\lfolevel}{\lfolevel}\ls77}
+{\listoverride\listid2110150742\listoverridecount3{\lfolevel\listoverridestartat\levelstartat0}{\lfolevel\listoverridestartat\levelstartat2}{\lfolevel\listoverridestartat\levelstartat2}\ls78}{\listoverride\listid100760789\listoverridecount2{\lfolevel
+\listoverridestartat\levelstartat0}{\lfolevel\listoverridestartat\levelstartat10}\ls79}{\listoverride\listid65032020\listoverridecount0\ls80}{\listoverride\listid-128\listoverridecount0\ls81}{\listoverride\listid-125\listoverridecount0\ls82}
+{\listoverride\listid1756777129\listoverridecount0\ls83}}{\info{\title Version 2 Segment Interface: proposal}{\author Sharon Correll}{\operator Sharon Correll}{\creatim\yr2004\mo4\dy15\hr14\min50}{\revtim\yr2005\mo3\dy28\hr10\min18}
+{\printim\yr2000\mo3\dy22\hr15\min23}{\version323}{\edmins-21215}{\nofpages18}{\nofwords4868}{\nofchars27749}{\*\company SIL International}{\nofcharsws34077}{\vern8247}}
+\widowctrl\ftnbj\aenddoc\noxlattoyen\expshrtn\noultrlspc\dntblnsbdb\nospaceforul\hyphcaps0\formshade\horzdoc\dghspace180\dgvspace180\dghorigin1701\dgvorigin1984\dghshow0\dgvshow0\jexpand\viewkind4\viewscale100\pgbrdrhead\pgbrdrfoot\nolnhtadjtbl \fet0
+\sectd \linex0\endnhere\sectdefaultcl {\footer \pard\plain \s28\ql \li0\ri0\widctlpar\tqc\tx4320\tqr\tx8640\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\field{\*\fldinst {\b  TITLE  \\
+* MERGEFORMAT }}{\fldrslt {\b Rendering Interface}}}{, Page }{\field{\*\fldinst { PAGE  \\* MERGEFORMAT }}{\fldrslt {\lang1024\langfe1024\noproof 2}}}{ of }{\field{\*\fldinst { NUMPAGES  \\* MERGEFORMAT }}{\fldrslt {\lang1024\langfe1024\noproof 18}}}{
+
+\par }{\field{\*\fldinst {\fs18  AUTHOR  \\* MERGEFORMAT }}{\fldrslt {\fs18\lang1024\langfe1024\noproof Sharon Correll}}}{\fs18 , }{\field{\*\fldinst {\fs18  DATE \\@ "dd-MMM-yyyy" \\* MERGEFORMAT }}{\fldrslt {\fs18\lang1024\langfe1024\noproof 22-Mar-2000}}}{
+\fs18 
+\par }}{\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang{\pntxta )}}
+{\*\pnseclvl5\pndec\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl8
+\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}\pard\plain \s16\ql \li0\ri0\sb240\sa360\widctlpar\aspalpha\aspnum\faauto\outlinelevel0\adjustright\rin0\lin0\itap0 
+\b\f1\fs32\lang1033\langfe1033\kerning28\cgrid\langnp1033\langfenp1033 {\field{\*\fldinst { TITLE  \\* MERGEFORMAT }}{\fldrslt {Version 2 Segment Interface: proposal}}}{ (SEMI-FINAL 4)
+\par }\pard\plain \s17\ql \li0\ri0\sa60\widctlpar\aspalpha\aspnum\faauto\outlinelevel1\adjustright\rin0\lin0\itap0 \i\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\field\flddirty{\*\fldinst { AUTHOR  \\* MERGEFORMAT }}{\fldrslt {
+\lang1024\langfe1024\noproof Sharon Correll}}}{
+\par Version 0.8
+\par }\pard \s17\ql \li0\ri0\sa1200\widctlpar\aspalpha\aspnum\faauto\outlinelevel1\adjustright\rin0\lin0\itap0 {Copyright \'a9 2005 by SIL International
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This paper describes proposed changes to the GrSegment interface for version 2 of the
+ Graphite open-source package.
+\par {\listtext\pard\plain\s1 \b\f1\fs32 \hich\af1\dbch\af0\loch\f1 1\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Overview
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+A Segment is an object that represents up to a line of rendered text that can appropriately be displayed by a single font using a single size. The client application asks Graphite to generate a sequence of segments w
+hich it lays out into a paragraph. Some lines of the paragraph will require several segments; a separate segment is required to handle changes of certain properties such as font face, size, bold, italic, and others. (See the TextSource interface document 
+for a complete discussion.)
+\par Each segment consists primarily of positioned glyphs and a mapping between the glyphs and the underlying characters.
+\par The SegmentPainter class provides capabilities for operations such as drawing and handling selections. A basic i
+mplementation is provided; a client may wish to subclass SegmentPainter or alternatively implement its own approach to drawing, mouse clicks, and highlighting.
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 1.1\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Changes from version 1 interface
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {The current GrSegment class will be replaced by two classes. Th
+e new Segment class corresponds to the current one, but will contain only methods to get information about glyphs and their positions. Instead of a full device-context-quality object like GrGraphics, it will simply use information about DPI and point size
+ 
+(taken from the font) so that it can perform basic coordinate-system transformations. The current ability to ask a segment for its glyphs and their positions will be enhanced signficantly. Also, the new Segment will record its starting character index in 
+the text-source, which will allow removal of the many places this information needed to passed in the current version.
+\par A new class, SegmentPainter, will be used to handle all the behaviors related specifically to drawing. SegmentPainter can be subclassed by applications or platforms as needed to provide varying approaches to drawing, highlighting selections, etc.
+\par The methods will no longer return GrResult values; instead exceptions will be thrown. COM-based callers must catch the exceptions and return the appropriate HRESULT.
+\par Notice we\rquote re proposing a change in naming conventions. Classes will continue to start with uppercase, but methods and functions will begin with lowercase.
+\par The following methods will no longer be implemented on Segment but on Font instead:
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard\plain \s32\ql \fi-360\li720\ri0\widctlpar\jclisttab\tx720\aspalpha\aspnum\faauto\ls83\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Ascent
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Descent
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Height
+\par }\pard\plain \s22\ql \li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {The following methods are no longer supported:
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard\plain \s32\ql \fi-360\li720\ri0\widctlpar\jclisttab\tx720\aspalpha\aspnum\faauto\ls83\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Recompute \endash  currently not used.
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}get_WritingSystem \endash  very FieldWorks specific, and obsolete anyway.
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}get_StartBreakWeight \endash  currently not used.
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}get_LimInterest \endash  current not used.
+\par {\listtext\pard\plain\s32 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}getActualWidth
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 1.2\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Thread-safety issues
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {The}{\f2\fs20  Segment::setTextSourceOffset }{
+method changes the internal value of a Segment. Multi-threaded clients will need to lock the segment when calling this method to ensure thread safety.
+\par A client that implements its own version of SegmentPainter must cache any data from the segment when initially creating the object or else lock the object when calling any method that can potentially modify the cache.
+\par {\listtext\pard\plain\s1 \b\f1\fs32 \hich\af1\dbch\af0\loch\f1 2\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Segment
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Note that all character indices in the Segment interface (}{\f2\fs20 toffset}{ values
+) are in terms of the encoding form specified by the}{\f2\fs20  TextSource::utfFormat }{method.
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 2.1\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Creation
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+There are several different ways to create segments. Each of these is represented by a distinct subclass; the constructors of the subclasses provide distinctive methods to call to generate segments.
+\par All constructors throw exceptions if the Font or TextSource is NULL. If an error occurs while generating the segment, an error will be thrown if the \'93dumb fallback\'94 layout parameter is false; otherwise an exception will be thrown.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 LineFillSegment}{(\line Font * graphiteFont,\line 
+TextSource * textSource,\line LayoutEnvironment * layout,\line toffset startChar,\line toffset stopChar,\line float maxWidth)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+This constructor fits as much text on the line as possible, finding a reasonable break point if necessary. (It takes the place of}{\f2\fs20  GrEngine::FindBreakPoint/WJust}{.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 BacktrackSegment}{( \line Font * graphiteFont,\line 
+TextSource * textSource,\line LayoutEnvironment * layout,\line toffset startChar,\line toffset stopCharForBacktracking,\line toffset endOfTextSource, \line float maxWidth)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This constructor is used in the situation where
+ the client application has discovered that a previously created segment (generally created by}{\f2\fs20  LineFillSegment}{) was terminated at an invalid location, and so needs to make a shorter segment. (This constructor takes the place of  }{\f2\fs20 
+GrEngine::FindBreakPoint/WJust}{ when backtracking is occurring.)
+\par }{\f2\fs20 BacktrackSegment }{is a subclass of}{\f2\fs20  LineFillSegment.}{
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 RangeSegment}{( \line Font * graphiteFont,\line 
+TextSource * textSource,\line LayoutEnvironment * layout)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This constructor creates a segment representing the entire text source. (It takes the place of }{
+\f2\fs20 GrEngine::MakeMeasuredSegment}{ and }{\f2\fs20 GrEngine::Make\-SegmentFromRange}{.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 RangeSegment}{( \line Font * graphiteFont,\line 
+TextSource * textSource,\line LayoutEnvironment * layout,\line toffset startChar,\line toffset stopChar = kPosInfinity)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This constructor creates a segm
+ent representing the given range of characters. (It takes the place of }{\f2\fs20 GrEngine::MakeMeasuredSegment}{ and }{\f2\fs20 GrEngine::Make\-SegmentFromRange}{.)
+\par {\listtext\pard\plain\s3 \b\f1 \hich\af1\dbch\af0\loch\f1 2.1.1\tab}}\pard\plain \s3\ql \fi-720\li720\ri0\sb360\widctlpar\jclisttab\tx720\aspalpha\aspnum\faauto\ls80\ilvl2\outlinelevel2\adjustright\rin0\lin720\itap0 
+\b\f1\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {LayoutEnvironment
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+A LayoutEnvironment encapsulates the various parameters that are needed by the segment constructors
+. For each parameter there is a setter and getter method. The setter methods are called by the client; the getters are called by Graphite to retrieve the value of the parameter.
+\par For all of the constructors, if NULL is passed as the layout argument, Graphite will supply a default environment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setStartOfLine}{(bool fStart)
+\par bool }{\cf2 startOfLine}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Used to indicate whether this segment is the first on the line. Default is true.
+\par Note that when creating segments that are not first on the line,}{\f2\fs20  setWorstBreak }{should generally be called to set the worst-case breakweight to something more stringent than klbClipBreak.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setEndOfLine}{(bool fEnd)
+\par bool }{\cf2 endOfLine}{()
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Used to indicate whether this segment is the last on the line. Default is true.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setBestBreak}{(LineBrk bestBreak)
+\par LineBreak }{\cf2 bestBreak}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Used to indicate what kind of breaks are permitted in in the}{\f2\fs20  LineBreakSegment }{and}{
+\f2\fs20  BacktrackSegment }{constructors. The default value is klbWsBreak. 
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setWorstBreak}{(LineBrk worstBreak)
+\par LineBreak }{\cf2 worstBreak}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Used to indicate the worst-case breakweight permitted in the}{\f2\fs20  LineBreakSegment }{and}{
+\f2\fs20  BacktrackSegment }{constructors. The default value is klbClipBreak.
+\par This method should generally be called when creating segments other than the first on the line to set the the worst-break to something more stringent than klbClipBreak.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setRightToLeft}{(bool fParaRtl)
+\par bool }{\cf2 rightToLeft}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Used to indicate the overall direction of the paragraph of which the segment is a part. The default value is false.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setTrailingWs}{(TrWsHandling twsh)
+\par TrWsHandling }{\cf2 trailingWs}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Used to indicate the method of handling trailing white-space. The default value is ktwsAll.
+
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setPrevSegment}{(Segment * prevSeg)
+\par Segment * }{\cf2 prevSegment}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {By indicating the previous segment, the segment constructors can perform cross-
+line-boundary contextualization. If left NULL, the segment to be built will be unaware of the previous context.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setJustifier}{(Justifier * justifier)
+\par Justifier * }{\cf2 justifier}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {The justifier can be used by the}{\f2\fs20  LineBreakSegment }{and}{\f2\fs20  BacktrackSegment }{
+constructors to allow the low-level layout routines to make decisions about how much shrinking is permitted. If}{\f2\fs20  setJustifier }{
+is not called, the justifier will be NULL which means shrinking is not permitted. (The justifier object is not needed for the}{\f2\fs20  RangeSegment }{constructor, since the location of the end of the segment is indicated explicitly.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setLoggingStream}{(std::ostream *)
+\par std::ostream * }{\cf2 loggingStream}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Indicate that the given stream should be used to record a log of the transduction process. This stream will most likely be a file stream representing the log file. If not set, the stream will be NULL which means that no log will be generated.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setDumbFallback}{(bool createDumbFallback)
+\par bool }{\cf2 dumbFallback}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {If set to true, Graphite will not throw an excepti
+on when an error occurs in segment creation. Instead it will create and return a \'93dumb\'94 segment. The fact the the segment is \'93dumb\'94 can be determined by calling the}{\f2\fs20  errorCondition }{method.
+\par If not set, the value will be false which means that an exception will be thrown when an error occurs.
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 2.2\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Copy constructors
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 LineContextSegment}{(Segment & seg,\line bool startOfLine,
+\line bool endOfLine)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This method is used when t
+he start- or end-of-line state of a segment must be changed. This version actually creates and returns a new segment.}{\cf16 .}{
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 JustifiedSegment}{(Segment & seg,\line float newWidth)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This method is used when a segment should be stretched to achieve justification. It creat
+es and returns a new segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 WhiteSpaceSegment}{(Segment & seg,\line int newDirectionDepth)
+
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This method is used when a segment needs to be changed from \'93upstream\'94 to \'93downstream
+\'94 (that is, matching the paragraph direction). It creates and returns a new segment.
+\par If the original is not the sort of segment that can change direction (i.e., not a trailing white-space segment), then the resulting segment will be an exact copy of the original, and the direction depth will not match the requested value.
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 2.3\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {General access methods
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 advanceWidth}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the advance width of the entire segment, i.e., the distance from the origin of the left-most glyph to the advance of the right-most.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Rect }{\cf2 boundingRect}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the bounding rectangle of the segment, that is, the rectan
+gle in which pixels are actually drawn. The origin of the rectangle is the left edge of the left-most glyph and the baseline. The returned rectangle will be at least large enough to encompass the full height of the font and the width of the segment, but i
+t may be larger if some of the glyphs extent outside of this region.
+\par A Rect is a rectangle whose coordinates are specified by floating point values.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Font & }{\cf2 getFont}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the Graphite font that was used to generate the segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {ITextSource & }{\cf2 getText}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the text-source on which the segment is based.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 rightToLeft}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns true if the segment is rendered from right to left.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {int }{\cf2 directionDepth}{(bool * pfWeak = NULL);
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the direction depth of the segment, to allow the application to handle 
+bidirectional text. Optionally, return a flag indicating whether the directionality is weak (generally, a white-space-only segment that may need to be adjusted according to the requirements of the Unicode Bidi Algorithm).
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {std::pair< toffset, toffset > }{\cf2 characterRange}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the index of the first and one after the last character of the corresponding text-stream that is represented by this segment. The indices are relative to the text-source.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {LineBrk }{\cf2 startBreakWeight}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the break-weight at the start of the segment.
+\par Break-weight values range from about 10 (best) to 40 (worst). Specific values are:
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard\plain \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {klbWsBreak = 10 \endash  a white-space break.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {klbWordBreak = 15 \endash  a word break that does not involve whitepsace.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {klbHyphenBreak = 20 \endash  an acceptable intra-word break; may or may not involve a hyphen, depending on the script\rquote s conventions.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {klbLetterBreak = 30 \endash  an inappropriate intra-word break, for instance, at a place that does not represent a syllable boundary.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {klbClipBreak = 40 \endash  a break that would be the equivalent of clipping a character, such as between a base character and a diacritic, or between two characters that form a ligature.
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+The exact meaning of breakweights depends on the implementation of the Graphite font.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {LineBrk }{\cf2 
+endBreakWeight}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the break-weight at the end of the segment.
+
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 stretch}{
+();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the amount of stretch in the segment\rquote 
+s width (in pixels), beyond its natural width. If the segment is shrunk, returns a negative number.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 maxStretch}
+{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the maximum stretch possible.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 maxShrink}{
+();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the maximum shrinkage possible.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 startOfLine}
+{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the start-of-line flag used to create the segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 endOfLine}{
+();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the end-of-line flag used to create the segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 
+hasLineBoundaryContext}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns tru
+e if changing the start-of-line or end-of-line flags could possibly have resulted in a different segment. If false, the WhiteSpaceSegment copy constructor will always create an identical segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx840\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {SegEnd }{\cf2 
+segmentTermination}{();
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns a member of an enumerat
+ion indicating why the segment was terminated. The values are:
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard\plain \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {kestNoMore \endash  segment rendered to the end of the text-source.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kestMoreLines \endash  segment ended because it ran out of available space on the line; another segment is needed.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kestOkBreak \endash  segment ended at the end of a font-run or the requested range, at a reasonable break point.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kestBadBreak \endash  segment ended at the end of a font-run, at a bad break point.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kresWsBreak \endash  segment ended at change in writing system; client must determine if the break point is appropriate.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kestHardBreak \endash  segment ended due to a hard break character.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kestMoreWhtsp \endash  a following segment is needed that includes upstream trailing whitespace.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {GrResult }{\cf2 
+errorCondition}{(utf16 * errorMessage);
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar{\*\pn \pnlvlcont\ilvl0\ls0\pnrnot0\pndec }\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns an indication of whether an error
+ occurred in building the segment. The}{\f2\fs20  errorMessage }{buffer is assumed to be at least 256 characters long, or NULL. The GrResult value is as follows:
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard\plain \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {kresOk \endash  segment was created using the Graphite font as intended.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kresFail \endash  a segment was created, but using dummy tables to provide dumb rendering.
+\par {\pntext\pard\plain\s37 \f3\fs22 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \s37\ql \fi-432\li1320\ri0\widctlpar\jclisttab\tx432\jclisttab\tx1320{\*\pn \pnlvlblt\ilvl0\ls57\pnrnot0\pnf3\pnstart1\pnindent360\pnsp120\pnhang{\pntxtb \'b7}}
+\aspalpha\aspnum\faauto\ls57\adjustright\rin0\lin1320\itap0 {kresUnexpected \endash  no segment was created (even the fall-back dummy tables failed).
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 2.4\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Modification methods
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setTextSourceOffset}{(toffset newStartChar);
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Sets the index of the first character relative to the text-source. Needed when editing operations have occurred in the text-source before the beginning of this segment, so that the segment now starts at a different place with respect to the text-source.
+
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 2.5\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Measuring methods
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 getRangeWidth}{(\line 
+toffset startChar, toffset stopChar, \line bool startLine = true, bool endLine = true, bool fSkipSpace = true);
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Return the width (in pixels) that would be required for a segment for the given range of characters, taking into account line-boundary contextualization as indicated. The}{\f2\fs20  fSkipSpace }{argument indicates whether to not in
+clude the width of trailing whitespace.
+\par When either of the }{\f2\fs20 startLine}{ or }{\f2\fs20 endLine}{ parameters is true, the returned width will include the adjustments indicated by the }{\f2\fs20 measure.startOfLine}{ and }{\f2\fs20 measure.endOfLine}{ Graphite attributes.
+\par In the case of a segment that includes cross-line-boundary contextualization, this method will ignore any glyphs that are \'93officially\'94 part of this segment but rendered in another, or vice versa.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 findNextBreakPoint}{(toffset startChar,\line 
+LineBrk lbPref, LineBrk lbWorst,\line float maxWidth,\line float * pBreakWidth,\line bool startLine = true, bool endLine = true);
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the next reasonable breakpoint after startChar resulting in a range that fits in the specified width.
+\par When either of the }{\f2\fs20 startLine}{ or }{\f2\fs20 endLine}{ parameters is true, the width will take into account any adjustments indicated by the }{\f2\fs20 measure.startOfLine}{ and }{\f2\fs20 measure.endOfLine}{ Graphite attributes.
+\par (Strictly speaking this method can be implemented by the client, using the}{\f2\fs20  getRangeWidth }{and}{\f2\fs20  breakWeights }{methods, but it is convenient and probably more efficient to include it in the API.)
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 2.6\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Glyph access
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {std::pair< GlyphIterator, GlyphIterator > }{\cf2 glyphs}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns a pair of  iterators over a sequence of GlyphInfo objects. (Dereferencing a GlyphIterator returns a GlyphInfo object.) These objects contain a wide range of information about glyphs; see GlyphInfo below.
+\par The order of the glyphs is that generated by the Graphite rules.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {std::pair< GlyphIterator, GlyphIterator > }{\cf2 charToGlyphs}{
+(toffset charIndex)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns a pair of iterators over a sequence of
+ GlyphInfo objects. The sequence represents the list of glyphs that correspond to the given character. The index of the character is relative to the text-source.
+\par If the charIndex is out of range for this segment, or if the given character is not displayed as part of the segment, the sequence will be empty.
+\par {\listtext\pard\plain\s3 \b\f1 \hich\af1\dbch\af0\loch\f1 2.6.1\tab}}\pard\plain \s3\ql \fi-720\li720\ri0\sb360\widctlpar\jclisttab\tx720\aspalpha\aspnum\faauto\ls80\ilvl2\outlinelevel2\adjustright\rin0\lin720\itap0 
+\b\f1\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {GlyphIterator methods
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {GlyphInfo }{\cf2 operator*}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Dereferencing a GlyphIterator returns a GlyphInfo object.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {GlyphIterator }{\cf2 operator++}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Increments to the next glyph in the sequence. (This is the pre-fix form.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {GlyphIterator }{\cf2 operator+=}{(int n)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Increments by the given number of glyphs.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 operator==}{(GlyphIterator & glyph)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns true if the two iterators indicate the same glyph.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 operator!=}{(GlyphIterator & glyph)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns true if the two iterators do not indicate the same glyph.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {int }{\cf2 operator-}{(GlyphIterator & glyph)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the difference between the two iterators, that is, how many glyphs are in between the two glyphs indicated by the iterators. Returns kInvalid if the iterators are not based on the same set of glyphs.
+\par {\listtext\pard\plain\s1 \b\f1\fs32 \hich\af1\dbch\af0\loch\f1 3\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {GlyphInfo
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+This object provides access to information for a single glyph. It should contain enough information to allow the client application to implement its own equivalent of SegmentPainter.
+\par Notice that we are using floating point numbers for the metrics. All coordinates are in logical units, the system in which the segment was created.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {glyphid}{\cf2  glyphID}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the actual glyph ID from the Graphite font; for pseudo-glyphs, this is different from }{
+\f2\fs20 pseudoGlyphID}{.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {glyphid }{\cf2 pseudoGlyphID}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the
+ pseudo-glyph ID used for Graphite rendering, or zero for glyphs that were not handled via the pseudo-glyph mechanism.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {size_t }{\cf2 logicalIndex}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the glyph\rquote 
+s index as generated by the final positioning pass. For right-to-left segments, the logically first (right-most) glyph is returns an index of zero.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 origin}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the glyph\rquote s origin relative to the left of the segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 advanceWidth}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the distance from the origin of this glyph to the origin of the next.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 advanceHeight}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Used instead of}{\f2\fs20  advanceWidth }{for vertical fonts; currently will always return zero.
+
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 yOffset}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the distance to raise glyph vertically when drawing.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Rect }{\cf2 bb}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the glyph\rquote s bounding box, relative to the origin. The Rect structure uses floating
+ point coordinates.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 isSpace}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns true if the glyph has no curves to draw.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 firstChar}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the index of the first underlying character associated with this glyph. Index is relative to official start of the segment (may be a negative number) and is in terms of the encoding from indicated by the}{\f2\fs20  TextSource::utfFormat() }{
+method.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 lastChar}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the index of the last underlying character associated with this glyph. Index is relative to official start of the segment) and is in terms of the encoding from indicated by the}{\f2\fs20  TextSource::utfFormat() }{method.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {unsigned int }{\cf2 directionality}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the direction assigned the glyph by the font and/or the bidi algorithm.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {unsigned int }{\cf2 directionLevel}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the embedding direction of the glyph.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 insertBefore}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns true if it is legal to create an insertion point before the character associated with this glyph.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {int }{\cf2 breakweight}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the breakweight of the character(s) associated with this glyph. If a positive number, it represents the quality of a break after the given character; if negative, it represents the quality of a break before the character.
+\par Note that since the linebreak table is run before the substitution table, all the glyphs associated with a given character will mostly l
+ikely have the same breakweight value. Therefore, when asking a character for its breakweight, it will generally be adequate to query a single glyph associated with that character.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {int }{\cf2 attachedTo}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the index of glyph this glyph is attached to (rela
+tive to the start of the segment); returns \_1 if this glyph is not attached to any other.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 maxStretch}{(size_t level)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns how many pixels this glyph may be stretched by.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 maxShrink}{(size_t level)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns how many pixels this glyph may be shrunk by.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 stretchStep}{(size_t level)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns an indication of how many pixels must be added at a time (e.g., the kashida size) when stretching a glyph.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {byte }{\cf2 justWeight}{(size_t level)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the level of priority to give to stretching this glyph, compared to
+ the other glyphs in the segment.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 justWidth}{(size_t level)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the actual width that was added to this glyph in order to justify the segment. Value will be zero if the segment is not justified.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 measureStartOfLine}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the amount by whic
+h the width of this glyph would change if it were first on the line. (Value will be zero if the glyph is actually first on the line, unless the GDL programmer has done something unexpected.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {float }{\cf2 measureEndOfLine}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the amount by which the width of
+ this glyph would change if it were last on the line. (Value will be generally zero if the glyph is actually last on the line, unless the GDL programmer has done something unexpected.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {size_t }{\cf2 numberOfComponents}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the number of ligature components this glyph has; 0 if the glyph is not a ligature.
+
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Rect }{\cf2 componentBox}{(size_t component)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns the coordinates of the given component\rquote 
+s visual space, relative to the origin (up is positive). If the component index is out of range, return value is (0,0,0,0).
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 componentFirstChar}{(size_t component)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the index of the first underlying character associated with the given component. Index is relative to official start of the segment) and is in terms of the encoding from indicated by the}{\f2\fs20  TextSource::utfFormat() }{method.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 componentLastChar}{(size_t component)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the index of the last underlying character associated with the given component. Index is relative to official start of the segment) and is in terms of the encoding from indicated by the}{\f2\fs20  TextSource::utfFormat() }{method.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 erroneous}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns true if there was some sort of error in generating this glyph.
+\par In the current implementation, all glyphs in a segment are either erroneous or not. Future enhancements may permit a segment with some erroneous glyphs and other corrected generated.
+\par {\listtext\pard\plain\s1 \b\f1\fs32 \hich\af1\dbch\af0\loch\f1 4\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {SegmentPainter
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+A SegmentPainter object is used to handle all the drawing and cursor-related routines associated with a segment. The class must be subclassed for different kinds of applications and platforms. Som
+e applications may choose to not use a SegmentPainter at all: some do not have any editing needs, and others prefer to do their own drawing and cursor handling using the glyph information obtained directly from the segment. SegmentPainter implementations 
+may choose to cache a representation of the segment optimized for certain kinds of operations, such as drawing.
+\par This class incorporates any needed graphics-related functionality that is currently handled by GrGraphics, such as}{\f2\fs20  DrawTextExt}{,}{\f2\fs20  InvertRect}{, etc.
+\par A good tactic is to set up the segment painter with the logical font from the engine that was used to create the segment.
+\par Note: a}{\f2\fs20  gr::Rect }{(as defined within the}{\f2\fs20  gr:: }{namespace) is a rectangle whose coordinates are specified by floating point values.
+\par The S
+egmentPainter class incorporates transformation rectangles for scrolling and zooming. This functionality was previous handled as rectangle arguments to many of the GrSegment methods. The conversion between the old rectangle system and the new system is th
+e following:
+\par }\pard\plain \s25\ql \li432\ri0\widctlpar\tx864\tx1728\tx2592\tx3456\tx4320\tx5184\aspalpha\aspnum\faauto\adjustright\rin0\lin432\itap0 \f2\fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {xOrigin = sourceRect.left;
+\par yOrigin = sourceRect.top;
+\par xPosition = destRect.left;
+\par yPosition = destRect.top;
+\par xFactor = (destRect.right \endash  destRect.left) /\line \tab  \tab  (sourceRect.right \endash  sourceRect.left);
+\par yFactor = (destRect.top \endash  destRect.bottom) /\line \tab  \tab  (sourceRect.top \endash  sourceRect.bottom);
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 4.1\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Constructor and initialization
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\cf2 SegmentPainter}{(Segment * segment,\line float xOrigin = 0,
+\line float yOrigin = 0)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {The x and y origins initialize the source rectangle.
+\par Subclasses will need to initialize the object with some appropriate indication of a graphics device.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setOrigin}{(float xOrigin, float yOrigin)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Set the origin in logical units. Duplicates the functionality of the optional parameters on the constructor.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setPosition}{(float xPosition, float yPosition)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Set the position at which to draw.\tab 
+\par The positions and the scaling factors together replace the destination rectangle formerly passed to many of the segment routines; the positions replace the top-left location, and the scaling factors replace the size of the rectangle.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setScalingFactors}{(float xFactor, float yFactor)
+
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Sets the scaling factors for the transformation rectangle.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setBuggyDisplayFormat}{
+(int strategy, long textColor, long backColor, long underlineColor)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Indicates how text should be displayed if Graphite
+ encountered some problem in generating the segment (bad or missing font tables, or a bug in the engine).
+\par Possible strategies include: no change, plain underline, wavy underline, plain strikethrough, wavy strikethrough.
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 4.2\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {General methods
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 paint}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Draws the segment at the stored location. (Replaces the version 1}{\f2\fs20  DrawSegment }{
+method.)
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 drawInsertionPoint}{(\line toffset charIndex,\line 
+bool associateWithPrevChar,\line bool turnOn,\line bool forceSplit)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Draws the insertion point before the given character.
+\par The}{\f2\fs20  forceSplit }{argument is needed to handle the obscure situations where there is reordering around the boundaries of segments. Consider the following rendering of the string \'93englishHEBREW\'94:
+\par }\pard \s26\ql \li1440\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin1440\itap0 {\f1\fs36 englishWERBEH}{\f1\fs48 
+\par }\pard \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 {Assuming this rendering involves two segments, if the insertion point is between the \'93h\'94 and the \'93H\'94
+, a split cursor is required on both segments. However, there is no way for either segment to figure this out; it can only be determined by the application as it consults the neighboring segment. So the}{\f2\fs20  forceSplit }{variable can
+ be used to inform Graphite of this fact.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 positionsOfIP}{(\line toffset charIndex,\line 
+bool associateWithPrevChar, \line bool forceSplit,\line Rect * rectPrimary,\line Rect * rectSecondary)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Returns rectangles indicating the locations of the cursor position(s). Invalid rectangl
+es are returned as (0,0,0,0).
+\par See }{\f2\fs20 drawInsertionPoint}{ for a description of the forceSplit argument.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 drawSelectionRange}{(\line toffset charAnchor,\line 
+toffset charEnd, \line float lineTop,\line float lineBottom,\line bool turnOn)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Highlights a range of text.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 positionsOfRange}{(\line toffset anchorIndex,\line 
+toffset endptIndex, \line float lineTop,\line float lineBottom,\line Rect * positions)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns a rectangle indicating the location of the range. An invalid rectangle is returned as (0,0,0,0).
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {size_t }{\cf2 getUnderlinePlacement}{(\line toffset charStart,
+\line toffset charStop,\line bool skipTrailingSpace,\line float ** lineSegmentStarts,\line float ** lineSegmentEnds,\line float ** yPositions = NULL)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns a set of line segments that can be used to underline the given range of text. The return value of the method is the number of line segments required.
+\par The }{\f2\fs20 yPositions}{ parameter values reflect the fact that in the case of subscripts, the underline generally needs to be lower vertically to avoid colliding with the text.
+\par {\listtext\pard\plain\s3 \b\f1 \hich\af1\dbch\af0\loch\f1 4.2.1\tab}}\pard\plain \s3\ql \fi-720\li720\ri0\sb360\widctlpar\jclisttab\tx720\aspalpha\aspnum\faauto\ls80\ilvl2\outlinelevel2\adjustright\rin0\lin720\itap0 
+\b\f1\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Non-device methods
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {The following methods do not involve drawing. But
+ it seems likely that they will be used by the same client module that does drawing, and also that they are likely to }{\i not}{
+ be wanted in the same situation where no SegmentPainter is wanted (i.e., where the client handles all the drawing itself). So for these reasons they are included as part of the SegmentPainter interface.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 pointToChar}{(\line Point clickPosition,\line 
+toffset * charIndex, \line bool * associateWithPrevChar)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Converts a mouse-click location to a character index. The Point object uses floating-point coord
+inates.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {IpValidResult }{\cf2 isValidInsertionPoint}{(toffset charIndex)
+
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns kipvrOkay if it is legal to create an insertion point at the given character location; returns kipvrBad if it is not legal, and kipvrUnknown if the segment is unable to determine the legality.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {bool }{\cf2 doBoundariesConcide}{
+(bool boundaryEnd, bool boundaryRight)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns true if the given logical and physical boundaries coincide. This can be used by the client to decide whether to draw normal or split cursors.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 arrowKeyPosition}{(\line toffset charIndex, \line 
+bool * associateWithPrevChar,\line bool movingRight,\line bool * inThisSeg)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns a character index corresponding to a left- or right-arrow-key movement. The inThisSeg argument takes the value true if the charIndex is initially with in this segment, and
+ returns true if a legitimate index can be found within this segment (i.e., combines the previous fMovingIn and pfRet arguments).
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {toffset }{\cf2 extendSelectionPosition}{(\line toffset endptIndex,
+\line bool assocPrevMatch,\line bool assocPrevNeeded,\line toffset anchorIndex,\line bool movingRight,\line bool * inThisSeg)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+Returns the character index corresponding to a shift-left- or shift-right-arrow. The inThisSeg argument takes the value true if the charIndex is initially with in this segment, and returns true if a legitimate index can be found within this segment.
+
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 4.3\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Possible additions
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+These may be useful it if turns out to be expensive to create SegmentPainters; they would allow a single segment-painter object to be used for multiple segments. These will not be included unless a definite need is known.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Segment * }{\cf2 segment}{()
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Return the segment currently being drawn.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 setSegment}{(Segment * pSegment)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Set (or change) the segment to draw.
+\par {\listtext\pard\plain\s1 \b\f1\fs32 \hich\af1\dbch\af0\loch\f1 5\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {Justifier
+\par }\pard\plain \s21\ql \fi720\li0\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+A Justifier object is implemented by the client (with a stock implementation provided as part of the Grap
+hite open-source code). It is in effect a call-back object that Graphite uses to make decisions about stretching and shrinking glyphs in order to produce justified layout. When justification is requested, the Graphite engine calls the Justifier at key poi
+nts in the glyph layout process.
+\par The Justifier functions by interacting with an implementation of IGraphiteProcess. The IGraphiteProcess represents the Graphite engine at an intermediate stage in the layout process. The Justifier reads relevant attributes from the glyphs (such as}{
+\f2\fs20  justify.stretch}{,}{\f2\fs20  justify.shrink}{,}{\f2\fs20  justify.step}{, and }{\f2\fs20 justify.weight}{), assigns stretch and/or shrink values, and then sets the}{\f2\fs20  justify.width }{
+attribute accordingly. The attributes are read and set using the interface methods of IGraphiteProcess.
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 adjustGlyphWidths}{(\line IGraphiteProcess * gproc,
+\line unsigned int glyphStart, unsigned int glyphStop,\line float currentWidth,\line float desiredWidth,\line int justificationLevel)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This method is called by the Graphite engine just after the Bidi pass (or after the
+ last substitution pass, if there is no Bidi pass) and just before the justification and positioning passes. This Justifier method is primarily responsible for setting the}{\f2\fs20  justify.width }{
+attribute of the glyphs to to indicate the amount by which each should be stretched or shrunk. To do this it reads relevant attributes such as}{\f2\fs20  justify.stretch}{,}{\f2\fs20  justify.shrink}{,}{\f2\fs20  justify.step}{, and }{\f2\fs20 
+justify.weight}{ and makes decisions about which glyphs should be adjusted and by how much.
+\par In multi-level justification, this method will be called once for each level, starting with the most complex (highest) used in the font.
+\par The }{\f2\fs20 glyphStart}{ and }{\f2\fs20 glyphStop}{ arguments generally represent the entire range of the segment. No special adjustment is made for the fact that it is generally inapp
+ropriate to stretch trailing whitespace; it is the responsibility of the font to handle this situation appropriately (i.e., explicitly set the}{\f2\fs20  justify.stretch }{attribute to zero for trailing whitespace).
+\par {\listtext\pard\plain\s2 \b\f1\fs28 \hich\af1\dbch\af0\loch\f1 5.1\tab}}\pard\plain \s2\ql \fi-576\li576\ri0\sb480\keepn\widctlpar\jclisttab\tx576\aspalpha\aspnum\faauto\ls80\ilvl1\outlinelevel1\adjustright\rin0\lin576\itap0 
+\b\f1\fs28\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {For future consideration
+\par }\pard\plain \s35\ql \fi-720\li720\ri0\sb240\keep\nowidctlpar\tx2610\tx5040\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \b\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {void }{\cf2 suggestShrinkAndBreak}{(\line IGraphiteProcess * gproc,
+\line unsigned int glyphStart, unsigned int glyphStop,\line float currentWidth,\line LineBreak lbPref, LineBreak lbMax,\line int justificationLevel,\line int * shrinkWidth,\line LineBreak * plbToTry)
+\par }\pard\plain \s26\ql \li720\ri0\sb120\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin720\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {This method may be needed if it is determined that it is nece
+ssary for low-level paragraph layout to allow shrinking of segments. Low-level layout means layout where linebreak locations are determined using a \'93fit-as-much-as-you-can\'94
+ approach. This method returns an amount by which the segment can shrink and a recommended breakweight.
+\par This method is called just after the the Bidi pass (or after the last substitution pass, if there is no Bidi pass) and just before the justification and positioning passes.
+\par The }{\f2\fs20 glyphStop}{ argument is adjusted by Graphite to not include any trailing whitespace, since it does not make sense to shrink such glyphs. }{\highlight7 Hmm\'85this is inconsistent with }{\f2\fs20\highlight7 adjustGlyphWidths}{\highlight7 .}{
+
+\par {\listtext\pard\plain\s1 \b\f1 \hich\af1\dbch\af0\loch\f1 6\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\sa120\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\fs24 Version History
+\par }\pard\plain \ql \fi-1440\li1440\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin1440\itap0 \fs20\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {0.1\emdash 2-Apr-2004: first draft by Sharon Correll.
+\par 0.2\emdash 15-Apr-2004: changes based on comments from Martin Hosken.
+\par 0.3\emdash April 2004
+\par 0.4\emdash 19-Oct-2004: change main Segment builders to static methods rather than constructors
+\par 0.5\emdash Dec-2004: reorganized segment builders again; other stuff
+\par 0.6\emdash 16-Dec-2004: changed back to segment constructors
+\par 0.7\emdash 27-Dec-2004: added stretch/shrink/justification and measuring stuff
+\par {\listtext\pard\plain\s1 \b\f1 \hich\af1\dbch\af0\loch\f1 7\tab}}\pard\plain \s1\ql \fi-432\li432\ri0\sb600\sa120\keepn\widctlpar\jclisttab\tx432\aspalpha\aspnum\faauto\ls80\outlinelevel0\adjustright\rin0\lin432\itap0 
+\b\f1\fs32\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\fs24 File Name
+\par }\pard\plain \s22\ql \li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\field{\*\fldinst { FILENAME  \\* MERGEFORMAT }}{\fldrslt {\lang1024\langfe1024\noproof 
+V2 Seg Interface.doc}}}{
+\par }}

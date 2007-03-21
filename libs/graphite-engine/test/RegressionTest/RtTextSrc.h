@@ -1,0 +1,58 @@
+/*--------------------------------------------------------------------*//*:Ignore this sentence.
+Copyright (C) 1999, 2001 SIL International. All rights reserved.
+
+Distributable under the terms of either the Common Public License or the
+GNU Lesser General Public License, as specified in the LICENSING.txt file.
+
+File: RtTextSrc.h
+Responsibility: Sharon Correll
+Last reviewed: Not yet.
+
+Description:
+
+-------------------------------------------------------------------------------*//*:End Ignore*/
+#pragma once
+#ifndef RTTXTSRC_INCLUDED
+#define RTTXTSRC_INCLUDED
+
+
+/*----------------------------------------------------------------------------------------------
+	Class: RtTextSrc
+	This class extends the SimpleTextSource to allow setting of features.
+----------------------------------------------------------------------------------------------*/
+class RtTextSrc : public SimpleTextSrc
+{
+public:
+	RtTextSrc(gr::utf16 * pszText) : SimpleTextSrc(pszText)
+	{
+		memset(m_fset, 0, MAXFEAT * sizeof(FeatureSetting));
+	}
+
+	void setFeatures(FeatureSetting * fset)
+	{
+		m_cFeats = 0;
+		for (int i = 0; i < MAXFEAT; i++)
+		{
+			if (fset[i].id > 0)
+			{
+				m_fset[i].id = fset[i].id;
+				m_fset[i].value = fset[i].value;
+				m_cFeats++;
+			}
+		}
+	}
+
+	virtual size_t getFontFeatures(toffset ich, FeatureSetting * prgfset)
+	{
+		// Note: size of prgfset buffer = gr::kMaxFeatures = 64
+		memcpy(prgfset, m_fset, MAXFEAT * sizeof(FeatureSetting));
+		return m_cFeats;
+	}
+
+protected:
+	int m_cFeats;
+	FeatureSetting m_fset[MAXFEAT];
+};
+
+
+#endif // !RTTXTSRC_INCLUDED
