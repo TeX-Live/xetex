@@ -710,7 +710,8 @@ GetFontCharRange_AAT(ATSUStyle style, int reqFirst)
 XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 										const char* name,
 										UInt32 rgbValue,
-										float extend, float slant)
+										float extend, float slant,
+										int nFeatures, const int* featureIDs, const int* featureValues)
 {
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
 	result->fontRef = fontRef;
@@ -725,7 +726,10 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	result->layoutEngine = NULL;
 
 	result->grFont = new XeTeXGrFont(result->font, name);
+
 	result->grSource = new XeTeXGrTextSource();
+	result->grSource->setFeatures(nFeatures, featureIDs, featureValues);
+
 	result->grSegment = NULL;
 
 	return result;
@@ -739,7 +743,7 @@ makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 		engine->grSegment = NULL;
 	}
 
-	engine->grSource->setText(txtPtr, txtLen, false, 0, NULL);
+	engine->grSource->setText(txtPtr, txtLen, false);
 	engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, NULL);
 
 	return engine->grSegment->glyphs().second - engine->grSegment->glyphs().first;
@@ -767,7 +771,8 @@ graphiteSegmentWidth(XeTeXLayoutEngine engine)
 /* line-breaking uses its own private textsource and segment, not the engine's ones */
 static XeTeXGrTextSource*	lbSource = NULL;
 static gr::Segment*			lbSegment = NULL;
-	
+static XeTeXLayoutEngine	lbEngine = NULL;
+
 void
 initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 {
@@ -779,7 +784,15 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen
 		lbSegment = NULL;
 	}
 
-	lbSource->setText(txtPtr, txtLen, false, 0, NULL);
+	lbSource->setText(txtPtr, txtLen, false);
+	
+	if (lbEngine != engine) {
+		gr::FeatureSetting	features[64];
+		size_t	nFeatures = engine->grSource->getFontFeatures(0, features);
+		lbSource->setFeatures(nFeatures, &features[0]);
+		lbEngine = engine;
+	}
+	
 	lbSegment = new gr::RangeSegment(engine->grFont, lbSource, NULL);
 }
 

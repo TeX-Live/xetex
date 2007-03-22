@@ -144,7 +144,8 @@ int getFontCharRange(XeTeXLayoutEngine engine, int reqFirst);
 XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 										const char* name,
 										UInt32 rgbValue,
-										float extend, float slant);
+										float extend, float slant,
+										int nFeatures, const int* featureIDs, const int* featureValues);
 int makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
 void getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y);
 float graphiteSegmentWidth(XeTeXLayoutEngine engine);

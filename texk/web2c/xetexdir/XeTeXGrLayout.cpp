@@ -101,14 +101,47 @@ XeTeXGrFont::getFontMetrics(float * pAscent, float * pDescent, float * pEmSquare
 #pragma mark XeTeXGrTextSource
 
 void
-XeTeXGrTextSource::setText(const UniChar* iText, size_t iLen, bool iRTL,
-							size_t iNumF, const gr::FeatureSetting* iFeatures)
+XeTeXGrTextSource::setText(const UniChar* iText, size_t iLen, bool iRTL)
 {
 	fTextBuffer = iText;
 	fTextLength = iLen;
 	fRightToLeft = iRTL;
-	fNumFeatures = iNumF;
-	fFeatureSettings = iFeatures;
+}
+
+void
+XeTeXGrTextSource::setFeatures(int nFeatures, const int* featureIDs, const int* featureValues)
+{
+	if (fFeatureSettings != NULL)
+		delete[] fFeatureSettings;
+	
+	fNumFeatures = nFeatures;
+	if (nFeatures == 0)
+		fFeatureSettings = NULL;
+	else {
+		gr::FeatureSetting* newFeatures = new gr::FeatureSetting[nFeatures];
+		for (int i = 0; i < nFeatures; ++i) {
+			newFeatures[i].id = featureIDs[i];
+			newFeatures[i].value = featureValues[i];
+		}
+		fFeatureSettings = newFeatures;
+	}
+}
+
+void
+XeTeXGrTextSource::setFeatures(int nFeatures, const gr::FeatureSetting* features)
+{
+	if (fFeatureSettings != NULL)
+		delete[] fFeatureSettings;
+	
+	fNumFeatures = nFeatures;
+	if (nFeatures == 0)
+		fFeatureSettings = NULL;
+	else {
+		gr::FeatureSetting* newFeatures = new gr::FeatureSetting[nFeatures];
+		for (int i = 0; i < nFeatures; ++i)
+			newFeatures[i] = features[i];
+		fFeatureSettings = newFeatures;
+	}
 }
 
 size_t

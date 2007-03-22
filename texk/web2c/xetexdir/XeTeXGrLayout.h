@@ -125,20 +125,21 @@ class XeTeXGrTextSource
 	: public gr::ITextSource
 {
 public:
-							XeTeXGrTextSource(const UniChar* iText = NULL, size_t iLen = 0, bool iRTL = false,
-									size_t iNumF = 0, const gr::FeatureSetting* iFeatures = NULL)
+							XeTeXGrTextSource(const UniChar* iText = NULL, size_t iLen = 0, bool iRTL = false)
 								: fTextBuffer(iText)
 								, fTextLength(iLen)
 								, fRightToLeft(iRTL)
-								, fNumFeatures(iNumF)
-								, fFeatureSettings(iFeatures)
+								, fNumFeatures(0)
+								, fFeatureSettings(NULL)
 									{ }
 
 	virtual					~XeTeXGrTextSource()
 								{ }
 
-	void					setText(const UniChar* iText, size_t iLen, bool iRTL = false,
-									size_t iNumF = 0, const gr::FeatureSetting* iFeatures = NULL);
+	void					setText(const UniChar* iText, size_t iLen, bool iRTL = false);
+
+	void					setFeatures(int nFeatures, const int* featureIDs, const int* featureValues);
+	void					setFeatures(int nFeatures, const gr::FeatureSetting* features);
 
 	virtual gr::UtfType		utfEncodingForm()
 								{ return gr::kutf16; }

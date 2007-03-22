@@ -810,6 +810,32 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	return engine;
 }
 
+static int
+readFeatureNumber(const char* s, const char* e, int* f, int* v)
+{
+	*f = 0;
+	*v = 0;
+	if (*s < '0' || *s > '9')
+		return 0;
+	while (*s >= '0' && *s <= '9')
+		*f = *f * 10 + *s++ - '0';
+	while ((*s == ' ') || (*s == '\t'))
+		++s;
+	if (*s++ != '=')
+		return 0;
+	if (*s < '0' || *s > '9')
+		return 0;
+	while (*s >= '0' && *s <= '9')
+		*v = *v * 10 + *s++ - '0';
+	while ((*s == ' ') || (*s == '\t'))
+		++s;
+	if (s != e)
+		return 0;
+	return 1;
+}
+
+#define MAX_GRAPHITE_FEATURES	64
+
 static void*
 loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1, const char* faceName)
 {
@@ -825,6 +851,11 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 
 	double	extend = 1.0;
 	double	slant = 0.0;
+
+	int		featureIDs[MAX_GRAPHITE_FEATURES];	
+	int		featureValues[MAX_GRAPHITE_FEATURES];
+	int		nFeatures = 0;
+	int		id, val;
 
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
@@ -900,6 +931,15 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 				goto next_option;
 			}
 			
+			if (readFeatureNumber(cp1, cp2, &id, &val)) {
+				if (nFeatures < MAX_GRAPHITE_FEATURES) {
+					featureIDs[nFeatures] = id;
+					featureValues[nFeatures] = val;
+					++nFeatures;
+				}
+				goto next_option;
+			}
+			
 /*
 			if (strncmp(cp1, "vertical", 8) == 0) {
 				cp3 = cp2;
@@ -932,7 +972,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 		setFontLayoutDir(font, 1);
 
 	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue,
-					extend, slant);
+					extend, slant, nFeatures, &featureIDs[0], &featureValues[0]);
 	if (engine == 0)
 		deleteFont(font);
 	else
