@@ -712,7 +712,7 @@ float GrSlotAbstract::GetGlyphMetric(Font * pfont, int nMetricID, gid16 chwGlyph
 		pfont->getGlyphMetrics(chwGlyphID, rectBb, ptAdvances);
 
 		m_xysGlyphX = rectBb.left;
-		m_xysGlyphY = rectBb.bottom;
+		m_xysGlyphY = rectBb.top;
 		m_xysGlyphWidth = (rectBb.right - rectBb.left);
 		m_xysGlyphHeight = (rectBb.top - rectBb.bottom);
 		m_xysAdvX = ptAdvances.x;
