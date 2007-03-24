@@ -45,7 +45,7 @@ public:
 	virtual size_t getFontFeatures(toffset ich, FeatureSetting * prgfset)
 	{
 		// Note: size of prgfset buffer = gr::kMaxFeatures = 64
-		memcpy(prgfset, m_fset, MAXFEAT * sizeof(FeatureSetting));
+		std::copy(m_fset, m_fset + MAXFEAT, prgfset);
 		return m_cFeats;
 	}
 

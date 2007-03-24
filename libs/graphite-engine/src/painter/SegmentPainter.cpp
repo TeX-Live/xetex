@@ -361,14 +361,14 @@ bool SegmentPainter::drawSelectionRange(int ichwAnchor, int ichwEnd,
 	std::vector<bool> vfEntireHt;
 
 	bool * prgfAllCompsSelected = new bool[m_pseg->m_dichwLim];
-	memset(prgfAllCompsSelected, 0, m_pseg->m_dichwLim);
+	std::fill_n(prgfAllCompsSelected, m_pseg->m_dichwLim, false);
 	CalcPartialLigatures(prgfAllCompsSelected, ichwMinSeg, ichwLimSeg,
 		ichwMinSel, ichwLimSel);
 
 	//	Array to keep track of which glyphs were highlighted.
 	int cginf = m_pseg->m_cginf;
 	bool * prgfHighlighted = new bool[cginf];
-	memset(prgfHighlighted, 0, cginf);
+	std::fill_n(prgfHighlighted, cginf, false);
 
 	for (int ichwLp = ichwMinSeg; ichwLp < ichwLimSeg; ichwLp++)
 	{
@@ -879,14 +879,14 @@ size_t SegmentPainter::getUnderlinePlacement(int ichwMin, int ichwLim,
 	std::vector<bool> vfEntireHt;
 
 	bool * prgfAllCompsSelected = new bool[m_pseg->m_dichwLim];
-	memset(prgfAllCompsSelected, 0, m_pseg->m_dichwLim);
+	std::fill_n(prgfAllCompsSelected, m_pseg->m_dichwLim, false);
 	CalcPartialLigatures(prgfAllCompsSelected, ichwMinSeg, ichwLimSeg,
 		ichwMinSel, ichwLimSel);
 
 	//	Array to keep track of which glyphs were highlighted:
 	int cginf = m_pseg->m_cginf;
 	bool * prgfHighlighted = new bool[cginf];
-	memset(prgfHighlighted, 0, cginf);
+	std::fill_n(prgfHighlighted, cginf, false);
 
 	for (int ichwLp = ichwMinSeg; ichwLp < ichwLimSeg; ichwLp++)
 	{

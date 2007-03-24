@@ -328,9 +328,9 @@ void TestCase::SetupBurmeseAux(int charCnt, int glyphCnt, int clickTestCnt)
 	int clickStuff[] = {
 		 10, 25,    1, true,    0, 25, 16,   kAbsent, kAbsent, kAbsent,
 		 40,  5,   13, false,   0, 25, 39,   kAbsent, kAbsent, kAbsent,
-		 93, 40,   19, false,   0, 25, 88,   0,  25, 77,
+		 93, 40,   19, false,   0, 25, 88,   0, 25, 77,
 		251,  5,   52, true,    0, 25,251,   kAbsent, kAbsent, kAbsent,
-		235, 30,   48, false,  23, 51,230,   15, 28,243,
+		235, 30,   48, false,  -1, 27,230,   7, 19,243,
 	};
 
 	//	Finish setting up test case.
@@ -385,8 +385,6 @@ void TestCase::SetupRoman()
 	m_italic = false;
 	m_backtrack = false;
 
-	m_debug = true;
-
 	//	Output:
 	m_segWidth = 236;			// physical width of segment
 
@@ -405,7 +403,7 @@ void TestCase::SetupRoman()
 	//                    0                                       10                                      20
 	gid16 glyphList[] =	{73,752,749, 87,833, 90, 75,2181,296, 68,751,750, 79,752, 44,752, 84,806,749,759,753};
 	int xPositions[] =  { 0, 23, 23, 21, 41, 45, 64,  88,116,148,170,170,169,188,183,203,199,229,229,229,229};
-	int yPositions[] =  { 0,  0, 10,  0,-22,  0,  0,   0,  0,  0,  0, 10,  0,  0,  0, 10,  0,  0,  0, 10, 20};
+	int yPositions[] =  { 0,  0, 10,  0, -6,  0,  0,   0,  0,  0,  0, 10,  0,  0,  0, 10,  0,  0,  0, 10, 20};
 	int advWidths[] =   {21,  0,  0, 24,  0, 18, 24,  28, 31, 21,  0,  0, 13,  0, 15,  0, 37,  0,  0,  0,  0};
 
 	//	Each line in clickStuff represents one click test with the following items:
@@ -414,8 +412,8 @@ void TestCase::SetupRoman()
 	//		sec sel Top, sec sel bottom, sec sel left,
 	const int clickTestCnt = 3;
 	int clickStuff[] = {
-		10, 15,    0, false,   0, 72, -1,   kAbsent, kAbsent, kAbsent,
-		61, 50,    5, true,    0, 72, 42,   kAbsent, kAbsent, kAbsent,
+		10, 15,    3, true,    0, 72, 20,   kAbsent, kAbsent, kAbsent,
+		61, 50,    6, true,    0, 72, 63,   kAbsent, kAbsent, kAbsent,
 		90, 40,    9, false,   0, 72, 87,   kAbsent, kAbsent, kAbsent
 	};
 
@@ -472,7 +470,7 @@ void TestCase::SetupRomanFeatures()
 	//                    0                                       10                                       20
 	gid16 glyphList[] =	{73,752,749, 87,833, 90, 76,1581,128,122,298, 69,1964, 79,752, 44,752, 84,806,749,759,753};
 	int xPositions[] =  { 0, 23, 23, 21, 41, 45, 64,  87,104,121,138,173, 174,198,217,211,231,227,258,258,258,258};
-	int yPositions[] =  { 0,  0, 10,  0,-22,  0,  0,   0,  0,  0,  0,  0,   0,  0,  0,  0, 10,  0,  0,  0, 10, 20};
+	int yPositions[] =  { 0,  0, 10,  0, -6,  0,  0,   0,  0,  0,  0,  0,   0,  0,  0,  0, 10,  0,  0,  0, 10, 20};
 	int advWidths[] =   {21,  0,  0, 24,  0, 18, 23,  17, 17, 17, 34, 24,  24, 13,  0, 15,  0, 37,  0,  0,  0,  0};
 
 	//	Each line in clickStuff represents one click test with the following items:
@@ -1074,7 +1072,7 @@ void TestCase::SetInputContextBlock(int contextBlockInSize, gr::byte * pContextB
 	else
 	{
 		m_contextBlockIn = new gr::byte[contextBlockInSize];
-		memcpy(m_contextBlockIn, pContextBlockIn, contextBlockInSize);
+		std::copy(pContextBlockIn, pContextBlockIn + contextBlockInSize, m_contextBlockIn);
 	}
 }
 
@@ -1082,5 +1080,5 @@ void TestCase::SetOutputContextBlock(int contextBlockOutSize, gr::byte * pContex
 {
 	m_contextBlockOutSize = contextBlockOutSize;
 	m_contextBlockOut = new gr::byte[contextBlockOutSize];
-	memcpy(m_contextBlockOut, pContextBlockOut, contextBlockOutSize);
+	std::copy(pContextBlockOut, pContextBlockOut + contextBlockOutSize, m_contextBlockOut);
 }

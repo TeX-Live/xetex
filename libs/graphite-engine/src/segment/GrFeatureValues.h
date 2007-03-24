@@ -40,14 +40,14 @@ public:
 	GrFeatureValues()
 	{
 		m_nStyleIndex = 0;
-		memset(m_rgnFValues, 0, (kMaxFeatures * isizeof(int)));
+		std::fill(m_rgnFValues, m_rgnFValues + kMaxFeatures, 0);
 	}
 
 	//	Copy constructor:
 	GrFeatureValues(const GrFeatureValues & fval)
 	{
 		m_nStyleIndex = fval.m_nStyleIndex;
-		memcpy(m_rgnFValues, fval.m_rgnFValues, (kMaxFeatures * isizeof(int)));
+		std::copy(fval.m_rgnFValues, fval.m_rgnFValues + kMaxFeatures, m_rgnFValues);
 	}
 
 	//	For transduction logging:

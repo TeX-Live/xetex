@@ -90,8 +90,8 @@ public:
 	/** 
 	* Returns the x and y resolution of the device co-ordinate space.
 	*/
-	virtual unsigned int getDPIx() { return 72.27; }
-	virtual unsigned int getDPIy() { return 72.27; }
+	virtual unsigned int getDPIx() { return 72; } /* I think this is irrelevant in XeTeX */
+	virtual unsigned int getDPIy() { return 72; }
 
 	/**
 	* Returns a pointer to the start of a table in the font.

@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 	if (g_strmLog.fail())
 	{
 		std::cout << "Unable to open log file.";
-		return 1;
+		return -1;
 	}
 
 	g_errorCount = 0;
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 
 //	::ReleaseDC(NULL, g_hdc);
 
-	return 0;
+	return g_errorCount;
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -340,8 +340,8 @@ int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, R
 	{
 //		POINT ptClick;
         gr::Point ptClick;
-		ptClick.x = ptcase->XClick(iclicktest);
-		ptClick.y = ptcase->YClick(iclicktest);
+		ptClick.x = static_cast<float>(ptcase->XClick(iclicktest));
+		ptClick.y = static_cast<float>(ptcase->YClick(iclicktest));
 		int charIndex;
 		bool assocPrev;
 		ppainter->pointToChar(ptClick, &charIndex, &assocPrev);
@@ -476,17 +476,20 @@ int WriteLog(int errorCount)
 
 	g_errorCount += errorCount;
 	return errorCount;
-}/*----------------------------------------------------------------------------------------------
+}
+
+/*----------------------------------------------------------------------------------------------
 	Copy a std::wstring (whose bytes can be of various sizes on different platforms)
 	to a buffer of UTF16.
 ----------------------------------------------------------------------------------------------*/
 void CopyWstringToUtf16(std::wstring textStr, gr::utf16 * utf16Buf, int bufSize)
 {
-	memset(utf16Buf, 0, bufSize * sizeof(gr::utf16));
+	std::fill_n(utf16Buf, bufSize, 0);
 	int cc = textStr.length();
 	for (int i = 0; i < cc; i++)
 		utf16Buf[i] = textStr[i];
-}
+}
+
 /*----------------------------------------------------------------------------------------------
 	Output information about an error.
 ----------------------------------------------------------------------------------------------*/

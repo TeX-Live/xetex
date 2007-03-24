@@ -79,11 +79,12 @@ void Font::UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic)
 	}
 	// byte * pvName = (byte *)pNameTbl + lOffset;
 	utf16 rgchwFace[128];
-	int cchw = (lSize / isizeof(utf16)) + 1;
-	cchw = min(cchw, 128);
-	memcpy(rgchwFace, (byte *)pNameTbl + lOffset, lSize);
-	rgchwFace[cchw - 1] = 0;  // zero terminate
-	TtfUtil::SwapWString(rgchwFace, cchw - 1);
+	int cchw = (lSize / isizeof(utf16));
+	cchw = min(cchw, 127);
+	const utf16 * pTable16 = reinterpret_cast<const utf16*>(pNameTbl) + lOffset / sizeof(utf16);
+	std::copy(pTable16, pTable16 + cchw, rgchwFace);
+	rgchwFace[cchw] = 0;  // zero terminate
+	TtfUtil::SwapWString(rgchwFace, cchw);
 	#if SIZEOF_WCHAR_T==2
 	stuFace.assign(rgchwFace);
 	#else

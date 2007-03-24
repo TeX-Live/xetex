@@ -28,8 +28,6 @@ use or other dealings in this Software without prior written
 authorization from SIL International.
 \****************************************************************************/
 
-#include "Assert.h"
-
 #include "XeTeX_ext.h"
 #include "XeTeXswap.h"
 

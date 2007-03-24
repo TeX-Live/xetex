@@ -263,11 +263,11 @@ isocode GrLangTable::LanguageCode(size_t ilang)
 	isocode lgcodeRet;
 	if (ilang > m_clang)
 	{
-		memset(lgcodeRet.rgch, 0, sizeof(char) * 4);
+		std::fill_n(lgcodeRet.rgch, 4, '\0');
 		return lgcodeRet;
 	}
 	LangEntry * plang = m_prglang + ilang;
-	memcpy(lgcodeRet.rgch, plang->rgchCode, sizeof(char) * 4);
+	std::copy(plang->rgchCode, plang->rgchCode + 4, lgcodeRet.rgch);
 	return lgcodeRet;
 }
 
@@ -300,9 +300,7 @@ int GrLangTable::FindIndex(isocode lgcode)
 		else
 		{
 			LangEntry * plangCurr = m_prglang + ilangCurr;
-			//isocode lgcodeCompare;
-			//memcpy(&lgcodeCompare.rgch, plangCurr->rgchCode, sizeof(char)*4);
-			nTest = strcmp(plangCurr->rgchCode /*lgcodeCompare.rgch*/, lgcode.rgch);
+			nTest = strcmp(plangCurr->rgchCode, lgcode.rgch);
 		}
 
 		if (nTest == 0)

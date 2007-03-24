@@ -56,7 +56,11 @@ protected:
 	------------------------------------------------------------------------------------------*/
 	void CopyFrom(data16 * pchwStart, int cchw)
 	{
-		memcpy(this, pchwStart, 4 * isizeof(data16));
+		m_cgixBIG = pchwStart[0];
+		m_digixBIGInit = pchwStart[1];
+		m_cBIGLoop = pchwStart[2];
+		m_igixBIGStart = pchwStart[3];
+
 		int cgix = NumberOfGlyphs();
 		m_pgixFirst = m_prggixBuffer;
 		if (cgix > 64)
@@ -68,7 +72,9 @@ protected:
 		#ifdef _DEBUG
 			memset(m_pgixFirst, 0, cgix * isizeof(GrGlyphIndexPair));
 		#endif
-		memcpy(m_pgixFirst, pchwStart + 4, cgix * isizeof(GrGlyphIndexPair));
+		Assert(sizeof(GrGlyphIndexPair) == sizeof(gid16) + sizeof(data16));
+		GrGlyphIndexPair * pgixStart = reinterpret_cast<GrGlyphIndexPair*>(pchwStart + 4);
+		std::copy(pgixStart, pgixStart + cgix, m_pgixFirst);
 	}
 
 	int NumberOfGlyphs()		{ return lsbf(m_cgixBIG); }

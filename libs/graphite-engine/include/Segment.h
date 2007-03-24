@@ -243,7 +243,7 @@ public:
 	{
 		m_cbNextSegDat = cbNextSegDat;
 		m_prgbNextSegDat = new byte[m_cbNextSegDat];
-		memcpy(m_prgbNextSegDat, pbNextSegDat, cbNextSegDat);
+		std::copy(pbNextSegDat, pbNextSegDat + cbNextSegDat, m_prgbNextSegDat);
 	}
 	void RecordInitializationForThisSeg(int cbDat, byte * pbDat)
 	{
@@ -253,7 +253,7 @@ public:
 		else
 		{
 			m_prgInitDat = new byte[m_cbInitDat];
-			memcpy(m_prgInitDat, pbDat, cbDat);
+			std::copy(pbDat, pbDat + cbDat, m_prgInitDat);
 		}
 	}
 

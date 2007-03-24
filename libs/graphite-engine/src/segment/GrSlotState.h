@@ -119,7 +119,7 @@ public:
 	void GetFeatureValues(GrFeatureValues * pfval)
 	{
 		pfval->m_nStyleIndex = m_bStyleIndex;
-		memset(pfval->m_rgnFValues, 0, kMaxFeatures);
+		std::fill(pfval->m_rgnFValues, pfval->m_rgnFValues + kMaxFeatures, 0);
 		for (size_t i = 0; i < m_cnFeat; i++)
 			pfval->m_rgnFValues[i] = PFeatureBuf()[i].nValue;
 	}

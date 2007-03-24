@@ -13,12 +13,18 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\\$(TARGET).bsc"
 AR=lib
 AR_FLAGS=/OUT:$@
 
+!IF "$(MLIB)" == "MD"
+MLIB=MD
+!ELSE
+MLIB=MT
+!ENDIF
+
 OBJEXT = .obj
 SBREXT = .sbr
 
 !IF "$(CFG)" == "DEBUG"
-# CPP_DEBUG=/D "DEBUG" /Gm /GR /ZI /Od /GZ /FR"$(INTDIR)\\" /MTd
-CPP_DEBUG=/D "DEBUG" /Gm /GR /ZI /Od /GZ /FR"$(INTDIR)\\" /MDd
+CPP_DEBUG=/D "DEBUG" /Gm /GR /ZI /Od /GZ /FR"$(INTDIR)\\" /$(MLIB)d
+# CPP_DEBUG=/D "DEBUG" /Gm /GR /ZI /Od /GZ /FR"$(INTDIR)\\" /MDd
 
 OUTDIR=.\debug
 INTDIR=.\debug_temp
@@ -27,8 +33,8 @@ LINK_DEBUG= MSVCRTD.lib /debug /incremental:yes #/pdbtype:sept
 all : lib lib_dll bsc
 
 !ELSE
-# CPP_DEBUG=/D "NDEBUG" /O2 /MT
-CPP_DEBUG=/D "NDEBUG" /O2 /MD
+CPP_DEBUG=/D "NDEBUG" /O2 /$(MLIB)
+# CPP_DEBUG=/D "NDEBUG" /O2 /MD
 OUTDIR=.\release
 INTDIR=.\release_temp
 LINK_DEBUG= MSVCRT.lib /incremental:no /NODEFAULTLIB:libc

@@ -123,7 +123,7 @@ template<class K, class T, class H, class Eq>
 		m_prgihsndBuckets = (int *)malloc(cBuckets * isizeof(int));
 		if (!m_prgihsndBuckets)
 			ThrowHr(WarnHr(E_OUTOFMEMORY));
-		memset(m_prgihsndBuckets, -1, cBuckets * isizeof(int));
+		std::fill_n(m_prgihsndBuckets, cBuckets, -1);
 		m_cBuckets = cBuckets;
 	}
 	if (!m_ihsndMax)
@@ -132,7 +132,7 @@ template<class K, class T, class H, class Eq>
 		m_prghsnd = (HashNode *)malloc(iMax * isizeof(HashNode));
 		if (!m_prghsnd)
 			ThrowHr(WarnHr(E_OUTOFMEMORY));
-		memset(m_prghsnd, 0, iMax * isizeof(HashNode));
+		std::fill_n(m_prghsnd, iMax, 0);
 		m_ihsndLim = 0;
 		m_ihsndMax = iMax;
 		m_ihsndFirstFree = FreeListIdx(-1);
@@ -179,7 +179,7 @@ template<class K, class T, class H, class Eq>
 			int * pNewBuckets = (int *)realloc(m_prgihsndBuckets, cNewBuckets * isizeof(int));
 			if (pNewBuckets)
 			{
-				memset(pNewBuckets, -1, cNewBuckets * isizeof(int));
+				std::fill_n(pNewBuckets, cNewBuckets, -1);
 				m_cBuckets = cNewBuckets;
 				m_prgihsndBuckets = pNewBuckets;
 				for (ihsnd = 0; ihsnd < m_ihsndLim; ++ihsnd)

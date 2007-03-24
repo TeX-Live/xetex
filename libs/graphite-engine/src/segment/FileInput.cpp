@@ -163,7 +163,7 @@ int GrBufferIStream::ReadIntFromFont()
 ----------------------------------------------------------------------------------------------*/
 void GrBufferIStream::ReadBlockFromFont(void * pvInput, int cb)
 {
-	memcpy(pvInput, m_pbNext, cb);
+	std::copy(m_pbNext, m_pbNext + cb, reinterpret_cast<byte*>(pvInput));
 	m_pbNext += cb;
 	if (m_pbLim && m_pbNext > m_pbLim)
 		THROW(kresReadFault);

@@ -366,12 +366,12 @@ LMainLoop:
 	{
 #ifdef WIN32
 		wchar_t rgchw[20];
-		memset(rgchw, 0, 40);
+		std::fill_n(rgchw, 20, 0);
 		_itow(dxStretchNeeded - dxStretchAchieved, rgchw, 10);
 		std::wstring strTmp(L"justification failed by ");
 		strTmp += rgchw;
 		strTmp += L" units (width needed = ";
-		memset(rgchw, 0, 20);
+		std::fill_n(rgchw, 10, 0);
 		_itow(dxDesiredWidth, rgchw, 10);
 		strTmp += rgchw;
 		strTmp += L")\n";

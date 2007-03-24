@@ -170,7 +170,7 @@ void GrGlyphSubTable::Initialize(int fxdSilfVersion, utf16 chwFlags,
 	//	indicate whether or not it has been calculated; hence the "+1".
 	m_cnCompPerLig = cnCompPerLig;
 	m_prgnDefinedComponents = new int[(m_cnCompPerLig + 1) * cGlyphs];
-	memset(m_prgnDefinedComponents, 0, isizeof(int) * (m_cnCompPerLig + 1) * cGlyphs);
+	std::fill_n(m_prgnDefinedComponents, (m_cnCompPerLig + 1) * cGlyphs, 0);
 
 	//	Now the instance is ready to have the locations and the debug strings
 	//	read from the file.

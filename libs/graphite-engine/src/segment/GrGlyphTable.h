@@ -73,9 +73,11 @@ class GrGlyphAttrRun
 		#ifdef _DEBUG
 		// Probably not strictly necessary to zero the array, but convenient for debugging.
 		// Removed from release build for optimization
-		memset(m_rgchwBIGValues, 0, isizeof(m_rgchwBIGValues));
+		std::fill(m_rgchwBIGValues, m_rgchwBIGValues + kMaxAttrsPerRun, 0);
 		#endif
-		memcpy(m_rgchwBIGValues, pbBIGEnt + 2, (m_cAttrs * isizeof(data16)));
+		// this is mixing types of data16 and byte pointers!
+		const data16 * prgchw = reinterpret_cast<const data16*>(pbBIGEnt + 2);
+		std::copy(prgchw, prgchw + m_cAttrs, m_rgchwBIGValues);
 	}
 
 	int ByteCount()

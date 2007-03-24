@@ -87,8 +87,8 @@ void FontCache::CacheFontFace(std::wstring strFaceName, bool fBold, bool fItalic
 	{
 		ifci = (ifciIns + 1) * -1;
 		InsertCacheItem(ifci);
-		memcpy(m_prgfci[ifci].szFaceName, (void *)strFaceName.data(),
-			(strFaceName.size() + 1) * sizeof(wchar_t));
+		std::copy(strFaceName.c_str(), strFaceName.c_str() +
+				  (strFaceName.size() + 1), m_prgfci[ifci].szFaceName);
 	}
 
 	CacheItem * pfci = m_prgfci + ifci;
@@ -231,12 +231,14 @@ void FontCache::InsertCacheItem(int ifci)
 		// Cache is full; double the space.
 		CacheItem * m_prgfciOld = m_prgfci;
 		m_prgfci = new CacheItem[m_cfciMax * 2];
-		memcpy(m_prgfci, m_prgfciOld, m_cfciMax * sizeof(CacheItem));
+		std::copy(m_prgfciOld, m_prgfciOld + m_cfciMax, m_prgfci);
 		delete[] m_prgfciOld;
 		m_cfciMax *= 2;
 	}
 
-	memcpy(m_prgfci + ifci + 1, m_prgfci + ifci, (sizeof(CacheItem) * (m_cfci - ifci)));
+	// This copy involves overlapping ranges, so we need copy_backward not copy
+	// to satisfy the preconditions
+	std::copy_backward(m_prgfci + ifci, m_prgfci + m_cfci, m_prgfci + m_cfci + 1);
 	m_cfci++;
 
 	// Initialize inserted item.

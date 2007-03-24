@@ -76,8 +76,8 @@ void PassState::InitForNewSegment(int ipass, int nMaxChunk)
 void PassState::InitializeLogInfo()
 {
 	m_crulrec = 0;
-	memset(m_rgcslotDeletions, 0, 128 * sizeof(int));
-	memset(m_rgfInsertion, 0, 128 * sizeof(bool));
+	std::fill_n(m_rgcslotDeletions, 128, 0);
+	std::fill_n(m_rgfInsertion, 128, false);
 }
 
 /*----------------------------------------------------------------------------------------------

@@ -228,7 +228,8 @@ GrResult GrEngine::ReadFontTables(Font * pfont, bool fItalic)
 
 	// Make a private copy of the cmap for the engine's use.
 	m_pCmapTbl = new byte[cbCmapSz];
-	memcpy(m_pCmapTbl, pCmapTbl, cbCmapSz);
+	std::copy(reinterpret_cast<const byte*>(pCmapTbl), 
+			  reinterpret_cast<const byte*>(pCmapTbl) + cbCmapSz, m_pCmapTbl);
 
 	// MS Unicode cmap
 	m_pCmap_3_1 = TtfUtil::FindCmapSubtable(m_pCmapTbl, 3, 1);
@@ -270,7 +271,8 @@ GrResult GrEngine::ReadFontTables(Font * pfont, bool fItalic)
 	}
 	// Make a private copy of the name table for the engine's use.
 	m_pNameTbl = new byte[cbNameSz];
-	memcpy(m_pNameTbl, pNameTbl, cbNameSz);
+	std::copy(reinterpret_cast<const byte*>(pNameTbl), 
+			  reinterpret_cast<const byte*>(pNameTbl) + cbNameSz, m_pNameTbl);
 
 	/****
 	Obtain font name from InitNew() now instead of reading from font file. InitNew should

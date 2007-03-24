@@ -210,7 +210,7 @@ void GrTableManager::LogUnderlying(std::ostream & strmOut, GrCharStream * pchstr
 
 	int rgnChars[MAX_SLOTS];
 	bool rgfNewRun[MAX_SLOTS];
-	memset(rgfNewRun, 0, MAX_SLOTS);
+	std::fill_n(rgfNewRun, MAX_SLOTS, false);
 	GrFeatureValues rgfval[MAX_SLOTS];
 	int cchwMaxRawChars;
 
@@ -984,7 +984,7 @@ void Segment::LogUnderlyingToSurface(GrTableManager * ptman, std::ostream & strm
 
 	int rgnChars[MAX_SLOTS];
 	bool rgfNewRun[MAX_SLOTS];
-	memset(rgfNewRun, 0, MAX_SLOTS);
+	std::fill_n(rgfNewRun, MAX_SLOTS, false);
 	GrFeatureValues rgfval[MAX_SLOTS];
 	int cchwMaxRawChars;
 
@@ -1398,7 +1398,7 @@ void GrTableManager::SlotAttrsModified(int ipass, bool * rgfMods, bool fPreJust,
 	int * pccomp, int * pcassoc)
 {
 	//	Zero the flags
-	memset(rgfMods, 0, kslatMax + NumUserDefn() - 1);
+	std::fill_n(rgfMods, kslatMax + NumUserDefn() - 1, false);
 	*pccomp = 0;
 	*pcassoc = 0;
 

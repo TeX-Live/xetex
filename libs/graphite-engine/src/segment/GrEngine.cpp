@@ -260,8 +260,7 @@ bool GrEngine::GetFeatureLabel_ff(size_t ifeat, lgid nLanguage, utf16 * rgchwLab
 
 	int cch = stu.size();
 	cch = min(cch, 127); // 1 char for zero-termination
-
-	memcpy(rgchwLabel, stu.data(), (cch * isizeof(OLECHAR)));
+	std::copy(stu.data(), stu.data() + cch, rgchwLabel);
 	rgchwLabel[cch] = 0;
 
 	return (cch > 0);
@@ -312,8 +311,9 @@ bool GrEngine::GetFeatureSettingLabel_ff(size_t ifeat, size_t ifset, lgid langua
 
 	int cch = stu.size();
 	cch = min(cch, 127); // 1 char for zero-termination
-
-	memcpy(rgchwLabel, stu.data(), (cch * isizeof(OLECHAR)));
+	// Note: the wchar_t label was originally assigned from utf16 data, so although wchar_t is 
+	// utf32 on some platforms the conversion back to utf16 should still give correct results.
+	std::copy(stu.data(), stu.data() + cch, rgchwLabel);
 	rgchwLabel[cch] = 0;
 
 	return (cch > 0);
@@ -737,9 +737,9 @@ void GrEngine::RecordFontLoadError(OLECHAR * prgchwErrMsg, int cchMax)
 		stuMessage.append(m_stuInitError);
 	}
 
-	memset(prgchwErrMsg, 0, isizeof(OLECHAR) * cchMax);
-	memcpy(prgchwErrMsg, stuMessage.data(),
-		min(cchMax, signed(stuMessage.size())) * isizeof(OLECHAR));
+	std::fill_n(prgchwErrMsg, cchMax, 0);
+	std::copy(stuMessage.data(), stuMessage.data() + min(cchMax - 1, signed(stuMessage.size())),
+				prgchwErrMsg);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -762,9 +762,9 @@ void GrEngine::RecordFontRunError(OLECHAR * prgchwErrMsg, int cchMax, GrResult r
 	else
 		stuMessage.append(L"\"");
 
-	memset(prgchwErrMsg, 0, isizeof(OLECHAR) * cchMax);
-	memcpy(prgchwErrMsg, stuMessage.data(),
-		min(cchMax, signed(stuMessage.size())) * isizeof(OLECHAR));
+	std::fill_n(prgchwErrMsg, cchMax, 0);
+	std::copy(stuMessage.data(), stuMessage.data() + min(cchMax - 1, signed(stuMessage.size())),
+			 prgchwErrMsg);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -774,7 +774,7 @@ void GrEngine::RecordFontRunError(OLECHAR * prgchwErrMsg, int cchMax, GrResult r
 ----------------------------------------------------------------------------------------------*/
 void GrEngine::ClearFontError(OLECHAR * prgchwErrMsg, int cchMaxErrMsg)
 {
-	memset(prgchwErrMsg, 0, isizeof(OLECHAR) * cchMaxErrMsg);
+	std::fill_n(prgchwErrMsg, cchMaxErrMsg, 0);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -1622,11 +1622,9 @@ std::wstring GrEngine::StringFromNameTable(int nLangID, int nNameID)
 	// the MS (platform id = 3) Unicode (writing system id = 1) table
 	// or the MS Symbol (writing system id = 0) table. Try MS Unicode first.
 	// lOffset & lSize are in bytes.
-	////if (!TtfUtil::GetNameInfo(m_tbufNameTbl, 3, 1, nLangID, nNameID, lOffset, lSize))
 	// new interface:
 	if (!TtfUtil::GetNameInfo(m_pNameTbl, 3, 1, nLangID, nNameID, lOffset, lSize))
 	{
-		////if (!TtfUtil::GetNameInfo(m_tbufNameTbl, 3, 0, nLangID, nNameID, lOffset, lSize))
 		if (!TtfUtil::GetNameInfo(m_pNameTbl, 3, 0, nLangID, nNameID, lOffset, lSize))
 		{
 			return stuName;
@@ -1635,14 +1633,9 @@ std::wstring GrEngine::StringFromNameTable(int nLangID, int nNameID)
 
 	size_t cchw = (unsigned(lSize) / sizeof(utf16));
 	utf16 * pchwName = new utf16[cchw+1]; // lSize - byte count for Uni str
-//	memcpy(pchwName, (byte *)m_pNameTbl + lOffset, lSize);
-//	pchwName[cchw] = 0;  // zero terminate
-    ////const utf16 *pchwSrcName = reinterpret_cast<const utf16*>(m_tbufNameTbl + lOffset);
 	const utf16 *pchwSrcName = reinterpret_cast<const utf16*>(m_pNameTbl + lOffset);
     std::transform(pchwSrcName, pchwSrcName + cchw, pchwName, std::ptr_fun<utf16,utf16>(lsbf));
 	pchwName[cchw] = 0;  // zero terminate
-//	if (TtfUtil::SwapWString(pchwName, cchw))
-//	{
 	#ifdef _WIN32
 		stuName.assign((const wchar_t*)pchwName, cchw);
 	#else
@@ -1653,7 +1646,6 @@ std::wstring GrEngine::StringFromNameTable(int nLangID, int nNameID)
 		stuName.assign(pchwName32, cchw);
 		delete [] pchwName32;
 	#endif
-//	}
 
 	delete [] pchwName;
 	return stuName;

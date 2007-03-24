@@ -445,7 +445,7 @@ Segment::Segment(Segment & seg)
 	m_nDirDepth = seg.m_nDirDepth;
 	m_cbNextSegDat = seg.m_cbNextSegDat;
 	m_prgbNextSegDat = new byte[m_cbNextSegDat];
-	memcpy(m_prgbNextSegDat, seg.m_prgbNextSegDat, m_cbNextSegDat * sizeof(byte));
+	std::copy(seg.m_prgbNextSegDat, seg.m_prgbNextSegDat + m_cbNextSegDat, m_prgbNextSegDat);
 	m_psegPrev = seg.m_psegPrev;
 	m_psegNext = seg.m_psegNext;
 	m_stuFaceName = seg.m_stuFaceName;
@@ -485,16 +485,16 @@ Segment::Segment(Segment & seg)
 
 	int dichw = m_ichwAssocsLim - m_ichwAssocsMin;
 	m_prgisloutBefore = new int[dichw];
-	memcpy(m_prgisloutBefore, seg.m_prgisloutBefore, dichw * sizeof(int));
+	std::copy(seg.m_prgisloutBefore, seg.m_prgisloutBefore + dichw, m_prgisloutBefore);
 	m_prgisloutAfter = new int[dichw];
-	memcpy(m_prgisloutAfter, seg.m_prgisloutAfter, dichw * sizeof(int));
+	std::copy(seg.m_prgisloutAfter, seg.m_prgisloutAfter + dichw, m_prgisloutAfter);
 	m_prgvisloutAssocs = new std::vector<int>[dichw];
-	for (int ich = 0; ich < dichw; ich++)
-		m_prgvisloutAssocs[ich] = seg.m_prgvisloutAssocs[ich];
+	std::copy(seg.m_prgvisloutAssocs, seg.m_prgvisloutAssocs + dichw,
+			 m_prgvisloutAssocs);
 	m_prgisloutLigature = new int[dichw];
-	memcpy(m_prgisloutLigature, seg.m_prgisloutLigature, dichw * sizeof(int));
+	std::copy(seg.m_prgisloutLigature, seg.m_prgisloutLigature + dichw, m_prgisloutLigature);
 	m_prgiComponent = new int[dichw];
-	memcpy(m_prgiComponent, seg.m_prgiComponent, dichw * sizeof(int));
+	std::copy(seg.m_prgiComponent, seg.m_prgiComponent + dichw, m_prgiComponent);
 
 	// m_psstrm
 
@@ -521,7 +521,7 @@ Segment::Segment(Segment & seg)
 	m_cginf = seg.m_cginf;
 	m_isloutGinf0 = seg.m_isloutGinf0;
 	m_prgginf = new GlyphInfo[m_cginf];
-	memcpy(m_prgginf, seg.m_prgginf, m_cginf * sizeof(GlyphInfo));
+	std::copy(seg.m_prgginf, seg.m_prgginf + m_cginf, m_prgginf);
 	for (int iginf = 0; iginf < m_cginf; iginf++)
 	{
 		m_prgginf[iginf].m_pseg = this;
@@ -552,7 +552,7 @@ Segment::Segment(Segment & seg)
 	m_dircPrevTerm = seg.m_dircPrevTerm;
 	m_cbInitDat = seg.m_cbInitDat;
 	m_prgInitDat = new byte[m_cbInitDat];
-	memcpy(m_prgInitDat, seg.m_prgInitDat, m_cbInitDat * sizeof(byte));
+	std::copy(seg.m_prgInitDat, seg.m_prgInitDat + m_cbInitDat, m_prgInitDat);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -564,10 +564,7 @@ void Segment::SwapWith(Segment * pgrseg)
 	int crefThis = m_cref;
 	int crefOther = pgrseg->m_cref;
 
-	byte rgbBuffer[isizeof(Segment)];
-	memcpy(rgbBuffer, this, isizeof(Segment));
-	memcpy(this, pgrseg, isizeof(Segment));
-	memcpy(pgrseg, rgbBuffer, isizeof(Segment));
+	std::swap(*this, *pgrseg);
 
 	m_cref = crefThis;
 	pgrseg->m_cref = crefOther;
@@ -2134,40 +2131,33 @@ void Segment::EnsureSpaceAtLineBoundaries(int ichwUnder)
 
 		int * prgisloutTmp = m_prgisloutBefore;
 		m_prgisloutBefore = new int[cchwNewLim - cchwNewMin];
-		memcpy(m_prgisloutBefore + cchwPreAdd,
-			prgisloutTmp,
-			(m_ichwAssocsLim - m_ichwAssocsMin)*isizeof(int));
+		std::copy(prgisloutTmp, prgisloutTmp + (m_ichwAssocsLim - m_ichwAssocsMin), 
+					m_prgisloutBefore + cchwPreAdd);
 		delete[] prgisloutTmp;
 
 		prgisloutTmp = m_prgisloutAfter;
 		m_prgisloutAfter = new int[cchwNewLim - cchwNewMin];
-		memcpy(m_prgisloutAfter + cchwPreAdd,
-			prgisloutTmp,
-			(m_ichwAssocsLim - m_ichwAssocsMin)*isizeof(int));
+		std::copy(prgisloutTmp, prgisloutTmp + (m_ichwAssocsLim - m_ichwAssocsMin), 
+					m_prgisloutAfter + cchwPreAdd);
 		delete[] prgisloutTmp;
 
 		std::vector<int> * pvisloutTmp = m_prgvisloutAssocs;
 		m_prgvisloutAssocs = new std::vector<int>[cchwNewLim - cchwNewMin];
-		std::swap_ranges(reinterpret_cast<byte*>(m_prgvisloutAssocs + cchwPreAdd), 
-			reinterpret_cast<byte*>(m_prgvisloutAssocs + cchwPreAdd + (m_ichwAssocsLim - m_ichwAssocsMin)), 
-			reinterpret_cast<byte*>(pvisloutTmp));
-		//SwapBytes(m_prgvisloutAssocs + cchwPreAdd,
-		//	pvisloutTmp,
-		//	(m_ichwAssocsLim - m_ichwAssocsMin)*isizeof(Vector<int>));
+		std::swap_ranges(m_prgvisloutAssocs + cchwPreAdd,
+						m_prgvisloutAssocs + cchwPreAdd +
+						(m_ichwAssocsLim - m_ichwAssocsMin), pvisloutTmp);
 		delete[] pvisloutTmp;
 
 		prgisloutTmp = m_prgisloutLigature;
 		m_prgisloutLigature = new int[cchwNewLim - cchwNewMin];
-		memcpy(m_prgisloutLigature + cchwPreAdd,
-			prgisloutTmp,
-			(m_ichwAssocsLim - m_ichwAssocsMin)*isizeof(int));
+		std::copy(prgisloutTmp, prgisloutTmp + (m_ichwAssocsLim - m_ichwAssocsMin),
+				m_prgisloutLigature + cchwPreAdd);
 		delete[] prgisloutTmp;
 
 		prgisloutTmp = m_prgiComponent;
 		m_prgiComponent = new int[cchwNewLim - cchwNewMin];
-		memcpy(m_prgiComponent + cchwPreAdd,
-			prgisloutTmp,
-			(m_ichwAssocsLim - m_ichwAssocsMin)*isizeof(int));
+		std::copy(prgisloutTmp, prgisloutTmp + (m_ichwAssocsLim - m_ichwAssocsMin),
+					m_prgiComponent + cchwPreAdd);
 		delete[] prgisloutTmp;
 
 		//	Initialize new slots.

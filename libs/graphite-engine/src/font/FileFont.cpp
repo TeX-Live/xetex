@@ -197,7 +197,8 @@ FileFont::initializeFromFace()
 		utf16 rgchwFace[128];
 		int cchw = (lSize / isizeof(utf16)) + 1;
 		cchw = min(cchw, 128);
-		memcpy(rgchwFace, pTable + lOffset, lSize);
+		utf16 * pTable16 = reinterpret_cast<utf16*>(pTable + lOffset);
+		std::copy(pTable16, pTable16 + cchw - 1, rgchwFace);
 		rgchwFace[cchw - 1] = 0;  // zero terminate
 		TtfUtil::SwapWString(rgchwFace, cchw - 1);
 #if SIZEOF_WCHAR_T == 4

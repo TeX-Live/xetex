@@ -42,7 +42,7 @@ SimpleTextSrc::SimpleTextSrc(gr::utf16 * pszText)
 	for (gr::utf16 * pch = pszText; *pch != 0; pch++)
 		m_cchLength++;
 	m_prgchText = new gr::utf16[m_cchLength + 1];
-	memcpy(m_prgchText, pszText, isizeof(gr::utf16) * m_cchLength);
+	std::copy(pszText, pszText + m_cchLength, m_prgchText);
 	m_prgchText[m_cchLength] = 0; // zero-terminate
 }
 
@@ -63,7 +63,7 @@ SimpleTextSrc::~SimpleTextSrc()
 size_t SimpleTextSrc::fetch(toffset ichMin, size_t cch, gr::utf16 * prgchwBuffer)
 {
 	size_t ichRet = min(cch, size_t(m_cchLength - ichMin));
-	memcpy(prgchwBuffer, m_prgchText+ichMin, isizeof(gr::utf16) * ichRet);
+	std::copy(m_prgchText + ichMin, m_prgchText+ichMin + ichRet, prgchwBuffer);
 	return ichRet;
 }
 

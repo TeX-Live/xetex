@@ -75,10 +75,8 @@ public:
 
 	virtual isocode getLanguage(toffset ich)
 	{
-		char lang[4];
-		lang[0] = 'e'; lang[1] = 'n'; lang[2] = 0; lang[3] = 0;
 		isocode ret;
-		memcpy(&ret, lang, 4);
+		ret.rgch[0] = 'e'; ret.rgch[1] = 'n'; ret.rgch[2] = 0; ret.rgch[3] = 0;
 		return ret;
 	}
 

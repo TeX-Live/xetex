@@ -50,9 +50,11 @@ void GrSlotState::Initialize(int chw, GrEngine * pgreng,
 	m_chwActual = kInvalidGlyph;
 	m_xysGlyphWidth = -1;
 	m_bStyleIndex = fval.m_nStyleIndex;
-	memset(PUserDefnBuf(), 0, (isizeof(u_intslot) * m_cnUserDefn));
-	memset(PCompRefBuf(), 0, (isizeof(u_intslot) * m_cnCompPerLig));
-	memset(PSlatiBuf(), 0, (isizeof(u_intslot) * m_cnCompPerLig));
+	u_intslot nullSlot;
+	nullSlot.pslot = NULL;
+	std::fill_n(PUserDefnBuf(), m_cnUserDefn, nullSlot);
+	std::fill_n(PCompRefBuf(), m_cnCompPerLig, nullSlot);
+	std::fill_n(PSlatiBuf(), m_cnCompPerLig, nullSlot);
 	u_intslot * pFeatBuf = PFeatureBuf();
 	for (size_t i = 0; i < m_cnFeat; i++)
 		pFeatBuf[i].nValue = fval.m_rgnFValues[i];
@@ -86,9 +88,11 @@ void GrSlotState::Initialize(int chw, GrEngine * pgreng,
 	m_chwGlyphID = chw;
 	m_chwActual = kInvalidGlyph;
 	m_xysGlyphWidth = -1;
-	memset(PUserDefnBuf(), 0, (isizeof(u_intslot) * m_cnUserDefn));
-	memset(PCompRefBuf(), 0, (isizeof(u_intslot) * m_cnCompPerLig));
-	memset(PSlatiBuf(), 0, (isizeof(u_intslot) * m_cnCompPerLig));
+	u_intslot nullSlot;
+	nullSlot.pslot = NULL;
+	std::fill_n(PUserDefnBuf(), m_cnUserDefn, nullSlot);
+	std::fill_n(PCompRefBuf(), m_cnCompPerLig, nullSlot);
+	std::fill_n(PSlatiBuf(), m_cnCompPerLig, nullSlot);
 	CopyFeaturesFrom(pslotFeat);
 	m_ipassModified = ipass;
 	m_ichwSegOffset = ichwSegOffset;
@@ -105,9 +109,11 @@ void GrSlotState::Initialize(int chw, GrEngine * pgreng,
 	m_chwGlyphID = chw;
 	m_chwActual = kInvalidGlyph;
 	m_xysGlyphWidth = -1;
-	memset(PUserDefnBuf(), 0, (isizeof(u_intslot) * m_cnUserDefn));
-	memset(PCompRefBuf(), 0, (isizeof(u_intslot) * m_cnCompPerLig));
-	memset(PSlatiBuf(), 0, (isizeof(u_intslot) * m_cnCompPerLig));
+	u_intslot nullSlot;
+	nullSlot.pslot = NULL;
+	std::fill_n(PUserDefnBuf(), m_cnUserDefn, nullSlot);
+	std::fill_n(PCompRefBuf(), m_cnCompPerLig, nullSlot);
+	std::fill_n(PSlatiBuf(), m_cnCompPerLig, nullSlot);
 	CopyFeaturesFrom(pslotFeat);
 	m_ipassModified = ipass;
 	m_ichwSegOffset = kInvalid;
@@ -146,7 +152,7 @@ void GrSlotState::CopyFeaturesFrom(GrSlotState * pslotSrc)
 {
 	m_bStyleIndex = pslotSrc->m_bStyleIndex;
 	Assert(m_cnFeat == pslotSrc->m_cnFeat);
-	memcpy(PFeatureBuf(), pslotSrc->PFeatureBuf(), m_cnFeat*sizeof(u_intslot));
+	std::copy(pslotSrc->PFeatureBuf(), pslotSrc->PFeatureBuf() + m_cnFeat, PFeatureBuf());
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -161,7 +167,7 @@ void GrSlotAbstract::CopyFrom(GrSlotState * pslot)
 	*this = *pslot;
 	m_prgnVarLenBuf = pnBufSave;
 	Assert(m_prgnVarLenBuf);
-	memcpy(m_prgnVarLenBuf, pslot->m_prgnVarLenBuf, (isizeof(u_intslot) * CExtraSpace()));
+	std::copy(pslot->m_prgnVarLenBuf, pslot->m_prgnVarLenBuf + CExtraSpace(), m_prgnVarLenBuf);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -1367,9 +1373,10 @@ void GrSlotOutput::ExactCopyFrom(GrSlotOutput * pslout, u_intslot * pnVarLenBuf,
 {
 	// The chunk of the object from GrSlotAbstract can be copied exactly,
 	// except for the variable-length buffer.
-	memcpy(this, pslout, sizeof(GrSlotAbstract));
+	*this = *pslout;
 	m_prgnVarLenBuf = pnVarLenBuf;
-	memcpy(m_prgnVarLenBuf, pslout->m_prgnVarLenBuf, cnExtraPerSlot * sizeof(u_intslot));
+	std::copy(pslout->m_prgnVarLenBuf, pslout->m_prgnVarLenBuf + cnExtraPerSlot,
+				m_prgnVarLenBuf);
 
 	// Now copy the stuff specific to GrSlotOutput.
 	m_ichwBeforeAssoc = pslout->m_ichwBeforeAssoc;
