@@ -471,7 +471,7 @@ load_mapping_file(const char* s, const char* e)
 	mapPath = kpse_find_file(buffer, kpse_miscfonts_format, 1);
 
 	if (mapPath) {
-		FILE*	mapFile = fopen(mapPath, "rb");
+		FILE*	mapFile = fopen(mapPath, FOPEN_RBIN_MODE);
 		free(mapPath);
 		if (mapFile) {
 			UInt32	mappingSize;
@@ -1853,7 +1853,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
 				getGlyphPosition(engine, nGlyphs, &x, &y, &status);
 				node_width(node) = X2Fix(x);
-	
+
 				if (nGlyphs >= maxGlyphs) {
 					if (glyphs != 0) {
 						free(glyphs);
@@ -1894,14 +1894,14 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		}
 		else { 
 			/* using Graphite */
-			realGlyphCount = makeGraphiteSegment(engine, (UniChar*)txtPtr, txtLen);
 			void*	glyph_info = NULL;
+			realGlyphCount = makeGraphiteSegment(engine, (UniChar*)txtPtr, txtLen);
 	
 			if (realGlyphCount > 0) {
+				int i;
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
 				glyphIDs = (UInt16*)(locations + realGlyphCount);
-				int i;
 				for (i = 0; i < realGlyphCount; ++i) {
 					float	x, y;
 					getGraphiteGlyphInfo(engine, i, &(glyphIDs[i]), &x, &y);

@@ -33,17 +33,19 @@ authorization from SIL International.
 
 #include "XeTeXGrLayout.h"
 
-typedef wchar_t OLECHAR;
-
 #include "GrDebug.h"
 #include "GrClient.h"
 #include "GrData.h"
 #include "GraphiteProcess.h"
+
+/* internal Graphite headers used here until the Font API gets cleaned up */
+typedef wchar_t OLECHAR;
 #include "../src/segment/GrEngine.h"
 #include "../src/segment/FontCache.h"
 #include "../src/segment/FontFace.h"
 
-#pragma mark XeTeXGrFont
+
+/* XeTeXGrFont class */
 
 XeTeXGrFont::XeTeXGrFont(const XeTeXFontInst* inFont, const char* name)
 	: Font()
@@ -96,7 +98,7 @@ XeTeXGrFont::getFontMetrics(float * pAscent, float * pDescent, float * pEmSquare
 }
 
 
-#pragma mark XeTeXGrTextSource
+/* XeTeXGrTextSource class */
 
 void
 XeTeXGrTextSource::setText(const UniChar* iText, size_t iLen, bool iRTL)
