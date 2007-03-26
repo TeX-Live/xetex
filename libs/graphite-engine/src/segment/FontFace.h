@@ -155,6 +155,14 @@ public:
 		return m_pgreng->GetLanguageCode_ff(ilang);
 	}
 
+	// Script Direction access:
+	ScriptDirCode ScriptDirection() const throw()
+	{
+		unsigned int script_dirs = 0;
+		OLECHAR err_dummy = 0;
+		m_pgreng->get_ScriptDirection(&script_dirs, &err_dummy, 1);
+		return ScriptDirCode(script_dirs);
+	}
 public:
 	// For use in segment creation:
 	void RenderLineFillSegment(Segment * pseg, Font * pfont, ITextSource * pts,

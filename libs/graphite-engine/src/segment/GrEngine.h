@@ -103,7 +103,7 @@ public:
 	//	std::ostream  * pstrmLog,
 	//	OLECHAR * prgchwErrMsg, int cchMaxErrMsg);
 
-	GrResult get_ScriptDirection(int * pgrfsdc, OLECHAR * prgchwErrMsg, int cchMaxErrMsg);
+	GrResult get_ScriptDirection(unsigned int * pgrfsdc, OLECHAR * prgchwErrMsg, int cchMaxErrMsg);
 
 	// DELETE
 	//GrResult MakeJustifiedSegment(Font * pfont, ITextSource * pgts, IGrJustifier * pgj,

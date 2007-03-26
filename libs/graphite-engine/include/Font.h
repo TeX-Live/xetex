@@ -293,6 +293,11 @@ public:
 	// Languages:
 	std::pair<LanguageIterator, LanguageIterator> getSupportedLanguages();
 
+	// Script directions, Verticle, LTR, RTL etc see enum ScriptDirCode
+	// the posibilities.  This returns a bit set where more than one scripts may 
+	// be set, it's up to the app to decide which is the prefered direction to use.
+	ScriptDirCode getSupportedScriptDiretcions() const throw();
+	
 	// Debugging:
 	//static bool DbgCheckFontCache();
 
@@ -306,9 +311,10 @@ public:
 		toffset ichStart, toffset ichEnd, float xsCurrentWidth, float xsDesiredWidth);
 
 protected:
-	Font()	{ }
-
-	FontFace * m_pfface;	// set up with Graphite tables
+	Font();
+	Font(const Font &);
+	
+	FontFace & fontFace();
 
 	// Feature access:
 	FeatureIterator BeginFeature();
@@ -330,10 +336,15 @@ protected:
 	size_t NumberOfLanguages();
 	isocode LanguageCode(size_t ilang);
 
-	void UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic);
+	virtual void UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic);
 	static bool FontHasGraphiteTables(Font & font);
+
+private:
+	FontFace * m_pfface;	// set up with Graphite tables
+	void initialiseFontFace();
 };
 
+inline Font::Font() : m_pfface(0) { }
 
 } // namespace gr
 

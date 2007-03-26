@@ -90,9 +90,6 @@ typedef unsigned short int gid16;	// glyph ID
 typedef unsigned short int data16;	// generic 16-bit data
 typedef unsigned int data32;		// generic 32-bit data
 typedef unsigned int fontTableId32;	// ID to pass to getTable()
-#ifndef GR_FW // annoying--FW uses a built-in defintion of byte and the compiler chokes, even though the defns are the same :-(
-typedef unsigned char byte;
-#endif
 
 #ifndef NO_ASM
 #define NO_ASM

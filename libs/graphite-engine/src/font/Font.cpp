@@ -41,6 +41,11 @@ namespace gr
 //:>********************************************************************************************
 //:>	Font methods
 //:>********************************************************************************************
+Font::Font(const Font &src) : m_pfface(src.m_pfface) {
+	if (m_pfface)  m_pfface->IncFontCount();
+}
+
+
 Font::~Font()
 {
 	if (m_pfface) m_pfface->DecFontCount();
@@ -62,6 +67,27 @@ int Font::GetFlushMode()
 	return FontFace::GetFlushMode();
 }
 
+inline FontFace & Font::fontFace() {
+	if (m_pfface == 0)
+		initialiseFontFace();
+	
+	return *m_pfface;
+}
+
+void Font::initialiseFontFace()
+{
+	std::wstring face_name;
+	bool         bold, italic;
+
+	UniqueCacheInfo(face_name, bold, italic);
+	
+	m_pfface = FontFace::GetFontFace(this, face_name, bold, italic);
+
+	Assert(m_pfface != 0);
+	
+	m_pfface->IncFontCount();
+}
+
 /*----------------------------------------------------------------------------------------------
 	Return uniquely identifying information that will be used a the key for this font
 	in the font cache. This includes the font face name and the bold and italic flags.
@@ -69,7 +95,7 @@ int Font::GetFlushMode()
 void Font::UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic)
 {
 	size_t cbSize;
-	const void * pNameTbl = getTable(TtfUtil::TableIdTag(ktiName), &cbSize);
+	const byte * pNameTbl = static_cast<const byte *>(getTable(TtfUtil::TableIdTag(ktiName), &cbSize));
 	long lOffset, lSize;
 	if (!TtfUtil::Get31EngFamilyInfo(pNameTbl, lOffset, lSize))
 	{
@@ -79,17 +105,12 @@ void Font::UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic)
 	}
 	// byte * pvName = (byte *)pNameTbl + lOffset;
 	utf16 rgchwFace[128];
-	int cchw = (lSize / isizeof(utf16));
-	cchw = min(cchw, 127);
-	const utf16 * pTable16 = reinterpret_cast<const utf16*>(pNameTbl) + lOffset / sizeof(utf16);
-	std::copy(pTable16, pTable16 + cchw, rgchwFace);
+	const size_t cchw = min(lSize / sizeof(utf16), sizeof rgchwFace - 1);
+	const utf16 *src_start = reinterpret_cast<const utf16 *>(pNameTbl+ lOffset);
+	std::copy(src_start, src_start + cchw, rgchwFace);
 	rgchwFace[cchw] = 0;  // zero terminate
 	TtfUtil::SwapWString(rgchwFace, cchw);
-	#if SIZEOF_WCHAR_T==2
-	stuFace.assign(rgchwFace);
-	#else
-	//#warning "need to fix Font::UniqueCacheInfo someday when it is used"
-	#endif
+	stuFace.assign(rgchwFace, rgchwFace + cchw);
 
 	const void * pOs2Tbl = getTable(TtfUtil::TableIdTag(ktiOs2), &cbSize);
 	TtfUtil::FontOs2Style(pOs2Tbl, fBold, fItalic);
@@ -273,43 +294,43 @@ bool Font::getFeatureSettingLabel(FeatureSettingIterator fsit, lgid nLanguage, u
 ----------------------------------------------------------------------------------------------*/
 size_t Font::NumberOfFeatures()
 {
-	return m_pfface->NumberOfFeatures();
+	return fontFace().NumberOfFeatures();
 }
 featid Font::FeatureID(size_t ifeat)
 {
-	return m_pfface->FeatureID(ifeat);
+	return fontFace().FeatureID(ifeat);
 }
 size_t Font::FeatureWithID(featid id)
 {
-	return m_pfface->FeatureWithID(id);
+	return fontFace().FeatureWithID(id);
 }
 bool Font::GetFeatureLabel(size_t ifeat, lgid language, utf16 * label)
 {
-	return m_pfface->GetFeatureLabel(ifeat, language, label);
+	return fontFace().GetFeatureLabel(ifeat, language, label);
 }
 int Font::GetFeatureDefault(size_t ifeat) // index of default setting
 {
-	return m_pfface->GetFeatureDefault(ifeat);
+	return fontFace().GetFeatureDefault(ifeat);
 }
 size_t Font::NumberOfSettings(size_t ifeat)
 {
-	return m_pfface->NumberOfSettings(ifeat);
+	return fontFace().NumberOfSettings(ifeat);
 }
 int Font::GetFeatureSettingValue(size_t ifeat, size_t ifset)
 {
-	return m_pfface->GetFeatureSettingValue(ifeat, ifset);
+	return fontFace().GetFeatureSettingValue(ifeat, ifset);
 }
 bool Font::GetFeatureSettingLabel(size_t ifeat, size_t ifset, lgid language, utf16 * label)
 {
-	return m_pfface->GetFeatureSettingLabel(ifeat, ifset, language, label);
+	return fontFace().GetFeatureSettingLabel(ifeat, ifset, language, label);
 }
 size_t Font::NumberOfLanguages()
 {
-	return m_pfface->NumberOfLanguages();
+	return fontFace().NumberOfLanguages();
 }
 isocode Font::LanguageCode(size_t ilang)
 {
-	return m_pfface->LanguageCode(ilang);
+	return fontFace().LanguageCode(ilang);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -323,27 +344,32 @@ std::pair<LanguageIterator, LanguageIterator> Font::getSupportedLanguages()
 	return pairRet;
 }
 
+ScriptDirCode Font::getSupportedScriptDiretcions() const throw()
+{
+	return m_pfface->ScriptDirection();
+}
+
 /*----------------------------------------------------------------------------------------------
 	For segment creation.
 ----------------------------------------------------------------------------------------------*/
 void Font::RenderLineFillSegment(Segment * pseg, ITextSource * pts, LayoutEnvironment & layout,
 	toffset ichStart, toffset ichStop, float xsMaxWidth, bool fBacktracking)
 {
-	m_pfface->RenderLineFillSegment(pseg, this, pts, layout, ichStart, ichStop, xsMaxWidth,
+	fontFace().RenderLineFillSegment(pseg, this, pts, layout, ichStart, ichStop, xsMaxWidth,
 		fBacktracking);
 }
 
 void Font::RenderRangeSegment(Segment * pseg, ITextSource * pts, LayoutEnvironment & layout,
 	toffset ichStart, toffset ichStop)
 {
-	m_pfface->RenderRangeSegment(pseg, this, pts, layout, ichStart, ichStop);
+	fontFace().RenderRangeSegment(pseg, this, pts, layout, ichStart, ichStop);
 }
 
 void Font::RenderJustifiedSegment(Segment * pseg, ITextSource * pts,
 	LayoutEnvironment & layout, toffset ichStart, toffset ichStop,
 	float xsCurrentWidth, float xsDesiredWidth)
 {
-	m_pfface->RenderJustifiedSegment(pseg, this, pts, layout, ichStart, ichStop,
+	fontFace().RenderJustifiedSegment(pseg, this, pts, layout, ichStart, ichStop,
 		xsCurrentWidth, xsDesiredWidth);
 }
 

@@ -33,17 +33,6 @@ authorization from SIL International.
 
 #include "XeTeXGrLayout.h"
 
-#include "GrDebug.h"
-#include "GrClient.h"
-#include "GrData.h"
-#include "GraphiteProcess.h"
-
-/* internal Graphite headers used here until the Font API gets cleaned up */
-typedef wchar_t OLECHAR;
-#include "../src/segment/GrEngine.h"
-#include "../src/segment/FontCache.h"
-#include "../src/segment/FontFace.h"
-
 
 /* XeTeXGrFont class */
 
@@ -53,15 +42,15 @@ XeTeXGrFont::XeTeXGrFont(const XeTeXFontInst* inFont, const char* name)
 	, fName(NULL)
 {
 	fName = strdup(name);
+	gr::Font::SetFlushMode(gr::kflushManual);
+}
 
-	int	len = strlen(name);
-	wchar_t*	wname = new wchar_t[len + 1];
-	mbstowcs(wname, name, len);
-
-	m_pfface = gr::FontFace::GetFontFace(this, wname, false, false);
-	delete[] wname;
-
-	gr::FontFace::SetFlushMode(gr::kflushManual);
+XeTeXGrFont::XeTeXGrFont(const XeTeXGrFont& orig)
+	: Font(orig)
+	, fXeTeXFont(orig.fXeTeXFont)
+	, fName(NULL)
+{
+	fName = strdup(orig.fName);
 }
 
 XeTeXGrFont::~XeTeXGrFont()
@@ -72,8 +61,21 @@ XeTeXGrFont::~XeTeXGrFont()
 XeTeXGrFont *
 XeTeXGrFont::copyThis()
 {
-	XeTeXGrFont*	rval = new XeTeXGrFont(fXeTeXFont, fName);
+	XeTeXGrFont*	rval = new XeTeXGrFont(*this);
 	return rval;
+}
+
+void
+XeTeXGrFont::UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic)
+{
+	int	len = strlen(fName);
+	wchar_t*	wname = new wchar_t[len + 1];
+	mbstowcs(wname, fName, len);
+	stuFace.assign(wname, wcslen(wname));
+	delete[] wname;
+
+	fBold = false;
+	fItalic = false;
 }
 
 const void *
@@ -145,7 +147,7 @@ XeTeXGrTextSource::setFeatures(int nFeatures, const gr::FeatureSetting* features
 }
 
 size_t
-XeTeXGrTextSource::fetch(toffset startChar, size_t n, gr::utf16* buffer)
+XeTeXGrTextSource::fetch(gr::toffset startChar, size_t n, gr::utf16* buffer)
 {
 	for (size_t i = 0; i < n; ++i)
 		buffer[i] = fTextBuffer[i];
@@ -153,23 +155,23 @@ XeTeXGrTextSource::fetch(toffset startChar, size_t n, gr::utf16* buffer)
 }
 
 bool
-XeTeXGrTextSource::getRightToLeft(toffset charIndex)
+XeTeXGrTextSource::getRightToLeft(gr::toffset charIndex)
 {
 	return false; // FIXME
 }
 
 unsigned int
-XeTeXGrTextSource::getDirectionDepth(toffset charIndex)
+XeTeXGrTextSource::getDirectionDepth(gr::toffset charIndex)
 {
 	return 0; // FIXME
 }
 
 size_t
-XeTeXGrTextSource::getFontFeatures(toffset charIndex, gr::FeatureSetting properties[64])
+XeTeXGrTextSource::getFontFeatures(gr::toffset charIndex, gr::FeatureSetting properties[64])
 {
 	for (int i = 0; i < fNumFeatures; ++i)
 		properties[i] = fFeatureSettings[i];
 	return fNumFeatures;
 }
 
-const isocode XeTeXGrTextSource::kUnknownLanguage = { 0, 0, 0, 0 };
+const gr::isocode XeTeXGrTextSource::kUnknownLanguage = { 0, 0, 0, 0 };

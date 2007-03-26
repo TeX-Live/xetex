@@ -44,6 +44,7 @@ class XeTeXGrFont
 {
 public:
 			XeTeXGrFont(const XeTeXFontInst* inFont, const char* name);
+			XeTeXGrFont(const XeTeXGrFont& orig);
 
 	virtual ~XeTeXGrFont();
 
@@ -117,6 +118,8 @@ public:
 	virtual void getFontMetrics(float * pAscent, float * pDescent = NULL, float * pEmSquare = NULL);
 
 protected:
+	virtual void			UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic);
+
 	const XeTeXFontInst*	fXeTeXFont;
 	const char*				fName;
 };
@@ -144,34 +147,34 @@ public:
 	virtual gr::UtfType		utfEncodingForm()
 								{ return gr::kutf16; }
 
-	virtual size_t			fetch(toffset startChar, size_t n, gr::utf32* buffer)
+	virtual size_t			fetch(gr::toffset startChar, size_t n, gr::utf32* buffer)
 								{ throw; }
 
-	virtual size_t			fetch(toffset startChar, size_t n, gr::utf8* buffer)
+	virtual size_t			fetch(gr::toffset startChar, size_t n, gr::utf8* buffer)
 								{ throw; }
 
-	virtual size_t			fetch(toffset startChar, size_t n, gr::utf16* buffer);
+	virtual size_t			fetch(gr::toffset startChar, size_t n, gr::utf16* buffer);
 
 	virtual size_t			getLength()
 								{ return fTextLength; }
 	
-	virtual std::pair<toffset,toffset>	propertyRange(toffset charIndex)
-								{ return std::pair<toffset,toffset>(0, fTextLength); }
+	virtual std::pair<gr::toffset,gr::toffset>	propertyRange(gr::toffset charIndex)
+								{ return std::pair<gr::toffset,gr::toffset>(0, fTextLength); }
 	
-	virtual bool			sameSegment(toffset firstChar, toffset secondChar)
+	virtual bool			sameSegment(gr::toffset firstChar, gr::toffset secondChar)
 								{ return true; }
 
-	virtual bool			getRightToLeft(toffset charIndex);
+	virtual bool			getRightToLeft(gr::toffset charIndex);
 
-	virtual unsigned int	getDirectionDepth(toffset charIndex);
+	virtual unsigned int	getDirectionDepth(gr::toffset charIndex);
 
-	virtual float			getVerticalOffset(toffset charIndex)
+	virtual float			getVerticalOffset(gr::toffset charIndex)
 								{ return 0.0; }
 
-	virtual isocode			getLanguage(toffset charIndex)
+	virtual gr::isocode		getLanguage(gr::toffset charIndex)
 								{ return kUnknownLanguage; }
 
-	virtual size_t			getFontFeatures(toffset charIndex, gr::FeatureSetting properties[64]);
+	virtual size_t			getFontFeatures(gr::toffset charIndex, gr::FeatureSetting properties[64]);
 
 protected:
 	const UInt16*				fTextBuffer;
@@ -180,7 +183,7 @@ protected:
 	size_t						fNumFeatures;
 	const gr::FeatureSetting*	fFeatureSettings;
 	
-	static const isocode		kUnknownLanguage;
+	static const gr::isocode	kUnknownLanguage;
 };
 
 #endif /* __XETEX_GR_LAYOUT__ */

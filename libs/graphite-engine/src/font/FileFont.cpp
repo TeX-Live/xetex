@@ -14,14 +14,9 @@ Description:
 ----------------------------------------------------------------------------------------------*/
 
 #include "Main.h"
-// include config.h to get SIZEOF_WCHAR_T macro
-//#ifdef __GNUC__
-//#include "config.h"
-//#endif
 
 #include "FontTableCache.h"
 #include "FileFont.h"
-#include "../segment/GrCharStream.h"
 #include <stdio.h>
 
 
@@ -228,9 +223,6 @@ FileFont::initializeFromFace()
 		// can now set the scale
 		m_xScale = scaleFromDpi(m_dpiX);
 		m_yScale = scaleFromDpi(m_dpiY);
-
-		m_pfface = FontFace::GetFontFace(this, m_faceName, m_fBold, m_fItalic);
-		if (m_pfface) m_pfface->IncFontCount();
 	}
 	else
 	{
@@ -319,9 +311,9 @@ Font * FileFont::copyThis()
 * The underlying table cache will be shared between the fonts, so
 * this should have a low overhead.
 */
-FileFont::FileFont(FileFont & font, float pointSize, 
+FileFont::FileFont(const FileFont & font, float pointSize, 
 				   unsigned int dpiX, unsigned int dpiY)
-: Font(),
+: Font(font),
 	m_file(font.m_file),
 	m_ascent(font.m_ascent),
 	m_descent(font.m_descent),
@@ -363,9 +355,6 @@ FileFont::FileFont(FileFont & font, float pointSize,
 	// I dont' see why we need to reget the face, but WinFont does
 	//m_pfface = FontFace::GetFontFace(this, m_fpropDef.szFaceName,
 	//																 m_fpropDef.fBold, m_fpropDef.fItalic);
-	m_pfface = font.m_pfface;																	 
-	if (m_pfface) m_pfface->IncFontCount();
-
 }
 
 

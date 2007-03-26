@@ -76,7 +76,7 @@ public:
 	* @param font the XftGrFont object to copy from.
 	* @internal
 	*/
-	FileFont(FileFont & font, float pointSize = 0, unsigned int DPIx = 0, unsigned int DPIy = 0);
+	FileFont(const FileFont & font, float pointSize = 0, unsigned int DPIx = 0, unsigned int DPIy = 0);
 
 	//virtual FontErrorCode isValidForGraphite(int * pnVersion = NULL, int * pnSubVersion = NULL);
 	/**

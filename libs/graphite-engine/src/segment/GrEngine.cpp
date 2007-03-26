@@ -372,7 +372,7 @@ GrResult GrEngine::get_SegDatMaxLength(int * pcb)
 	@return The supported script direction(s). If more than one, the application is
 	responsible for choosing the most appropriate.
 ----------------------------------------------------------------------------------------------*/
-GrResult GrEngine::get_ScriptDirection(int * pgrfsdc, OLECHAR * prgchwErrMsg, int cchMaxErrMsg)
+GrResult GrEngine::get_ScriptDirection(unsigned int * pgrfsdc, OLECHAR * prgchwErrMsg, int cchMaxErrMsg)
 {
 	ChkGrOutPtr(pgrfsdc);
 	ChkGrArrayArg(prgchwErrMsg, cchMaxErrMsg);
