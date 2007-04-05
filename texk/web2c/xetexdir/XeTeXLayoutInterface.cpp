@@ -47,6 +47,7 @@ authorization from SIL International.
 #include "ScriptAndLanguage.h"
 
 #include "unicode/ubidi.h"
+#include "unicode/utext.h"
 
 #include <math.h>
 
@@ -322,6 +323,175 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
 	}
 	
 	return 0;
+}
+
+UInt32 countGraphiteFeatures(XeTeXLayoutEngine engine)
+{
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	UInt32	rval = 0;
+	while (fi.first != fi.second) {
+		++rval;
+		++fi.first;
+	}
+	return rval;
+}
+
+UInt32 getGraphiteFeatureCode(XeTeXLayoutEngine engine, UInt32 index)
+{
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	while (index > 0 && fi.first != fi.second) {
+		--index;
+		++fi.first;
+	}
+	if (fi.first != fi.second)
+		return *fi.first;
+	return 0;
+}
+
+UInt32 countGraphiteFeatureSettings(XeTeXLayoutEngine engine, UInt32 feature)
+{
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	while (fi.first != fi.second && *fi.first != feature)
+		++fi.first;
+	if (fi.first != fi.second) {
+		std::pair<gr::FeatureSettingIterator, gr::FeatureSettingIterator>
+				si = engine->grFont->getFeatureSettings(fi.first);
+		UInt32	rval = 0;
+		while (si.first != si.second) {
+			++rval;
+			++si.first;
+		}
+		return rval;
+	}
+	return 0;
+}
+
+UInt32 getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, UInt32 feature, UInt32 index)
+{
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	while (fi.first != fi.second && *fi.first != feature)
+		++fi.first;
+	if (fi.first != fi.second) {
+		std::pair<gr::FeatureSettingIterator, gr::FeatureSettingIterator>
+				si = engine->grFont->getFeatureSettings(fi.first);
+		while (index > 0 && si.first != si.second) {
+			--index;
+			++si.first;
+		}
+		if (si.first != si.second)
+			return *si.first;
+	}
+	return 0;
+}
+
+UInt32 getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, UInt32 feature)
+{
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	while (fi.first != fi.second && *fi.first != feature)
+		++fi.first;
+	if (fi.first != fi.second) {
+		gr::FeatureSettingIterator	si = engine->grFont->getDefaultFeatureValue(fi.first);
+		return *si;
+	}
+	return 0;
+}
+
+void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 feature, unsigned short* buf)
+{
+	buf[0] = 0;
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	while (fi.first != fi.second && *fi.first != feature)
+		++fi.first;
+	if (fi.first != fi.second) {
+		engine->grFont->getFeatureLabel(fi.first, 0x0409, buf);
+	}
+}
+
+void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UInt32 setting, unsigned short* buf)
+{
+	buf[0] = 0;
+	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
+	while (fi.first != fi.second && *fi.first != feature)
+		++fi.first;
+	if (fi.first != fi.second) {
+		std::pair<gr::FeatureSettingIterator, gr::FeatureSettingIterator>
+				si = engine->grFont->getFeatureSettings(fi.first);
+		while (si.first != si.second && *si.first != setting)
+			++si.first;
+		if (si.first != si.second) {
+			engine->grFont->getFeatureSettingLabel(si.first, 0x0409, buf);
+		}
+	}
+}
+
+long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int namelength)
+{
+	long		rval = -1;
+	UErrorCode	status = (UErrorCode)0;
+
+	std::pair<gr::FeatureIterator,gr::FeatureIterator>	features = engine->grFont->getFeatures();
+	while (features.first != features.second) {
+		gr::utf16	label[128];
+		if (engine->grFont->getFeatureLabel(features.first, 0x409, &label[0])) {
+			UText* ut1 = utext_openUTF8(NULL, name, namelength, &status);
+			UText* ut2 = utext_openUChars(NULL, &label[0], -1, &status);
+			UChar32	ch1 = 0, ch2 = 0;
+			while (ch1 != U_SENTINEL) {
+				ch1 = utext_next32(ut1);
+				ch2 = utext_next32(ut2);
+				if (ch1 != ch2)
+					break;
+			}
+			ut1 = utext_close(ut1);
+			ut2 = utext_close(ut2);
+			if (ch1 == ch2) {
+				rval = *features.first;
+				break;
+			}
+		}
+		++features.first;
+	}
+
+	return rval;
+}
+
+long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 feature, const char* name, int namelength)
+{
+	long		rval = -1;
+	UErrorCode	status = (UErrorCode)0;
+
+	std::pair<gr::FeatureIterator,gr::FeatureIterator>	features = engine->grFont->getFeatures();
+	while (features.first != features.second) {
+		if (*features.first == feature) {
+			std::pair<gr::FeatureSettingIterator,gr::FeatureSettingIterator>
+					settings = engine->grFont->getFeatureSettings(features.first);
+			while (settings.first != settings.second) {
+				gr::utf16	label[128];
+				if (engine->grFont->getFeatureSettingLabel(settings.first, 0x409, &label[0])) {
+					UText* ut1 = utext_openUTF8(NULL, name, namelength, &status);
+					UText* ut2 = utext_openUChars(NULL, &label[0], -1, &status);
+					UChar32	ch1 = 0, ch2 = 0;
+					while (ch1 != U_SENTINEL) {
+						ch1 = utext_next32(ut1);
+						ch2 = utext_next32(ut2);
+						if (ch1 != ch2)
+							break;
+					}
+					ut1 = utext_close(ut1);
+					ut2 = utext_close(ut2);
+					if (ch1 == ch2) {
+						rval = *settings.first;
+						break;
+					}
+				}
+				++settings.first;
+			}
+			break;
+		}
+	}
+
+	return rval;
+
 }
 
 float getGlyphWidth(XeTeXFont font, UInt32 gid)
@@ -825,3 +995,94 @@ int usingGraphite(XeTeXLayoutEngine engine)
 {
 	return engine->grFont != NULL;
 }
+
+int
+findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v)
+	/* s...e is a "feature=setting" string; look for this in the font */
+{
+	while (*s == ' ' || *s == '\t')
+		++s;
+	const char* cp = s;
+	while (cp < e && *cp != '=')
+		++cp;
+	if (cp == e)
+		return 0;
+
+	*f = findGraphiteFeatureNamed(engine, s, cp - s);
+	if (*f == -1)
+		return 0;
+
+	std::string	feature(s, cp - s);
+	++cp;
+	while (cp < e && (*cp == ' ' || *cp == '\t'))
+		++cp;
+	if (cp == e)
+		return 0;
+	std::string	setting(cp, e - cp);
+
+	*v = findGraphiteFeatureSettingNamed(engine, *f, cp, e - cp);
+	if (*v == -1)
+		return 0;
+	
+	return 1;
+/*
+	UErrorCode	status = (UErrorCode)0;
+	
+	UText* ut1 = NULL;
+	UText* ut2 = NULL;
+
+	std::pair<gr::FeatureIterator,gr::FeatureIterator>	features = engine->grFont->getFeatures();
+	while (features.first != features.second) {
+		gr::utf16	label[128];
+		if (engine->grFont->getFeatureLabel(features.first, 0x409, &label[0])) {
+			ut1 = utext_openUTF8(ut1, feature.c_str(), -1, &status);
+			ut2 = utext_openUChars(ut2, &label[0], -1, &status);
+			UChar32	ch1 = 0, ch2 = 0;
+			while (ch1 != U_SENTINEL) {
+				ch1 = utext_next32(ut1);
+				ch2 = utext_next32(ut2);
+				if (ch1 != ch2)
+					break;
+			}
+			if (ch1 == ch2) {
+				*f = *features.first;
+				std::pair<gr::FeatureSettingIterator,gr::FeatureSettingIterator>
+						settings = engine->grFont->getFeatureSettings(features.first);
+				while (settings.first != settings.second) {
+					if (engine->grFont->getFeatureSettingLabel(settings.first, 0x409, &label[0])) {
+						ut1 = utext_close(ut1);
+						ut1 = utext_openUTF8(ut1, setting.c_str(), -1, &status);
+						ut2 = utext_close(ut2);
+						ut2 = utext_openUChars(ut2, &label[0], -1, &status);
+						ch1 = ch2 = 0;
+						while (ch1 != U_SENTINEL) {
+							ch1 = utext_next32(ut1);
+							ch2 = utext_next32(ut2);
+							if (ch1 != ch2)
+								break;
+						}
+						if (ch1 == ch2) {
+							*v = *settings.first;
+							found = 1;
+							break;
+						}
+					}
+					++settings.first;
+				}
+				break;
+			}
+			ut1 = utext_close(ut1);
+			ut2 = utext_close(ut2);
+		}
+		++features.first;
+	}
+	
+	if (ut1 != NULL)
+		utext_close(ut1);
+	if (ut2 != NULL)
+		utext_close(ut2);
+
+	return found;
+*/
+}
+

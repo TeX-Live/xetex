@@ -848,7 +848,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 					cp3 = cp2;
 					if (*cp3 == ';' || *cp3 == ':')
 						--cp3;
-					while (*cp3 == ' ' || *cp3 == '\t')
+					while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
 						--cp3;
 					if (*cp3)
 						++cp3;

@@ -67,6 +67,9 @@ authorization from SIL International.
 @define function findNextGraphiteBreak();
 @define function usingOpenType();
 @define function usingGraphite();
+@define procedure grprintfontname();
+@define function grfontgetnamed();
+@define function grfontgetnamed1();
 
 @define procedure memcpy();
 @define function casttoptr();

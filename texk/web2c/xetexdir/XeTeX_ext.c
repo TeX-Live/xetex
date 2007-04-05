@@ -759,7 +759,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp2;
 				if (*cp3 == ';' || *cp3 == ':')
 					--cp3;
-				while (*cp3 == ' ' || *cp3 == '\t')
+				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
 					--cp3;
 				if (*cp3)
 					++cp3;
@@ -839,7 +839,7 @@ readFeatureNumber(const char* s, const char* e, int* f, int* v)
 static void*
 loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1, const char* faceName)
 {
-	XeTeXLayoutEngine   engine;
+	XeTeXLayoutEngine   engine = NULL;
 	
 	const char*	cp2;
 	const char*	cp3;
@@ -856,6 +856,14 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 	int		featureValues[MAX_GRAPHITE_FEATURES];
 	int		nFeatures = 0;
 	int		id, val;
+
+	/* create a default engine so we can query the font for Graphite features;
+	   because of font caching, it's cheap to discard this and create the real one later */
+	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, extend, slant, 0, NULL, NULL);
+	if (engine == NULL) {
+		deleteFont(font);
+		return NULL;
+	}
 
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
@@ -931,7 +939,8 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 				goto next_option;
 			}
 			
-			if (readFeatureNumber(cp1, cp2, &id, &val)) {
+			if (readFeatureNumber(cp1, cp2, &id, &val)
+			 || findGraphiteFeature(engine, cp1, cp2, &id, &val)) {
 				if (nFeatures < MAX_GRAPHITE_FEATURES) {
 					featureIDs[nFeatures] = id;
 					featureValues[nFeatures] = val;
@@ -971,6 +980,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 	if ((loadedfontflags & FONT_FLAGS_VERTICAL) != 0)
 		setFontLayoutDir(font, 1);
 
+//	deleteLayoutEngine(engine);
 	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue,
 					extend, slant, nFeatures, &featureIDs[0], &featureValues[0]);
 	if (engine == 0)
@@ -1207,7 +1217,11 @@ otfontget(int what, void* pEngine)
 		case XeTeX_count_glyphs:
 			return countGlyphs(fontInst);
 			break;
-			
+		
+		case XeTeX_count_features: /* ie Graphite features */
+			return countGraphiteFeatures(engine);
+			break;
+		
 		case XeTeX_OT_count_scripts:
 			return countScripts(fontInst);
 			break;
@@ -1229,6 +1243,17 @@ otfontget1(int what, void* pEngine, long param)
 		case XeTeX_OT_script_code:
 			return getIndScript(fontInst, param);
 			break;
+		
+		/* for graphite fonts...*/
+		case XeTeX_feature_code:
+			return getGraphiteFeatureCode(engine, param);
+			break;
+		case XeTeX_is_exclusive_feature:
+			return 1;
+			break;
+		case XeTeX_count_selectors:
+			return countGraphiteFeatureSettings(engine, param);
+			break;
 	}
 	return 0;
 }
@@ -1246,6 +1271,14 @@ otfontget2(int what, void* pEngine, long param1, long param2)
 
 		case XeTeX_OT_count_features:
 			return countFeatures(fontInst, param1, param2);
+			break;
+
+		/* for graphite fonts */
+		case XeTeX_selector_code:
+			return getGraphiteFeatureSettingCode(engine, param1, param2);
+			break;
+		case XeTeX_is_default_selector:
+			return getGraphiteFeatureDefaultSetting(engine, param1) == param2;
 			break;
 	}
 	
@@ -1265,6 +1298,50 @@ otfontget3(int what, void* pEngine, long param1, long param2, long param3)
 	}
 	
 	return 0;
+}
+
+void grprintfontname(int what, void* pEngine, int param1, int param2)
+{
+	unsigned short	name[128];	/* graphite API specifies size 128 */
+	int				n = 0;
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
+	switch (what) {
+		case XeTeX_feature_name:
+			getGraphiteFeatureLabel(engine, param1, &name[0]);
+			break;
+		case XeTeX_selector_name:
+			getGraphiteFeatureSettingLabel(engine, param1, param2, &name[0]);
+			break;
+	}
+	while (name[n] != 0 && n < 128)
+		++n;
+	printchars(&name[0], n);
+}
+
+long
+grfontgetnamed(int what, void* pEngine)
+{
+	long	rval = -1;
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
+	switch (what) {
+		case XeTeX_find_feature_by_name:
+			rval = findGraphiteFeatureNamed(engine, (const char*)nameoffile + 1, namelength);
+			break;
+	}
+	return rval;
+}
+
+long
+grfontgetnamed1(int what, void* pEngine, int param)
+{
+	long	rval = -1;
+	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
+	switch (what) {
+		case XeTeX_find_selector_by_name:
+			rval = findGraphiteFeatureSettingNamed(engine, param, (const char*)nameoffile + 1, namelength);
+			break;
+	}
+	return rval;
 }
 
 #define XDV_FLAG_FONTTYPE_ATSUI	0x0001
