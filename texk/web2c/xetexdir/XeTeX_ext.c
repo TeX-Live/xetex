@@ -757,7 +757,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 
 			if (strncmp(cp1, "vertical", 8) == 0) {
 				cp3 = cp2;
-				if (*cp3 == ';' || *cp3 == ':')
+				if (*cp3 == ';' || *cp3 == ':' || *cp3 == ',')
 					--cp3;
 				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
 					--cp3;
