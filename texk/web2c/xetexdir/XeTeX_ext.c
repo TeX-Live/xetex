@@ -851,6 +851,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 
 	double	extend = 1.0;
 	double	slant = 0.0;
+	int		rtl = 0;
 
 	int		featureIDs[MAX_GRAPHITE_FEATURES];	
 	int		featureValues[MAX_GRAPHITE_FEATURES];
@@ -859,7 +860,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 
 	/* create a default engine so we can query the font for Graphite features;
 	   because of font caching, it's cheap to discard this and create the real one later */
-	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, extend, slant, 0, NULL, NULL);
+	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, 0, extend, slant, 0, NULL, NULL);
 	if (engine == NULL) {
 		deleteFont(font);
 		return NULL;
@@ -949,12 +950,26 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 				goto next_option;
 			}
 			
+			if (strncmp(cp1, "rtl", 3) == 0) {
+				cp3 = cp2;
+				if (*cp3 == ';' || *cp3 == ':')
+					--cp3;
+				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
+					--cp3;
+				if (*cp3)
+					++cp3;
+				if (cp3 == cp1 + 3) {
+					rtl = 1;
+					goto next_option;
+				}
+			}
+			
 /*
 			if (strncmp(cp1, "vertical", 8) == 0) {
 				cp3 = cp2;
 				if (*cp3 == ';' || *cp3 == ':')
 					--cp3;
-				while (*cp3 == ' ' || *cp3 == '\t')
+				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
 					--cp3;
 				if (*cp3)
 					++cp3;
@@ -981,7 +996,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 		setFontLayoutDir(font, 1);
 
 //	deleteLayoutEngine(engine);
-	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue,
+	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl,
 					extend, slant, nFeatures, &featureIDs[0], &featureValues[0]);
 	if (engine == 0)
 		deleteFont(font);
@@ -992,10 +1007,11 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 }
 
 static void
-splitFontName(char* name, char** var, char** feat, char** end)
+splitFontName(char* name, char** var, char** feat, char** end, int* index)
 {
 	*var = NULL;
 	*feat = NULL;
+	*index = 0;
 	if (*name == '[') {
 		int	withinFileName = 1;
 #ifdef WIN32
@@ -1013,8 +1029,12 @@ splitFontName(char* name, char** var, char** feat, char** end)
 #ifdef WIN32
 					&& !((name - start == 1) && isalpha(*start))
 #endif
-					)
-					*var = name;
+					) {
+					++name;
+					while (*name >= '0' && *name <= '9')
+						*index = *index * 10 + *name++ - '0';
+					--name;
+				}
 				else if (!withinFileName && *feat == NULL)
 					*feat = name;
 			}
@@ -1052,13 +1072,13 @@ findnativefont(unsigned char* uname, long scaled_size)
 	char*	featString = NULL;
 	PlatformFontRef	fontRef;
 	XeTeXFont	font;
+	int		index = 0;
 
 	loadedfontmapping = NULL;
 	loadedfontflags = 0;
 	loadedfontletterspace = 0;
 
-	splitFontName(name, &var, &feat, &end);
-
+	splitFontName(name, &var, &feat, &end, &index);
 	nameString = xmalloc(var - name + 1);
 	strncpy(nameString, name, var - name);
 	nameString[var - name] = 0;
@@ -1083,15 +1103,12 @@ findnativefont(unsigned char* uname, long scaled_size)
 		if (path == NULL)
 			path = kpse_find_file(nameString + 1, kpse_type1_format, 0);
 		if (path != NULL) {
-			int index = 0;
-			if (varString != NULL) {
-				char* cp;
-				for (cp = varString; *cp && isdigit(*cp); ++cp)
-					index = index * 10 + *cp - '0';
-			}
 			font = createFontFromFile(path, index, scaled_size);
 			if (font != NULL) {
-				rval = loadOTfont(0, font, scaled_size, featString);
+				if (varString && strncmp(varString, "/GR", 3) == 0)
+					rval = loadGraphiteFont(0, font, scaled_size, featString, nameString);
+				else
+					rval = loadOTfont(0, font, scaled_size, featString);
 				if (rval == 0)
 					deleteFont(font);
 			}

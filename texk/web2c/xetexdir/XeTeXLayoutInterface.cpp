@@ -877,9 +877,11 @@ GetFontCharRange_AAT(ATSUStyle style, int reqFirst)
 
 /* Graphite interface */
 
+gr::LayoutEnvironment	layoutEnv;
+
 XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 										const char* name,
-										UInt32 rgbValue,
+										UInt32 rgbValue, int rtl,
 										float extend, float slant,
 										int nFeatures, const int* featureIDs, const int* featureValues)
 {
@@ -897,10 +899,12 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 
 	result->grFont = new XeTeXGrFont(result->font, name);
 
-	result->grSource = new XeTeXGrTextSource();
+	result->grSource = new XeTeXGrTextSource(rtl);
 	result->grSource->setFeatures(nFeatures, featureIDs, featureValues);
 
 	result->grSegment = NULL;
+	
+	layoutEnv.setDumbFallback(true);
 
 	return result;
 }
@@ -913,8 +917,8 @@ makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 		engine->grSegment = NULL;
 	}
 
-	engine->grSource->setText(txtPtr, txtLen, false);
-	engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, NULL);
+	engine->grSource->setText(txtPtr, txtLen);
+	engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, &layoutEnv);
 
 	return engine->grSegment->glyphs().second - engine->grSegment->glyphs().first;
 }
@@ -947,14 +951,14 @@ void
 initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 {
 	if (lbSource == NULL)
-		lbSource = new XeTeXGrTextSource();
+		lbSource = new XeTeXGrTextSource(0);
 
 	if (lbSegment != NULL) {
 		delete lbSegment;
 		lbSegment = NULL;
 	}
 
-	lbSource->setText(txtPtr, txtLen, false);
+	lbSource->setText(txtPtr, txtLen);
 	
 	if (lbEngine != engine) {
 		gr::FeatureSetting	features[64];
@@ -963,7 +967,7 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen
 		lbEngine = engine;
 	}
 	
-	lbSegment = new gr::RangeSegment(engine->grFont, lbSource, NULL);
+	lbSegment = new gr::RangeSegment(engine->grFont, lbSource, &layoutEnv);
 }
 
 int

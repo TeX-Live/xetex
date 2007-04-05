@@ -103,11 +103,10 @@ XeTeXGrFont::getFontMetrics(float * pAscent, float * pDescent, float * pEmSquare
 /* XeTeXGrTextSource class */
 
 void
-XeTeXGrTextSource::setText(const UniChar* iText, size_t iLen, bool iRTL)
+XeTeXGrTextSource::setText(const UniChar* iText, size_t iLen)
 {
 	fTextBuffer = iText;
 	fTextLength = iLen;
-	fRightToLeft = iRTL;
 }
 
 void
@@ -152,18 +151,6 @@ XeTeXGrTextSource::fetch(gr::toffset startChar, size_t n, gr::utf16* buffer)
 	for (size_t i = 0; i < n; ++i)
 		buffer[i] = fTextBuffer[i];
 	return n;
-}
-
-bool
-XeTeXGrTextSource::getRightToLeft(gr::toffset charIndex)
-{
-	return false; // FIXME
-}
-
-unsigned int
-XeTeXGrTextSource::getDirectionDepth(gr::toffset charIndex)
-{
-	return 0; // FIXME
 }
 
 size_t

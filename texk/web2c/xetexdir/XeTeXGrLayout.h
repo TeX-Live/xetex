@@ -128,10 +128,10 @@ class XeTeXGrTextSource
 	: public gr::ITextSource
 {
 public:
-							XeTeXGrTextSource(const UniChar* iText = NULL, size_t iLen = 0, bool iRTL = false)
-								: fTextBuffer(iText)
+							XeTeXGrTextSource(int dirLevel, const UniChar* iText = NULL, size_t iLen = 0)
+								: fDirLevel(dirLevel)
+								, fTextBuffer(iText)
 								, fTextLength(iLen)
-								, fRightToLeft(iRTL)
 								, fNumFeatures(0)
 								, fFeatureSettings(NULL)
 									{ }
@@ -139,7 +139,7 @@ public:
 	virtual					~XeTeXGrTextSource()
 								{ }
 
-	void					setText(const UniChar* iText, size_t iLen, bool iRTL = false);
+	void					setText(const UniChar* iText, size_t iLen);
 
 	void					setFeatures(int nFeatures, const int* featureIDs, const int* featureValues);
 	void					setFeatures(int nFeatures, const gr::FeatureSetting* features);
@@ -164,9 +164,11 @@ public:
 	virtual bool			sameSegment(gr::toffset firstChar, gr::toffset secondChar)
 								{ return true; }
 
-	virtual bool			getRightToLeft(gr::toffset charIndex);
+	virtual bool			getRightToLeft(gr::toffset charIndex)
+								{ return (fDirLevel & 1) != 0; }
 
-	virtual unsigned int	getDirectionDepth(gr::toffset charIndex);
+	virtual unsigned int	getDirectionDepth(gr::toffset charIndex)
+								{ return fDirLevel; }
 
 	virtual float			getVerticalOffset(gr::toffset charIndex)
 								{ return 0.0; }
@@ -179,7 +181,7 @@ public:
 protected:
 	const UInt16*				fTextBuffer;
 	size_t						fTextLength;
-	bool						fRightToLeft;
+	int							fDirLevel;
 	size_t						fNumFeatures;
 	const gr::FeatureSetting*	fFeatureSettings;
 	
