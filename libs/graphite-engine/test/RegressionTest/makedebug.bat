@@ -1,2 +1,2 @@
 cls
-nmake CFG=DEBUG
+nmake CFG=DEBUG -f makefile.vc

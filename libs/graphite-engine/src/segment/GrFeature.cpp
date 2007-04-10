@@ -279,8 +279,8 @@ int GrLangTable::FindIndex(isocode lgcode)
 	if (m_clang == 0)
 		return -1;
 #ifdef _DEBUG
-	size_t nPowerOf2 = 1;
-	while (nPowerOf2 <= m_clang)
+	int nPowerOf2 = 1;
+	while (nPowerOf2 <= signed(m_clang))
 		nPowerOf2 <<= 1;
 	nPowerOf2 >>= 1;
 	//	Now nPowerOf2 is the max power of 2 <= m_clang

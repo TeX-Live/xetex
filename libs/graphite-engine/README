@@ -15,9 +15,9 @@ conventions of those tools. This includes extended support for debug,
 maintanence mode, etc. See the GNU autotools info pages for the appropriate 
 tools for help. See INSTALL for more information on using the build system.
 
-If you have checked this source out of our Subversion repository or a similar 
-version control system you will need to generate the autotools scripts and 
-files (configure, Makefile.in etc) to do this run:
+If you have checked this source out of the Graphite Subversion repository or 
+a similar version control system you will need to generate the autotools 
+scripts and files (configure, Makefile.in etc) to do this run:
 
     autoreconf --install
         

@@ -80,7 +80,7 @@ bool GrClassTable::ReadFromFont(GrIStream & grstrm, int fxdVersion)
 	int cbDiff = lClassesPos - lClassMapStart;
 	for (icls = 0; icls <= m_ccls; icls++)
 	{
-		m_prgichwOffsets[icls] -= cbDiff;
+		m_prgichwOffsets[icls] = data16(int(m_prgichwOffsets[icls]) - cbDiff);
 		gAssert((m_prgichwOffsets[icls] & 0x00000001) == 0);
 		if ((m_prgichwOffsets[icls] & 0x00000001) != 0)
 			return false; // bad table

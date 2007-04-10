@@ -279,7 +279,7 @@ void GrTableManager::LogUnderlying(std::ostream & strmOut, GrCharStream * pchstr
 	//	Unicode
 	strmOut << "Unicode:       ";
 	for (ichw = 0; ichw < cnUtf32; ichw++)
-		LogHexInTable(strmOut, rgnChars[ichw]);
+		LogHexInTable(strmOut, utf16(rgnChars[ichw]));
 	strmOut << "\n";
 	for (int icchRaw = 2; icchRaw <= cchwMaxRawChars; icchRaw++)
 	{
@@ -1027,7 +1027,7 @@ void Segment::LogUnderlyingToSurface(GrTableManager * ptman, std::ostream & strm
 		switch (rgcchwRaw[ichw])
 		{
 		default:
-		case 1:	chw = rgnChars[inUtf32];    chwNext = rgchwChars2[inUtf32];	break;
+		case 1:	chw = utf16(rgnChars[inUtf32]); chwNext = rgchwChars2[inUtf32];	break;
 		case 2:	chw = rgchwChars2[inUtf32]; chwNext = rgchwChars3[inUtf32];	break;
 		case 3:	chw = rgchwChars3[inUtf32]; chwNext = rgchwChars4[inUtf32];	break;
 		case 4:	chw = rgchwChars4[inUtf32]; chwNext = rgchwChars5[inUtf32];	break;
@@ -1052,7 +1052,7 @@ void Segment::LogUnderlyingToSurface(GrTableManager * ptman, std::ostream & strm
 		switch (rgcchwRaw[ichw])
 		{
 		default:
-		case 1:	chw = rgnChars[inUtf32];    chwNext = rgchwChars2[inUtf32];	break;
+		case 1:	chw = utf16(rgnChars[inUtf32]); chwNext = rgchwChars2[inUtf32];	break;
 		case 2:	chw = rgchwChars2[inUtf32]; chwNext = rgchwChars3[inUtf32];	break;
 		case 3:	chw = rgchwChars3[inUtf32]; chwNext = rgchwChars4[inUtf32];	break;
 		case 4:	chw = rgchwChars4[inUtf32]; chwNext = rgchwChars5[inUtf32];	break;
@@ -1482,7 +1482,7 @@ void GrSlotState::SlotAttrsModified(bool * rgfMods, bool fPreJust, int * pccomp,
 			rgfMods[kslatJShrink] = true;
 		if (m_mJStep0 != kNotYetSet && m_mJStep0 != 0)
 			rgfMods[kslatJStep] = true;
-		if (m_nJWeight0 != (byte)(kNotYetSet) &&
+		if (m_nJWeight0 != byte(kNotYetSet) &&
 			m_nJWeight0 != 0 && m_nJWeight0 != 1)
 			rgfMods[kslatJWeight] = true;
 		if (m_mJWidth0 != kNotYetSet && m_mJWidth0 != 0)

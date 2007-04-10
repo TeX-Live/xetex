@@ -97,9 +97,9 @@ public:
 
 		m_islotPosPass = kNotYetSet;
 
-		m_cnUserDefn = cnUserDefn;
-		m_cnCompPerLig = cnCompPerLig;
-		m_cnFeat = cnFeat;
+		m_cnUserDefn = byte(cnUserDefn);
+		m_cnCompPerLig = byte(cnCompPerLig);
+		m_cnFeat = byte(cnFeat);
 		m_prgnVarLenBuf = pnBuf;
 
 		m_fAdvXSet = false; // for transduction logging
@@ -423,11 +423,11 @@ public:
 	{
 	}
 
-	void Initialize(int chw, GrEngine *, GrFeatureValues fval,
+	void Initialize(gid16 chw, GrEngine *, GrFeatureValues fval,
 		int ipass, int ichwSegOffset, int nUnicode = -1);
-	void Initialize(int chw, GrEngine *, GrSlotState * pslotFeat,
+	void Initialize(gid16 chw, GrEngine *, GrSlotState * pslotFeat,
 		int ipass, int ichwSegOffset);
-	void Initialize(int chw, GrEngine *, GrSlotState * pslotFeat,
+	void Initialize(gid16 chw, GrEngine *, GrSlotState * pslotFeat,
 		int ipass);
 
 	void InitializeFrom(GrSlotState * pslot, int ipass);
@@ -545,7 +545,7 @@ public:
 	{
 		if (m_mAdvanceX == kNotYetSet)
 			//	Initialize it from the glyph metric (adjusted for hinting).
-			m_mAdvanceX = GlyphMetricEmUnits(ptman, kgmetAdvWidth);
+			m_mAdvanceX = short(GlyphMetricEmUnits(ptman, kgmetAdvWidth));
 		return m_mAdvanceX;
 	}
 
@@ -553,7 +553,7 @@ public:
 	{
 		if (m_mAdvanceY == kNotYetSet)
 			//	Initialize it from the glyph metric (adjusted for hinting).
-			m_mAdvanceY = GlyphMetricEmUnits(ptman, kgmetAdvHeight);
+			m_mAdvanceY = short(GlyphMetricEmUnits(ptman, kgmetAdvHeight));
 		return m_mAdvanceY;
 	}
 
@@ -566,7 +566,7 @@ public:
 			if (m_srAttachTo == 0)
 				return 0;
 			else
-				m_mAttachAtX = AttachRoot(psstrm)->AdvanceX(ptman); // attach on the right
+				m_mAttachAtX = short(AttachRoot(psstrm)->AdvanceX(ptman)); // attach on the right
 		}
 		return m_mAttachAtX;
 	}
@@ -610,53 +610,53 @@ public:
 
 	void SetAdvanceX(int mVal)
 	{
-		Assert(mVal < 0xFFFF); m_mAdvanceX = mVal & 0xFFFF; m_fShiftMod = true;
+		Assert(mVal < 0xFFFF); m_mAdvanceX = short(mVal & 0xFFFF); m_fShiftMod = true;
 		m_fAdvXSet = true;	// for transduction logging
 	}
 	void SetAdvanceY(int mVal)
 	{
-		Assert(mVal < 0xFFFF); m_mAdvanceY = mVal & 0xFFFF; m_fShiftMod = true;
+		Assert(mVal < 0xFFFF); m_mAdvanceY = short(mVal & 0xFFFF); m_fShiftMod = true;
 		m_fAdvYSet = true;	// for transduction logging
 	}
 	void SetShiftX(int mVal) {
-		Assert(mVal < 0xFFFF); m_mShiftX = mVal & 0xFFFF; m_fShiftMod = true; }
+		Assert(mVal < 0xFFFF); m_mShiftX = short(mVal & 0xFFFF); m_fShiftMod = true; }
 	void SetShiftY(int mVal) {
-		Assert(mVal < 0xFFFF); m_mShiftY = mVal & 0xFFFF; m_fShiftMod = true; }
+		Assert(mVal < 0xFFFF); m_mShiftY = short(mVal & 0xFFFF); m_fShiftMod = true; }
 
 	void SetAttachTo(int srVal)
 	{
 		Assert(srVal < 0xFFFF);
-		m_srAttachTo = srVal & 0xFFFF;
+		m_srAttachTo = short(srVal & 0xFFFF);
 		m_fAttachMod = true;
 	}
 	void SetAttachLevel(int nVal) {
-		Assert(nVal < 0xFFFF); m_nAttachLevel = nVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(nVal < 0xFFFF); m_nAttachLevel = short(nVal & 0xFFFF); m_fAttachMod = true; }
 
 	void SetAttachAtX(int mVal)
 	{
 		Assert(mVal < 0xFFFF);
-		m_mAttachAtX = mVal & 0xFFFF;
+		m_mAttachAtX = short(mVal) & 0xFFFF;
 		m_fAttachMod = true;
 	}
 	void SetAttachAtY(int mVal) {
-		Assert(mVal < 0xFFFF); m_mAttachAtY = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachAtY = short(mVal & 0xFFFF); m_fAttachMod = true; }
 	void SetAttachAtGpoint(int nVal) {
-		m_nAttachAtGpoint = nVal; m_fAttachMod = true; }
+		m_nAttachAtGpoint = short(nVal); m_fAttachMod = true; }
 	void SetAttachAtXOffset(int mVal) {
-		Assert(mVal < 0xFFFF); m_mAttachAtXOffset = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachAtXOffset = short(mVal & 0xFFFF); m_fAttachMod = true; }
 	void SetAttachAtYOffset(int mVal) {
-		Assert(mVal < 0xFFFF); m_mAttachAtYOffset = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachAtYOffset = short(mVal & 0xFFFF); m_fAttachMod = true; }
 
 	void SetAttachWithX(int mVal)	{
-		Assert(mVal < 0xFFFF); m_mAttachWithX = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachWithX = short(mVal & 0xFFFF); m_fAttachMod = true; }
 	void SetAttachWithY(int mVal) {
-		Assert(mVal < 0xFFFF); m_mAttachWithY = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachWithY = short(mVal & 0xFFFF); m_fAttachMod = true; }
 	void SetAttachWithGpoint(int nVal) {
-		m_nAttachWithGpoint = nVal; m_fAttachMod = true; }
+		m_nAttachWithGpoint = short(nVal); m_fAttachMod = true; }
 	void SetAttachWithXOffset(int mVal) {
-		Assert(mVal < 0xFFFF); m_mAttachWithXOffset = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachWithXOffset = short(mVal & 0xFFFF); m_fAttachMod = true; }
 	void SetAttachWithYOffset(int mVal) {
-		Assert(mVal < 0xFFFF); m_mAttachWithYOffset = mVal & 0xFFFF; m_fAttachMod = true; }
+		Assert(mVal < 0xFFFF); m_mAttachWithYOffset = short(mVal & 0xFFFF); m_fAttachMod = true; }
 
 	void SetCompRefSlot(GrTableManager * ptman, int i, GrSlotState * pslotComp);
 
@@ -666,18 +666,18 @@ public:
 	void SetDirectionality(DirCode dirc)	{ m_dirc = dirc; }
 	void SetDirLevel(int n)					{ m_nDirLevel = n; }
 
-	void SetMeasureSol(int mVal)			{ m_mMeasureSol = mVal; }
-	void SetMeasureEol(int mVal)			{ m_mMeasureEol = mVal; }
+	void SetMeasureSol(int mVal)			{ m_mMeasureSol = short(mVal); }
+	void SetMeasureEol(int mVal)			{ m_mMeasureEol = short(mVal); }
 
-	void SetJStretch(int mVal)				{ m_mJStretch0 = mVal; }
-	void SetJShrink(int mVal)				{ m_mJShrink0 = mVal; }
-	void SetJStep(int mVal)					{ m_mJStep0 = mVal; }
-	void SetJWeight(int nVal)				{ m_nJWeight0 = nVal; }
+	void SetJStretch(int mVal)				{ m_mJStretch0 = short(mVal); }
+	void SetJShrink(int mVal)				{ m_mJShrink0 = short(mVal); }
+	void SetJStep(int mVal)					{ m_mJStep0 = short(mVal); }
+	void SetJWeight(int nVal)				{ m_nJWeight0 = byte(nVal); }
 	void SetJWidth(int mVal)				{ m_mJWidth0 = mVal; }
 	void AddJWidthToAdvance(GrTableManager * ptman)
 	{
 		// Don't change m_fShiftMod.
-		m_mAdvanceX = m_mJWidth0 + AdvanceX(ptman); // make sure it is calculated
+		m_mAdvanceX = short(m_mJWidth0 + AdvanceX(ptman)); // make sure it is calculated
 		m_mJWidth0 = 0;
 		m_fAdvXSet = true;	// for transduction logging
 	}

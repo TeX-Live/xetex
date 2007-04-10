@@ -49,6 +49,7 @@ class Segment
 	friend class SegmentPainter;
 	friend class GlyphInfo;
 	friend class GlyphIterator;
+	friend class GlyphSetIterator;
 
 public:
 	// Static methods
@@ -104,7 +105,7 @@ public:
 	//GrResult changeLineEnds(bool fNewStart, bool fNewEnd);
 
 	std::pair<GlyphIterator, GlyphIterator> glyphs();
-	std::pair<GlyphIterator, GlyphIterator> charToGlyphs(toffset ich);
+	std::pair<GlyphSetIterator, GlyphSetIterator> charToGlyphs(toffset ich);
 
 	// OBSOLETE:
 	GrResult GetCharData(int cchMax, utf16 * prgch, int * pcchRet);

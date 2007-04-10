@@ -1181,7 +1181,7 @@ bool GrEngine::ReadSilfTable(GrIStream & grstrm, long lTableStart, int iSubTable
 		grstrm.SetPositionInFont(lPassBlockPos);
 	else
 		//	Otherwise assume that's where we are!
-		Assert(lPassBlockPos = -1);
+		Assert(lPassBlockPos == -1);
 
 	//	offsets to passes, relative to the start of this subtable;
 	//	note that we read (cPasses + 1) of these
@@ -1196,7 +1196,7 @@ bool GrEngine::ReadSilfTable(GrIStream & grstrm, long lTableStart, int iSubTable
 		grstrm.SetPositionInFont(lPseudosPos);
 	else
 		//	Otherwise assume that's where we are!
-		Assert(lPseudosPos = -1);
+		Assert(lPseudosPos == -1);
 
 	//	number of pseudo-glyphs and search constants
 	short snTmp;
@@ -1452,7 +1452,7 @@ GrResult GrEngine::RunUsingEmpty(Segment * psegNew, Font * pfont,
 	int cComponentsSave = m_cComponents;
 	int cnUserDefnSave = m_cnUserDefn;
 	int cnCompPerLigSave = m_cnCompPerLig;
-	int grfsdcSave = m_grfsdc;
+	unsigned int grfsdcSave = m_grfsdc;
 	gid16 chwLBGlyphIDSave = m_chwLBGlyphID;
 	int cpsdSave = m_cpsd;
 	int dipsdInitSave = m_dipsdInit;
@@ -1543,9 +1543,9 @@ gid16 GrEngine::GetGlyphIDFromUnicode(int nUnicode)
 	//	Otherwise, get the glyph ID from the font's cmap.
 
 	if (m_pCmap_3_10)
-		return TtfUtil::Cmap310Lookup(m_pCmap_3_10, nUnicode);
+		return gid16(TtfUtil::Cmap310Lookup(m_pCmap_3_10, nUnicode));
 	else if (m_pCmap_3_1)
-		return TtfUtil::Cmap31Lookup(m_pCmap_3_1, nUnicode);
+		return gid16(TtfUtil::Cmap31Lookup(m_pCmap_3_1, nUnicode));
 	else
 		return 0;
 }
@@ -1600,7 +1600,7 @@ gid16 GrEngine::MapToPseudo(int nUnicode)
 ----------------------------------------------------------------------------------------------*/
 gid16 GrEngine::ActualGlyphForOutput(gid16 chwGlyphID)
 {
-	gid16 chwActual = GlyphAttrValue(chwGlyphID, m_chwPseudoAttr);
+	gid16 chwActual = gid16(GlyphAttrValue(chwGlyphID, m_chwPseudoAttr));
 	if (chwActual == 0)
 		return chwGlyphID; // not a pseudo, we're already working with the actual glyph ID
 	else
@@ -1640,7 +1640,7 @@ std::wstring GrEngine::StringFromNameTable(int nLangID, int nNameID)
 		stuName.assign((const wchar_t*)pchwName, cchw);
 	#else
 		wchar_t * pchwName32 = new wchar_t[cchw+1]; // lSize - byte count for Uni str
-		for (int i=0; i<=(signed)cchw;i++) {
+		for (int i = 0; i <= signed(cchw); i++) {
 			pchwName32[i] = pchwName[i];
 		}
 		stuName.assign(pchwName32, cchw);

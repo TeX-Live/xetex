@@ -42,14 +42,14 @@ namespace gr
 	Initialize slots.
 ----------------------------------------------------------------------------------------------*/
 //	standard for pass 0 slots
-void GrSlotState::Initialize(int chw, GrEngine * pgreng,
+void GrSlotState::Initialize(gid16 chw, GrEngine * pgreng,
 	GrFeatureValues fval, int ipass, int ichwSegOffset, int nUnicode)
 {
 	Assert(ipass == 0);
 	m_chwGlyphID = chw;
 	m_chwActual = kInvalidGlyph;
 	m_xysGlyphWidth = -1;
-	m_bStyleIndex = fval.m_nStyleIndex;
+	m_bStyleIndex = byte(fval.m_nStyleIndex);
 	u_intslot nullSlot;
 	nullSlot.pslot = NULL;
 	std::fill_n(PUserDefnBuf(), m_cnUserDefn, nullSlot);
@@ -82,7 +82,7 @@ void GrSlotState::Initialize(int chw, GrEngine * pgreng,
 }
 
 //	line-break slots
-void GrSlotState::Initialize(int chw, GrEngine * pgreng,
+void GrSlotState::Initialize(gid16 chw, GrEngine * pgreng,
 	GrSlotState * pslotFeat, int ipass, int ichwSegOffset)
 {
 	m_chwGlyphID = chw;
@@ -103,7 +103,7 @@ void GrSlotState::Initialize(int chw, GrEngine * pgreng,
 }
 
 //	for inserting new slots after pass 0 (under-pos and unicode are irrelevant)
-void GrSlotState::Initialize(int chw, GrEngine * pgreng,
+void GrSlotState::Initialize(gid16 chw, GrEngine * pgreng,
 	GrSlotState * pslotFeat, int ipass)
 {
 	m_chwGlyphID = chw;
@@ -850,13 +850,13 @@ void GrSlotState::HandleModifiedPosition(GrTableManager * ptman,
 				if (m_mAttachAtX == kNotYetSet && m_nAttachAtGpoint == kNotYetSet)
 					m_mAttachAtX = 0;
 				if (m_mAttachWithX == kNotYetSet && m_nAttachWithGpoint == kNotYetSet)
-					m_mAttachWithX = AdvanceX(ptman);
+					m_mAttachWithX = short(AdvanceX(ptman));
 			}
 			else
 			{
 				//	The root is on the left, the leaf is on the right.
 				if (m_mAttachAtX == kNotYetSet && m_nAttachAtGpoint == kNotYetSet)
-					m_mAttachAtX = pslotNewRoot->AdvanceX(ptman);
+					m_mAttachAtX = short(pslotNewRoot->AdvanceX(ptman));
 				if (m_mAttachWithX == kNotYetSet && m_nAttachWithGpoint == kNotYetSet)
 					m_mAttachWithX = 0;
 			}

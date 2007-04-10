@@ -24,6 +24,7 @@ Description:
 // It's okay to use functions that were declared deprecated by VS 2005:
 #define _CRT_SECURE_NO_DEPRECATE
 #pragma warning(disable: 4996) // warning: function was declared deprecated
+#pragma warning(disable: 4702) // unreachable code
 
 #include "GrCommon.h"
 

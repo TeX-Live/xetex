@@ -296,7 +296,7 @@ public:
 	// Script directions, Verticle, LTR, RTL etc see enum ScriptDirCode
 	// the posibilities.  This returns a bit set where more than one scripts may 
 	// be set, it's up to the app to decide which is the prefered direction to use.
-	ScriptDirCode getSupportedScriptDiretcions() const throw();
+	ScriptDirCode getSupportedScriptDirections() const throw();
 	
 	// Debugging:
 	//static bool DbgCheckFontCache();

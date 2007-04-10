@@ -420,7 +420,7 @@ protected:
 							// check sum as a unique identifer
 
 	int m_nScriptTag;		// from the pertinent writing system; currently not used
-	int m_grfsdc;			// supported script directions
+	unsigned int m_grfsdc;	// supported script directions
 
 	bool m_fRightToLeft;	// overall writing-system direction
 

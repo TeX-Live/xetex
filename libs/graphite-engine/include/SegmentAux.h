@@ -30,90 +30,165 @@ class GrSlotOutput;
 class IGrJustifier;
 class GlyphInfo;
 
+
 /*----------------------------------------------------------------------------------------------
-	The GlyphIterator class allows the Graphite client to iterate over a list of glyphs
-	for the segment, or a list of glyphs for a character.
+	The GlyphSetIterator class allows the Graphite client to iterate over a non-contiguous
+	set of glyphs for the segment, this is almost always the set of glyphs for a character.
+----------------------------------------------------------------------------------------------*/
+class GlyphSetIterator
+: public std::iterator<std::random_access_iterator_tag, gr::GlyphInfo>
+{
+public:
+	friend class GlyphInfo;
+	friend class Segment;
+ 
+	// Segment containing the glyphs being iterated over.
+	const Segment *	_seg_ptr;
+
+	// Sometimes, in the case of character-to-glyph look-ups or attached
+	// children, we need to represent a non-contiguous list; in these cases
+	// we first map through a vector of output-slot objects into the actual 
+	// glyph-info store.
+	std::vector<int>::const_iterator _itr;
+#if !defined(NDEBUG)
+	std::vector<int>::const_iterator _begin;
+	std::vector<int>::const_iterator _end;
+#endif	
+
+	// Default constructor--no output-slot mapping:
+	GlyphSetIterator() throw (): _seg_ptr(0), _itr(std::vector<int>::const_iterator())
+#if !defined(NDEBUG)
+	, _begin(std::vector<int>::const_iterator()), 
+	_end(std::vector<int>::const_iterator())
+#endif	
+	 {}
+
+protected:
+	// Constructor that includes output-slot mapping list, used for non-contiguous lists:
+	GlyphSetIterator(Segment & seg, size_t islout, const std::vector<int> & vislout)
+	  : _seg_ptr(&seg), _itr(vislout.begin() + islout)
+#if !defined(NDEBUG)
+	, _begin(vislout.begin()), _end(vislout.end())
+#endif	
+	  {}
+
+public:
+	// Forward iterator requirements.
+	reference	          operator*() const;
+	pointer		          operator->() const		{ return &(operator*()); }
+	GlyphSetIterator	& operator++() throw()		{ GrAssert(_itr < _end); ++_itr; return *this; }
+	GlyphSetIterator	  operator++(int) throw()	{ GlyphSetIterator tmp = *this; operator++(); return tmp; }
+
+	// Bidirectional iterator requirements
+	GlyphSetIterator	& operator--() throw()		{ GrAssert(_begin <= _itr); --_itr; return *this; }
+	GlyphSetIterator	  operator--(int) throw()	{ GlyphSetIterator tmp = *this; operator--(); return tmp; }
+
+	// Random access iterator requirements
+	reference	          operator[](difference_type n) const		{ return *operator+(n); }
+	GlyphSetIterator	& operator+=(difference_type n)	throw()		{ _itr += n; GrAssert(_itr <= _end); return *this; }
+	GlyphSetIterator	  operator+(difference_type n) const throw()	{ GlyphSetIterator r = *this; return r += n; }
+	GlyphSetIterator	& operator-=(difference_type n)	throw()		{ operator+=(-n); return *this; }
+	GlyphSetIterator	  operator-(difference_type n) const throw()	{ GlyphSetIterator r = *this; return r += -n; }
+ 
+	// Relational operators.
+  	// Forward iterator requirements
+	bool	operator==(const GlyphSetIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr == rhs._itr; }
+	bool	operator!=(const GlyphSetIterator & rhs) const throw()	{ return !(*this == rhs); }
+
+	// Random access iterator requirements
+	bool	operator<(const GlyphSetIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr < rhs._itr; }
+	bool	operator>(const GlyphSetIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr > rhs._itr; }
+	bool	operator<=(const GlyphSetIterator & rhs) const throw()	{ return !(*this > rhs); }
+	bool	operator>=(const GlyphSetIterator & rhs) const throw()	{ return !(*this < rhs); }
+
+	difference_type operator-(const GlyphSetIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr - rhs._itr; }
+ 
+private:
+#if !defined(NDEBUG)
+	bool isComparable(const GlyphSetIterator & rhs) const throw ()
+	{
+		return (_seg_ptr == rhs._seg_ptr && _begin == rhs._begin && _end == rhs._end);
+	}
+#endif
+};
+
+inline GlyphSetIterator operator+(const GlyphSetIterator::difference_type n, const GlyphSetIterator & rhs)
+{
+	return rhs + n;
+}
+
+
+/*----------------------------------------------------------------------------------------------
+	The GlyphIterator class allows the Graphite client to iterate over a contiguous
+	range of glyphs for the segment.
 ----------------------------------------------------------------------------------------------*/
 class GlyphIterator
 : public std::iterator<std::random_access_iterator_tag, gr::GlyphInfo>
 {
 public:
 	friend class GlyphInfo;
-	friend class Segment;
+ 	friend class Segment;
 
-	// Index--if there there is a non-contiguous list (m_pvislout) then this is an index
-	// into that, (in which case it functions as an 'islout'). Otherwise it is simply an index 
-	// into the glyph stream (ie, an 'iginf')
-	size_t m_index;
-
-	// Segment containing the glyphs being iterated over.
-	const Segment *	m_pseg;
-
-	// Sometimes, in the case of character-to-glyph look-ups or attached
-	// children, we need to represent a non-contiguous list; in these cases
-	// we first map through a vector of output-slot objects into the actual 
-	// glyph-info store.
-	const std::vector<int> * m_pvislout;
+	// Pointers into the glyph infor store
+	GlyphInfo * _itr;
+#if !defined(NDEBUG)
+	GlyphInfo * _begin;
+	GlyphInfo * _end;
+#endif	
 
 	// Default constructor--no output-slot mapping:
-	GlyphIterator() throw (): m_index(0), m_pseg(NULL), m_pvislout(NULL) {}
+	GlyphIterator() throw (): _itr(0)
+#if !defined(NDEBUG)
+	, _begin(0), _end(0)
+#endif	
+	 {}
+
+	explicit GlyphIterator(const GlyphSetIterator &);
 
 protected:
-	// Constructor with no output-slot mapping:
-	GlyphIterator(Segment * const pseg, size_t iginf) throw()
-	  : m_index(iginf), m_pseg(pseg), m_pvislout(NULL)
-	{
-		GrAssert(pseg);
-		GrAssert(iginf <= seqSize());
-	}
-
-	// Constructor that includes output-slot mapping list, used for non-contiguous lists:
-	GlyphIterator(Segment * const pseg, size_t islout, const std::vector<int> * pvislout)
-	  : m_index(islout), m_pseg(pseg), m_pvislout(pvislout)
-	{
-		GrAssert(pseg);
-		GrAssert(pvislout);
-		GrAssert(islout <= pvislout->size());
-		GrAssert(pvislout->size() <= seqSize());
-	}
+	// Constructor
+	GlyphIterator(Segment & seg, size_t iginf);
 
 public:
 	// Forward iterator requirements.
-	reference	  operator*() const		{ return operator[](0); }
+	reference	  operator*() const		{ GrAssert(_begin <= _itr && _itr < _end); return *_itr; }
 	pointer		  operator->() const		{ return &(operator*()); }
-	GlyphIterator	& operator++() throw()		{ GrAssert(m_index < seqSize()); ++m_index; return *this; }
+	GlyphIterator	& operator++() throw();
 	GlyphIterator	  operator++(int) throw()	{ GlyphIterator tmp = *this; operator++(); return tmp; }
 
 	// Bidirectional iterator requirements
-	GlyphIterator	& operator--() throw()		{ GrAssert(0 < m_index); --m_index; return *this; }
+	GlyphIterator	& operator--() throw();
 	GlyphIterator	  operator--(int) throw()	{ GlyphIterator tmp = *this; operator--(); return tmp; }
 
 	// Random access iterator requirements
 	reference	  operator[](difference_type n) const;
-	GlyphIterator	& operator+=(difference_type n)	throw()		{ m_index += n; GrAssert(m_index <= seqSize()); return *this; }
+	GlyphIterator	& operator+=(difference_type n)	throw();
 	GlyphIterator	  operator+(difference_type n) const throw()	{ GlyphIterator r = *this; return r += n; }
 	GlyphIterator	& operator-=(difference_type n)	throw()		{ operator+=(-n); return *this; }
 	GlyphIterator	  operator-(difference_type n) const throw()	{ GlyphIterator r = *this; return r += -n; }
  
 	// Relational operators.
   	// Forward iterator requirements
-	bool	operator==(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return m_index == rhs.m_index; }
+	bool	operator==(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr == rhs._itr; }
 	bool	operator!=(const GlyphIterator & rhs) const throw()	{ return !(*this == rhs); }
 
 	// Random access iterator requirements
-	bool	operator<(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return m_index < rhs.m_index; }
-	bool	operator>(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return m_index > rhs.m_index; }
+	bool	operator<(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr < rhs._itr; }
+	bool	operator>(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return _itr > rhs._itr; }
 	bool	operator<=(const GlyphIterator & rhs) const throw()	{ return !(*this > rhs); }
 	bool	operator>=(const GlyphIterator & rhs) const throw()	{ return !(*this < rhs); }
 
-	difference_type operator-(const GlyphIterator & rhs) const throw()	{ GrAssert(isComparable(rhs)); return m_index - rhs.m_index; }
+	difference_type operator-(const GlyphIterator & rhs) const throw();
  
 private:
+	static std::vector<int> _empty;
+	
+#if !defined(NDEBUG)
 	bool isComparable(const GlyphIterator & rhs) const throw ()
 	{
-		return (m_pseg == rhs.m_pseg && m_pvislout == rhs.m_pvislout);
+		return (_begin == rhs._begin && _end == rhs._end);
 	}
-	size_t seqSize() const throw();
+#endif
 };
 
 inline GlyphIterator operator+(const GlyphIterator::difference_type n, const GlyphIterator & rhs)
@@ -167,7 +242,7 @@ public:
 	bool isAttached() const throw();
 	gr::GlyphIterator attachedClusterBase() const throw();
 	float attachedClusterAdvance() const throw();
-	std::pair<gr::GlyphIterator, gr::GlyphIterator> attachedClusterGlyphs() const;
+	std::pair<gr::GlyphSetIterator, gr::GlyphSetIterator> attachedClusterGlyphs() const;
 
 	float maxStretch(size_t level);
 	float maxShrink(size_t level);
@@ -184,12 +259,22 @@ public:
 
 	bool erroneous();
 
+	const Segment & segment() const throw();
+	Segment & segment() throw();
+
 protected:
 	Segment * m_pseg;
 	GrSlotOutput * m_pslout;
-	size_t m_islout;
+	int m_islout;		// signed, so it can return kInvalid
 };
 
+inline Segment & GlyphInfo::segment() throw () {
+	return *m_pseg;
+}
+
+inline const Segment & GlyphInfo::segment() const throw () {
+	return *m_pseg;
+}
 
 /*----------------------------------------------------------------------------------------------
 	The GlyphInfo class provides access to details about a single glyph within a segment.

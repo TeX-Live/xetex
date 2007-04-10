@@ -47,8 +47,8 @@ FileFont::FileFont()
 	m_fItalic = false;
 	m_fBold = false;
 	// colors are not used
-	m_clrFore = kclrBlack;
-	m_clrBack = kclrTransparent;
+	m_clrFore = (unsigned long)kclrBlack;
+	m_clrBack = (unsigned long)kclrTransparent;
 }
 
 FileFont::FileFont(FILE * file, float pointSize, 
@@ -127,8 +127,8 @@ FileFont::initializeFromFace()
 	m_fItalic = false;
 	m_fBold = false;
 	// colors are not used
-	m_clrFore = kclrBlack;
-	m_clrBack = kclrTransparent;
+	m_clrFore = (unsigned long)kclrBlack;
+	m_clrBack = (unsigned long)kclrTransparent;
 
 	if (m_file)
 	{

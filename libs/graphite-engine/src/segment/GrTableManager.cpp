@@ -873,7 +873,7 @@ void GrTableManager::InitSegmentAsEmpty(Segment * psegNew, Font * pfont,
 	if (pbNextSegDat)
 	{
 		byte * pb = pbNextSegDat;
-		*pb++ = lbEnd;
+		*pb++ = byte(lbEnd);
 		*pb++ = kdircNeutral;
 		*pb++ = kdircNeutral;
 		*pb++ = 0;
@@ -1132,7 +1132,7 @@ void GrTableManager::InitializeForNextSeg(Segment * pseg,
 	if (islotSurfaceLim == -1)
 		islotSurfaceLim = OutputStream(m_cpass - 1)->FinalSegLim();
 
-	*pb++ = (byte)lbEnd;
+	*pb++ = byte(lbEnd);
 
 	//	Find previous strong and terminator directionality codes.
 
@@ -1152,8 +1152,8 @@ void GrTableManager::InitializeForNextSeg(Segment * pseg,
 			break;
 		}
 	}
-	*pb++ = (byte)dircStrong;
-	*pb++ = (byte)dircTerm;
+	*pb++ = byte(dircStrong);
+	*pb++ = byte(dircTerm);
 
 	//	Record how much of each pass to redo in the next segment.
 	//	The basic algorithm is described in the "WR Data Transform Engine" document.
@@ -1303,10 +1303,11 @@ LBackupPC:
 	}
 
 	Assert(cslotPreLB >= 0);
+	Assert(cslotPreLB < 0xFF);
 
-	*pb++ = cslotPreLB;
+	*pb++ = byte(cslotPreLB);
 	for (ipass = 0; ipass < m_cpass; ipass++)
-		*pb++ = vcslotSkipOffsets[ipass];
+		*pb++ = byte(vcslotSkipOffsets[ipass]);
 
 	*pcbNextSegDat = 4 + m_cpass;
 
@@ -1703,7 +1704,7 @@ GrTableManager * EngineState::TableManager()
 
 //	standard for pass 0 slots
 void EngineState::NewSlot(
-	int gID, GrFeatureValues fval, int ipass, int ichwSegOffset, int nUnicode,
+	gid16 gID, GrFeatureValues fval, int ipass, int ichwSegOffset, int nUnicode,
 	GrSlotState ** ppslotRet)
 {
 	NextSlot(ppslotRet);
@@ -1712,7 +1713,7 @@ void EngineState::NewSlot(
 
 //	line-break slots
 void EngineState::NewSlot(
-	int gID, GrSlotState * pslotFeat, int ipass, int ichwSegOffset,
+	gid16 gID, GrSlotState * pslotFeat, int ipass, int ichwSegOffset,
 	GrSlotState ** ppslotRet)
 {
 	NextSlot(ppslotRet);
@@ -1721,7 +1722,7 @@ void EngineState::NewSlot(
 
 //	for inserting new slots after pass 0 (under-pos and unicode are irrelevant)
 void EngineState::NewSlot(
-	int gID, GrSlotState * pslotFeat, int ipass,
+	gid16 gID, GrSlotState * pslotFeat, int ipass,
 	GrSlotState ** ppslotRet)
 {
 	NextSlot(ppslotRet);

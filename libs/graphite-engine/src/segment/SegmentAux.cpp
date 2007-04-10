@@ -67,7 +67,7 @@ gr::GlyphIterator GlyphInfo::attachedClusterBase() const throw()
 	const int islout = m_pslout->ClusterBase();
 
 	// Since we are not passing an array, the constructor expects a ginf index, not a slout index.
-	return GlyphIterator(m_pseg, ((islout >= 0) ? islout : m_islout) - m_pseg->m_isloutGinf0);
+	return GlyphIterator(*m_pseg, ((islout >= 0) ? islout : m_islout) - m_pseg->m_isloutGinf0);
 }
 
 float GlyphInfo::attachedClusterAdvance() const throw()
@@ -75,13 +75,13 @@ float GlyphInfo::attachedClusterAdvance() const throw()
 	return m_pslout->ClusterAdvance();
 }
 
-std::pair<gr::GlyphIterator, gr::GlyphIterator> GlyphInfo::attachedClusterGlyphs() const
+std::pair<gr::GlyphSetIterator, gr::GlyphSetIterator> GlyphInfo::attachedClusterGlyphs() const
 {
 	return std::make_pair(
-		GlyphIterator(m_pseg, 0, 
-			&(m_pslout->m_visloutClusterMembers)), 
-		GlyphIterator(m_pseg, m_pslout->m_visloutClusterMembers.size(),
-			&(m_pslout->m_visloutClusterMembers)));
+		GlyphSetIterator(*m_pseg, 0, 
+			m_pslout->m_visloutClusterMembers), 
+		GlyphSetIterator(*m_pseg, m_pslout->m_visloutClusterMembers.size(),
+			m_pslout->m_visloutClusterMembers));
 }
 
 size_t GlyphInfo::logicalIndex()
@@ -172,7 +172,7 @@ float GlyphInfo::stretchStep(size_t level)
 
 byte GlyphInfo::justWeight(size_t level)
 {
-	return m_pslout->JustWeight((int)level);
+	return byte(m_pslout->JustWeight((int)level));
 }
 
 float GlyphInfo::justWidth(size_t level)
@@ -221,28 +221,61 @@ bool GlyphInfo::erroneous()
 //:>	GlyphIterator methods
 //:>********************************************************************************************
 
+	// Constructor
+GlyphIterator::GlyphIterator(Segment & seg, size_t iginf)
+: _itr(seg.m_prgginf + iginf)
+#if !defined(NDEBUG)
+, _begin(seg.m_prgginf), 
+_end(seg.m_prgginf + seg.m_cginf)
+#endif	
+{}
+
+GlyphIterator::GlyphIterator(const GlyphSetIterator &set_itr)
+: _itr(set_itr->segment().m_prgginf + set_itr->logicalIndex())
+#if !defined(NDEBUG)
+, _begin(set_itr->segment().m_prgginf), 
+_end(set_itr->segment().m_prgginf + set_itr->segment().m_cginf)
+#endif	
+{}
+
+GlyphIterator & GlyphIterator::operator++() throw() {
+	GrAssert(_itr < _end); 
+	++_itr; 
+	return *this;
+}
+
+GlyphIterator & GlyphIterator::operator--() throw() { 
+	GrAssert(_begin <= _itr); 
+	--_itr; 
+	return *this;
+}
+
+GlyphIterator & GlyphIterator::operator+=(difference_type n) throw() { 
+	_itr += n; 
+	GrAssert(_itr <= _end); 
+	return *this; 
+}
+
+GlyphIterator::difference_type GlyphIterator::operator-(const GlyphIterator & rhs) const throw()	{ 
+	GrAssert(isComparable(rhs)); 
+	return _itr - rhs._itr; 
+}
+ 
+GlyphIterator::reference	  GlyphIterator::operator[](difference_type n) const { 
+	return _itr[n]; 
+}
+
 /*----------------------------------------------------------------------------------------------
  Dereference the iterator, returning a GlyphInfo object.
 ----------------------------------------------------------------------------------------------*/
 
-GlyphIterator::reference GlyphIterator::operator[](GlyphIterator::difference_type n) const
+GlyphSetIterator::reference GlyphSetIterator::operator*() const
 {
-	const size_t index = m_index + n; // index may be either an islout or a iginf
-
-	assert(index <= seqSize());
-	int iginf = m_pvislout ?
-		(*m_pvislout)[index] - m_pseg->m_isloutGinf0 :	// transform from output-slot to glyph-info
+	assert(_seg_ptr);
+	assert(_begin <= _itr && _itr < _end);
 														// in the case of a non-contiguous list
-		index;
-	return m_pseg->m_prgginf[iginf];
+	return _seg_ptr->m_prgginf[(*_itr) - _seg_ptr->m_isloutGinf0];
 }
 
-/*----------------------------------------------------------------------------------------------
- Return the size of the set of GlyphInfo objects over which this iterators ranges.
-----------------------------------------------------------------------------------------------*/
-size_t GlyphIterator::seqSize() const throw()
-{
-	return m_pvislout ? m_pvislout->size() : m_pseg->m_cginf;
-}
 
 } // namespace gr

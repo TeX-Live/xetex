@@ -8,6 +8,7 @@
 #pragma warning(disable: 4065) // Switch statement contains default but no case.
 #pragma warning(disable: 4097) // typedef-name 'xxx' used as synonym for class-name 'yyy'.
 #pragma warning(disable: 4100) // unreferenced formal parameter.
+#pragma warning(disable: 4127) // conditional expression is constant
 #pragma warning(disable: 4192) // automatically excluding while importing.
 #pragma warning(disable: 4201) // nonstandard extension used : nameless struct/union.
 #pragma warning(disable: 4290) // exception specification ignored.
@@ -26,6 +27,7 @@
                                // places that are obviously OK.
 #pragma warning(disable: 4702) // unreachable code. We would like to keep this warning (4702)
                                // enabled but the compiler applies it in places that are obviously OK.
+#pragma warning(disable: 4706) // assignment in conditional expression
 #pragma warning(disable: 4710) // not inlined.
 #pragma warning(disable: 4786) // identifier truncated in debug info.
 #pragma warning(disable: 4800) // forcing value to bool 'true' or 'false' (performance warning).

@@ -913,22 +913,22 @@ float Segment::maxShrink()
 ----------------------------------------------------------------------------------------------*/
 std::pair<GlyphIterator, GlyphIterator> Segment::glyphs()
 {
-	return std::make_pair(GlyphIterator(this, 0), GlyphIterator(this, m_cginf));
+	return std::make_pair(GlyphIterator(*this, 0), GlyphIterator(*this, m_cginf));
 }
 
 /*----------------------------------------------------------------------------------------------
 	Return iterators representing the set of glyphs for the given character.
 ----------------------------------------------------------------------------------------------*/
-std::pair<GlyphIterator, GlyphIterator> Segment::charToGlyphs(toffset ich)
+std::pair<GlyphSetIterator, GlyphSetIterator> Segment::charToGlyphs(toffset ich)
 {
 	std::vector<int> * pvislout = UnderlyingToLogicalAssocs(ich);
 
 	// UnderlyingToLogicalAssocs can return NULL for edge cases
 	if (pvislout == NULL)
-		return std::make_pair(GlyphIterator(), GlyphIterator());
+		return std::make_pair(GlyphSetIterator(), GlyphSetIterator());
 	else
-		return std::make_pair(GlyphIterator(this, 0, pvislout), 
-			GlyphIterator(this, pvislout->size(), pvislout));
+		return std::make_pair(GlyphSetIterator(*this, 0, *pvislout), 
+			GlyphSetIterator(*this, pvislout->size(), *pvislout));
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -1833,11 +1833,11 @@ void Segment::SetUpGlyphInfo(GrTableManager * ptman, gid16 chwLB, int nDirDepth,
 		else
 			ginf.attachedTo = pslot->AttachTo() + islot;
 
-		ginf.directionality = (byte)pslot->Directionality();
+		ginf.directionality = byte(pslot->Directionality());
 		if (pslot->DirLevel() == -1)
 			ginf.directionLevel = paraDirLevel;
 		else
-			ginf.directionLevel = (byte)pslot->DirLevel();
+			ginf.directionLevel = byte(pslot->DirLevel());
 
 		//ginf.firstChar = LogicalSurfaceToUnderlying(islout, true);
 		//ginf.lastChar = LogicalSurfaceToUnderlying(islout, false);

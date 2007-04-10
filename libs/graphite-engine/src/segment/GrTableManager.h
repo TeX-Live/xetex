@@ -204,11 +204,11 @@ public:
 		GrSlotState ** ppslotLast, GrSlotState ** ppslotLastBase);
 
 	//	Memory management for slots:
-	void NewSlot(int gID, GrFeatureValues fval, int ipass, int ichwSegOffset, int nUnicode,
+	void NewSlot(gid16 gID, GrFeatureValues fval, int ipass, int ichwSegOffset, int nUnicode,
 		GrSlotState **);
-	void NewSlot(int gID, GrSlotState * pslotFeat, int ipass, int ichwSegOffset,
+	void NewSlot(gid16 gID, GrSlotState * pslotFeat, int ipass, int ichwSegOffset,
 		GrSlotState **);
-	void NewSlot(int gID, GrSlotState * pslotFeat, int ipass, GrSlotState **);
+	void NewSlot(gid16 gID, GrSlotState * pslotFeat, int ipass, GrSlotState **);
 	void NewSlotCopy(GrSlotState * pslotCopyFrom, int ipass,
 		GrSlotState ** pslotRet);
 protected:

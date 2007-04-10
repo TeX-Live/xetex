@@ -496,7 +496,7 @@ int GrSlotStream::DirLevelRange(EngineState * pengst, int islotStart, int nTopDi
 			{
 				// Include in the range to reverse the PDF or the char after the LRM/RLM.
 				// (Note: don't use a size_t below: we are decrementing below zero.)
-				for (int i = (signed)vislotStops.size() - 1; i >= 0 && vislotStops[i] == islot-1; i--)
+				for (int i = signed(vislotStops.size()) - 1; i >= 0 && vislotStops[i] == islot-1; i--)
 				{
 					vislotStops[i] = islot;
 				}
@@ -1120,7 +1120,7 @@ bool RightToLeftDir(DirCode dirc)
 void GrSlotStream::CopyOneSlotFrom(GrSlotStream * psstrmPrev)
 {
 #ifdef _DEBUG
-	gid16 chw = psstrmPrev->Peek()->GlyphID();
+	gid16 chw; chw = psstrmPrev->Peek()->GlyphID();
 #endif
 
 	// If we are exactly at the segment boundary, pass the information on to this stream.

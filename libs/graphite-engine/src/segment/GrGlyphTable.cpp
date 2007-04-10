@@ -66,7 +66,7 @@ bool GrGlyphTable::ReadFromFont(GrIStream & gloc_strm, long lGlocStart,
 	unsigned short cAttrs = gloc_strm.ReadUShortFromFont();
 
 	//	Create a single sub-table for the single style.
-	pgstbl->Initialize(fxdSilfVersion, snFlags, chwBWAttr, chwJStrAttr, chwJStrAttr + cJLevels,
+	pgstbl->Initialize(fxdSilfVersion, snFlags, chwBWAttr, chwJStrAttr, data16(chwJStrAttr + cJLevels),
 		m_cglf, cAttrs, cnCompPerLig);
 
 	SetSubTable(0, pgstbl);
@@ -88,7 +88,7 @@ bool GrGlyphSubTable::ReadFromFont(GrIStream & gloc_strm, int cGlyphs,
 	}
 
 	//	length of buffer needed for glyph attribute values:
-	int cbBufLen = GlocLookup(cGlyphs);
+	int cbBufLen = GlocLookup(data16(cGlyphs));
 	
 	//	TODO: slurp debugger offsets: 'm_prgibBIGGlyphAttrDebug'
 
@@ -194,11 +194,11 @@ int GrGlyphSubTable::GlyphAttrValue(gid16 chwGlyphID, int nAttrID)
 	int ibMin = GlocLookup(chwGlyphID);		// where this glyph's attrs start
 	int	ibLim = GlocLookup(chwGlyphID + 1);	// where next glyph starts
 
-	int nRet = m_pgatbl->GlyphAttr16BitValue(ibMin, ibLim, (byte)nAttrID);
+	int nRet = m_pgatbl->GlyphAttr16BitValue(ibMin, ibLim, byte(nAttrID));
 	if ((data16)nAttrID == m_chwJStrAttr)
 	{
 		//	For justify.stretch, which can be a 32-bit value, add on the high word.
-		unsigned int nRetHW = m_pgatbl->GlyphAttr16BitValue(ibMin, ibLim, (byte)m_chwJStrHWAttr);
+		unsigned int nRetHW = m_pgatbl->GlyphAttr16BitValue(ibMin, ibLim, byte(m_chwJStrHWAttr));
 		nRet = (nRetHW << 16) | nRet;
 	}
 	return ConvertValueForVersion(nRet, nAttrID);
@@ -526,12 +526,12 @@ void GrGlyphSubTable::SetUpTestData()
 	m_pgatbl = new GrGlyphAttrTable();
 	m_pgatbl->Initialize(0, 48);
 
-	m_prgibBIGAttrValues[0] = (byte)msbf(data16(0));
-	m_prgibBIGAttrValues[1] = (byte)msbf(data16(6));
-	m_prgibBIGAttrValues[2] = (byte)msbf(data16(20));
-	m_prgibBIGAttrValues[3] = (byte)msbf(data16(20));
-	m_prgibBIGAttrValues[4] = (byte)msbf(data16(40));
-	m_prgibBIGAttrValues[5] = (byte)msbf(data16(48));
+	m_prgibBIGAttrValues[0] = byte(msbf(data16(0)));
+	m_prgibBIGAttrValues[1] = byte(msbf(data16(6))));
+	m_prgibBIGAttrValues[2] = byte(msbf(data16(20)));
+	m_prgibBIGAttrValues[3] = byte(msbf(data16(20)));
+	m_prgibBIGAttrValues[4] = byte(msbf(data16(40)));
+	m_prgibBIGAttrValues[5] = byte(msbf(data16(48)));
 
 	m_pgatbl->SetUpTestData();
 }

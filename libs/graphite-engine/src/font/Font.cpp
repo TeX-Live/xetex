@@ -41,14 +41,23 @@ namespace gr
 //:>********************************************************************************************
 //:>	Font methods
 //:>********************************************************************************************
-Font::Font(const Font &src) : m_pfface(src.m_pfface) {
-	if (m_pfface)  m_pfface->IncFontCount();
+
+/*----------------------------------------------------------------------------------------------
+	Constructor.
+----------------------------------------------------------------------------------------------*/
+Font::Font(const Font & fontSrc) : m_pfface(fontSrc.m_pfface)
+{
+	if (m_pfface)
+		m_pfface->IncFontCount();
 }
 
-
+/*----------------------------------------------------------------------------------------------
+	Destructor.
+----------------------------------------------------------------------------------------------*/
 Font::~Font()
 {
-	if (m_pfface) m_pfface->DecFontCount();
+	if (m_pfface)
+		m_pfface->DecFontCount();
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -67,21 +76,25 @@ int Font::GetFlushMode()
 	return FontFace::GetFlushMode();
 }
 
-inline FontFace & Font::fontFace() {
+/*----------------------------------------------------------------------------------------------
+	Return the internal object representing the font-face. This is the object that is stored
+	in Graphite's internal cache.
+----------------------------------------------------------------------------------------------*/
+inline FontFace & Font::fontFace()
+{
 	if (m_pfface == 0)
 		initialiseFontFace();
-	
 	return *m_pfface;
 }
 
 void Font::initialiseFontFace()
 {
-	std::wstring face_name;
-	bool         bold, italic;
+	std::wstring stuFaceName;
+	bool         fBold, fItalic;
 
-	UniqueCacheInfo(face_name, bold, italic);
+	UniqueCacheInfo(stuFaceName, fBold, fItalic);
 	
-	m_pfface = FontFace::GetFontFace(this, face_name, bold, italic);
+	m_pfface = FontFace::GetFontFace(this, stuFaceName, fBold, fItalic);
 
 	Assert(m_pfface != 0);
 	
@@ -105,7 +118,7 @@ void Font::UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic)
 	}
 	// byte * pvName = (byte *)pNameTbl + lOffset;
 	utf16 rgchwFace[128];
-	const size_t cchw = min(lSize / sizeof(utf16), sizeof rgchwFace - 1);
+	const size_t cchw = min(long(lSize / sizeof(utf16)), long(sizeof rgchwFace - 1));
 	const utf16 *src_start = reinterpret_cast<const utf16 *>(pNameTbl+ lOffset);
 	std::copy(src_start, src_start + cchw, rgchwFace);
 	rgchwFace[cchw] = 0;  // zero terminate
@@ -344,7 +357,7 @@ std::pair<LanguageIterator, LanguageIterator> Font::getSupportedLanguages()
 	return pairRet;
 }
 
-ScriptDirCode Font::getSupportedScriptDiretcions() const throw()
+ScriptDirCode Font::getSupportedScriptDirections() const throw()
 {
 	return m_pfface->ScriptDirection();
 }
@@ -435,7 +448,7 @@ featid FeatureIterator::operator*()
 	if (m_ifeat >= m_cfeat)
 	{
 		Assert(false);
-		return kInvalid;
+		return (unsigned int)kInvalid;
 	}
 
 	return m_pfont->FeatureID(m_ifeat);
