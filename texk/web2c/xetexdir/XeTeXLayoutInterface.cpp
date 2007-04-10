@@ -975,12 +975,12 @@ findNextGraphiteBreak(int iOffset, int iBrkVal)
 {
 	if (iOffset < lbSource->getLength()) {
 		while (++iOffset < lbSource->getLength()) {
-			const gr::GlyphIterator&	gi = lbSegment->charToGlyphs(iOffset).first;
-			if (gi == lbSegment->charToGlyphs(iOffset).second)
+			const gr::GlyphSetIterator&	gsi = lbSegment->charToGlyphs(iOffset).first;
+			if (gsi == lbSegment->charToGlyphs(iOffset).second)
 				continue;
-			if (gi->breakweight() < gr::klbNoBreak && gi->breakweight() >= -(gr::LineBrk)iBrkVal)
+			if (gsi->breakweight() < gr::klbNoBreak && gsi->breakweight() >= -(gr::LineBrk)iBrkVal)
 				return iOffset;
-			if (gi->breakweight() > gr::klbNoBreak && gi->breakweight() <= (gr::LineBrk)iBrkVal)
+			if (gsi->breakweight() > gr::klbNoBreak && gsi->breakweight() <= (gr::LineBrk)iBrkVal)
 				return iOffset + 1;
 		}
 		return lbSource->getLength();
@@ -1029,64 +1029,5 @@ findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int*
 		return 0;
 	
 	return 1;
-/*
-	UErrorCode	status = (UErrorCode)0;
-	
-	UText* ut1 = NULL;
-	UText* ut2 = NULL;
-
-	std::pair<gr::FeatureIterator,gr::FeatureIterator>	features = engine->grFont->getFeatures();
-	while (features.first != features.second) {
-		gr::utf16	label[128];
-		if (engine->grFont->getFeatureLabel(features.first, 0x409, &label[0])) {
-			ut1 = utext_openUTF8(ut1, feature.c_str(), -1, &status);
-			ut2 = utext_openUChars(ut2, &label[0], -1, &status);
-			UChar32	ch1 = 0, ch2 = 0;
-			while (ch1 != U_SENTINEL) {
-				ch1 = utext_next32(ut1);
-				ch2 = utext_next32(ut2);
-				if (ch1 != ch2)
-					break;
-			}
-			if (ch1 == ch2) {
-				*f = *features.first;
-				std::pair<gr::FeatureSettingIterator,gr::FeatureSettingIterator>
-						settings = engine->grFont->getFeatureSettings(features.first);
-				while (settings.first != settings.second) {
-					if (engine->grFont->getFeatureSettingLabel(settings.first, 0x409, &label[0])) {
-						ut1 = utext_close(ut1);
-						ut1 = utext_openUTF8(ut1, setting.c_str(), -1, &status);
-						ut2 = utext_close(ut2);
-						ut2 = utext_openUChars(ut2, &label[0], -1, &status);
-						ch1 = ch2 = 0;
-						while (ch1 != U_SENTINEL) {
-							ch1 = utext_next32(ut1);
-							ch2 = utext_next32(ut2);
-							if (ch1 != ch2)
-								break;
-						}
-						if (ch1 == ch2) {
-							*v = *settings.first;
-							found = 1;
-							break;
-						}
-					}
-					++settings.first;
-				}
-				break;
-			}
-			ut1 = utext_close(ut1);
-			ut2 = utext_close(ut2);
-		}
-		++features.first;
-	}
-	
-	if (ut1 != NULL)
-		utext_close(ut1);
-	if (ut2 != NULL)
-		utext_close(ut2);
-
-	return found;
-*/
 }
 
