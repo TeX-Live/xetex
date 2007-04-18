@@ -39,14 +39,18 @@ public:
 	void SetupCrossLine2();
 	void SetupCrossLine3();
 	void SetupCrossLine4();
+	void SetupArabic1();
+	void SetupArabic2();
 	//	*** Add more methods here. ***
 
 protected:
 	//	Auxiliary functions to set up test cases.
 	void SetupBurmeseAux(int charCount, int glyphCount, int clickTestCount);
+	void SetupArabicAux(int charCount, int glyphCount);
 	std::wstring BurmeseText();
 	std::wstring RomanText();
 	std::wstring CrossLineText();
+	std::wstring ArabicText();
 
 public:
 	const static int kAbsent = -100;	// not present in data
@@ -77,6 +81,7 @@ public:
 	int AvailWidth()				{ return m_availWidth; }
 	bool Backtrack()				{ return m_backtrack; }
 	TrWsHandling Twsh()				{ return m_twsh; }
+	bool Rtl()						{ return m_rtl; }
 	bool ParaRtl()					{ return m_paraRtl; }
 	size_t FirstChar()				{ return m_firstChar; }
 	size_t InputContextBlock(gr::byte ** ppContextBlock)
@@ -153,6 +158,7 @@ protected:
 	int m_availWidth;				// default: 100
 	bool m_bold;					// default: false
 	bool m_italic;					// default: false
+	bool m_rtl;						// default: false
 	bool m_backtrack;				// default: false
 	TrWsHandling m_twsh;			// default: ktwshAll
 	bool m_paraRtl;					// default: false

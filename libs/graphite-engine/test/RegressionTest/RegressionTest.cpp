@@ -143,10 +143,10 @@ void RunTests(int numberOfTests, TestCase * ptcaseList)
 int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, RtTextSrc ** pptsrcRet)
 {
 	// Break into the debugger if requested.
-//	if (ptcase->RunDebugger() && ::IsDebuggerPresent())
-//	{
-//		::DebugBreak();
-//	}
+	//if (ptcase->RunDebugger() && ::IsDebuggerPresent())
+	//{
+	//	::DebugBreak();
+	//}
 
 	int errorCount = 0;
 
@@ -166,7 +166,6 @@ int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, R
 	//lf.lfWeight = 400;
 	//lf.lfItalic = FALSE;
 	//wcscpy(lf.lfFaceName, ptcase->FontName().data());
-
 	//HDC hdc = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
 	//HFONT hfont = CreateFontIndirect(&lf);
 	//HFONT hfontOld = (HFONT)::SelectObject(hdc, hfont); // restore before destroying the DC.
@@ -186,6 +185,7 @@ int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, R
 	*pptsrcRet = new RtTextSrc(&(text[0]));
 	RtTextSrc * ptsrc = *pptsrcRet;
 	(*pptsrcRet)->setFeatures(ptcase->Features());
+	(*pptsrcRet)->setRightToLeft(ptcase->Rtl());
 
 	//	Generate a segment.
 	LayoutEnvironment layout;

@@ -444,6 +444,9 @@ protected:
 //									// Review: do we need this, or is a linear search adequate?
 	int	m_cfeat;					// number of features present
 
+	short * m_rglcidFeatLabelLangs;	// LCIDs (language IDs) for all the labels in the feature table
+	size_t m_clcidFeatLabelLangs;
+
 	GrLangTable m_langtbl;
 
 	//	are line-breaks relevant at all?
@@ -560,9 +563,14 @@ protected:
 	size_t NumberOfSettings_ff(size_t ifeat);
 	int GetFeatureSettingValue_ff(size_t ifeat, size_t ifset);
 	bool GetFeatureSettingLabel_ff(size_t ifeat, size_t ifset, lgid language, utf16 * label);
+	// Feature-label languages:
+	size_t NumberOfFeatLangs_ff();
+	short GetFeatLabelLang_ff(size_t ilang);
 	// Language access for FontFace:
 	size_t NumberOfLanguages_ff();
 	isocode GetLanguageCode_ff(size_t ilang);
+
+	void SetUpFeatLangList();
 
 //:Ignore
 #ifdef OLD_TEST_STUFF

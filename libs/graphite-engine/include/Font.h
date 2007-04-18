@@ -10,7 +10,8 @@ Last reviewed: Not yet.
 
 Description:
     A Font is an object that represents a font-family + bold + italic setting, that contains
-	Graphite tables.
+	Graphite tables. This file also includes related iterators: FeatureIterator,
+	FeatureSettingIterator, FeatLabelLangIterator, LanguageIterator.
 ----------------------------------------------------------------------------------------------*/
 #ifdef _MSC_VER
 #pragma once
@@ -128,7 +129,44 @@ protected:
 };
 
 /*----------------------------------------------------------------------------------------------
-	Iterator to provide access to a font's defined languages.
+	Iterator to provide access to the languages available for the feature label strings.
+----------------------------------------------------------------------------------------------*/
+class FeatLabelLangIterator
+{
+	friend class Font;
+
+public:
+	FeatLabelLangIterator() // needed for creating std::pair of these, and for default FSI
+	{
+		m_pfont = NULL;
+		m_ilang = 0;
+		m_clang = 0;
+	}
+
+protected:
+	FeatLabelLangIterator(Font * pfont, int ilang, size_t clang)
+	{
+		m_pfont = pfont;
+		m_ilang = ilang;
+		m_clang = clang;
+	}
+public:
+	data16 operator*();
+	FeatLabelLangIterator operator++();
+	FeatLabelLangIterator operator+=(int n);
+	bool operator==(FeatLabelLangIterator &);
+	bool operator!=(FeatLabelLangIterator &);
+	int operator-(FeatLabelLangIterator &);
+
+protected:
+	Font * m_pfont;
+	size_t m_ilang;	// language being pointed at
+	size_t m_clang;	// number of languages for this font
+};
+
+/*----------------------------------------------------------------------------------------------
+	Iterator to provide access to a font's defined languages--ie, those that have feature
+	settings associated with them.
 ----------------------------------------------------------------------------------------------*/
 class LanguageIterator
 {
@@ -171,6 +209,7 @@ class Font {
 
 	friend class FeatureIterator;
 	friend class FeatureSettingIterator;
+	friend class FeatLabelLangIterator;
 	friend class LanguageIterator;
 
 public:
@@ -290,6 +329,8 @@ public:
 	std::pair<FeatureSettingIterator, FeatureSettingIterator> getFeatureSettings(FeatureIterator);
 	bool getFeatureSettingLabel(FeatureSettingIterator, lgid language, utf16 * label);
 
+	std::pair<FeatLabelLangIterator, FeatLabelLangIterator> getFeatureLabelLanguages();
+
 	// Languages:
 	std::pair<LanguageIterator, LanguageIterator> getSupportedLanguages();
 
@@ -328,6 +369,13 @@ protected:
 	size_t NumberOfSettings(size_t ifeat);
 	int GetFeatureSettingValue(size_t ifeat, size_t ifset);
 	bool GetFeatureSettingLabel(size_t ifeat, size_t ifset, lgid language, utf16 * label);
+
+	// Feature-label languages:
+	FeatLabelLangIterator BeginFeatLang();
+	FeatLabelLangIterator EndFeatLang();
+
+	size_t NumberOfFeatLangs();
+	short FeatLabelLang(size_t ilang);
 
 	// Language access:
 	LanguageIterator BeginLanguage();

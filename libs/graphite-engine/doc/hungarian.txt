@@ -12,7 +12,7 @@ General rules for variable names:
 
 * If you are creating a new class, make up a short indicator for it and use it consistently. Class indicators should be 3-6 characters long.
 
-* An appropriate way to indicate method arguments where necessary is with an "Arg" usage label, eg: nValueArg.
+* An appropriate way to indicate method arguments where necessary is with an "Arg" usage label, eg: nValueArg. Generally method arguments have no special indication.
 
 * Usage labels can be made up arbitrarily, but the ones listed below should be used if they apply.
 

@@ -426,6 +426,58 @@ bool TtfUtil::GetNameInfo(const void * pName, int nPlatformId, int nEncodingId,
 }
 
 /*----------------------------------------------------------------------------------------------
+	Return all the lang-IDs that have data for the given name-IDs. Assume that there is room
+	in the return array (langIdList) for 128 items. The purpose of this method is to return
+	a list of all possible lang-IDs.
+----------------------------------------------------------------------------------------------*/
+int TtfUtil::GetLangsForNames(const void * pName, int nPlatformId, int nEncodingId,
+		int * nameIdList, int cNameIds, short * langIdList)
+{
+	const sfnt_NamingTable * pTable = reinterpret_cast<const sfnt_NamingTable *>(pName);
+	uint16 cRecord = swapw(pTable->count);
+	//uint16 nRecordOffset = swapw(pTable->stringOffset);
+	const sfnt_NameRecord * pRecord = reinterpret_cast<const sfnt_NameRecord *>(pTable + 1);
+
+	int cLangIds = 0;
+	for (int i = 0; i < cRecord; i++)
+	{
+		if (swapw(pRecord->platformID) == nPlatformId && 
+			swapw(pRecord->specificID) == nEncodingId)
+		{
+			bool fNameFound = false;
+			int nLangId = swapw(pRecord->languageID);
+			int nNameId = swapw(pRecord->nameID);
+			for (int i = 0; i < cNameIds; i++)
+			{
+				if (nNameId == nameIdList[i])
+				{
+					fNameFound = true;
+					break;
+				}
+			}
+			if (fNameFound)
+			{
+				// Add it if it's not there.
+				int ilang;
+				for (ilang = 0; ilang < cLangIds; ilang++)
+					if (langIdList[ilang] == nLangId)
+						break;
+				if (ilang >= cLangIds)
+				{
+					langIdList[cLangIds] = short(nLangId);
+					cLangIds++;
+				}
+				if (cLangIds == 128)
+					return cLangIds;
+			}
+		}
+		pRecord++;
+	}
+
+	return cLangIds;
+}
+
+/*----------------------------------------------------------------------------------------------
 	Get the offset and size of the font family name in English for the MS Platform with Unicode
 	writing system. The offset is within the pName data. The string is double byte with MSB first.
 ----------------------------------------------------------------------------------------------*/

@@ -610,6 +610,17 @@ void GrTableManager::Run(Segment * psegNew, Font * pfont,
 	{
 		return;
 	}
+	else if (psegNew->segmentTermination() == kestHardBreak && 
+		psegNew->startCharacter() == psegNew->stopCharacter())
+	{
+		// Empty segment caused by a hard-break.
+		m_engst.m_lbPrevEnd = klbNoBreak;
+		psegNew->SetWidths(0, 0);
+		psegNew->SetUpOutputArrays(pfont, this, NULL, 0, 0, 0, twsh,
+			fParaRtl, nDirDepth, true);
+		psegNew->SetLayout(layout);
+		return;
+	}
 
 	psegNew->RecordInitializationForThisSeg(cbPrev, pbPrevSegDat);
 
@@ -709,9 +720,18 @@ void GrTableManager::InitNewSegment(Segment * psegNew,
 
 	if (ichwMin >= ichwLim)
 	{
-		// Invalid empty segment.
-		Assert(ichwMin == ichwLim);
-		InitSegmentToDelete(psegNew);
+		if (est == kestHardBreak)
+		{
+			// Empty segment cause by a hard-break.
+			InitSegmentAsEmpty(psegNew, pfont, pchstrm, fStartLine, fEndLine);
+			psegNew->FixTermination(est);
+		}
+		else
+		{
+			// Invalid empty segment.
+			Assert(ichwMin == ichwLim);
+			InitSegmentToDelete(psegNew);
+		}
 		return;
 	}
 

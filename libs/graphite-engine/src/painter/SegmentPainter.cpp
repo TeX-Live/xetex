@@ -158,7 +158,13 @@ LgIpValidResult SegmentPainter::isValidInsertionPoint(int ichw)
 	int ichwSegOffset = ichw - m_pseg->m_ichwMin;
 	if (ichwSegOffset < m_pseg->m_ichwAssocsMin || ichwSegOffset >= m_pseg->m_ichwAssocsLim)
 	{
-		return kipvrUnknown;
+		// If we're pointing at a hard line break character (Unicode 2028), then we know
+		// that it's a good insertion point in spite of missing the other conditions.
+		utf16 ch;
+		m_pseg->m_pgts->fetch(ichw, 1, &ch);
+		if (ch != knLineSep)
+			return kipvrUnknown; // Definitely in a different segment of the paragraph.
+		return kipvrOK;
 	}
 
 	int isloutLig = m_pseg->m_prgisloutLigature[ichwSegOffset - m_pseg->m_ichwAssocsMin];
@@ -485,12 +491,10 @@ bool SegmentPainter::positionsOfRange(int ichwAnchor, int ichwEnd,
 		prsBounds->right = max(prsBounds->right, prs->right);
 	}
 
-	int xsSegLeft = 0;
-
 	prdBounds->top = ydLineTop;
 	prdBounds->bottom = ydLineBottom;
-	prdBounds->left = ScaleXToDest(xsSegLeft + prsBounds->left);
-	prdBounds->right = ScaleXToDest(xsSegLeft + prsBounds->right);
+	prdBounds->left = ScaleXToDest(prsBounds->left);
+	prdBounds->right = ScaleXToDest(prsBounds->right);
 
 	return true;
 }
@@ -518,7 +522,7 @@ void SegmentPainter::pointToChar(Point zptdClickPosition, int * pichw, bool * pf
 
 	if (m_pseg->m_dichwLim == 0)
 	{
-		*pichw = 0;
+		*pichw = m_pseg->m_ichwMin;
 		*pfAssocPrev = false;
 		//RestoreFont(pgg);
 		return;
@@ -835,8 +839,6 @@ GrResult SegmentPainter::ArrowKeyPositionAux(
 /*----------------------------------------------------------------------------------------------
 	Used to find out where underlines should be drawn.
 
-	TODO SharonC: handle end-of-line spaces properly--they shouldn't be underlined.
-
 	@param ichwMin/Lim		- range of text of interest
 	@param rs, rd			- source/destination coordinates, for scaling
 	@param fSkipSpace		- true if white space should not be underlined; some renderers may
@@ -865,9 +867,14 @@ size_t SegmentPainter::getUnderlinePlacement(int ichwMin, int ichwLim,
 	Assert(m_pseg->m_dxsWidth >= 0);
 	Assert(m_pseg->m_dysAscent >= 0);
 
-	float xsSegLeft = 0;
+	float xsSegLeft = m_pseg->m_dxsTotalWidth;
+	for (int iginf = 0; iginf < m_pseg->m_cginf; iginf++)
+	{
+		xsSegLeft = min(xsSegLeft, m_pseg->GlyphLeftEdge(iginf));
+	}
 
-	float xdSegRight = this->ScaleXToDest(m_pseg->m_dxsTotalWidth);
+	float xdSegLeft = this->ScaleXToDest(xsSegLeft);
+	float xdSegRight = xdSegLeft + m_pseg->m_dxsTotalWidth;
 
 	int ichwMinSel = min(ichwMin, ichwLim);
 	int ichwLimSel = max(ichwMin, ichwLim);
@@ -909,8 +916,8 @@ size_t SegmentPainter::getUnderlinePlacement(int ichwMin, int ichwLim,
 	{
 		Rect rsTmp = vrs[irs];
 		LineSeg lsdTmp;
-		lsdTmp.left = min(xdSegRight, max(float(0), ScaleXToDest(rsTmp.left + xsSegLeft)));
-		lsdTmp.right = max(float(0), min(xdSegRight, ScaleXToDest(rsTmp.right + xsSegLeft)));
+		lsdTmp.left = min(xdSegRight, max(xdSegLeft, ScaleXToDest(rsTmp.left)));
+		lsdTmp.right = max(xdSegLeft, min(xdSegRight, ScaleXToDest(rsTmp.right)));
 		vlsd.push_back(lsdTmp);
 	}
 
@@ -1010,7 +1017,7 @@ void SegmentPainter::CalcOrDrawInsertionPoint(
 	CalcIP(ichwIP, true, &xsBefore, &ysBeforeTop, &ysBeforeBottom, &fRtlBefore);
 	CalcIP(ichwIP, false, &xsAfter, &ysAfterTop,  &ysAfterBottom,  &fRtlAfter);
 
-	if (m_pseg->m_cginf == 0)
+	if (m_pseg->m_cginf == 0 && ichwIP == ichwLim)
 	{
 		Assert(kPosInfFloat == xsBefore && kPosInfFloat == xsAfter);
 		xsBefore = 0;

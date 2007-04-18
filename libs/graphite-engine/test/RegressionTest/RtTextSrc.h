@@ -25,6 +25,7 @@ class RtTextSrc : public SimpleTextSrc
 public:
 	RtTextSrc(gr::utf16 * pszText) : SimpleTextSrc(pszText)
 	{
+		m_fRtl = false;
 		memset(m_fset, 0, MAXFEAT * sizeof(FeatureSetting));
 	}
 
@@ -49,7 +50,21 @@ public:
 		return m_cFeats;
 	}
 
+	virtual bool getRightToLeft(toffset ich)
+	{
+		return m_fRtl;
+	}
+	virtual unsigned int getDirectionDepth(toffset ich)
+	{
+		return ((m_fRtl == 1) ? 1 : 0);
+	}
+	void setRightToLeft(bool f)
+	{
+		m_fRtl = f;
+	}
+
 protected:
+	bool m_fRtl;
 	int m_cFeats;
 	FeatureSetting m_fset[MAXFEAT];
 };

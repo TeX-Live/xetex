@@ -145,6 +145,15 @@ public:
 	{
 		return m_pgreng->GetFeatureSettingLabel_ff(ifeat, ifset, language, label);
 	}
+	// Feature-label language access:
+	size_t NumberOfFeatLangs()
+	{
+		return m_pgreng->NumberOfFeatLangs_ff();
+	}
+	short FeatLabelLang(int ilang)
+	{
+		return m_pgreng->GetFeatLabelLang_ff(ilang);
+	}
 	// Language access:
 	size_t NumberOfLanguages()
 	{

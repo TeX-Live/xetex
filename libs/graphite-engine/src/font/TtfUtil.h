@@ -74,6 +74,8 @@ public:
 	////////////////////////////////// utility methods helpful for name table
 	static bool GetNameInfo(const void * pName, int nPlatformId, int nEncodingId,
 		int nLangId, int nNameId, long & lOffset, long & lSize);
+	static int GetLangsForNames(const void * pName, int nPlatformId, int nEncodingId,
+		int * nameIdList, int cNameIds, short * langIdList);
 	static bool SwapWString(void * pWStr, int nSize = 0);
 
 	////////////////////////////////// cmap lookup tools 

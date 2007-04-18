@@ -30,7 +30,7 @@ Things that still need testing:
 //:>	Test constants and methods
 //:>********************************************************************************************
 
-const int g_numberOfTests = 15;	// *** increment as tests are added ***
+const int g_numberOfTests = 17;	// *** increment as tests are added ***
 
 TestCase * g_ptcaseList;		// list of test cases
 
@@ -62,6 +62,8 @@ int TestCase::SetupTests(TestCase ** pptcaseList)
 	g_ptcaseList[12].SetupCrossLine2();
 	g_ptcaseList[13].SetupCrossLine3();
 	g_ptcaseList[14].SetupCrossLine4();
+	g_ptcaseList[15].SetupArabic1();
+	g_ptcaseList[16].SetupArabic2();
 	// *** Add more method calls here. ***
 
 	*pptcaseList = g_ptcaseList;
@@ -75,7 +77,8 @@ int TestCase::SetupTests(TestCase ** pptcaseList)
 void TestCase::SetupSimpleTest()
 {
 	m_testName = "Simple";
-	m_debug = true;
+	m_debug = false;
+	m_traceLog = false;
 
 	//	Input:
 	m_fontName = L"Graphite Test Roman";
@@ -86,6 +89,7 @@ void TestCase::SetupSimpleTest()
 	m_availWidth = 500;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 
 	//	Output:
@@ -145,6 +149,7 @@ void TestCase::SetupSimpleBacktrackTest()
 	m_availWidth = 500;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = true;
 
 	//	Output:
@@ -185,7 +190,7 @@ void TestCase::SetupSimpleBacktrackTest()
 ----------------------------------------------------------------------------------------------*/
 void TestCase::SetupBurmese1()
 {
-	m_testName = "Burmese1";
+	m_testName = "Burmese 1";
 	m_debug = false;
 	m_traceLog = false;
 
@@ -215,7 +220,7 @@ void TestCase::SetupBurmese1()
 
 void TestCase::SetupBurmese2()
 {
-	m_testName = "Burmese2";
+	m_testName = "Burmese 2";
 
 	//	Input:
 	m_fontName = L"Graphite Test Burmese";
@@ -244,7 +249,7 @@ void TestCase::SetupBurmese2()
 
 void TestCase::SetupBurmese3()
 {
-	m_testName = "Burmese3";
+	m_testName = "Burmese 3";
 	//m_debug = true;
 
 	//	Input:
@@ -274,7 +279,7 @@ void TestCase::SetupBurmese3()
 
 void TestCase::SetupBurmese4()
 {
-	m_testName = "Burmese4";
+	m_testName = "Burmese 4";
 	//m_traceLog = true;
 	//m_debug = true;
 
@@ -303,6 +308,8 @@ void TestCase::SetupBurmese4()
 
 void TestCase::SetupBurmeseAux(int charCnt, int glyphCnt, int clickTestCnt)
 {
+	m_rtl = false;
+
 	// need charCnt elements in this array:
 	bool insPtFlags[] = {
 		true,  true,  false, false, false, true,  false, false, false, false,	// 0 - 9
@@ -383,6 +390,7 @@ void TestCase::SetupRoman()
 	m_availWidth = 500;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 
 	//	Output:
@@ -443,6 +451,7 @@ void TestCase::SetupRomanFeatures()
 	m_availWidth = 500;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 
 	m_fset[0].id = 1024;	m_fset[0].value = 2;	// capital eng with tail
@@ -479,7 +488,7 @@ void TestCase::SetupRomanFeatures()
 	//		sec sel Top, sec sel bottom, sec sel left,
 	const int clickTestCnt = 3;
 	int clickStuff[] = {
-		 10, 15,    0, false,   0, 72,  -1,   kAbsent, kAbsent, kAbsent,
+		 10, 15,    3, true,    0, 72,  20,   kAbsent, kAbsent, kAbsent,
 		116,  5,    9, true,    0, 72, 120,   kAbsent, kAbsent, kAbsent,
 		 90, 40,    7, false,   0, 72,  86,   kAbsent, kAbsent, kAbsent
 	};
@@ -523,6 +532,7 @@ void TestCase::SetupNoWhiteSpace()
 	m_availWidth = 150;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 	m_twsh = ktwshNoWs;
 	m_paraRtl = true;
@@ -575,6 +585,7 @@ void TestCase::SetupNoWhiteSpaceFailure()
 	m_availWidth = 2;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 	m_twsh = ktwshNoWs;
 	m_paraRtl = true;
@@ -605,6 +616,7 @@ void TestCase::SetupOnlyWhiteSpace()
 	m_availWidth = 2;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 	m_twsh = ktwshOnlyWs;
 	m_paraRtl = true;
@@ -665,6 +677,7 @@ void TestCase::SetupCrossLine1()
 	m_availWidth = 350;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 
 	//	Output:
@@ -728,6 +741,7 @@ void TestCase::SetupCrossLine2()
 	m_availWidth = 400;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 	m_initWithPrev = true;
 
@@ -794,6 +808,7 @@ void TestCase::SetupCrossLine3()
 	m_availWidth = 400;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 	m_initWithPrev = true;
 
@@ -860,6 +875,7 @@ void TestCase::SetupCrossLine4()
 	m_availWidth = 400;				// width available for segment
 	m_bold = false;
 	m_italic = false;
+	m_rtl = false;
 	m_backtrack = false;
 	m_initWithPrev = true;
 
@@ -920,8 +936,127 @@ std::wstring TestCase::CrossLineText()
 	return strRet;
 }
 
-// *** Add more methods here. ***
+/*----------------------------------------------------------------------------------------------
+	A set of tests using Arabic: RTL, bidi, and embedded direction codes.
+----------------------------------------------------------------------------------------------*/
+void TestCase::SetupArabic1()
+{
+	m_testName = "Arabic 1";
+	m_debug = true;
+	m_traceLog = false;
 
+	//	Input:
+	m_fontName = L"Graphite Test Arabic";
+	m_fontFile = "grtest_arabic.ttf";
+	m_text = ArabicText();
+	m_fontSize = 20;				// font size in points
+	m_prefBreak = klbWordBreak;		// preferred break-weight
+	m_availWidth = 1000;			// width available for segment
+	m_bold = false;
+	m_italic = false;
+	m_backtrack = false;
+
+	//	Output:
+	m_segWidth = 409;			// physical width of segment
+
+	SetupArabicAux(
+		61,		// character count
+		61);	// glyph count
+
+	//	Each line in clickStuff represents one click test with the following items:
+	//		click x-coord, click y-coord, char index, assoc-prev,
+	//		prim sel Top, prim sel bottom, prim sel left,
+	//		sec sel Top, sec sel bottom, sec sel left,
+	int clickStuff[] = {
+		199, 13,    37, true,    0, 35,196,   kAbsent, kAbsent, kAbsent,
+		396, 13,     3, false,   8, 26,399,   10, 17, 397,
+		396,  8,     6, true,    3, 11,391,    9, 22, 394,
+		222,  5,    32, true,    0, 35,225,   kAbsent, kAbsent, kAbsent,
+		217,  5,    31, false,   0, 35,215,    0, 35, 246,
+	};
+	SetClickTests(4, clickStuff);
+}
+
+void TestCase::SetupArabic2()
+{
+	m_testName = "Arabic 2";
+	m_debug = false;
+	m_traceLog = false;
+
+	//	Input:
+	m_fontName = L"Graphite Test Arabic";
+	m_fontFile = "grtest_arabic.ttf";
+	m_text = ArabicText();
+	m_fontSize = 20;				// font size in points
+	m_prefBreak = klbWordBreak;		// preferred break-weight
+	m_availWidth = 230;				// width available for segment-break after number
+	m_bold = false;
+	m_italic = false;
+	m_backtrack = false;
+
+	//	Output:
+	m_segWidth = 193;			// physical width of segment
+
+	SetupArabicAux(
+		35,		// character count
+		35);	// glyph count
+
+	// The x-positions are different for a shorter segment:
+	//                     0                                      10                                      20                                      30
+	int xPositions[] =  {188,183,184,177,178,178,170,169,162,150,154,154,153,155,139,132,127,127,115,118,108,102, 84, 77, 77, 72, 65, 46, 46, 37, 31, 20, 10, 0, -6};
+	SetXPositions(xPositions);
+}
+
+void TestCase::SetupArabicAux(int charCnt, int glyphCnt)
+{
+	m_rtl = true;
+
+	// need charCnt elements in this array:
+	bool insPtFlags[] = {
+		true, true, true, true, true, true, true, true, true, true,	// 0 - 9
+		true, true, true, true, true, true, true, true, true, true,	// 10 - 19
+		true, true, true, true, true, true, true, true, true, true,	// 20 - 29
+		true, true, true, true, true, true, true, true, true, true,	// 30 - 39
+		true, true, true, true, true, true, true, true, true, true,	// 40 - 49
+		true, true, true, true, true, true, true, true, true, true,	// 50 - 59
+		true
+	};
+
+	// need glyphCnt elements in these arrays:
+	//                     0                                        10                                      20                                               30                                                40                                                50                                                60
+	gid16 glyphList[] =	{785,658,907,1182,913,907,1192,907,  3,811,914,909,911,934,592,  3,785,909,621,911, 12,  3,321,  3,236,659,731,555,925,961,  3,992,991,990,  3,821,924,712,474,882,527,  3,411,924,950,  3,236,990,991,992,993,995,236,  3,821,769,455,290,839,620,961};
+	int xPositions[] =  {404,400,401, 393,394,394, 386,385,379,366,370,370,370,371,355,348,343,343,331,334,324,318,300,293,293,289,281,263,262,254,247,237,226,216,209,197,197,189,179,172,154,147,135,139,127,120,120,110, 99, 89, 79, 68, 68, 62, 50, 41, 36, 29, 19,  8,  0};
+	int yPositions[] =  {  0,  0, -5,   0,  0,  4,   0,  0,  0,  0, -5, -3, -2,  4,  0,  0,  0,  1,  0, -3,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0,  0,  0,  0,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
+	int advWidths[] =   {  4,  4,  0,   6,  0,  0,   6,  0,  6, 12,  0,  0,  0,  0, 11,  6,  4,  0, 11,  0,  7,  6, 17,  6,  0,  4,  7, 18,  0,  8,  6, 10, 10, 10,  6, 11,  0,  7,  9,  7, 17,  6, 11,  0,  8,  6,  0, 10, 10, 10, 10, 10,  0,  6, 11,  9,  4,  6,  9, 11,  8};
+
+	//	Finish setting up test case.
+	SetCharCount(charCnt);
+	SetGlyphCount(glyphCnt);
+	SetGlyphList(glyphList);
+	SetXPositions(xPositions);
+	SetYPositions(yPositions);
+	SetAdvWidths(advWidths);
+	SetInsPtFlags(insPtFlags);
+}
+
+std::wstring TestCase::ArabicText()
+{
+	std::wstring strRet;
+	wchar_t charData[] = {
+		0x0628, 0x0628, 0x064e, 0x0644, 0x064e, 0x0654, 0x0627, 0x064e, 0x0020, 0x0686,
+		0x0650, 0x0652, 0x0655, 0x06e0, 0x06a8, 0x0020, 0x0628, 0x0650, 0x06b9, 0x0652,
+		0x0029, 0x0020, 0x0628, 0x0020, 0x200d, 0x062a, 0x06a8, 0x0633, 0x0670, 0x061b,
+		0x0020, 0x06f1, 0x06f2, 0x06f3, 0x0020, 0x0633, 0x0670, 0x0639, 0x062f, 0x0645,
+		0x067e, 0x0020, 0x0644, 0x0670, 0x060c, 0x0020, 0x202e, 0x06f1, 0x06f2, 0x06f3,
+		0x06f4, 0x06f5, 0x202c, 0x0020, 0x0633, 0x0647, 0x0627, 0x0631, 0x0639, 0x0646,
+		0x061b, 0x0000
+	};
+	strRet.assign(charData);
+	return strRet;
+}
+
+
+// *** Add more methods here. ***
 
 
 //:>********************************************************************************************

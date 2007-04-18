@@ -148,6 +148,9 @@ void GrEngine::BasicInit()
 	m_nFontCheckSum = 0;
 
 	m_fInErrorState = false;
+
+	m_rglcidFeatLabelLangs = NULL;	// initialize lazily, when needed
+	m_clcidFeatLabelLangs = 0;
 }
 
 GrEngine::~GrEngine()
@@ -320,6 +323,24 @@ bool GrEngine::GetFeatureSettingLabel_ff(size_t ifeat, size_t ifset, lgid langua
 }
 
 /*----------------------------------------------------------------------------------------------
+	For FontFace: return the number of languages that are possible among the feature labels.
+----------------------------------------------------------------------------------------------*/
+size_t GrEngine::NumberOfFeatLangs_ff()
+{
+	SetUpFeatLangList();
+	return m_clcidFeatLabelLangs;
+}
+
+/*----------------------------------------------------------------------------------------------
+	For FontFace: return the language LCID for the feature-label language with the given index.
+----------------------------------------------------------------------------------------------*/
+short GrEngine::GetFeatLabelLang_ff(size_t ilang)
+{
+	SetUpFeatLangList();
+	return m_rglcidFeatLabelLangs[ilang];
+}
+
+/*----------------------------------------------------------------------------------------------
 	For FontFace: return the number of supported languages.
 ----------------------------------------------------------------------------------------------*/
 size_t GrEngine::NumberOfLanguages_ff()
@@ -333,6 +354,23 @@ size_t GrEngine::NumberOfLanguages_ff()
 isocode GrEngine::GetLanguageCode_ff(size_t ilang)
 {
 	return m_langtbl.LanguageCode(ilang);
+}
+
+/*----------------------------------------------------------------------------------------------
+	Set up the list of all the languages that are present in the feature labels.
+----------------------------------------------------------------------------------------------*/
+void GrEngine::SetUpFeatLangList()
+{
+	if (m_rglcidFeatLabelLangs)
+		return;
+
+	int rgnNameIDs[kMaxFeatures];
+	for (int ifeat = 0; ifeat < m_cfeat; ifeat++)
+		rgnNameIDs[ifeat] = m_rgfeat[ifeat].NameId();
+	short rglcid[128]; // 128 is the number expected by TtfUtil::GetLangsForNames
+	m_clcidFeatLabelLangs = TtfUtil::GetLangsForNames(m_pNameTbl, 3, 1, rgnNameIDs, m_cfeat, rglcid);
+	m_rglcidFeatLabelLangs = new short[m_clcidFeatLabelLangs];
+	memcpy(m_rglcidFeatLabelLangs, rglcid, sizeof(short) * m_clcidFeatLabelLangs);
 }
 
 /*----------------------------------------------------------------------------------------------
@@ -1293,6 +1331,8 @@ void GrEngine::CreateEmpty()
 
 	//	Feat table
 	m_cfeat = 0;
+	m_rglcidFeatLabelLangs = NULL;
+	m_clcidFeatLabelLangs = 0;
 
 	//	Language table
 	m_langtbl.CreateEmpty();
@@ -1379,11 +1419,19 @@ bool GrEngine::ReadFeatTable(GrIStream & grstrm, long lTableStart)
 		//	index into name table of UI label
 		int nNameId = grstrm.ReadShortFromFont();
 
+		if (fxdVersion <= 0x00020000 && nID == GrFeature::knLangFeatV2)
+		{
+			// Ignore the obsolete "lang" feature which has ID = 1
+			vnIDs.pop_back();
+			vcfset.pop_back();
+			vnOffsets.pop_back();
+			continue;
+		}
 		AddFeature(nID, nNameId, cfset);
 	}
 
 	//	default feature setting value and name strings;
-	for (ifeat = 0; ifeat < cfeat; ifeat++)
+	for (ifeat = 0; ifeat < m_cfeat; ifeat++)
 	{
 		GrFeature * pfeat = m_rgfeat + ifeat;
 		Assert(pfeat->ID() == vnIDs[ifeat]);

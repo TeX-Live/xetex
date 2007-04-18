@@ -1016,13 +1016,11 @@ findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int*
 	if (*f == -1)
 		return 0;
 
-	std::string	feature(s, cp - s);
 	++cp;
 	while (cp < e && (*cp == ' ' || *cp == '\t'))
 		++cp;
 	if (cp == e)
 		return 0;
-	std::string	setting(cp, e - cp);
 
 	*v = findGraphiteFeatureSettingNamed(engine, *f, cp, e - cp);
 	if (*v == -1)

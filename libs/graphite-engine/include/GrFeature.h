@@ -60,6 +60,10 @@ class GrFeature
 {
 	//friend class GrFeatureSetting;
 public:
+	enum {
+		knLangFeatV2 = 1
+	};
+
 	GrFeature()
 	{
 		m_vnVal.clear();
@@ -81,6 +85,11 @@ public:
 	void SetDefault(int nDefault)
 	{
 		m_nDefault = nDefault;
+	}
+
+	int NameId()
+	{
+		return m_nNameId;
 	}
 
 	void SetNameId(int n)

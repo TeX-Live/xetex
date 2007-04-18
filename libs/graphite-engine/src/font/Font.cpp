@@ -337,6 +337,14 @@ bool Font::GetFeatureSettingLabel(size_t ifeat, size_t ifset, lgid language, utf
 {
 	return fontFace().GetFeatureSettingLabel(ifeat, ifset, language, label);
 }
+size_t Font::NumberOfFeatLangs()
+{
+	return fontFace().NumberOfFeatLangs();
+}
+short Font::FeatLabelLang(size_t ilang)
+{
+	return fontFace().FeatLabelLang(ilang);
+}
 size_t Font::NumberOfLanguages()
 {
 	return fontFace().NumberOfLanguages();
@@ -347,7 +355,19 @@ isocode Font::LanguageCode(size_t ilang)
 }
 
 /*----------------------------------------------------------------------------------------------
-	Return a pair of iterators over a sequence of features defined for the font.
+	Return a pair of iterators over a sequence of feature-label languages for this font.
+----------------------------------------------------------------------------------------------*/
+std::pair<FeatLabelLangIterator, FeatLabelLangIterator> Font::getFeatureLabelLanguages()
+{
+	std::pair<FeatLabelLangIterator, FeatLabelLangIterator> pairRet;
+	pairRet.first = BeginFeatLang();
+	pairRet.second = EndFeatLang();
+	return pairRet;
+}
+
+/*----------------------------------------------------------------------------------------------
+	Return a pair of iterators over a sequence of languages defined for the font, that is,
+	those that have features specified for them.
 ----------------------------------------------------------------------------------------------*/
 std::pair<LanguageIterator, LanguageIterator> Font::getSupportedLanguages()
 {
@@ -357,6 +377,9 @@ std::pair<LanguageIterator, LanguageIterator> Font::getSupportedLanguages()
 	return pairRet;
 }
 
+/*----------------------------------------------------------------------------------------------
+	Return a bitmap indicating which directions are supported by the font.
+----------------------------------------------------------------------------------------------*/
 ScriptDirCode Font::getSupportedScriptDirections() const throw()
 {
 	return m_pfface->ScriptDirection();
@@ -400,6 +423,22 @@ FeatureIterator Font::EndFeature()
 	int cfeat = NumberOfFeatures();
 	FeatureIterator fit (this, cfeat, cfeat);
 	return fit;
+}
+
+/*----------------------------------------------------------------------------------------------
+	Feature-label language iterators.
+----------------------------------------------------------------------------------------------*/
+FeatLabelLangIterator Font::BeginFeatLang()
+{
+	FeatLabelLangIterator lgit(this, 0, NumberOfFeatLangs());
+	return lgit;
+}
+
+FeatLabelLangIterator Font::EndFeatLang()
+{
+	int clang = NumberOfFeatLangs();
+	FeatLabelLangIterator lgit(this, clang, clang);
+	return lgit;
 }
 
 
@@ -631,6 +670,89 @@ int FeatureSettingIterator::operator-(FeatureSettingIterator fsit)
 }
 
 //:>********************************************************************************************
+//:>	FeatLabelLangIterator methods
+//:>********************************************************************************************
+
+/*----------------------------------------------------------------------------------------------
+	Dereference the iterator, returning a language LCID.
+----------------------------------------------------------------------------------------------*/
+data16 FeatLabelLangIterator::operator*()
+{
+	if (m_ilang >= m_clang)
+	{
+		Assert(false);
+		return 0;
+	}
+
+	return m_pfont->FeatLabelLang(m_ilang);
+}
+
+/*----------------------------------------------------------------------------------------------
+	Increment the iterator.
+----------------------------------------------------------------------------------------------*/
+FeatLabelLangIterator FeatLabelLangIterator::operator++()
+{
+	if (m_ilang >= m_clang)
+	{
+		// Can't increment.
+		Assert(false);
+	}
+	else
+		m_ilang++;
+
+	return *this;
+}
+
+/*----------------------------------------------------------------------------------------------
+	Increment the iterator by the given value.
+----------------------------------------------------------------------------------------------*/
+FeatLabelLangIterator FeatLabelLangIterator::operator+=(int n)
+{
+	if (m_ilang + n >= m_clang)
+	{
+		// Can't increment.
+		Assert(false);
+		m_ilang = m_clang;
+	}
+	else if (m_ilang + n < 0)
+	{
+		// Can't decrement.
+		Assert(false);
+		m_ilang = 0;
+	}
+	else
+		m_ilang += m_clang;
+
+	return *this;
+}
+
+/*----------------------------------------------------------------------------------------------
+	Test whether the two iterators are equal.
+----------------------------------------------------------------------------------------------*/
+bool FeatLabelLangIterator::operator==(FeatLabelLangIterator & fllit)
+{
+	return (fllit.m_ilang == m_ilang && fllit.m_pfont == m_pfont);
+}
+
+bool FeatLabelLangIterator::operator!=(FeatLabelLangIterator & fllit)
+{
+	return (fllit.m_ilang != m_ilang || fllit.m_pfont != m_pfont);
+}
+
+/*----------------------------------------------------------------------------------------------
+	Return the number of items represented by the range of the two iterators.
+----------------------------------------------------------------------------------------------*/
+int FeatLabelLangIterator::operator-(FeatLabelLangIterator & fllit)
+{
+	if (m_pfont != fllit.m_pfont)
+	{
+		throw;
+	}
+	return (m_ilang - fllit.m_ilang);
+}
+
+
+//:>********************************************************************************************
 //:>	LanguageIterator methods
 //:>********************************************************************************************
 
@@ -644,7 +766,7 @@ isocode LanguageIterator::operator*()
 		Assert(false);
 		isocode codeRet;
 		codeRet.rgch[1] = '?'; codeRet.rgch[2] = '?';
-		codeRet.rgch[3] = '?';  codeRet.rgch[2] = 0;
+		codeRet.rgch[3] = '?'; codeRet.rgch[4] = 0;
 		return codeRet;
 	}
 
