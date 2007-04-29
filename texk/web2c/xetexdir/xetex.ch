@@ -949,8 +949,6 @@ This is followed by |2*length| bytes, for the actual characters of the string (i
 
 So |native_node_size|, which does not include any space for the actual text, is 6.}
 
-@d deleted_native_node=41 {native words that have been superseded by their successors}
-
 @d native_node_size=6 {size of a native_word node (plus the actual chars) -- see also xetex.h}
 @d native_size(#)==mem[#+4].hh.b0
 @d native_font(#)==mem[#+4].hh.b1
@@ -1050,7 +1048,6 @@ whatsit_node:
 	  end;
 	  print_native_word(p);
 	end;
-    deleted_native_node: do_nothing;
 	othercases print("[]")
   endcases;
 @z
@@ -3650,8 +3647,7 @@ done:
 end
 
 @ @<Advance |q| past ignorable nodes@>=
-while (q <> null) and (not is_char_node(q))
-  and ( (type(q) = disc_node) or ((type(q) = whatsit_node) and (subtype(q) = deleted_native_node)) ) do
+while (q <> null) and (not is_char_node(q)) and (type(q) = disc_node) do
     q := link(q)
 
 @ We ought to give special care to the efficiency of one part of |hlist_out|,
@@ -4678,7 +4674,6 @@ label done,done1,done2,done3,done4,done5,done6,continue, restart;
     or (subtype(v)=pic_node)
     or (subtype(v)=pdf_node)
     then break_width[1]:=break_width[1]-width(v)
-	else if subtype(v)=deleted_native_node then do_nothing
 	else confusion("disc1a");
   othercases confusion("disc1")
 @z
@@ -4692,7 +4687,6 @@ label done,done1,done2,done3,done4,done5,done6,continue, restart;
     or (subtype(s)=pic_node)
     or (subtype(s)=pdf_node)
     then break_width[1]:=break_width[1]+width(s)
-	else if subtype(s)=deleted_native_node then do_nothing
 	else confusion("disc2a");
   othercases confusion("disc2")
 @z
@@ -4712,7 +4706,6 @@ label done,done1,done2,done3,done4,done5,done6,continue, restart;
     or (subtype(s)=pic_node)
     or (subtype(s)=pdf_node)
     then disc_width:=disc_width+width(s)
-	else if subtype(s)=deleted_native_node then do_nothing
 	else confusion("disc3a");
   othercases confusion("disc3")
 @z
@@ -4726,7 +4719,6 @@ label done,done1,done2,done3,done4,done5,done6,continue, restart;
     or (subtype(s)=pic_node)
     or (subtype(s)=pdf_node)
     then act_width:=act_width+width(s)
-	else if subtype(s)=deleted_native_node then do_nothing
 	else confusion("disc4a");
   othercases confusion("disc4")
 @z
@@ -5203,7 +5195,7 @@ append_normal_space:check_for_post_char_toks(big_switch);
 @!main_p:pointer; {temporary register for list manipulation}
 @y
 @!main_p:pointer; {temporary register for list manipulation}
-@!main_pp:pointer; {another temporary register for list manipulation}
+@!main_pp,@!main_ppp:pointer; {more temporary registers for list manipulation}
 @!main_h:pointer; {temp for hyphen offset in native-font text}
 @!is_hyph:boolean; {whether the last char seen is the font's hyphenchar}
 @!space_class:integer;
@@ -5354,11 +5346,22 @@ collected:
 
 	if mode=hmode then begin
 
+		main_ppp := head;
+		if main_ppp<>main_pp then
+			while (link(main_ppp)<>main_pp) do
+				main_ppp:=link(main_ppp);	{ find node preceding tail }
+
 		temp_ptr := 0;
 		repeat
 			if main_h = 0 then main_h := main_k;
 
-			if (not is_char_node(main_pp)) and (type(main_pp)=whatsit_node) and (subtype(main_pp)=native_word_node) and (native_font(main_pp)=main_f) then begin
+			if (not is_char_node(main_pp))
+				and (type(main_pp)=whatsit_node)
+				and (subtype(main_pp)=native_word_node)
+				and (native_font(main_pp)=main_f)
+				and (main_ppp<>main_pp)
+				and type(main_ppp)<>disc_node
+			then begin
 
 				{ make a new temp string that contains the concatenated text of |tail| + the current word/fragment }
 				main_k := main_h + native_length(main_pp);
@@ -5383,9 +5386,13 @@ collected:
 				do incr(main_h);	{ look for next hyphen or end of text }
 				if (main_h < main_k) then incr(main_h);
 
-				{ flag the previous node as no longer valid }
-				free_native_glyph_info(main_pp);
-				subtype(main_pp) := deleted_native_node;
+				{ remove the preceding node from the list }
+				link(main_ppp) := link(main_pp);
+				link(main_pp) := null;
+				flush_node_list(main_pp);
+				main_pp := tail;
+				while (link(main_ppp)<>main_pp) do
+					main_ppp:=link(main_ppp);
 
 			end else begin
 
@@ -5424,9 +5431,14 @@ collected:
 				set_native_char(tail, main_p + native_length(main_pp), native_text[main_p]);
 			set_native_metrics(tail, XeTeX_use_glyph_metrics);
 
-			{ flag the previous node as no longer valid }
-			free_native_glyph_info(main_pp);
-			subtype(main_pp) := deleted_native_node;
+			{ remove the preceding node from the list }
+			main_p := head;
+			if main_p<>main_pp then
+				while link(main_p)<>main_pp do
+					main_p := link(main_p);
+			link(main_p) := link(main_pp);
+			link(main_pp) := null;
+			flush_node_list(main_pp);
 		end else begin
 			{ package the current string into a |native_word| whatsit }
 			link(main_pp) := new_native_word_node(main_f, main_k);
@@ -5521,7 +5533,6 @@ begin if tail<>head then
 @y
     if type(p)<>kern_node then if type(p)<>ligature_node then
 	if (type(p)<>whatsit_node) or ((subtype(p)<>native_word_node)
-									 and (subtype(p)<>deleted_native_node)
 									 and (subtype(p)<>glyph_node)) then
       begin print_err("Improper discretionary list");
 @z
@@ -6691,8 +6702,6 @@ native_word_node:begin
 	print_char(" ");
 	print_native_word(p);
   end;
-deleted_native_node:
-	print("[DELETED]");
 glyph_node:begin
     print_esc(font_id_text(native_font(p)));
     print(" glyph#");
@@ -6729,9 +6738,6 @@ native_word_node: begin words:=native_size(p);
   native_glyph_info_ptr(r):=0; native_glyph_count(r):=0;
   copy_native_glyph_info(p, r);
   end;
-deleted_native_node: begin words:=native_size(p);
-  r:=get_node(words);
-  end;
 glyph_node: begin r:=get_node(glyph_node_size);
   words:=glyph_node_size;
   end;
@@ -6747,7 +6753,6 @@ othercases confusion("ext2")
 othercases confusion("ext3")
 @y
 native_word_node: begin free_native_glyph_info(p); free_node(p,native_size(p)); end;
-deleted_native_node: free_node(p,native_size(p));
 glyph_node: free_node(p,glyph_node_size);
 pic_node,pdf_node: free_node(p,total_pic_node_size(p));
 pdf_save_pos_node:
@@ -7183,7 +7188,7 @@ end;
 @x
 language_node:do_nothing;
 @y
-language_node,deleted_native_node:do_nothing;
+language_node:do_nothing;
 @z
 
 @x
