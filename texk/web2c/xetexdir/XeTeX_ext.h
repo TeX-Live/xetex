@@ -206,6 +206,8 @@ extern const UInt32 kSurrogateLowEnd;
 extern const UInt32 byteMask;
 extern const UInt32 byteMark;
 
+#include <stdio.h> /* for FILE */
+
 #include "trans.h"
 
 #ifdef __cplusplus
@@ -262,12 +264,12 @@ extern "C" {
 
 	const char* getGlyphNamePtr(const char* buffer, int tableSize, UInt16 gid, int* len);
 
-	integer find_pic_file(char** path, realrect* bounds, integer pdfBoxType, integer page);
-	boolean u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData);
-	boolean open_dvi_output(FILE** fptr);
+	int find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page);
+	int u_open_in(unicodefile* f, integer filefmt, const char* fopen_mode, integer mode, integer encodingData);
+	int open_dvi_output(FILE** fptr);
 	void dviclose(FILE* fptr);
 	int get_uni_c(UFILE* f);
-	boolean input_line(UFILE* f);
+	int input_line(UFILE* f);
 	void makeutf16name();
 
 #ifdef XETEX_MAC

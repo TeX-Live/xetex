@@ -2622,8 +2622,8 @@ printglyphname(integer font, integer gid)
 		printchar(*s++);
 }
 
-boolean
-u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData)
+int
+u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode, integer encodingData)
 {
 	boolean	rval;
 	*f = malloc(sizeof(UFILE));
@@ -2666,7 +2666,7 @@ u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int en
 	return rval;
 }
 
-boolean
+int
 open_dvi_output(FILE** fptr)
 {
 	if (nopdfoutput) {
@@ -2790,7 +2790,7 @@ get_uni_c(UFILE* f)
 	return rval;
 }
 
-boolean
+int
 input_line(UFILE* f)
 {
 	int i;
