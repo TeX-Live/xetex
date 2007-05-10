@@ -942,26 +942,27 @@ if max_quarterword-min_quarterword<@"FFFF then bad:=19;
 
 To support ``native'' fonts, we build |native_word_nodes|, which are variable size whatsits.
 These have the same |width|, |depth|, and |height| fields as a |box_node|, at offsets 1-3,
-and then a word containing a size field for the node, a font number, and a length.
-Then there is a field containing two halfwords, a glyph count and a C pointer to a glyph info array;
-these are set by |set_native_metrics|. Copying and freeing of these nodes needs to take account of this!
+and then a word containing a size field for the node, a font number, a length, and a glyph count.
+Then there is a field containing a C pointer to a glyph info array;
+this and the glyph count are set by |set_native_metrics|.
+Copying and freeing of these nodes needs to take account of this!
 This is followed by |2*length| bytes, for the actual characters of the string (in UTF-16).
 
 So |native_node_size|, which does not include any space for the actual text, is 6.}
 
 @d native_node_size=6 {size of a native_word node (plus the actual chars) -- see also xetex.h}
-@d native_size(#)==mem[#+4].hh.b0
-@d native_font(#)==mem[#+4].hh.b1
-@d native_length(#)==mem[#+4].hh.rh
-@d native_glyph_count(#)==mem[#+5].hh.lh
-@d native_glyph_info_ptr(#)==mem[#+5].hh.rh
+@d native_size(#)==mem[#+4].qqqq.b0
+@d native_font(#)==mem[#+4].qqqq.b1
+@d native_length(#)==mem[#+4].qqqq.b2
+@d native_glyph_count(#)==mem[#+4].qqqq.b3
+@d native_glyph_info_ptr(#)==mem[#+5].ptr
 @d native_glyph_info_size=10 { number of bytes of info per glyph: 16-bit glyph ID, 32-bit x and y coords }
 
 @d free_native_glyph_info(#) ==
   begin
-    if native_glyph_info_ptr(#) <> 0 then begin
-      libc_free(cast_to_ptr(native_glyph_info_ptr(#)));
-      native_glyph_info_ptr(#) := 0;
+    if native_glyph_info_ptr(#) <> null_ptr then begin
+      libc_free(native_glyph_info_ptr(#));
+      native_glyph_info_ptr(#) := null_ptr;
       native_glyph_count(#) := 0;
     end
   end
@@ -969,10 +970,10 @@ So |native_node_size|, which does not include any space for the actual text, is 
 @p procedure copy_native_glyph_info(src:pointer; dest:pointer);
 var glyph_count:integer;
 begin
-  if native_glyph_info_ptr(src) <> 0 then begin
+  if native_glyph_info_ptr(src) <> null_ptr then begin
     glyph_count := native_glyph_count(src);
-    native_glyph_info_ptr(dest) := cast_to_integer(xmalloc_array(char, glyph_count * native_glyph_info_size));
-    memcpy(cast_to_ptr(native_glyph_info_ptr(dest)), cast_to_ptr(native_glyph_info_ptr(src)), glyph_count * native_glyph_info_size);
+    native_glyph_info_ptr(dest) := xmalloc_array(char, glyph_count * native_glyph_info_size);
+    memcpy(native_glyph_info_ptr(dest), native_glyph_info_ptr(src), glyph_count * native_glyph_info_size);
     native_glyph_count(dest) := glyph_count;
   end
 end;
@@ -6735,7 +6736,7 @@ native_word_node: begin words:=native_size(p);
   r:=get_node(words);
   while words > 0 do
     begin decr(words); mem[r+words]:=mem[p+words]; end;
-  native_glyph_info_ptr(r):=0; native_glyph_count(r):=0;
+  native_glyph_info_ptr(r):=null_ptr; native_glyph_count(r):=0;
   copy_native_glyph_info(p, r);
   end;
 glyph_node: begin r:=get_node(glyph_node_size);
@@ -7018,7 +7019,7 @@ begin
 			dvi_two(native_glyph(p));
 			cur_h := cur_h + width(p);
 		end else begin
-			if native_glyph_info_ptr(p) <> 0 then begin
+			if native_glyph_info_ptr(p) <> null_ptr then begin
 				len := make_xdv_glyph_array_data(p);
 				for k := 0 to len-1 do
 					dvi_out(xdv_buffer_byte(k));
@@ -8215,7 +8216,7 @@ begin
 	native_length(q) := n;
 
 	native_glyph_count(q) := 0;
-	native_glyph_info_ptr(q) := 0;
+	native_glyph_info_ptr(q) := null_ptr;
 
 	new_native_word_node := q;
 end;
@@ -8272,7 +8273,7 @@ begin
 
 		native_size(p) := native_node_size + 1;
 		native_glyph_count(p) := 0;
-		native_glyph_info_ptr(p) := 0;
+		native_glyph_info_ptr(p) := null_ptr;
 		native_font(p) := f;
 
 		if c > @"FFFF then begin
