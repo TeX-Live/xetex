@@ -224,47 +224,12 @@ bool GlyphInfo::erroneous()
 	// Constructor
 GlyphIterator::GlyphIterator(Segment & seg, size_t iginf)
 : _itr(seg.m_prgginf + iginf)
-#if !defined(NDEBUG)
-, _begin(seg.m_prgginf), 
-_end(seg.m_prgginf + seg.m_cginf)
-#endif	
 {}
 
 GlyphIterator::GlyphIterator(const GlyphSetIterator &set_itr)
 : _itr(set_itr->segment().m_prgginf + set_itr->logicalIndex())
-#if !defined(NDEBUG)
-, _begin(set_itr->segment().m_prgginf), 
-_end(set_itr->segment().m_prgginf + set_itr->segment().m_cginf)
-#endif	
 {}
-
-GlyphIterator & GlyphIterator::operator++() throw() {
-	GrAssert(_itr < _end); 
-	++_itr; 
-	return *this;
-}
-
-GlyphIterator & GlyphIterator::operator--() throw() { 
-	GrAssert(_begin <= _itr); 
-	--_itr; 
-	return *this;
-}
-
-GlyphIterator & GlyphIterator::operator+=(difference_type n) throw() { 
-	_itr += n; 
-	GrAssert(_itr <= _end); 
-	return *this; 
-}
-
-GlyphIterator::difference_type GlyphIterator::operator-(const GlyphIterator & rhs) const throw()	{ 
-	GrAssert(isComparable(rhs)); 
-	return _itr - rhs._itr; 
-}
  
-GlyphIterator::reference	  GlyphIterator::operator[](difference_type n) const { 
-	return _itr[n]; 
-}
-
 /*----------------------------------------------------------------------------------------------
  Dereference the iterator, returning a GlyphInfo object.
 ----------------------------------------------------------------------------------------------*/
@@ -272,7 +237,6 @@ GlyphIterator::reference	  GlyphIterator::operator[](difference_type n) const {
 GlyphSetIterator::reference GlyphSetIterator::operator*() const
 {
 	assert(_seg_ptr);
-	assert(_begin <= _itr && _itr < _end);
 														// in the case of a non-contiguous list
 	return _seg_ptr->m_prgginf[(*_itr) - _seg_ptr->m_isloutGinf0];
 }

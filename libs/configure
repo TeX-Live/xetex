@@ -2247,7 +2247,7 @@ if test "$needs_graphite" = no; then
   LDGRAPHITE=
   GRAPHITEDEP=
 else
-  GRAPHITECPPFLAGS='-DNDEBUG -I$(GRAPHITESRCDIR)/include'
+  GRAPHITECPPFLAGS='-I$(GRAPHITESRCDIR)/include'
   LDGRAPHITE='$(GRAPHITEDIR)/src/.libs/libgraphite.a'
   GRAPHITEDEP='$(GRAPHITEDIR)/src/.libs/libgraphite.a'
 fi

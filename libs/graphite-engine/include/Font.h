@@ -385,7 +385,6 @@ protected:
 	isocode LanguageCode(size_t ilang);
 
 	virtual void UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic);
-	static bool FontHasGraphiteTables(Font & font);
 
 private:
 	FontFace * m_pfface;	// set up with Graphite tables
