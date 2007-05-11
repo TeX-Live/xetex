@@ -2741,7 +2741,7 @@ else  begin u_close(read_file[m]); read_open[m]:=closed;
 if (cur_cmd>active_char)or(cur_chr>255) then {not a character}
   begin m:=relax; n:=256;
 @y
-if (cur_cmd>active_char)or(cur_chr>biggest_char) then {not a character}
+if (cur_cmd>active_char)or(cur_chr>biggest_usv) then {not a character}
   begin m:=relax; n:=too_big_char;
 @z
 
@@ -2749,7 +2749,7 @@ if (cur_cmd>active_char)or(cur_chr>biggest_char) then {not a character}
 if (cur_cmd>active_char)or(cur_chr>255) then
   begin cur_cmd:=relax; cur_chr:=256;
 @y
-if (cur_cmd>active_char)or(cur_chr>biggest_char) then
+if (cur_cmd>active_char)or(cur_chr>biggest_usv) then
   begin cur_cmd:=relax; cur_chr:=too_big_char;
 @z
 
@@ -6596,7 +6596,8 @@ primitive("pdfsavepos",extension,pdf_save_pos_node);@/
   pdf_file_code:print_esc("XeTeXpdffile");
   glyph_code:print_esc("XeTeXglyph");
   XeTeX_linebreak_locale_extension_code:print_esc("XeTeXlinebreaklocale");
-
+  XeTeX_input_encoding_extension_code:print_esc("XeTeXinputencoding");
+  XeTeX_default_encoding_extension_code:print_esc("XeTeXdefaultencoding");
   pdf_save_pos_node: print_esc("pdfsavepos");
 @z
 
