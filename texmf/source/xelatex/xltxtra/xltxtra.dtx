@@ -1,23 +1,45 @@
 % \iffalse
+%<*internal>
+\iffalse
+%</internal>
+%<*readme>
+------------------------
+THE XLTXTRA PACKAGE v0.3
+
+This package provides a few small features that 
+are useful for XeLaTeX.
+
+It loads the fixltx2e and etex packages and
+patches a couple of other LaTeX commands: 
+ \-: for discretionary hyphenation with variable
+     hyphenation characters, and 
+ \textsuperscript & \textsubscript:
+     now use fontspec to access
+     real superior/inferior characters,
+ \emph: uses NFSS information to determine
+     when to enter \eminnershape,
+ \showhyphens: now works.
+
+Defines logos \XeTeX and \XeLaTeX.
+
+Defines the dubiously useful commands
+ \vfrac - for vulgar fractions with fontspec
+ \namedglyph - to access font glyphs by name
+ 
+For more info see the documentation xltxtra.pdf.
+
+--------------
+Will Robertson
+2006/2007
+Distributed under the LaTeX Project Public License
+%</readme>
+%<*internal>
+\fi
+%</internal>
 %
-%!TEX encoding = UTF-8 Unicode
-%
-% Copyright (C) 2006 by Will Robertson <wspr81@gmail.com>
-% 
-% Distributable under the LaTeX Project Public License,
-% version 1.3c or higher (your choice). The latest version of
-% this license is at: http://www.latex-project.org/lppl.txt
-%
-% This work is "maintained" (as per LPPL maintenance status) 
-% by Will Robertson.
-% 
-% This work consists of the file  xltxtra.dtx
-%           and the derived files xltxtra.sty and xltxtra.pdf.
-%
-%
-%<*internalbatchfile>
+%<*internal>
 \begingroup
-%</internalbatchfile>
+%</internal>
 %<*batchfile>
 \input docstrip.tex
 \keepsilent
@@ -25,14 +47,14 @@
 
   ____________________________
   The xltxtra package         
-  (C) 2006  Will Robertson    
+  (C) 2006/2007  Will Robertson    
   License information appended
 
 
 \endpreamble
 \postamble
 
-Copyright (C) 2006 by Will Robertson <wspr81@gmail.com>
+Copyright (C) 2006/2007 by Will Robertson <wspr81@gmail.com>
 
 Distributable under the LaTeX Project Public License,
 version 1.3c or higher (your choice). The latest version of
@@ -47,15 +69,17 @@ This work consists of the file  \jobname.dtx
 \endpostamble
 \askforoverwritefalse
 \generate{\file{\jobname.sty}{\from{\jobname.dtx}{package}}}
+%</batchfile>
+%<batchfile>\endbatchfile
+%<*internal>
 \generate{\file{\jobname.ins}{\from{\jobname.dtx}{batchfile}}}
 \nopreamble\nopostamble
 \generate{\file{README.txt}{\from{\jobname.dtx}{readme}}}
 \generate{\file{dtx-style.sty}{\from{\jobname.dtx}{dtx-style}}}
-%</batchfile>
-%<batchfile>\endbatchfile
-%<*internalbatchfile>
 \endgroup
-%</internalbatchfile>
+\immediate\write18{makeindex -s gind.ist -o \jobname.ind  \jobname.idx}
+\immediate\write18{makeindex -s gglo.ist -o \jobname.gls  \jobname.glo}
+%</internal>
 %
 %<*driver>
 \documentclass[12pt]{ltxdoc}
@@ -69,27 +93,6 @@ This work consists of the file  \jobname.dtx
 \end{document}
 %</driver>
 %
-%<*readme>
-------------------------
-THE XLTXTRA PACKAGE v0.3
-
-This package provides a few small features that 
-are useful for XeLaTeX.
-
-It loads the fixltx2e and etex packages, and
-patches a couple of other LaTeX commands: \-
-for discretionary hyphenation with variable
-hyphenation characters, and \textsuperscript/
-\textsubscript that use the fontspec to access
-real superior/inferior characters. It also
-provides a parameterised logos for \TeX, 
-\LaTeX and \XeTeX.
-
---------------
-Will Robertson
-2006
-%</readme>
-%
 % \fi
 %
 % \errorcontextlines=999
@@ -97,29 +100,169 @@ Will Robertson
 %
 % \GetFileInfo{\jobname.sty}
 %
-% \title{The \pkg{xltxtra} package}
+% \title{The \pkg{\jobname} package}
 % \author{Will Robertson}
 % \date{\filedate \qquad \fileversion}
 %
 % \maketitle
-% \tableofcontents
 %
 % \section{Introduction}
 %
-% This document describes the \pkg{xltxtra} package. It implements in general
+% This document describes the \pkg{xltxtra} package. 
+% It implements some odds-and-ends features and
 % improved functionality for broken or sub-standard \LaTeX\ methods when using the
 % \XeTeX\ format.
 %
-% Documentation is slim, and a bit ugly at this stage. I intend to improve it at some stage\dots Anyway, look through the sections to see what's contained within.
+% \subsection{Usage}
+% Easy: |\usepackage{xltxtra}|. This package automatically loads the following packages: \pkg{fixltx2e}, \pkg{etex}, \pkg{xunicode}, \pkg{fontspec}.
+%
+% There are some package options to disable various functionality that could clash with other things:
+% \begin{description}[font=\ttfamily]
+% \item[no-sscript] Swaps the definitions of \cmd\textsubscript\ and \cmd\textsuperscript\ with their respective starred versions, as described in \secref{sscript}.
+% \item[no-emph] Disables the redefinition of \cmd\emph\ and \cmd\em\ described in \secref{emph}.
+% \item[no-logos] Disables the redefinition of \cmd\TeX, etc. described in \secref{logos}, but \emph{does} still define the \cmd\XeTeX\ and \cmd\XeLaTeX\ logo commands.
+% \item[no-hyphen] Disables the redefinition of \cmd\-\ (probably harmless anyway) described in \secref{hyphen}.
+% \end{description}
+%
+% \section{Features}
+%
+% \subsection{\cmd\textsuperscript\ and \cmd\textsubscript}
+% \seclabel{sscript}
+%
+% These two macros have been redefined to take advantage, if possible, of actual superior or inferior glyphs in the main document font. This is very important for high-quality typesetting — compare this first example to the third; yes, they are the same font.
+% \begin{quotation}\color{niceblue}
+%	\fontspec{Hoefler Text}
+%	  |\textsuperscript     | \textsuperscript{abcdefghijklmnopqrstuvwxyz1234567890}\par
+%	  |\textsubscript       | \textsubscript{abcdefghijklmnopqrstuvwxyz1234567890}
+% \end{quotation}
+% But will fall back on `faked' ones if they don't exist: 
+% (this is {\fontspec{Didot} Didot})
+% \begin{quotation}\color{niceblue}
+%	\fontspec{Didot}
+%	  |\textsuperscript     | \textsuperscript{abcdefghijklmnopqrstuvwxyz1234567890}\par
+%	  |\textsubscript       | \textsubscript{abcdefghijklmnopqrstuvwxyz1234567890}
+% \end{quotation}
+% The original definitions are available in starred verions of the commands:
+% \begin{quotation}\color{niceblue}
+%	\fontspec{Hoefler Text}
+%	  |\textsuperscript*    | \textsuperscript*{abcdefghijklmnopqrstuvwxyz1234567890}\par
+%	  |\textsubscript*      | \textsubscript*{abcdefghijklmnopqrstuvwxyz1234567890}
+% \end{quotation}
+% But beware fonts lacking the full repertoire: (this is Adobe Jenson Pro)
+% \begin{quotation}\color{niceblue}
+%	\fontspec{Adobe Jenson Pro}
+%	  |\textsuperscript     | \makebox[0pt][l]{\textsuperscript{abcdefghijklmnopqrstuvwxyz1234567890}}\par
+%	  |\textsubscript       | \makebox[0pt][l]{\textsubscript{abcdefghijklmnopqrstuvwxyz1234567890}}
+% \end{quotation}
+%
+% The \pkgopt{no-sscript} will swap the definitions of the starred and non-starred versions of the commands described above if the new definitions are undesirable.
+%
+% The macros
+% \cmd\realsubscript, 
+% \cmd\realsuperscript, 
+% \cmd\fakesubscript, and 
+% \cmd\fakesuperscript\
+% may be used to access the `new' and `old' functionalities regardless of the \pkgopt{no-sscript}.
+%
+% \subsection{Inner emphasis}
+% \seclabel{emph}
+%
+% \pkg{fixltx2e}'s method for checking for ``inner'' emphasis is a little fragile in \XeTeX, because
+% font slant information might be missing from the font. Therefore, we use \LaTeX's \acro{NFSS}
+% information, which is more likely to be correct.
+%
+% \begin{example}
+%   \renewcommand\eminnershape{\scshape}
+%   \fontspec{Didot}
+%   Nested {\em emphasis is 
+%               \emph{now} fixed.}
+% \end{example}
+%
+% The \pkgopt{no-emph} will disable this redefinition.
+%
+% \subsection{Unicode footnote symbols}
+% By default \LaTeX\ defines symbolic footnote characters in terms of commands 
+% that don't resolve well; better results can be achieved by using specific unicode characters or proper LICRs with the \pkg{xunicode} package.
+%
+% This problem has been solved by loading the 
+% \pkg{fixltx2e} and \pkg{xunicode} packages in \pkg{xltxtra}.
+%
+% \subsection{Logos}
+% \seclabel{logos}
+%
+% This part of the package essentially exists to define the \cmd\XeTeX\ and \cmd\XeLaTeX\ logos. Here're some examples. The default:
+% \begin{example}
+%   \TeX\ \XeTeX\ \LaTeX\ \XeLaTeX
+% \end{example}
+% \noindent Notice it's a bit tight compared to not using Computer Modern, for which the logos were designed:
+% \begin{example}
+%   \usefont{OT1}{cmr}{m}{n}
+%   \TeX\ \XeTeX\ \LaTeX\ \XeLaTeX
+% \end{example}
+%
+% Look in the implementation corresponding to this section to see how to customise the spacings in these logos, but be warned it's fairly crude and may change in the future.
+%
+% The \pkgopt{no-logos} will not redefine \cmd\TeX\ or \cmd\LaTeX\ but will still define \cmd\XeTeX\ and \cmd\XeLaTeX. (The only advantage for not doing this is more consistency when customising the spacing, which isn't really recommended anyway\dots)
+% 
+% \subsection{Discrectionary hyphenation: \cmd\-}
+% \seclabel{hyphen}
+%
+% \LaTeX\ defines the macro \cmd\-\ to insert discretionary hyphenation points.
+% However, it is hard-coded in \LaTeX\ to use the hyphen |-| character. Since \pkg{fontspec}
+% makes it easy to change the hyphenation character on a per font basis, it would
+% be nice if \cmd\-\ adjusted automatically — and now it does.
+%
+% \subsection{Vulgar fractions}
+% The \cmd\vfrac\ command for setting `vulgar' fractions based on AAT or OpenType font features. Not really recommended for many purposes, depending on your text, but it's a good example of how to program such things using \pkg{fontspec}.
+% \begin{example}
+%   \fontspec{Hoefler Text}
+%   AAT: \vfrac{123}{456}\par
+%   \fontspec{Warnock Pro}
+%   ICU: \vfrac{123}{456}
+% \end{example}
+% \noindent (This can be achieved in regular \LaTeX\ with the \pkg{nicefrac} package, but don't believe its name: these fractions aren't nice!)
+%
+% Only use it when you know it will work; no warnings are given if the font doesn't support it.
+%
+% \subsection{Named glyphs}
+% Along the way somewhere, \XeTeX\ added support for selecting glyphs from a TrueType-based OpenType font based on their internal glyph name. Jonathan Kew posted the following definition as a nice interface to it.
+% \begin{example}
+%   \fontspec{Charis SIL}
+%   \namedglyph{yen}
+%   \namedglyph{smile}
+% \end{example}
+%
+% \subsection{The \cmd\showhyphens\ command}
+% The default definition doesn't work in \XeTeX. 
+% A new version, written by Jonathan Kew, is included in the package that \emph{does} work. Minor differences with the original: the showing of hyphens in the console output will be marked with explanatory text. Also, multiple words, separated by commas, will end up in separate instances of `showing hyphens'.
+% \showhyphens{discomedusoid, discommodiousness}
 %
 % \part{The \textsf{xltxtra} package}
 %\iffalse
 %<*package>
 %\fi
-% This is the package.
+% This is the package implementation.
+%
 %    \begin{macrocode}
 \ProvidesPackage{xltxtra}
-  [2006/06/13 v0.2 Improvements for the XeTeX/LaTeX format]  
+  [2006/05/30 v0.3 Improvements for the "XeLaTeX" format]  
+%    \end{macrocode}
+%
+% \changes{v0.3}{2007/05/29}{Added proper documentation.}
+% \changes{v0.3}{2007/05/29}{Added \texttt{no-} package options to restrict functionality.}
+% \PrintChanges
+%
+% \paragraph{Option processing}
+%    \begin{macrocode}
+\newif\if@xxt@nosscript@
+\newif\if@xxt@nologos@
+\newif\if@xxt@nohyphen@
+\newif\if@xxt@noemph@
+\DeclareOption{no-sscript}{\@xxt@nosscript@true}
+\DeclareOption{no-logos}{\@xxt@nologos@true}
+\DeclareOption{no-hyphen}{\@xxt@nohyphen@true}
+\DeclareOption{no-emph}{\@xxt@noemph@true}
+\ProcessOptions*
 %    \end{macrocode}
 %
 % \paragraph{Required packages}
@@ -130,6 +273,8 @@ Will Robertson
 \RequirePackage{fontspec}
 \RequirePackage{xunicode}
 %    \end{macrocode}
+%
+% \section{Programmming bits and pieces}
 %
 % \section{Logos}
 % \DescribeMacro{\XeTeX}
@@ -144,19 +289,6 @@ Will Robertson
 % side-effects in \XeTeX\ of often overrunning the \cmd\baselineskip.
 % Putting the logos in zero-height boxes prevents this problem.
 % Actually, this problem doesn't happen anymore.
-%
-% Here're some examples. The default:
-% \begin{example}
-%   \TeX\ \XeTeX\ \LaTeX\ \XeLaTeX
-% \end{example}
-% Notice it's a bit tight when not using Computer Modern, as here:
-% \begin{example}
-%   \usefont{OT1}{cmr}{m}{n}
-%   \TeX\ \XeTeX\ \LaTeX\ \XeLaTeX
-% \end{example}
-% This package provides a \emph{non-stable} method of specifying
-% the spacings in these logos. In the future, it will hopefully adjust
-% somewhat automatically.
 %
 % \noindent To do:
 % \begin{itemize}[noitemsep]
@@ -202,6 +334,7 @@ Will Robertson
   \setlength\xxt@kern@aT{#5}%  
   \setlength\xxt@kern@eL{#6}%  
 }
+\unless\if@xxt@nologos@
 \DeclareRobustCommand\TeX{%
   \leavevmode
   \smash{%
@@ -221,6 +354,7 @@ Will Robertson
   }% 
   \kern\xxt@kern@aT
   \TeX}}  
+\fi
 \DeclareRobustCommand\XeTeX{%
   \leavevmode
   \smash{%
@@ -280,29 +414,17 @@ Will Robertson
 \RequirePackage{etex}
 %    \end{macrocode}
 %
-% \section{Unicode footnote symbols}
-% \LaTeX\ defines footnote symbols with LICRs that don't resolve well 
-% with the \pkg{xunicode} package; better results can be achieved by
-% using specific unicode characters.
-%
-% This problem is solved by the \pkg{fixltx2e} package.
+% \subsection{Unicode footnote symbols}
 %    \begin{macrocode}
 \RequirePackage{fixltx2e}[2006/03/24]
 %    \end{macrocode}
 %
-% \section{\cmd\eminnershape}
+% \subsection{Emph}
+%    \begin{macrocode}
+\unless\if@xxt@noemph@
+%    \end{macrocode}
 % \begin{macro}{\em}
 % \begin{macro}{\emph}
-% \pkg{fixltx2e}'s method for checking for ``inner'' emphasis is a little fragile in \XeTeX, because
-% font slant information might be missing from the font. Therefore, we use \LaTeX's \acro{NFSS}
-% information, which is more likely to be correct.
-%
-% \begin{example}
-%   \renewcommand\eminnershape{\scshape}
-%   \fontspec{Didot}
-%   Nested {\em emphasis is \emph{now} fixed.}
-% \end{example}
-%
 %    \begin{macrocode}
 \DeclareRobustCommand\em 
   {\@nomath\em 
@@ -319,21 +441,16 @@ Will Robertson
 %    \end{macrocode}
 % \changes{v0.2}{2006/08/12}{Migrated from \textsf{fontspec}.}
 % \end{macro} \end{macro}
-%
-%
-% \section{Programmming bits and pieces}
-%
-% Thanks to a long-ago c.t.t.\ post by Robin Fairbairns for the code how to \cmd\let\ a robust macro.
 %    \begin{macrocode}
-\newcommand*\robust@let@nc[2]{%
-  \expandafter\let\expandafter#1\csname #2 \endcsname}
+\fi
 %    \end{macrocode}
 %
-% \section{\cmd\-}
-% \LaTeX\ defines the macro \cmd\-\ to insert discretionary hyphenation points.
-% However, it is hard-coded to use the hyphen |-| character. Since \pkg{fontspec}
-% makes it easy to change the hyphenation character on a per font basis, it would
-% be nice if \cmd\-\ adjusted automatically.
+%
+%
+% \subsection{\cmd\-}
+%    \begin{macrocode}
+\unless\if@xxt@nohyphen@
+%    \end{macrocode}
 %
 % \begin{macro}{\-}
 % This macro is courtesy of Frank Mittelbach and the \LaTeXe\ source code.
@@ -350,67 +467,69 @@ Will Robertson
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented; from the \LaTeXe\ sources.}
 % \end{macro}
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
 %
-% \section{\cmd\textsuperscript\ and \cmd\textsubscript}
-%
-% The new macros now allow real text inferiors and superiors:
-% \begin{quotation}
-%	\fontspec{Hoefler Text}
-%	  |\textsuperscript     | \textsuperscript{abcdefghijklmnopqrstuvwxyz1234567890}\par
-%	  |\textsubscript       | \textsubscript{abcdefghijklmnopqrstuvwxyz1234567890}
-% \end{quotation}
-% As opposed to fake ones:
-% \begin{quotation}
-%	\fontspec{Hoefler Text}
-%	  |\textsuperscript*    | \textsuperscript*{abcdefghijklmnopqrstuvwxyz1234567890}\par
-%	  |\textsubscript*      | \textsubscript*{abcdefghijklmnopqrstuvwxyz1234567890}
-% \end{quotation}
-% Or:
-% \begin{quotation}
-%	\fontspec{Hoefler Text}
-%	  |\faketextsuperscript | \textsuperscript*{abcdefghijklmnopqrstuvwxyz1234567890}\par
-%	  |\faketextsubscript   | \textsubscript*{abcdefghijklmnopqrstuvwxyz1234567890}
-% \end{quotation}
-% But beware fonts lacking the full repertoire: (this is Adobe Jenson Pro)
-% \begin{quotation}
-%	\fontspec{Adobe Jenson Pro}
-%	  |\textsuperscript     | \textsuperscript{abcdefghijklmnopqrstuvwxyz1234567890}\par
-%	  |\textsubscript       | \textsubscript{abcdefghijklmnopqrstuvwxyz1234567890}
-% \end{quotation}
+% \subsection{Subscript and superscript}
 %
 % For OpenType fonts, the subscript feature (|subs|) is used, but if that doesn't
 % exist then the scientific inferior feature (|sinf|) is used on the assumption
-% that something's better than nothing. This assumption may prove to be a poor one,
-% and the functionality of the package may change in the future.
+% that something's better than nothing. This matches current trends in OpenType font design.
 %
-% \begin{macro}{\faketextsubscript}
-% \begin{macro}{\faketextsuperscript}
+% Footnotes are patched to use this better \cmd\textsuperscript.
+%
+% \begin{macro}{\fakesubscript}
+% \begin{macro}{\fakesuperscript}
 % The old (`fake') methods:
 %    \begin{macrocode}
-\robust@let@nc\faketextsubscript{textsubscript} 
-\robust@let@nc\faketextsuperscript{textsuperscript} 
+\DeclareRobustCommand*\fakesubscript[1]{%
+  \@textsubscript{\selectfont#1}}
+\DeclareRobustCommand*\fakesuperscript[1]{% 
+  \@textsuperscript{\selectfont#1}}
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented.}
+% \changes{v0.3}{2007/05/29}{Name change from \cmd\fakesubscript. Made robust.}
 % \end{macro}
-% \changes{v0.1}{2006/05/03}{Implemented.}
 % \end{macro}
+%
 % \begin{macro}{\textsubscript}
 % \begin{macro}{\textsubscript*}
+% \begin{macro}{\textsuperscript}
+% \begin{macro}{\textsuperscript*}
+% These commands are either defined to create fake or real sub-/super-scripts if they are starred or not, respectively. This swaps if the \pkgopt{no-sscript} is in effect.
 % Text subscripts:
 %    \begin{macrocode}
-\DeclareRobustCommand*\textsubscript{%
-  \@ifstar{\faketextsubscript}{\@@textsubscript}}
-\newcommand\@@textsubscript[1]{%
+\if@xxt@nosscript@
+  \DeclareRobustCommand*\textsubscript{%
+    \@ifstar{\realsubscript}{\fakesubscript}}
+  \DeclareRobustCommand*\textsuperscript{%
+    \@ifstar{\realsuperscript}{\fakesuperscript}}
+\else
+  \DeclareRobustCommand*\textsubscript{%
+    \@ifstar{\fakesubscript}{\realsubscript}}
+  \DeclareRobustCommand*\textsuperscript{%
+    \@ifstar{\fakesuperscript}{\realsuperscript}}
+\fi
+%    \end{macrocode}
+% \changes{v0.1}{2006/05/03}{Implemented.}
+% \end{macro}\end{macro}\end{macro}
+% \changes{v0.3}{2007/05/29}{Adjusted, made robust (with friends `super' and starred).}
+% \end{macro}
+%
+% \begin{macro}{\realsubscript}
+%    \begin{macrocode}
+\DeclareRobustCommand*\realsubscript[1]{%
   \begingroup
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
     \ifzf@atsui
       \zf@make@aat@feature@string{10}{2}%
-      \unless\ifx\zf@thisfontfeature\@empty
+      \unless\ifx\@tempa\@empty
         {\addfontfeature{VerticalPosition=Inferior}#1}%
       \else
-        \faketextsubscript{#1}%
+        \fakesubscript{#1}%
       \fi
     \fi
     \ifzf@icu
@@ -422,33 +541,30 @@ Will Robertson
         \if@tempswa
           {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
         \else
-          \faketextsubscript{#1}%
+          \fakesubscript{#1}%
         \fi
       \fi
     \fi
   \endgroup}
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented.}
+% \changes{v0.3}{2007/05/29}{Fixes to catch up with fontspec. Name change.}
 % \end{macro}
-% \changes{v0.1}{2006/05/03}{Implemented.}
-% \end{macro}
-% \begin{macro}{\textsuperscript}
-% \begin{macro}{\textsuperscript*}
+%
+% \begin{macro}{\realsuperscript}
 % Text superscripts:
 %    \begin{macrocode}
-\DeclareRobustCommand*\textsuperscript{%
-  \@ifstar{\faketextsuperscript}{\@@textsuperscript}}
-\newcommand\@@textsuperscript[1]{%
+\DeclareRobustCommand*\realsuperscript[1]{%
   \begingroup
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
     \ifzf@atsui
       \zf@make@aat@feature@string{10}{1}%
-      \unless\ifx\zf@thisfontfeature\@empty
+      \unless\ifx\@tempa\@empty
         {\addfontfeature{VerticalPosition=Superior}#1}%
       \else
-        \faketextsuperscript{#1}%
+        \fakesuperscript{#1}%
       \fi
     \fi
     \ifzf@icu
@@ -456,25 +572,24 @@ Will Robertson
       \if@tempswa
         {\addfontfeature{VerticalPosition=Superior}#1}%
       \else
-        \faketextsuperscript{#1}%
+        \fakesuperscript{#1}%
       \fi
     \fi
   \endgroup}
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented.}
-% \end{macro}
-% \changes{v0.1}{2006/05/03}{Implemented.}
+% \changes{v0.3}{2007/05/29}{Fixes to catch up with fontspec. Name change.}
 % \end{macro}
 %
-% \section{\cmd\vfrac}
-% A command for setting vulgar fractions based on AAT or OpenType font features. 
-% Not really recommended for many purposes, depending on your text, but it's a good example.
-% \begin{example}
-%   \fontspec{Hoefler Text}
-%   AAT: \vfrac{123}{456}\par
-%   \fontspec{Warnock Pro}
-%   ICU: \vfrac{123}{456}
-% \end{example}
+% Patching footnotes:
+% \begin{macro}{\@makefnmark}
+%    \begin{macrocode}
+\def\@makefnmark{\mbox{\normalfont\textsuperscript{\@thefnmark}}}
+%    \end{macrocode}
+% \changes{v0.2}{2007/02/04}{Footnotes patched to use new \cmd\textsuperscript.}
+% \changes{v0.3}{2007/05/29}{Footnote symbol put in an mbox.}
+% \end{macro}
+%
 % \begin{macro}{\vfrac}
 % \darg{Numerator}
 % \darg{Denominator}
@@ -501,13 +616,6 @@ Will Robertson
 % \changes{v0.1}{2006/05/03}{Implemented.}
 % \end{macro}
 %
-% \section{Named glyphs}
-% Along the way somewhere, \XeTeX\ added support for selecting glyphs from a TrueType-based OpenType font based on their internal glyph name. Jonathan Kew posted the following definition as a nice interface to it.
-% \begin{example}
-%   \fontspec{Charis SIL}
-%   \namedglyph{yen}
-%   \namedglyph{smile}
-% \end{example}
 % \begin{macro}{\namedglyph}
 % \darg{Name of the font glyph to be typeset}
 %    \begin{macrocode}
@@ -529,12 +637,43 @@ Will Robertson
 % \changes{v0.2}{2006/08/12}{Implemented.}
 % \end{macro}
 %
+%
+% \begin{macro}{\showhyphens}
+% This macro is entirely due to Jonathan Kew. 
+% I wish I knew how to write these sorts of things.
+%    \begin{macrocode}
+\newbox\xxt@tempbox
+\def\showhyphens#1{%
+  \typeout{^^J*********************** 
+           \string\showhyphens: 
+           ***********************}%
+  \@for\@ii:=#1\do{\xxt@showhyphens{\@ii}}%
+  \typeout{^^J***********************%
+           ***************%
+           ***********************^^J}}
+\def\xxt@showhyphens#1{%
+   \setbox\@tempboxa=\vbox{%
+     \hsize1sp \hbadness10000 \hfuzz\maxdimen
+     \everypar={} \leftskip\z@ \rightskip\leftskip 
+     \pretolerance\m@ne \noindent \hskip\z@ #1\par
+     \global\setbox\xxt@tempbox=\hbox{}\xxt@sh@cat}%
+   \setbox\@tempboxa=\hbox to \maxdimen{\unhbox\xxt@tempbox}}
+\def\xxt@sh@cat{\unskip\unpenalty
+   \setbox\@tempboxa=\lastbox 
+   \unless\ifvoid\@tempboxa 
+     \global\setbox\xxt@tempbox=\hbox{%
+       \unhbox\@tempboxa
+       \unskip\unskip
+       \unhbox\xxt@tempbox}%
+     \expandafter\xxt@sh@cat
+   \fi}
+%    \end{macrocode}
+% \changes{v0.3}{2007/05/30}{Implemented.}
+% \end{macro}
+%
 %\iffalse
 %</package>
 %\fi
-%
-% \clearpage
-% \PrintChanges
 %
 % \clearpage
 % \PrintIndex
@@ -548,11 +687,6 @@ Will Robertson
 
 \def\@dotsep{1000}
 \setcounter{tocdepth}{2}
-\setlength\columnseprule{0.4pt}
-\renewcommand\tableofcontents{\relax
-  \begin{multicols}{2}[\section*{\contentsname}]\relax
-    \@starttoc{toc}\relax
-  \end{multicols}}
 
 \setcounter{IndexColumns}{2}
 \renewenvironment{theglossary}
@@ -564,7 +698,7 @@ Will Robertson
   {\endlist}
 
 \usepackage{array,booktabs,calc,color,enumitem,fancyvrb,graphicx,ifthen,longtable,refstyle,varioref}
-\usepackage{fontspec,ifxetex,xunicode,xltxtra}
+\usepackage{fontspec,xunicode,xltxtra}
 \setromanfont[WordSpace=0.9,Mapping=tex-text,
   BoldFont=Hoefler Text,
   ItalicFeatures={Contextuals={NoWordFinal,NoLineFinal}}]{Hoefler Text}
@@ -575,15 +709,20 @@ Will Robertson
 \frenchspacing         % Remove ugly extra space after punctuation
   
 \definecolor{niceblue}{rgb}{0.2,0.4,0.6}
+\def\theCodelineNo{\textcolor{niceblue}{\sffamily\tiny\arabic{CodelineNo}}}
+
 \newenvironment{example}
   {\VerbatimEnvironment
-   \par\noindent\hrulefill\nobreak\par\nobreak
+   \begin{trivlist}\item[]
+   \begin{minipage}{\linewidth}
+   \par\noindent\hrulefill\par
    \begin{VerbatimOut}[gobble=4]{\examplefilename}}
   {\end{VerbatimOut}\relax
    \begingroup
      \color{niceblue}
      \typesetexample
-   \endgroup\nobreak\par\nobreak\noindent\hrulefill\nobreak\par}
+   \endgroup\par\noindent\hrulefill\par
+   \end{minipage}\end{trivlist}}
 
 \let\examplesize\normalsize
 \let\auxwidth\relax
@@ -620,7 +759,8 @@ Will Robertson
 \newcommand*\setverbwidth[1]{\def\auxwidth{#1}}
 
 \newcommand*\name[1]{{#1}}
-\newcommand*\pkg[1]{\textsf{#1}}
+\newcommand*\pkg[1]{\texttt{#1}}
+\newcommand*\pkgopt[1]{\texttt{[#1]} package option}
 
 \newcommand*\acro[1]{\textsc{\MakeLowercase{#1}}}
 

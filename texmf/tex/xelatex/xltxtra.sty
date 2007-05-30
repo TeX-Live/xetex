@@ -8,12 +8,21 @@
 %% 
 %%   ____________________________
 %%   The xltxtra package
-%%   (C) 2006  Will Robertson
+%%   (C) 2006/2007  Will Robertson
 %%   License information appended
 %% 
 %% 
 \ProvidesPackage{xltxtra}
-  [2006/06/13 v0.2 Improvements for the XeTeX/LaTeX format]
+  [2006/05/30 v0.3 Improvements for the "XeLaTeX" format]
+\newif\if@xxt@nosscript@
+\newif\if@xxt@nologos@
+\newif\if@xxt@nohyphen@
+\newif\if@xxt@noemph@
+\DeclareOption{no-sscript}{\@xxt@nosscript@true}
+\DeclareOption{no-logos}{\@xxt@nologos@true}
+\DeclareOption{no-hyphen}{\@xxt@nohyphen@true}
+\DeclareOption{no-emph}{\@xxt@noemph@true}
+\ProcessOptions*
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \RequirePackage{graphicx}
@@ -33,6 +42,7 @@
   \setlength\xxt@kern@aT{#5}%
   \setlength\xxt@kern@eL{#6}%
 }
+\unless\if@xxt@nologos@
 \DeclareRobustCommand\TeX{%
   \leavevmode
   \smash{%
@@ -52,6 +62,7 @@
   }%
   \kern\xxt@kern@aT
   \TeX}}
+\fi
 \DeclareRobustCommand\XeTeX{%
   \leavevmode
   \smash{%
@@ -98,6 +109,7 @@
 \TeX@logo@spacing{-0.15em}{-0.15em}{0.5ex}{-0.36em}{-0.15em}{-0.1em}
 \RequirePackage{etex}
 \RequirePackage{fixltx2e}[2006/03/24]
+\unless\if@xxt@noemph@
 \DeclareRobustCommand\em
   {\@nomath\em
    \edef\@tempa{\f@shape}%
@@ -110,8 +122,8 @@
 \DeclareTextFontCommand{\emph}{\em}
 \let\emshape\itshape
 \let\eminnershape\upshape
-\newcommand*\robust@let@nc[2]{%
-  \expandafter\let\expandafter#1\csname #2 \endcsname}
+\fi
+\unless\if@xxt@nohyphen@
 \DeclareRobustCommand{\-}{%
   \discretionary{%
     \char\ifnum\hyphenchar\font<\z@
@@ -120,21 +132,33 @@
            \hyphenchar\font
          \fi}{}{}}
 \def\xlx@defaulthyphenchar{`\-}
-\robust@let@nc\faketextsubscript{textsubscript}
-\robust@let@nc\faketextsuperscript{textsuperscript}
-\DeclareRobustCommand*\textsubscript{%
-  \@ifstar{\faketextsubscript}{\@@textsubscript}}
-\newcommand\@@textsubscript[1]{%
+\fi
+\DeclareRobustCommand*\fakesubscript[1]{%
+  \@textsubscript{\selectfont#1}}
+\DeclareRobustCommand*\fakesuperscript[1]{%
+  \@textsuperscript{\selectfont#1}}
+\if@xxt@nosscript@
+  \DeclareRobustCommand*\textsubscript{%
+    \@ifstar{\realsubscript}{\fakesubscript}}
+  \DeclareRobustCommand*\textsuperscript{%
+    \@ifstar{\realsuperscript}{\fakesuperscript}}
+\else
+  \DeclareRobustCommand*\textsubscript{%
+    \@ifstar{\fakesubscript}{\realsubscript}}
+  \DeclareRobustCommand*\textsuperscript{%
+    \@ifstar{\fakesuperscript}{\realsuperscript}}
+\fi
+\DeclareRobustCommand*\realsubscript[1]{%
   \begingroup
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
     \ifzf@atsui
       \zf@make@aat@feature@string{10}{2}%
-      \unless\ifx\zf@thisfontfeature\@empty
+      \unless\ifx\@tempa\@empty
         {\addfontfeature{VerticalPosition=Inferior}#1}%
       \else
-        \faketextsubscript{#1}%
+        \fakesubscript{#1}%
       \fi
     \fi
     \ifzf@icu
@@ -146,24 +170,22 @@
         \if@tempswa
           {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
         \else
-          \faketextsubscript{#1}%
+          \fakesubscript{#1}%
         \fi
       \fi
     \fi
   \endgroup}
-\DeclareRobustCommand*\textsuperscript{%
-  \@ifstar{\faketextsuperscript}{\@@textsuperscript}}
-\newcommand\@@textsuperscript[1]{%
+\DeclareRobustCommand*\realsuperscript[1]{%
   \begingroup
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
     \ifzf@atsui
       \zf@make@aat@feature@string{10}{1}%
-      \unless\ifx\zf@thisfontfeature\@empty
+      \unless\ifx\@tempa\@empty
         {\addfontfeature{VerticalPosition=Superior}#1}%
       \else
-        \faketextsuperscript{#1}%
+        \fakesuperscript{#1}%
       \fi
     \fi
     \ifzf@icu
@@ -171,10 +193,11 @@
       \if@tempswa
         {\addfontfeature{VerticalPosition=Superior}#1}%
       \else
-        \faketextsuperscript{#1}%
+        \fakesuperscript{#1}%
       \fi
     \fi
   \endgroup}
+\def\@makefnmark{\mbox{\normalfont\textsuperscript{\@thefnmark}}}
 \newcommand*\vfrac[2]{%
   \begingroup
     \c@zf@script 1818326126\relax
@@ -199,8 +222,33 @@
     \xxt@namedglyph@fallback{#1}%
   \fi}
 \newcommand\xxt@namedglyph@fallback[1]{[#1]}
+\newbox\xxt@tempbox
+\def\showhyphens#1{%
+  \typeout{^^J***********************
+           \string\showhyphens:
+           ***********************}%
+  \@for\@ii:=#1\do{\xxt@showhyphens{\@ii}}%
+  \typeout{^^J***********************%
+           ***************%
+           ***********************^^J}}
+\def\xxt@showhyphens#1{%
+   \setbox\@tempboxa=\vbox{%
+     \hsize1sp \hbadness10000 \hfuzz\maxdimen
+     \everypar={} \leftskip\z@ \rightskip\leftskip
+     \pretolerance\m@ne \noindent \hskip\z@ #1\par
+     \global\setbox\xxt@tempbox=\hbox{}\xxt@sh@cat}%
+   \setbox\@tempboxa=\hbox to \maxdimen{\unhbox\xxt@tempbox}}
+\def\xxt@sh@cat{\unskip\unpenalty
+   \setbox\@tempboxa=\lastbox
+   \unless\ifvoid\@tempboxa
+     \global\setbox\xxt@tempbox=\hbox{%
+       \unhbox\@tempboxa
+       \unskip\unskip
+       \unhbox\xxt@tempbox}%
+     \expandafter\xxt@sh@cat
+   \fi}
 %% 
-%% Copyright (C) 2006 by Will Robertson <wspr81@gmail.com>
+%% Copyright (C) 2006/2007 by Will Robertson <wspr81@gmail.com>
 %% 
 %% Distributable under the LaTeX Project Public License,
 %% version 1.3c or higher (your choice). The latest version of
