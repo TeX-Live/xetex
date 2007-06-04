@@ -245,7 +245,7 @@ This work consists of the file  \jobname.dtx
 %
 %    \begin{macrocode}
 \ProvidesPackage{xltxtra}
-  [2006/05/30 v0.3 Improvements for the "XeLaTeX" format]  
+  [2007/05/30 v0.3 Improvements for the "XeLaTeX" format]  
 %    \end{macrocode}
 %
 % \changes{v0.3}{2007/05/29}{Added proper documentation.}
@@ -425,6 +425,7 @@ This work consists of the file  \jobname.dtx
 %    \end{macrocode}
 % \begin{macro}{\em}
 % \begin{macro}{\emph}
+% Redefinition of |{\em ...}| and |\emph{...}| to use \textsc{nfss} info to detect when the inner shape should be used.
 %    \begin{macrocode}
 \DeclareRobustCommand\em 
   {\@nomath\em 
@@ -455,7 +456,6 @@ This work consists of the file  \jobname.dtx
 % \begin{macro}{\-}
 % This macro is courtesy of Frank Mittelbach and the \LaTeXe\ source code.
 %    \begin{macrocode}
-%\CheckCommand\-{\discretionary{-}{}{}}
 \DeclareRobustCommand{\-}{%
   \discretionary{%
     \char\ifnum\hyphenchar\font<\z@
@@ -699,11 +699,10 @@ This work consists of the file  \jobname.dtx
 
 \usepackage{array,booktabs,calc,color,enumitem,fancyvrb,graphicx,ifthen,longtable,refstyle,varioref}
 \usepackage{fontspec,xunicode,xltxtra}
-\setromanfont[WordSpace=0.9,Mapping=tex-text,
-  BoldFont=Hoefler Text,
+\setromanfont[Mapping=tex-text, BoldFont=Hoefler Text,
   ItalicFeatures={Contextuals={NoWordFinal,NoLineFinal}}]{Hoefler Text}
 \setsansfont[Scale=MatchLowercase,Mapping=tex-text,BoldFont=Gill Sans]{Gill Sans}
-\setmonofont[Scale=MatchLowercase]{Andale Mono}
+\setmonofont[Scale=MatchLowercase]{Monaco}
 
 \linespread{1.05}      % A bit more space between lines
 \frenchspacing         % Remove ugly extra space after punctuation
