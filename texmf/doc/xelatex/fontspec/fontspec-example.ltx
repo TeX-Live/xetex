@@ -1,3 +1,18 @@
+%%
+%% This is file `fontspec-example.ltx',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% fontspec.dtx  (with options: `example')
+%% 
+%%   ________________________________
+%%   The fontspec package for XeLaTeX
+%%   (C) 2004--2006    Will Robertson
+%% 
+%%   License information appended.
+%% 
+%% 
 \documentclass{article}
 
 \usepackage{euler}
@@ -5,7 +20,7 @@
 \usepackage{xltxtra}
 
 \defaultfontfeatures{Scale=MatchLowercase,Mapping=tex-text}
-\setromanfont[Numbers=Lowercase]{FPL Neu}
+\setmainfont[Numbers=Lowercase]{FPL Neu}
 \setsansfont{Lucida Sans}
 \setmonofont{Lucida Sans Typewriter}
 
@@ -31,7 +46,7 @@ As an example:
   My 1st example of Apple Chancery
 \end{center}
 
-The default roman, sans serif, and typewriter fonts may be set with the \verb|\setromanfont|, \verb|\setsansfont| and \verb|\setmonofont| commands, respectively, as shown in the preamble. They take the same syntax as the \verb|\fontspec| package. All expected font shapes are available:
+The default, sans serif, and typewriter fonts may be set with the \verb|\setmainfont|, \verb|\setsansfont| and \verb|\setmonofont| commands, respectively, as shown in the preamble. They take the same syntax as the \verb|\fontspec| package. All expected font shapes are available:
 
 \begin{center}
   {\itshape Italics and \scshape small caps\dots}\\
@@ -48,3 +63,18 @@ You'll also notice the \verb|\defaultfontfeatures| command in the preamble. This
 Please see the documentation for font feature explanation and further package niceties.
 
 \end{document}
+%% 
+%% Copyright 2005-2006 by Will Robertson <wspr81@gmail.com>
+%% 
+%% Distributable under the LaTeX Project Public License,
+%% version 1.3c or higher (your choice). The latest version of
+%% this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status)
+%% by Will Robertson.
+%% 
+%% This work consists of the file  fontspec.dtx
+%%           and the derived files fontspec.sty and fontspec.pdf.
+%% 
+%%
+%% End of file `fontspec-example.ltx'.

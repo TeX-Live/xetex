@@ -12,8 +12,9 @@
 %% 
 %%   License information appended.
 %% 
+%% 
 \ProvidesPackage{fontspec}
-  [2006/12/24 v1.13a Advanced font selection for XeLaTeX]
+  [2006/12/24 v1.14 Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \newif\ifzf@firsttime
@@ -30,6 +31,7 @@
 \newif\ifzf@package@babel@loaded
 \newif\if@zf@configfile
 \newif\if@zf@euenc
+\newif\if@zf@math
 \newcount\c@zf@newff
 \newcount\c@zf@index
 \newcount\c@zf@script
@@ -43,10 +45,13 @@
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
 \DeclareOption{cm-default}{\@zf@euencfalse}
 \DeclareOption{lm-default}{\@zf@euenctrue}
+\DeclareOption{math}{\@zf@mathtrue}
+\DeclareOption{no-math}{\@zf@mathfalse}
 \DeclareOption{config}{\@zf@configfiletrue}
+\DeclareOption{no-config}{\@zf@configfilefalse}
 \DeclareOption{noconfig}{\@zf@configfilefalse}
 \DeclareOption{quiet}{\let\zf@PackageWarning\zf@PackageInfo}
-\ExecuteOptions{config,lm-default}
+\ExecuteOptions{config,lm-default,math}
 \ProcessOptions*
 \RequirePackage{ifxetex}
 \RequireXeTeX
@@ -176,8 +181,9 @@
       \xdef\zf@family@long{\zf@family@long+lang=#1}%
       \xdef\zf@pre@ff{\zf@pre@ff language=#2,}%
     \else
-      \zf@PackageWarning{Font \fontname\zf@basefont does not contain
-                         language '#1' for script '\zf@script@name'}%
+      \zf@PackageWarning{%
+        Font \fontname\zf@basefont does not contain
+        language '#1' for script '\zf@script@name'}%
     \fi}}
 \newcommand*\zf@fontspec[2]{%
   \begingroup
@@ -215,7 +221,7 @@
   \fi
   \xdef\zf@family{\@nameuse{zf@UID@\zf@family@long}}%
   \unless\ifcsname zf@family@fontname\zf@family\endcsname
-    \zf@PackageInfo{Defining font family for "#2"
+    \zf@PackageInfo{Defining font family for '#2'
           with options [\zf@default@options #1]}%
     \gdef@cx{zf@family@fontname\zf@family}{\zf@fontname}%
     \gdef@cx{zf@family@options\zf@family}{\zf@default@options #1}%
@@ -329,7 +335,7 @@
         \zf@scale"\zf@size@fnt\zf@suffix:\zf@pre@ff\zf@ff#1"}}%
   \fi
   \edef\@tempa{\noexpand
-    \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}%
+    \DeclareFontShape{\zf@enc}{\zf@family}{#2}{#3}
       {\zf@font@str}{\zf@adjust}}%
   \@tempa
   \edef\@tempa{#3}%
@@ -366,9 +372,9 @@
   \let\zf@it@feat     \@empty
   \let\zf@bfit@feat   \@empty
   \let\zf@sc@feat     \@empty
-  \let\zf@size\@empty
-  \let\zf@size@feat\@empty
-  \let\zf@size@fnt\@empty
+  \let\zf@size        \@empty
+  \let\zf@size@feat   \@empty
+  \let\zf@size@fnt    \@empty
   \c@zf@script 1818326126\relax
   \def\zf@script@name{Latin}%
   \c@zf@language 0\relax
@@ -437,7 +443,7 @@
 \newcommand*\keyval@alias@key[4][KV]{%
   \let@cc{#1@#2@#4}{#1@#2@#3}%
   \let@cc{#1@#2@#4@default}{#1@#2@#3@default}}
-\newcommand*\multi@alias@key[2]{
+\newcommand*\multi@alias@key[2]{%
   \key@ifundefined[zf]{preparse}{#1}
     {\key@ifundefined[zf]{options}{#1}
        {\zf@PackageError{The feature #1 doesn't appear to be defined}
@@ -447,7 +453,7 @@
 \newcommand*\zf@make@aat@feature@string[2]{%
   \edef\@tempa{\XeTeXfeaturename\zf@basefont #1}%
   \unless\ifx\@tempa\@empty
-    \ifnum\XeTeXisexclusivefeature\zf@basefont #1 > 0
+    \ifnum\XeTeXisexclusivefeature\zf@basefont #1>0
       \edef\@tempb{\XeTeXselectorname\zf@basefont #1 #2}%
     \else
       \unless\ifodd #2
@@ -592,9 +598,7 @@
   \unless\ifzf@firsttime\def\zf@sc@feat{,#1}\fi
   \zf@update@family{scfeat:\zap@space #1 \@empty}}
 \define@key[zf]{preparse}{SizeFeatures}{%
-  \unless\ifzf@firsttime
-    \def\zf@size@feat{#1}%
-  \fi
+  \unless\ifzf@firsttime\def\zf@size@feat{#1}\fi
   \zf@update@family{sizefeat:\zap@space #1 \@empty}}
 \define@key[zf]{sizing}{Size}{\def\zf@size{#1}}
 \define@key[zf]{sizing}{Font}{\def\zf@size@fnt{#1}}
@@ -666,15 +670,15 @@
         \zf@PackageError
           {\fontname\zf@basefont\space doesn't appear to have the glyph corresponding to #1.}
           {You can't hyphenate with a character that's not available!}
-      \fi}
+      \fi}%
     \else
       {\zf@basefont\ifnum\XeTeXcharglyph#1 > 0
         \g@addto@macro\zf@adjust{\hyphenchar\font#1\relax}%
       \else
         \zf@PackageError
           {\fontname\zf@basefont\space doesn't appear to have the glyph corresponding to #1.}
-          {You can't hyphenate with a character that's not available!}
-      \fi}
+          {You can't hyphenate with a character that's not available!}%
+      \fi}%
     \fi
   \fi}
 \def\zf@check@one@char#1#2\zf@@{\def\@tempb{#2}}
@@ -1063,7 +1067,7 @@
   \zf@merge@shape\updefault\sidefault\scdefault}
 \@ifpackageloaded{euler}{\zf@package@euler@loadedtrue}
                         {\zf@package@euler@loadedfalse}
-\AtBeginDocument{%
+\def\zf@math{%
   \let\zf@font@warning\@font@warning
   \let\@font@warning\@font@info
   \@ifpackageloaded{euler}{%
@@ -1154,6 +1158,30 @@
   \SetMathAlphabet\mathsf{bold}\zf@enc\zf@sfmaths\bfdefault\updefault
   \SetMathAlphabet\mathtt{bold}\zf@enc\zf@ttmaths\bfdefault\updefault
   \let\font@warning\zf@font@warning}
+\def\zf@math@maybe{%
+  \@ifpackageloaded{anttor}{\ifx\define@antt@mathversions a\@zf@mathfalse\fi}{}
+  \@ifpackageloaded{arev}{\@zf@mathfalse}{}
+  \@ifpackageloaded{eulervm}{\@zf@mathfalse}{}
+  \@ifpackageloaded{mathdesign}{\@zf@mathfalse}{}
+  \@ifpackageloaded{concmath}{\@zf@mathfalse}{}
+  \@ifpackageloaded{cmbright}{\@zf@mathfalse}{}
+  \@ifpackageloaded{mathesf}{\@zf@mathfalse}{}
+  \@ifpackageloaded{gfsartemisia}{\@zf@mathfalse}{}
+  \@ifpackageloaded{gfsneohellenic}{\@zf@mathfalse}{}
+  \@ifpackageloaded{iwona}{\ifx\define@iwona@mathversions a\@zf@mathfalse\fi}{}
+  \@ifpackageloaded{kpfonts}{\@zf@mathfalse}{}
+  \@ifpackageloaded{kmath}{\@zf@mathfalse}{}
+  \@ifpackageloaded{kurier}{\ifx\define@kurier@mathversions a\@zf@mathfalse\fi}{}
+  \@ifpackageloaded{fouriernc}{\@zf@mathfalse}{}
+  \@ifpackageloaded{fourier}{\@zf@mathfalse}{}
+  \@ifpackageloaded{mathpazo}{\@zf@mathfalse}{}
+  \@ifpackageloaded{mathptmx}{\@zf@mathfalse}{}
+  \@ifpackageloaded{unicode-math}{\@zf@mathfalse}{}
+  \if@zf@math
+    \zf@PackageWarning{Adjusting the maths setup^^J     (use [no-math] to avoid this)}
+    \zf@math
+  \fi}
+\AtBeginDocument{\zf@math@maybe}
 \if@zf@configfile
   \InputIfFileExists{fontspec.cfg}
     {\typeout{fontspec.cfg loaded.}}
