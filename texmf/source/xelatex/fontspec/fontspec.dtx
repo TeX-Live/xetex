@@ -1,20 +1,73 @@
 % \iffalse
-%
-%!TEX encoding = UTF-8 Unicode
-%
-% Copyright 2005 by Will Robertson <wspr81@gmail.com>
-% 
-% Distributable under the LaTeX Project Public License,
-% version 1.3c or higher (your choice). The latest version of
-% this license is at: http://www.latex-project.org/lppl.txt
-%
-% This work is "maintained" (as per LPPL maintenance status) 
-% by Will Robertson.
-% 
-% This work consists of the file  fontspec.dtx
-%           and the derived files fontspec.sty, 
-%                                 fontspec.ins, 
-%                             and fontspec.pdf.
+%<*internal>
+\iffalse
+%</internal>
+%<*readme>
+--------------------------
+THE FONTSPEC PACKAGE v1.14
+
+The fontspec package only works with XeTeX, 
+a unicode capable TeX-variant. It provides 
+an automatic and unified interface for loading 
+fonts in LaTeX. XeTeX allows a direct interface 
+to system-installed fonts, so no manual font 
+installation is required.
+
+This package also provides access to the large 
+number of font features available with AAT and 
+OpenType fonts, including upper and lower case 
+numbers, proportional and monospaced numbers, 
+swash letters, vulgar fractions, ligature 
+control, and many others.
+
+It also provides an interface to set the XeTeX 
+font mappings, font colour, relative font 
+scaling, inter-word space scaling, and more.
+
+------------------------
+SUMMARY OF USER COMMANDS
+
+Font families may be selected individually with the command
+   \fontspec[<font options>]{<font name>}
+
+Commands for selecting fonts efficiently can be created with
+   \newfontfamily\myfamily[<font options>]{<font name>}
+   \newfontface\myfont[<font options>]{<font name>}
+
+Default document fonts are selected with 
+   \setmainfont[<font options>]{<font name>}
+   \setsansfont[<font options>]{<font name>}
+   \setmonofont[<font options>]{<font name>}
+
+Fonts to be used in maths are defined with 
+   \setmathrm[<font options>]{<font name>}
+   \setmathsf[<font options>]{<font name>}
+   \setmathtt[<font options>]{<font name>}
+   \setboldmathrm[<font options>]{<font name>}
+
+Features to be used for every subsequently defined font are specified with
+   \defaultfontfeatures{<default font options>}
+
+Features may be added to the font currently in use with
+   \addfontfeatures{<font options to add>}
+   \addfontfeature{<...>} does the same thing
+
+Features not provided for out of the box may be defined with
+   \newAATfeature{<feature tag>}{<feature code>}{<selector code>}
+   \newICUfeature{<feature tag>}{[+|-]<4 letter feature string>}
+   \newfontfeature{<feature tag>}{<arbitrary XeTeX font options>}
+
+Features can be renamed and feature options can be renamed with
+   \aliasfontfeature{<current feature>}{<new feature>}
+   \aliasfontfeatureoption{<feature>}{<current option>}{<new option>}
+
+--------------
+Will Robertson
+2004--2007
+%</readme>
+%<*internal>
+\fi
+%</internal>
 %
 %<*internal>
 \begingroup
@@ -27,7 +80,7 @@
 
   ________________________________
   The fontspec package for XeLaTeX
-  (C) 2004--2006    Will Robertson
+  (C) 2004--2007    Will Robertson
 
   License information appended.
 
@@ -35,7 +88,7 @@
 \endpreamble
 \postamble
 
-Copyright 2005-2006 by Will Robertson <wspr81@gmail.com>
+Copyright 2004--2007 by Will Robertson <wspr81@gmail.com>
 
 Distributable under the LaTeX Project Public License,
 version 1.3c or higher (your choice). The latest version of
@@ -44,8 +97,12 @@ this license is at: http://www.latex-project.org/lppl.txt
 This work is "maintained" (as per LPPL maintenance status) 
 by Will Robertson.
 
-This work consists of the file  fontspec.dtx
-          and the derived files fontspec.sty and fontspec.pdf.
+This work consists of this file  fontspec.dtx
+          and the derived files fontspec.sty, 
+                                fontspec.cfg, 
+                                fontspec.ins, 
+                                fontspec-example.ltx,
+                            and fontspec.pdf.
 
 \endpostamble
 \askforoverwritefalse
@@ -55,8 +112,9 @@ This work consists of the file  fontspec.dtx
 %</batchfile>
 %<batchfile>\endbatchfile
 %<*internal>
-\nopreamble\nopostamble
 \generate{\file{fontspec.ins}{\from{fontspec.dtx}{batchfile}}}
+\nopreamble\nopostamble
+\generate{\file{README.txt}{\from{\jobname.dtx}{readme}}}
 \generate{\file{fontspec-doc-style.sty}{\from{fontspec.dtx}{doc-style}}}
 \endgroup
 %</internal>
@@ -77,7 +135,7 @@ This work consists of the file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2006/12/24 v1.14 Advanced font selection for XeLaTeX]
+  [2007/06/20 v1.14 Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -1699,8 +1757,10 @@ This work consists of the file  fontspec.dtx
 %    \end{macrocode}
 % \pkg{fontspec} shorthands:
 %    \begin{macrocode}
-\newcommand\zf@PackageError[2]{\PackageError{fontspec}{#1}{#2}}
-\newcommand\zf@PackageWarning[1]{\PackageWarning{fontspec}{#1}}
+\def\zf@nl{^^J\space\space\space\space}
+\newcommand\zf@PackageError[2]{\PackageError{fontspec}{{\zf@nl #1}^^J}{#2}}
+\newcommand\zf@PackageWarning[1]{%
+  \PackageWarning{fontspec}{\zf@nl #1^^JThis warning occured}}
 \newcommand\zf@PackageInfo[1]{\PackageInfo{fontspec}{#1}}
 %    \end{macrocode}
 %
@@ -1958,16 +2018,22 @@ This work consists of the file  fontspec.dtx
 %   often typed this instead when adding only a single font feature.
 %    \begin{macrocode}
 \newcommand*\addfontfeatures[1]{%
-  \begingroup
-    \let\zf@default@options\@empty
-    \edef\@tempa{%
-      \noexpand\zf@fontspec
-        {\csname zf@family@options\f@family\endcsname,#1}%
-        {\csname zf@family@fontname\f@family\endcsname}}%
-    \@tempa
-  \endgroup
-  \fontfamily\zf@family\selectfont
-  \ignorespaces}
+  \ifcsname zf@family@fontdef\f@family\endcsname
+    \begingroup
+      \let\zf@default@options\@empty
+      \edef\@tempa{%
+        \noexpand\zf@fontspec
+          {\csname zf@family@options\f@family\endcsname,#1}%
+          {\csname zf@family@fontname\f@family\endcsname}}%
+      \@tempa
+    \endgroup
+    \fontfamily\zf@family\selectfont
+    \expandafter\ignorespaces
+  \else
+    \zf@PackageWarning{%
+      \protect\addfontfeature (s) ignored;\zf@nl
+      it cannot be used with a font that wasn't selected by fontspec.}%
+  \fi}
 \let\addfontfeature\addfontfeatures
 %    \end{macrocode}
 % \changes{v1.5}{2004/11/29}{Implemented.}
@@ -2593,13 +2659,13 @@ This work consists of the file  fontspec.dtx
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
         '\XKV@tfam=\XKV@tkey' feature not supported
-         for AAT font '\fontname\zf@basefont'}%
+         for AAT font \fontname\zf@basefont}%
     \else
       \zf@make@aat@feature@string{#1}{#2}%
       \ifx\@tempa\@empty
         \zf@PackageWarning{%
-          AAT feature '\XKV@tfam=\XKV@tkey'
-          (#1,#2) not available in font '\fontname\zf@basefont'}%
+          AAT feature '\XKV@tfam=\XKV@tkey' (#1,#2) not available\zf@nl 
+          in font \fontname\zf@basefont}%
       \else
         \zf@update@family{+#1,#2}%
         \zf@update@ff\@tempa
@@ -2614,7 +2680,7 @@ This work consists of the file  fontspec.dtx
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
         '\XKV@tfam=\XKV@tkey' feature not supported 
-        for ICU font '\fontname\zf@basefont'}%
+        for ICU font \fontname\zf@basefont}%
     \else
       \expandafter\zf@check@ot@feat\expandafter{\@tempa}%
       \if@tempswa
@@ -2623,8 +2689,10 @@ This work consists of the file  fontspec.dtx
       \else
         \zf@PackageWarning{%
           OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
-          not available in font \fontname\zf@basefont, script
-          '\zf@script@name', language '\zf@language@name'}%
+          not available\zf@nl
+          for font \fontname\zf@basefont, \zf@nl 
+          with script '\zf@script@name',\zf@nl
+          and language '\zf@language@name'.}%
       \fi
     \fi
   \fi}
@@ -3644,8 +3712,9 @@ This work consists of the file  fontspec.dtx
       \xdef\zf@family@long{\zf@family@long+lang=Turkish}%
       \xdef\zf@pre@ff{\zf@pre@ff language=TUR,}%
     \else
-      \zf@PackageWarning{Font \fontname\zf@basefont does not contain 
-                         language '#1' for script '\zf@script@name'}%
+      \zf@PackageWarning{Language '#1' not available\zf@nl 
+         for font \fontname\zf@basefont\zf@nl 
+         with script '\zf@script@name'.}%
     \fi
   \fi}
 %    \end{macrocode}
@@ -3767,9 +3836,9 @@ This work consists of the file  fontspec.dtx
       \zf@math@eulertrue
     \else
       \zf@PackageError{The euler package must be loaded BEFORE fontspec}
-        {fontspec only overwrites euler's attempt to \MessageBreak
-         define the maths text fonts if fontspec is  \MessageBreak
-         loaded after euler. Type <return> to proceed\MessageBreak
+        {fontspec only overwrites euler's attempt to  ^^J
+         define the maths text fonts if fontspec is   ^^J
+         loaded after euler. Type <return> to proceed ^^J
          with incorrect \protect\mathit, \protect\mathbf, etc}
     \fi}{}
   \@ifpackageloaded{lucbmath}{\zf@math@lucidatrue}{}
@@ -3937,9 +4006,10 @@ This work consists of the file  fontspec.dtx
   \@ifpackageloaded{fourier}{\@zf@mathfalse}{}
   \@ifpackageloaded{mathpazo}{\@zf@mathfalse}{}
   \@ifpackageloaded{mathptmx}{\@zf@mathfalse}{}
+  \@ifpackageloaded{MinionPro}{\@zf@mathfalse}{}
   \@ifpackageloaded{unicode-math}{\@zf@mathfalse}{}
   \if@zf@math
-    \zf@PackageWarning{Adjusting the maths setup^^J     (use [no-math] to avoid this)}
+    \zf@PackageWarning{Adjusting the maths setup (use [no-math] to avoid this).}
     \zf@math
   \fi}
 \AtBeginDocument{\zf@math@maybe}

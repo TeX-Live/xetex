@@ -13,7 +13,7 @@
 %% 
 %% 
 \ProvidesPackage{xltxtra}
-  [2007/05/30 v0.3 Improvements for the "XeLaTeX" format]
+  [2007/05/30 v0.3a Improvements for the "XeLaTeX" format]
 \newif\if@xxt@nosscript@
 \newif\if@xxt@nologos@
 \newif\if@xxt@nohyphen@
@@ -28,19 +28,13 @@
 \RequirePackage{graphicx}
 \RequirePackage{fontspec}
 \RequirePackage{xunicode}
-\newlength\xxt@kern@Te
-\newlength\xxt@kern@eX
-\newlength\xxt@lower@e
-\newlength\xxt@kern@La
-\newlength\xxt@kern@aT
-\newlength\xxt@kern@eL
 \newcommand*\TeX@logo@spacing[6]{%
-  \setlength\xxt@kern@Te{#1}%
-  \setlength\xxt@kern@eX{#2}%
-  \setlength\xxt@lower@e{#3}%
-  \setlength\xxt@kern@La{#4}%
-  \setlength\xxt@kern@aT{#5}%
-  \setlength\xxt@kern@eL{#6}%
+  \def\xxt@kern@Te{#1}%
+  \def\xxt@kern@eX{#2}%
+  \def\xxt@lower@e{#3}%
+  \def\xxt@kern@La{#4}%
+  \def\xxt@kern@aT{#5}%
+  \def\xxt@kern@eL{#6}%
 }
 \unless\if@xxt@nologos@
 \DeclareRobustCommand\TeX{%
@@ -258,7 +252,9 @@
 %% by Will Robertson.
 %% 
 %% This work consists of the file  xltxtra.dtx
-%%           and the derived files xltxtra.sty and xltxtra.pdf.
+%%           and the derived files xltxtra.sty,
+%%                                 xltxtra.ins, and
+%%                                 xltxtra.pdf.
 %% 
 %%
 %% End of file `xltxtra.sty'.

@@ -3,8 +3,8 @@
 \iffalse
 %</internal>
 %<*readme>
-------------------------
-THE XLTXTRA PACKAGE v0.3
+-------------------------
+THE XLTXTRA PACKAGE v0.3a
 
 This package provides a few small features that 
 are useful for XeLaTeX.
@@ -63,8 +63,10 @@ this license is at: http://www.latex-project.org/lppl.txt
 This work is "maintained" (as per LPPL maintenance status) 
 by Will Robertson.
 
-This work consists of the file  \jobname.dtx
-          and the derived files \jobname.sty and \jobname.pdf.
+This work consists of the file  xltxtra.dtx
+          and the derived files xltxtra.sty,
+                                xltxtra.ins, and
+                                xltxtra.pdf.
 
 \endpostamble
 \askforoverwritefalse
@@ -234,7 +236,7 @@ This work consists of the file  \jobname.dtx
 %
 % \subsection{The \cmd\showhyphens\ command}
 % The default definition doesn't work in \XeTeX. 
-% A new version, written by Jonathan Kew, is included in the package that \emph{does} work. Minor differences with the original: the showing of hyphens in the console output will be marked with explanatory text. Also, multiple words, separated by commas, will end up in separate instances of `showing hyphens'.
+% A new version, written by Jonathan Kew, is included in this package that \emph{does} work. Minor differences with the original: the showing of hyphens in the console output will be marked with explanatory text. Also, multiple words, separated by commas, will end up in separate instances of `showing hyphens'.
 % \showhyphens{discomedusoid, discommodiousness}
 %
 % \part{The \textsf{xltxtra} package}
@@ -245,7 +247,7 @@ This work consists of the file  \jobname.dtx
 %
 %    \begin{macrocode}
 \ProvidesPackage{xltxtra}
-  [2007/05/30 v0.3 Improvements for the "XeLaTeX" format]  
+  [2007/05/30 v0.3a Improvements for the "XeLaTeX" format]  
 %    \end{macrocode}
 %
 % \changes{v0.3}{2007/05/29}{Added proper documentation.}
@@ -315,24 +317,18 @@ This work consists of the file  \jobname.dtx
 %   \TeX\ \XeTeX\ \LaTeX\ \XeLaTeX
 % \end{example}
 %
-% \emph{Warning!} This macro will  {\fontspec{Hoefler Text Black} definitely} change in the future.
+% \emph{Warning!} This macro will {\fontspec{Hoefler Text Black} almost definitely} change in the future.
 % If you care abouts backwards compatibility in your documents, copy+paste
 % the definitions below rather than using \cmd\TeX@logo@spacing.
 %
 %    \begin{macrocode}
-\newlength\xxt@kern@Te
-\newlength\xxt@kern@eX
-\newlength\xxt@lower@e
-\newlength\xxt@kern@La
-\newlength\xxt@kern@aT
-\newlength\xxt@kern@eL
 \newcommand*\TeX@logo@spacing[6]{%
-  \setlength\xxt@kern@Te{#1}%
-  \setlength\xxt@kern@eX{#2}%
-  \setlength\xxt@lower@e{#3}%
-  \setlength\xxt@kern@La{#4}%
-  \setlength\xxt@kern@aT{#5}%  
-  \setlength\xxt@kern@eL{#6}%  
+  \def\xxt@kern@Te{#1}%
+  \def\xxt@kern@eX{#2}%
+  \def\xxt@lower@e{#3}%
+  \def\xxt@kern@La{#4}%
+  \def\xxt@kern@aT{#5}%  
+  \def\xxt@kern@eL{#6}%  
 }
 \unless\if@xxt@nologos@
 \DeclareRobustCommand\TeX{%
@@ -404,6 +400,7 @@ This work consists of the file  \jobname.dtx
 % \changes{v0.2}{2006/06/11}{Added \cmd\XeLaTeX\ logo. Thanks Herb!}
 % \changes{v0.2}{2006/06/11}{Added TFM font check.}
 % \changes{v0.2}{2006/08/12}{\cmd\TeX@logo@spacing made ``private'' and added an arg for \cmd\XeLaTeX.}
+% \changes{v0.3a}{2007/06/20}{Changed \cmd\setlength\ to \cmd\def. Silly me.}
 % \end{macro}
 %
 % \section{\eTeX\ functionality}

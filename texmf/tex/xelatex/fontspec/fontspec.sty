@@ -12,9 +12,8 @@
 %% 
 %%   License information appended.
 %% 
-%% 
 \ProvidesPackage{fontspec}
-  [2006/12/24 v1.14 Advanced font selection for XeLaTeX]
+  [2007/06/20 v1.14 Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \newif\ifzf@firsttime
@@ -36,8 +35,10 @@
 \newcount\c@zf@index
 \newcount\c@zf@script
 \newcount\c@zf@language
-\newcommand\zf@PackageError[2]{\PackageError{fontspec}{#1}{#2}}
-\newcommand\zf@PackageWarning[1]{\PackageWarning{fontspec}{#1}}
+\def\zf@nl{^^J\space\space\space\space}
+\newcommand\zf@PackageError[2]{\PackageError{fontspec}{{\zf@nl #1}^^J}{#2}}
+\newcommand\zf@PackageWarning[1]{%
+  \PackageWarning{fontspec}{\zf@nl #1^^JThis warning occured}}
 \newcommand\zf@PackageInfo[1]{\PackageInfo{fontspec}{#1}}
 \providecommand\def@cx[2]{\expandafter\edef\csname#1\endcsname{#2}}
 \providecommand\gdef@cx[2]{\expandafter\xdef\csname#1\endcsname{#2}}
@@ -128,16 +129,22 @@
 \newcommand*\defaultfontfeatures[1]{\def\zf@default@options{#1,}}
 \let\zf@default@options\@empty
 \newcommand*\addfontfeatures[1]{%
-  \begingroup
-    \let\zf@default@options\@empty
-    \edef\@tempa{%
-      \noexpand\zf@fontspec
-        {\csname zf@family@options\f@family\endcsname,#1}%
-        {\csname zf@family@fontname\f@family\endcsname}}%
-    \@tempa
-  \endgroup
-  \fontfamily\zf@family\selectfont
-  \ignorespaces}
+  \ifcsname zf@family@fontdef\f@family\endcsname
+    \begingroup
+      \let\zf@default@options\@empty
+      \edef\@tempa{%
+        \noexpand\zf@fontspec
+          {\csname zf@family@options\f@family\endcsname,#1}%
+          {\csname zf@family@fontname\f@family\endcsname}}%
+      \@tempa
+    \endgroup
+    \fontfamily\zf@family\selectfont
+    \expandafter\ignorespaces
+  \else
+    \zf@PackageWarning{%
+      \protect\addfontfeature (s) ignored;\zf@nl
+      it cannot be used with a font that wasn't selected by fontspec.}%
+  \fi}
 \let\addfontfeature\addfontfeatures
 \newcommand*\newfontfeature[2]{%
   \stepcounter{zf@newff}%
@@ -404,13 +411,13 @@
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
         '\XKV@tfam=\XKV@tkey' feature not supported
-         for AAT font '\fontname\zf@basefont'}%
+         for AAT font \fontname\zf@basefont}%
     \else
       \zf@make@aat@feature@string{#1}{#2}%
       \ifx\@tempa\@empty
         \zf@PackageWarning{%
-          AAT feature '\XKV@tfam=\XKV@tkey'
-          (#1,#2) not available in font '\fontname\zf@basefont'}%
+          AAT feature '\XKV@tfam=\XKV@tkey' (#1,#2) not available\zf@nl
+          in font \fontname\zf@basefont}%
       \else
         \zf@update@family{+#1,#2}%
         \zf@update@ff\@tempa
@@ -422,7 +429,7 @@
     \ifx\@tempa\@empty
       \zf@PackageWarning{%
         '\XKV@tfam=\XKV@tkey' feature not supported
-        for ICU font '\fontname\zf@basefont'}%
+        for ICU font \fontname\zf@basefont}%
     \else
       \expandafter\zf@check@ot@feat\expandafter{\@tempa}%
       \if@tempswa
@@ -431,8 +438,10 @@
       \else
         \zf@PackageWarning{%
           OpenType feature '\XKV@tfam=\XKV@tkey' (#3)
-          not available in font \fontname\zf@basefont, script
-          '\zf@script@name', language '\zf@language@name'}%
+          not available\zf@nl
+          for font \fontname\zf@basefont, \zf@nl
+          with script '\zf@script@name',\zf@nl
+          and language '\zf@language@name'.}%
       \fi
     \fi
   \fi}
@@ -1032,8 +1041,9 @@
       \xdef\zf@family@long{\zf@family@long+lang=Turkish}%
       \xdef\zf@pre@ff{\zf@pre@ff language=TUR,}%
     \else
-      \zf@PackageWarning{Font \fontname\zf@basefont does not contain
-                         language '#1' for script '\zf@script@name'}%
+      \zf@PackageWarning{Language '#1' not available\zf@nl
+         for font \fontname\zf@basefont\zf@nl
+         with script '\zf@script@name'.}%
     \fi
   \fi}
 \define@key[zf]{options}{RawFeature}{%
@@ -1075,9 +1085,9 @@
       \zf@math@eulertrue
     \else
       \zf@PackageError{The euler package must be loaded BEFORE fontspec}
-        {fontspec only overwrites euler's attempt to \MessageBreak
-         define the maths text fonts if fontspec is  \MessageBreak
-         loaded after euler. Type <return> to proceed\MessageBreak
+        {fontspec only overwrites euler's attempt to  ^^J
+         define the maths text fonts if fontspec is   ^^J
+         loaded after euler. Type <return> to proceed ^^J
          with incorrect \protect\mathit, \protect\mathbf, etc}
     \fi}{}
   \@ifpackageloaded{lucbmath}{\zf@math@lucidatrue}{}
@@ -1176,9 +1186,10 @@
   \@ifpackageloaded{fourier}{\@zf@mathfalse}{}
   \@ifpackageloaded{mathpazo}{\@zf@mathfalse}{}
   \@ifpackageloaded{mathptmx}{\@zf@mathfalse}{}
+  \@ifpackageloaded{MinionPro}{\@zf@mathfalse}{}
   \@ifpackageloaded{unicode-math}{\@zf@mathfalse}{}
   \if@zf@math
-    \zf@PackageWarning{Adjusting the maths setup^^J     (use [no-math] to avoid this)}
+    \zf@PackageWarning{Adjusting the maths setup (use [no-math] to avoid this).}
     \zf@math
   \fi}
 \AtBeginDocument{\zf@math@maybe}
