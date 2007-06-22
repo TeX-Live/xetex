@@ -4815,6 +4815,10 @@ native_word_node:begin
 	print_char(" ");
 	print_native_word(p);
   end;
+@{
+deleted_native_node:
+ 	print("[DELETED]");
+@}
 glyph_node:begin
     print_esc(font_id_text(native_font(p)));
     print(" glyph#");
