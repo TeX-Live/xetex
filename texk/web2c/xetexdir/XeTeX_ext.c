@@ -234,9 +234,9 @@ void initversionstring(char **versions)
 }
 
 
-extern char*	gettexstring(int strNumber);
+extern char*	gettexstring(integer strNumber);
 void
-setinputfileencoding(UFILE* f, int mode, int encodingData)
+setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 {
 	if ((f->encodingMode == ICUMAPPING) && (f->conversionData != NULL))
 		ucnv_close((UConverter*)(f->conversionData));
@@ -286,9 +286,9 @@ input_line_icu(UFILE* f)
 static char* byteBuffer = NULL;
 
 	UInt32		bytesRead = 0;
-	int			i;
+	int		i;
 	UConverter*	cnv;
-	long		outLen;
+	int		outLen;
 	UErrorCode	errorCode = 0;
 
 	if (byteBuffer == NULL)
@@ -353,10 +353,9 @@ static UBreakIterator*	brkIter = NULL;
 static int				brkLocaleStrNum = 0;
 
 void
-linebreakstart(int localeStrNum, const UniChar* text, int textLength)
+linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
 {
 	UErrorCode	status = 0;
-	int i;
 
 	if ((localeStrNum != brkLocaleStrNum) && (brkIter != NULL)) {
 		ubrk_close(brkIter);
@@ -390,8 +389,8 @@ linebreaknext()
 	return ubrk_next((UBreakIterator*)brkIter);
 }
 
-long
-getencodingmodeandinfo(long* info)
+int
+getencodingmodeandinfo(integer* info)
 {
 	/* \XeTeXinputencoding "enc-name"
 	 *   -> name is packed in |nameoffile| as a C string, starting at [1]
@@ -809,7 +808,7 @@ splitFontName(char* name, char** var, char** feat, char** end)
 }
 
 void*
-findnativefont(unsigned char* uname, long scaled_size)
+findnativefont(unsigned char* uname, integer scaled_size)
 	/* scaled_size here is in TeX points */
 {
 	void*	rval = 0;
@@ -948,7 +947,6 @@ void
 otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight, scaled* capheight, scaled* slant)
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
-	long	rval = 0;
 	float	a, d;
 	int		glyphID;
 
@@ -975,8 +973,8 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 		*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
 }
 
-long
-otfontget(int what, void* pEngine)
+integer
+otfontget(integer what, void* pEngine)
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
@@ -993,8 +991,8 @@ otfontget(int what, void* pEngine)
 }
 
 
-long
-otfontget1(int what, void* pEngine, long param)
+integer
+otfontget1(integer what, void* pEngine, integer param)
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
@@ -1011,8 +1009,8 @@ otfontget1(int what, void* pEngine, long param)
 }
 
 
-long
-otfontget2(int what, void* pEngine, long param1, long param2)
+integer
+otfontget2(integer what, void* pEngine, integer param1, integer param2)
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
@@ -1030,8 +1028,8 @@ otfontget2(int what, void* pEngine, long param1, long param2)
 }
 
 
-long
-otfontget3(int what, void* pEngine, long param1, long param2, long param3)
+integer
+otfontget3(integer what, void* pEngine, integer param1, integer param2, integer param3)
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	XeTeXFont	fontInst = getFont(engine);
@@ -1089,7 +1087,7 @@ makeXDVGlyphArrayData(void* pNode)
 		xdvbuffer = (char*)xmalloc(xdvBufSize);
 	}
 
-	glyph_info = (void*)native_glyph_info_ptr(p);
+	glyph_info = native_glyph_info_ptr(p);
 	locations = (FixedPoint*)glyph_info;
 	glyphIDs = (UInt16*)(locations + glyphCount);
 	
@@ -1136,8 +1134,8 @@ makeXDVGlyphArrayData(void* pNode)
 	return ((char*)cp - xdvbuffer);
 }
 
-long
-makefontdef(long f)
+int
+makefontdef(integer f)
 {
 	UInt16	flags = 0;
 	UInt32	variationCount = 0;
@@ -1347,7 +1345,7 @@ snap_zone(scaled* value, scaled snap_value, scaled fuzz)
 }
 
 void
-getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth)
+getnativecharheightdepth(integer font, integer ch, scaled* height, scaled* depth)
 {
 #define QUAD(f)			fontinfo[6+parambase[f]].cint
 #define X_HEIGHT(f)		fontinfo[5+parambase[f]].cint
@@ -1387,7 +1385,7 @@ getnativecharheightdepth(int font, int ch, scaled* height, scaled* depth)
 }
 
 scaled
-getnativecharht(int f, int c)
+getnativecharht(integer f, integer c)
 {
 	scaled	h, d;
 	getnativecharheightdepth(f, c, &h, &d);
@@ -1395,7 +1393,7 @@ getnativecharht(int f, int c)
 }
 
 scaled
-getnativechardp(int f, int c)
+getnativechardp(integer f, integer c)
 {
 	scaled	h, d;
 	getnativecharheightdepth(f, c, &h, &d);
@@ -1403,7 +1401,7 @@ getnativechardp(int f, int c)
 }
 
 void
-getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb)
+getnativecharsidebearings(integer font, integer ch, scaled* lsb, scaled* rsb)
 {
 	float	l, r;
 
@@ -1430,7 +1428,7 @@ getnativecharsidebearings(int font, int ch, scaled* lsb, scaled* rsb)
 }
 
 scaled
-getnativecharic(int f, int c)
+getnativecharic(integer f, integer c)
 {
 	scaled	lsb, rsb;
 	getnativecharsidebearings(f, c, &lsb, &rsb);
@@ -1441,7 +1439,7 @@ getnativecharic(int f, int c)
 }
 
 scaled
-getnativecharwd(int f, int c)
+getnativecharwd(integer f, integer c)
 {
 	scaled wd = 0;
 #ifdef XETEX_MAC
@@ -1513,7 +1511,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		void*	glyph_info = 0;
 		static	float*	positions = 0;
 		static	UInt32*	glyphs = 0;
-		static	long	maxGlyphs = 0;
+		static	int		maxGlyphs = 0;
 
 		FixedPoint*	locations;
 		UInt16*		glyphIDs;
@@ -1589,7 +1587,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
 			node_width(node) = X2Fix(wid);
 			native_glyph_count(node) = realGlyphCount;
-			native_glyph_info_ptr(node) = (long)glyph_info;
+			native_glyph_info_ptr(node) = glyph_info;
 		}
 		else {
 			int i;
@@ -1630,7 +1628,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			}
 						
 			native_glyph_count(node) = realGlyphCount;
-			native_glyph_info_ptr(node) = (long)glyph_info;
+			native_glyph_info_ptr(node) = glyph_info;
 		}
 
 		ubidi_close(pBiDi);
@@ -1785,8 +1783,8 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 	}
 }
 
-int
-mapchartoglyph(int font, unsigned int ch)
+integer
+mapchartoglyph(integer font, integer ch)
 {
 	if (ch > 0x10ffff || ((ch >= 0xd800) && (ch <= 0xdfff)))
 		return 0;
@@ -1803,8 +1801,8 @@ mapchartoglyph(int font, unsigned int ch)
 	}
 }
 
-int
-mapglyphtoindex(int font)
+integer
+mapglyphtoindex(integer font)
 	/* glyph name is at nameoffile+1 */
 {
 #ifdef XETEX_MAC
@@ -1820,8 +1818,8 @@ mapglyphtoindex(int font)
 	}
 }
 
-int
-getfontcharrange(int font, int first)
+integer
+getfontcharrange(integer font, int first)
 {
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG)
@@ -1926,10 +1924,10 @@ atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheigh
 #endif
 }
 
-long
+int
 atsufontget(int what, ATSUStyle style)
 {
-	long	rval = -1;
+	int	rval = -1;
 
 #ifdef XETEX_MAC
 	ATSUFontID	fontID;
@@ -1964,10 +1962,10 @@ atsufontget(int what, ATSUStyle style)
 	return rval;
 }
 
-long
+int
 atsufontget1(int what, ATSUStyle style, int param)
 {
-	long	rval = -1;
+	int	rval = -1;
 
 #ifdef XETEX_MAC
 	ATSUFontID	fontID;
@@ -2024,10 +2022,10 @@ atsufontget1(int what, ATSUStyle style, int param)
 	return rval;
 }
 
-long
+int
 atsufontget2(int what, ATSUStyle style, int param1, int param2)
 {
-	long	rval = -1;
+	int	rval = -1;
 
 #ifdef XETEX_MAC
 	ATSUFontID	fontID;
@@ -2061,10 +2059,10 @@ atsufontget2(int what, ATSUStyle style, int param1, int param2)
 	return rval;
 }
 
-long
+int
 atsufontgetnamed(int what, ATSUStyle style)
 {
-	long	rval = -1;
+	int	rval = -1;
 
 #ifdef XETEX_MAC
 	ATSUFontID	fontID;
@@ -2088,10 +2086,10 @@ atsufontgetnamed(int what, ATSUStyle style)
 	return rval;
 }
 
-long
+int
 atsufontgetnamed1(int what, ATSUStyle style, int param)
 {
-	long	rval = -1;
+	int	rval = -1;
 
 #ifdef XETEX_MAC
 	ATSUFontID	fontID;
@@ -2218,7 +2216,7 @@ atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
 }
 
 void
-printglyphname(int font, int gid)
+printglyphname(integer font, integer gid)
 {
 	char* s;
 	int   len = 0;
@@ -2241,8 +2239,8 @@ printglyphname(int font, int gid)
 		printchar(*s++);
 }
 
-boolean
-u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int encodingData)
+int
+u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode, integer encodingData)
 {
 	boolean	rval;
 	*f = malloc(sizeof(UFILE));
@@ -2285,7 +2283,7 @@ u_open_in(unicodefile* f, int filefmt, const_string fopen_mode, int mode, int en
 	return rval;
 }
 
-boolean
+int
 open_dvi_output(FILE** fptr)
 {
 	if (nopdfoutput) {
@@ -2389,7 +2387,7 @@ get_uni_c(UFILE* f)
 	return rval;
 }
 
-boolean
+int
 input_line(UFILE* f)
 {
 	int i;
