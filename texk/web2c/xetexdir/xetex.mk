@@ -299,7 +299,7 @@ xefmts: $(all_xefmts)
 
 xefmtdir = $(web2cdir)/xetex
 $(xefmtdir)::
-	$(SHELL) $(top_srcdir)/../mkinstalldirs $(xefmtdir)
+	$(SHELL) $(top_srcdir)/../mkinstalldirs ${DESTDIR}$(xefmtdir)
 
 xetex.fmt: xetex
 	$(dumpenv) $(MAKE) progname=xetex files="xetex.ini unicode-letters.tex plain.tex cmr10.tfm" prereq-check
@@ -318,7 +318,7 @@ install-xetex-dumps: install-xetex-fmts
 
 install-programs: @XETEX@ install-xetex-programs
 install-xetex-programs: xetex $(bindir)
-	for p in xetex; do $(INSTALL_LIBTOOL_PROG) $$p $(bindir); done
+	for p in xetex; do $(INSTALL_LIBTOOL_PROG) $$p ${DESTDIR}$(bindir); done
 
 install-links: @XETEX@ install-xetex-links
 install-xetex-links: install-xetex-programs
@@ -328,10 +328,10 @@ install-xetex-links: install-xetex-programs
 install-fmts: @XETEX@ install-xetex-fmts
 install-xetex-fmts: xefmts $(xefmtdir)
 	xefmts="$(all_xefmts)"; \
-	  for f in $$xefmts; do $(INSTALL_DATA) $$f $(xefmtdir)/$$f; done
+	  for f in $$xefmts; do $(INSTALL_DATA) $$f ${DESTDIR}$(xefmtdir)/$$f; done
 	xefmts="$(xefmts)"; \
 	  for f in $$xefmts; do base=`basename $$f .fmt`; \
-	    (cd $(bindir) && (rm -f $$base; $(LN) xetex $$base)); done
+	    (cd ${DESTDIR}$(bindir) && (rm -f $$base; $(LN) xetex $$base)); done
 
 install-data:: @XETEX@ install-xetex-data
 
