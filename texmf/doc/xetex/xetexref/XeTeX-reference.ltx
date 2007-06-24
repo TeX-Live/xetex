@@ -1,4 +1,4 @@
-%!TEX TS-program = XeLaTeX=xdvipdfmx
+%!TEX TS-program = XeLaTeX+xdvipdfmx
 
 \documentclass[12pt]{article}
 
@@ -12,14 +12,14 @@
 %\setsansfont{Lucida Sans}
 %\setmonofont{Lucida Sans Typewriter}
 
-\usepackage{calc,fancyvrb,hyperref}
+\usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
 \usepackage{geometry}
 %\geometry{screen,margin=3cm}
 
 \usepackage[nofancy]{svninfo}
-\svnInfo $Id: XeTeX-reference.ltx 8 2007-02-04 13:57:21Z will $ 
+\svnInfo $Id: XeTeX-reference.ltx 9 2007-06-24 13:10:01Z will $ 
 
-\usepackage[medium,rm]{titlesec}
+\usepackage[it]{titlesec}
 \usepackage{enumitem}
 \setlist{nolistsep}
 
@@ -28,16 +28,20 @@
   {\end{description}}
 
 \newcommand\cmd{%
-  \vspace{2ex plus 5pt minus 5pt}
   \noindent
+  \begin{trivlist}\item[]
   \SaveVerb[%
     aftersave={%
       \begin{minipage}{\linewidth}
         \UseVerb{CMD}}]{CMD}}
 \DefineShortVerb{\|}
 \newcommand\xarg[1]{‹\textit{#1}›}
-\newcommand\desc[1]{\par#1}
-\def\endcmd{\end{minipage}}
+\newcommand\desc[1]{\par#1\par}
+\def\endcmd{%
+  \end{minipage}  
+  \end{trivlist}}
+
+\def\cs#1{\texttt{\textbackslash#1}}
 
 \newsavebox\verbatimbox
 \edef\examplefilename{\jobname.example}
@@ -51,7 +55,7 @@
    \typesetexample}
    
 \newcommand\typesetexample{%
-  \vspace{2ex plus 5pt minus 5pt}
+  \begin{trivlist}\item[]
   \vrule
   \hspace{\exampleindent}
   \begin{minipage}{\linewidth-\exampleindent}
@@ -59,9 +63,9 @@
     \vspace{0.4\baselineskip}
     \BVerbatimInput[fontsize=\small]{\examplefilename}\par
     \vspace{0.4\baselineskip}
-    \input\examplefilename\relax
-  \end{minipage}
-  \vspace{2ex plus 5pt minus 5pt}}
+    \color[rgb]{0.7,0,0}\input\examplefilename\relax
+  \end{minipage}\par
+  \end{trivlist}}
 
 \let\strong\textbf
 \providecommand\pdfTeX{pdf\/\TeX}
@@ -74,12 +78,14 @@
 \def\Ie{\latin{I.e.}}
 \def\etc{\@ifnextchar.{\latin{etc}}{\latin{etc.}\@}}
 
+\def\opteq{\textcolor{gray}{[\textcolor{black}{=}]}\,}
+
 \setlength\parskip{0pt}
 \setlength\parindent{2em}
 \raggedbottom
 
 \begin{document}
-\title{The \XeTeX\ reference guide}
+\title{The \texorpdfstring{\XeTeX}{XeTeX} reference guide}
 \author{Will Robertson}
 \date{\svnInfoLongDate}
 \maketitle
@@ -88,14 +94,16 @@
 \section{Introduction}
 This document serves to summarise \XeTeX's additional features without being so much as a `users' guide'. Note that much of the functionality addressed here is provided in abstracted form in various \LaTeX\ packages and Con\TeX{}t modules.
 
-\part{\XeTeX\ specifics}
+The descriptions here correspond to a prerelease of version 0.997 of \XeTeX, and should be a fairly exhaustive list of its primitives. Descriptions are still a little aenemic, however. Contributions welcomed!
 
-\section{The {\ttfamily\char`\\font} command}
-The |\font| command has seen significant addition in \XeTeX\ to facilitate rich font feature selection. Under \TeX, fonts were selected like so: |\font\1="|\xarg{font name}|"| with various options appended such as `|at 10pt|' or `|scaled 1.2|'. This syntax has been extended in \XeTeX\ by passing additions options through the \xarg{font name}.
+\part{\texorpdfstring{\XeTeX}{XeTeX}\ specifics}
+
+\section{The \cs{font} command}
+The |\font| command has seen significant addition in \XeTeX\ to facilitate rich font feature selection. Under \TeX, fonts were selected like so: |\font\1="|\xarg{font name}|"| with various options appended such as `|at 10pt|' or `|scaled 1.2|', with obvious meaning. This syntax has been extended in \XeTeX\ by passing additions options through the \xarg{font name}.
 
 This syntax looks something like\par
 {\centering|\font\1="|\xarg{font name}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
-The \xarg{font name} is the actual name of the font; e.g., `|Charis SIL|'. 
+The \xarg{font name} is the actual name of the font (e.g., `|Charis SIL|') and the only mandatory part of the above syntax. 
 
 When using the |xdvipdfmx| driver (not yet the default in Mac~OS~X), it is possible to use fonts
 that aren't installed in the operating system by surrounding their name with square brackets. The current directory and the |texmf| trees are searched for files named in this way, or the path may be embedded in the
@@ -106,11 +114,10 @@ font declaration. \Eg,
 |\font\1="[lmroman10-regular]"| \hfill \emph{Selects a Latin Modern font in the \emph{TDS}}
 \end{quote}
 
-The other arguments are optional and described subsequently.
-
 \subsection{Font options}
 
-\xarg{Font options} may be any concatenation of the following: 
+\xarg{Font options} are only applicable when the font is selected through the operating system (\ie, without square brackets), and may be any concatenation of the following: 
+
 \begin{optdesc}
 \item[/B] Use the bold version of the selected font.
 \item[/I] Use the italic version of the selected font.
@@ -120,22 +127,21 @@ The other arguments are optional and described subsequently.
 \item[/AAT] Explicitly use the ATSUI renderer (Mac OS X only).
 \item[/ICU] Explicitly use the ICU OpenType renderer (only useful on Mac OS X).
 \end{optdesc}
-Font options aren't applicable when the font is selected locally (\ie, with square brackets).
 
 \subsection{Font features}
 
 The \xarg{font features} is a comma or semi-colon separated list activating or deactivating various AAT or OpenType font features, which will vary by font. 
 The \XeTeX\ documentation files \path{aat-info.tex} and \path{opentype-info.tex} provide per-font lists of supported features.
 
-\subsubsection{Arbitrary AAT or OpenType features.}
-OpenType font features are chosen with standard tags, registered with Adobe or Microsoft: see 
-\hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{this link}.
-
+\subsubsection{Arbitrary AAT or OpenType features}
+OpenType font features are chosen with \hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{standard tags}. They may be either comma- or semicolon-separated, and prepended with a |+| to turn them on and a |-| to turn them off.
 \begin{example}
 \font\warnock="Warnock Pro/I/S=5:+smcp" at 12pt
 \warnock This is the OpenType font Warnock Pro in italic 
          with small caps at a small optical size.
 \end{example}
+
+Varying depending on the language and script in use (see \secref[vref]{script}), a small number of OpenType features, if they exist, will be activated by default.
 
 AAT font features are specified by strings within each font. Therefore, even equivalent features between different fonts can have different names.
 \begin{example}
@@ -143,18 +149,24 @@ AAT font features are specified by strings within each font. Therefore, even equ
 \hoefler This is the AAT font Hoefler Text in bold with small caps.
 \end{example}
 
+\subsubsection{Options for all fonts}
 Some font features may be applied for any font. These are
 \begin{optdesc}
-\item[mapping=\textsl{<font map>}] Uses the specified font mapping for this font.
-\item[color={\slshape RRGGBB}{[{\slshape TT}]}] Triple pair of hex values to specify the colour in RGB space, with an optional value for the transparency. 
-\item[letterspace=$x$] Adds $x/S$ space between letters in words, where $S$ is the font size.
+\item[mapping=\textsl{<font map>}] 
+Uses the specified font mapping for this font. This uses the TECKit engine to transform unicode characters in the last-minute processing stage of the source. For example, |mapping=tex-text| will enable the classical mappings from ugly ascii |``---''| to proper typographical glyphs ``---'', and so on.
+
+\item[color={\slshape RRGGBB}{[{\slshape TT}]}] 
+Triple pair of hex values to specify the colour in RGB space, with an optional value for the transparency. 
+
+\item[letterspace=$x$] 
+Adds $x/S$ space between letters in words, where $S$ is the font size.
 \end{optdesc}
 
-\subsubsection{OpenType script and language support}
-OpenType font features can vary by script (`alphabet') and by language.
+\subsubsection{OpenType script and language support}\seclabel{script}
+OpenType font features (and font behaviour) can vary by \hlink{http://www.microsoft.com/typography/otspec/scripttags.htm}{script} (`alphabet') and by \hlink{http://www.microsoft.com/typography/otspec/languagetags.htm}{language}. These are selected with four and three letter tags, respectively.
 \begin{optdesc}
-\item[script=\textsl{<script tag>}] See \hlink{http://www.microsoft.com/typography/otspec/scripttags.htm}{this link}.
-\item[language=\textsl{<lang tag>}] See \hlink{http://www.microsoft.com/typography/otspec/languagetags.htm}{this link}.
+\item[script=\textsl{<script tag>}] Selects the font script.
+\item[language=\textsl{<lang tag>}] Selects the font language.
 \end{optdesc}
 
 \subsubsection{Multiple Master and Variable Axes AAT font support}
@@ -162,10 +174,17 @@ OpenType font features can vary by script (`alphabet') and by language.
 \begin{optdesc}
 \item[weight=$x$] Selects the normalised font weight, $x$.
 \item[width=$x$] Selects the normalised font width, $x$.
-\item[optical size=$x$] Selects the optical size, $x$. Note the difference between the \texttt{/S} font option, which selects discrete fonts.
+\item[optical size=$x$] Selects the optical size, $x$\,pt. Note the difference between the \texttt{/S} font option, which selects discrete fonts.
 \end{optdesc}
 
-\section{\XeTeX's {\ttfamily\char`\\special}s}
+\subsubsection{Vertical typesetting}
+For AAT fonts only?
+\begin{optdesc}
+\item[vertical] 
+Enables glyph rotation in the output so vertical typesetting can be performed.
+\end{optdesc}
+
+\section{\texorpdfstring{\XeTeX}{XeTeX}'s \cs{special}s}
 
 \textit{To be addressed. Hopefully not by me.}
 
@@ -174,8 +193,7 @@ OpenType font features can vary by script (`alphabet') and by language.
 \section{Font primitives}
 
 \cmd|\XeTeXuseglyphmetrics|
-\xarg{Integer}
-\desc{Boolean to specify if the height and depth of characters are taken into account ($\ge\mathtt1$). Otherwise ($<\mathtt1$), a single height and depth for the entire alphabet is used. When activated, by default, gives better output but is slower.}
+\desc{Counter to specify if the height and depth of characters are taken into account while typesetting ($\ge\mathtt1$). Otherwise ($<\mathtt1$), a single height and depth for the entire alphabet is used. Gives better output but is slower. Activated ($\ge\mathtt1$) by default.}
 \endcmd
 
 \begin{example}
@@ -189,7 +207,7 @@ OpenType font features can vary by script (`alphabet') and by language.
 \endcmd
 
 \cmd|\XeTeXglyphindex|
-\xarg{Glyph name}
+|"|\xarg{Glyph name}|"| \xarg{space} \emph{or} \cs{relax}
 \desc{Expands to the \xarg{glyph slot} corresponding to the (possibly font specific) \xarg{glyph name} in the currently selected font. Only works for TrueType fonts (or TrueType-based OpenType fonts) at present. Use \texttt{fontforge} or similar to discover glyph names.}
 \endcmd
 
@@ -201,8 +219,8 @@ OpenType font features can vary by script (`alphabet') and by language.
 \begin{example}
 \font\1="Charis SIL"\1
 The glyph slot in Charis SIL for the Yen symbol is:
-    \the\XeTeXglyphindex"yen". % the font-specific glyph name
-Or: \the\XeTeXcharglyph"00A5.  % the unicode character slot
+    \the\XeTeXglyphindex"yen" . % the font-specific glyph name
+Or: \the\XeTeXcharglyph"00A5.   % the unicode character slot
 
 This glyph may be typeset with the font-specific glyph slot:
 \XeTeXglyph1458, 
@@ -217,7 +235,8 @@ or the unicode character slot:
   \begin{optdesc}
     \item [0] for \TeX\ (a legacy TFM-based font);
     \item [1] for ATSUI (usually an AAT font);
-    \item [2] for ICU (an OpenType font).
+    \item [2] for ICU (an OpenType font);
+    \item [3] for Graphite.
   \end{optdesc}
 }
 \endcmd
@@ -368,9 +387,100 @@ or the unicode character slot:
 \desc{Expands to the default value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
 \endcmd
 
+\subsection{Graphite fonts}
+
+To do.
+
 \subsection{Maths fonts}
 
-To be addressed. Not enough time.
+The primitives described following are extensions of \TeX's 8-bit primitives.
+
+In the following commands, \xarg{fam.} is a number (0--255) representing font to use in maths. \xarg{math type} is the 0--7 number corresponding to the type of math symbol; see a \TeX\ reference for details.
+
+\cmd|\XeTeXmathcode|
+\xarg{char slot}
+\opteq
+\xarg{math type}
+\xarg{fam.}
+\xarg{glyph slot}
+\desc{Defines a maths glyph accessible via an input character. Note that the input takes \emph{three} arguments unlike \TeX's \cs{mathcode}.}
+\endcmd
+
+\cmd|\XeTeXmathcodenum|
+\xarg{char slot}
+\opteq
+\xarg{math type/fam./glyph slot}
+\desc{Pure extension of \cs{mathcode} that uses a `bit-packed' single number argument. Can also be used to extract the bit-packed mathcode number of the \xarg{char slot} if no assignment is given.}
+\endcmd
+
+\cmd|\XeTeXmathchardef|
+\xarg{control sequence}
+\opteq
+\xarg{math type}
+\xarg{fam.}
+\xarg{glyph slot}
+\desc{Defines a maths glyph accessible via a control sequence.}
+\endcmd
+
+\cmd|\XeTeXdelcode|
+\xarg{char slot}
+\opteq
+\xarg{fam.}
+\xarg{glyph slot}
+\desc{Defines a delimiter glyph accessible via an input character.}
+\endcmd
+
+\cmd|\XeTeXdelcodenum|
+\xarg{char slot}
+\opteq
+\xarg{fam./glyph slot}
+\desc{Pure extension of \cs{delcode} that uses a `bit-packed' single number argument. Can also be used to extract the bit-packed mathcode number of the \xarg{char slot} if no assignment is given.}
+\endcmd
+
+\cmd|\XeTeXdelimiter|
+\xarg{math type}
+\xarg{fam.}
+\xarg{glyph slot}
+\desc{Typesets the delimiter in the \xarg{glyph slot} in the family specified of either \xarg{math type} 4 (opening) or 5 (closing).}
+\endcmd
+
+\cmd|\XeTeXradical|
+\xarg{fam.}
+\xarg{glyph slot}
+\desc{Typesets the radical in the \xarg{glyph slot} in the family specified.}
+\endcmd
+
+\section{Character classes}
+
+The idea behind character classes is to define a boundary where tokens can be added to the input stream without explicit markup. It is primarily intended for automatic alphabet/language font switching.
+
+\cmd|\XeTeXinterchartokenstate|
+\desc{Counter. If positive, enables the character classes functionality.}
+\endcmd
+
+\cmd|\XeTeXcharclass|
+\xarg{char slot}
+\opteq
+\xarg{class number}
+\desc{Assigns a class corresponding to \xarg{class number} (range 0--255) to a \xarg{char slot}. Most characters are class 0 by default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK punctuation. Special case class 256 is ignored; useful for diacritics so I'm told.}
+\endcmd
+
+\cmd|\XeTeXinterchartoks|
+\xarg{class num. 1}
+\xarg{class num. 2}
+\opteq
+|{|\xarg{token list}|}|
+\desc{Defines tokens to be inserted at the interface between \xarg{class num. 1} and \xarg{class num. 2} (in that order).}
+\endcmd
+
+\begin{example}
+\XeTeXinterchartokenstate = 1
+\XeTeXcharclass `\a 7
+\XeTeXcharclass `\A 8
+\XeTeXinterchartoks 7 8 = {[\itshape}
+\XeTeXinterchartoks 8 7 = {\upshape]}
+aAa
+\end{example}
 
 \section{Encodings}
 
@@ -388,7 +498,7 @@ To be addressed. Not enough time.
 
 \cmd|\XeTeXdashbreakstate|
 \xarg{Integer}
-\desc{Specify whether line breaks after en- and em-dashes are allowed. On, 1, by default.}
+\desc{Specify whether line breaks after en- and em-dashes are allowed. Off, 0, by default.}
 \endcmd
 
 \cmd|\XeTeXlinebreaklocale|
@@ -413,6 +523,8 @@ To be addressed. Not enough time.
 
 \section{Graphics}
 
+This description is incomplete.
+
 \cmd|\XeTeXpicfile|
 \xarg{filename}
 \xarg{optional options}
@@ -428,12 +540,12 @@ To be addressed. Not enough time.
 \subsection{Parity with \pdfTeX}
 
 \cmd|\pdfpageheight|
-\xarg{Number}
+\xarg{dimension}
 \desc{The height of the PDF page.}
 \endcmd
 
 \cmd|\pdfpagewidth|
-\xarg{Number}
+\xarg{dimension}
 \desc{The width of the PDF page.}
 \endcmd
 
@@ -462,7 +574,5 @@ To be addressed. Not enough time.
 \begin{example}
 The \XeTeX\ version is: \the\XeTeXversion\XeTeXrevision
 \end{example}
-
-
 
 \end{document}
