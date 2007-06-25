@@ -16,8 +16,10 @@
 U_NAMESPACE_BEGIN
 
 struct PairInfo {
-  le_uint32 key;   // sigh, MSVC compiler gags on union here
+  le_uint16	left;
+  le_uint16	right;
   le_int16  value; // fword, kern value in funits
+  le_uint32	key() const { return (SWAPW(left) << 16) | SWAPW(right); }
 };
 #define KERN_PAIRINFO_SIZE 6
 
@@ -103,9 +105,8 @@ KernTable::KernTable(const LEFontInstance* font, const void* tableData)
 
 	  const PairInfo* p = pairs;
 	  for (i = 0; i < nPairs; ++i, p = (const PairInfo*)((char*)p+KERN_PAIRINFO_SIZE)) {
-  	    le_uint32 k = SWAPL(p->key);
-	    le_uint16 left = (k >> 16) & 0xffff;
-	    le_uint16 right = k & 0xffff;
+	    le_uint16 left = SWAPW(p->left);
+	    le_uint16 right = SWAPW(p->right);
 	    if (left < 256 && right < 256) {
 	      char c = ids[left];
 	      if (c > 0x20 && c < 0x7f) {
@@ -149,10 +150,11 @@ void KernTable::process(LEGlyphStorage& storage)
       // but it is not in sorted order on win32 platforms because of the endianness difference
       // so either I have to swap the element each time I examine it, or I have to swap
       // all the elements ahead of time and store them in the font
+      // The key() accessor on PairInfo handles the swapping if needed
 
       const PairInfo* p = pairs;
       const PairInfo* tp = (const PairInfo*)((char*)p + rangeShift);
-      if (key > SWAPL(tp->key)) {
+      if (key > tp->key()) {
 	p = tp;
       }
 
@@ -165,7 +167,7 @@ void KernTable::process(LEGlyphStorage& storage)
       while (probe > KERN_PAIRINFO_SIZE) {
         probe >>= 1;
         tp = (const PairInfo*)((char*)p + probe);
-	le_uint32 tkey = SWAPL(tp->key);
+	le_uint32 tkey = tp->key();
 #if DEBUG
 	fprintf(stdout, "   %.3d (%0.8x)\n", ((char*)tp - (char*)pairs)/KERN_PAIRINFO_SIZE, tkey);
 	fflush(stdout);
