@@ -98,9 +98,24 @@ KernTable::KernTable(const LEFontInstance* font, const void* tableData)
       if (coverage & COVERAGE_HORIZONTAL) { // only handle horizontal kerning
 	const Subtable_0* table = (const Subtable_0*)((char*)subhead + KERN_SUBTABLE_HEADER_SIZE);
 	nPairs = SWAPW(table->nPairs);
+#if 0 // don't trust these fields as some old TTF fonts have bad data here
 	searchRange = SWAPW(table->searchRange);
 	entrySelector = SWAPW(table->entrySelector);
 	rangeShift = SWAPW(table->rangeShift);
+#else // recompute the binary search header fields
+	if (nPairs == 0) { // this probably shouldn't happen
+	  searchRange = entrySelector = 0;
+	} else {
+	  searchRange = 1;
+	  entrySelector = 0;
+	  while (searchRange * 2 <= nPairs) {
+	    searchRange *= 2;
+	    entrySelector += 1;
+	  }
+	}
+	rangeShift = (nPairs - searchRange) * KERN_PAIRINFO_SIZE;
+	searchRange *= KERN_PAIRINFO_SIZE;
+#endif
 	pairs = (const PairInfo*)((char*)table + KERN_SUBTABLE_0_HEADER_SIZE);
 
 #if DEBUG
