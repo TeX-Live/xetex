@@ -21,7 +21,7 @@ struct PairInfo {
   le_uint16	left;
   le_uint16	right;
   le_int16  value; // fword, kern value in funits
-  le_uint32	key() const { return (SWAPW(left) << 16) | SWAPW(right); }
+  le_uint32	key() const { return ((le_uint32)SWAPW(left) << 16) | SWAPW(right); }
 };
 #define KERN_PAIRINFO_SIZE 6
 
