@@ -90,6 +90,19 @@ print << '__EOT__';
 
 \begingroup
 \catcode`\{=1 \catcode`\}=2 \catcode`\#=6
+
+\message{loading Unicode properties}
+
+% test whether xetex is new enough to set codes on supplementary-plane chars
+% (requires version > 0.996)
+\let\ifSupplementary=\iffalse
+\def\Supplementarytrue{\let\ifSupplementary=\iftrue}
+\ifnum\XeTeXversion>0 \Supplementarytrue
+\else
+  \def\getrevnumber.#1-#2\end{\count255=#1 }
+  \expandafter\getrevnumber\XeTeXrevision-\end
+  \ifnum\count255>996 \Supplementarytrue \fi
+\fi
 % definitions for classes and case mappings based on UnicodeData.txt
 \def\C #1 #2 #3 {\global\uccode"#1="#2 \global\lccode"#1="#3 } % case mappings (non-letter)
 \def\L #1 #2 #3 {\global\catcode"#1=11 % category: letter
@@ -103,7 +116,12 @@ print << '__EOT__';
 
 __EOT__
 
+$supp = 0;
 for (@letters) {
+	if ((hex $_ > 0xffff) and ($supp == 0)) {
+		print "\\ifSupplementary\n";
+		$supp = 1;
+	}
 	if (exists $uccode{$_} or exists $lccode{$_}) {
 		if (($lccode{$_} eq $_) and ($uccode{$_} eq $_)) {
 			print "\\l $_\n";
@@ -120,16 +138,50 @@ for (@letters) {
 		print "\\l $_\n";
 	}
 }
+if ($supp == 1) {
+	print "\\fi % end ifSupplementary\n";
+	$supp = 0;
+}
+
 for (@casesym) {
+	if ((hex $_ > 0xffff) and ($supp == 0)) {
+		print "\\ifSupplementary\n";
+		$supp = 1;
+	}
 	print "\\C $_ ";
 	print exists $uccode{$_} ? $uccode{$_} : "0";
 	print " ";
 	print exists $lccode{$_} ? $lccode{$_} : "0";
 	print "\n";
 }
+if ($supp == 1) {
+	print "\\fi % end ifSupplementary\n";
+	$supp = 0;
+}
+
 for (@marks) {
+	if ((hex $_ > 0xffff) and ($supp == 0)) {
+		print "\\ifSupplementary\n";
+		$supp = 1;
+	}
 	print "\\m $_\n";
 }
+if ($supp == 1) {
+	print "\\fi % end ifSupplementary\n";
+	$supp = 0;
+}
+
+print << '__EOT__';
+
+% check whether the interchar toks features are present
+\ifx\XeTeXinterchartoks\XeTeXcharclass
+  \def\next{\endgroup\endinput}
+\else
+  \let\next\relax
+\fi
+\next
+
+__EOT__
 
 open EAW, $ARGV[1] or die "can't read $ARGV[1]";
 while (<EAW>) {
@@ -159,6 +211,7 @@ close EAW;
 );
 
 print << '__EOT__';
+\message{and character classes}
 
 % definitions for script classes based on LineBreak.txt
 __EOT__
