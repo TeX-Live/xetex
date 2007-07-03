@@ -1139,10 +1139,12 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			if (font != 0) {
 				if (getReqEngine() == 'G')
 					rval = loadGraphiteFont(fontRef, font, scaled_size, featString, nameString);
+				else {
 #ifdef XETEX_MAC
-				else if (getReqEngine() == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0)
-					rval = loadOTfont(fontRef, font, scaled_size, featString);
+					if (getReqEngine() == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0)
 #endif
+					rval = loadOTfont(fontRef, font, scaled_size, featString);
+				}
 				if (rval == 0)
 					deleteFont(font);
 			}
