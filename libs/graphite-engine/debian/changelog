@@ -1,16 +1,43 @@
+silgraphite2.0 (1:2.1+0447svn-1) unstable; urgency=low
+
+  * Update svn
+  * Keep engine separate from wrappers
+  * debian/control So don't need build dep on fontconfig or freetype
+  * debian/docs Docs are not in odf format not rtf
+
+ -- Daniel Glassey <wdg@debian.org>  Fri, 25 May 2007 13:33:06 +0100
+
+silgraphite2.0 (1:2.1+0361svn-1) unstable; urgency=low
+
+  * Build freetype wrapper
+  * Update svn
+  * depend on libfreetype6-dev instead of X and Xft dependencies
+  * binary package is now libgraphite3 since library version has 
+      changed
+  * so rename the debian/libgraphite2.* to libgraphite3.*
+  * libgraphite-dev.install: install libgraphite-ft.a
+
+ -- Daniel Glassey <wdg@debian.org>  Mon, 12 Mar 2007 20:25:30 +0000
+
+silgraphite2.0 (1:2.1+0347svn-1) unstable; urgency=low
+
+  * Package preparation for min-deps reorganisation
+  * allow build from svn
+  * debian/rules: not using tarball anymore
+  * debian/control standards version 3.7.2 (no changes)
+  * remove unneeded misc:Depends subsitution variable
+
+ -- Daniel Glassey <wdg@debian.org>  Fri,  9 Mar 2007 17:20:52 +0000
+
 silgraphite2.0 (1:2.1-1) unstable; urgency=low
 
-  [ Daniel Glassey ]
   * New upstream release
   * debian/rules: fix shlibs
   * Use an epoch as 2.1 < 221svn
       if further svn releases are made they will be
       e.g. 1:2.1+0250svn-1
 
-  [ Martin Hosken ]
-  * build local release
-
- -- Martin Hosken <martin_hosken@sil.org>  Sat, 24 Jun 2006 08:56:13 +0700
+ -- Daniel Glassey <wdg@debian.org>  Mon, 15 May 2006 19:48:23 -0500
 
 silgraphite2.0 (221svn-3) unstable; urgency=low
 

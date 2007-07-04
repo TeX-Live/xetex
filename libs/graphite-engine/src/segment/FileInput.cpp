@@ -16,7 +16,19 @@ Description:
 //:>********************************************************************************************
 //:>	Include files
 //:>********************************************************************************************
-#include "Main.h"
+
+#include "GrCommon.h"
+#include "GrData.h"
+#ifndef _WIN32
+#include "GrMstypes.h"
+#endif
+#include "GrDebug.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include "FileInput.h"
+#include "GrResult.h"
+
 //#ifndef _MSC_VER
 //#include "config.h"
 //#endif

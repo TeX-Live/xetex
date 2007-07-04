@@ -33,11 +33,11 @@ authorization from SIL International.
 
 #include "XeTeXFontInst.h"
 
-#include "GrClient.h"
+#include "graphite/GrClient.h"
 
-#include "Font.h"
-#include "Segment.h"
-#include "ITextSource.h"
+#include "graphite/Font.h"
+#include "graphite/Segment.h"
+#include "graphite/ITextSource.h"
 
 class XeTeXGrFont
 	: public gr::Font

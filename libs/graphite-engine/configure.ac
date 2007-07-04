@@ -34,6 +34,8 @@ AC_LANG_CPLUSPLUS
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
+AC_PATH_PROG(LSB_RELEASE, lsb_release, no)
+
 # Checks for libraries.
 
 # Checks for header files.
@@ -65,7 +67,7 @@ fi
 if test "$enable_final" = yes; then
   build_flags="$build_flags -O3 -DNDEBUG"
 fi
-
+	
 # Enable profile
 if test "$enable_profile" = yes; then
   build_flags="$build_flags -pg "
@@ -74,6 +76,40 @@ if test "$enable_profilefn" = yes; then
   build_flags="$build_flags -g -finstrument-functions "
   LIBS="$LIBS -g -finstrument-functions -lfnccheck "
 fi
+
+# Find distrib codename
+
+AC_MSG_CHECKING(if already have REL_CODENAME)
+if test -z "${REL_CODENAME}"; then
+	AC_MSG_RESULT(no)
+	AC_MSG_CHECKING(if have lsb_release)
+	if test "${LSB_RELEASE}" = "no"; then
+		AC_MSG_RESULT(no)
+		REL_CODENAME="unstable"
+	else
+		AC_MSG_RESULT(yes)
+		AC_MSG_CHECKING(if LSB_RELEASE is empty)
+		if test -z ${LSB_RELEASE}; then
+			AC_MSG_RESULT(yes)
+			REL_CODENAME="unstable"
+		else
+			AC_MSG_RESULT(no)
+			CODENAME=`${LSB_RELEASE} -c | sed -e 's/^\S*\s*//'`
+			AC_MSG_CHECKING(if release is sid)
+			if test ${CODENAME} = 'sid'; then
+				AC_MSG_RESULT(yes)
+				REL_CODENAME="unstable"
+			else
+				AC_MSG_RESULT(no, ${CODENAME})
+				REL_CODENAME=${CODENAME}
+			fi
+		fi
+	fi
+else
+	AC_MSG_RESULT(yes)
+fi
+
+AC_SUBST(REL_CODENAME)
 
 CFLAGS="$CFLAGS $build_flags"
 CXXFLAGS="$CXXFLAGS $build_flags"

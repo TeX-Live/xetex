@@ -377,8 +377,8 @@ GrResult GrEngine::ReadFontTables(Font * pfont, bool fItalic)
 	{
 		// Parse the "Silf" table.
 		grstrm.OpenBuffer((byte*)pSilfTbl, cbSilfSz);
-		int max_glyph_id, version;
-		bool f = ReadSilfTable(grstrm, 0, 0, &max_glyph_id, &version);
+		int chwGlyphIDMax, fxdVersion;
+		bool f = ReadSilfTable(grstrm, 0, 0, &chwGlyphIDMax, &fxdVersion);
 		grstrm.Close();
 		if (!f)
 		{
@@ -389,13 +389,13 @@ GrResult GrEngine::ReadFontTables(Font * pfont, bool fItalic)
 	
 		//	Parse the "Gloc" and "Glat" tables.
 		{
-			GrBufferIStream glat_strm;
+			GrBufferIStream grstrmGlat;
 	
 			grstrm.OpenBuffer((byte *)pGlocTbl, cbGlocSz);
-			glat_strm.OpenBuffer((byte *)pGlatTbl, cbGlatSz);
-			f = ReadGlocAndGlatTables(grstrm, 0, glat_strm, 0, max_glyph_id, version);
+			grstrmGlat.OpenBuffer((byte *)pGlatTbl, cbGlatSz);
+			f = ReadGlocAndGlatTables(grstrm, 0, grstrmGlat, 0, chwGlyphIDMax, fxdVersion);
 			grstrm.Close();
-			glat_strm.Close();
+			grstrmGlat.Close();
 			if (!f)
 			{
 				m_ferr = kferrReadGlocGlatTable;

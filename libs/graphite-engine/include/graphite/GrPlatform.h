@@ -89,9 +89,14 @@ typedef unsigned int utf32;	// UTF32 encoded Unicode codepoints
 typedef unsigned short int utf16;	// UTF16 encoded Unicode codepoints
 typedef unsigned char utf8;			// UTF-8 encoded Unicode codepoints
 typedef unsigned short int gid16;	// glyph ID
-typedef unsigned short int data16;	// generic 16-bit data
-typedef unsigned int data32;		// generic 32-bit data
 typedef unsigned int fontTableId32;	// ID to pass to getTable()
+
+typedef unsigned char      data8;
+typedef unsigned short int data16;	// generic 16-bit data
+typedef unsigned int       data32;	// generic 32-bit data
+typedef signed char      sdata8;
+typedef signed short int sdata16;	// generic 16-bit data
+typedef signed int       sdata32;	// generic 32-bit data
 
 #ifndef NO_ASM
 #define NO_ASM

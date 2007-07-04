@@ -19,7 +19,7 @@ Description:
 #define TTFUTIL_H
 
 #include <cstddef>
-
+#include <stdexcept>
 #include "GrPlatform.h"
 
 // Enumeration used to specify a table in a TTF file
@@ -37,113 +37,114 @@ enum TableId
 	Callling application handles all file input and memory allocation.
 	Assumes minimal knowledge of TTF file format.
 ----------------------------------------------------------------------------------------------*/
-class TtfUtil
+namespace TtfUtil
 {
-public:
-	static const int kMaxGlyphComponents;
-	static const int kcPostNames;
-	static const char * rgPostName[];
 	////////////////////////////////// tools to find & check TTF tables
-	static bool GetHeaderInfo(long & lOffset, long & lSize);
-	static bool CheckHeader(const void * pHdr);
-	static bool GetTableDirInfo(const void * pHdr, long & lOffset, long & lSize);
-	static bool GetTableInfo(TableId ktiTableId, const void * pHdr, const void * pTableDir, 
-		long & lOffset, long & lSize);
-	static bool CheckTable(TableId ktiTableId, const void * pTable, size_t lTableSize);
+	bool GetHeaderInfo(size_t & lOffset, size_t & lSize);
+	bool CheckHeader(const void * pHdr);
+	bool GetTableDirInfo(const void * pHdr, size_t & lOffset, size_t & lSize);
+	bool GetTableInfo(TableId ktiTableId, const void * pHdr, const void * pTableDir, 
+		size_t & lOffset, size_t & lSize);
+	bool CheckTable(TableId ktiTableId, const void * pTable, size_t lTableSize);
 
 	////////////////////////////////// simple font wide info 
-	static int GlyphCount(const void * pMaxp); 
-	static int MaxCompositeComponentCount(const void * pMaxp);
-	static int MaxCompositeLevelCount(const void * pMaxp);
-	static int LocaGlyphCount(long lLocaSize, const void * pHead); 
-	static int DesignUnits(const void * pHead);
-	static int HeadTableCheckSum(const void * pHead);
-	static void HeadTableCreateTime(const void * pHead, unsigned int * pnDateBC, unsigned int * pnDateAD);
-	static void HeadTableModifyTime(const void * pHead, unsigned int * pnDateBC, unsigned int * pnDateAD);
-	static bool IsItalic(const void * pHead);
-	static int FontAscent(const void * pOs2);
-	static int FontDescent(const void * pOs2);
-	static bool FontOs2Style(const void *pOs2, bool & fBold, bool & fItalic);
-	static bool Get31EngFamilyInfo(const void * pName, long & lOffset, long & lSize);
-	static bool Get31EngFullFontInfo(const void * pName, long & lOffset, long & lSize);
-	static bool Get30EngFamilyInfo(const void * pName, long & lOffset, long & lSize);
-	static bool Get30EngFullFontInfo(const void * pName, long & lOffset, long & lSize);
-	static int PostLookup(const void * pPost, long lPostSize, const void * pMaxp, 
+	size_t  GlyphCount(const void * pMaxp); 
+	size_t  MaxCompositeComponentCount(const void * pMaxp);
+	size_t  MaxCompositeLevelCount(const void * pMaxp);
+	size_t  LocaGlyphCount(size_t lLocaSize, const void * pHead) throw (std::domain_error); 
+	int DesignUnits(const void * pHead);
+	int HeadTableCheckSum(const void * pHead);
+	void HeadTableCreateTime(const void * pHead, unsigned int * pnDateBC, unsigned int * pnDateAD);
+	void HeadTableModifyTime(const void * pHead, unsigned int * pnDateBC, unsigned int * pnDateAD);
+	bool IsItalic(const void * pHead);
+	int FontAscent(const void * pOs2);
+	int FontDescent(const void * pOs2);
+	bool FontOs2Style(const void *pOs2, bool & fBold, bool & fItalic);
+	bool Get31EngFamilyInfo(const void * pName, size_t & lOffset, size_t & lSize);
+	bool Get31EngFullFontInfo(const void * pName, size_t & lOffset, size_t & lSize);
+	bool Get30EngFamilyInfo(const void * pName, size_t & lOffset, size_t & lSize);
+	bool Get30EngFullFontInfo(const void * pName, size_t & lOffset, size_t & lSize);
+	int PostLookup(const void * pPost, size_t lPostSize, const void * pMaxp, 
 		const char * pPostName);
 
 	////////////////////////////////// utility methods helpful for name table
-	static bool GetNameInfo(const void * pName, int nPlatformId, int nEncodingId,
-		int nLangId, int nNameId, long & lOffset, long & lSize);
-	static int GetLangsForNames(const void * pName, int nPlatformId, int nEncodingId,
-		int * nameIdList, int cNameIds, short * langIdList);
-	static bool SwapWString(void * pWStr, int nSize = 0);
+	bool GetNameInfo(const void * pName, int nPlatformId, int nEncodingId,
+		int nLangId, int nNameId, size_t & lOffset, size_t & lSize);
+	int GetLangsForNames(const void * pName, int nPlatformId, int nEncodingId,
+		int *nameIdList, int cNameIds, short *langIdList);
+	void SwapWString(void * pWStr, size_t nSize = 0) throw (std::invalid_argument);
 
 	////////////////////////////////// cmap lookup tools 
-	static void * FindCmapSubtable(const void * pCmap, int nPlatformId = 3, 
+	void * FindCmapSubtable(const void * pCmap, int nPlatformId = 3, 
 		int nEncodingId = 1); 
-	static bool CheckCmap31Subtable(const void * pCmap31);
-	static int Cmap31Lookup(const void * pCmap31, int nUnicodeId); 
-	static int Cmap31NextCodepoint(const void *pCmap31, unsigned int nUnicodeId,
+	bool CheckCmap31Subtable(const void * pCmap31);
+	gr::gid16 Cmap31Lookup(const void * pCmap31, int nUnicodeId); 
+	unsigned int Cmap31NextCodepoint(const void *pCmap31, unsigned int nUnicodeId,
 		int * pRangeKey = 0);
-	static bool CheckCmap310Subtable(const void *pCmap310);
-	static int Cmap310Lookup(const void * pCmap310, unsigned int uUnicodeId); 
-	static int Cmap310NextCodepoint(const void *pCmap310, unsigned int nUnicodeId,
+	bool CheckCmap310Subtable(const void *pCmap310);
+	gr::gid16 Cmap310Lookup(const void * pCmap310, unsigned int uUnicodeId); 
+	unsigned int Cmap310NextCodepoint(const void *pCmap310, unsigned int nUnicodeId,
 		int * pRangeKey = 0);
 
 	///////////////////////////////// horizontal metric data for a glyph
-	static bool HorMetrics(int nGlyphId, const void * pHmtx, long lHmtxSize, 
-		const void * pHhea, int & nLsb, int & nAdvWid);
+	bool HorMetrics(gr::gid16 nGlyphId, const void * pHmtx, size_t lHmtxSize, 
+		const void * pHhea, int & nLsb, unsigned int & nAdvWid);
 
 	///////////////////////////////// convert our TableId enum to standard TTF tags
-	static gr::fontTableId32 TableIdTag(TableId ktiTableId);
+	gr::fontTableId32 TableIdTag(const TableId);
 
 	////////////////////////////////// primitives for loca and glyf lookup 
-	static long LocaLookup(int nGlyphId, const void * pLoca, long lLocaSize, 
-		const void * pHead); 
-	static void * GlyfLookup(const void * pGlyf, long lGlyfOffset);
+	size_t LocaLookup(gr::gid16 nGlyphId, const void * pLoca, size_t lLocaSize, 
+		const void * pHead) throw (std::out_of_range); 
+	void * GlyfLookup(const void * pGlyf, size_t lGlyfOffset);
 
 	////////////////////////////////// primitves for simple glyph data
-	static bool GlyfBox(const void * pSimpleGlyf, int & xMin, int & yMin, 
+	bool GlyfBox(const void * pSimpleGlyf, int & xMin, int & yMin, 
 		int & xMax, int & yMax);
 
-	static int GlyfContourCount(const void * pSimpleGlyf); 
-	static bool GlyfContourEndPoints(const void * pSimpleGlyf, int * prgnContourEndPoint, 
-		int cnPointsTotal, int & cnPoints);
-	static bool GlyfPoints(const void * pSimpleGlyf, int * prgnX, int * prgnY, 
+	int GlyfContourCount(const void * pSimpleGlyf); 
+	bool GlyfContourEndPoints(const void * pSimpleGlyf, int * prgnContourEndPoint, 
+		int cnPointsTotal, size_t & cnPoints);
+	bool GlyfPoints(const void * pSimpleGlyf, int * prgnX, int * prgnY, 
 		char * prgbFlag, int cnPointsTotal, int & cnPoints);
 	
 	// primitive to find the glyph ids in a composite glyph
-	static bool GetComponentGlyphIds(const void * pSimpleGlyf, int * prgnCompId, 
-		int cnCompIdTotal, int & cnCompId);
+	bool GetComponentGlyphIds(const void * pSimpleGlyf, int * prgnCompId, 
+		size_t cnCompIdTotal, size_t & cnCompId);
 	// primitive to find the placement data for a component in a composite glyph
-	static bool GetComponentPlacement(const void * pSimpleGlyf, int nCompId,
+	bool GetComponentPlacement(const void * pSimpleGlyf, int nCompId,
 		bool fOffset, int & a, int & b);						
 	// primitive to find the transform data for a component in a composite glyph
-	static bool GetComponentTransform(const void * pSimpleGlyf, int nCompId,
+	bool GetComponentTransform(const void * pSimpleGlyf, int nCompId,
 		float & flt11, float & flt12, float & flt21, float & flt22, bool & fTransOffset);
 
 	////////////////////////////////// operate on composite or simple glyph (auto glyf lookup)
-	static void * GlyfLookup(int nGlyphId, const void * pGlyf, const void * pLoca, 
-		long lLocaSize, const void * pHead); // primitive used by below methods
+	void * GlyfLookup(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
+		size_t lLocaSize, const void * pHead); // primitive used by below methods
 
 	// below are primary user methods for handling glyf data
-	static bool IsSpace(int nGlyphId, const void * pLoca, long lLocaSize, const void * pHead);
-	static bool IsDeepComposite(int nGlyphId, const void * pGlyf, const void * pLoca, 
-		long lLocaSize, const void * pHead);
+	bool IsSpace(gr::gid16 nGlyphId, const void * pLoca, size_t lLocaSize, const void * pHead);
+	bool IsDeepComposite(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
+		size_t lLocaSize, const void * pHead);
 
-	static bool GlyfBox(int nGlyphId, const void * pGlyf, const void * pLoca, long lLocaSize, 
+	bool GlyfBox(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, size_t lLocaSize, 
 		const void * pHead, int & xMin, int & yMin, int & xMax, int & yMax);
-	static bool GlyfContourCount(int nGlyphId, const void * pGlyf, const void * pLoca, 
-		long lLocaSize, const void *pHead, int & cnContours); 
-	static bool GlyfContourEndPoints(int nGlyphId, const void * pGlyf, const void * pLoca, 
-		long lLocaSize,	const void * pHead, int * prgnContourEndPoint, int cnPoints); 
-	static bool GlyfPoints(int nGlyphId, const void * pGlyf, const void * pLoca, 
-		long lLocaSize, const void * pHead, const int * prgnContourEndPoint, int cnEndPoints, 
-		int * prgnX, int * prgnY, bool * prgfOnCurve, int cnPoints);
+	bool GlyfContourCount(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
+		size_t lLocaSize, const void *pHead, int & cnContours); 
+	bool GlyfContourEndPoints(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
+		size_t lLocaSize,	const void * pHead, int * prgnContourEndPoint, size_t cnPoints); 
+	bool GlyfPoints(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
+		size_t lLocaSize, const void * pHead, const int * prgnContourEndPoint, size_t cnEndPoints, 
+		int * prgnX, int * prgnY, bool * prgfOnCurve, size_t cnPoints);
 
 	// utitily method used by high-level GlyfPoints 
-	static bool SimplifyFlags(char * prgbFlags, int cnPoints);
-	static bool CalcAbsolutePoints(int * prgnX, int * prgnY, int cnPoints);
-};
+	bool SimplifyFlags(char * prgbFlags, int cnPoints);
+	bool CalcAbsolutePoints(int * prgnX, int * prgnY, int cnPoints);
+
+	/*----------------------------------------------------------------------------------------------
+		Return standard TTF tag for the given TableId enumeration constant
+		If requested ktiTableId doesn't exist, return 0;
+	----------------------------------------------------------------------------------------------*/
+} // end of namespace TtfUtil
 
 #endif

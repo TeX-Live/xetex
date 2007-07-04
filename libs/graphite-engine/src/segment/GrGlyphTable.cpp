@@ -43,8 +43,8 @@ namespace gr
 /*----------------------------------------------------------------------------------------------
 	Fill in the glyph table from the font stream.
 ----------------------------------------------------------------------------------------------*/	
-bool GrGlyphTable::ReadFromFont(GrIStream & gloc_strm, long lGlocStart, 
-	GrIStream & glat_strm, long lGlatStart, 
+bool GrGlyphTable::ReadFromFont(GrIStream & grstrmGloc, long lGlocStart, 
+	GrIStream & grstrmGlat, long lGlatStart, 
 	data16 chwBWAttr, data16 chwJStrAttr, int cJLevels, int cnCompPerLig, 
 	int fxdSilfVersion)
 {
@@ -52,18 +52,18 @@ bool GrGlyphTable::ReadFromFont(GrIStream & gloc_strm, long lGlocStart,
 	GrGlyphSubTable * pgstbl = new GrGlyphSubTable();
 
 	//	Gloc table--offsets into Glat table
-	gloc_strm.SetPositionInFont(lGlocStart);
+	grstrmGloc.SetPositionInFont(lGlocStart);
 
 	//	version
-    int fxdGlocVersion = GrEngine::ReadVersion(gloc_strm);
+    int fxdGlocVersion = GrEngine::ReadVersion(grstrmGloc);
 	if (fxdGlocVersion > kGlocVersion)
 		return false;
 
 	//	flags
-	short snFlags = gloc_strm.ReadShortFromFont();
+	short snFlags = grstrmGloc.ReadShortFromFont();
 
 	//	number of attributes
-	unsigned short cAttrs = gloc_strm.ReadUShortFromFont();
+	unsigned short cAttrs = grstrmGloc.ReadUShortFromFont();
 
 	//	Create a single sub-table for the single style.
 	pgstbl->Initialize(fxdSilfVersion, snFlags, chwBWAttr, chwJStrAttr, data16(chwJStrAttr + cJLevels),
@@ -71,20 +71,20 @@ bool GrGlyphTable::ReadFromFont(GrIStream & gloc_strm, long lGlocStart,
 
 	SetSubTable(0, pgstbl);
 
-	return pgstbl->ReadFromFont(gloc_strm, m_cglf, glat_strm, lGlatStart);
+	return pgstbl->ReadFromFont(grstrmGloc, m_cglf, grstrmGlat, lGlatStart);
 }
 
-bool GrGlyphSubTable::ReadFromFont(GrIStream & gloc_strm, int cGlyphs,
-		GrIStream & glat_strm, long lGlatStart)
+bool GrGlyphSubTable::ReadFromFont(GrIStream & grstrmGloc, int cGlyphs,
+	GrIStream & grstrmGlat, long lGlatStart)
 {
 	//	attribute value offsets--slurp
 	if (m_fGlocShort)
 	{
-		gloc_strm.ReadBlockFromFont(m_prgibBIGAttrValues, ((cGlyphs + 1) * sizeof(data16)));
+		grstrmGloc.ReadBlockFromFont(m_prgibBIGAttrValues, ((cGlyphs + 1) * sizeof(data16)));
 	}
 	else
 	{
-		gloc_strm.ReadBlockFromFont(m_prgibBIGAttrValues, ((cGlyphs + 1) * sizeof(data32)));
+		grstrmGloc.ReadBlockFromFont(m_prgibBIGAttrValues, ((cGlyphs + 1) * sizeof(data32)));
 	}
 
 	//	length of buffer needed for glyph attribute values:
@@ -96,19 +96,19 @@ bool GrGlyphSubTable::ReadFromFont(GrIStream & gloc_strm, int cGlyphs,
 	m_pgatbl->Initialize(m_fxdSilfVersion, cbBufLen);
 
 	//	Glat table
-	glat_strm.SetPositionInFont(lGlatStart);
+	grstrmGlat.SetPositionInFont(lGlatStart);
 
 	//	version
-	int fxdGlatVersion = glat_strm.ReadIntFromFont();
+	int fxdGlatVersion = grstrmGlat.ReadIntFromFont();
 	if (fxdGlatVersion > kGlatVersion)
 		return false;
 
 	//	Back up over the version number and include it right in the attribute value entry
 	//	buffer, since the offsets take it into account.
-	glat_strm.SetPositionInFont(lGlatStart);
+	grstrmGlat.SetPositionInFont(lGlatStart);
 
 	//	Slurp the entire block of entries.
-	glat_strm.ReadBlockFromFont(m_pgatbl->m_prgbBIGEntries, cbBufLen);
+	grstrmGlat.ReadBlockFromFont(m_pgatbl->m_prgbBIGEntries, cbBufLen);
 
 	return true;
 }

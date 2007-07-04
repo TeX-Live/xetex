@@ -274,7 +274,7 @@ public:
 	* be done by the Graphite engine.
 	* Throws an exception if there is some other error in reading the 
 	* table, or if the table asked for is not in the font.
-	* @param tableID the TTF ID of the table.
+	* @param tableID the TTF ID of the table as a 32-bit long in native machine byte order
 	* @param pcbSize pointer to a size_t to hold the table size.
 	* @return address of the buffer containing the table or 0
 	*/

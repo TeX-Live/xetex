@@ -1341,8 +1341,8 @@ void GrEngine::CreateEmpty()
 /*----------------------------------------------------------------------------------------------
 	Create the glyph table and fill it in from the font stream.
 ----------------------------------------------------------------------------------------------*/	
-bool GrEngine::ReadGlocAndGlatTables(GrIStream & gloc_strm, long lGlocStart,
-	GrIStream & glat_strm, long lGlatStart,
+bool GrEngine::ReadGlocAndGlatTables(GrIStream & grstrmGloc, long lGlocStart,
+	GrIStream & grstrmGlat, long lGlatStart,
 	int chwGlyphIDMax, int fxdSilfVersion)
 {
 	//	Determine the highest used glyph ID number.
@@ -1359,7 +1359,7 @@ bool GrEngine::ReadGlocAndGlatTables(GrIStream & gloc_strm, long lGlocStart,
 	m_pgtbl->SetNumberOfComponents(m_cComponents);
 	m_pgtbl->SetNumberOfStyles(1);	// for now
 
-	return m_pgtbl->ReadFromFont(gloc_strm, lGlocStart, glat_strm, lGlatStart,
+	return m_pgtbl->ReadFromFont(grstrmGloc, lGlocStart, grstrmGlat, lGlatStart,
 		m_chwBWAttr, m_chwJStretch0, m_cJLevels, m_cnCompPerLig, fxdSilfVersion);
 }
 
@@ -1663,8 +1663,7 @@ std::wstring GrEngine::StringFromNameTable(int nLangID, int nNameID)
 {
 	std::wstring stuName;
 	stuName.erase();
-	long lOffset = -1;
-	long lSize = -1;
+	size_t lOffset = 0, lSize = 0;
 
 	// The Graphite compiler stores our names in either 
 	// the MS (platform id = 3) Unicode (writing system id = 1) table

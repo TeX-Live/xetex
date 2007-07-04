@@ -244,6 +244,25 @@ enum JustifyModes
 	kjmoduJustify	= 2
 };
 
+enum TruetypeTableId {
+    kttiCmap = 0x636D6170,
+    kttiFeat = 0x46656174,
+    kttiGlat = 0x476C6174,
+    kttiGloc = 0x476C6F63,
+    kttiGlyf = 0x676C7966,
+    kttiHead = 0x68656164,
+    kttiHhea = 0x68686561,
+    kttiHmtx = 0x686D7478,
+    kttiLoca = 0x6C6F6361,
+    kttiMaxp = 0x6D617870,
+    kttiName = 0x6E616D65,
+    kttiOs2  = 0x4F532F32,
+    kttiPost = 0x706F7374,
+    kttiSile = 0x53696C65,
+    kttiSilf = 0x53696C66,
+    kttiSill = 0x53696C6C
+};
+
 } // namespace gr
 
 #endif // CONSTANTS_INCLUDED

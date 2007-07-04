@@ -4,6 +4,7 @@ EXTRA_DIST = \
 	burmeseText.wpx \
 	romanText.wpx \
 	xlineText.wpx \
+	grtest_arabic.ttf \
 	grtest_burmese.ttf \
 	grtest_roman.ttf \
 	grtest_xline.ttf xline.gdl \
@@ -12,7 +13,7 @@ EXTRA_DIST = \
 
 noinst_PROGRAMS = regression-test
 
-AM_CPPFLAGS  = -I$(top_srcdir)/include
+AM_CPPFLAGS  = -I$(top_srcdir)/include/graphite
 
 regression_test_LDFLAGS = -L$(top_builddir)/src -lgraphite
 
@@ -24,4 +25,9 @@ regression_test_SOURCES  = \
 	RtTextSrc.h \
 	SimpleTextSrc.cpp SimpleTextSrc.h \
 	GrJustifier.cpp GrJustifier.h
-	
+
+check-local: regression-test
+	$(top_builddir)/test/RegressionTest/regression-test -p $(srcdir)
+
+dist-hook:
+	rm -f grregtest.log tracelog.txt

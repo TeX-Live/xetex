@@ -29,6 +29,13 @@ bool g_silentMode = false;
 
 int g_itcaseStart = 0;  // adjust to skip to a certain test
 
+std::string g_fontPath = ".";
+#ifdef _WIN32
+#define PATH_SEP "\\"
+#else
+#define PATH_SEP "/"
+#endif
+
 // Forward defintions.
 int WriteLog(int);
 void CopyWstringToUtf16(std::wstring textStr, gr::utf16 * utf16Buf, int bufSize);
@@ -50,19 +57,32 @@ int main(int argc, char* argv[])
 	int iargc = 1;
 	while (iargc < argc)
 	{
-		if (strcmp(argv[iargc], "/d") == 0)
+		if ((strcmp(argv[iargc], "/d") == 0) || (strcmp(argv[iargc], "-d") == 0))
 		{
 			g_debugMode = true;
 		}
-		if (strcmp(argv[iargc], "/s") == 0)
+		if ((strcmp(argv[iargc], "/s") == 0) || (strcmp(argv[iargc], "-s") == 0))
 		{
 			g_silentMode = true;
+		}
+		if ((strcmp(argv[iargc], "/p") == 0) || (strcmp(argv[iargc], "-p") == 0))
+		{
+			iargc++;
+			if (iargc < argc)
+			{
+				g_fontPath = argv[iargc];
+			}
 		}
 		iargc++;
 	}
 
 	if (!g_silentMode)
-		std::cout << "Graphite Regression Test\n\n";
+	{
+		std::cout << "Graphite Regression Test\n";
+		std::cout << "Files path is " << g_fontPath << "\n\n";
+		if (g_debugMode)
+			std::cout << "In debug mode\n";
+	}
 
 	//	Start a new log.
 	g_strmLog.open("grregtest.log");
@@ -171,11 +191,11 @@ int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, R
 	//HFONT hfontOld = (HFONT)::SelectObject(hdc, hfont); // restore before destroying the DC.
 	//WinFont winfont(hdc);
 
-	FileFont font(ptcase->FontFile(), float(signed(ptcase->FontSize())), 96, 96);
+	FileFont font(g_fontPath + PATH_SEP + ptcase->FontFile(), float(signed(ptcase->FontSize())), 96, 96);
 
 	if (!font.isValid())
 	{
-		OutputError(ptcase, std::string("ERROR: reading font file: \"") + ptcase->FontFile() + "\"; remaining tests skipped");
+		OutputError(ptcase, std::string("ERROR: reading font file: \"") + ptcase->FontFile() + "\" at path \"" + g_fontPath + "\"; remaining tests skipped");
 		*ppsegRet = NULL;
 		errorCount++;
 		return WriteLog(errorCount);

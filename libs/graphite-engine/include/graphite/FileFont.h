@@ -24,6 +24,7 @@ namespace gr
 {
 
 class FontTableCache;
+class GrEngine;
 /*-----------------------------------------------------------------------------
 	Stock implementation of an Xft font class. 
 ------------------------------------------------------------------------------*/
@@ -218,7 +219,7 @@ protected:
 	void initializeFromFace(void);
 	// this uses an int to avoid having to include TtfUtil.h in the include
 	// directory
-	byte * readTable(int /*TableId*/ tableId, long & size);
+	byte * readTable(int /*TableId*/ tableId, size_t & size);
 	
 	// pixels-per-em = dpi * point-size / 72
 	// pixel-coord = design-coord * pixels-per-em / font-em-square

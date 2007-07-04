@@ -18,6 +18,7 @@ Description:
 #endif
 #ifndef GRSTRUCTS_INCLUDED
 #define GRSTRUCTS_INCLUDED
+#include "GrPlatform.h"
 
 namespace gr
 {

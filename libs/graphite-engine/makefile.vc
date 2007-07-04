@@ -2,7 +2,7 @@
 TARGET=graphite
 
 CPP=cl.exe
-CPPFLAGS=/nologo /W4 /GR /GX /I "./src/font" /I "./src/painter" /I "./src/segment" /I "./src/textsource" /I "./src/generic" /I "./include" /I "../wrappers/win32" /D "GR_NAMESPACE" /D "WIN32" /D "_WINDOWS" /D "_UNICODE" /D "UNICODE" /D "TRACING"  /Fp"$(INTDIR)\graphite.pch" /YX /Fd"$(INTDIR)\\" /FD /c
+CPPFLAGS=/nologo /W4 /GR /GX /I "./src/font" /I "./src/painter" /I "./src/segment" /I "./src/textsource" /I "./src/generic" /I "./include/graphite" /I "../wrappers/win32" /D "GR_NAMESPACE" /D "WIN32" /D "_WINDOWS" /D "_UNICODE" /D "UNICODE" /D "TRACING"  /Fp"$(INTDIR)\graphite.pch" /YX /Fd"$(INTDIR)\\" /FD /c
 
 LINK=link.exe
 LINK_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /dll /pdb:"$(OUTDIR)\\graphite.pdb" /machine:I386 /out:"$(OUTDIR)\\$(TARGET).dll" /implib:"$(OUTDIR)\\$(TARGET).lib"

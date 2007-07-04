@@ -26,6 +26,7 @@ Description:
 namespace gr
 {
 
+	class Segment;
 /*----------------------------------------------------------------------------------------------
 	A SegmentPainter handles the UI-related operations on for segment.
 

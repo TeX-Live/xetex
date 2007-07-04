@@ -44,6 +44,7 @@ namespace gr
 ----------------------------------------------------------------------------------------------*/
 GrPass::GrPass(int i)
 	:	m_ipass(i),
+		vnStack(128),
 		m_nMaxRuleContext(0),
 		m_pfsm(NULL),
 		m_nMaxRuleLoop(0),
@@ -57,9 +58,9 @@ GrPass::GrPass(int i)
 		m_prgbConstraintBlock(NULL),
 		m_prgbActionBlock(NULL),
 		m_prgibConstraintDebug(NULL),
-        m_prgibRuleDebug(NULL),
-        m_fCheckRules(false),
-        m_prgfRuleOkay(NULL)
+		m_prgibRuleDebug(NULL),
+		m_fCheckRules(false),
+		m_prgfRuleOkay(NULL)
 {
 }
 

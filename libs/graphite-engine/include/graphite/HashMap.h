@@ -134,7 +134,7 @@ public:
 	public:
 		// Constructors/destructors/etc.
 
-		iterator() : m_phmParent(NULL), m_ihsnd(0)
+		iterator() : m_phmParent(0), m_ihsnd(0)
 		{
 		}
 		iterator(HashMap<K,T,H,Eq> * phm, int ihsnd) : m_phmParent(phm), m_ihsnd(ihsnd)
@@ -244,7 +244,7 @@ public:
 
 	iterator Begin();
 	iterator End();
-	void Insert(K & key, T & value, bool fOverwrite = false, int * pihsndOut = NULL);
+	void Insert(K & key, T & value, bool fOverwrite = false, int * pihsndOut = 0);
 	bool Retrieve(K & key, T * pvalueRet);
 	bool Delete(K & key);
 	void Clear();

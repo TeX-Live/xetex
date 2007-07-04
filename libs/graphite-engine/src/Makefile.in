@@ -37,10 +37,11 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/../include/Makefile.am \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/font/Makefile.am $(srcdir)/generic/Makefile.am \
-	$(srcdir)/painter/Makefile.am $(srcdir)/segment/Makefile.am
+DIST_COMMON = $(graphiteinclude_HEADERS) \
+	$(srcdir)/../include/Makefile.am $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(srcdir)/font/Makefile.am \
+	$(srcdir)/generic/Makefile.am $(srcdir)/painter/Makefile.am \
+	$(srcdir)/segment/Makefile.am
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -54,7 +55,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgincludedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(graphiteincludedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgraphite_la_LIBADD =
@@ -79,8 +81,8 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgraphite_la_SOURCES)
 DIST_SOURCES = $(libgraphite_la_SOURCES)
-pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(pkginclude_HEADERS)
+graphiteincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(graphiteinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -123,6 +125,7 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
+LSB_RELEASE = @LSB_RELEASE@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -137,6 +140,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+REL_CODENAME = @REL_CODENAME@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SIZEOF_WCHAR_T = @SIZEOF_WCHAR_T@
@@ -190,40 +194,45 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = 1.6
-AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/src/generic \
-	-I$(top_srcdir)/src/font -I$(top_srcdir)/src/segment
+AM_CPPFLAGS = -I$(top_srcdir)/include/graphite \
+	-I$(top_srcdir)/src/generic -I$(top_srcdir)/src/font \
+	-I$(top_srcdir)/src/segment
 #AM_CPPFLAGS += $(FT_CFLAGS) $(XFT_CFLAGS)
 #AM_CPPFLAGS += -D_UNICODE -DUNICODE -DNO_ASM
 lib_LTLIBRARIES = libgraphite.la
 libgraphite_la_LDFLAGS = -version-info 3:0:0
-EXTRA_DIST = textsource $(top_srcdir)/include/BinTree.h \
-	$(top_srcdir)/include/GenericResource.h \
-	$(top_srcdir)/include/HashMap.h $(genericdir)/*.h \
+
+#EXTRA_DIST=textsource
+EXTRA_DIST = $(top_srcdir)/include/graphite/BinTree.h \
+	$(top_srcdir)/include/graphite/GenericResource.h \
+	$(top_srcdir)/include/graphite/HashMap.h $(genericdir)/*.h \
 	$(genericdir)/BinTree_i.cpp $(genericdir)/HashMap_i.cpp \
 	$(fontdir)/*.h $(segmentdir)/*.h \
 	$(segmentdir)/explicit_instantiations.cpp
-pkginclude_HEADERS = $(top_srcdir)/include/FileFont.h \
-	$(top_srcdir)/include/Font.h \
-	$(top_srcdir)/include/GraphiteProcess.h \
-	$(top_srcdir)/include/GrAppData.h \
-	$(top_srcdir)/include/GrClient.h \
-	$(top_srcdir)/include/GrCommon.h \
-	$(top_srcdir)/include/GrConstants.h \
-	$(top_srcdir)/include/GrData.h $(top_srcdir)/include/GrDebug.h \
-	$(top_srcdir)/include/GrExt.h \
-	$(top_srcdir)/include/GrFeature.h \
-	$(top_srcdir)/include/GrMstypes.h \
-	$(top_srcdir)/include/GrPlatform.h \
-	$(top_srcdir)/include/GrResult.h \
-	$(top_srcdir)/include/GrStructs.h \
-	$(top_srcdir)/include/GrWrappers.h \
-	$(top_srcdir)/include/IGraphiteProcess.h \
-	$(top_srcdir)/include/IGrEngine.h \
-	$(top_srcdir)/include/IGrJustifier.h \
-	$(top_srcdir)/include/ITextSource.h \
-	$(top_srcdir)/include/SegmentAux.h \
-	$(top_srcdir)/include/Segment.h \
-	$(top_srcdir)/include/SegmentPainter.h
+graphiteinclude_HEADERS = $(top_srcdir)/include/graphite/FileFont.h \
+	$(top_srcdir)/include/graphite/Font.h \
+	$(top_srcdir)/include/graphite/GraphiteProcess.h \
+	$(top_srcdir)/include/graphite/GrAppData.h \
+	$(top_srcdir)/include/graphite/GrClient.h \
+	$(top_srcdir)/include/graphite/GrCommon.h \
+	$(top_srcdir)/include/graphite/GrConstants.h \
+	$(top_srcdir)/include/graphite/GrData.h \
+	$(top_srcdir)/include/graphite/GrDebug.h \
+	$(top_srcdir)/include/graphite/GrExt.h \
+	$(top_srcdir)/include/graphite/GrFeature.h \
+	$(top_srcdir)/include/graphite/GrMstypes.h \
+	$(top_srcdir)/include/graphite/GrPlatform.h \
+	$(top_srcdir)/include/graphite/GrResult.h \
+	$(top_srcdir)/include/graphite/GrStructs.h \
+	$(top_srcdir)/include/graphite/GrWrappers.h \
+	$(top_srcdir)/include/graphite/IGraphiteProcess.h \
+	$(top_srcdir)/include/graphite/IGrEngine.h \
+	$(top_srcdir)/include/graphite/IGrJustifier.h \
+	$(top_srcdir)/include/graphite/ITextSource.h \
+	$(top_srcdir)/include/graphite/SegmentAux.h \
+	$(top_srcdir)/include/graphite/Segment.h \
+	$(top_srcdir)/include/graphite/SegmentPainter.h
+graphiteincludedir = $(includedir)/graphite
 libgraphite_la_SOURCES = $(genericdir)/Debug.cpp \
 	$(genericdir)/Util.cpp $(fontdir)/Font.cpp \
 	$(fontdir)/TtfUtil.cpp $(fontdir)/FileFont.cpp \
@@ -551,22 +560,22 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-pkgincludeHEADERS: $(pkginclude_HEADERS)
+install-graphiteincludeHEADERS: $(graphiteinclude_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkgincludedir)" || $(mkdir_p) "$(DESTDIR)$(pkgincludedir)"
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	test -z "$(graphiteincludedir)" || $(mkdir_p) "$(DESTDIR)$(graphiteincludedir)"
+	@list='$(graphiteinclude_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
+	  echo " $(graphiteincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(graphiteincludedir)/$$f'"; \
+	  $(graphiteincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(graphiteincludedir)/$$f"; \
 	done
 
-uninstall-pkgincludeHEADERS:
+uninstall-graphiteincludeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
+	@list='$(graphiteinclude_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(graphiteincludedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(graphiteincludedir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -618,7 +627,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/$(fontdir) $(distdir)/$(genericdir) $(distdir)/$(segmentdir) $(distdir)/$(top_srcdir)/include $(distdir)/../include $(distdir)/font $(distdir)/generic $(distdir)/painter $(distdir)/segment
+	$(mkdir_p) $(distdir)/$(fontdir) $(distdir)/$(genericdir) $(distdir)/$(segmentdir) $(distdir)/$(top_srcdir)/include/graphite $(distdir)/../include $(distdir)/../include/graphite $(distdir)/font $(distdir)/generic $(distdir)/painter $(distdir)/segment
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -649,7 +658,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(graphiteincludedir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -697,7 +706,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-pkgincludeHEADERS
+install-data-am: install-graphiteincludeHEADERS
 
 install-exec-am: install-libLTLIBRARIES
 
@@ -725,22 +734,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES \
-	uninstall-pkgincludeHEADERS
+uninstall-am: uninstall-graphiteincludeHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pkgincludeHEADERS \
+	install-exec-am install-graphiteincludeHEADERS install-info \
+	install-info-am install-libLTLIBRARIES install-man \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-info-am uninstall-libLTLIBRARIES \
-	uninstall-pkgincludeHEADERS
+	uninstall-graphiteincludeHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
 
 #EXTRA_DIST += $(painterdir)/*.h

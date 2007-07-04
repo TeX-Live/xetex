@@ -21,6 +21,8 @@ Note:
 
 //:End Ignore
 
+#include "GrAppData.h"
+
 namespace gr
 {
 
@@ -129,6 +131,8 @@ protected:
 	GrEngine has one instance of this class.
 	Hungarian: langtbl
 ----------------------------------------------------------------------------------------------*/
+class GrIStream;
+
 class GrLangTable
 {
 public:

@@ -392,6 +392,7 @@ protected:
 
 	int m_fxdVersion;
 
+	std::vector<int> vnStack;	
 	//	number of items required from previous pass; don't access directly, use the getter
 	//	method, because GrBidiPass overrides to always use 1.
 	int m_nMaxRuleContext;

@@ -109,7 +109,7 @@ void Font::UniqueCacheInfo(std::wstring & stuFace, bool & fBold, bool & fItalic)
 {
 	size_t cbSize;
 	const byte * pNameTbl = static_cast<const byte *>(getTable(TtfUtil::TableIdTag(ktiName), &cbSize));
-	long lOffset, lSize;
+	size_t lOffset, lSize;
 	if (!TtfUtil::Get31EngFamilyInfo(pNameTbl, lOffset, lSize))
 	{
 		// TODO: try to find any name in any arbitrary language.
@@ -200,7 +200,8 @@ void Font::getGlyphMetrics(gid16 glyphID, gr::Rect & boundingBox, gr::Point & ad
 		float(TtfUtil::DesignUnits(pHead)) / pixelEmSquare;
 
 	// Use the Hmtx and Head tables to find the glyph advances.
-	int lsb, advance = 0;
+	int lsb;
+	unsigned int advance = 0;
 	if (TtfUtil::HorMetrics(glyphID, pHmtx, hmtxSize, pHead, 
 			lsb, advance))
 	{

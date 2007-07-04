@@ -17,6 +17,7 @@ Description:
 #ifndef GR_SEGMENT_INCLUDED
 #define GR_SEGMENT_INCLUDED
 
+#include "Font.h"
 #include "GrConstants.h"
 #include "SegmentAux.h"
 

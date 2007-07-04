@@ -132,8 +132,7 @@ FileFont::initializeFromFace()
 
 	if (m_file)
 	{
-		long lOffset;
-		long lSize;
+		size_t lOffset, lSize;
 		TtfUtil::GetHeaderInfo(lOffset, lSize);
 		m_pHeader = new byte [lSize];
 		m_isValid = true;
@@ -144,7 +143,7 @@ FileFont::initializeFromFace()
 		}
 		m_isValid = (fseek(m_file, lOffset, SEEK_SET) == 0);
 		size_t bytesRead = fread(m_pHeader, 1, lSize, m_file);
-		Assert(static_cast<int>(bytesRead) == lSize);
+		Assert(bytesRead == lSize);
 		m_isValid = TtfUtil::CheckHeader(m_pHeader);
 
 		if (!m_isValid) return;
@@ -158,7 +157,7 @@ FileFont::initializeFromFace()
 		// if lOffset hasn't changed this isn't needed
 		fseek(m_file, lOffset, SEEK_SET);
 		bytesRead = fread(m_pTableDir, 1, lSize, m_file);
-		Assert(static_cast<int>(bytesRead) == lSize);
+		Assert(bytesRead == lSize);
 		
 		// now read head tables
 		m_isValid = TtfUtil::GetTableInfo(ktiOs2, m_pHeader, m_pTableDir, 
@@ -231,11 +230,11 @@ FileFont::initializeFromFace()
 }
 
 byte * 
-FileFont::readTable(int /*TableId*/ tid, long & size)
+FileFont::readTable(int /*TableId*/ tid, size_t & size)
 {
-	TableId tableId = static_cast<TableId>(tid);
+	const TableId tableId = TableId(tid);
 	bool isValid = true;
-	long lOffset = 0, lSize = 0;
+	size_t lOffset = 0, lSize = 0;
 	if (!m_pTableCache)
 	{
 		m_pTableCache = new FontTableCache();		
@@ -247,7 +246,7 @@ FileFont::readTable(int /*TableId*/ tid, long & size)
 	// check whether it is already in the cache
 	if (pTable) return pTable;
 	isValid &= TtfUtil::GetTableInfo(tableId, m_pHeader, m_pTableDir, 
-									  lOffset, lSize);
+			lOffset, lSize);
 	if (!isValid) 
 		return NULL;
 	fseek(m_file, lOffset, SEEK_SET);
@@ -260,14 +259,14 @@ FileFont::readTable(int /*TableId*/ tid, long & size)
 		return NULL;
 	}
 	size_t bytesRead = fread(pTable, 1, lSize, m_file);
-	isValid = (static_cast<int>(bytesRead) == lSize);
+	isValid = bytesRead == lSize;
 	if (isValid)
 	{
 		isValid &= TtfUtil::CheckTable(tableId, pTable, lSize);
 	}
 	if (!isValid) 
 	{
-		return NULL;
+		return 0;
 	}
 	size = lSize;
 	return pTable;
@@ -389,7 +388,7 @@ FileFont::getTable(fontTableId32 tableID, size_t * pcbSize)
 		}
 	}
 	Assert(tid < ktiLast);
-	long tableSize = 0;
+	size_t tableSize = 0;
 	void * pTable = readTable(tid, tableSize);
 	*pcbSize = static_cast<int>(tableSize);
 	return pTable;
@@ -419,7 +418,7 @@ bool FileFont::FontHasGraphiteTables(char * fileName)
 
 bool FileFont::fontHasGraphiteTables()
 {
-	long tableSize;
+	size_t tableSize;
 	bool isGraphiteFont = m_isValid;
 	isGraphiteFont &= (readTable(ktiSilf, tableSize) != NULL);
 	return isGraphiteFont;
