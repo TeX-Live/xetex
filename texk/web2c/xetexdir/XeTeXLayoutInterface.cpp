@@ -953,6 +953,8 @@ getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float
 float
 graphiteSegmentWidth(XeTeXLayoutEngine engine)
 {
+	if (engine->grSegment == NULL)
+		return 0.0;
 	//return engine->grSegment->advanceWidth(); // can't use this because it ignores trailing WS
 	try {
 		return engine->extend * engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
