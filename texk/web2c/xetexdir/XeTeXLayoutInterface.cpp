@@ -918,7 +918,16 @@ makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 	}
 
 	engine->grSource->setText(txtPtr, txtLen);
-	engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, &layoutEnv);
+	try {
+		engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, &layoutEnv);
+	}
+	catch (gr::FontException f) {
+		fprintf(stderr, "*** makeGraphiteSegment: font error %d, returning 0\n", (int)f.errorCode);
+	}
+	catch (...) {
+		fprintf(stderr, "*** makeGraphiteSegment: segment creation failed, returning 0\n");
+		return 0;
+	}
 
 	return engine->grSegment->glyphs().second - engine->grSegment->glyphs().first;
 }
@@ -926,6 +935,11 @@ makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 void
 getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y)
 {
+	if (engine->grSegment == NULL) {
+		*glyphID = 0;
+		*x = *y = 0.0;
+		return;
+	}
 	gr::GlyphIterator	i = engine->grSegment->glyphs().first + index;
 	*glyphID = i->glyphID();
 	if (engine->extend != 1.0 || engine->slant != 0.0)
@@ -939,7 +953,16 @@ float
 graphiteSegmentWidth(XeTeXLayoutEngine engine)
 {
 	//return engine->grSegment->advanceWidth(); // can't use this because it ignores trailing WS
-	return engine->extend * engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
+	try {
+		return engine->extend * engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
+	}
+	catch (gr::FontException f) {
+		fprintf(stderr, "*** graphiteSegmentWidth: font error %d, returning 0\n", (int)f.errorCode);
+	}
+	catch (...) {
+		fprintf(stderr, "*** graphiteSegmentWidth: getRangeWidth failed, returning 0.0\n");
+		return 0.0;
+	}
 }
 
 /* line-breaking uses its own private textsource and segment, not the engine's ones */
@@ -967,12 +990,22 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen
 		lbEngine = engine;
 	}
 	
-	lbSegment = new gr::RangeSegment(engine->grFont, lbSource, &layoutEnv);
+	try {
+		lbSegment = new gr::RangeSegment(engine->grFont, lbSource, &layoutEnv);
+	}
+	catch (gr::FontException f) {
+		fprintf(stderr, "*** initGraphiteBreaking: font error %d, returning 0\n", (int)f.errorCode);
+	}
+	catch (...) {
+		fprintf(stderr, "*** initGraphiteBreaking: segment creation failed\n");
+	}
 }
 
 int
 findNextGraphiteBreak(int iOffset, int iBrkVal)
 {
+	if (lbSegment == NULL)
+		return -1;
 	if (iOffset < lbSource->getLength()) {
 		while (++iOffset < lbSource->getLength()) {
 			const gr::GlyphSetIterator&	gsi = lbSegment->charToGlyphs(iOffset).first;
