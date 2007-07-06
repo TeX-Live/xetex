@@ -923,6 +923,7 @@ makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 	}
 	catch (gr::FontException f) {
 		fprintf(stderr, "*** makeGraphiteSegment: font error %d, returning 0\n", (int)f.errorCode);
+		return 0;
 	}
 	catch (...) {
 		fprintf(stderr, "*** makeGraphiteSegment: segment creation failed, returning 0\n");
@@ -957,7 +958,8 @@ graphiteSegmentWidth(XeTeXLayoutEngine engine)
 		return engine->extend * engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
 	}
 	catch (gr::FontException f) {
-		fprintf(stderr, "*** graphiteSegmentWidth: font error %d, returning 0\n", (int)f.errorCode);
+		fprintf(stderr, "*** graphiteSegmentWidth: font error %d, returning 0.0\n", (int)f.errorCode);
+		return 0.0;
 	}
 	catch (...) {
 		fprintf(stderr, "*** graphiteSegmentWidth: getRangeWidth failed, returning 0.0\n");
@@ -994,7 +996,7 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen
 		lbSegment = new gr::RangeSegment(engine->grFont, lbSource, &layoutEnv);
 	}
 	catch (gr::FontException f) {
-		fprintf(stderr, "*** initGraphiteBreaking: font error %d, returning 0\n", (int)f.errorCode);
+		fprintf(stderr, "*** initGraphiteBreaking: font error %d\n", (int)f.errorCode);
 	}
 	catch (...) {
 		fprintf(stderr, "*** initGraphiteBreaking: segment creation failed\n");
