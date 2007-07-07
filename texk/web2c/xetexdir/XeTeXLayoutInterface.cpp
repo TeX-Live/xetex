@@ -885,6 +885,11 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 										float extend, float slant,
 										int nFeatures, const int* featureIDs, const int* featureValues)
 {
+	// check if the font supports graphite, and return NULL if not
+	const UInt32	kttiSilf = 0x53696C66;	// from GrConstants.h
+	if (getFontTablePtr(font, kttiSilf) == NULL)
+		return NULL;
+
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
 	result->fontRef = fontRef;
 	result->font = (XeTeXFontInst*)font;

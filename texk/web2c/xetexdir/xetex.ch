@@ -8334,6 +8334,21 @@ begin
 	end_diagnostic(false);
 end;
 
+procedure graphite_warning;
+var
+	i: integer;
+begin
+	begin_diagnostic;
+	print_nl("Font `");
+	i := 1;
+	while ord(name_of_file[i]) <> 0 do begin
+		print_visible_char(name_of_file[i]); { this is already UTF-8 }
+		incr(i);
+	end;
+	print("' does not support Graphite. Trying ICU layout instead.");
+	end_diagnostic(false);
+end;
+
 function load_native_font(u: pointer; nom, aire:str_number; s: scaled): internal_font_number;
 label
 	done;

@@ -795,7 +795,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 					addFeatures, addParams, removeFeatures, rgbValue,
 					extend, slant);
 	if (engine == 0) {
-		deleteFont(font);
+		// only free these if creation failed, otherwise the engine now owns them
 		if (addFeatures)
 			free(addFeatures);
 		if (addParams)
@@ -860,10 +860,8 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 	/* create a default engine so we can query the font for Graphite features;
 	   because of font caching, it's cheap to discard this and create the real one later */
 	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, 0, extend, slant, 0, NULL, NULL);
-	if (engine == NULL) {
-		deleteFont(font);
+	if (engine == NULL)
 		return NULL;
-	}
 
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
@@ -997,9 +995,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 //	deleteLayoutEngine(engine);
 	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl,
 					extend, slant, nFeatures, &featureIDs[0], &featureValues[0]);
-	if (engine == 0)
-		deleteFont(font);
-	else
+	if (engine != NULL)
 		nativefonttypeflag = OTGR_FONT_FLAG;
 
 	return engine;
@@ -1061,7 +1057,7 @@ void*
 findnativefont(unsigned char* uname, integer scaled_size)
 	/* scaled_size here is in TeX points */
 {
-	void*	rval = 0;
+	void*	rval = NULL;
 	char*	nameString;
 	char*	var;
 	char*	feat;
@@ -1104,11 +1100,14 @@ findnativefont(unsigned char* uname, integer scaled_size)
 		if (path != NULL) {
 			font = createFontFromFile(path, index, scaled_size);
 			if (font != NULL) {
-				if (varString && strncmp(varString, "/GR", 3) == 0)
+				if (varString && strncmp(varString, "/GR", 3) == 0) {
 					rval = loadGraphiteFont(0, font, scaled_size, featString, nameString);
-				else
+					if (rval == NULL)
+						graphitewarning();
+				}
+				if (rval == NULL) /* graphite wasn't requested, or failed to initialize */
 					rval = loadOTfont(0, font, scaled_size, featString);
-				if (rval == 0)
+				if (rval == NULL)
 					deleteFont(font);
 			}
 		}
@@ -1137,20 +1136,24 @@ findnativefont(unsigned char* uname, integer scaled_size)
 	
 			font = createFont(fontRef, scaled_size);
 			if (font != 0) {
-				if (getReqEngine() == 'G')
+				if (getReqEngine() == 'G') {
 					rval = loadGraphiteFont(fontRef, font, scaled_size, featString, nameString);
-				else {
-#ifdef XETEX_MAC
-					if (getReqEngine() == 'I' || getFontTablePtr(font, kGSUB) != 0 || getFontTablePtr(font, kGPOS) != 0)
-#endif
-					rval = loadOTfont(fontRef, font, scaled_size, featString);
+					if (rval == NULL)
+						graphitewarning();
 				}
-				if (rval == 0)
+				if (rval == NULL) {
+#ifdef XETEX_MAC
+					if (getReqEngine() == 'I' || getReqEngine() == 'G' ||
+						getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
+#endif
+						rval = loadOTfont(fontRef, font, scaled_size, featString);
+				}
+				if (rval == NULL)
 					deleteFont(font);
 			}
 	
 #ifdef XETEX_MAC
-			if (rval == 0) {
+			if (rval == NULL) {
 			load_aat:
 				rval = loadAATfont(fontRef, scaled_size, featString);
 			}
