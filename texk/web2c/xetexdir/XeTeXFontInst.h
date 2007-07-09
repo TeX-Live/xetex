@@ -63,7 +63,7 @@ extern "C" {
 
 class XeTeXFontInst : public LEFontInstance, protected FontTableCache
 {
-	friend class XeTeXGrFont;
+friend class XeTeXGrFont;
 
 protected:
     float    fPointSize;
@@ -110,6 +110,7 @@ public:
 	virtual void initialize(LEErrorCode &status);
 
     virtual const void *getFontTable(LETag tableTag) const;
+    virtual const void *getFontTable(LETag tableTag, le_uint32* length) const;
 
 	virtual const char *getFilename() const
 	{
