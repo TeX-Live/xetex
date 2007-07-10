@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # FIXME: this should all be replaced by "make install" eventually,
 # as part of proper integration with the TeX Live build
@@ -6,11 +6,14 @@
 # script to install xetex (and xdv2pdf on OS X)
 # from the binaries created by build-xetex
 
-# this is intended for the Linux version; on OS X, we build installer packages
+# this is intended for the Linux and *BSD version;
+# on OS X, we build installer packages
 
 # to be run from the top level dir of the xetex tree, after ./build-xetex
 
 # set -o xtrace
+
+echo "###### INSTALLING XETEX"
 
 filelist=Work/xetex-installed-files
 
@@ -26,15 +29,20 @@ texbin=`which tex`
 if [ ! -x "${texbin}" ]; then
 	echo "### error: existing tex binary couldn't be found"
 	exit 100
+else
+	echo "### TeX binary = ${texbin}"
 fi
 if [ -L ${texbin} ]; then
 	texbin=`readlink ${texbin}`
+	echo "### TeX binary (${texbin}) seems to be symlinked."
 fi
 texbindir=`dirname ${texbin}`
+echo "### TeX bin directory = ${texbindir}"
 
 # copy the xetex binary to the same dir as standard tex
 cp -pf Work/texk/web2c/xetex ${texbindir}/xetex
 echo ${texbindir}/xetex >> ${filelist}
+
 if [ -e Work/texk/xdv2pdf/xdv2pdf ]; then
 	programs="xdv2pdf T1Wrap"
 	for f in ${programs}; do
@@ -45,11 +53,25 @@ fi
 
 # copy our texmf additions into the local texmf tree
 texmflocal=`kpsewhich --var-value TEXMFLOCAL`
-if [ "x${texmflocal}" == "x" ]; then
+if [ -z "${texmflocal}" ]; then
 	# if --var-value didn't work, try to find the definition in the texmf.cnf file
 	CNF=`kpsewhich texmf.cnf`
-	texmflocal=`sed -rne "s/^[ \t]*TEXMFLOCAL[ \t]*=[ \t]*(\/[^ \t]+).*/\1/p" ${CNF}`
+	texmflocal=`grep '^[ \t]*TEXMFLOCAL[ \t]*=[ \t]*/' ${CNF}`
+	if [ -z "${texmflocal}" ]; then
+		echo "### error: unable to find usable TEXMFLOCAL definition"
+		exit 100
+	fi
+	texmflocal=`echo ${texmflocal} | awk -F "=[ \t]*" '{print $2}'`
 fi
+# Figuring out whether texmflocal contains symlinks (as we did in
+# runConfigure.sh and build-xetex) is not necessary here, since this
+# path is used just for mechanical copying, _except_ for texhash.
+# Does texhash's behaviour differ depending on whether the path it
+# uses respects symlinks?
+# 
+# What fmtutil does depends however on kpsewhich, which is beyond
+# the scope of this installation script.
+echo "### Using TEXMFLOCAL = ${texmflocal}"
 
 mkdir -p ${texmflocal}
 if [ -d texmf/.svn ]; then
@@ -64,14 +86,24 @@ else
 fi
 find texmf -type f -and -not -path "*/.*" -print | sed -e "s@^texmf@${texmflocal}@" >> ${filelist}
 
-# copy the pool file to /web2c under TEXMFLOCAL
-mkdir -p ${texmflocal}/web2c
-cp -pf Work/texk/web2c/xetex.pool ${texmflocal}/web2c/xetex.pool
-echo ${texmflocal}/web2c/xetex.pool >> ${filelist}
-
 # update kpathsearch databases because we've installed a bunch of stuff
+echo "### Running texhash"
 texhash ${texmflocal}
 
 # this will build the format files on the system where this script is run;
 # for packaged binary installations, we must repeat this on the target
+
 sh ./rebuild-formats
+echo "### All done. You installed xetex successfully. Newly installed files are:"
+cat ${filelist}
+echo "### Output of 'xetex --version:'"
+xetex --version
+
+echo "### NOTE: If you have locally installed xe(la)tex.fmt"
+echo "### (~/.texlive2007/texmf-var/web2c/xetex/ is TeXLive's"
+echo "### default directory), then you can expect the following"
+echo "### error when run your new xetex for the first time:"
+echo "###     [...]/xelatex.fmt doesn't match xetex.pool"
+echo "###     (Fatal format file error; I'm stymied)"
+echo "### You should delete the old .fmt files."
+# Is installing new local .fmt's using fmtutil --enablefmt/--byfmt necessary?

@@ -3,8 +3,38 @@
 # Top-level script to compile xetex (and xdv2pdf on OS X)
 # from the source tree as found in Subversion
 
+echo "###### CONFIGURING XETEX"
+
+real_path() # function to resolve symlinks in path, as not everyone has realpath(1)
+{
+	current_path=`pwd` && relative_path="$1"
+	cd -P "${relative_path}"
+	real_path=`pwd` && cd "${current_path}"
+	echo "${real_path}"
+}
+
+test -z "${GNUMAKE}" && {
+	GNUMAKE=`which gnumake`
+	if [ ! -e "${GNUMAKE}" ]; then
+		GNUMAKE=`which gmake`
+	fi
+	if [ ! -e "${GNUMAKE}" ]; then
+		GNUMAKE=`which make`
+	fi
+	if [ ! -e "${GNUMAKE}" ]; then
+		echo "### There is no 'make' in your system."
+		exit 1
+	fi
+}
+
+is_gnu_make=`${GNUMAKE} -v | grep -c -i "GNU Make"`
+if [ "${is_gnu_make}" = "0" ]; then
+	echo "### You need GNU Make (gmake, gnumake) to build XeTeX."
+	exit 1
+fi
+
 # do some cleanup if needed
-test ! -f Makefile || make clean
+test ! -f Makefile || ${GNUMAKE} clean
 rm -rf Work
 find . -name config.cache -print -exec rm -f {} \;
 
@@ -14,27 +44,74 @@ find . -name configure -exec chmod +x {} \;
 test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-6-source libs/icu-xetex
 
 # run the configure script, which will create a Work subtree
-bash ./runConfigure.sh
+sh ./runConfigure.sh
+
+echo "###### BUILDING LIBRARIES AND XETEX"
 
 # make libraries first (not handled by the xetex makefile)
+LIBS=`find Work/libs -type d -maxdepth 1 -mindepth 1 | sed -e 's/Work\/libs\///'`
 if [ "`uname`" = "Darwin" ]; then
-	LIBS="teckit icu-xetex graphite-engine freetype2"
-else
-	LIBS="teckit icu-xetex graphite-engine freetype2 libpng xpdf"
+	# don't need libpng or xpdf on Darwin; we use QuickTime & Quartz
+	LIBS=`echo "$LIBS" | grep -v 'libpng\|xpdf'`
 fi
+echo "### Static libs to be built:"
+echo "${LIBS}"
 for f in ${LIBS}; do
-	(cd Work/libs/${f} && make)
+	( cd Work/libs/${f} && echo "### Running ${GNUMAKE} in `pwd`" && ${GNUMAKE} )
 done
 
 # make the xetex binary
-(cd Work/texk/web2c && make web2cdir=`dirname \`kpsewhich texmf.cnf\`` xetex)
+
+	# -------
+	# This is the copy of determining the presence of symlinks in
+	# web2c path as reported by kpsewhich (as used in runConfigure.sh);
+	# it would be nice if there is a more elegant way to pass it here.
+
+	# try to figure out where the user's TeX is, and complain if we can't find it...
+	KPSEWHICH=`which kpsewhich`
+	if [ ! -e "${KPSEWHICH}" ]; then
+		echo "### No kpsewhich found -- are you sure you have TeX installed?"
+		exit 1
+	else
+		using_tex_dist=`dirname ${KPSEWHICH} | grep -c texbin`
+		if [ "${using_tex_dist}" = "1" ]; then
+			# Looks like we've got a Mac OS X "TeX Distributions" structure;
+			# we can't use this as a build prefix - must find the real location
+			kpsewhich_dir=`dirname ${KPSEWHICH}`
+			echo "### Resolving TeXDist path ${kpsewhich_dir} to real location"
+			real_bin_dir=`real_path ${kpsewhich_dir}`
+			echo "### Real binaries location: ${real_bin_dir}"
+			PREFIX=`echo ${real_bin_dir} | sed -e 's!/bin/.*!!;'`
+		else
+			PREFIX=`echo ${KPSEWHICH} | sed -e 's!/bin/.*!!;'`
+		fi
+		if [ ! -d "${PREFIX}" ]; then
+			echo "### PREFIX ${PREFIX} is not a directory; cannot continue."
+			exit 1
+		fi
+	fi
+	
+	WEB2CDIR=`dirname \`kpsewhich texmf.cnf\``
+	REALPATHPREFIX=`real_path ${PREFIX}`
+	if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
+		if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
+			WEB2CDIR=`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!${PREFIX}!'`
+			echo "### WEB2CDIR seems to contain symlink; honouring it."
+		fi
+	fi
+	# -------
+
+echo "### Making xetex binary using: 'cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex'"
+(cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex)
 PRODUCTS=Work/texk/web2c/xetex
 
-# xdv2pdf is for Mac OS X only, don't try to build on Linux
+# xdv2pdf is for Mac OS X only, don't try to build on Linux or *BSD.
 if [ "`uname`" = "Darwin" ]; then
-	(cd Work/texk/xdv2pdf && make all)
+	(cd Work/texk/xdv2pdf && ${GNUMAKE} all)
 	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
 fi
 
 # show the executables we made (assuming the build was successful)
+echo "### Products built successfully:"
+find ${PRODUCTS} -type f -exec strip {} \;
 ls -l ${PRODUCTS}
