@@ -57,11 +57,11 @@ WEB2CDIR=`dirname \`kpsewhich texmf.cnf\``
 REALPATHPREFIX=`real_path ${PREFIX}`
 if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
 	if [ "`echo ${DATADIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${DATADIR}" ]; then
-		DATADIR=`echo ${DATADIR} | sed -e 's!${REALPATHPREFIX}!${PREFIX}!'`
+		DATADIR=`echo ${DATADIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
 		echo "### DATADIR seems to contain symlink; honouring it."
 	fi
 	if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
-		WEB2CDIR=`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!${PREFIX}!'`
+		WEB2CDIR=`echo ${WEB2CDIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
 		echo "### WEB2CDIR seems to contain symlink; honouring it."
 	fi
 fi

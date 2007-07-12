@@ -95,7 +95,7 @@ done
 	REALPATHPREFIX=`real_path ${PREFIX}`
 	if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
 		if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
-			WEB2CDIR=`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!${PREFIX}!'`
+			WEB2CDIR=`echo ${WEB2CDIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
 			echo "### WEB2CDIR seems to contain symlink; honouring it."
 		fi
 	fi
