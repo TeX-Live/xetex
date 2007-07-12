@@ -95,7 +95,7 @@ if [ "`uname`" = "FreeBSD" ]; then
 	# automatically by the Ports System. In meantime...
 	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} ${SYSTEM_LIBS_PATHS}"
 else
-	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib"
+	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib --with-old-mac-fonts"
 fi
 echo ${CONFIGURECMD}
 ${CONFIGURECMD} || exit
