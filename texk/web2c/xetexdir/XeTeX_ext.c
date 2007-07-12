@@ -168,11 +168,7 @@ const UInt32 byteMark				= 0x00000080UL;
 
 /* if the user specifies a paper size or output driver program */
 string papersize;
-#ifdef XETEX_MAC
-string outputdriver = "xdv2pdf"; /* default for backward compatibility on Mac OS X */
-#else
-string outputdriver = "xdvipdfmx -q -E"; /* else default to portable xdvipdfmx driver */
-#endif
+string outputdriver = "xdvipdfmx -q -E"; /* default to portable xdvipdfmx driver */
 
 
 void initversionstring(char **versions)

@@ -10,8 +10,8 @@
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".997-dev"
-@d XeTeX_version_string=='-0.997-dev' {current \XeTeX\ version}
+@d XeTeX_revision==".997"
+@d XeTeX_version_string=='-0.997' {current \XeTeX\ version}
 @z
 
 @x
