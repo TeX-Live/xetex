@@ -52,7 +52,7 @@
 #	'IS' => 3,		# infix sep (comma etc)
 #	'QU' => 4,		# ambiguous quote
 
-die "usage: perl $0 UnicodeData.txt EastAsianWidth.txt LineBreak.txt > unicode-letters.tex"
+die "usage: perl $0 UnicodeData.txt EastAsianWidth.txt LineBreak.txt > unicode-letters.tex\n"
 	unless $#ARGV == 2;
 
 open Unidata, $ARGV[0] or die "can't read $ARGV[0]";
@@ -108,8 +108,8 @@ print << '__EOT__';
 \def\L #1 #2 #3 {\global\catcode"#1=11 % category: letter
   \C #1 #2 #3 % with case mappings
   \ifnum"#1="#3 \else \global\sfcode"#1=999 \fi % uppercase letters have sfcode=999
-  \ifnum"#1<"10000 \global\XeTeXmathcode"#1="0"01"#1 % SMP letters class 0 (regular), fam 1
-  \else \global\XeTeXmathcode"#1="7"01"#1 % BMP letters default to class 7 (var), fam 1
+  \ifnum"#1<"10000 \global\XeTeXmathcode"#1="7"01"#1 % BMP letters default to class 7 (var), fam 1
+  \else \global\XeTeXmathcode"#1="0"01"#1 % SMP letters class 0 (regular), fam 1
   \fi}
 \def\l #1 {\L #1 #1 #1 } % letter without case mappings
 \let\m=\l % combining mark - treated as uncased letter
