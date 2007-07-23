@@ -17,7 +17,7 @@
 %\geometry{screen,margin=3cm}
 
 \usepackage[nofancy]{svninfo}
-\svnInfo $Id: XeTeX-reference.ltx 9 2007-06-24 13:10:01Z will $ 
+\svnInfo $Id: XeTeX-reference.ltx 11 2007-07-23 14:00:48Z will $ 
 
 \usepackage[it]{titlesec}
 \usepackage{enumitem}
@@ -94,7 +94,7 @@
 \section{Introduction}
 This document serves to summarise \XeTeX's additional features without being so much as a `users' guide'. Note that much of the functionality addressed here is provided in abstracted form in various \LaTeX\ packages and Con\TeX{}t modules.
 
-The descriptions here correspond to a prerelease of version 0.997 of \XeTeX, and should be a fairly exhaustive list of its primitives. Descriptions are still a little aenemic, however. Contributions welcomed!
+The descriptions here correspond to a prerelease of version 0.997 of \XeTeX, and should be a fairly exhaustive list of its primitives. Descriptions are still a little aenemic, however. I don't have much time to maintain this document, so contributions are highly welcomed \verb|:)|
 
 \part{\texorpdfstring{\XeTeX}{XeTeX}\ specifics}
 
@@ -452,7 +452,7 @@ In the following commands, \xarg{fam.} is a number (0--255) representing font to
 
 \section{Character classes}
 
-The idea behind character classes is to define a boundary where tokens can be added to the input stream without explicit markup. It is primarily intended for automatic alphabet/language font switching.
+The idea behind character classes is to define a boundary where tokens can be added to the input stream without explicit markup. It was originally intended to add glue around punctuation to effect correct Japanese typesetting. This feature can also be used to adjust space around punctuation for European traditions. The general nature of this feature, however, lends it to several other useful applications including automatic font switching when small amounts of another language (in another script) is present in the text.
 
 \cmd|\XeTeXinterchartokenstate|
 \desc{Counter. If positive, enables the character classes functionality.}
@@ -462,7 +462,7 @@ The idea behind character classes is to define a boundary where tokens can be ad
 \xarg{char slot}
 \opteq
 \xarg{class number}
-\desc{Assigns a class corresponding to \xarg{class number} (range 0--255) to a \xarg{char slot}. Most characters are class 0 by default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK punctuation. Special case class 256 is ignored; useful for diacritics so I'm told.}
+\desc{Assigns a class corresponding to \xarg{class number} (range 0--255) to a \xarg{char slot}. Most characters are class 0 by default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK punctuation. The boundary of a text string is considered class 255. Special case class 256 is ignored; useful for diacritics so I'm told.}
 \endcmd
 
 \cmd|\XeTeXinterchartoks|
@@ -477,10 +477,24 @@ The idea behind character classes is to define a boundary where tokens can be ad
 \XeTeXinterchartokenstate = 1
 \XeTeXcharclass `\a 7
 \XeTeXcharclass `\A 8
+\XeTeXcharclass `\B 9
+
+% between "a" and "A":
 \XeTeXinterchartoks 7 8 = {[\itshape}
 \XeTeXinterchartoks 8 7 = {\upshape]}
-aAa
+
+% between " " and "A":
+\XeTeXinterchartoks 255 9 = {\bgroup\color{blue}}
+\XeTeXinterchartoks 9 255 = {\egroup}
+
+% between "B" and "B":
+\XeTeXinterchartoks 9 9 = {.}
+
+aAa A a B aBa BB
 \end{example}
+
+In the above example the input text is typeset as\\
+{\null\hfill\small\verb|a[\itshape A\unshape]a A a \bgroup\color{blue}B\egroup aBa B.B|}
 
 \section{Encodings}
 
@@ -572,7 +586,8 @@ This description is incomplete.
 \endcmd
 
 \begin{example}
-The \XeTeX\ version is: \the\XeTeXversion\XeTeXrevision
+The \XeTeX\ version used to typeset this document is: 
+\the\XeTeXversion\XeTeXrevision
 \end{example}
 
 \end{document}
