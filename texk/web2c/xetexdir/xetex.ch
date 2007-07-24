@@ -2479,7 +2479,7 @@ else if m<math_code_base then scanned_result(equiv(m+cur_val) mod @"10000)(int_v
 @#
 @d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
 @#
-@d eTeX_dim=XeTeX_int+29 {first of \eTeX\ codes for dimensions}
+@d eTeX_dim=XeTeX_int+30 {first of \eTeX\ codes for dimensions}
  {changed for \XeTeX\ to make room for \XeTeX\ integers}
 @z
 
@@ -7513,6 +7513,8 @@ end
 @d pdf_last_x_pos_code        = XeTeX_int+27
 @d pdf_last_y_pos_code        = XeTeX_int+28
 
+@d XeTeX_pdf_page_count_code  = XeTeX_int+29
+
 { NB: must update eTeX_dim when items are added here! }
 @z
 
@@ -7567,6 +7569,8 @@ primitive("XeTeXlastfontchar", last_item, XeTeX_last_char_code);
 
 primitive("pdflastxpos",last_item,pdf_last_x_pos_code);
 primitive("pdflastypos",last_item,pdf_last_y_pos_code);
+
+primitive("XeTeXpdfpagecount",last_item,XeTeX_pdf_page_count_code);
 @z
 
 @x
@@ -7610,6 +7614,8 @@ XeTeX_last_char_code: print_esc("XeTeXlastfontchar");
 
   pdf_last_x_pos_code:  print_esc("pdflastxpos");
   pdf_last_y_pos_code:  print_esc("pdflastypos");
+
+XeTeX_pdf_page_count_code: print_esc("XeTeXpdfpagecount");
 @z
 
 @x
@@ -7819,6 +7825,12 @@ XeTeX_first_char_code,XeTeX_last_char_code:
 
   pdf_last_x_pos_code:  cur_val := pdf_last_x_pos;
   pdf_last_y_pos_code:  cur_val := pdf_last_y_pos;
+
+XeTeX_pdf_page_count_code:
+  begin
+    scan_and_pack_name;
+    cur_val:=count_pdf_file_pages;
+  end;
 
 @ Slip in an extra procedure here and there....
 
