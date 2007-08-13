@@ -7,13 +7,13 @@
 \ProvidesFile{eu1lmssq.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
 \DeclareFontFamily{EU1}{lmssq}{\hyphenchar \font\m@ne}
 \DeclareFontShape{EU1}{lmssq}{m}{n}
-     {<-> "[lmsansquotation8-regular]"}{}
+     {<-> "[lmsansquotation8-regular]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmssq}{m}{sl}
-     {<-> "[lmsansquotation8-oblique]"}{}
+     {<-> "[lmsansquotation8-oblique]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmssq}{bx}{n}
-     {<-> "[lmsansquotation8-bold]"}{}
+     {<-> "[lmsansquotation8-bold]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmssq}{bx}{sl}
-     {<-> "[lmsansquotation8-boldoblique]"}{}
+     {<-> "[lmsansquotation8-boldoblique]:mapping=tex-text"}{}
 \endinput
 %%
 %% End of file `eu1lmssq.fd'.

@@ -7,44 +7,44 @@
 \ProvidesFile{eu1lmr.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
 \DeclareFontFamily{EU1}{lmr}{}
 \DeclareFontShape{EU1}{lmr}{m}{n}%
-     {<-5.5>    "[lmroman5-regular]"     <5.5-6.5> "[lmroman6-regular]"
-      <6.5-7.5> "[lmroman7-regular]"     <7.5-8.5> "[lmroman8-regular]"
-      <8.5-9.5> "[lmroman9-regular]"     <9.5-11>  "[lmroman10-regular]"
-      <11-15>   "[lmroman12-regular]"
-      <15-> "[lmroman17-regular]"
+     {<-5.5>    "[lmroman5-regular]:mapping=tex-text"     <5.5-6.5> "[lmroman6-regular]:mapping=tex-text"
+      <6.5-7.5> "[lmroman7-regular]:mapping=tex-text"     <7.5-8.5> "[lmroman8-regular]:mapping=tex-text"
+      <8.5-9.5> "[lmroman9-regular]:mapping=tex-text"     <9.5-11>  "[lmroman10-regular]:mapping=tex-text"
+      <11-15>   "[lmroman12-regular]:mapping=tex-text"
+      <15-> "[lmroman17-regular]:mapping=tex-text"
       }{}
 \DeclareFontShape{EU1}{lmr}{m}{sl}%
-     {<-8.5>    "[lmroman8-oblique]"    <8.5-9.5> "[lmroman9-oblique]"
-      <9.5-11>  "[lmroman10-oblique]"   <11-15>   "[lmroman12-oblique]"
-      <15-> "[lmroman17-oblique]"
+     {<-8.5>    "[lmroman8-oblique]:mapping=tex-text"    <8.5-9.5> "[lmroman9-oblique]:mapping=tex-text"
+      <9.5-11>  "[lmroman10-oblique]:mapping=tex-text"   <11-15>   "[lmroman12-oblique]:mapping=tex-text"
+      <15-> "[lmroman17-oblique]:mapping=tex-text"
       }{}
 \DeclareFontShape{EU1}{lmr}{m}{it}%
-     {<-7.5>    "[lmroman7-italic]"
-      <7.5-8.5> "[lmroman8-italic]"    <8.5-9.5> "[lmroman9-italic]"
-      <9.5-11>  "[lmroman10-italic]"   <11->   "[lmroman12-italic]"
+     {<-7.5>    "[lmroman7-italic]:mapping=tex-text"
+      <7.5-8.5> "[lmroman8-italic]:mapping=tex-text"    <8.5-9.5> "[lmroman9-italic]:mapping=tex-text"
+      <9.5-11>  "[lmroman10-italic]:mapping=tex-text"   <11->   "[lmroman12-italic]:mapping=tex-text"
       }{}
 \DeclareFontShape{EU1}{lmr}{m}{sc}%
-     {<-> "[lmroman10-capsregular]"}{}
+     {<-> "[lmroman10-capsregular]:mapping=tex-text"}{}
 %
 % Is this the right 'shape'?:
 \DeclareFontShape{EU1}{lmr}{m}{scsl}%
-     {<-> "[lmroman10-capsoblique]"}{}
+     {<-> "[lmroman10-capsoblique]:mapping=tex-text"}{}
 %%%%%%% bold series
 \DeclareFontShape{EU1}{lmr}{b}{n}
-     {<-> "[lmroman10-demi]"}{}
+     {<-> "[lmroman10-demi]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmr}{b}{sl}
-     {<-> "[lmroman10-demioblique]"}{}
+     {<-> "[lmroman10-demioblique]:mapping=tex-text"}{}
 %%%%%%%% bold extended series
 \DeclareFontShape{EU1}{lmr}{bx}{n}
-     {<-5.5>   "[lmroman5-bold]"      <5.5-6.5> "[lmroman6-bold]"
-      <6.5-7.5> "[lmroman7-bold]"      <7.5-8.5> "[lmroman8-bold]"
-      <8.5-9.5> "[lmroman9-bold]"      <9.5-11>  "[lmroman10-bold]"
-      <11->   "[lmroman12-bold]"
+     {<-5.5>   "[lmroman5-bold]:mapping=tex-text"      <5.5-6.5> "[lmroman6-bold]:mapping=tex-text"
+      <6.5-7.5> "[lmroman7-bold]:mapping=tex-text"      <7.5-8.5> "[lmroman8-bold]:mapping=tex-text"
+      <8.5-9.5> "[lmroman9-bold]:mapping=tex-text"      <9.5-11>  "[lmroman10-bold]:mapping=tex-text"
+      <11->   "[lmroman12-bold]:mapping=tex-text"
       }{}
 \DeclareFontShape{EU1}{lmr}{bx}{it}
-     {<-> "[lmroman10-bolditalic]"}{}
+     {<-> "[lmroman10-bolditalic]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmr}{bx}{sl}
-     {<-> "[lmroman10-boldoblique]"}{}
+     {<-> "[lmroman10-boldoblique]:mapping=tex-text"}{}
 \endinput
 %%
 %% End of file `eu1lmr.fd'.

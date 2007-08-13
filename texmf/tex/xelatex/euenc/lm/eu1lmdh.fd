@@ -7,12 +7,12 @@
 \ProvidesFile{eu1lmdh.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
 \DeclareFontFamily{EU1}{lmdh}{\hyphenchar\font45 }
 \DeclareFontShape{EU1}{lmdh}{m}{n}{%
-      <-> "[lmroman10-dunhill]"
+      <-> "[lmroman10-dunhill]:mapping=tex-text"
     }{}
 \DeclareFontShape{EU1}{lmdh}{m}{it}
       {<->sub*lmdh/m/sl}{}
 \DeclareFontShape{EU1}{lmdh}{m}{sl}{%
-      <-> "[lmroman10-dunhilloblique]"
+      <-> "[lmroman10-dunhilloblique]:mapping=tex-text"
     }{}
 \endinput
 %%
