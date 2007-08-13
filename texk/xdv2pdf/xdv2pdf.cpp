@@ -2198,9 +2198,8 @@ xdv2pdf(int argc, char** argv)
 
 	gTagLevel = -1;
 	
-	double_t	paperWd = 0.0;
-	double_t	paperHt = 0.0;
-
+	gPaperWd = gPaperHt = 0.0;
+	
     int	ch;
     while ((ch = getopt(argc, argv, "o:p:m:d:hv" /*r:*/)) != -1) {
         switch (ch) {
@@ -2213,7 +2212,7 @@ xdv2pdf(int argc, char** argv)
                 break;
             
             case 'p':
-				if (!getPaperSize(optarg, paperWd, paperHt)) {
+				if (!getPaperSize(optarg, gPaperWd, gPaperHt)) {
 					fprintf(stderr, "*** unknown paper name: %s\n", optarg);
 					exit(1);
 				}
@@ -2237,7 +2236,7 @@ xdv2pdf(int argc, char** argv)
         }
     }
 
-	if ((paperWd == 0.0) || (paperHt == 0.0)) {
+	if ((gPaperWd == 0.0) || (gPaperHt == 0.0)) {
 		// get default paper size from printing system
 		PMRect				paperRect = { 0, 0, 792, 612 };
 		PMPrintSession		printSession;
@@ -2258,12 +2257,12 @@ xdv2pdf(int argc, char** argv)
 			}
 			status = PMRelease(printSession);
 		}
-		paperWd = paperRect.right - paperRect.left;
-		paperHt = paperRect.bottom - paperRect.top;
+		gPaperWd = paperRect.right - paperRect.left;
+		gPaperHt = paperRect.bottom - paperRect.top;
 	}
 
     // set the media box for PDF generation
-    gMediaBox = CGRectMake(0, 0, paperWd, paperHt);
+    gMediaBox = CGRectMake(0, 0, gPaperWd, gPaperHt);
     
     argc -= optind;
     argv += optind;
