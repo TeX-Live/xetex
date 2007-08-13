@@ -3733,21 +3733,24 @@ if upwards then cur_v:=cur_v-rule_ht else cur_v:=cur_v+rule_ht;
 dvi_four(last_bop); last_bop:=page_loc;
 @y
 dvi_four(last_bop); last_bop:=page_loc;
+{ generate a pagesize \special at start of page }
+old_setting:=selector; selector:=new_string;
+print("pdf:pagesize ");
 if (pdf_page_width > 0) and (pdf_page_height > 0) then begin
-  { generate a papersize \special at start of page }
-  old_setting:=selector; selector:=new_string;
-  print("papersize ");
+  print("width"); print(" ");
   if mag=1000 then print_scaled(pdf_page_width)
   else print_scaled(xn_over_d(pdf_page_width,mag,1000));
-  print("pt"); print(",");
+  print("pt"); print(" ");
+  print("height"); print(" ");
   if mag=1000 then print_scaled(pdf_page_height)
   else print_scaled(xn_over_d(pdf_page_height,mag,1000));
   print("pt");
-  selector:=old_setting;
-  dvi_out(xxx1); dvi_out(cur_length);
-  for s:=str_start_macro(str_ptr) to pool_ptr-1 do dvi_out(so(str_pool[s]));
-  pool_ptr:=str_start_macro(str_ptr); {erase the string}
-end;
+end else
+  print("default");
+selector:=old_setting;
+dvi_out(xxx1); dvi_out(cur_length);
+for s:=str_start_macro(str_ptr) to pool_ptr-1 do dvi_out(so(str_pool[s]));
+pool_ptr:=str_start_macro(str_ptr); {erase the string}
 @z
 
 @x
