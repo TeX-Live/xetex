@@ -881,7 +881,7 @@ gr::LayoutEnvironment	layoutEnv;
 
 XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 										const char* name,
-										UInt32 rgbValue, int rtl,
+										UInt32 rgbValue, int rtl, UInt32 languageTag,
 										float extend, float slant,
 										int nFeatures, const int* featureIDs, const int* featureValues)
 {
@@ -894,7 +894,7 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	result->fontRef = fontRef;
 	result->font = (XeTeXFontInst*)font;
 	result->scriptTag = 0;
-	result->languageTag = 0;
+	result->languageTag = languageTag;
 	result->addedFeatures = NULL;
 	result->removedFeatures = NULL;
 	result->rgbValue = rgbValue;
@@ -906,6 +906,8 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 
 	result->grSource = new XeTeXGrTextSource(rtl);
 	result->grSource->setFeatures(nFeatures, featureIDs, featureValues);
+	if (languageTag != 0)
+		result->grSource->setLanguage(languageTag);
 
 	result->grSegment = NULL;
 	

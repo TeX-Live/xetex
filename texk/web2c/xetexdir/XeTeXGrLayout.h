@@ -132,6 +132,7 @@ public:
 								: fDirLevel(dirLevel)
 								, fTextBuffer(iText)
 								, fTextLength(iLen)
+								, fLanguage(kUnknownLanguage)
 								, fNumFeatures(0)
 								, fFeatureSettings(NULL)
 									{ }
@@ -143,6 +144,11 @@ public:
 
 	void					setFeatures(int nFeatures, const int* featureIDs, const int* featureValues);
 	void					setFeatures(int nFeatures, const gr::FeatureSetting* features);
+
+	void					setLanguage(gr::isocode iLanguage)
+								{ fLanguage = iLanguage; }
+
+	void					setLanguage(UInt32 iLanguage);
 
 	virtual gr::UtfType		utfEncodingForm()
 								{ return gr::kutf16; }
@@ -174,17 +180,18 @@ public:
 								{ return 0.0; }
 
 	virtual gr::isocode		getLanguage(gr::toffset charIndex)
-								{ return kUnknownLanguage; }
+								{ return fLanguage; }
 
 	virtual size_t			getFontFeatures(gr::toffset charIndex, gr::FeatureSetting properties[64]);
 
 protected:
+	int							fDirLevel;
 	const UInt16*				fTextBuffer;
 	size_t						fTextLength;
-	int							fDirLevel;
+	gr::isocode					fLanguage;
 	size_t						fNumFeatures;
 	const gr::FeatureSetting*	fFeatureSettings;
-	
+
 	static const gr::isocode	kUnknownLanguage;
 };
 

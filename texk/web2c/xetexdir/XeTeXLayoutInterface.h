@@ -143,7 +143,7 @@ int getFontCharRange(XeTeXLayoutEngine engine, int reqFirst);
 /* graphite interface functions... */
 XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 										const char* name,
-										UInt32 rgbValue, int rtl,
+										UInt32 rgbValue, int rtl, UInt32 languageTag,
 										float extend, float slant,
 										int nFeatures, const int* featureIDs, const int* featureValues);
 int makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);

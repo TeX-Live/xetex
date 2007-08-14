@@ -533,7 +533,7 @@ read_double(const char** s)
 }
 
 static UInt32
-read_tag(const char* cp)
+read_tag(const char* cp, char padChar)
 {
 	UInt32	tag = 0;
 	int i;
@@ -544,7 +544,7 @@ read_tag(const char* cp)
 			++cp;
 		}
 		else
-			tag += ' ';
+			tag += padChar;
 	}
 	return tag;
 }
@@ -658,7 +658,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				scriptTag = read_tag(cp3 + 1);
+				scriptTag = read_tag(cp3 + 1, ' ');
 				goto next_option;
 			}
 			
@@ -666,7 +666,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
 					goto bad_option;
-				languageTag = read_tag(cp3 + 1);
+				languageTag = read_tag(cp3 + 1, ' ');
 				goto next_option;
 			}
 			
@@ -740,7 +740,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			}
 			
 			if (*cp1 == '-') {
-				tag = read_tag(cp1 + 1);
+				tag = read_tag(cp1 + 1, ' ');
 				++nRemoved;
 				if (nRemoved == 1)
 					removeFeatures = xmalloc(sizeof(UInt32));
@@ -855,7 +855,8 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 
 	/* create a default engine so we can query the font for Graphite features;
 	   because of font caching, it's cheap to discard this and create the real one later */
-	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, 0, extend, slant, 0, NULL, NULL);
+	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl, languageTag,
+									extend, slant, 0, NULL, NULL);
 	if (engine == NULL)
 		return NULL;
 
@@ -877,7 +878,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
 					goto bad_option;
-				languageTag = read_tag(cp3 + 1);
+				languageTag = read_tag(cp3 + 1, '\0');
 				goto next_option;
 			}
 			
@@ -989,7 +990,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 		setFontLayoutDir(font, 1);
 
 //	deleteLayoutEngine(engine);
-	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl,
+	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl, languageTag,
 					extend, slant, nFeatures, &featureIDs[0], &featureValues[0]);
 	if (engine != NULL)
 		nativefonttypeflag = OTGR_FONT_FLAG;

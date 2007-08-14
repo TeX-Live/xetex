@@ -145,6 +145,15 @@ XeTeXGrTextSource::setFeatures(int nFeatures, const gr::FeatureSetting* features
 	}
 }
 
+void
+XeTeXGrTextSource::setLanguage(UInt32 iLanguage)
+{
+	fLanguage.rgch[0] = (iLanguage >> 24) & 0xff;
+	fLanguage.rgch[1] = (iLanguage >> 16) & 0xff;
+	fLanguage.rgch[2] = (iLanguage >> 8) & 0xff;
+	fLanguage.rgch[3] = iLanguage & 0xff;
+}
+
 size_t
 XeTeXGrTextSource::fetch(gr::toffset startChar, size_t n, gr::utf16* buffer)
 {
