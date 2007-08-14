@@ -64,6 +64,7 @@ case "$target" in
     *-darwin*)
         : ${INSTALL='/usr/bin/install -c -p'}; export INSTALL
         : ${NCURSES_CPP_FIX=true}; export NCURSES_CPP_FIX
+        AC_MSG_RESULT([no, but using other fixes for Darwin])
         ;;
     *)
         AC_MSG_RESULT(no)

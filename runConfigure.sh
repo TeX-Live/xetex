@@ -98,7 +98,7 @@ else
 	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib --with-old-mac-fonts"
 fi
 echo ${CONFIGURECMD}
-${CONFIGURECMD} || exit
+${CONFIGURECMD} || exit 1
 
 if [ "`uname`" = "Darwin" ]; then
   if [ "`uname -p`" = "powerpc" ]; then

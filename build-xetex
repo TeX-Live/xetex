@@ -44,7 +44,10 @@ find . -name configure -exec chmod +x {} \;
 test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-6-source libs/icu-xetex
 
 # run the configure script, which will create a Work subtree
-sh ./runConfigure.sh
+sh ./runConfigure.sh || {
+	echo "### configure script appears to have failed"
+	exit 1
+}
 
 echo "###### BUILDING LIBRARIES AND XETEX"
 
@@ -57,7 +60,10 @@ fi
 echo "### Static libs to be built:"
 echo "${LIBS}"
 for f in ${LIBS}; do
-	( cd Work/libs/${f} && echo "### Running ${GNUMAKE} in `pwd`" && ${GNUMAKE} )
+	( cd Work/libs/${f} && echo "### Running ${GNUMAKE} in `pwd`" && ${GNUMAKE} ) || {
+		echo "### library build appears to have failed for ${f}"
+		exit 1
+	}
 done
 
 # make the xetex binary
@@ -102,12 +108,18 @@ done
 	# -------
 
 echo "### Making xetex binary using: 'cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex'"
-(cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex)
+(cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex) || {
+	echo "### failed to build the xetex binary"
+	exit 1
+}
 PRODUCTS=Work/texk/web2c/xetex
 
 # xdv2pdf is for Mac OS X only, don't try to build on Linux or *BSD.
 if [ "`uname`" = "Darwin" ]; then
-	(cd Work/texk/xdv2pdf && ${GNUMAKE} all)
+	(cd Work/texk/xdv2pdf && ${GNUMAKE} all) || {
+		echo "### failed to build the xdv2pdf driver for Mac OS X"
+		exit 1
+	}
 	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
 fi
 
