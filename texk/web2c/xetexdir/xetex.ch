@@ -4514,12 +4514,14 @@ make_op:=delta;
 end;
 @y
 function make_op(@!q:pointer):scaled;
+label found;
 var delta:scaled; {offset between subscript and superscript}
 @!p,@!v,@!x,@!y,@!z:pointer; {temporary registers for box construction}
 @!c:quarterword;@+@!i:four_quarters; {registers for character examination}
 @!shift_up,@!shift_down:scaled; {dimensions for box calculation}
 @!h1,@!h2:scaled; {height of original text-style symbol and possible replacement}
 @!n,@!g:integer; {potential variant index and glyph code}
+@!ot_assembly_ptr:void_pointer;
 begin if (subtype(q)=normal)and(cur_style<text_style) then
   subtype(q):=limits;
 delta:=0;
@@ -4539,19 +4541,33 @@ if math_type(nucleus(q))=math_char then
     p:=list_ptr(x);
     if (type(p)=whatsit_node) and (subtype(p)=glyph_node) then begin
       if cur_style<text_style then begin
-        {try to replace the operator glyph with a variant at least 25% taller}
-        h1:=height(p)+depth(p);
+        {try to replace the operator glyph with a display-size variant,
+         ensuring it is larger than the text size}
+        h1:=get_ot_math_constant(cur_f,displayOperatorMinHeight);
+        if h1<(height(p)+depth(p))*5/4 then h1:=(height(p)+depth(p))*5/4;
         c:=native_glyph(p);
-        n:=1;
+        n:=0;
         repeat
           g:=get_ot_math_variant(cur_f, c, n, address_of(h2));
           if h2>0 then native_glyph(p):=g;
           incr(n);
-        until (h2<0) or (h2>(h1*5)/4);
-        set_native_glyph_metrics(p, 1);
+        until (h2<0) or (h2>=h1);
+        if (h2<0) then begin
+          {if we get here, then we didn't find a big enough glyph; check if the char is extensible}
+          ot_assembly_ptr:=get_ot_assembly_ptr(cur_f, c);
+          if ot_assembly_ptr<>nil then begin
+            free_node(p,glyph_node_size);
+            p:=build_opentype_assembly(cur_f, ot_assembly_ptr, h1);
+            list_ptr(x):=p;
+            delta:=0;
+            goto found;
+          end;
+        end else
+          set_native_glyph_metrics(p, 1);
       end;
-      width(x):=width(p); height(x):=height(p); depth(x):=depth(p);
       delta:=get_ot_math_ital_corr(cur_f, native_glyph(p));
+found:
+      width(x):=width(p); height(x):=height(p); depth(x):=depth(p);
     end
   end;
   if (math_type(subscr(q))<>empty)and(subtype(q)<>limits) then
