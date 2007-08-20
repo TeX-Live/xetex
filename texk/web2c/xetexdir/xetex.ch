@@ -711,6 +711,7 @@ exit:end;
 @!native_text: ^UTF16_code; { buffer for collecting native-font strings }
 @!native_text_size: integer; { size of buffer }
 @!native_len: integer;
+@!save_native_len: integer;
 
 @ @<Set init...@>=
 doing_special:=false;
@@ -5372,36 +5373,42 @@ collected:
 	if mode=hmode then begin
 
 		main_ppp := head;
-		if main_ppp<>main_pp then
-			while (link(main_ppp)<>main_pp) do
-				main_ppp:=link(main_ppp);	{ find node preceding tail }
+		if main_ppp<>main_pp then	{ find node preceding tail, skipping discretionaries }
+			while (link(main_ppp)<>main_pp) do begin
+				if (not is_char_node(main_ppp)) and (type(main_ppp=disc_node)) then begin
+					temp_ptr:=main_ppp;
+					for main_p:=1 to replace_count(temp_ptr) do main_ppp:=link(main_ppp);
+				end;
+				if main_ppp<>main_pp then main_ppp:=link(main_ppp);
+			end;
 
 		temp_ptr := 0;
 		repeat
 			if main_h = 0 then main_h := main_k;
 
-			if (not is_char_node(main_pp))
+			if      (not is_char_node(main_pp))
 				and (type(main_pp)=whatsit_node)
 				and (subtype(main_pp)=native_word_node)
 				and (native_font(main_pp)=main_f)
 				and (main_ppp<>main_pp)
-				and type(main_ppp)<>disc_node
+				and (not is_char_node(main_ppp))
+				and (type(main_ppp)<>disc_node)
 			then begin
 
 				{ make a new temp string that contains the concatenated text of |tail| + the current word/fragment }
 				main_k := main_h + native_length(main_pp);
 				native_room(main_k);
 
-				temp_ptr := native_len;
+				save_native_len := native_len;
 				for main_p := 0 to native_length(main_pp) - 1 do
 					append_native(get_native_char(main_pp, main_p));
-				for main_p := 0 to temp_ptr - 1 do
-					append_native(native_text[main_p]);
+				for main_p := 0 to main_h - 1 do
+					append_native(native_text[temp_ptr + main_p]);
 
-				do_locale_linebreaks(temp_ptr, main_k);
+				do_locale_linebreaks(save_native_len, main_k);
 
-				native_len := temp_ptr;	{ discard the temp string }
-				main_k := native_len - main_h;	{ and set main_k to remaining length of new word }
+				native_len := save_native_len;	{ discard the temp string }
+				main_k := native_len - main_h - temp_ptr;	{ and set main_k to remaining length of new word }
 				temp_ptr := main_h;	{ pointer to remaining fragment }
 
 				main_h := 0;
@@ -5438,6 +5445,7 @@ collected:
 			if (main_k > 0) or is_hyph then begin
 				tail_append(new_disc);	{ add a break if we aren't at end of text (must be a hyphen),
 											or if last char in original text was a hyphen }
+				main_pp:=tail;
 			end;
 		until main_k = 0;
 
