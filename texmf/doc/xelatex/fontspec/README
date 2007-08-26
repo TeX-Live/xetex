@@ -1,11 +1,23 @@
 --------------------------
-THE FONTSPEC PACKAGE v1.12
+THE FONTSPEC PACKAGE v1.15
 
-The fontspec package only works with XeTeX, a unicode capable TeX-variant. It provides an automatic and unified interface for loading fonts in LaTeX. XeTeX allows a direct interface to system-installed fonts, so no manual font installation is required.
+The fontspec package only works with XeTeX,
+a unicode capable TeX-variant. It provides
+an automatic and unified interface for loading
+fonts in LaTeX. XeTeX allows a direct interface
+to system-installed fonts, so no manual font
+installation is required.
 
-This package also provides access to the large number of font features available with AAT and OpenType fonts, including upper and lower case numbers, proportional and monospaced numbers, swash letters, vulgar fractions, ligature control, and many others.
+This package also provides access to the large
+number of font features available with AAT and
+OpenType fonts, including upper and lower case
+numbers, proportional and monospaced numbers,
+swash letters, vulgar fractions, ligature
+control, and many others.
 
-It also provides an interface to set the XeTeX font mappings, font colour, relative font scaling, inter-word space scaling, and more.
+It also provides an interface to set the XeTeX
+font mappings, font colour, relative font
+scaling, inter-word space scaling, and more.
 
 ------------------------
 SUMMARY OF USER COMMANDS
@@ -17,12 +29,12 @@ Commands for selecting fonts efficiently can be created with
    \newfontfamily\myfamily[<font options>]{<font name>}
    \newfontface\myfont[<font options>]{<font name>}
 
-Default document fonts are selected with 
-   \setromanfont[<font options>]{<font name>}
+Default document fonts are selected with
+   \setmainfont[<font options>]{<font name>}
    \setsansfont[<font options>]{<font name>}
    \setmonofont[<font options>]{<font name>}
 
-Fonts to be used in maths are defined with 
+Fonts to be used in maths are defined with
    \setmathrm[<font options>]{<font name>}
    \setmathsf[<font options>]{<font name>}
    \setmathtt[<font options>]{<font name>}
@@ -46,4 +58,4 @@ Features can be renamed and feature options can be renamed with
 
 --------------
 Will Robertson
-2006
+2004--2007
