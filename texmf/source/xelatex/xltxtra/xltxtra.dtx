@@ -4,7 +4,7 @@
 %</internal>
 %<*readme>
 -------------------------
-THE XLTXTRA PACKAGE v0.3a
+THE XLTXTRA PACKAGE v0.3b
 
 This package provides a few small features that 
 are useful for XeLaTeX.
@@ -205,6 +205,8 @@ This work consists of the file  xltxtra.dtx
 % Look in the implementation corresponding to this section to see how to customise the spacings in these logos, but be warned it's fairly crude and may change in the future.
 %
 % The \pkgopt{no-logos} will not redefine \cmd\TeX\ or \cmd\LaTeX\ but will still define \cmd\XeTeX\ and \cmd\XeLaTeX. (The only advantage for not doing this is more consistency when customising the spacing, which isn't really recommended anyway\dots)
+%
+% If the \pkg{hyperref} package is loaded, these logos will be set up to behave properly in PDF bookmarks and so on.
 % 
 % \subsection{Discrectionary hyphenation: \cmd\-}
 % \seclabel{hyphen}
@@ -247,7 +249,7 @@ This work consists of the file  xltxtra.dtx
 %
 %    \begin{macrocode}
 \ProvidesPackage{xltxtra}
-  [2007/05/30 v0.3a Improvements for the "XeLaTeX" format]  
+  [2007/05/30 v0.3b Improvements for the "XeLaTeX" format]  
 %    \end{macrocode}
 %
 % \changes{v0.3}{2007/05/29}{Added proper documentation.}
@@ -402,6 +404,19 @@ This work consists of the file  xltxtra.dtx
 % \changes{v0.2}{2006/08/12}{\cmd\TeX@logo@spacing made ``private'' and added an arg for \cmd\XeLaTeX.}
 % \changes{v0.3a}{2007/06/20}{Changed \cmd\setlength\ to \cmd\def. Silly me.}
 % \end{macro}
+%
+% \textsf{hyperref}-safe versions of the logos:
+%    \begin{macrocode}
+\@ifpackageloaded{hyperref}{%
+  \pdfstringdefDisableCommands{%
+    \def\TeX{TeX}%
+    \def\XeTeX{XeTeX}%
+    \def\LaTeX{LaTeX}%
+    \def\LaTeXe{LaTeX2e}
+    \def\XeLaTeX{XeLaTeX}
+}}{}
+%    \end{macrocode}
+% \changes{v0.3b}{2007/09/01}{Added hyperref logos. Thanks Ross.}
 %
 % \section{\eTeX\ functionality}
 % Because it's just sensible, we load the package that actually

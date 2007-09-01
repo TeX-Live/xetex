@@ -13,7 +13,7 @@
 %% 
 %% 
 \ProvidesPackage{xltxtra}
-  [2007/05/30 v0.3a Improvements for the "XeLaTeX" format]
+  [2007/05/30 v0.3b Improvements for the "XeLaTeX" format]
 \newif\if@xxt@nosscript@
 \newif\if@xxt@nologos@
 \newif\if@xxt@nohyphen@
@@ -101,6 +101,14 @@
         \raise\dimen0\hbox{\rotatebox{180}{\box0}}%
       \fi}\kern\xxt@kern@eL\LaTeX}}
 \TeX@logo@spacing{-0.15em}{-0.15em}{0.5ex}{-0.36em}{-0.15em}{-0.1em}
+\@ifpackageloaded{hyperref}{%
+  \pdfstringdefDisableCommands{%
+    \def\TeX{TeX}%
+    \def\XeTeX{XeTeX}%
+    \def\LaTeX{LaTeX}%
+    \def\LaTeXe{LaTeX2e}
+    \def\XeLaTeX{XeLaTeX}
+}}{}
 \RequirePackage{etex}
 \RequirePackage{fixltx2e}[2006/03/24]
 \unless\if@xxt@noemph@
