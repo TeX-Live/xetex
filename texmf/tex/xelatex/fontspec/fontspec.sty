@@ -14,7 +14,7 @@
 %% 
 %% 
 \ProvidesPackage{fontspec}
-  [2007/08/27 v1.15 Advanced font selection for XeLaTeX]
+  [2007/09/01 v1.16 Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \newif\ifzf@firsttime
@@ -140,12 +140,12 @@
       \@tempa
     \endgroup
     \fontfamily\zf@family\selectfont
-    \expandafter\ignorespaces
   \else
     \zf@PackageWarning{%
       \protect\addfontfeature (s) ignored;\zf@nl
       it cannot be used with a font that wasn't selected by fontspec.}%
-  \fi}
+  \fi
+  \ignorespaces}
 \let\addfontfeature\addfontfeatures
 \newcommand*\newfontfeature[2]{%
   \stepcounter{zf@newff}%
@@ -223,7 +223,7 @@
       \expandafter\stepcounter\else
       \expandafter\newcounter\fi
         {zf@famc@#2}%
-    \def@cx{zf@UID@\zf@family@long}{%
+    \gdef@cx{zf@UID@\zf@family@long}{%
       \zap@space#2 \@empty
       (\expandafter\the\csname c@zf@famc@#2\endcsname)}%
   \fi
@@ -1192,7 +1192,7 @@
   \@ifpackageloaded{MinionPro}{\@zf@mathfalse}{}
   \@ifpackageloaded{unicode-math}{\@zf@mathfalse}{}
   \if@zf@math
-    \zf@PackageWarning{Adjusting the maths setup (use [no-math] to avoid this).}
+    \zf@PackageInfo{Adjusting the maths setup (use [no-math] to avoid this).}
     \zf@math
   \fi}
 \AtBeginDocument{\zf@math@maybe}

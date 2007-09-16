@@ -4,7 +4,7 @@
 %</internal>
 %<*readme>
 --------------------------
-THE FONTSPEC PACKAGE v1.14
+THE FONTSPEC PACKAGE v1.16
 
 The fontspec package only works with XeTeX, 
 a unicode capable TeX-variant. It provides 
@@ -135,7 +135,7 @@ This work consists of this file  fontspec.dtx
 %
 %<*fontspec>
 \ProvidesPackage{fontspec}
-  [2007/06/20 v1.14 Advanced font selection for XeLaTeX]
+  [2007/09/16 v1.16 Advanced font selection for XeLaTeX]
 %</fontspec>
 %
 % \fi
@@ -409,7 +409,7 @@ This work consists of this file  fontspec.dtx
 % the processing. The \pkg{fontspec} package must also be loaded after
 % any maths font packages (\eg, \pkg{euler}) to be
 % successful. (Actually, it is \emph{only} \pkg{euler} that is the
-% problem.)
+% problem.\footnote{Speaking of \pkg{euler}, if you want to use its \texttt{[mathbf]} option, it won't work, and you'll need to put this after \pkg{fontspec} is loaded instead:\ttfamily\cmd\AtBeginDocument\char`\{\cmd\DeclareMathAlphabet\cmd\mathbf\char`\{U\char`\}\char`\{eur\char`\}\char`\{b\char`\}\char`\{n\char`\}})
 %
 % Note that you may find that loading some maths packages won't be as smooth as you expect since \pkg{fontspec} (and \XeTeX\ in general) breaks many of the assumptions of \TeX\ as to where maths characters and accents can be found. Contact me if you have troubles, but I can't guarantee to be able to fix any incompatibilities. The Lucida and Euler maths fonts (the latter loaded with \pkg{euler} rather than \pkg{eulervm}) should be fine; for all others keep an eye out for problems.
 %
@@ -1410,9 +1410,8 @@ This work consists of this file  fontspec.dtx
 %
 % \subsection{Vertical typesetting}
 %
-% A recent feature of \XeTeX\ is the ability to rotate 
-% the glyphs in AAT fonts by 90°, providing a method to typeset vertically
-% by building a horizontal box as normal and then rotating it.
+% \XeTeX\ provides for vertical typesetting simply with the ability to rotate 
+% the individual glyphs as a font is used for typesetting.
 %
 % \begin{aatexample}
 %   \fontspec{Hiragino Mincho Pro}
@@ -1421,11 +1420,6 @@ This work consists of this file  fontspec.dtx
 %   \fontspec[Renderer=AAT,Vertical=RotatedGlyphs]{Hiragino Mincho Pro}
 %   \rotatebox{-90}{共産主義者は}% requires the graphicx package
 % \end{aatexample}
-%
-% The AAT renderer is required above because \XeTeX\ choses the
-% ICU renderer by preference when both options are available; if it
-% is not explicitly chosen, the glyphs will not be rotated and a
-% warning will be printed in the output.
 % 
 % No actual provision is made for typesetting top-to-bottom
 % languages; for an example of how to do this, see the vertical Chinese
@@ -2028,12 +2022,12 @@ This work consists of this file  fontspec.dtx
       \@tempa
     \endgroup
     \fontfamily\zf@family\selectfont
-    \expandafter\ignorespaces
   \else
     \zf@PackageWarning{%
       \protect\addfontfeature (s) ignored;\zf@nl
       it cannot be used with a font that wasn't selected by fontspec.}%
-  \fi}
+  \fi
+  \ignorespaces}
 \let\addfontfeature\addfontfeatures
 %    \end{macrocode}
 % \changes{v1.5}{2004/11/29}{Implemented.}
@@ -2246,7 +2240,7 @@ This work consists of this file  fontspec.dtx
       \expandafter\stepcounter\else
       \expandafter\newcounter\fi
         {zf@famc@#2}%
-    \def@cx{zf@UID@\zf@family@long}{%
+    \gdef@cx{zf@UID@\zf@family@long}{%
       \zap@space#2 \@empty
       (\expandafter\the\csname c@zf@famc@#2\endcsname)}%
   \fi
@@ -2359,8 +2353,9 @@ This work consists of this file  fontspec.dtx
 % \changes{v1.9}{2005/12/11}{Abstracted the long family name so the NFSS family is simple.}
 % \changes{v1.10}{2006/04/14}{Saved family info split into two (now three!) macros.}
 % \changes{v1.10}{2006/05/03}{Space zapped from \LaTeX\ family name due to various problems.}
-% \end{macro}
 % \changes{v1.11}{2006/06/29}{Ensure bold/italic fonts are loaded with the same renderer as the regular font even if unspecified.}
+% \changes{v1.16}{2007/09/17}{\cmd{\zf@UID...} wasn't being defined globally. gah!}
+% \end{macro}
 %
 %
 % \subsubsection{Fonts}
@@ -3062,6 +3057,7 @@ This work consists of this file  fontspec.dtx
 %    \end{macrocode}
 %
 % paragraph{Features varying by size}
+% TODO: sizezfeatures and italicfont (etc) don't play nice
 %    \begin{macrocode}
 \define@key[zf]{preparse}{SizeFeatures}{%
   \unless\ifzf@firsttime\def\zf@size@feat{#1}\fi
@@ -3510,11 +3506,14 @@ This work consists of this file  fontspec.dtx
 %
 % \subsubsection{Vertical}
 % \changes{v1.9}{2006/02/12}{New feature \feat{Vertical}.}
+% \changes{v1.15}{2007/08/27}{\opt{RotatedGlyphs} now works for ICU fonts.}
 %    \begin{macrocode}
 \zf@define@font@feature{Vertical}
 \define@key[zf@feat]{Vertical}{RotatedGlyphs}[]{%
   \ifzf@icu
     \zf@make@feature{}{}{+vrt2}%
+    \zf@update@family{+vert}%
+    \zf@update@ff{vertical}%
   \else
     \zf@update@family{+vert}%
     \zf@update@ff{vertical}%
@@ -4009,11 +4008,12 @@ This work consists of this file  fontspec.dtx
   \@ifpackageloaded{MinionPro}{\@zf@mathfalse}{}
   \@ifpackageloaded{unicode-math}{\@zf@mathfalse}{}
   \if@zf@math
-    \zf@PackageWarning{Adjusting the maths setup (use [no-math] to avoid this).}
+    \zf@PackageInfo{Adjusting the maths setup (use [no-math] to avoid this).}
     \zf@math
   \fi}
 \AtBeginDocument{\zf@math@maybe}
 %    \end{macrocode}
+% \changes{v1.16}{2007/09/01}{Maths setup warning sent to the log file instead.}
 % \end{macro}
 %
 %

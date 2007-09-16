@@ -1,5 +1,5 @@
 --------------------------
-THE FONTSPEC PACKAGE v1.15
+THE FONTSPEC PACKAGE v1.16
 
 The fontspec package only works with XeTeX,
 a unicode capable TeX-variant. It provides
