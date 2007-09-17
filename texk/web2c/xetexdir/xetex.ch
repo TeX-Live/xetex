@@ -1395,9 +1395,10 @@ else  begin print_esc("scriptscriptfont");
 @d eTeX_state_code=etex_int_base+9 {\eTeX\ state variables}
 @d etex_int_pars=eTeX_state_code+eTeX_states {total number of \eTeX's integer parameters}
 @y
-@d XeTeX_linebreak_locale_code=etex_int_base+9 {string number of locale to use for linebreak locations}
-@d XeTeX_linebreak_penalty_code=etex_int_base+10 {penalty to use at locale-dependent linebreak locations}
-@d eTeX_state_code=etex_int_base+11 {\eTeX\ state variables}
+@d suppress_fontnotfound_error_code=etex_int_base+9 {suppress errors for missing fonts}
+@d XeTeX_linebreak_locale_code=etex_int_base+10 {string number of locale to use for linebreak locations}
+@d XeTeX_linebreak_penalty_code=etex_int_base+11 {penalty to use at locale-dependent linebreak locations}
+@d eTeX_state_code=etex_int_base+12 {\eTeX\ state variables}
 @d etex_int_pars=eTeX_state_code+eTeX_states {total number of \eTeX's integer parameters}
 @z
 
@@ -1423,6 +1424,7 @@ else  begin print_esc("scriptscriptfont");
 @d saving_hyph_codes==int_par(saving_hyph_codes_code)
 @y
 @d saving_hyph_codes==int_par(saving_hyph_codes_code)
+@d suppress_fontnotfound_error==int_par(suppress_fontnotfound_error_code)
 @d XeTeX_linebreak_locale==int_par(XeTeX_linebreak_locale_code)
 @d XeTeX_linebreak_penalty==int_par(XeTeX_linebreak_penalty_code)
 @z
@@ -3262,9 +3264,9 @@ pack_file_name(nom,aire,cur_ext);
 if quoted_filename then begin
   { quoted name, so try for a native font }
   g:=load_native_font(u,nom,aire,s);
-  if g=null_font then goto bad_tfm else goto done;
+  if g<>null_font then goto done;
 end;
-{ it was an unquoted name, so try for a TFM file }
+{ it was an unquoted name, or not found as an installed font, so try for a TFM file }
 @<Read and check the font data if file exists;
   |abort| if the \.{TFM} file is
 @z
@@ -3273,16 +3275,15 @@ end;
 bad_tfm: @<Report that the font won't be loaded@>;
 @y
 if g<>null_font then goto done;
-if file_name_quote_char=0 then begin
+if not quoted_filename then begin
   { we failed to find a TFM file, so try for a native font }
   g:=load_native_font(u,nom,aire,s);
   if g<>null_font then goto done
 end;
 bad_tfm:
-if (not file_opened) and (file_name_quote_char<>0) then begin
-  @<Report that native font couldn't be found, and |goto done|@>;
-end;
-@<Report that the font won't be loaded@>;
+if suppress_fontnotfound_error=0 then begin
+  @<Report that the font won't be loaded@>;
+  end;
 @z
 
 @x
@@ -3307,17 +3308,6 @@ else print(" not loadable: Metric (TFM) file or installed font not found");
 @ @<Read and check...@>=
 @<Open |tfm_file| for input@>;
 @y
-@ @<Report that native font couldn't be found, and |goto done|@>=
-start_font_error_message;
-@.Font x=xx not loadable...@>
-print(" not loadable: installed font not found");
-help4("I wasn't able to find this font in the Mac OS,")@/
-("so I will ignore the font specification.")@/
-("You might try inserting a different font spec;")@/
-("e.g., type `I\font<same font id>=<substitute font name>'.");
-error;
-goto done
-
 @ @<Read and check...@>=
 @<Open |tfm_file| for input and |begin|@>;
 @z
@@ -8060,6 +8050,7 @@ font_char_ic_code: begin scan_font_ident; q:=cur_val; scan_usv_num;
 @x
 eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 @y
+suppress_fontnotfound_error_code:print_esc("suppressfontnotfounderror");
 eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 eTeX_state_code+XeTeX_upwards_code:print_esc("XeTeXupwardsmode");
 eTeX_state_code+XeTeX_use_glyph_metrics_code:print_esc("XeTeXuseglyphmetrics");
@@ -8071,6 +8062,7 @@ eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 primitive("TeXXeTstate",assign_int,eTeX_state_base+TeXXeT_code);
 @!@:TeXXeT_state_}{\.{\\TeXXeT_state} primitive@>
 @y
+primitive("suppressfontnotfounderror",assign_int,int_base+suppress_fontnotfound_error_code);@/
 primitive("TeXXeTstate",assign_int,eTeX_state_base+TeXXeT_code);
 @!@:TeXXeT_state_}{\.{\\TeXXeT_state} primitive@>
 primitive("XeTeXupwardsmode",assign_int,eTeX_state_base+XeTeX_upwards_code);

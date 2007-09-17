@@ -74,8 +74,6 @@ authorization from SIL International.
 @define function grfontgetnamed1();
 
 @define procedure memcpy();
-@define function casttoptr();
-@define function casttointeger();
 @define function glyphinfobyte();
 @define function casttoushort();
 
