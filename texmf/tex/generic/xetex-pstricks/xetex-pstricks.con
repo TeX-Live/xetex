@@ -63,6 +63,22 @@
 \special{x: escale}%
 \ifdim\pst@dima>\z@\kern\pst@dima\fi}}
 \let\ps@@scalebox\@@scalebox
+\def\ps@rotateleft#1{%
+\leavevmode\hbox{\hskip\ht#1\hskip\dp#1\vbox{\vskip\wd#1%
+\pst@Verb{90 \tx@RotBegin}
+\vbox to \z@{\vss\hbox to \z@{\box#1\hss}\vskip\z@}%
+\pst@Verb{\tx@RotEnd}}}}
+\def\ps@rotateright#1{%
+  \leavevmode\hbox{%
+  \hskip\ht#1\hskip\dp#1\vbox{\vskip\wd#1%
+  \pst@Verb{-90 \tx@RotBegin}
+  \vbox to \z@{\hbox to \z@{\hss\box#1}\vss}%
+  \pst@Verb{\tx@RotEnd}}}}
+\def\ps@rotatedown#1{%
+\hbox{\hskip\wd#1\vbox{\vskip\ht#1\vskip\dp#1%
+\pst@Verb{180 \tx@RotBegin}%
+\vbox to \z@{\hbox to \z@{\box#1\hss}\vss}%
+\pst@Verb{\tx@RotEnd}}}}
 \def\begin@psclip{\special{x: gsave}}
 \def\end@psclip{\special{x: grestore}}
 \def\@newcolor#1#2#3{%
