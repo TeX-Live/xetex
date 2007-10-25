@@ -107,6 +107,7 @@ authorization from SIL International.
 @define function getotmathvariant();
 @define function getotassemblyptr();
 @define function getotmathitalcorr();
+@define function getotmathaccentpos();
 
 @define function otpartcount();
 @define function otpartglyph();

@@ -4267,7 +4267,7 @@ if is_ot_font(g) then begin
   free_node(b, native_size(b));
   f:=g; c:=x; w:=0; n:=0;
   repeat
-    y:=get_ot_math_variant(g, x, n, address_of(u));
+    y:=get_ot_math_variant(g, x, n, address_of(u), 0);
     if u>w then begin
       c:=y; w:=u;
       if u>=v then goto found;
@@ -4275,7 +4275,7 @@ if is_ot_font(g) then begin
     n:=n+1;
   until u<0;
   {if we get here, then we didn't find a big enough glyph; check if the char is extensible}
-  ot_assembly_ptr:=get_ot_assembly_ptr(g, x);
+  ot_assembly_ptr:=get_ot_assembly_ptr(g, x, 0);
   if ot_assembly_ptr<>nil then goto found;
 end else
 @z
@@ -4411,13 +4411,13 @@ procedure make_math_accent(@!q:pointer);
 label done,done1;
 var p,@!x,@!y:pointer; {temporary registers for box construction}
 @!a:integer; {address of lig/kern instruction}
-@!c:integer; {accent character}
+@!c,@!g:integer; {accent character}
 @!f:internal_font_number; {its font}
 @!i:four_quarters; {its |char_info|}
 @!s:scaled; {amount to skew the accent to the right}
 @!h:scaled; {height of character being accented}
 @!delta:scaled; {space to remove between accent and accentee}
-@!w:scaled; {width of the accentee, not including sub/superscripts}
+@!w,@!wa,@!w2:scaled; {width of the accentee, not including sub/superscripts}
 begin fetch(accent_chr(q));
 x:=null;
 if is_native_font(cur_f) then
@@ -4432,6 +4432,70 @@ else if char_exists(cur_i) then
   @<Switch to a larger accent if available and appropriate@>;
   end;
 if x<>null then begin
+@z
+
+@x
+  y:=char_box(f,c);
+  shift_amount(y):=s+half(w-width(y));
+@y
+  y:=char_box(f,c);
+  if is_native_font(f) then begin
+    {turn the native_word node into a native_glyph one}
+    p:=get_node(glyph_node_size);
+    type(p):=whatsit_node; subtype(p):=glyph_node;
+    native_font(p):=f; native_glyph(p):=get_native_glyph(list_ptr(y), 0);
+    set_native_glyph_metrics(p, 1);
+    free_node(list_ptr(y), native_size(list_ptr(y)));
+    list_ptr(y):=p;
+
+    @<Switch to a larger native-font accent if available and appropriate@>;
+
+    {determine horiz positioning}
+    wa:=get_ot_math_accent_pos(f,native_glyph(p));
+    if wa=@"7FFFFFFF then wa:=half(width(y));
+    p:=list_ptr(x);
+    if (type(p)=whatsit_node) and (subtype(p)=glyph_node) and (link(p)=null) then begin
+      w:=get_ot_math_accent_pos(native_font(p), native_glyph(p));
+      if w=@"7FFFFFFF then w:=half(width(x));
+    end else
+      w:=half(width(x));
+    shift_amount(y):=s+w-wa;
+  end else
+    shift_amount(y):=s+half(w-width(y));
+@z
+
+@x
+@ @<Switch to a larger accent if available and appropriate@>=
+@y
+@ @<Switch to a larger native-font accent if available and appropriate@>=
+  wa:=width(x);
+  c:=native_glyph(p);
+  a:=0;
+  repeat
+    g:=get_ot_math_variant(f, c, a, address_of(w2), 1);
+    if (w2>0) and (w2<=wa) then begin
+      native_glyph(p):=g;
+      set_native_glyph_metrics(p, 1);
+      incr(a);
+    end;
+  until (w2<0) or (w2>=wa);
+{
+  if (w2<0) then begin
+    ot_assembly_ptr:=get_ot_assembly_ptr(f, c, 1);
+    if ot_assembly_ptr<>nil then begin
+      free_node(p,glyph_node_size);
+      p:=build_opentype_assembly(cur_f, ot_assembly_ptr, w1);
+      list_ptr(y):=p;
+      goto found;
+    end;
+  end else
+}
+    set_native_glyph_metrics(p, 1);
+{found:}
+  width(y):=width(p); height(y):=height(p); depth(y):=depth(p);
+  if depth(y)<0 then depth(y):=0;
+
+@ @<Switch to a larger accent if available and appropriate@>=
 @z
 
 @x
@@ -4539,13 +4603,13 @@ if math_type(nucleus(q))=math_char then
         c:=native_glyph(p);
         n:=0;
         repeat
-          g:=get_ot_math_variant(cur_f, c, n, address_of(h2));
+          g:=get_ot_math_variant(cur_f, c, n, address_of(h2), 0);
           if h2>0 then native_glyph(p):=g;
           incr(n);
         until (h2<0) or (h2>=h1);
         if (h2<0) then begin
           {if we get here, then we didn't find a big enough glyph; check if the char is extensible}
-          ot_assembly_ptr:=get_ot_assembly_ptr(cur_f, c);
+          ot_assembly_ptr:=get_ot_assembly_ptr(cur_f, c, 0);
           if ot_assembly_ptr<>nil then begin
             free_node(p,glyph_node_size);
             p:=build_opentype_assembly(cur_f, ot_assembly_ptr, h1);
