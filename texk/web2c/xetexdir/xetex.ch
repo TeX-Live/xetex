@@ -3721,6 +3721,13 @@ if upwards then cur_v:=cur_v-rule_ht else cur_v:=cur_v+rule_ht;
 @z
 
 @x
+begin if tracing_output>0 then
+@y
+begin if job_name=0 then open_log_file;
+if tracing_output>0 then
+@z
+
+@x
 dvi_four(last_bop); last_bop:=page_loc;
 @y
 dvi_four(last_bop); last_bop:=page_loc;
