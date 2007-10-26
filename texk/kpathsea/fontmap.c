@@ -28,6 +28,7 @@
 #include <kpathsea/line.h>
 #include <kpathsea/pathsearch.h>
 #include <kpathsea/str-list.h>
+#include <kpathsea/recorder.h>
 #include <kpathsea/tex-file.h>
 
 /* We have one and only one fontmap, so may as well make it static
@@ -81,10 +82,13 @@ map_file_parse P1C(const_string, map_filename)
   char *orig_l;
   unsigned map_lineno = 0;
   FILE *f = xfopen (map_filename, FOPEN_R_MODE);
-  
+
+  if (kpse_record_input)
+    kpse_record_input (map_filename);
+
   while ((orig_l = read_line (f)) != NULL) {
     string filename;
-    string l = orig_l;
+    string l = orig_l; /* save for free() */
     string comment_loc = strrchr (l, '%');
     if (!comment_loc) {
       comment_loc = strstr (l, "@c");
@@ -132,12 +136,13 @@ map_file_parse P1C(const_string, map_filename)
 
       } else {
         /* We've got everything.  Insert the new entry.  They were
-           already dynamically allocated, so don't bother with xstrdup.  */
+           already dynamically allocated by token(), so don't bother
+           with xstrdup.  */
         hash_insert_normalized (&map, alias, filename);
       }
     }
 
-    free (l);
+    free (orig_l);
   }
   
   xfclose (f, map_filename);

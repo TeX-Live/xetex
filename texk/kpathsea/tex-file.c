@@ -1,7 +1,7 @@
 /* tex-file.c: high-level file searching by format.
 
+    Copyright 1993, 1994, 1995, 1996, 1997, 2007 Karl Berry.
     Copyright 1998-2005 Olaf Weber.
-    Copyright 1993, 94, 95, 96, 97 Karl Berry.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -93,6 +93,7 @@ kpse_format_info_type kpse_format_info[kpse_last_format];
 #define PDFTEXCONFIG_ENVS "PDFTEXCONFIG"
 #define LIG_ENVS "LIGFONTS", "TEXFONTS"
 #define TEXMFSCRIPTS_ENVS "TEXMFSCRIPTS"
+#define LUA_ENVS "LUAINPUTS"
 
 /* The compiled-in default list, DEFAULT_FONT_SIZES, is intended to be
    set from the command line (presumably via the Makefile).  */
@@ -177,6 +178,8 @@ kpse_maketex_option P2C(const_string, fmtname,  boolean, value)
     fmt = kpse_tex_format;
   } else if (FILESTRCASEEQ (fmtname, "tfm")) {
     fmt = kpse_tfm_format;
+  } else if (FILESTRCASEEQ (fmtname, "fmt")) {
+    fmt = kpse_fmt_format;
   } else if (FILESTRCASEEQ (fmtname, "ofm")) {
     fmt = kpse_ofm_format;
   } else if (FILESTRCASEEQ (fmtname, "ocp")) {
@@ -471,8 +474,6 @@ kpse_init_format P1C(kpse_file_format_type, format)
       init_maketex (format, "mktexfmt", NULL);
       INIT_FORMAT ("fmt", DEFAULT_TEXFORMATS, FMT_ENVS);
       SUFFIXES (".fmt");
-#define FMT_SUFFIXES ".efmt",".efm",".ofmt",".ofm",".oft",".eofmt",".eoft",".eof",".pfmt",".pfm",".epfmt",".epf",".xpfmt",".xpf",".afmt",".afm"
-      ALT_SUFFIXES (FMT_SUFFIXES);
       FMT_INFO.binmode = true;
       break;
     case kpse_fontmap_format:
@@ -608,6 +609,8 @@ kpse_init_format P1C(kpse_file_format_type, format)
       break;
     case kpse_type42_format:
       INIT_FORMAT ("type42 fonts", DEFAULT_T42FONTS, TYPE42_ENVS);
+#define TYPE42_SUFFIXES ".t42", ".T42"
+      SUFFIXES (TYPE42_SUFFIXES);
       FMT_INFO.binmode = true;
       break;
     case kpse_web2c_format:
@@ -667,6 +670,12 @@ kpse_init_format P1C(kpse_file_format_type, format)
       break;
     case kpse_texmfscripts_format:
       INIT_FORMAT ("texmfscripts", DEFAULT_TEXMFSCRIPTS, TEXMFSCRIPTS_ENVS);
+      break;
+    case kpse_lua_format:
+      INIT_FORMAT ("lua", DEFAULT_LUAINPUTS, LUA_ENVS);
+#define LUA_SUFFIXES ".luc", ".luctex", ".texluc", ".lua", ".luatex", ".texlua"
+      SUFFIXES (LUA_SUFFIXES);
+      FMT_INFO.suffix_search_only = true;
       break;
     default:
       FATAL1 ("kpse_init_format: Unknown format %d", format);

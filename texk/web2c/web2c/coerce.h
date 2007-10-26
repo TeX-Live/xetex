@@ -43,7 +43,7 @@ extern void paintrow P4H(screenrow, pixelcolor, transspec, screencol);
 
 #ifdef TeX
 /* Prototypes for source-specials functions... */
-extern strnumber makefullnamestring(void);
+extern strnumber makefullnamestring();
 extern boolean isnewsource P2H(strnumber, int);
 extern poolpointer makesrcspecial P2H(strnumber, int);
 extern void remembersourceinfo P2H(strnumber, int);

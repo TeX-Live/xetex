@@ -244,7 +244,7 @@ versions of the program.
 @!sup_strings_free = sup_max_strings;
 
 @!inf_buf_size = 500;
-@!sup_buf_size = 300000;
+@!sup_buf_size = 30000000;
 
 @!inf_nest_size = 40;
 @!sup_nest_size = 4000;
@@ -1934,7 +1934,7 @@ if area_delimiter<>0 then begin
   s:=str_start[str_ptr];
   t:=str_start[str_ptr]+area_delimiter;
   j:=s;
-  while (not must_quote) and (j<>t) do begin
+  while (not must_quote) and (j<t) do begin
     must_quote:=str_pool[j]=" "; incr(j);
     end;
   if must_quote then begin
@@ -1952,7 +1952,7 @@ s:=str_start[str_ptr]+area_delimiter;
 if ext_delimiter=0 then t:=pool_ptr else t:=str_start[str_ptr]+ext_delimiter-1;
 must_quote:=false;
 j:=s;
-while (not must_quote) and (j<>t) do begin
+while (not must_quote) and (j<t) do begin
   must_quote:=str_pool[j]=" "; incr(j);
   end;
 if must_quote then begin
@@ -1969,7 +1969,7 @@ if ext_delimiter<>0 then begin
   t:=pool_ptr;
   must_quote:=false;
   j:=s;
-  while (not must_quote) and (j<>t) do begin
+  while (not must_quote) and (j<t) do begin
     must_quote:=str_pool[j]=" "; incr(j);
     end;
   if must_quote then begin
@@ -2032,19 +2032,19 @@ begin
 must_quote:=false;
 if a<>0 then begin
   j:=str_start[a];
-  while (not must_quote) and (j<>str_start[a+1]) do begin
+  while (not must_quote) and (j<str_start[a+1]) do begin
     must_quote:=str_pool[j]=" "; incr(j);
   end;
 end;
 if n<>0 then begin
   j:=str_start[n];
-  while (not must_quote) and (j<>str_start[n+1]) do begin
+  while (not must_quote) and (j<str_start[n+1]) do begin
     must_quote:=str_pool[j]=" "; incr(j);
   end;
 end;
 if e<>0 then begin
   j:=str_start[e];
-  while (not must_quote) and (j<>str_start[e+1]) do begin
+  while (not must_quote) and (j<str_start[e+1]) do begin
     must_quote:=str_pool[j]=" "; incr(j);
   end;
 end;
@@ -2210,12 +2210,20 @@ var k:0..buf_size; {index into |buffer|}
 @y
 var k:0..buf_size; {index into |buffer|}
 @!saved_cur_name:str_number; {to catch empty terminal input}
+@!saved_cur_ext:str_number; {to catch empty terminal input}
+@!saved_cur_area:str_number; {to catch empty terminal input}
 @z
 
 @x [29.530] l.10252 - prompt_file_name: No default extension is TeX input file.
 if e=".tex" then show_context;
 @y
 if (e=".tex") or (e="") then show_context;
+print_ln; print("(Type <return> to retry, or <eof> to exit");
+if (e<>"") then
+  begin
+    print(" Default file extension is `"); print(e); print("'");
+  end;
+print(")"); print_ln;
 @z
 
 @x [29.530] l.10258 - prompt_file_name: prevent empty filenames.
@@ -2223,9 +2231,17 @@ clear_terminal; prompt_input(": "); @<Scan file name in the buffer@>;
 if cur_ext="" then cur_ext:=e;
 @y
 saved_cur_name:=cur_name;
+saved_cur_ext:=cur_ext;
+saved_cur_area:=cur_area;
 clear_terminal; prompt_input(": "); @<Scan file name in the buffer@>;
-if cur_ext="" then cur_ext:=e;
-if length(cur_name)=0 then cur_name:=saved_cur_name;
+if (length(cur_name)=0) and (cur_ext="") and (cur_area="") then
+  begin
+    cur_name:=saved_cur_name;
+    cur_ext:=saved_cur_ext;
+    cur_area:=saved_cur_area;
+  end
+else
+  if cur_ext="" then cur_ext:=e;
 @z
 
 @x [29.532] l.10263 - avoid conflict, `logname' in <unistd.h> on some systems.

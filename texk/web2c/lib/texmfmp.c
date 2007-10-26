@@ -18,6 +18,7 @@
 #include <kpathsea/readable.h>
 #include <kpathsea/variable.h>
 #include <kpathsea/absolute.h>
+#include <kpathsea/recorder.h>
 
 #include <time.h> /* For `struct tm'.  */
 #if defined (HAVE_SYS_TIME_H)
@@ -186,6 +187,9 @@ maininit P2C(int, ac, string *, av)
   /* Must be initialized before options are parsed.  */
   interactionoption = 4;
 
+  kpse_record_input = recorder_record_input;
+  kpse_record_output = recorder_record_output;
+
 #if defined(pdfTeX)
   ptexbanner = BANNER;
 #endif
@@ -331,7 +335,6 @@ maininit P2C(int, ac, string *, av)
 #endif /* TeX */
 }
 
-#ifndef WIN32
 /* The entry point: set up for reading the command line, which will
    happen in `topenin', then call the main body.  */
 
@@ -343,13 +346,16 @@ main P2C(int, ac,  string *, av)
   _response (&ac, &av);
 #endif
 
+#ifdef WIN32
+  _setmaxstdio(2048);
+#endif
+
   maininit(ac, av);
 
   /* Call the real main program.  */
   mainbody ();
   return EXIT_SUCCESS;
 } 
-#endif /* ! WIN32 */
 
 /* This is supposed to ``open the terminal for input'', but what we
    really do is copy command line arguments into TeX's or Metafont's
@@ -876,7 +882,6 @@ static struct option long_options[]
       { "etex",                      0, &etexp, 1 },
 #endif /* eTeX || pdfTeX || Aleph */
       { "output-comment",            1, 0, 0 },
-      { "output-directory",          1, 0, 0 },
 #if defined(pdfTeX)
       { "draftmode",                 0, 0, 0 },
       { "output-format",             1, 0, 0 },
@@ -893,6 +898,7 @@ static struct option long_options[]
       { "file-line-error",           0, &filelineerrorstylep, 1 },
       { "no-file-line-error",        0, &filelineerrorstylep, -1 },
       { "jobname",                   1, 0, 0 },
+      { "output-directory",          1, 0, 0 },
       { "parse-first-line",          0, &parsefirstlinep, 1 },
       { "no-parse-first-line",       0, &parsefirstlinep, -1 },
       { "translate-file",            1, 0, 0 },
@@ -1350,6 +1356,7 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
          free (fullnameoffile);
       fullnameoffile = xstrdup (fname);
 #endif
+      recorder_record_input (fname + 1);
       *f_ptr = popen(fname+1,"r");
       free(fname);
       for (i=0; i<=15; i++) {
@@ -1394,6 +1401,7 @@ open_out_or_pipe P2C(FILE **, f_ptr,  const_string, fopen_mode)
       } else {
         *f_ptr = popen(fname+1,"w");
       }
+      recorder_record_output (fname + 1);
       free(fname);
 
       for (i=0; i<=15; i++) {
