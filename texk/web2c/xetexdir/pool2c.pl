@@ -1,6 +1,10 @@
 #! /usr/bin/perl
 
-# convert web .pool file into an array of C strings
+# Convert web .pool file into C source
+# Result is an array of chars (bytes) containing the strings,
+# each prefixed by a length byte.
+# The function initpool() loads this data into TeX's pool.
+
 # usage: perl pool2c.pl NAME.pool
 # writes output to ${NAME}_pool.c if only one arg provided
 
@@ -54,7 +58,6 @@ print OUT <<__EOT__;
 
 int initpool(int limit) {
 	int g = 0;
-	int i = 0, j = 0;
 	unsigned char *s = POOL;
 	while (s < POOL + POOL_LEN) {
 		int len = *s++;
