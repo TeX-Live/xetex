@@ -3786,7 +3786,9 @@ if not no_pdf_output then fflush(dvi_file);
     end else print(").");
   end else begin
     print_nl("Error "); print_int(k); print(" (");
-    printcstring(strerror(k)); print(") generating output;");
+    if no_pdf_output then printcstring(strerror(k))
+    else print("driver return code");
+    print(") generating output;");
     print_nl("file "); print(output_file_name); print(" may not be valid.");
     end;
 @z
