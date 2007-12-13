@@ -5326,10 +5326,8 @@ adjust_space_factor;@/
 			if (state<>token_list) or (token_type<>backed_up_char) then begin
 				find_sa_element(inter_char_val, 255*@"100 + space_class, false);
 				if cur_ptr<>null then begin
-					if cur_cs=0 then begin
-						if cur_cmd=char_num then cur_cmd:=char_given;
-						cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-					end else cur_tok:=cs_token_flag+cur_cs; {can't happen?}
+					if cur_cmd<>letter then cur_cmd:=other_char;
+					cur_tok:=(cur_cmd*max_char_val)+cur_chr;
 					back_input; token_type:=backed_up_char;
 					begin_token_list(sa_ptr(cur_ptr), inter_char_text);
 					goto big_switch;
@@ -5338,10 +5336,8 @@ adjust_space_factor;@/
 		end else begin
 			find_sa_element(inter_char_val, prev_class*@"100 + space_class, false);
 			if cur_ptr<>null then begin
-				if cur_cs=0 then begin
-					if cur_cmd=char_num then cur_cmd:=char_given;
-					cur_tok:=(cur_cmd*max_char_val)+cur_chr;
-				end else cur_tok:=cs_token_flag+cur_cs; {can't happen?}
+				if cur_cmd<>letter then cur_cmd:=other_char;
+				cur_tok:=(cur_cmd*max_char_val)+cur_chr;
 				back_input; token_type:=backed_up_char;
 				begin_token_list(sa_ptr(cur_ptr), inter_char_text);
 				prev_class:=255;
@@ -5357,7 +5353,7 @@ adjust_space_factor;@/
 		find_sa_element(inter_char_val, space_class*@"100 + 255, false); {boundary}
 		if cur_ptr<>null then begin
 			if cur_cs=0 then begin
-				if cur_cmd=char_num then cur_cmd:=char_given;
+				if cur_cmd=char_num then cur_cmd:=other_char;
 				cur_tok:=(cur_cmd*max_char_val)+cur_chr;
 			end else cur_tok:=cs_token_flag+cur_cs;
 			back_input;
