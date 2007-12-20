@@ -369,7 +369,7 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 	if (ptSize < 0.0)
 		ptSize = dsize / 10.0;
 	if (font != NULL && font->opSizeInfo.subFamilyID != 0 && ptSize > 0.0) {
-		ptSize = ptSize * 720 / 72.27;	// convert TeX points to PS decipoints for comparison with the opSize values
+		ptSize = ptSize * 10.0;	// convert to decipoints for comparison with the opSize values
 		double	bestMismatch = my_fmax(font->opSizeInfo.minSize - ptSize, ptSize - font->opSizeInfo.maxSize);
 		if (bestMismatch > 0.0) {
 			Font*	bestMatch = font;
