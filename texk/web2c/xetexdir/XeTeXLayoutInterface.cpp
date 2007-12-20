@@ -155,6 +155,11 @@ const char* getFullName(PlatformFontRef fontRef)
 	return XeTeXFontMgr::GetFontManager()->getFullName(fontRef);
 }
 
+double getDesignSize(XeTeXFont font)
+{
+	return XeTeXFontMgr::GetFontManager()->getDesignSize(font);
+}
+
 const char* getFontFilename(XeTeXLayoutEngine engine)
 {
 	return engine->font->getFilename();

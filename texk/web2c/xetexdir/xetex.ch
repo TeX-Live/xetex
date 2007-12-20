@@ -3276,6 +3276,7 @@ if translate_filename then begin
 @!loaded_font_mapping: void_pointer; { used by |load_native_font| to return mapping, if any }
 @!loaded_font_flags: char; { used by |load_native_font| to return flags }
 @!loaded_font_letter_space: scaled;
+@!loaded_font_design_size: scaled;
 @!mapped_text: ^UTF16_code; { scratch buffer used while applying font mappings }
 @!xdv_buffer: ^char; { scratch buffer used in generating XDV output }
 @z
@@ -8503,9 +8504,17 @@ begin
 
 	load_native_font := null_font;
 
-	if (s < 0) then actual_size := -s * unity div 100 else actual_size := s;
-	font_engine := find_native_font(name_of_file + 1, actual_size);
+	font_engine := find_native_font(name_of_file + 1, s);
 	if font_engine = 0 then goto done;
+	
+	if s>=0 then
+		actual_size := s
+	else begin
+		if (s <> -1000) then
+			actual_size := xn_over_d(loaded_font_design_size,-s,1000)
+		else
+			actual_size := loaded_font_design_size;
+	end;
 
 	{ look again to see if the font is already loaded, now that we know its canonical name }
 	str_room(name_length);
@@ -8537,7 +8546,7 @@ begin
 	font_check[font_ptr].b2 := 0;
 	font_check[font_ptr].b3 := 0;
 	font_glue[font_ptr] := null;
-	font_dsize[font_ptr] := 10 * unity;
+	font_dsize[font_ptr] := loaded_font_design_size;
 	font_size[font_ptr] := actual_size;
 
 	if (native_font_type_flag = aat_font_flag) then begin
