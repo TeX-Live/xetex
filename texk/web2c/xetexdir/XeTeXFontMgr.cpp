@@ -465,8 +465,6 @@ XeTeXFontMgr::bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) 
 const XeTeXFontMgr::OpSizeRec*
 XeTeXFontMgr::getOpSizePtr(XeTeXFont font)
 {
-	const OpSizeRec *rval = NULL;
-	
 	const GlyphPositioningTableHeader* gposTable = (const GlyphPositioningTableHeader*)getFontTablePtr(font, LE_GPOS_TABLE_TAG);
 	if (gposTable != NULL) {
 		const FeatureListTable*	featureListTable = (const FeatureListTable*)((const char*)gposTable + SWAP(gposTable->featureListOffset));
@@ -487,14 +485,28 @@ XeTeXFontMgr::getOpSizePtr(XeTeXFont font)
 						pSizeRec = (const OpSizeRec*)((char*)featureListTable + offset);
 					if (SWAP(pSizeRec->designSize) == 0)
 						continue;	// incorrect 'size' feature format
-					rval = pSizeRec;
-					break;
+					if (SWAP(pSizeRec->subFamilyID) == 0
+						&& SWAP(pSizeRec->nameCode) == 0
+						&& SWAP(pSizeRec->minSize) == 0
+						&& SWAP(pSizeRec->maxSize) == 0)
+						return pSizeRec;	// feature is valid, but no 'size' range
+					if (SWAP(pSizeRec->designSize) < SWAP(pSizeRec->minSize))	// check values are valid
+						continue;												// else try different interpretation
+					if (SWAP(pSizeRec->designSize) > SWAP(pSizeRec->maxSize))
+						continue;
+					if (SWAP(pSizeRec->maxSize) < SWAP(pSizeRec->minSize))
+						continue;
+					if (SWAP(pSizeRec->nameCode) < 256)
+						continue;
+					if (SWAP(pSizeRec->nameCode) > 32767)
+						continue;
+					return pSizeRec;
 				}
 			}
 		}
 	}
 
-	return rval;
+	return NULL;
 }
 
 double
@@ -520,17 +532,6 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 				&& SWAP(pSizeRec->minSize) == 0
 				&& SWAP(pSizeRec->maxSize) == 0)
 				goto done_size;	// feature is valid, but no 'size' range
-			if (SWAP(pSizeRec->designSize) < SWAP(pSizeRec->minSize))
-				goto done_size;
-			if (SWAP(pSizeRec->designSize) > SWAP(pSizeRec->maxSize))
-				goto done_size;
-			if (SWAP(pSizeRec->maxSize) <= SWAP(pSizeRec->minSize))
-				goto done_size;
-			if (SWAP(pSizeRec->nameCode) < 256)
-				goto done_size;
-			if (SWAP(pSizeRec->nameCode) > 32767)
-				goto done_size;
-			// looks like we've found a usable feature!
 			theFont->opSizeInfo.subFamilyID = SWAP(pSizeRec->subFamilyID);
 			theFont->opSizeInfo.nameCode = SWAP(pSizeRec->nameCode);
 			theFont->opSizeInfo.minSize = SWAP(pSizeRec->minSize);
