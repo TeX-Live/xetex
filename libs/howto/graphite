@@ -1,4 +1,4 @@
-The libs/graphite-engine code is a copy of branches/minimal-dependency/engine
+The libs/graphite-engine code is a copy of the code in trunk/engine rev. 803
 from the Graphite repository at http://scripts.sil.org/svn/graphite/graphite.
 
 autoreconf --install has been run to create the configure/Make files.
