@@ -70,6 +70,7 @@ namespace TtfUtil
 	////////////////////////////////// utility methods helpful for name table
 	bool GetNameInfo(const void * pName, int nPlatformId, int nEncodingId,
 		int nLangId, int nNameId, size_t & lOffset, size_t & lSize);
+	//size_t NameTableLength(const gr::byte * pTable);
 	int GetLangsForNames(const void * pName, int nPlatformId, int nEncodingId,
 		int *nameIdList, int cNameIds, short *langIdList);
 	void SwapWString(void * pWStr, size_t nSize = 0) throw (std::invalid_argument);
@@ -130,7 +131,7 @@ namespace TtfUtil
 	bool GlyfBox(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, size_t lLocaSize, 
 		const void * pHead, int & xMin, int & yMin, int & xMax, int & yMax);
 	bool GlyfContourCount(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
-		size_t lLocaSize, const void *pHead, int & cnContours); 
+		size_t lLocaSize, const void *pHead, size_t & cnContours);
 	bool GlyfContourEndPoints(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 
 		size_t lLocaSize,	const void * pHead, int * prgnContourEndPoint, size_t cnPoints); 
 	bool GlyfPoints(gr::gid16 nGlyphId, const void * pGlyf, const void * pLoca, 

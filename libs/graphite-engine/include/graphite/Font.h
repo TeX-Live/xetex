@@ -30,6 +30,7 @@ class FeatureSettingIterator;
 class Segment;
 class LayoutEnvironment;
 class ITextSource;
+class FontMemoryUsage;
 
 typedef struct tagFontProps
 {
@@ -211,6 +212,7 @@ class Font {
 	friend class FeatureSettingIterator;
 	friend class FeatLabelLangIterator;
 	friend class LanguageIterator;
+	friend class FontMemoryUsage;
 
 public:
 	virtual ~Font();
@@ -342,6 +344,9 @@ public:
 	// Debugging:
 	//static bool DbgCheckFontCache();
 
+	static FontMemoryUsage calculateMemoryUsage();
+	///FontMemoryUsage calculateMemoryUsage(bool fBold = false, bool fItalic = false);
+
 public:
 	// For use in segment creation:
 	void RenderLineFillSegment(Segment * pseg, ITextSource * pts, LayoutEnvironment & layout,
@@ -355,7 +360,7 @@ protected:
 	Font();
 	Font(const Font &);
 	
-	FontFace & fontFace();
+	FontFace & fontFace(bool fDumbFallback = false);
 
 	// Feature access:
 	FeatureIterator BeginFeature();
@@ -388,7 +393,7 @@ protected:
 
 private:
 	FontFace * m_pfface;	// set up with Graphite tables
-	void initialiseFontFace();
+	void initialiseFontFace(bool fDumbFallback);
 };
 
 inline Font::Font() : m_pfface(0) { }
