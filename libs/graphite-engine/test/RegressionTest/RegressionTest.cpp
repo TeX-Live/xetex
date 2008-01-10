@@ -460,6 +460,8 @@ pseg->calculateMemoryUsage(g_smu);
 		int iglyph = ptcase->AttachedGlyphItem(att++);
 		if (iglyph > cGlyphs)
 		{
+			OutputError(ptcase, "ERROR: non-existent glyph in attachment test ", iglyph);
+			errorCount++;
 			att++;
 			att += ptcase->AttachedGlyphItem(att) + 1;
 			continue;

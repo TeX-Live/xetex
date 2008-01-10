@@ -1861,7 +1861,11 @@ void SegmentPainter::CalcHighlightRect(int ichw,
 		for (size_t iislout = 0; iislout < vislout.size(); iislout++)
 		{
 			int islout = vislout[iislout];
+			if (islout == kNegInfinity || islout == kPosInfinity)
+				continue;
 			int iginfTmp = m_pseg->LogicalToPhysicalSurface(islout);
+			Assert(iginfTmp != kNegInfinity);
+			Assert(iginfTmp != kPosInfinity);
 
 			if (fSkipTrSpace && islout >= m_pseg->m_isloutVisLim)
 				continue;

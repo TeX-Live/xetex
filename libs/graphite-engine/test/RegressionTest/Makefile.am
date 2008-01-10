@@ -9,6 +9,7 @@ EXTRA_DIST = \
 	grtest_badCmap.ttf \
 	grtest_burmese.ttf \
 	grtest_roman.ttf \
+	grtest_taiviet.ttf \
 	grtest_xline.ttf \
 	xline.gdl \
 	Makefile.vc \
