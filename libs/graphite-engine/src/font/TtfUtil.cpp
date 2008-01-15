@@ -79,11 +79,32 @@ namespace
 		return float(f)/float(2^R);
 	}
 
-	const char id_to_tag_map[][5] = {
-		"cmap", "cvt ", "cryp", "head", "fpgm", "gdir", "glyf", 
-		"hdmx", "hhea", "hmtx", "loca", "kern", "LTSH", "maxp", 
-		"name", "OS/2", "post", "prep", "Feat", "Glat", "Gloc",
-		"Silf", "Sile", "Sill"
+#define MAKE_TAG(a,b,c,d) ((a << 24UL) + (b << 16UL) + (c << 8UL) + (d))
+	const gr::fontTableId32 id_to_tag_map[] = {
+		MAKE_TAG('c','m','a','p'),
+		MAKE_TAG('c','v','t',' '),
+		MAKE_TAG('c','r','y','p'),
+		MAKE_TAG('h','e','a','d'),
+		MAKE_TAG('f','p','g','m'),
+		MAKE_TAG('g','d','i','r'),
+		MAKE_TAG('g','l','y','f'), 
+		MAKE_TAG('h','d','m','x'),
+		MAKE_TAG('h','h','e','a'),
+		MAKE_TAG('h','m','t','x'),
+		MAKE_TAG('l','o','c','a'),
+		MAKE_TAG('k','e','r','n'),
+		MAKE_TAG('L','T','S','H'),
+		MAKE_TAG('m','a','x','p'), 
+		MAKE_TAG('n','a','m','e'),
+		MAKE_TAG('O','S','/','2'),
+		MAKE_TAG('p','o','s','t'),
+		MAKE_TAG('p','r','e','p'),
+		MAKE_TAG('F','e','a','t'),
+		MAKE_TAG('G','l','a','t'),
+		MAKE_TAG('G','l','o','c'),
+		MAKE_TAG('S','i','l','f'),
+		MAKE_TAG('S','i','l','e'),
+		MAKE_TAG('S','i','l','l')
 	};
 
 /*----------------------------------------------------------------------------------------------
@@ -1876,15 +1897,9 @@ bool CalcAbsolutePoints(int * prgnX, int * prgnY, int cnPoints)
 ---------------------------------------------------------------------------------------------*/
 gr::fontTableId32 TableIdTag(const TableId tid)
 {
-	assert(sizeof id_to_tag_map == 5 * ktiLast);
+	assert(sizeof(id_to_tag_map) == sizeof(gr::fontTableId32) * ktiLast);
 	assert(tid < ktiLast);
-	const char *table_tag = id_to_tag_map[tid];
-
-	gr::fontTableId32 r  = table_tag[0] << 24;
-	                  r |= table_tag[1] << 16;
-	                  r |= table_tag[2] << 8;
-	                  r |= table_tag[3];
-	return r;
+	return id_to_tag_map[tid];
 }
 
 /*----------------------------------------------------------------------------------------------

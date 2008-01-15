@@ -227,11 +227,11 @@ void Font::getGlyphMetrics(gid16 glyphID, gr::Rect & boundingBox, gr::Point & ad
 	const void * pHmtx = getTable(TtfUtil::TableIdTag(ktiHmtx), &hmtxSize);
 	if (pHmtx == 0) return;
 
-	// Calculate the number of design units per pixel.
+	// Calculate the number of pixels per design unit.
 	float pixelEmSquare;
 	getFontMetrics(0, 0, &pixelEmSquare);
-	const float designUnitsPerPixel = 
-		float(TtfUtil::DesignUnits(pHead)) / pixelEmSquare;
+	const float pixelsPerDesignUnit = 
+		pixelEmSquare / float(TtfUtil::DesignUnits(pHead));
 
 	// Use the Hmtx and Head tables to find the glyph advances.
 	int lsb;
@@ -239,7 +239,7 @@ void Font::getGlyphMetrics(gid16 glyphID, gr::Rect & boundingBox, gr::Point & ad
 	if (TtfUtil::HorMetrics(glyphID, pHmtx, hmtxSize, pHead, 
 			lsb, advance))
 	{
-		advances.x = (advance / designUnitsPerPixel);
+		advances.x = (advance * pixelsPerDesignUnit);
 		advances.y = 0.0f;		
 	}
 
@@ -260,10 +260,10 @@ void Font::getGlyphMetrics(gid16 glyphID, gr::Rect & boundingBox, gr::Point & ad
 	if (TtfUtil::GlyfBox(glyphID, pGlyf, pLoca, locaSize, pHead,
 			xMin, yMin, xMax, yMax))
 	{
-		boundingBox.left = (xMin / designUnitsPerPixel);
-		boundingBox.bottom = (yMin / designUnitsPerPixel);
-		boundingBox.right = (xMax / designUnitsPerPixel);
-		boundingBox.top = (yMax / designUnitsPerPixel);
+		boundingBox.left = (xMin * pixelsPerDesignUnit);
+		boundingBox.bottom = (yMin * pixelsPerDesignUnit);
+		boundingBox.right = (xMax * pixelsPerDesignUnit);
+		boundingBox.top = (yMax * pixelsPerDesignUnit);
 	}
 }
 

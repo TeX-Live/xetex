@@ -142,10 +142,6 @@ namespace TtfUtil
 	bool SimplifyFlags(char * prgbFlags, int cnPoints);
 	bool CalcAbsolutePoints(int * prgnX, int * prgnY, int cnPoints);
 
-	/*----------------------------------------------------------------------------------------------
-		Return standard TTF tag for the given TableId enumeration constant
-		If requested ktiTableId doesn't exist, return 0;
-	----------------------------------------------------------------------------------------------*/
 } // end of namespace TtfUtil
 
 #endif
