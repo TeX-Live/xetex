@@ -2623,11 +2623,13 @@ std::vector<int> Segment::UnderlyingToLogicalAssocs(int ichw)
 	{
 		// Create a vector using the before and after values.
 		std::vector<int> visloutRet;
-		visloutRet.push_back(m_prgisloutBefore[ichwSegOffset - m_ichwAssocsMin]);
-		if (m_prgisloutBefore[ichwSegOffset - m_ichwAssocsMin]
-			!= m_prgisloutAfter[ichwSegOffset - m_ichwAssocsMin])
+		int isloutBefore = m_prgisloutBefore[ichwSegOffset - m_ichwAssocsMin];
+		int isloutAfter = m_prgisloutAfter[ichwSegOffset - m_ichwAssocsMin];
+		if (isloutBefore != kPosInfinity && isloutBefore != kNegInfinity)
+            visloutRet.push_back(isloutBefore);
+		if (isloutAfter != kPosInfinity && isloutAfter != kNegInfinity && isloutBefore != isloutAfter)
 		{
-			visloutRet.push_back(m_prgisloutAfter[ichwSegOffset - m_ichwAssocsMin]);
+			visloutRet.push_back(isloutAfter);
 		}
 		return visloutRet;
 	}
