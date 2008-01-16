@@ -87,14 +87,15 @@ const void *FontTableCache::find(LETag tableTag, le_uint32 *tableSize) const
 	int lo = 0, hi = fTableCacheCurr;
 	while (lo < hi) {
 		int i = (lo + hi) >> 1;
-		if (fTableCache[i].tag < tableTag)
+		const FontTableCacheEntry *e = fTableCache + i;
+		if (e->tag < tableTag)
 			lo = i + 1;
-		else if (fTableCache[i].tag > tableTag)
+		else if (e->tag > tableTag)
 			hi = i;
 		else {
             if (tableSize != NULL)
-                *tableSize = fTableCache[i].size;
-            return fTableCache[i].table;
+                *tableSize = e->size;
+            return e->table;
 		}
 	}
 
