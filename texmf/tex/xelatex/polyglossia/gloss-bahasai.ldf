@@ -1,0 +1,79 @@
+\ProvidesFile{gloss-bahasai.ldf}[polyglossia: module for bahasa indonesia]
+\makeatletter
+
+\ifx\l@bahasa\@undefined
+  \ifx\l@bahasai\@undefined
+    \ifx\l@indon\@undefined
+      \ifx\l@indonesian\@undefined
+        \ifx\l@bahasam\@undefined
+          \ifx\l@malay\@undefined
+            \ifx\l@meyalu\@undefined
+              \xpg@nopatterns{Bahasa Indonesia}
+              \adddialect\l@bahasa0\relax
+            \else
+              \let\l@bahasa\l@meyalu
+            \fi
+          \else
+            \let\l@bahasa\l@malay
+          \fi
+        \else
+          \let\l@bahasa\l@bahasam
+        \fi
+      \else
+        \let\l@bahasa\l@indonesian
+      \fi
+    \else
+      \let\l@bahasa\l@indon
+    \fi
+  \else
+    \let\l@bahasa\l@bahasai
+  \fi
+\fi
+
+\def\bahasai@captions{%
+   \def\refname{\localbahasai{Pustaka}}%
+   \def\abstractname{\localbahasai{Ringkasan}}%
+   \def\bibname{\localbahasai{Bibliografi}}%
+   \def\prefacename{\localbahasai{Pendahuluan}}%
+   \def\chaptername{\localbahasai{Bab}}%
+   \def\appendixname{\localbahasai{Lampiran}}%
+   \def\contentsname{\localbahasai{Daftar Isi}}%
+   \def\listfigurename{\localbahasai{Daftar Gambar}}%
+   \def\listtablename{\localbahasai{Daftar Tabel}}%
+   \def\indexname{\localbahasai{Indeks}}%
+   \def\figurename{\localbahasai{Gambar}}%
+   \def\tablename{\localbahasai{Tabel}}%
+   %\def\thepart{}%
+   \def\partname{\localbahasai{Bagian}}%
+   \def\pagename{\localbahasai{Halaman}}%
+   \def\seename{\localbahasai{lihat}}%
+   \def\alsoname{\localbahasai{lihat juga}}%
+   \def\enclname{\localbahasai{Lampiran}}%
+   \def\ccname{cc}%
+   \def\headtoname{Kepada}%
+   \def\proofname{\localbahasai{Bukti}}% for AMS-\LaTeX
+   \def\glossaryname{\localbahasai{Daftar Istilah}}%
+   \def\today{\localbahasai{\number\day~\ifcase\month\or
+    Januari\or Pebruari\or Maret\or April\or Mei\or Juni\or
+    Juli\or Agustus\or September\or Oktober\or Nopember\or Desember\fi
+    \space \number\year}}}
+
+\def\bahasai@language{\protect\language=\l@bahasai}
+
+\def\noextras@bahasai{%
+   }
+
+\def\blockextras@bahasai{%
+   \bahasai@language%
+   \local@hyphenmins{bahasai}{2}{2}%
+   \bahasai@captions%
+   \local@marks{bahasai}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@bahasai{%
+   \bahasai@language%
+   \local@hyphenmins{bahasai}{2}{2}%
+   }
+
+\endinput

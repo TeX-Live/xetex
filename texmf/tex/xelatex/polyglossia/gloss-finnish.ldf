@@ -1,0 +1,67 @@
+\ProvidesFile{gloss-finnish.ldf}[polyglossia: module for finnish]
+\makeatletter
+
+\ifx\l@finnish\@undefined%
+   \xpg@nopatterns{Finnish}%
+   \adddialect\l@finnish0%
+\fi
+
+\def\finnish@captions{%
+   \def\refname{\localfinnish{Viitteet}}%
+   \def\abstractname{\localfinnish{Tiivistelmä}}%
+   \def\bibname{\localfinnish{Kirjallisuutta}}%
+   \def\prefacename{\localfinnish{Esipuhe}}%
+   \def\chaptername{\localfinnish{Luku}}%
+   \def\appendixname{\localfinnish{Liite}}%
+   \def\contentsname{\localfinnish{Sisältö}}%
+   \def\listfigurename{\localfinnish{Kuvat}}%
+   \def\listtablename{\localfinnish{Taulukot}}%
+   \def\indexname{\localfinnish{Hakemisto}}%
+   \def\figurename{\localfinnish{Kuva}}%
+   \def\tablename{\localfinnish{Taulukko}}%
+   %\def\thepart{\localfinnish{}}%
+   \def\partname{\localfinnish{Osa}}%
+   \def\pagename{\localfinnish{Sivu}}%
+   \def\seename{\localfinnish{katso}}%
+   \def\alsoname{\localfinnish{katso myös}}%
+   \def\enclname{\localfinnish{Liitteet}}%
+   \def\ccname{\localfinnish{Jakelu}}%
+   \def\headtoname{\localfinnish{Vastaanottaja}}%
+   \def\proofname{\localfinnish{Todistus}}% for AMS-\LaTeX
+   \def\glossaryname{\localfinnish{Sanasto}}%
+   \def\today{\localfinnish{\number\day.~\ifcase\month\or
+    tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
+    toukokuuta\or kesäkuuta\or heinäkuuta\or elokuuta\or
+    syyskuuta\or lokakuuta\or marraskuuta\or joulukuuta\fi
+    \space\number\year}}}
+
+\def\finnish@language{\protect\language=\l@finnish}
+
+\def\noextras@finnish{%
+   \nonfrenchspacing%
+   }
+
+\def\blockextras@finnish{%
+   \finnish@language%
+   \local@hyphenmins{finnish}{2}{2}%
+   \frenchspacing%
+   \finnish@captions%
+   \local@marks{finnish}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@finnish{%
+   \finnish@language%
+   \local@hyphenmins{finnish}{2}{2}%
+   \frenchspacing%
+   }
+
+\endinput
+
+% TODO ?
+\addto\extrasfinnish{%
+  \babel@savevariable\hyphenpenalty\hyphenpenalty=30%
+  \babel@savevariable\exhyphenpenalty\exhyphenpenalty=30%
+  \babel@savevariable\doublehyphendemerits\doublehyphendemerits=5000%
+  \babel@savevariable\finalhyphendemerits\finalhyphendemerits=5000%
+  }

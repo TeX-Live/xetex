@@ -1,0 +1,79 @@
+\ProvidesFile{gloss-lsorbian.ldf}[polyglossia: module for lower sorbian]
+\makeatletter
+
+\ifx\l@lowersorbian\@undefined
+  \ifx\l@lsorbian\@undefined
+    \xpg@nopatterns{Lsorbian}
+    \adddialect\l@lsorbian\z@
+    \let\l@lowersorbian\l@lsorbian
+  \else
+    \let\l@lowersorbian\l@lsorbian
+  \fi
+\else
+  \let\l@lsorbian\l@lowersorbian
+\fi
+
+\def\lsorbian@captions{%
+   \def\refname{\locallsorbian{Referency}}%
+   \def\abstractname{\locallsorbian{Abstrakt}}%
+   \def\bibname{\locallsorbian{Literatura}}%
+   \def\prefacename{\locallsorbian{Zawod}}%
+   \def\chaptername{\locallsorbian{Kapitl}}%
+   \def\appendixname{\locallsorbian{Dodawki}}%
+   \def\contentsname{\locallsorbian{Wopśimjeśe}}%
+   \def\listfigurename{\locallsorbian{Zapis wobrazow}}%
+   \def\listtablename{\locallsorbian{Zapis tabulkow}}%
+   \def\indexname{\locallsorbian{Indeks}}%
+   \def\figurename{\locallsorbian{Wobraz}}%
+   \def\tablename{\locallsorbian{Tabulka}}%
+   %\def\thepart{\locallsorbian{}}%
+   \def\partname{\locallsorbian{Źěl}}%
+   \def\pagename{\locallsorbian{Strona}}%
+   \def\seename{\locallsorbian{gl.}}%
+   \def\alsoname{\locallsorbian{gl.~teke}}%
+   \def\enclname{\locallsorbian{Pśiłoga}}%
+   \def\ccname{\locallsorbian{CC}}%
+   \def\headtoname{\locallsorbian{Komu}}%
+   \def\proofname{\locallsorbian{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\locallsorbian{Glossary}}%
+   \def\today{\locallsorbian{\number\day.~\ifcase\month\or
+    januara\or februara\or měrca\or apryla\or maja\or
+    junija\or julija\or awgusta\or septembra\or oktobra\or
+    nowembra\or decembra\fi
+    \space \number\year}}}
+
+\def\lsorbian@language{\protect\language=\l@lsorbian}
+
+\def\noextras@lsorbian{%
+   }
+
+\def\blockextras@lsorbian{%
+   \lsorbian@language%
+   \local@hyphenmins{lsorbian}{2}{2}%
+   \lsorbian@captions%
+   \local@marks{lsorbian}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@lsorbian{%
+   \lsorbian@language%
+   \local@hyphenmins{lsorbian}{2}{2}%
+   }
+
+\endinput
+% TODO
+%implement this as option date=old
+%
+%\def\today{\number\day.~\ifcase\month\or
+%    wjelikego rožka\or
+%    małego rožka\or
+%    nalětnika\or
+%    jatšownika\or
+%    rožownika\or
+%    smažnika\or
+%    pražnika\or
+%    žnjeńca\or
+%    požnjeńca\or
+%    winowca\or
+%    nazymnika\or
+%    godownika\fi \space \number\year}

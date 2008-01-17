@@ -1,0 +1,119 @@
+\ProvidesFile{gloss-farsi.ldf}[polyglossia: module for farsi]
+\RequirePackage{bidi}
+\makeatletter
+
+\ifx\l@farsi\@undefined
+  \xpg@nopatterns{Farsi}%
+  \adddialect\l@farsi0
+\fi
+
+\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
+
+\define@key{polyglossia}{farsilocale}[default]{%
+	\def\@farsi@locale{#1}}
+%TODO add option for months 
+
+\def\farsinumber#1{\ifnum\XeTeXcharglyph"06F0 > 0%
+{\addfontfeature{Mapping=farsidigits}\number#1}%
+\else%
+{\addfontfeature{Mapping=arabicdigits}\number#1}%
+\fi}
+
+\input{jalalical.def}
+
+\def\farsigregmonth#1{\ifcase#1%
+  \or ژانویه\or فوریه\or مارس\or آوریل\or مه\or ژوئن\or ژوئیه؛\or ژویه\or اوت\or سپتامبر\or اکتبر\or نوامبر\or دسامبر\fi}
+\def\farsimonth#1{\ifcase#1%
+  \or کانون ثانی\or شباط\or اذار%؛\or ادار
+    \or نیسان\or ایار\or حزیران\or تموز\or آب\or ایلول\or تشرین اول\or تشرین ثانی\or کانون اول\fi}
+
+\def\farsi@captions{%
+%\def\prefacename{\@ensure@RL{مدخل}}% 
+%\def\refname{\@ensure@RL{مراجع}}
+%\def\abstractname{\@ensure@RL{ملخص}}%
+%\def\bibname{\@ensure@RL{مصادر}}%
+%\def\chaptername{\@ensure@RL{باب}}%
+%\def\appendixname{\@ensure@RL{ملاحق}}%
+\def\contentsname{\@ensure@RL{فهرست مطالب}}%
+\def\listfigurename{\@ensure@RL{لیست تصاویر}}%
+\def\listtablename{\@ensure@RL{لیست جداول}}%
+%\def\indexname{\@ensure@RL{فهرس}}%
+\def\figurename{\@ensure@RL{شكل}}%
+\def\tablename{\@ensure@RL{جدول}}%
+%\def\partname{\@ensure@RL{قسم}}%
+%\def\enclname{\@ensure@RL{مرفقات}}%<-- Needs translation
+%\def\ccname{\@ensure@RL{نسخة ل‬}}% <<
+%\def\headtoname{\@ensure@RL{إلى}}%<-- Needs translation
+%\def\pagename{\@ensure@RL{صفحة}}%
+%\def\seename{\@ensure@RL{راجع}}%\alefhamza\nun\za\ra
+%\def\alsoname{\@ensure@RL{راجع أيضاً}}%<<\alefhamza\nun\za\ra
+%\def\proofname{\@ensure@RL{برهان}}% for AMS-\LaTeX
+%\def\glossaryname{\@ensure@RL{قاموس}}%<<
+\def\today{\@ensure@RL{\farsinumber\day\space\farsigregmonth{\month}\space\farsinumber\year}}
+}
+
+%TODO
+\def\farsi@numbers{%
+\renewcommand{\thepage}{\farsinumber{\the\c@page}}
+\renewcommand{\thesection}{\farsinumber{\the\c@section}}
+\renewcommand{\thesubsection}{\@ensure@RL{\farsinumber{\the\c@subsection}–\farsinumber{\the\c@section}}}
+\renewcommand{\thepart}{\farsinumber{\the\c@part}}
+%\renewcommand{\thefootnote}{\farsinumber{\the\c@footnote}}
+\renewcommand{\thefigure}{\farsinumber{\the\c@figure}}
+\renewcommand{\thetable}{\farsinumber{\the\c@table}}
+}
+
+\input{abjad.def}
+
+\def\farsi@language{\language=\l@farsi}
+
+\def\farsi@font{\@ifundefined{farsifont}{\addfontfeature{Script=Arabic,Language=Farsi}}{\farsifont}}
+
+\def\noextras@farsi{%
+   %\nofarsi@numbers%
+   }
+
+\def\blockextras@farsi{%
+   \farsi@language%
+   \farsi@font%
+   \local@hyphenmins{farsi}{1}{1}%
+   \local@marks{farsi}%
+   \farsi@captions%
+   \farsi@numbers%
+   \setRL\setfootnoteRL%
+   \def\footnoterule{\RLfootnoterule}%
+   \def\reset@font{\farsi@font}%
+   }{}
+
+\def\inlineextras@farsi{%
+   \farsi@language%
+   \farsi@font%
+   \local@hyphenmins{farsi}{1}{1}%
+   }
+
+\endinput
+
+%TODO
+\InputIfFileExists{ftoday.sty}{%
+  \message{Loading the definitions for the Jalali calendar}}{%
+  \errhelp{I can't find the ftoday.sty file for the Jalali calendar}%
+  \errmessage{Since I do not know what the Jalali calendar is^^J
+    I can't typeset the Farsi date.^^J
+    I stop here, while you get a suitable ftoday.sty file}\@@end
+}
+
+%%\def\today{\ftoday} -> use instead \JalaliToday etc. as in hebcal.sty
+%% define also \JalaliTodayInEnglish !
+
+\newsavebox\@Arabitempboxa
+
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@Arabitempboxa{\beginR #1: #2\endR}%
+  \ifdim \wd\@Arabitempboxa >\hsize
+  \beginR #1: #2\endR\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@Arabitempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}

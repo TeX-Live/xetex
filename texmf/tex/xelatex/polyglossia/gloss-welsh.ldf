@@ -1,0 +1,57 @@
+\ProvidesFile{gloss-welsh.ldf}[polyglossia: module for welsh]
+\makeatletter
+
+\ifx\l@welsh\@undefined%
+   \xpg@nopatterns{<Lang>}%
+   \adddialect\l@welsh0%
+\fi
+
+\def\welsh@captions{%
+   \def\refname{\localwelsh{Cyfeiriadau}}%
+   \def\abstractname{\localwelsh{Crynodeb}}%
+   \def\bibname{\localwelsh{Llyfryddiaeth}}%
+   \def\prefacename{\localwelsh{Rhagair}}%
+   \def\chaptername{\localwelsh{Pennod}}%
+   \def\appendixname{\localwelsh{Atodiad}}%
+   \def\contentsname{\localwelsh{Cynnwys}}%
+   \def\listfigurename{\localwelsh{Rhestr Ddarluniau}}%
+   \def\listtablename{\localwelsh{Rhestr Dablau}}%
+   \def\indexname{\localwelsh{Mynegai}}%
+   \def\figurename{\localwelsh{Darlun}}%
+   \def\tablename{\localwelsh{Taflen}}%
+   %\def\thepart{\localwelsh{}}%
+   \def\partname{\localwelsh{Rhan}}%
+   \def\pagename{\localwelsh{tudalen}}%
+   \def\seename{\localwelsh{gweler}}%
+   \def\alsoname{\localwelsh{gweler hefyd}}%
+   \def\enclname{\localwelsh{amgaeëdig}}%
+   \def\ccname{\localwelsh{copïau}}%
+   \def\headtoname{\localwelsh{At}}%
+   \def\proofname{\localwelsh{Prawf}}% for AMS-\LaTeX
+   \def\glossaryname{\localwelsh{Rhestr termau}}%
+   \def\today{\localwelsh{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else%
+    \number\day\fi\space\ifcase\month\or
+     Ionawr\or Chwefror\or Mawrth\or Ebrill\or
+     Mai\or Mehefin\or Gorffennaf\or Awst\or
+     Medi\or Hydref\or Tachwedd\or Rhagfyr\fi%
+     \space\number\year}}}
+
+\def\welsh@language{\protect\language=\l@welsh}
+
+\def\noextras@welsh{%
+   }
+
+\def\blockextras@welsh{%
+   \welsh@language%
+   \local@hyphenmins{welsh}{2}{2}%
+   \welsh@captions%
+   \local@marks{welsh}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@welsh{%
+   \welsh@language%
+   \local@hyphenmins{welsh}{2}{3}%
+   }
+
+\endinput

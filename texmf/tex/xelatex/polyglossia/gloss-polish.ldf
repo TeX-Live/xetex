@@ -1,0 +1,57 @@
+\ProvidesFile{gloss-polish.ldf}[polyglossia: module for polish]
+\makeatletter
+
+\ifx\l@polish\@undefined
+   \xpg@nopatterns{polish}
+   \adddialect\l@polish0
+\fi
+
+\def\polish@captions{%
+  \def\prefacename{\localpolish{Przedmowa}}%
+  \def\refname{\localpolish{Literatura}}%
+  \def\abstractname{\localpolish{Streszczenie}}%
+  \def\bibname{\localpolish{Bibliografia}}%
+  \def\chaptername{\localpolish{Rozdział}}%
+  \def\appendixname{\localpolish{Dodatek}}%
+  \def\contentsname{\localpolish{Spis treści}}%
+  \def\listfigurename{\localpolish{Spis rysunków}}%
+  \def\listtablename{\localpolish{Spis tablic}}%
+  \def\indexname{\localpolish{Indeks}}%
+  \def\figurename{\localpolish{Rysunek}}%
+  \def\tablename{\localpolish{Tablica}}%
+  \def\partname{\localpolish{Część}}%
+  \def\enclname{\localpolish{Załącznik}}%
+  \def\ccname{\localpolish{Kopie:}}%
+  \def\headtoname{\localpolish{Do}}%
+  \def\pagename{\localpolish{Strona}}%
+  \def\seename{\localpolish{Porównaj}}%
+  \def\alsoname{\localpolish{Porównaj także}}%
+  \def\proofname{\localpolish{Dowód}}%
+  \def\glossaryname{\localpolish{Glossary}}% <-- Needs translation
+  \def\today{\localpolish{\ifcase\month\or%
+      stycznia\or lutego\or marca\or kwietnia\or maja\or czerwca\or%
+      lipca\or sierpnia\or września\or października\or%
+      listopada\or grudnia\fi%
+      \space\number\day, \number\year}}}
+
+\def\polish@language{\protect\language=\l@polish}
+
+\def\noextras@polish{%
+   \nonfrenchspacing%
+}
+
+\def\blockextras@polish{%
+   \polish@language%
+   \local@hyphenmins{polish}{2}{2}%
+   \frenchspacing%
+   \polish@captions%
+   \local@marks{polish}%
+}
+
+\def\inlineextras@polish{%
+   \polish@language%
+   \local@hyphenmins{polish}{2}{2}%
+   \frenchspacing%
+}
+
+\endinput

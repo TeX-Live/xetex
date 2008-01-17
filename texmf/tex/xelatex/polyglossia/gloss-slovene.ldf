@@ -1,0 +1,55 @@
+\ProvidesFile{gloss-slovene.ldf}[polyglossia: module for slovene]
+\makeatletter
+
+\ifx\l@slovene\@undefined%
+   \xpg@nopatterns{Slovene}%
+   \adddialect\l@slovene0%
+\fi
+
+\def\slovene@captions{%
+   \def\refname{\localslovene{Literatura}}%
+   \def\abstractname{\localslovene{Povzetek}}%
+   \def\bibname{\localslovene{Literatura}}%
+   \def\prefacename{\localslovene{Predgovor}}%
+   \def\chaptername{\localslovene{Poglavje}}%
+   \def\appendixname{\localslovene{Dodatek}}%
+   \def\contentsname{\localslovene{Kazalo}}%
+   \def\listfigurename{\localslovene{Slike}}%
+   \def\listtablename{\localslovene{Tabele}}%
+   \def\indexname{\localslovene{Stvarno kazalo}}%
+   \def\figurename{\localslovene{Slika}}%
+   \def\tablename{\localslovene{Tabela}}%
+   %\def\thepart{\localslovene{}}%
+   \def\partname{\localslovene{Del}}%
+   \def\pagename{\localslovene{Stran}}%
+   \def\seename{\localslovene{glej}}%
+   \def\alsoname{\localslovene{glej tudi}}%
+   \def\enclname{\localslovene{Priloge}}%
+   \def\ccname{\localslovene{Kopije}}%
+   \def\headtoname{\localslovene{Prejme}}%
+   \def\proofname{\localslovene{Dokaz}}% for AMS-\LaTeX
+   \def\glossaryname{\localslovene{Glossary}}% <-- needs translation
+   \def\today{\localslovene{\number\day.~\ifcase\month\or
+    januar\or februar\or marec\or april\or maj\or junij\or
+    julij\or avgust\or september\or oktober\or november\or december\fi
+    \space \number\year}}}
+
+\def\slovene@language{\protect\language=\l@slovene}
+
+\def\noextras@slovene{%
+   }
+
+\def\blockextras@slovene{%
+   \slovene@language%
+   \local@hyphenmins{slovene}{2}{2}%
+   \slovene@captions%
+   \local@marks{slovene}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@slovene{%
+   \slovene@language%
+   \local@hyphenmins{slovene}{2}{2}%
+   }
+
+\endinput

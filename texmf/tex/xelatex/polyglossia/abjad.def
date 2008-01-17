@@ -1,0 +1,71 @@
+\def\abjad#1{%
+\ifnum#1>1999 \PackageWarning{polyglossia}{Illegal value (#1) for abjad numeral} {#1}
+\else
+  \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for abjad numeral}%
+  \else
+    \ifnum#1<10\expandafter\abj@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\abj@num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\abj@num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\abj@num@iv\number#1%since #1<2000, we must have 1000
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+\fi
+}
+
+\def\abjadmaghribi#1{%
+\ifnum#1>1999 \PackageWarning{polyglossia}{Illegal value (#1) for abjad numeral} {#1}
+\else
+  \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for abjad numeral}%
+  \else
+    \ifnum#1<10\expandafter\abj@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\abj@maghribi@num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\abj@maghribi@num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\abj@maghribi@num@iv\number#1%
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+\fi
+}
+
+\def\abjad@zero{}
+\def\abj@num@i#1{%
+  \ifcase#1\or\char"0627 \or\char"0628 \or\char"062C \char"200D\or\char"062F % 
+           \or\char"0647 \or\char"0648 \or\char"0632 \or\char"062D \or\char"0637 \fi
+  \ifnum#1=\z@\abjad@zero\fi}
+\def\abj@num@ii#1{%
+  \ifcase#1\or\char"064A \or\char"0643 \or\char"0644 \or\char"0645 \or\char"0646 %
+           \or\char"0633 \or\char"0639 \or\char"0641 \or\char"0635 \fi 
+  \ifnum#1=\z@\fi\abj@num@i}
+\def\abj@num@iii#1{%
+  \ifcase#1\or\char"0642 \or\char"0631 \or\char"0634 \or\char"062A \or\char"062B %
+            \or\char"062E \or\char"0630 \or\char"0636 \or\char"0638 \fi
+  \ifnum#1=\z@\fi\abj@num@ii}
+\def\abj@num@iv#1{%
+  \ifcase#1\or\char"063A \fi
+  \ifnum#1=\z@\fi\abj@num@iii}
+
+%maghribi س -> ص ص -> ض ش -> س ض -> ظ ظ -> غ غ -> ش
+\def\abj@maghribi@num@ii#1{%
+  \ifcase#1\or\char"064A \or\char"0643 \or\char"0644 \or\char"0645 \or\char"0646 %
+           \or\char"0635 \or\char"0639 \or\char"0641 \or\char"0636 \fi 
+  \ifnum#1=\z@\abjad@zero\fi\abj@num@i}
+\def\abj@maghribi@num@iii#1{%
+  \ifcase#1\or\char"0642 \or\char"0631 \or\char"0633 \or\char"062A \or\char"062B %
+           \or\char"062E \or\char"0630 \or\char"0638 \or\char"063A \fi
+  \ifnum#1=\z@\fi\abj@maghribi@num@ii}
+\def\abj@maghribi@num@iv#1{%
+  \ifcase#1\or\char"0634 \fi
+  \ifnum#1=\z@\fi\abj@maghribi@num@iii}
+
+\endinput

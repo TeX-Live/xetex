@@ -1,0 +1,67 @@
+\ProvidesFile{gloss-latin.ldf}[polyglossia: module for latin]
+\makeatletter
+
+\ifx\l@latin\@undefined
+   \xpg@nopatterns{latin}
+   \adddialect\l@latin0
+\fi
+
+\def\latin@punctuation{%
+   \frenchspacing%
+}
+
+\def\nolatin@punctuation{%
+   \nonfrenchspacing%
+}
+
+\def\latin@captions{%
+   \def\prefacename{\locallatin{Praefatio}}%
+   \def\refname{\locallatin{Conspectus librorum}}%
+   \def\abstractname{\locallatin{Summarium}}%
+   \def\bibname{\locallatin{Conspectus librorum}}%
+   \def\chaptername{\locallatin{Caput}}%
+   \def\appendixname{\locallatin{Additamentum}}%
+   \def\contentsname{\locallatin{Index}}%
+   \def\listfigurename{\locallatin{Conspectus descriptionum}}%
+   \def\listtablename{\locallatin{Conspectus tabularum}}%
+   \def\indexname{\locallatin{Index rerum notabilium}}%
+   \def\figurename{\locallatin{Descriptio}}%
+   \def\tablename{\locallatin{Tabula}}%
+   \def\partname{\locallatin{Pars}}%
+   \def\enclname{\locallatin{Additur}}%
+   \def\ccname{\locallatin{Exemplar}}%
+   \def\headtoname{\ignorespaces}%
+   \def\pagename{\locallatin{pagina}}%
+   \def\seename{\locallatin{cfr.}}%
+   \def\alsoname{\locallatin{cfr.}}%
+   \def\proofname{\locallatin{Demonstratio}}% for AMS-\LaTeX
+   \def\glossaryname{\locallatin{Glossarium}}%
+   \def\today{\locallatin{\uppercase\expandafter{\romannumeral\day}%
+      \space \ifcase\month%
+      \or Januarii\or Februarii\or Martii\or Aprilis\or Maji\or Junii\or%
+      Julii\or Augusti\or Septembris\or Octobris\or Novembris\or%
+      Decembris\fi%
+      \space \uppercase\expandafter{\romannumeral\year}}}}
+
+\def\latin@language{%
+   \protect\language=\l@latin}
+
+\def\noextras@latin{%
+   \nolatin@punctuation%
+}
+
+\def\blockextras@latin{%
+   \latin@language%
+   \local@hyphenmins{latin}{2}{2}%
+   \frenchspacing%
+   \latin@captions%
+   \local@marks{latin}%
+}
+
+\def\inlineextras@latin{%
+   \latin@language%
+   \local@hyphenmins{latin}{2}{2}%
+   \frenchspacing%
+}
+
+\endinput

@@ -1,0 +1,69 @@
+\ProvidesFile{gloss-usorbian.ldf}[polyglossia: module for upper sorbian]
+\makeatletter
+
+\ifx\l@uppersorbian\@undefined
+  \ifx\l@usorbian\@undefined
+    \xpg@nopatterns{Upper Sorbian}
+    \adddialect\l@usorbian\z@
+    \let\l@uppersorbian\l@usorbian
+  \else
+    \let\l@uppersorbian\l@usorbian
+  \fi
+\else
+  \let\l@usorbian\l@uppersorbian
+\fi
+
+\def\usorbian@captions{%
+   \def\refname{\localusorbian{Referency}}%
+   \def\abstractname{\localusorbian{Abstrakt}}%
+   \def\bibname{\localusorbian{Literatura}}%
+   \def\prefacename{\localusorbian{Zawod}}%
+   \def\chaptername{\localusorbian{Kapitl}}%
+   \def\appendixname{\localusorbian{Dodawki}}%
+   \def\contentsname{\localusorbian{Wobsah}}%
+   \def\listfigurename{\localusorbian{Zapis wobrazow}}%
+   \def\listtablename{\localusorbian{Zapis tabulkow}}%
+   \def\indexname{\localusorbian{Indeks}}%
+   \def\figurename{\localusorbian{Wobraz}}%
+   \def\tablename{\localusorbian{Tabulka}}%
+   %\def\thepart{\localusorbian{}}%
+   \def\partname{\localusorbian{Dźěl}}%
+   \def\pagename{\localusorbian{Strona}}%
+   \def\seename{\localusorbian{hl.}}%
+   \def\alsoname{\localusorbian{hl.~tež}}%
+   \def\enclname{\localusorbian{Přłoha}}%
+   \def\ccname{\localusorbian{CC}}%
+   \def\headtoname{\localusorbian{Komu}}%
+   \def\proofname{\localusorbian{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\localusorbian{Glossary}}% <-- needs translation
+   \def\today{\localusorbian{\number\day.~\ifcase\month\or
+    januara\or februara\or měrca\or apryla\or meje\or junija\or
+    julija\or awgusta\or septembra\or oktobra\or
+    nowembra\or decembra\fi
+    \space \number\year}}}
+%TODO implement option olddate:
+%  \def\today{\number\day.~\ifcase\month\or
+%    wulkeho róžka\or małeho róžka\or nalětnika\or
+%    jutrownika\or róžownika\or  smažnika\or pražnika\or
+%    žnjenca\or požnjenca\or winowca\or nazymnika\or
+%    hodownika\fi \space \number\year}}
+
+\def\usorbian@language{\protect\language=\l@usorbian}
+
+\def\noextras@usorbian{%
+   }
+
+\def\blockextras@usorbian{%
+   \usorbian@language%
+   \local@hyphenmins{usorbian}{2}{2}%
+   \usorbian@captions%
+   \local@marks{usorbian}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@usorbian{%
+   \usorbian@language%
+   \local@hyphenmins{usorbian}{2}{2}%
+   }
+
+\endinput

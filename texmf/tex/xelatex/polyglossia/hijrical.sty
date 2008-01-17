@@ -1,0 +1,140 @@
+\ProvidesPackage{hijrical}
+        [2007/12/27 v0.1 %
+         Islamic calendar]
+\RequirePackage{calc,bidi}
+%% taken from hebcal.sty with minor modifications
+\def\Remainder#1#2#3{%
+    #3 = #1%                   %  c = a
+    \divide #3 by #2%          %  c = a/b
+    \multiply #3 by -#2%       %  c = -b(a/b)
+    \advance #3 by #1}%        %  c = a - b(a/b)
+\newif\if@Divisible
+\def\CheckIfDivisible#1#2{%
+    {%
+      \countdef\tmpx=0%        % temporary variable
+      \Remainder{#1}{#2}{\tmpx}%
+      \ifnum\tmpx=0%
+          \global\@Divisibletrue%
+      \else%
+          \global\@Divisiblefalse%
+      \fi}}
+\newif\if@GregorianLeap
+\def\CheckIfGregorianLeap#1{%
+   {%
+   \CheckIfDivisible{#1}{4}%
+    \if@Divisible%
+        \CheckIfDivisible{#1}{100}%
+        \if@Divisible%
+            \CheckIfDivisible{#1}{400}%
+            \if@Divisible%
+                \global\@GregorianLeaptrue%
+            \else%
+                \global\@GregorianLeapfalse%
+            \fi%
+        \else%
+            \global\@GregorianLeaptrue%
+        \fi%
+    \else%
+        \global\@GregorianLeapfalse%
+    \fi%
+    }}
+%%
+
+\newcounter{tmpA}\newcounter{tmpB}
+\newcounter{tmpC}\newcounter{tmpD}
+\newcounter{tmpE}\newcounter{tmpF}
+
+
+%% The following functions are straightforward implementation 
+%% of Reingold & Dershowitz, Calendrical Calculations, The Millenium Edition
+%%
+\def\FixedFromGregorian#1#2#3#4{%
+ \setcounter{tmpA}{(#1-1)*365}%
+ \setcounter{tmpB}{(#1-1)/4}%
+ \setcounter{tmpC}{(#1-1)/100}%
+ \setcounter{tmpD}{(#1-1)/400}%
+ \setcounter{tmpE}{(367*#2-362)/12}%
+ \ifnum#2<3%
+    \setcounter{tmpF}{0}%
+ \else%
+      \CheckIfGregorianLeap{#1}%
+      \if@GregorianLeap%
+        \setcounter{tmpF}{-1}%
+      \else%
+        \setcounter{tmpF}{-2}%
+      \fi%
+ \fi%
+ \@ifundefined{c@#4}{\global\newcounter{#4}}{}%
+ \setcounter{#4}{\value{tmpA}+\value{tmpB}-\value{tmpC}+\value{tmpD}+\value{tmpE}+\value{tmpF}+#3}%
+}
+
+\def\FixedFromHijri#1#2#3#4{% year,month,day,counter
+\@ifundefined{c@#4}{\newcounter{#4}}{}%
+\setcounter{tmpA}{#2/2}% see errata of Reingold+Dershowitz
+%\message{tmpA is \thetmpA}%
+\setcounter{tmpB}{(3+11*#1)/30}%
+%\message{tmpB is \thetmpB}%
+\setcounter{#4}{227014+(#1-1)*354+\value{tmpB}+(29*(#2-1))+\value{tmpA}+#3}%
+}
+
+\newcounter{Hijriday}\newcounter{Hijrimonth}\newcounter{Hijriyear}
+
+\def\HijriFromGregorian#1#2#3{% year,month,day
+\FixedFromGregorian{#1}{#2}{#3}{RDdate}%
+\setcounter{Hijriyear}{(30*(\value{RDdate}-227015)+10646)/10631}%
+\FixedFromHijri{\value{Hijriyear}}{1}{1}{tmpx}%
+%\message{tmpx is \thetmpx}%
+\setcounter{tmpB}{\value{RDdate}-\value{tmpx}}%
+%\message{tmpB is \thetmpB}%
+\setcounter{Hijrimonth}{((11*\value{tmpB})+330)/325}%
+\FixedFromHijri{\value{Hijriyear}}{\value{Hijrimonth}}{1}{tmpy}%
+%\message{tmpy is \thetmpy}%
+\setcounter{Hijriday}{1+\value{RDdate}-\value{tmpy}}%
+}
+
+%\HijriFromGregorian{\year}{\month}{\day}%
+
+%\def\PlainHijritoday{%
+%\theHijriday.\theHijrimonth.\theHijriyear}
+
+\def\Hijridate#1#2#3{%
+    \HijriFromGregorian{#1}{#2}{#3}%
+    \if@rl%
+       \FormatHijriDate%
+    \else%
+       \FormatHijriDateEnglish%
+    \fi}
+% added option \Hijritoday[n] (default 0) for adjusting the date + n days
+\newcommand\Hijritoday[1][0]{\@ifundefined{c@adj@day}{\global\newcounter{adj@day}}{}%
+ \setcounter{adj@day}{\the\day+#1}% 
+ \Hijridate{\year}{\month}{\value{adj@day}}}
+%\def\Hijritoday{\Hijridate{\year}{\month}{\day}}
+\let\hijritoday=\Hijritoday
+%FIXME necessary?
+%\def\Hijrisetreg{%
+% \HijriFromGregorian{\year}{\month}{\day}}
+
+\def\HijriMonthTranslit#1{\ifcase#1\or Muḥarram\or Ṣafar\or Rabīʿ I\or Rabīʿ II\or%
+Jumādā I\or Jumādā II\or Rajab\or Shaʿbān\or Ramaḍān\or%
+Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
+
+\def\HijriMonthArabic#1{\ifcase#1\or محرم\or صفر\or ربيع الأول\or ربيع الآخر\or%
+جمادى الأولى\or جمادى الآخرة\or رجب\or شعبان\or رمضان\or%
+شوال\or ذو القعدة\or ذو الحجة\fi}
+
+\def\FormatHijriDateEnglish{%
+\theHijriday\space\HijriMonthTranslit{\value{Hijrimonth}}\space\theHijriyear}
+
+\def\@rabicnumb@r#1{\@ifundefined{arabicnumber}{{\addfontfeature{Mapping=arabicdigits} #1}}%
+{\arabicnumber{#1}}}
+
+\def\FormatHijriDate{\@ensure@RL{%
+\@rabicnumb@r{\value{Hijriday}}\space\HijriMonthArabic{\value{Hijrimonth}}\space\@rabicnumb@r{\value{Hijriyear}}}}
+
+\endinput
+
+%TODO
+\def\CYearsFromHijri#1{%yields the corr julian or gregorian years
+} % e.g. \CYearsFromHijri{425} -> 1033/34
+
+

@@ -1,0 +1,72 @@
+\ProvidesFile{gloss-albanian.ldf}[polyglossia: module for albanian]
+\makeatletter
+
+\ifx\l@albanian\@undefined
+    \xpg@nopatterns{Albanian}
+    \adddialect\l@albanian0\fi
+
+\def\albanian@captions{%
+   \def\refname{\localalbanian{Referencat}}%
+   \def\abstractname{\localalbanian{Përmbledhja}}%
+   \def\bibname{\localalbanian{Bibliografia}}%
+   \def\prefacename{\localalbanian{Parathenia}}%
+   \def\chaptername{\localalbanian{Kapitulli}}%
+   \def\appendixname{\localalbanian{Shtesa}}%
+   \def\contentsname{\localalbanian{Përmbajta}}%
+   \def\listfigurename{\localalbanian{Figurat}}%
+   \def\listtablename{\localalbanian{Tabelat}}%
+   \def\indexname{\localalbanian{Indeksi}}%
+   \def\figurename{\localalbanian{Figura}}%
+   \def\tablename{\localalbanian{Tabela}}%
+   %\def\thepart{\localalbanian{}}%
+   \def\partname{\localalbanian{Pjesa}}%
+   \def\pagename{\localalbanian{Faqe}}%
+   \def\seename{\localalbanian{shiko}}%
+   \def\alsoname{\localalbanian{shiko dhe}}%
+   %\def\enclname{\localalbanian{}}%
+   %\def\ccname{\localalbanian{}}%
+   %\def\headtoname{\localalbanian{}}%
+   \def\proofname{\localalbanian{Vërtetim}}% for AMS-\LaTeX
+   \def\glossaryname{\localalbanian{Përhasja e Fjalëve}}%
+   \def\today{\localalbanian{{\number\day~\ifcase\month\or
+    Janar\or Shkurt\or Mars\or Prill\or Maj\or
+    Qershor\or Korrik\or Gusht\or Shtator\or Tetor\or Nëntor\or
+    Dhjetor\fi \space \number\year}}}}
+
+\def\albanian@language{\protect\language=\l@albanian}
+
+\def\noextras@albanian{%
+   \nofrench@indent%
+   }
+
+\def\blockextras@albanian{%
+   \albanian@language%
+   \local@hyphenmins{albanian}{2}{2}%
+   \french@indent%
+   \albanian@captions%
+   \local@marks{albanian}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@albanian{%
+   \albanian@language%
+   \local@hyphenmins{albanian}{2}{2}%
+   }
+
+\endinput
+  
+%\def\sh{\mathop{\operator@font sh}\nolimits} % same as \sinh
+%\def\ch{\mathop{\operator@font ch}\nolimits} % same as \cosh
+%\def\th{\mathop{\operator@font th}\nolimits} % same as \tanh
+%\def\cth{\mathop{\operator@font cth}\nolimits} % same as \coth
+%\def\arsh{\mathop{\operator@font arsh}\nolimits}
+%\def\arch{\mathop{\operator@font arch}\nolimits}
+%\def\arth{\mathop{\operator@font arth}\nolimits}
+%\def\arcth{\mathop{\operator@font arcth}\nolimits}
+%\def\tg{\mathop{\operator@font tg}\nolimits} % same as \tan
+%\def\ctg{\mathop{\operator@font ctg}\nolimits} % same as \cot
+%\def\arctg{\mathop{\operator@font arctg}\nolimits} % same as \arctan
+%\def\arcctg{\mathop{\operator@font arcctg}\nolimits}
+%\def\Prob{\mathop{\mathsf P\hskip0pt}\nolimits}
+%\def\Expect{\mathop{\mathsf E\hskip0pt}\nolimits}
+%\def\Variance{\mathop{\mathsf D\hskip0pt}\nolimits}

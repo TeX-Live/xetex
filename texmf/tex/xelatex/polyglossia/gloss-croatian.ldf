@@ -1,0 +1,55 @@
+\ProvidesFile{gloss-croatian.ldf}[polyglossia: module for croatian]
+\makeatletter
+
+\ifx\l@croatian\@undefined%
+   \xpg@nopatterns{Croatian}%
+   \adddialect\l@croatian0%
+\fi
+
+\def\croatian@captions{%
+   \def\refname{\localcroatian{Literatura}}%
+   \def\abstractname{\localcroatian{Sažetak}}%
+   \def\bibname{\localcroatian{Bibliografija}}%
+   \def\prefacename{\localcroatian{Predgovor}}%
+   \def\chaptername{\localcroatian{Poglavlje}}%
+   \def\appendixname{\localcroatian{Dodatak}}%
+   \def\contentsname{\localcroatian{Sadržaj}}%
+   \def\listfigurename{\localcroatian{Popis slika}}%
+   \def\listtablename{\localcroatian{Popis tablica}}%
+   \def\indexname{\localcroatian{Indeks}}%
+   \def\figurename{\localcroatian{Slika}}%
+   \def\tablename{\localcroatian{Tablica}}%
+   %\def\thepart{\localcroatian{}}%
+   \def\partname{\localcroatian{}}%
+   \def\pagename{\localcroatian{Stranica}}%
+   \def\seename{\localcroatian{Vidjeti}}%
+   \def\alsoname{\localcroatian{Vidjeti i}}%
+   \def\enclname{\localcroatian{Prilozi}}%
+   \def\ccname{\localcroatian{Kopije}}%
+   \def\headtoname{\localcroatian{Prima}}%
+   \def\proofname{\localcroatian{Dokaz}}% for AMS-\LaTeX
+   \def\glossaryname{\localcroatian{Kazalo}}%
+   \def\today{\localcroatian{\number\day.~\ifcase\month\or
+    siječnja\or veljače\or ožujka\or travnja\or svibnja\or
+    lipnja\or srpnja\or kolovoza\or rujna\or listopada\or studenog\or
+    prosinca\fi \space \number\year.}}}
+
+\def\croatian@language{\protect\language=\l@croatian}
+
+\def\noextras@croatian{%
+   }
+
+\def\blockextras@croatian{%
+   \croatian@language%
+   \local@hyphenmins{croatian}{2}{2}%
+   \croatian@captions%
+   \local@marks{croatian}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@croatian{%
+   \croatian@language%
+   \local@hyphenmins{croatian}{2}{2}%
+   }
+
+\endinput

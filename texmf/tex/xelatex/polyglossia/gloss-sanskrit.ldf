@@ -1,0 +1,56 @@
+\ProvidesFile{gloss-sanskrit.ldf}[polyglossia: module for sanskrit]
+\makeatletter
+
+\ifx\l@sanskrit\@undefined%
+  \ifx\l@prakrit\@undefined%
+    \xpg@nopatterns{Sanskrit}%
+    \adddialect\l@sanskrit0%
+  \else%
+    \let\l@sanskrit=\l@prakrit%
+  \fi%
+\fi
+
+%\def\sanskrit@captions{%
+%   \def\refname{\localsanskrit{<++>}}%
+%   \def\abstractname{\localsanskrit{<++>}}%
+%   \def\bibname{\localsanskrit{<++>}}%
+%   \def\prefacename{\localsanskrit{<++>}}%
+%   \def\chaptername{\localsanskrit{<++>}}%
+%   \def\appendixname{\localsanskrit{<++>}}%
+%   \def\contentsname{\localsanskrit{<++>}}%
+%   \def\listfigurename{\localsanskrit{<++>}}%
+%   \def\listtablename{\localsanskrit{<++>}}%
+%   \def\indexname{\localsanskrit{<++>}}%
+%   \def\figurename{\localsanskrit{<++>}}%
+%   \def\tablename{\localsanskrit{<++>}}%
+%   \def\thepart{\localsanskrit{}}%
+%   \def\partname{\localsanskrit{<++>}}%
+%   \def\pagename{\localsanskrit{<++>}}%
+%   \def\seename{\localsanskrit{<++>}}%
+%   \def\alsoname{\localsanskrit{<++>}}%
+%   \def\enclname{\localsanskrit{<++>}}%
+%   \def\ccname{\localsanskrit{<++>}}%
+%   \def\headtoname{\localsanskrit{<++>}}%
+%   \def\proofname{\localsanskrit{<++>}}% for AMS-\LaTeX
+%   \def\glossaryname{\localsanskrit{<++>}}%
+%   \def\today{\localsanskrit{<++>}}}
+
+\def\sanskrit@language{\protect\language=\l@sanskrit}
+
+\def\noextras@sanskrit{%
+   }
+
+\def\blockextras@sanskrit{%
+   \sanskrit@language%
+   \local@hyphenmins{sanskrit}{2}{2}%
+   %\sanskrit@captions%
+   %\local@marks{sanskrit}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@sanskrit{%
+   \sanskrit@language%
+   \local@hyphenmins{sanskrit}{2}{2}%
+   }
+
+\endinput

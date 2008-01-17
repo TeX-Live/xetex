@@ -1,0 +1,102 @@
+\ProvidesFile{gloss-english.ldf}[polyglossia: module for english]
+\makeatletter
+
+\ifx\l@english\@undefined
+   \ifx\l@USenglish\@undefined
+      \ifx\l@american\@undefined
+         \xpg@nopatterns{English}
+         \adddialect\l@english0
+      \else
+         \let\l@english\l@american
+      \fi
+   \else
+      \let\l@english\l@USenglish
+   \fi
+\fi
+\ifx\l@american\@undefined
+   \let\l@american\l@english
+\fi
+\ifx\l@british\@undefined
+   \ifx\l@UKenglish\@undefined
+      \adddialect\l@british\l@english
+  \else
+      \let\l@british\l@UKenglish
+  \fi
+\fi
+
+\def\tmp@us{us}
+\def\tmp@uk{uk}
+\def\tmp@british{british}
+\def\tmp@american{american}
+\def\en@dialect{\l@english}
+\def\english@language{\protect\language=\en@dialect}
+
+\define@key{english}{dialect}[american]{%
+  \def\@tmpa{#1}
+  \ifx\@tmpa\tmp@uk\def\en@dialect{\l@british}
+     \typeout{Option: english dialect=british}
+  \else\ifx\@tmpa\tmp@british\def\en@dialect{\l@british}
+     \typeout{Option: english dialect=british}%
+  \else\ifx\@tmpa\tmp@us\def\en@dialect{\l@american}
+     \typeout{Option: english dialect=american}%
+  \else\ifx\@tmpa\tmp@american\def\en@dialect{\l@american}
+     \typeout{Option: english dialect=american}
+  \fi\fi\fi\fi}
+
+\def\english@captions{%
+   \def\prefacename{\localenglish{Preface}}%
+   \def\refname{\localenglish{References}}%
+   \def\abstractname{\localenglish{Abstract}}%
+   \def\bibname{\localenglish{Bibliography}}%
+   \def\chaptername{\localenglish{Chapter}}%
+   \def\appendixname{\localenglish{Appendix}}%
+   \def\contentsname{\localenglish{Contents}}%
+   \def\listfigurename{\localenglish{List of Figures}}%
+   \def\listtablename{\localenglish{List of Tables}}%
+   \def\indexname{\localenglish{Index}}%
+   \def\figurename{\localenglish{Figure}}%
+   \def\tablename{\localenglish{Table}}%
+   \def\partname{\localenglish{Part}}%
+   \def\enclname{\localenglish{encl}}%
+   \def\ccname{\localenglish{cc}}%
+   \def\headtoname{\localenglish{To}}%
+   \def\pagename{\localenglish{Page}}%
+   \def\seename{\localenglish{see}}%
+   \def\alsoname{\localenglish{see also}}%
+   \def\proofname{\localenglish{Proof}}%
+   %TODO change format to Day Month Year when dialect is british
+   \def\today{\localenglish{%
+    \ifx\en@dialect\l@british%
+      \number\day\space%
+     \ifcase\month\or%
+      January\or February\or March\or April\or May\or June\or%
+      July\or August\or September\or October\or November\or December\fi%
+      \space\number\year%
+     \else% 
+     \ifcase\month\or%
+      January\or February\or March\or April\or May\or June\or%
+      July\or August\or September\or October\or November\or December\fi%
+      \space\number\day, \number\year%
+     \fi}}}
+
+\def\noextras@english{}
+
+\def\blockextras@english{%
+   \english@language%
+   \local@hyphenmins{english}{2}{3}%
+   \english@captions%
+   \local@marks{english}%
+   \@ifundefined{setLR}{}{\setLR}%
+   \rmfamily%
+   %\english@OCP%
+   %\english@font
+   }
+
+\def\inlineextras@english{%
+   \english@language%
+   \local@hyphenmins{english}{2}{3}%
+   %\english@OCP%
+   %\english@font
+   }
+
+\endinput

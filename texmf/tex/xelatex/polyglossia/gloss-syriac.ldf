@@ -1,0 +1,105 @@
+\ProvidesFile{gloss-syriac.ldf}[polyglossia: module for syriac]
+\RequirePackage{bidi}
+\makeatletter
+
+\ifx\l@syriac\@undefined
+  \xpg@nopatterns{Syriac}%
+  \adddialect\l@syriac0
+\fi
+
+\def\syriac@font{%
+\@ifundefined{syriacfont}{\addfontfeature{Script=Syriac,Language=Syriac}}{\syriacfont}}
+
+\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
+
+%\define@key{polyglossia}{syriaclocale}[default]{%
+%	\def\@syriac@locale{#1}}
+
+\def\syriacmonth#1{\ifcase#1%
+  \or ܟܢܘܢ ܐܚܪܝ\or ܫܒܛ\or ܐܕܪ\or ܢܝܣܢ\or ܐܝܪ\or ܚܙܝܪܢ\or ܬܡܘܙ\or ܐܒ\or ܐܝܠܘܠ% ܐܠܘܠ
+    \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
+    \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
+    \fi}
+
+%\def\syriac@captions{%
+%\def\prefacename{\@ensure@RL{}}% 
+%\def\refname{\@ensure@RL{}}
+%\def\abstractname{\@ensure@RL{}}%
+%\def\bibname{\@ensure@RL{}}%
+%\def\chaptername{\@ensure@RL{}}%
+%\def\appendixname{\@ensure@RL{}}%
+%\def\contentsname{\@ensure@RL{}}
+%%\def\contentsname{\@ensure@RL{}}%
+%\def\listfigurename{\@ensure@RL{}}%
+%\def\listtablename{\@ensure@RL{}}%
+%\def\indexname{\@ensure@RL{}}%
+%\def\figurename{\@ensure@RL{}}%
+%\def\tablename{\@ensure@RL{}}%
+%\def\partname{\@ensure@RL{}}%
+%\def\enclname{\@ensure@RL{}}%<-- Needs translation
+%\def\ccname{\@ensure@RL{}}% <<
+%\def\headtoname{\@ensure@RL{}}%<-- Needs translation
+%\def\pagename{\@ensure@RL{}}%
+%\def\seename{\@ensure@RL{}}%\alefhamza\nun\za\ra
+%\def\alsoname{\@ensure@RL{}}%<<\alefhamza\nun\za\ra
+%\def\proofname{\@ensure@RL{}}% for AMS-\LaTeX
+%\def\glossaryname{\@ensure@RL{}}%<<
+%\def\today{\@ensure@RL{\number\day\space\@syriacmonth{\@syriac@locale}{\month}\space\number\year}}
+%}
+
+\def\syriac@zero{}
+
+\def\abjadsyriac#1{%
+\ifnum#1>499 \PackageWarning{polyglossia}{Illegal value (#1) for Syriac abjad numeral} {#1}
+\else
+  \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for Syriac abjad numeral}%
+  \else
+    \ifnum#1<10\expandafter\abj@syr@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\abj@syr@num@ii\number#1%
+      \else
+        \expandafter\abj@syr@num@iii\number#1%
+      \fi
+    \fi
+  \fi
+\fi
+}
+
+\def\abj@syr@num@i#1{%
+  \ifcase#1\or\char"0710 \or\char"0712 \or\char"0713 \or\char"0715 %
+  \or\char"0717 \or\char"0718 \or\char"0719 \or\char"071A \or\char"071B\fi
+  \ifnum#1=\z@\syriac@zero\fi}
+\def\abj@syr@num@ii#1{%
+  \ifcase#1\or\char"071D \or\char"071F \or\char"0720 \or\char"0721 \or\char"0722 %
+           \or\char"0723 \or\char"0725 \or\char"0726 \or\char"0728 \fi 
+  \ifnum#1=\z@\fi\abj@syr@num@i}
+\def\abj@syr@num@iii#1{%
+  \ifcase#1\or\char"0729 \or\char"072A \or\char"072B \or\char"072C \fi
+  \ifnum#1=\z@\fi\abj@syr@num@ii}
+
+\def\syriac@language{\language=\l@syriac}
+
+\def\noextras@syriac{%
+   %\nosyriac@numbers%
+   %\nosyriac@punctuation
+   }
+
+\def\blockextras@syriac{%
+   \syriac@language%
+   \local@hyphenmins{syriac}{1}{1}%
+   %\syriac@punctuation%
+   \local@marks{syriac}%
+   \syriac@captions%
+   %\syriac@numbers%
+   \syriac@font
+   \setRL\setfootnoteRL
+   }{}
+
+\def\inlineextras@syriac{%
+   \syriac@language%
+   \local@hyphenmins{syriac}{1}{1}%
+   %\syriac@punctuation%
+   \syriac@font
+   }
+
+\endinput

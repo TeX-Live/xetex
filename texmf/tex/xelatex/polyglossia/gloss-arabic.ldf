@@ -1,0 +1,138 @@
+\ProvidesFile{gloss-arabic.ldf}[polyglossia: module for arabic]
+\RequirePackage{bidi}
+\makeatletter
+
+\ifx\l@arabic\@undefined
+  \xpg@nopatterns{arabic}%
+  \adddialect\l@arabic0
+\fi
+
+\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
+
+\define@key{arabic}{locale}[default]{%
+	\def\@arabic@locale{#1}}
+
+\newif\if@eastern@numerals
+\def\tmp@mashriq{mashriq}
+\def\tmp@maghrib{maghrib}
+\define@key{arabic}{numerals}[mashriq]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@mashriq\@eastern@numeralstrue\else%
+	  \ifx\@tmpa\tmp@maghrib\@eastern@numeralsfalse\fi%
+	\fi}
+
+\newif\if@hijrical
+%\def\tmp@hijri{hijri}
+%\def\tmp@islamic{islamic}
+\def\tmp@gregorian{gregorian}
+\define@key{arabic}{calendar}[islamic]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@gregorian\@hijricalfalse\else%
+	\@hijricaltrue\fi}
+
+% This should set the defaults
+\setkeys{arabic}{locale,calendar,numerals}
+
+% TODO: check locales: if morocco or algeria : use western numerals
+%       but don't override the numbers key
+\def\arabicnumber#1{\if@eastern@numerals{\protect\addfontfeature{Mapping=arabicdigits}\number#1}\else{\rmfamily\number#1}\fi}
+
+\def\arabicgregmonth@default#1{\ifcase#1%
+  % Egypt, Sudan, Yemen and Golf states
+  \or يناير\or فبراير\or مارس\or ابريل\or مايو\or يونيو\or يوليو\or اغستس\or سبتمبر\or أكتوبر\or نوفمبر\or ديسمبر\fi}
+\def\arabicgregmonth@mashriq#1{\ifcase#1%
+  % Iraq Syria Jordan Lebanon Palestine
+  \or  كانون الثاني\or شباط\or آذار\or نيسان\or أيار\or حزيران\or تموز\or آب\or أيلول\or تشرين الأول\or تشرين الثاني\or كانون الأول\fi}
+\def\arabicgregmonth@libya#1{\ifcase#1%
+  %Lybia «تعرف في ليبيا بأسماء عربية وضعها معمر القذافي ترمز إلى فصول السنة وبعض الشخصيات التاريخية» (ar.wikipedia.org)
+  \or أي النار\or النوار\or الربيع\or الطير\or الماء\or الصيف\or ناصر\or هانيبال\or الفاتح\or التمور\or الحرث\or الكانون\fi}
+\def\arabicgregmonth@morocco#1{\ifcase#1%
+  \or يناير\or فبراير\or مارس\or أبريل\or ماي\or يونيو\or يوليوز\or غشت\or شتنبر\or أكتوبر\or نونبر\or دجنبر\fi}
+\def\arabicgregmonth@algeria#1{\ifcase#1%
+  % Tunisia and Algeria
+  \or جانفي\or فيفري\or مارس\or أفريل\or ماي\or جوان\or جويلية\or أوت\or سبتمبر\or أكتوبر\or نوفمبر\or ديسمبر\fi}
+\def\arabicgregmonth@mauritania#1{\ifcase#1%
+  \or يناير\or فبراير\or مارس\or إبريل\or مايو\or يونيو\or يوليو\or أغشت\or شتمبر\or أكتوبر\or نوفمبر\or دجمبر\fi}
+
+\def\@arabic@month#1{\expandafter\csname arabicgregmonth@#1\endcsname}
+
+\def\arabic@captions{%
+\def\prefacename{\@ensure@RL{مدخل}}% 
+\def\refname{\@ensure@RL{المراجع}}
+\def\abstractname{\@ensure@RL{ملخص}}%
+\def\bibname{\@ensure@RL{المصادر}}%
+\def\chaptername{\@ensure@RL{الباب}}%
+\def\appendixname{\@ensure@RL{الملاحق}}%
+\def\contentsname{\@ensure@RL{المحتويات}}
+%\def\contentsname{\@ensure@RL{الفهرس}}%
+\def\listfigurename{\@ensure@RL{قائمة الأشكال}}%
+\def\listtablename{\@ensure@RL{قائمة الجداول}}%
+\def\indexname{\@ensure@RL{الفهرس}}%
+\def\figurename{\@ensure@RL{شكل}}%
+\def\tablename{\@ensure@RL{جدول}}%
+\def\partname{\@ensure@RL{القسم}}%
+\def\enclname{\@ensure@RL{المرفقات}}%<-- Needs translation
+\def\ccname{\@ensure@RL{نسخة ل‬}}% <<
+\def\headtoname{\@ensure@RL{إلى}}%<-- Needs translation
+\def\pagename{\@ensure@RL{صفحة}}%
+\def\seename{\@ensure@RL{راجع}}%\alefhamza\nun\za\ra
+\def\alsoname{\@ensure@RL{راجع أيضاً}}%<<\alefhamza\nun\za\ra
+\def\proofname{\@ensure@RL{برهان}}% for AMS-\LaTeX
+\def\glossaryname{\@ensure@RL{قاموس}}%<<
+% TODO define a defaultLRlanguage … \def\LRtoday{\localdefaultLRlanguage{\today}}
+\def\today{%
+ \if@rl%
+   \if@hijrical\RequirePackage{hijrical}%
+     \@ensure@RL{\Hijritoday}%
+   \else%
+     \@ensure@RL{\arabicnumber\day\space\@arabic@month{\@arabic@locale}{\month}%
+        \space\arabicnumber\year}%
+   \fi	
+ \else% TODO \LRtoday
+      \ifcase\month\or January\or February\or March\or April\or May\or June\or%
+      July\or August\or September\or October\or November\or December\fi%
+      \space\number\day, \number\year%
+ \fi}%
+}
+
+\def\arabic@numbers{%
+\renewcommand{\thepage}{\protect\arabicnumber{\the\c@page}}%
+\renewcommand{\thesection}{\protect\arabic@font\protect\arabicnumber{\the\c@section}}%
+\renewcommand{\thesubsection}{\protect\arabic@font\protect\@ensure@RL{\protect\arabicnumber{\the\c@subsection}\textrm{–}\protect\arabicnumber{\the\c@section}}}%
+\renewcommand{\thepart}{\protect\arabic@font\protect\arabicnumber{\the\c@part}}%
+%\renewcommand{\thefootnote}{\arabicnumber{\the\c@footnote}} %-> don't use this!
+\renewcommand{\thefigure}{\protect\arabic@font\protect\arabicnumber{\the\c@figure}}%
+\renewcommand{\thetable}{\protect\arabic@font\protect\arabicnumber{\the\c@table}}%
+}
+
+\input{abjad.def} %TODO add error message
+
+\def\arabic@language{\language=\l@arabic}
+
+\def\arabic@font{%
+\@ifundefined{arabicfont}{\addfontfeature{Script=Arabic,Language=Arabic}}{\arabicfont}}
+
+\def\noextras@arabic{%
+   %\noarabic@numbers%
+   %\noarabic@punctuation
+   }
+
+\def\blockextras@arabic{%
+   \arabic@language%
+   \arabic@font%
+   \local@hyphenmins{arabic}{1}{1}%
+   \local@marks{arabic}%
+   \arabic@captions%
+   \arabic@numbers%
+   \setRL\setfootnoteRL%
+   \def\footnoterule{\RLfootnoterule}%
+   \def\reset@font{\arabic@font}%
+   }{}
+
+\def\inlineextras@arabic{%
+   \arabic@language%
+   \arabic@font
+   \local@hyphenmins{arabic}{1}{1}%
+   }
+
+\endinput

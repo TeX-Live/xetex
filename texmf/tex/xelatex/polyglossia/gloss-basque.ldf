@@ -1,0 +1,56 @@
+\ProvidesFile{gloss-basque.ldf}[polyglossia: module for basque]
+\makeatletter
+
+\ifx\l@basque\@undefined%
+   \xpg@nopatterns{Basque}%
+   \adddialect\l@basque0%
+\fi
+
+\def\basque@captions{%
+   \def\refname{\localbasque{Erreferentziak}}%
+   \def\abstractname{\localbasque{Laburpena}}%
+   \def\bibname{\localbasque{Bibliografia}}%
+   \def\prefacename{\localbasque{Hitzaurrea}}%
+   \def\chaptername{\localbasque{Kapitulua}}%
+   \def\appendixname{\localbasque{Eranskina}}%
+   \def\contentsname{\localbasque{Gaien Aurkibidea}}%
+   \def\listfigurename{\localbasque{Irudien Zerrenda}}%
+   \def\listtablename{\localbasque{Taulen Zerrenda}}%
+   \def\indexname{\localbasque{Kontzeptuen Aurkibidea}}%
+   \def\figurename{\localbasque{Irudia}}%
+   \def\tablename{\localbasque{Taula}}%
+   \def\thepart{\localbasque{}}%
+   \def\partname{\localbasque{Atala}}%
+   \def\pagename{\localbasque{Orria}}%
+   \def\seename{\localbasque{Ikusi}}%
+   \def\alsoname{\localbasque{Ikusi, halaber}}%
+   \def\enclname{\localbasque{Erantsia}}%
+   \def\ccname{\localbasque{Kopia}}%
+   \def\headtoname{\localbasque{Nori}}%
+   \def\proofname{\localbasque{Frogapena}}% for AMS-\LaTeX
+   \def\glossaryname{\localbasque{Glosarioa}}%
+   \def\today{\localbasque{\number\year.eko\space\ifcase\month\or
+    urtarrilaren\or otsailaren\or martxoaren\or apirilaren\or
+    maiatzaren\or ekainaren\or uztailaren\or abuztuaren\or
+    irailaren\or urriaren\or azaroaren\or
+    abenduaren\fi~\number\day}}}
+
+\def\basque@language{\protect\language=\l@basque}
+
+\def\noextras@basque{%
+   }
+
+\def\blockextras@basque{%
+   \basque@language%
+   \local@hyphenmins{basque}{2}{2}%
+   \basque@captions%
+   \local@marks{basque}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@basque{%
+   \basque@language%
+   \local@hyphenmins{basque}{2}{2}%
+   }
+
+\endinput

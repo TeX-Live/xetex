@@ -1,0 +1,87 @@
+\ProvidesFile{gloss-breton.ldf}[polyglossia: module for breton]
+\makeatletter
+
+\ifx\l@breton\@undefined%
+   \xpg@nopatterns{Breton}%
+   \adddialect\l@breton0%
+\fi
+
+\def\breton@punctuation{%
+    \frenchspacing%
+    \XeTeXinterchartokenstate=1%
+    \XeTeXcharclass `\! 7%
+    \XeTeXcharclass `\; 7%
+    \XeTeXcharclass `\: 7%
+    \XeTeXcharclass `\? 8%
+    \XeTeXinterchartoks 0 7 = {\unskip\kern.1667em}%
+    \XeTeXinterchartoks 0 8 = {\unskip\kern\fontdimen2\font\kern-1.4\fontdimen3\font}%
+    }
+
+\def\nobreton@punctuation{%
+    \nonfrenchspacing%
+    \XeTeXinterchartokenstate=0%
+}
+
+
+\def\breton@captions{%
+   \def\refname{\localbreton{Daveennoù}}%
+   \def\abstractname{\localbreton{Dvierrañ}}%
+   \def\bibname{\localbreton{Lennadurezh}}%
+   \def\prefacename{\localbreton{Rakskrid}}%
+   \def\chaptername{\localbreton{Pennad}}%
+   \def\appendixname{\localbreton{Stagadenn}}%
+   \def\contentsname{\localbreton{Taolenn}}%
+   \def\listfigurename{\localbreton{Listenn ar Figurennoù}}%
+   \def\listtablename{\localbreton{Listenn an taolennoù}}%
+   \def\indexname{\localbreton{Meneger}}%
+   \def\figurename{\localbreton{Figurenn}}%
+   \def\tablename{\localbreton{Taolenn}}%
+   \def\thepart{\localbreton{}}%
+   \def\partname{\localbreton{Lodenn}}%
+   \def\pagename{\localbreton{Pajenn}}%
+   \def\seename{\localbreton{Gwelout}}%
+   \def\alsoname{\localbreton{Gwelout ivez}}%
+   \def\enclname{\localbreton{Dielloù kevret}}%
+   \def\ccname{\localbreton{Eilskrid da}}%
+   \def\headtoname{\localbreton{evit}}%
+   \def\proofname{\localbreton{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\localbreton{Glossary}}%
+   \def\today{\localbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
+    \number\day\fi \space a\space viz\space\ifcase\month\or
+    Genver\or C'hwevrer\or Meurzh\or Ebrel\or Mae\or Mezheven\or
+    Gouere\or Eost\or Gwengolo\or Here\or Du\or Kerzu\fi
+    \space\number\year}}}
+
+\def\breton@language{\protect\language=\l@breton}
+
+\def\noextras@breton{%
+   \nobreton@punctuation
+   }
+
+\def\blockextras@breton{%
+   \breton@language%
+   \local@hyphenmins{breton}{2}{2}%
+   \breton@punctuation%
+   \breton@captions%
+   \local@marks{breton}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@breton{%
+   \breton@language%
+   \local@hyphenmins{breton}{2}{2}%
+   \breton@punctuation%
+   }
+
+\endinput
+
+% These are defined in Babel 
+% perhaps we should activate them only if option 
+% "ordinalmacros" is given
+\def\kentan{1\/\textsuperscript{añ}} %${}^{\rm a\tilde{n}}$}
+\def\eil{2\/\textsuperscript{l}} %${}^{\rm l}$}
+\def\re{\/\textsuperscript{re}} %${}^{\rm re}$}
+\def\trede{3\re}
+\def\pevare{4\re}
+\def\vet{\/\textsuperscript{vet}} %${}^{\rm vet}$}
+\def\pempvet{5\vet}

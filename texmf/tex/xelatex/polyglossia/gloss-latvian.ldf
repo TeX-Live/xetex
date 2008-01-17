@@ -1,0 +1,55 @@
+\ProvidesFile{gloss-latvian.ldf}[polyglossia: module for latvian]
+\makeatletter
+
+\ifx\l@latvian\@undefined
+   \xpg@nopatterns{Latvian}
+   \adddialect\l@latvian0
+\fi
+
+\def\latvian@captions{%
+   \def\prefacename{\locallatvian{Priekšvārds}}%
+   \def\refname{\locallatvian{Literatūras saraksts}}%
+   \def\abstractname{\locallatvian{Anotācija}}%
+   \def\bibname{\locallatvian{Literatūra}}%
+   \def\chaptername{\locallatvian{Nodaļa}}%
+   \def\appendixname{\locallatvian{Pielikums}}%
+   \def\contentsname{\locallatvian{Saturs}}%
+   \def\listfigurename{\locallatvian{Attēlu saraksts}}%
+   \def\listtablename{\locallatvian{Tabulu saraksts}}%
+   \def\indexname{\locallatvian{Index}}%
+   \def\figurename{\locallatvian{Att.}}%
+   \def\tablename{\locallatvian{Tabula}}%
+   \def\partname{\locallatvian{Daļa}}%
+   \def\enclname{\locallatvian{encl}}%
+   \def\ccname{\locallatvian{cc}}%
+   \def\headtoname{\locallatvian{To}}%
+   \def\pagename{\locallatvian{lpp.}}%
+   \def\seename{\locallatvian{sk.}}%
+   \def\alsoname{\locallatvian{sk. arī}}%
+   \def\proofname{\locallatvian{Pierādījums}}%
+   \def\today{\locallatvian{%
+      \number\year.\thinspace gada%
+      \space\number\day.\thinspace%
+      \ifcase\month\or%
+      janvārī\or februārī\or martā\or%
+      aprīlī\or maijā\or jūnijā\or%
+      jūlijā\or augustā\or septembrī\or%
+      oktobrī\or novembrī\or decembrī\fi}}}
+
+\def\latvian@language{\protect\language=\l@latvian}
+
+\def\noextras@latvian{}
+
+\def\blockextras@latvian{%
+   \latvian@language%
+   \local@hyphenmins{latvian}{2}{2}%
+   \latvian@captions%
+   \local@marks{latvian}%
+   }
+
+\def\inlineextras@latvian{%
+   \latvian@language%
+   \local@hyphenmins{latvian}{2}{2}%
+   }
+
+\endinput

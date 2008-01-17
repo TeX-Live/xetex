@@ -1,0 +1,122 @@
+\ProvidesFile{gloss-hebrew.ldf}[polyglossia: module for hebrew]
+\RequirePackage{bidi}
+\makeatletter
+
+\ifx\l@hebrew\@undefined
+  \xpg@nopatterns{Hebrew}%
+  \adddialect\l@hebrew0
+\fi
+
+%ADD OPTION FOR calendar and load hebcal.sty if needed
+
+\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
+
+\def\hebrew@captions{%
+  \def\prefacename{\@ensure@RL{מבוא}}%
+  \def\refname{\@ensure@RL{רשימט מקורוט}}%
+  \def\abstractname{\@ensure@RL{טקציר}}%
+  \def\bibname{\@ensure@RL{ביבליו גרפיח}}%
+  \def\chaptername{\@ensure@RL{פרק}}%
+  \def\appendixname{\@ensure@RL{נספה}}%
+  \def\contentsname{\@ensure@RL{טוכן עניינים}}%
+  \def\listfigurename{\@ensure@RL{רשימט איורים}}%
+  \def\listtablename{\@ensure@RL{רשימט תבלאוט}}%
+  \def\indexname{\@ensure@RL{מפטה}}%
+  \def\figurename{\@ensure@RL{איור}}%
+  \def\tablename{\@ensure@RL{תבלח}}%
+  \def\partname{\@ensure@RL{הלק}}%
+  \def\enclname{\@ensure@RL{רצ"ב}}%
+  \def\ccname{\@ensure@RL{חעטקי ם}}%
+  \def\headtoname{\@ensure@RL{אל}}%
+  \def\pagename{\@ensure@RL{עמוד}}%
+  \def\psname{\@ensure@RL{נ.ב.}}%
+  \def\seename{\@ensure@RL{ראח}}%
+  \def\alsoname{\@ensure@RL{ראח ג ם}}% check
+  \def\proofname{\@ensure@RL{חוכהח}}
+  \def\glossaryname{\@ensure@LR{Glossary}}% <-- Needs translation
+  \def\today{%TODO if calendar=hebrew \Hebrewtoday \else
+  \@ensure@RL{\number\day\space ב\hebrewgregmonth{\month}\space\number\year}}
+}
+
+\def\hebrewgregmonth#1{\ifcase#1%
+  \or ינואר% יאנואר
+    \or פברואר\or מרץ% מרס / מארס
+    \or אפריל\or מי% מאי
+    \or יוני\or יולי\or אבגוסט% אוגוסט
+    \or ספטמבר\or אוקטובר\or נובמבר\or דצמבר\fi}
+
+
+\def\hebrewnumeral#1{%
+\ifnum#1>9999 \PackageWarning{polyglossia}{Illegal value (#1) for Hebrew numeral} {#1}
+\else
+  \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for Hebrew numeral}%
+  \else
+    \ifnum#1<10\expandafter\heb@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\heb@num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\heb@num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\heb@num@iv\number#1%
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+\fi
+}
+
+\def\hebnum@zero{}
+
+%Hebrew alphabetic numerals (primitive implementation -- the code in Babel is more complex):
+\def\heb@num@i#1{%
+  \ifcase#1\or\char"05D0 \or\char"05D1 \or\char"05D2 \or\char"05D3 \or\char"05D4 %
+           \or\char"05D5 \or\char"05D6 \or\char"05D7 \or\char"05D8 \fi
+  \ifnum#1=\z@\hebnum@zero\fi}
+\def\heb@num@ii#1{%
+  \ifcase#1\or\char"05D9 \or\char"05DB \or\char"05DC \or\char"05DE \or\char"05E0 %
+           \or\char"05E1 \or\char"05E2 \or\char"05E4 \or\char"05E6 \fi 
+  \ifnum#1=\z@\fi\heb@num@i}
+\def\heb@num@iii#1{%
+  \ifcase#1\or\char"05E7 \or\char"05E8 \or\char"05E9 \or\char"05EA \or\char"05DA %
+           \or\char"05DD \or\char"05DF \or\char"05E3 \or\char"05E5 \fi
+  \ifnum#1=\z@\fi\heb@num@ii}
+\def\heb@num@iv#1{%
+  \ifcase#1\or\char"05D0\char"05F3 \or\char"05D1\char"05F3 \or\char"05D2\char"05F3 %
+           \or\char"05D3\char"05F3 \or\char"05D4\char"05F3 \or\char"05D5\char"05F3 %
+	   \or\char"05D6\char"05F3 \or\char"05D7\char"05F3 \or\char"05D8\char"05F3 \fi
+  \ifnum#1=\z@\fi\heb@num@iii}
+%TODO [optionally] 
+% -insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
+% -insert geresh (\char"05F3) after letter if it is alone
+
+
+\def\hebrew@language{\language=\l@hebrew}
+
+\def\noextras@hebrew{%
+   %\nohebrew@numbers%
+   %\nohebrew@punctuation
+   }
+
+\def\blockextras@hebrew{%
+   \hebrew@language%
+   \local@hyphenmins{hebrew}{1}{1}%
+   %\hebrew@punctuation%
+   \local@marks{hebrew}%
+   \hebrew@captions%
+   %\hebrew@numbers%
+   \@ifundefined{hebrewfont}{\addfontfeature{Script=Arabic,Language=Arabic}}{\hebrewfont}
+   \setRL\setfootnoteRL
+   }{}
+
+\def\inlineextras@hebrew{%
+   \hebrew@language%
+   \local@hyphenmins{hebrew}{1}{1}%
+   %\hebrew@punctuation%
+   \@ifundefined{hebrewfont}{\addfontfeature{Script=Hebrew,Language=Hebrew}}{\hebrewfont}
+   }
+
+\endinput
+
+%TODO: Implement hebrew calendar
+\InputIfFileExists{hebcal.sty}

@@ -1,0 +1,165 @@
+\ProvidesFile{gloss-russian.ldf}[polyglossia: module for russian]
+\makeatletter
+
+\ifx\l@russian\@undefined
+   \xpg@nopatterns{Russian}
+   \adddialect\l@russian0
+\fi
+
+\def\russian@font{%
+\@ifundefined{russianfont}{%
+      \@ifundefined{cyrillicfont}{%
+	\addfontfeature{Script=Cyrillic,Language=Russian}}{\cyrillicfont}}%
+      {\russianfont}}
+
+%\def\russian@punctuation{%
+%   \frenchspacing%
+%   \def\No{№\kern.1667em}%
+%   \def\cyrdash{—}%
+%   \def\PlainTextEmDash{\ifdim\lastskip>\z@\unskip\nobreak\hskip.2em\fi%
+%      \cyrdash\hskip.2em\ignorespaces}%
+%   \def\CompoundNamesEmDash{\leavevmode\ifdim\lastskip>\z@\unskip\fi%
+%      \nobreak\cyrdash\penalty\exhyphenpenalty\hskip\z@skip\ignorespaces}%
+%   \def\DirectSpeechEmDash{\leavevmode%
+%      \nobreak\cyrdash\nobreak\hskip.35em\ignorespaces}}
+%
+%\def\norussian@punctuation{%
+%   \nonfrenchspacing%
+%   \let\No\@undefined%
+%   \let\cyrdash\@undefined%
+%   \let\PlainTextEmDash\@undefined%
+%   \let\CompoundNamesEmDash\@undefined%
+%   \let\DirectSpeechEmDash\@undefined%
+%}
+
+\def\tmp@old{old}
+\def\tmp@modern{modern}
+\def\russian@captions{\moderncaptions}
+
+\define@key{russian}{orthography}[modern]{%
+   \def\@tmpa{#1}%
+   \ifx\@tmpa\tmp@old\def\russian@captions{\oldcaptions}%
+   \else\def\russian@captions{\moderncaptions}%
+   \fi}
+
+\def\moderncaptions{%
+   \def\prefacename{\localrussian{Предисловие}}%
+   \def\refname{\localrussian{Примечания}}%
+   \def\abstractname{\localrussian{Аннотация}}%
+   \def\bibname{\localrussian{Библиография}}%
+   \def\chaptername{\localrussian{Глава}}%
+   \def\appendixname{\localrussian{Приложение}}%
+   \def\contentsname{\localrussian{Оглавление}}%
+   \def\listfigurename{\localrussian{Список иллюстраций}}%
+   \def\listtablename{\localrussian{Список таблиц}}%
+   \def\indexname{\localrussian{Предметный указатель}}%
+   \def\authorname{\localrussian{Именной указатель}}%
+   \def\figurename{\localrussian{Рис.}}%
+   \def\tablename{\localrussian{Таблица}}%
+   \def\partname{\localrussian{Часть}}%
+   \def\enclname{\localrussian{вкл.}}%
+   \def\ccname{\localrussian{исх.}}%
+   \def\headtoname{\localrussian{вх.}}%
+   \def\pagename{\localrussian{с.}}%
+   \def\seename{\localrussian{см.}}%
+   \def\alsoname{\localrussian{см. также}}%
+   \def\proofname{\localrussian{Доказательство}}%
+   \def\today{\localrussian{\number\day%
+      \space\ifcase\month\or%
+      января\or
+      февраля\or
+      марта\or
+      апреля\or
+      мая\or
+      июня\or
+      июля\or
+      августа\or
+      сентября\or
+      октября\or
+      ноября\or
+      декабря\fi%
+      \space \number\year\space г.}}}
+
+\def\oldcaptions{%
+   \def\prefacename{\localrussian{Предисловіе}}%
+   \def\refname{\localrussian{Примѣчанія}}%
+   \def\abstractname{\localrussian{Аннотація}}%
+   \def\bibname{\localrussian{Библіографія}}%
+   \def\chaptername{\localrussian{Глава}}%
+   \def\appendixname{\localrussian{Приложеніе}}%
+   \def\contentsname{\localrussian{Оглавленіе}}%
+   \def\listfigurename{\localrussian{Списокъ иллюстрацій}}%
+   \def\listtablename{\localrussian{Списокъ таблицъ}}%
+   \def\indexname{\localrussian{Предмѣтный указатель}}%
+   \def\authorname{\localrussian{Именной указатель}}%
+   \def\figurename{\localrussian{Рис.}}%
+   \def\tablename{\localrussian{Таблица}}%
+   \def\partname{\localrussian{Часть}}%
+   \def\enclname{\localrussian{вкл.}}%
+   \def\ccname{\localrussian{исх.}}%
+   \def\headtoname{\localrussian{вх.}}%
+   \def\pagename{\localrussian{с.}}%
+   \def\seename{\localrussian{см.}}%
+   \def\alsoname{\localrussian{см. также}}%
+   \def\proofname{\localrussian{Доказательство}}%
+   \def\today{\localrussian{\number\day%
+      \space\ifcase\month\or%
+      января\or
+      февраля\or
+      марта\or
+      апреля\or
+      мая\or
+      іюня\or
+      іюля\or
+      августа\or
+      сентября\or
+      октября\or
+      ноября\or
+      декабря\fi%
+      \space \number\year\space г.}}}
+
+% The following is based on some ideas from ruscor.sty
+
+\def\russian@capsformat{%
+   \def\@seccntformat##1{\csname pre##1\endcsname%
+      \csname the##1\endcsname%
+      \csname post##1\endcsname}%
+   \def\@aftersepkern{\hspace{0.5em}}%
+   \def\postchapter{.\@aftersepkern}%
+   \def\postsection{.\@aftersepkern}%
+   \def\postsubsection{.\@aftersepkern}%
+   \def\postsubsubsection{.\@aftersepkern}%
+   \def\postparagraph{.\@aftersepkern}%
+   \def\postsubparagraph{.\@aftersepkern}%
+   \def\prechapter{}%
+   \def\presection{}%
+   \def\presubsection{}%
+   \def\presubsubsection{}%
+   \def\preparagraph{}%
+   \def\presubparagraph{}}
+
+\def\russian@language{\protect\language=\l@russian}
+
+\def\noextras@russian{%
+   \nonfrenchspacing%
+   }
+   
+\def\blockextras@russian{%
+   \russian@language%
+   \local@hyphenmins{russian}{2}{2}%
+   %\russian@alph%
+   \frenchspacing%
+   \russian@captions%
+   \russian@capsformat%
+   \local@marks{russian}%
+   \russian@font%
+   }
+
+\def\inlineextras@russian{%
+   \russian@language%
+   \local@hyphenmins{russian}{2}{2}%
+   \frenchspacing%
+   \russian@font% 
+   }
+
+\endinput

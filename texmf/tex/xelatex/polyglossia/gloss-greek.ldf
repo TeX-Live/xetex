@@ -1,0 +1,263 @@
+\ProvidesFile{gloss-greek.ldf}[polyglossia: module for greek]
+\makeatletter
+
+%TODO: option for \language = monogreek, greek=polygreek or ancientgreek
+% 
+
+\ifx\l@greek\@undefined
+   \ifx\l@polygreek\@undefined
+      \xpg@nopatterns{Greek}
+      \adddialect\l@greek0
+   \else
+      \let\l@greek\l@polygreek
+   \fi
+\fi
+\ifx\l@monogreek\@undefined
+      \PackageWarningNoLine{polyglossia}%
+      {No hyphenation patterns were loaded for Monotonic Greek\MessageBreak
+         I will use the patterns loaded for \string\l@greek instead}
+   \adddialect\l@monogreek\l@greek
+\fi
+\ifx\l@ancientgreek\@undefined
+      \PackageWarningNoLine{polyglossia}%
+      {No hyphenation patterns were loaded for Ancient Greek\MessageBreak
+         I will use the patterns loaded for \string\l@greek instead}
+   \adddialect\l@ancientgreek\l@greek
+\fi
+
+\def\tmp@mono{mono}
+\def\tmp@monotonic{monotonic}
+\def\tmp@poly{poly}
+\def\tmp@polytonic{polytonic}
+\def\tmp@ancient{ancient}
+\def\tmp@ancientgreek{ancientgreek}
+
+\define@key{greek}{variant}[monotonic]{%
+\def\@tmpa{#1}%
+\def\greek@captions{\polygreekcaptions}%
+\ifx\@tmpa\tmp@polytonic%
+   \def\greek@variant{\l@polygreek}%
+   \typeout{Option: Polytonic Greek}%
+\else%
+   \ifx\@tmpa\tmp@poly%
+      \def\greek@variant{\l@polygreek}%
+      \typeout{Option: Polytonic Greek}%
+   \else%
+      \ifx\@tmpa\tmp@ancient%
+         \def\greek@variant{\l@ancientgreek}%
+         \typeout{Option: Ancient Greek}%
+      \else%
+         \ifx\@tmpa\tmp@ancientgreek%
+	    \def\greek@variant{\l@ancientgreek}%
+            \typeout{Option: Ancient Greek}%
+	 \else%
+	     \def\greek@variant{\l@monogreek}% monotonic
+             \def\greek@captions{\monogreekcaptions}%
+             \typeout{Option: Monotonic Greek}%
+	 \fi%
+      \fi%
+   \fi%
+\fi}
+
+\def\tmp@arabic{arabic}
+\newif\if@greek@numerals
+\define@key{greek}{numerals}[greek]{%
+\def\@tmpa{#1}\ifx\@tmpa\tmp@arabic\@greek@numeralsfalse\else\@greek@numeralstrue\fi}
+%TODO implement above option!!!
+
+% This should set the defaults
+\setkeys{greek}{variant,numerals}
+
+%TODO simplify greek@captions using xgreek.sty as a model ?
+%
+%\def\polytonicn@mes{%
+%  \def\refname{Ἀναφορὲς}%
+%  \def\indexname{Εὑρετήριο}%
+%  \def\figurename{Σχῆμα}%
+%  \def\headtoname{Πρὸς}%
+%  \def\alsoname{βλέπε ἐπίσης}%
+%  \def\proofname{Ἀπόδειξη}%
+%}
+
+
+\def\monogreekcaptions{%
+   \def\refname{\localgreek{Αναφορές}}%
+   \def\abstractname{\localgreek{Περίληψη}}%
+   \def\bibname{\localgreek{Βιβλιογραφία}}%
+   \def\prefacename{\localgreek{Πρόλογος}}%
+   \def\chaptername{\localgreek{Κεφάλαιο}}%
+   \def\appendixname{\localgreek{Παράρτημα}}%
+   \def\contentsname{\localgreek{Περιεχόμενα}}%
+   \def\listfigurename{\localgreek{Κατάλογος σχημάτων}}%
+   \def\listtablename{\localgreek{Κατάλογος πινάκων}}%
+   \def\indexname{\localgreek{Ευρετήριο}}%
+   \def\figurename{\localgreek{Σχήμα}}%
+   \def\tablename{\localgreek{Πίνακας}}%
+   \def\partname{\localgreek{Μέρος}}%
+   \def\pagename{\localgreek{Σελίδα}}%
+   \def\seename{\localgreek{βλέπε}}%
+   \def\alsoname{\localgreek{βλέπε επίσης}}%
+   \def\enclname{\localgreek{Συνημμένα}}%
+   \def\ccname{\localgreek{Κοινοποίηση}}%
+   \def\headtoname{\localgreek{Προς}}%
+   \def\proofname{\localgreek{Απόδειξη}}% for AMS-\LaTeX
+   \def\today{\localgreek{\number\day\space%
+      \ifcase\month\or%
+      Ιανουαρίου\or
+      Φεβρουαρίου\or
+      Μαρτίου\or
+      Απριλίου\or%
+      Μαΐου\or
+      Ιουνίου\or
+      Ιουλίου\or
+      Αυγούστου\or%
+      Σεπτεμβρίου\or
+      Οκτωβρίου\or
+      Νοεμβρίου\or
+      Δεκεμβρίου\fi%
+      \space\number\year}}}
+
+\def\polygreekcaptions{%
+   \def\refname{\localgreek{Ἀναφορές}}%
+   \def\abstractname{\localgreek{Περίληψη}}%
+   \def\bibname{\localgreek{Βιβλιογραφία}}%
+   \def\prefacename{\localgreek{Πρόλογος}}%
+   \def\chaptername{\localgreek{Κεφάλαιο}}%
+   \def\appendixname{\localgreek{Παράρτημα}}%
+   \def\contentsname{\localgreek{Περιεχόμενα}}%
+   \def\listfigurename{\localgreek{Κατάλογος σχημάτων}}%
+   \def\listtablename{\localgreek{Κατάλογος πινάκων}}%
+   \def\indexname{\localgreek{Εὑρετήριο}}%
+   \def\figurename{\localgreek{Σχῆμα}}%
+   \def\tablename{\localgreek{Πίνακας}}%
+   \def\partname{\localgreek{Μέρος}}%
+   \def\pagename{\localgreek{Σελίδα}}%
+   \def\seename{\localgreek{βλέπε}}%
+   \def\alsoname{\localgreek{βλέπε ἐπίσης}}%
+   \def\enclname{\localgreek{Συνημμένα}}%
+   \def\ccname{\localgreek{Κοινοποίηση}}%
+   \def\headtoname{\localgreek{Πρὸς}}%
+   \def\proofname{\localgreek{Ἀπόδειξη}}% for AMS-\LaTeX
+   \def\today{\localgreek{\number\day \space%
+      \ifcase\month\or%
+      Ἰανουαρίου\or
+      Φεβρουαρίου\or
+      Μαρτίου\or
+      Ἀπριλίου\or
+      Μαΐου\or
+      Ἰουνίου\or
+      Ἰουλίου\or
+      Αὐγούστου\or
+      Σεπτεμβρίου\or
+      Ὀκτωβρίου\or
+      Νοεμβρίου\or
+      Δεκεμβρίου\fi%
+      \space \number\year}}}
+
+\newcounter{hundredmillions}
+\newcounter{tenmillions}
+\newcounter{millions}
+\newcounter{hundredthousands}
+\newcounter{tenthousands}
+\newcounter{thousands}
+\newcounter{hundreds}
+\newcounter{tens}
+\newcounter{units}
+\newcounter{belowhundred}
+\newcounter{grnumber}
+
+\def\greek@numbers{%
+\def\greek@alph##1{\protect\greeknumber{##1}}%
+\def\greek@Alph##1{\uppercase{\protect\greeknumber{##1}}}%
+\def\alph##1{\expandafter\greek@alph\csname c@##1\endcsname}%
+\def\Alph##1{\expandafter\greek@Alph\csname c@##1\endcsname}%
+\def\labelitemi{–}%
+\def\labelitemii{–}%
+\def\labelitemiii{–}%
+\def\labelitemiv{–}%
+%
+\def\grnumbertmp##1##2##3{\ifcase\value{##1}\or ρ\or σ\or%
+   τ\or υ\or φ\or χ\or ψ\or ω\or%
+   π\else\@ctrerr\fi%
+\ifcase\value{##2}\or ι\or κ\or λ\or μ\or%
+   ν\or ξ\or ο\or π\or χ\else\@ctrerr\fi%
+\ifcase\value{##3}\or α\or β \or γ\or δ\or ε\or%
+   \GreekSmallLetterStigma\or ζ\or η\or θ\else\@ctrerr\fi}%
+\def\greeknumber##1{%
+   \setcounter{grnumber}{##1}%
+   \ifthenelse{\value{grnumber}>999999999}{\typeout{Number too big!}}{%
+      \ifthenelse{\value{grnumber}>999999}{͵͵\kern.5pt}{%
+	 \ifthenelse{\value{grnumber}>999}{͵\kern.5pt}{}}%
+      \setcounter{hundredmillions}{\value{grnumber}/100000000}%
+      \addtocounter{grnumber}{-100000000*\value{hundredmillions}}%
+      \setcounter{tenmillions}{\value{grnumber}/10000000}%
+      \addtocounter{grnumber}{-10000000*\value{tenmillions}}%
+      \setcounter{millions}{\value{grnumber}/1000000}%
+      \addtocounter{grnumber}{-1000000*\value{millions}}%
+      \setcounter{hundredthousands}{\value{grnumber}/100000}%
+      \addtocounter{grnumber}{-100000*\value{hundredthousands}}%
+      \setcounter{tenthousands}{\value{grnumber}/10000}%
+      \addtocounter{grnumber}{-10000*\value{tenthousands}}%
+      \setcounter{thousands}{\value{grnumber}/1000}%
+      \addtocounter{grnumber}{-1000*\value{thousands}}%
+      \setcounter{hundreds}{\value{grnumber}/100}%
+      \addtocounter{grnumber}{-100*\value{hundreds}}%
+      \setcounter{tens}{\value{grnumber}/10}%
+      \addtocounter{grnumber}{-10*\value{tens}}%
+      \setcounter{units}{\value{grnumber}}%
+      \grnumbertmp{hundredmillions}{tenmillions}{millions}%
+	 \grnumbertmp{hundredthousands}{tenthousands}{thousands}%
+	 \grnumbertmp{hundreds}{tens}{units}%
+      \setcounter{belowhundred}{\value{hundreds}+\value{tens}+\value{units}}%
+      \ifthenelse{\value{belowhundred}>0}{ʹ}{}}}%
+%
+\def\greektoday{\greeknumber{\number\day} \space%
+   \ifcase\month\or%
+   Ἰανουαρίου\or
+   Φεβρουαρίου\or
+   Μαρτίου\or
+   Ἀπριλίου\or
+   Μαΐου\or
+   Ἰουνίου\or
+   Ἰουλίου\or
+   Αὐγούστου\or
+   Σεπτεμβρίου\or
+   Ὀκτωβρίου\or
+   Νοεμβρίου\or 
+   Δεκεμβρίου\fi%
+   \space \greeknumber{\number\year}}}
+
+\def\nogreek@numbers{%
+   \let\greek@alph\@undefined%
+   \let\greek@Alph\@undefined%
+   \let\numbersix\@undefined%
+   \let\grnumbertmp\@undefined%
+   \let\greeknumber\@undefined%
+   \let\greektoday\@undefined%
+   \def\alph##1{\expandafter\@alph\csname c@##1\endcsname}%
+   \def\Alph##1{\expandafter\@Alph\csname c@##1\endcsname}}
+
+\def\greek@language{\protect\language=\greek@variant}
+
+\def\greek@font{%
+\@ifundefined{greekfont}{\addfontfeature{Script=Greek,Language=Greek}}{\greekfont}}
+
+\def\noextras@greek{%
+   \nogreek@numbers}
+
+\def\blockextras@greek{%
+   \greek@language%
+   \local@hyphenmins{greek}{1}{1}%
+   \local@marks{greek}%
+   \greek@captions%
+   \greek@numbers% TODO implement option Numerals=latin/greek
+   \greek@font%
+   }{}
+
+\def\inlineextras@greek{%
+   \greek@language%
+   \local@hyphenmins{greek}{1}{1}%
+   \greek@font%
+   }
+
+\endinput

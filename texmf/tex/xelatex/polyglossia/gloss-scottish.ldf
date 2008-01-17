@@ -1,0 +1,58 @@
+\ProvidesFile{gloss-scottish.ldf}[polyglossia: module for scottish]
+\makeatletter
+
+\ifx\l@scottish\@undefined%
+   \xpg@nopatterns{Scottish}%
+   \adddialect\l@scottish0%
+\fi
+
+\def\scottish@captions{%
+   \def\refname{\localscottish{Iomraidh}}%
+   \def\abstractname{\localscottish{Brìgh}}%
+   \def\bibname{\localscottish{Leabhraichean}}%
+   \def\prefacename{\localscottish{Preface}}%    <-- needs translation
+   \def\chaptername{\localscottish{Caibideil}}%
+   \def\appendixname{\localscottish{Ath-sgr`ıobhadh}}%
+   \def\contentsname{\localscottish{Clàr-obrach}}%
+   \def\listfigurename{\localscottish{Liosta Dhealbh }}%
+   \def\listtablename{\localscottish{Liosta Chlàr}}%
+   \def\indexname{\localscottish{Clàr-innse}}%
+   \def\figurename{\localscottish{Dealbh}}%
+   \def\tablename{\localscottish{Clàr}}%
+   %\def\thepart{\localscottish{}}%
+   \def\partname{\localscottish{Cuid}}%
+   \def\pagename{\localscottish{t.d.}}%
+   \def\seename{\localscottish{see}}%    <-- needs translation
+   \def\alsoname{\localscottish{see also}}%    <-- needs translation
+   \def\enclname{\localscottish{a-staigh}}%
+   \def\ccname{\localscottish{lethbhreac gu}}%
+   \def\headtoname{\localscottish{gu}}%
+   \def\proofname{\localscottish{Proof}}%    <-- needs translation 
+   \def\glossaryname{\localscottish{Glossary}}%    <-- needs translation
+   \def\today{\localscottish{%
+    \number\day\space \ifcase\month\or
+    am Faoilteach\or an Gearran\or am Màrt\or an Giblean\or
+    an Cèitean\or an t-Òg mhios\or an t-Iuchar\or
+    Lùnasdal\or an Sultuine\or an Dàmhar\or
+    an t-Samhainn\or an Dubhlachd\fi
+    \space \number\year}}}
+
+\def\scottish@language{\protect\language=\l@scottish}
+
+\def\noextras@scottish{%
+   }
+
+\def\blockextras@scottish{%
+   \scottish@language%
+   \local@hyphenmins{scottish}{2}{2}%
+   \scottish@captions%
+   \local@marks{scottish}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@scottish{%
+   \scottish@language%
+   \local@hyphenmins{scottish}{2}{2}%
+   }
+
+\endinput

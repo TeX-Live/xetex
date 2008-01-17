@@ -1,0 +1,59 @@
+\ProvidesFile{gloss-irish.ldf}[polyglossia: module for irish]
+\makeatletter
+
+\ifx\l@irish\@undefined%
+   \xpg@nopatterns{Irish}%
+   \adddialect\l@irish0%
+\fi
+
+\def\irish@captions{%
+   \def\refname{\localirish{Tagairtí}}%
+   \def\abstractname{\localirish{Achoimre}}%
+   \def\bibname{\localirish{Leabharliosta}}%
+   \def\prefacename{\localirish{Réamhrá}}%    <-- also "Brollach"
+   \def\refname{\localirish{Tagairtí}}%
+   \def\chaptername{\localirish{Tagairtí}}%
+   \def\appendixname{\localirish{Aguisín}}%
+   \def\contentsname{\localirish{Clár Ábhair}}%
+   \def\listfigurename{\localirish{Léaráidí}}%
+   \def\listtablename{\localirish{Táblaí}}%
+   \def\indexname{\localirish{Innéacs}}%
+   \def\figurename{\localirish{Léaráid}}%
+   \def\tablename{\localirish{Tábla}}%
+   %\def\thepart{\localirish{}}%
+   \def\partname{\localirish{Cuid}}%
+   \def\pagename{\localirish{Leathanach}}%
+   \def\seename{\localirish{féach}}%
+   \def\alsoname{\localirish{féach freisin}}%
+   \def\enclname{\localirish{faoi iamh}}%
+   \def\ccname{\localirish{cc}}%
+   \def\headtoname{\localirish{Go}}%
+   \def\proofname{\localirish{Cruthúnas}}% for AMS-\LaTeX
+   \def\glossaryname{\localirish{Glossary}}%
+   \def\today{\localirish{%
+    \number\day\space \ifcase\month\or
+    Eanáir\or Feabhra\or Márta\or Aibreán\or
+    Bealtaine\or Meitheamh\or Iúil\or Lúnasa\or
+    Meán Fómhair\or Deireadh Fómhair\or
+    Mí na Samhna\or Mí na Nollag\fi
+    \space \number\year}}}
+
+\def\irish@language{\protect\language=\l@irish}
+
+\def\noextras@irish{%
+   }
+
+\def\blockextras@irish{%
+   \irish@language%
+   \local@hyphenmins{irish}{2}{2}%
+   \irish@captions%
+   \local@marks{irish}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@irish{%
+   \irish@language%
+   \local@hyphenmins{irish}{2}{3}%
+   }
+
+\endinput

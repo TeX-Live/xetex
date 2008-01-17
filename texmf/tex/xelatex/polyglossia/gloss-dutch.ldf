@@ -1,0 +1,65 @@
+\ProvidesFile{gloss-dutch.ldf}[polyglossia: module for dutch]
+\makeatletter
+
+\ifx\l@dutch\@undefined
+   \xpg@nopatterns{Dutch}
+   \adddialect\l@dutch0
+\fi
+
+\def\dutch@punctuation{%
+   \frenchspacing%
+}
+
+\def\nodutch@punctuation{%
+   \nonfrenchspacing%
+}
+
+\def\dutch@captions{%
+    \def\prefacename{Voorwoord}%
+    \def\refname{Referenties}%
+    \def\abstractname{Samenvatting}%
+    \def\bibname{Bibliografie}%
+    \def\chaptername{Hoofdstuk}%
+    \def\appendixname{Bĳlage}%
+    \def\contentsname{Inhoudsopgave}%
+    \def\listfigurename{Lĳst van figuren}%
+    \def\listtablename{Lĳst van tabellen}%
+    \def\indexname{Index}%
+    \def\figurename{Figuur}%
+    \def\tablename{Tabel}%
+    \def\partname{Deel}%
+    \def\enclname{Bĳlage(n)}%
+    \def\ccname{cc}%
+    \def\headtoname{Aan}%
+    \def\pagename{Pagina}%
+    \def\seename{zie}%
+    \def\alsoname{zie ook}%
+    \def\proofname{Bewĳs}%
+    \def\glossaryname{Verklarende Woordenlĳst}%
+    \def\today{\localdutch{\number\day~\ifcase\month%
+      Januarie\or Februarie\or Maart\or April\or Mei\or Junie\or
+      Julie\or  Augustus\or September\or Oktober\or November\or
+      Desember\fi
+      \space \number\year}}}
+
+\def\dutch@language{\protect\language=\l@dutch}
+
+\def\noextras@dutch{%
+   \nodutch@punctuation%
+}
+
+\def\blockextras@dutch{%
+   \dutch@language%
+   \local@hyphenmins{dutch}{2}{2}%
+   \dutch@punctuation%
+   \dutch@captions%
+   \local@marks{dutch}%
+}
+
+\def\inlineextras@dutch{%
+   \dutch@language%
+   \local@hyphenmins{dutch}{2}{2}%
+   \dutch@punctuation%
+}
+
+\endinput

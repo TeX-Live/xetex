@@ -1,0 +1,55 @@
+\ProvidesFile{gloss-galician.ldf}[polyglossia: module for galician]
+\makeatletter
+
+\ifx\l@galician\@undefined%
+   \xpg@nopatterns{Galician}%
+   \adddialect\l@galician0%
+\fi
+
+\def\galician@captions{%
+   \def\refname{\localgalician{Referencias}}%
+   \def\abstractname{\localgalician{Resumo}}%
+   \def\bibname{\localgalician{Bibliografía}}%
+   \def\prefacename{\localgalician{Prefacio}}%
+   \def\chaptername{\localgalician{Capítulo}}%
+   \def\appendixname{\localgalician{Apéndice}}%
+   \def\contentsname{\localgalician{Índice Xeral}}%
+   \def\listfigurename{\localgalician{Índice de Figuras}}%
+   \def\listtablename{\localgalician{Índice de Táboas}}%
+   \def\indexname{\localgalician{Índice de Materias}}%
+   \def\figurename{\localgalician{Figura}}%
+   \def\tablename{\localgalician{Táboa}}%
+   %\def\thepart{\localgalician{}}%
+   \def\partname{\localgalician{Parte}}%
+   \def\pagename{\localgalician{Páxina}}%
+   \def\seename{\localgalician{véxase}}%
+   \def\alsoname{\localgalician{véxase tamén}}%
+   \def\enclname{\localgalician{Adxunto}}%
+   \def\ccname{\localgalician{Copia a}}%
+   \def\headtoname{\localgalician{A}}%
+   \def\proofname{\localgalician{Demostración}}% for AMS-\LaTeX
+   \def\glossaryname{\localgalician{Glosario}}%
+   \def\today{\localgalician{\number\day~de\space\ifcase\month\or
+    xaneiro\or febreiro\or marzo\or abril\or maio\or xuño\or
+    xullo\or agosto\or setembro\or outubro\or novembro\or decembro\fi
+    \space de~\number\year}}}
+
+\def\galician@language{\protect\language=\l@galician}
+
+\def\noextras@galician{%
+   }
+
+\def\blockextras@galician{%
+   \galician@language%
+   \local@hyphenmins{galician}{2}{2}%
+   \galician@captions%
+   \local@marks{galician}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@galician{%
+   \galician@language%
+   \local@hyphenmins{galician}{2}{2}%
+   }
+
+\endinput

@@ -1,0 +1,133 @@
+\ProvidesFile{gloss-french.ldf}[polyglossia: module for french]
+\makeatletter
+
+\ifx\l@french\@undefined%
+   \xpg@nopatterns{French}%
+   \adddialect\l@french0%
+\fi
+
+\def\french@punctuation{%
+    \frenchspacing%
+    \XeTeXinterchartokenstate=1%
+    \XeTeXcharclass `\! 7%
+    \XeTeXcharclass `\? 7%
+    \XeTeXcharclass `\; 7%
+    \XeTeXcharclass `\: 7%
+    \XeTeXinterchartoks 0 7 = {\unskip\kern.1667em}%
+    }
+
+\def\nofrench@punctuation{%
+    \nonfrenchspacing%
+    \XeTeXinterchartokenstate=0%
+}
+
+\def\french@guillemets{%
+    \XeTeXinterchartokenstate=1%
+    \XeTeXcharclass `\« 8%
+    \XeTeXcharclass `\» 8%
+    \XeTeXinterchartoks 8 0 = {\kern.1667em}%
+    \XeTeXinterchartoks 0 8 = {\unskip\kern.1667em}%
+}
+
+\let\@aifORI\@afterindentfalse%
+
+\def\french@indent{\let\@afterindentfalse\@afterindenttrue%
+                        \@afterindenttrue}
+\def\nofrench@indent{\let\@afterindentfalse\@aifORI%
+                          \@afterindentfalse}
+
+%\newcounter{niveauguillemets}[paragraph]
+%
+%\def\tmp@normal{normal}
+%\def\tmp@paragraphe{paragraphe}
+%\def\tmp@ligne{ligne}
+
+%TODO
+%\define@key{french}{guillemets}[normal]{
+%   \def\@tmpa{#1}
+%   \ifx\@tmpa\tmp@ligne%
+%      \def\french@guill@mets{% FIXME
+%      \def\LeftPointingDoubleAngleQuotationMark{«\kern.1667em\setcounter{niveauguillemets}{1}%
+%      \ifthenelse{\value{niveauguillemets} = 1}{\localleftbox{«\kern.1667em}}%
+%      {\everypar={{«}\kern.1667em}\setcounter{niveauguillemets}{1}}}%
+%      \def\RightPointingDoubleAngleQuotationMark{\unskip\kern.1667em»%
+%      \everypar={}\localleftbox{}}}%
+%   \else\ifx\@tmpa\tmp@paragraphe%
+%      \def\french@guill@mets{\def\LeftPointingDoubleAngleQuotationMark{«\kern.1667em%
+%      \everypar={«\kern.1667em}}\def\RightPointingDoubleAngleQuotationMark%
+%      {\unskip\kern.1667em»\everypar={}}}%
+%   \else\ifx\@tmpa\tmp@normal%
+%      \def\french@guill@mets{\def\LeftPointingDoubleAngleQuotationMark{«\kern.1667em}%
+%      \def\RightPointingDoubleAngleQuotationMark{\unskip\kern.1667em»}}%
+%\fi\fi\fi}
+%
+%\def\tmp@sans{sansaccents}
+%\define@key{french}{majuscules}{%
+%   \def\@tmpa{#1}%
+%   \ifx\@tmpa\tmp@sans%
+%      \addfontfeature{Mapping=sansaccents}% <<< TODO!
+%   \fi}
+
+\def\french@captions{%
+   \def\refname{\localfrench{Références}}%
+   \def\abstractname{\localfrench{Résumé}}%
+   \def\bibname{\localfrench{Bibliographie}}%
+   \def\prefacename{\localfrench{Préface}}%
+   \def\chaptername{\localfrench{Chapitre}}%
+   \def\appendixname{\localfrench{Annexe}}%
+   \def\contentsname{\localfrench{Table des matières}}%
+   \def\listfigurename{\localfrench{Table des figures}}%
+   \def\listtablename{\localfrench{Liste des tableaux}}%
+   \def\indexname{\localfrench{Index}}%
+   \def\figurename{\localfrench{\scshape Fig.}}%
+   \def\tablename{\localfrench{\scshape Tab.}}%
+   \def\@Fpt{\ifcase\value{part}\or Première\or Deuxième\or%
+   Troisième\or Quatrième\or Cinquième\or Sixième\or%
+   Septième\or Huitième\or Neuvième\or Dixième\or Onzième\or%
+   Douzième\or Treizième\or Quatorzième\or Quinzième\or%
+   Seizième\or Dix-septième\or Dix-huitième\or Dix-neuvième\or%
+   Vingtième\fi\space}%
+   \def\thepart{}%
+   \def\partname{\localfrench{\protect\@Fpt partie}}%
+   \def\pagename{\localfrench{page}}%
+   \def\seename{\localfrench{\emph{voir}}}%
+   \def\alsoname{\localfrench{\emph{voir aussi}}}%
+   \def\enclname{\localfrench{P.~J. }}%
+   \def\ccname{\localfrench{Copie à }}%
+   \def\headtoname{}%
+   \def\proofname{\localfrench{Démonstration}}% for AMS-\LaTeX
+   \def\today{\localfrench{\ifx\ier\undefined\def\ier{er}\fi%
+      \ifnum\day=1\relax 1\ier%
+      \else \number\day\fi%
+      \space \ifcase\month%
+      \or janvier\or février\or mars\or avril\or mai\or juin\or%
+      juillet\or août\or septembre\or octobre\or novembre\or%
+      décembre\fi%
+      \space \number\year}}}
+
+\def\french@language{\protect\language=\l@french}
+
+\def\noextras@french{%
+   \nofrench@punctuation%
+   \nofrench@indent}
+
+\def\blockextras@french{%
+   \french@language%
+   \local@hyphenmins{french}{2}{2}%
+   \french@punctuation%
+   \french@indent%
+   \french@captions%
+   \local@marks{french}%
+   \french@guillemets%
+   \@ifundefined{setLR}{}{\setLR}%
+   \rmfamily%
+   }
+
+\def\inlineextras@french{%
+   \french@language%
+   \local@hyphenmins{french}{2}{2}%
+   \french@punctuation%
+   \french@guillemets%
+   }
+
+\endinput

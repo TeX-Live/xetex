@@ -1,0 +1,99 @@
+\ProvidesFile{gloss-icelandic.ldf}[polyglossia: module for icelandic]
+\makeatletter
+
+\ifx\l@icelandic\@undefined%
+   \xpg@nopatterns{Icelandic}%
+   \adddialect\l@icelandic0%
+\fi
+
+\def\icelandic@captions{%
+   \def\refname{\localicelandic{Heimildir}}%
+   \def\abstractname{\localicelandic{Útdráttur}}%
+   \def\bibname{\localicelandic{Heimildir}}%
+   \def\prefacename{\localicelandic{Formáli}}%
+   \def\chaptername{\localicelandic{Kafli}}%
+   \def\appendixname{\localicelandic{Viðauki}}%
+   \def\contentsname{\localicelandic{Efnisyfirlit}}%
+   \def\listfigurename{\localicelandic{Myndaskrá}}%
+   \def\listtablename{\localicelandic{Töfluskrá}}%
+   \def\indexname{\localicelandic{Atriðisorðaskrá}}%
+   \def\figurename{\localicelandic{Mynd}}%
+   \def\tablename{\localicelandic{Tafla}}%
+   %\def\thepart{\localicelandic{}}%
+   \def\partname{\localicelandic{Hluti}}%
+   \def\pagename{\localicelandic{Blaðsíða}}%
+   \def\seename{\localicelandic{Sjá}}%
+   \def\alsoname{\localicelandic{Sjá einnig}}%
+   \def\enclname{\localicelandic{Hjálagt}}%
+   \def\ccname{\localicelandic{Samrit}}%
+   \def\headtoname{\localicelandic{Til:}}%
+   \def\proofname{\localicelandic{Sönnun}}% for AMS-\LaTeX
+   \def\glossaryname{\localicelandic{Orðalisti}}%
+   \def\today{\localicelandic{\number\day.~\ifcase\month\or
+    janúar\or febrúar\or mars\or apríl\or maí\or
+    júní\or júlí\or ágúst\or september\or
+    október\or nóvember\or desember\fi
+    \space\number\year}}}
+
+\def\icelandic@language{\protect\language=\l@icelandic}
+
+\def\noextras@icelandic{%
+   }
+
+\def\blockextras@icelandic{%
+   \icelandic@language%
+   \local@hyphenmins{icelandic}{2}{2}%
+   \icelandic@captions%
+   \local@marks{icelandic}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@icelandic{%
+   \icelandic@language%
+   \local@hyphenmins{icelandic}{2}{2}%
+   }
+
+\endinput
+
+
+%% implement this as a separate module ?
+%\mathchardef\m@comma="013B 
+%\def\@comma@{\ifmmode\m@comma\else,\fi}
+%\def\f@thousandsep{\ifmmode\mskip5.5mu\else\penalty\@M\kern.3em\fi}
+%\newcommand{\decimalsep}{.}  \newcommand{\thousandsep}{\@comma@}
+%
+%\newcommand{\tala}[2][\decimalsep]{%
+%         \def\@decimalsep{#1}\@tala#2\@empty,\@empty,\@nil}
+%\def\@tala#1,#2,#3\@nil{%
+%       \ifx\@empty#2%
+%         \@integerpart{#1}%
+%       \else
+%         \@integerpart{#1}\@decimalsep\@decimalpart{#2}%
+%       \fi}
+%\def\@decimalpart#1{\@@decimalpart#1\@empty\@empty\@empty}
+%\def\@@decimalpart#1#2#3#4{#1#2#3%
+%  \ifx\@empty#4%
+%  \else
+%    \thousandsep\expandafter\@@decimalpart\expandafter#4%
+%  \fi}
+%\def\@integerpart#1{\@@integerpart{}#1\@empty\@empty\@empty}
+%\def\@@integerpart#1#2#3#4{%
+%  \ifx\@empty#2%
+%    \@addthousandsep#1\relax
+%  \else
+%    \ifx\@empty#3%
+%      \@addthousandsep\@empty\@empty#1#2\relax
+%    \else
+%      \ifx\@empty#4%
+%        \@addthousandsep\@empty#1#2#3\relax
+%      \else
+%        \@@integerpartafterfi{#1#2#3#4}%
+%      \fi
+%    \fi
+%  \fi}
+%\def\@@integerpartafterfi#1\fi\fi\fi{\fi\fi\fi\@@integerpart{#1}}
+%\def\@addthousandsep#1#2#3#4{#1#2#3%
+%  \if#4\relax
+%  \else
+%    \thousandsep\expandafter\@addthousandsep\expandafter#4%
+%  \fi}

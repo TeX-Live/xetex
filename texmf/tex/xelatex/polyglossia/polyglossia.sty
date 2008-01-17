@@ -1,0 +1,201 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{polyglossia}[2007/12/31 pre-alpha release
+	Babel replacement for XeLaTeX]
+\RequirePackage{etoolbox} % TEMPORARY?
+\RequirePackage{fontspec} %which itself depends on xkeyval
+% TODO - add better font and direction switching mechanisms 
+%        for ex. if Arabic is background, English paragraph 
+% 	 should be \setLR with appropriate font
+%      - improve the user interface:
+%        * \usepackage[lang1,lang2]{polyglossia} as with babel  -> DONE
+%        * \usepackage{polyglossia} followed by 
+%          \setmainlanguage[<options>]{<lang>}   == background
+%          \setotherlanguages{lang1,lang2,lang3}
+%       OR \setotherlanguage[<options>]{lang} etc
+%      - 
+%      - for languages with hyphenation patterns but without
+%        a gloss-* module, allow to load it with only a warning message
+%      - avoid loading gloss file more than once
+%      - 
+%      - 
+%
+\providecommand*{\xpg@nopatterns}[1]{%
+   \PackageWarningNoLine{polyglossia}%
+      {No hyphenation patterns were loaded for `#1'\MessageBreak
+         I will use the patterns loaded for \string\language=0\MessageBreak instead}}
+\providecommand*{\xpg@nolang}[1]{%
+   \PackageWarningNoLine{polyglossia}%
+      {Couldn't find file gloss-#1.ldf!}%
+      %TODO Will try to at least load the hyphenation patterns for #1.
+      }
+\def\opt@enabled{on}
+\def\opt@disabled{off}
+\define@key{polyglossia}{localmarks}[on]{%
+   \def\@tmpa{#1}
+   \ifx\@tmpa\opt@enabled
+      \def\local@marks##1{%
+         \def\markboth####1####2{%
+            \begingroup%
+               \let\label\relax \let\index\relax \let\glossary\relax%
+               \unrestored@protected@xdef\@themark%
+               {{\foreignlanguage{##1}{####1}}{\foreignlanguage{##1}{####2}}}%
+               \@temptokena \expandafter{\@themark}%
+               \mark{\the\@temptokena}%
+            \endgroup%
+            \if@nobreak\ifvmode\nobreak\fi\fi}%
+            \def\markright####1{%
+               \begingroup%
+                  \let\label\relax \let\index\relax \let\glossary\relax%
+                  \expandafter\@markright\@themark{\foreignlanguage{##1}{####1}}%
+                  \@temptokena \expandafter{\@themark}%
+                  \mark{\the\@temptokena}%
+               \endgroup%
+               \if@nobreak\ifvmode\nobreak\fi\fi}%
+            \def\@markright####1####2####3{\@temptokena{####1}%
+               \unrestored@protected@xdef\@themark{{\the\@temptokena}%
+               {{####3}}}}}
+   \else\ifx\@tmpa\opt@disabled
+      \def\local@marks#1{}
+      \typeout{Polyglossia package option: localmarks=off}
+   \fi\fi
+}
+\DeclareOption{nolocalmarks}{\setkeys{polyglossia}{localmarks=off}}
+\setkeys{polyglossia}{localmarks=on}
+
+%% Use the etoolbox macros instead!
+%\def\oaddto#1#2{%
+%   \ifx#1\@undefined
+%      \def#1{#2}%
+%   \else
+%      \ifx#1\relax
+%         \def#1{#2}%
+%      \else
+%         {\toks@\expandafter{#1#2}%
+%           \xdef#1{\the\toks@}}%
+%      \fi
+%   \fi
+%}
+
+\newcommand{\setdefaultlanguage}[2][]{%
+   \IfFileExists{gloss-#2.ldf}%
+   {\ifcsundef{#2@loaded}% from etoolbox.sty
+     {\input{gloss-#2.ldf}%
+      % NEED TO CHANGE THIS because \arabic is a built-in LaTeX command:
+      % so now we have \begin{Arabic}... instead of \begin{arabic}...  
+      \edef\@tmpa{arabic}%
+      \edef\@tmpb{#2}%
+      \ifx\@tmpb\@tmpa%
+      \newenvironment{Arabic}[1][]{\begin{otherlanguage}[####1]{Arabic}}%
+         {\end{otherlanguage}}%
+      \else%   
+      \newenvironment{#2}[1][]{\begin{otherlanguage}[####1]{#2}}%
+         {\end{otherlanguage}}%
+      \fi%
+      \expandafter\newcommand\csname local#2\endcsname[2][]{%
+      \foreignlanguage[####1]{#2}{####2}}%
+      \expandafter\gdef\csname #2@loaded\endcsname{}}%
+     {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
+    \AtBeginDocument{\selectlanguage[#1]{#2}}%
+    \PackageInfo{polyglossia}{Background language set as #2. }}%
+   {\xpg@nolang{#2}}%
+}
+\let\background=\setdefaultlanguage
+
+\newcommand{\setotherlanguage}[2][]{%
+   \IfFileExists{gloss-#2.ldf}%
+   {\ifcsundef{#2@loaded}% from etoolbox.sty
+     {\input{gloss-#2.ldf}%
+      \setkeys{#2}{#1}%
+      \edef\@tmpa{arabic}%
+      \edef\@tmpb{#2}%
+      \ifx\@tmpb\@tmpa%
+      \newenvironment{Arabic}[1][]{\begin{otherlanguage}[####1]{Arabic}}%
+         {\end{otherlanguage}}%
+      \else%   
+      \newenvironment{#2}[1][]{\begin{otherlanguage}[####1]{#2}}%
+         {\end{otherlanguage}}%
+      \fi%
+      \expandafter\newcommand\csname local#2\endcsname[2][]{%
+         \foreignlanguage[####1]{#2}{####2}}%
+      \expandafter\gdef\csname #2@loaded\endcsname{}}%
+     {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}}%
+   {\xpg@nolang{#2}%
+   %TODO \expandafter\ifx\csname l@#2\endcsname\@undefined
+   %\xpg@nopatterns{#2}\expandafter\adddialect\csname l@#2\endcsname 0%
+   %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
+   }%
+}
+\let\load=\setotherlanguage
+
+\newcommand\setotherlanguages[1]{%
+   \def\do##1{\setotherlanguage{##1}}%
+   \docsvlist{#1}}% from etoolbox.sty
+
+\def\common@language{%
+   \protect\language=0%
+   \lefthyphenmin=2\righthyphenmin=3}
+
+\def\noextrascurrent#1{\@ifundefined{noextras@#1}{}%
+   {\csname noextras@#1\endcsname}}
+
+\def\originalLaTeX{\@ifundefined{languagename}{}%
+   {\noextrascurrent{\languagename}}%
+   \common@language}
+
+\AtBeginDocument{\originalLaTeX}
+\@ifundefined{foreignlanguage}{}%
+   {\let\foreignlanguage\@undefined}
+\newcommand{\foreignlanguage}[3][]{%
+   \@ifundefined{inlineextras@#2}{\xpg@nolang{#2}}{%
+     {\def\languagename{#2}%
+      \setkeys{#2}{#1}%
+      \csname inlineextras@#2\endcsname#3}%
+}}
+\@ifundefined{selectlanguage}{}%
+   {\let\selectlanguage\@undefined}
+\newcommand{\selectlanguage}[2][]{%
+   \@ifundefined{blockextras@#2}{\xpg@nolang{#2}}{%
+      \def\xpg@pop@language{%
+         \xpg@set@language{\languagename}%
+         \let\emp@langname\undefined}%
+      \aftergroup\xpg@pop@language%
+      \setkeys{#2}{#1}%
+      \xpg@set@language{#2}%
+}}
+\newcommand{\xpg@set@language}[1]{%
+   \select@language{#1}%
+   \if@filesw%
+      \protected@write\@auxout{}{\protect\select@language{#1}}%
+      \addtocontents{toc}{\protect\select@language{#1}}%
+      \addtocontents{lof}{\protect\select@language{#1}}%
+      \addtocontents{lot}{\protect\select@language{#1}}%
+   \fi%
+}
+\@ifundefined{select@language}{}%
+   {\let\select@language\@undefined}
+\newcommand{\select@language}[1]{%
+   \originalLaTeX%
+   \edef\languagename{#1}%
+   \csname blockextras@#1\endcsname%
+}
+\let\xpg@pop@language\relax
+\@ifundefined{otherlanguage}{}%
+   {\let\otherlanguage\@undefined}
+\@ifundefined{endotherlanguage}{}%
+   {\let\endotherlanguage\@undefined}
+\newenvironment{otherlanguage}[2][]{%
+   \selectlanguage[#1]{#2}%
+   }{}
+\newcommand{\local@hyphenmins}[3]{%
+   \@ifundefined{#1hyphenmins}{}%
+   {\expandafter\xdef\csname #1hyphenmins\endcsname{}}%
+   \lefthyphenmin=#2\righthyphenmin=#3\relax%
+}
+%\DeclareOption*{%
+%   \edef\@temp{\noexpand\setkeys{polyglossia}{\CurrentOption}}%
+%   \@temp}%
+\DeclareOption*{%
+   \edef\@temp{\noexpand\setotherlanguage{\CurrentOption}}
+   \@temp}
+\ProcessOptions*
+\endinput

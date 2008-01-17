@@ -1,0 +1,80 @@
+\ProvidesFile{gloss-bahasam.ldf}[polyglossia: module for bahasa malaysia]
+\makeatletter
+
+\ifx\l@malay\@undefined
+  \ifx\l@meyalu\@undefined
+    \ifx\l@bahasam\@undefined
+      \ifx\l@bahasa\@undefined
+        \ifx\l@bahasai\@undefined
+          \ifx\l@indon\@undefined
+            \ifx\l@indonesian\@undefined
+              \xpg@nopatterns{Bahasa Malaysia}
+              \adddialect\l@malay0\relax
+            \else
+              \let\l@malay\l@indonesian
+            \fi
+          \else
+            \let\l@malay\l@indon
+          \fi
+        \else
+          \let\l@malay\l@bahasai
+        \fi
+      \else
+        \let\l@malay\l@bahasa
+      \fi
+    \else
+      \let\l@malay\l@bahasam
+    \fi
+  \else
+    \let\l@malay\l@meyalu
+  \fi
+\fi
+
+\def\bahasam@captions{%
+   \def\refname{\localbahasam{Pustaka}}%
+   \def\abstractname{\localbahasam{Ringkasan}}%
+   \def\bibname{\localbahasam{Bibliografi}}%
+   \def\prefacename{\localbahasam{Pendahuluan}}%
+   \def\chaptername{\localbahasam{Bab}}%
+   \def\appendixname{\localbahasam{Lampiran}}%
+   \def\contentsname{\localbahasam{Kandungan}}%
+   \def\listfigurename{\localbahasam{Senarai Gambar}}%
+   \def\listtablename{\localbahasam{Senarai Jadual}}%
+   \def\indexname{\localbahasam{Indeks}}%
+   \def\figurename{\localbahasam{Gambar}}%
+   \def\tablename{\localbahasam{Jadual}}%
+   \def\thepart{}\localbahasam{}%
+   \def\partname{\localbahasam{Bahagian}}%
+   \def\pagename{\localbahasam{Halaman}}%
+   \def\seename{\localbahasam{lihat}}%
+   \def\alsoname{\localbahasam{lihat juga}}%
+   \def\enclname{\localbahasam{Lampiran}}%
+   \def\ccname{\localbahasam{cc}}%
+   \def\headtoname{\localbahasam{Kepada}}%
+   \def\proofname{\localbahasam{Bukti}}% for AMS-\LaTeX
+   \def\glossaryname{\localbahasam{Istilah}}%
+   \def\today{\localbahasam{\number\day~\ifcase\month\or
+    Januari\or Pebruari\or Mac\or April\or Mei\or Jun\or
+    Julai\or Ogos\or September\or Oktober\or November\or Disember\fi
+    \space \number\year}}}
+
+\def\bahasam@language{\protect\language=\l@bahasam}
+
+\def\noextras@bahasam{%
+   }
+
+\def\blockextras@bahasam{%
+   \bahasam@language%
+   \local@hyphenmins{bahasam}{2}{2}%
+   \bahasam@captions%
+   \local@marks{bahasam}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@bahasam{%
+   \bahasam@language%
+   \local@hyphenmins{bahasam}{2}{2}%
+   %\bahasam@punctuation%
+   }
+
+\endinput

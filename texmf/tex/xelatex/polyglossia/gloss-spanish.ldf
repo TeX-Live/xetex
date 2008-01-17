@@ -1,0 +1,58 @@
+\ProvidesFile{gloss-spanish.ldf}[polyglossia: module for spanish]
+\makeatletter
+
+\ifx\l@spanish\@undefined
+   \xpg@nopatterns{spanish}
+   \adddialect\l@spanish0
+\fi
+
+\def\spanish@captions{%
+   \def\prefacename{\localspanish{Prefacio}}%
+   \def\refname{\localspanish{Referencias}}%
+   \def\abstractname{\localspanish{Resumen}}%
+   \def\bibname{\localgerman{Bibliografía}}%
+   \def\chaptername{\localspanish{Capítulo}}%
+   \def\appendixname{\localspanish{Apéndice}}%
+   \def\contentsname{\localspanish{Índice general}}%
+   \def\listfigurename{\localspanish{Índice de figuras}}%
+   \def\listtablename{\localspanish{Índice de cuadros}}%
+   \def\indexname{\localspanish{Índice alfabético}}%
+   \def\figurename{\localspanish{Figura}}%
+   \def\tablename{\localspanish{Cuadro}}%
+   \def\partname{\localspanish{Parte}}%
+   \def\enclname{\localspanish{Adjunto(s)}}%
+   \def\ccname{\localspanish{Copia a}}%
+   \def\headtoname{\localspanish{A}}%
+   \def\pagename{\localspanish{Página}}%
+   \def\seename{\localspanish{véase}}%
+   \def\alsoname{\localspanish{véase también}}%
+   \def\proofname{\localspanish{Prueba}}% for AMS-\LaTeX
+   \def\glossaryname{\localspanish{Glosario}}%
+   \def\today{\localspanish{\number\day\NonBreakingSpace de%
+      \space \ifcase\month%
+      \or enero\or febrero\or marzo\or abril\or mayo\or junio\or%
+      julio\or agosto\or septiembre\or octubre\or noviembre\or%
+      diciembre\fi%
+      \space de\NonBreakingSpace\number\year}}}
+
+\def\spanish@language{\protect\language=\l@spanish}
+
+\def\noextras@spanish{%
+   \nonfrenchspacing%
+}
+
+\def\blockextras@spanish{%
+   \spanish@language%
+   \local@hyphenmins{spanish}{2}{2}%
+   \frenchspacing%
+   \spanish@captions%
+   \local@marks{spanish}%
+}
+
+\def\inlineextras@spanish{%
+   \spanish@language%
+   \local@hyphenmins{spanish}{2}{2}%
+   \frenchspacing%
+}
+
+\endinput

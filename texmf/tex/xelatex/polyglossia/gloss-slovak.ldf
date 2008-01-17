@@ -1,0 +1,56 @@
+\ProvidesFile{gloss-slovak.ldf}[polyglossia: module for slovak]
+\makeatletter
+
+\ifx\l@slovak\@undefined%
+   \xpg@nopatterns{Slovak}%
+   \adddialect\l@slovak0%
+\fi
+
+\def\slovak@captions{%
+   \def\refname{\localslovak{Referencie}}%
+   \def\abstractname{\localslovak{Abstrakt}}%
+   \def\bibname{\localslovak{Literatúra}}%
+   \def\prefacename{\localslovak{Úvod}}%
+   \def\chaptername{\localslovak{Kapitola}}%
+   \def\appendixname{\localslovak{Dodatok}}%
+   \def\contentsname{\localslovak{Obsah}}%
+   \def\listfigurename{\localslovak{Zoznam obrázkov}}%
+   \def\listtablename{\localslovak{Zoznam tabuliek}}%
+   \def\indexname{\localslovak{Index}}%
+   \def\figurename{\localslovak{Obrázok}}%
+   \def\tablename{\localslovak{Tabuľka}}%
+   %\def\thepart{\localslovak{}}%
+   \def\partname{\localslovak{Časť}}%
+   \def\pagename{\localslovak{Strana}}%
+   \def\seename{\localslovak{viď}}%
+   \def\alsoname{\localslovak{viď tiež}}%
+   \def\enclname{\localslovak{Prílohy}}%
+   \def\ccname{\localslovak{CC}}%
+   \def\headtoname{\localslovak{Komu}}%
+   \def\proofname{\localslovak{Dôkaz}}% for AMS-\LaTeX
+   \def\glossaryname{\localslovak{Glossary}}%
+   \def\today{\localslovak{\number\day.~\ifcase\month\or
+    januára\or februára\or marca\or apríla\or mája\or
+    júna\or júla\or augusta\or septembra\or októbra\or
+    novembra\or decembra\fi
+    \space \number\year}}}
+
+\def\slovak@language{\protect\language=\l@slovak}
+
+\def\noextras@slovak{%
+   }
+
+\def\blockextras@slovak{%
+   \slovak@language%
+   \local@hyphenmins{slovak}{2}{2}%
+   \slovak@captions%
+   \local@marks{slovak}%
+   \@ifundefined{setLR}{}{\setLR}%
+   }
+
+\def\inlineextras@slovak{%
+   \slovak@language%
+   \local@hyphenmins{slovak}{2}{2}%
+   }
+
+\endinput
