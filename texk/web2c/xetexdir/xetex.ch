@@ -3761,12 +3761,10 @@ old_setting:=selector; selector:=new_string;
 print("pdf:pagesize ");
 if (pdf_page_width > 0) and (pdf_page_height > 0) then begin
   print("width"); print(" ");
-  if mag=1000 then print_scaled(pdf_page_width)
-  else print_scaled(xn_over_d(pdf_page_width,mag,1000));
+  print_scaled(pdf_page_width);
   print("pt"); print(" ");
   print("height"); print(" ");
-  if mag=1000 then print_scaled(pdf_page_height)
-  else print_scaled(xn_over_d(pdf_page_height,mag,1000));
+  print_scaled(pdf_page_height);
   print("pt");
 end else
   print("default");
