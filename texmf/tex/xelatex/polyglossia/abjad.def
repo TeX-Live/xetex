@@ -40,32 +40,32 @@
 
 \def\abjad@zero{}
 \def\abj@num@i#1{%
-  \ifcase#1\or\char"0627 \or\char"0628 \or\char"062C \char"200D\or\char"062F % 
-           \or\char"0647 \or\char"0648 \or\char"0632 \or\char"062D \or\char"0637 \fi
+  \ifcase#1\or ا \or ب \or ج\char"200D\or د % 
+           \or ه \or و \or ز \or ح \or ط \fi
   \ifnum#1=\z@\abjad@zero\fi}
 \def\abj@num@ii#1{%
-  \ifcase#1\or\char"064A \or\char"0643 \or\char"0644 \or\char"0645 \or\char"0646 %
-           \or\char"0633 \or\char"0639 \or\char"0641 \or\char"0635 \fi 
+  \ifcase#1\or ي \or ك \or ل \or م \or ن %
+           \or س \or ع \or ف \or ص \fi 
   \ifnum#1=\z@\fi\abj@num@i}
 \def\abj@num@iii#1{%
-  \ifcase#1\or\char"0642 \or\char"0631 \or\char"0634 \or\char"062A \or\char"062B %
-            \or\char"062E \or\char"0630 \or\char"0636 \or\char"0638 \fi
+  \ifcase#1\or ق \or ر \or ش \or ت \or ث %
+            \or خ \or ذ \or ض \or ظ \fi
   \ifnum#1=\z@\fi\abj@num@ii}
 \def\abj@num@iv#1{%
-  \ifcase#1\or\char"063A \fi
+  \ifcase#1\or غ \fi
   \ifnum#1=\z@\fi\abj@num@iii}
 
 %maghribi س -> ص ص -> ض ش -> س ض -> ظ ظ -> غ غ -> ش
 \def\abj@maghribi@num@ii#1{%
-  \ifcase#1\or\char"064A \or\char"0643 \or\char"0644 \or\char"0645 \or\char"0646 %
-           \or\char"0635 \or\char"0639 \or\char"0641 \or\char"0636 \fi 
+  \ifcase#1\or ي \or ك \or ل \or م \or ن %
+           \or ص \or ع \or ف \or ض \fi 
   \ifnum#1=\z@\abjad@zero\fi\abj@num@i}
 \def\abj@maghribi@num@iii#1{%
-  \ifcase#1\or\char"0642 \or\char"0631 \or\char"0633 \or\char"062A \or\char"062B %
-           \or\char"062E \or\char"0630 \or\char"0638 \or\char"063A \fi
+  \ifcase#1\or ق \or ر \or س \or ت \or ث %
+           \or خ \or ذ \or ظ \or غ \fi
   \ifnum#1=\z@\fi\abj@maghribi@num@ii}
 \def\abj@maghribi@num@iv#1{%
-  \ifcase#1\or\char"0634 \fi
+  \ifcase#1\or ش \fi
   \ifnum#1=\z@\fi\abj@maghribi@num@iii}
 
 \endinput
