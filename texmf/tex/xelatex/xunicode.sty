@@ -1,5 +1,5 @@
-% Copyright 2004 Ross Moore <ross@maths.mq.edu.au>
-\ProvidesFile{xunicode.sty}[2005/02/26 v0.5 provides access to
+% Copyright 2004-2007 Ross Moore <ross@maths.mq.edu.au>
+\ProvidesFile{xunicode.sty}[2008/02/08 v0.91 provides access to
  latin accents and many other characters in Unicode lower plane]
 
 % This package is designed to work with TeX engines that directly
@@ -16,6 +16,36 @@
   \endgroup\endinput}
 \expandafter\ifx\csname XeTeXpicfile\endcsname\relax\expandafter\notXeTeXformat\fi
 \endgroup
+
+% The single biggest mistake made by novice XeTeX users is
+% to declare wrong encodings, using the {inputenc} package.
+% While not fatal, this can cause bad output, which they then
+% incorrectly attribute to XeTeX or to this  xunicode.sty  package.
+% So here is a test for this error, which posts warning messages.
+%
+\def\@TestForInputenc{%
+ \@ifpackageloaded{inputenc}{\@dontuse@inputenc}{}%
+}
+\def\@dontuse@inputenc{%
+  \typeout{\@dontinputenci}%
+  \typeout{\@dontinputencii}%
+  \typeout{\@dontinputenciii}%
+}
+\def\@dontinputenci{*** you should *not* be loading the inputenc package}
+\def\@dontinputencii{*** XeTeX expects the source to be in UTF8 encoding}
+\def\@dontinputenciii{*** some features of other encodings may conflict,
+ resulting in poor output.}
+
+\def\@cleanupafterinputenc{%
+ \let\@TestForInputenc\relax
+ \let\@dontuse@inputenc\relax
+ \let\@dontinputenci\relax
+ \let\@dontinputencii\relax
+ \let\@dontinputenciii\relax
+}
+\@TestForInputenc
+\AtBeginDocument{\@TestForInputenc}
+\AtBeginDocument{\@cleanupafterinputenc}
 
 %%%%  History of Changes  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -43,6 +73,26 @@
 %           \textasciitilde, \textasciiacute, \textasciigrave
 %           \textasciimacron,  \textasciicircum, \textasciicedilla
 %       removed the  " did you really mean " message.
+%
+% v0.6  2005/10/20  
+%       added check and warnings for when  inputenc.sty  is also loaded
+%
+% v0.7  2006/04/09  
+%       changed  \textg  to give x0261
+%
+% v0.8  2006/07/18  
+%       changed  \textminus  to give x2212  (thanks Toralf Senger)
+%       fixed name for x212E as \textestimated  (not \textestimate)
+%       added support for  \textlquill (x2045) and \textrquill (x2046)
+%       added support for  \textmusicalnote (x266A)
+%       added support for  \capital<accent>s   from  textcomp.sty
+%
+% v0.9  2007/09/11  
+%       fixes to some TIPA macro names for active chars:  2 3 G U Z
+%       provides a definition for  \textezh
+%
+% v0.91 2008/02/08  
+%       added declarations for common accents over \i 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -229,22 +279,44 @@
 %\let\add@encoded@accent\add@set@accentMOD
 
 \DeclareEncodedCompositeCharacter{\UTFencname}{\`}{0300}{02CB}  % Combining grave accent
+\@ifundefined{capitalgrave}{\DeclareTextAccent{\capitalgrave}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalgrave}{0300}{02CB}  % textcomp grave accent
 \DeclareEncodedCompositeCharacter{\UTFencname}{\'}{0301}{02CA}  % Combining acute accent
+\@ifundefined{capitalacute}{\DeclareTextAccent{\capitalacute}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalacute}{0301}{02CA}  % textcomp acute accent
 \DeclareEncodedCompositeCharacter{\UTFencname}{\^}{0302}{02C6}  % Combining circumflex accent
+\@ifundefined{capitalcircumflex}{\DeclareTextAccent{\capitalcircumflex}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalcircumflex}{0302}{02C6}  % textcomp circumflex accent
 \DeclareEncodedCompositeCharacter{\UTFencname}{\~}{0303}{02DC}  % Combining tilde
+\@ifundefined{capitaltilde}{\DeclareTextAccent{\capitaltilde}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitaltilde}{0303}{02DC}  % textcomp tilde
 \DeclareEncodedCompositeCharacter{\UTFencname}{\=}{0304}{02C9}  % Combining macron
+\@ifundefined{capitalmacron}{\DeclareTextAccent{\capitalmacron}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalmacron}{0304}{02C9}  % textcomp macron
 \DeclareTextAccent{\textoverline}{OT1}{999}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\textoverline}{0305}{203E}  % Combining overline
 \DeclareEncodedCompositeCharacter{\UTFencname}{\u}{0306}{02D8}  % Combining breve
+\@ifundefined{capitalbreve}{\DeclareTextAccent{\capitalbreve}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalbreve}{0306}{02D8}  % textcomp breve
 \DeclareEncodedCompositeCharacter{\UTFencname}{\.}{0307}{02D9}  % Combining dot above
+\@ifundefined{capitaldotaccent}{\DeclareTextAccent{\capitaldotaccent}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitaldotaccent}{0307}{02D9}  % textcomp dot above
 \DeclareEncodedCompositeCharacter{\UTFencname}{\"}{0308}{00A8}  % Combining diaeresis
+\@ifundefined{capitaldieresis}{\DeclareTextAccent{\capitaldieresis}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitaldieresis}{0308}{00A8}  % textcomp diaeresis
 \@ifundefined{m}{\DeclareTextAccent{\m}{OT1}{999}}{} % miscellaneous IPA symbols
 \DeclareEncodedCompositeCharacter{\UTFencname}{\m}{0309}{0309}  % (Combining hook above)
 \DeclareTextAccent{\texthookabove}{OT1}{999}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\texthookabove}{0309}{0309}  % Combining hook above
 \DeclareEncodedCompositeCharacter{\UTFencname}{\r}{030A}{02DA}  % Combining ring above
+\@ifundefined{capitalring}{\DeclareTextAccent{\capitalring}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalring}{030A}{02DA}  % textcomp ring above
 \DeclareEncodedCompositeCharacter{\UTFencname}{\H}{030B}{02DD}  % Combining double acute
+\@ifundefined{capitalhungarumlaut}{\DeclareTextAccent{\capitalhungarumlaut}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalhungarumlaut}{030B}{02DD}  % textcomp double acute
 \DeclareEncodedCompositeCharacter{\UTFencname}{\v}{030C}{02C7}  % Combining caron
+\@ifundefined{capitalcaron}{\DeclareTextAccent{\capitalcaron}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalcaron}{030C}{02C7}  % textcomp caron
 \@ifundefined{textvbaraccent}{\DeclareTextAccent{\textvbaraccent}{OT1}{999}}{}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\textvbaraccent}{030D}{02C8}  % Combining vertical line above
 \@ifundefined{textdoublevbaraccent}{\DeclareTextAccent{\textdoublevbaraccent}{OT1}{999}}{}
@@ -261,8 +333,12 @@
 \DeclareEncodedCompositeCharacter{\UTFencname}{\textroundcap}{0311}{0311}  % Combining inverted breve
 \@ifundefined{newtie}{\DeclareTextAccent{\newtie}{OT1}{999}}{}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\newtie}{0311}{0311}  % Combining inverted breve
+\@ifundefined{capitalnewtie}{\DeclareTextAccent{\capitalnewtie}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalnewtie}{0311}{0311}  % Combining inverted breve
 \@ifundefined{t}{\DeclareTextAccent{\t}{OT1}{999}}{}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\t}{0311}{0311}  % Combining inverted breve
+\@ifundefined{capitaltie}{\DeclareTextAccent{\capitaltie}{OT1}{999}}{}
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitaltie}{0311}{0311}  % Combining inverted breve
 \DeclareTextAccent{\textturncommaabove}{OT1}{999}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\textturncommaabove}{0312}{02BB}  % Combining turned comma above
 \DeclareTextAccent{\textcommaabove}{OT1}{999}
@@ -309,7 +385,9 @@
 \DeclareTextAccent{\textcommabelow}{OT1}{999}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\textcommabelow}{0326}{0326}  % Combining comma below
 \DeclareEncodedCompositeCharacter{\UTFencname}{\c}{0327}{00B8}  % Combining cedilla
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalcedilla}{0327}{00B8}  % Combining cedilla
 \DeclareEncodedCompositeCharacter{\UTFencname}{\k}{0328}{02DB}  % Combining ogonek
+\DeclareEncodedCompositeCharacter{\UTFencname}{\capitalogonek}{0328}{02DB}  % Combining ogonek
 \@ifundefined{textpolhook}{\DeclareTextAccent{\textpolhook}{OT1}{999}}{}
 \DeclareEncodedCompositeCharacter{\UTFencname}{\textpolhook}{0328}{02DB}  % Combining ogonek
 \@ifundefined{textsyllabic}{\DeclareTextAccent{\textsyllabic}{OT1}{999}}{}
@@ -672,12 +750,14 @@
  \setTIPAcatcodes
 \gdef\activatetipa{\setuptipaaccents
  \def A{\textscripta}%
+% \def B{\textbeta}%  name taken for the greek letter
  \def B{\ss}%
  \def C{\textctc}%
  \def D{\dh}%
  \def E{\textepsilon}%
  \def F{\textphi}%
- \def G{\textbabygamma}%
+ \def G{\textgamma}%
+% \def G{\textbabygamma}%
  \def H{\texthth}%
  \def I{\textsci}%
  \def J{\textctj}%
@@ -691,16 +771,17 @@
  \def R{\textfishhookr}%
  \def S{\textesh}%
  \def T{\texttheta}%
- \def U{\textscupsilon}%
+ \def U{\textupsilon}%
  \def V{\textscriptv}%
  \def W{\textturnm}%
  \def X{\textchi}%
  \def Y{\textscy}%
+% \def Z{\textyogh}%
  \def Z{\textezh}%
  \def 0{\textbaru}%
  \def 1{\textbari}%
- \def 2{\textezh}%
- \def 3{\textvarepsilon}%
+ \def 2{\textturnv}%
+ \def 3{\textrevepsilon}%
  \def 4{\textturnh}%
  \def 5{\textturna}%
  \def 6{\textturnscripta}%
@@ -766,7 +847,7 @@
 \DeclareUTFcharacter[\UTFencname]{x00AA}{\textordfeminine}
 \DeclareUTFcharacter[\UTFencname]{x00AB}{\guillemotleft}
 \DeclareUTFcharacter[\UTFencname]{x00AC}{\textlogicalnot}
-\DeclareUTFcharacter[\UTFencname]{x00AD}{\textminus}
+%\DeclareUTFcharacter[\UTFencname]{x00AD}{\softhyphen}%  is this  \- ???
 \DeclareUTFcharacter[\UTFencname]{x00AE}{\textregistered}
 \DeclareUTFcharacter[\UTFencname]{x00AF}{\textasciimacron}% see also x02C9
 \DeclareUTFcharacter[\UTFencname]{x00B0}{\textdegree}
@@ -776,6 +857,7 @@
 \DeclareUTFcharacter[\UTFencname]{x00B4}{\textasciiacute}% see also x02CA
 \DeclareUTFcharacter[\UTFencname]{x00B5}{\textmu}
 \DeclareUTFcharacter[\UTFencname]{x00B6}{\textparagraph}
+\DeclareUTFcharacter[\UTFencname]{x00B6}{\textpilcrow}
 \DeclareUTFcharacter[\UTFencname]{x00B7}{\textcentereddot}
 \DeclareUTFcharacter[\UTFencname]{x00B8}{\textasciicedilla}% see also x02DB
 \DeclareUTFcharacter[\UTFencname]{x00B9}{\textonesuperior}
@@ -835,9 +917,13 @@
 \DeclareUTFcomposite[\UTFencname]{x00EA}{\^}{e}
 \DeclareUTFcomposite[\UTFencname]{x00EB}{\"}{e}
 \DeclareUTFcomposite[\UTFencname]{x00EC}{\`}{i}
+\DeclareUTFcomposite[\UTFencname]{x00EC}{\`}{\i}
 \DeclareUTFcomposite[\UTFencname]{x00ED}{\'}{i}
+\DeclareUTFcomposite[\UTFencname]{x00ED}{\'}{\i}
 \DeclareUTFcomposite[\UTFencname]{x00EE}{\^}{i}
+\DeclareUTFcomposite[\UTFencname]{x00EE}{\^}{\i}
 \DeclareUTFcomposite[\UTFencname]{x00EF}{\"}{i}
+\DeclareUTFcomposite[\UTFencname]{x00EF}{\"}{\i}
 \DeclareUTFcharacter[\UTFencname]{x00F0}{\dh}   % TIPA-D
 \DeclareUTFcomposite[\UTFencname]{x00F1}{\~}{n}
 \DeclareUTFcomposite[\UTFencname]{x00F2}{\`}{o}
@@ -864,7 +950,9 @@
 \DeclareUTFcomposite[\UTFencname]{x0102}{\u}{A}
 \DeclareUTFcomposite[\UTFencname]{x0103}{\u}{a}
 \DeclareUTFcomposite[\UTFencname]{x0104}{\k}{A}
+\DeclareUTFcharacter[\UTFencname]{x0104}{\Aogonek} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0105}{\k}{a}
+\DeclareUTFcharacter[\UTFencname]{x0105}{\aogonek} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0106}{\'}{C}
 \DeclareUTFcomposite[\UTFencname]{x0107}{\'}{c}
 \DeclareUTFcomposite[\UTFencname]{x0108}{\^}{C}
@@ -929,13 +1017,17 @@
 \DeclareUTFcomposite[\UTFencname]{x013B}{\c}{L}
 \DeclareUTFcomposite[\UTFencname]{x013C}{\c}{l}
 \DeclareUTFcomposite[\UTFencname]{x013D}{\v}{L}
+\DeclareUTFcharacter[\UTFencname]{x013D}{\Lcaron} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x013E}{\v}{l}
+\DeclareUTFcharacter[\UTFencname]{x013E}{\lcaron} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x013F}{\textmiddledot}{L} % with middle dot
 \DeclareUTFcomposite[\UTFencname]{x0140}{\textmiddledot}{l} % with middle dot
 \DeclareUTFcomposite[\UTFencname]{x0141}{\B}{L}
 \DeclareUTFcharacter[\UTFencname]{x0141}{\L}
+\DeclareUTFcharacter[\UTFencname]{x0141}{\Lstroke} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0142}{\B}{l}
 \DeclareUTFcharacter[\UTFencname]{x0142}{\l}
+\DeclareUTFcharacter[\UTFencname]{x0142}{\lstroke} %  regi-cp1250
 \DeclareUTFcharacter[\UTFencname]{x0142}{\textbarl}
 \DeclareUTFcomposite[\UTFencname]{x0143}{\'}{N}
 \DeclareUTFcomposite[\UTFencname]{x0144}{\'}{n}
@@ -958,23 +1050,33 @@
 \DeclareUTFcharacter[\UTFencname]{x0152}{\OE}
 \DeclareUTFcharacter[\UTFencname]{x0153}{\oe}
 \DeclareUTFcomposite[\UTFencname]{x0154}{\'}{R}
+\DeclareUTFcharacter[\UTFencname]{x0154}{\Racute} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0155}{\'}{r}
+\DeclareUTFcharacter[\UTFencname]{x0155}{\racute} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0156}{\c}{R}
 \DeclareUTFcomposite[\UTFencname]{x0157}{\c}{r}
 \DeclareUTFcomposite[\UTFencname]{x0158}{\v}{R}
 \DeclareUTFcomposite[\UTFencname]{x0159}{\v}{r}
 \DeclareUTFcomposite[\UTFencname]{x015A}{\'}{S}
+\DeclareUTFcharacter[\UTFencname]{x015A}{\Sacute} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x015B}{\'}{s}
+\DeclareUTFcharacter[\UTFencname]{x015B}{\sacute} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x015C}{\^}{S}
 \DeclareUTFcomposite[\UTFencname]{x015D}{\^}{s}
 \DeclareUTFcomposite[\UTFencname]{x015E}{\c}{S}
+\DeclareUTFcharacter[\UTFencname]{x015E}{\Scedilla} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x015F}{\c}{s}
+\DeclareUTFcharacter[\UTFencname]{x015F}{\scedilla} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0160}{\v}{S}
+\DeclareUTFcharacter[\UTFencname]{x0160}{\Scaron} %  regi-cp1250 
 \DeclareUTFcomposite[\UTFencname]{x0161}{\v}{s}
+\DeclareUTFcharacter[\UTFencname]{x0161}{\scaron} %  regi-cp1250 
 \DeclareUTFcomposite[\UTFencname]{x0162}{\c}{T}
 \DeclareUTFcomposite[\UTFencname]{x0163}{\c}{t}
 \DeclareUTFcomposite[\UTFencname]{x0164}{\v}{T}
+\DeclareUTFcharacter[\UTFencname]{x0164}{\Tcaron} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0165}{\v}{t}
+\DeclareUTFcharacter[\UTFencname]{x0165}{\tcaron} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x0166}{\B}{T}
 \DeclareUTFcharacter[\UTFencname]{x0166}{\textTstroke}
 \DeclareUTFcomposite[\UTFencname]{x0167}{\B}{t}
@@ -999,9 +1101,13 @@
 \DeclareUTFcomposite[\UTFencname]{x0179}{\'}{Z}
 \DeclareUTFcomposite[\UTFencname]{x017A}{\'}{z}
 \DeclareUTFcomposite[\UTFencname]{x017B}{\.}{Z}
+\DeclareUTFcharacter[\UTFencname]{x017B}{\Zdotaccent} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x017C}{\.}{z}
+\DeclareUTFcharacter[\UTFencname]{x017C}{\zdotaccent} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x017D}{\v}{Z}
+\DeclareUTFcharacter[\UTFencname]{x017D}{\Zcaron} %  regi-cp1250
 \DeclareUTFcomposite[\UTFencname]{x017E}{\v}{z}
+\DeclareUTFcharacter[\UTFencname]{x017E}{\zcaron} %  regi-cp1250
 
 \DeclareUTFcomposite[\UTFencname]{x0180}{\B}{b}
 \DeclareUTFcharacter[\UTFencname]{x0180}{\textcrb}
@@ -1028,7 +1134,7 @@
 \DeclareUTFcomposite[\UTFencname]{x0192}{\m}{f}
 \DeclareUTFcomposite[\UTFencname]{x0193}{\texthookabove}{G} % with hook above
 \DeclareUTFcomposite[\UTFencname]{x0194}{\m}{G} % capital Gamma
-\DeclareUTFcharacter[\UTFencname]{x0194}{\textgamma}
+\DeclareUTFcharacter[\UTFencname]{x0194}{\textgamma}  %  TIPA-G
 \DeclareUTFcharacter[\UTFencname]{x0195}{\hv}
 \DeclareUTFcharacter[\UTFencname]{x0195}{\texthvlig}
 \DeclareUTFcomposite[\UTFencname]{x0196}{\m}{I}
@@ -1059,6 +1165,7 @@
 %\DeclareUTFcharacter[\UTFencname]{x01A8}{} % tone 2
 \DeclareUTFcharacter[\UTFencname]{x01A9}{\ESH}
 \DeclareUTFcharacter[\UTFencname]{x01AA}{\textlooptoprevesh} % reversed ESH loop
+\DeclareUTFcharacter[\UTFencname]{x01AA}{\textlhtlongi} % Left-hooktop Long I
 \DeclareUTFcomposite[\UTFencname]{x01AB}{\textpalhookbelow}{t} % t with palatal hook
 \DeclareUTFcharacter[\UTFencname]{x01AB}{\textlhookt}
 \DeclareUTFcomposite[\UTFencname]{x01AC}{\m}{T}
@@ -1069,7 +1176,7 @@
 \DeclareUTFcomposite[\UTFencname]{x01AF}{\textrighthorn}{U} % U with horn
 %\DeclareUTFcharacter[\UTFencname]{x01B0}{} % u with horn
 \DeclareUTFcomposite[\UTFencname]{x01B0}{\textrighthorn}{u} % u with horn
-\DeclareUTFcharacter[\UTFencname]{x01B1}{\textupsilon}
+\DeclareUTFcharacter[\UTFencname]{x01B1}{\textupsilon} %  TIPA-U
 \DeclareUTFcomposite[\UTFencname]{x01B2}{\m}{U}
 \DeclareUTFcomposite[\UTFencname]{x01B2}{\m}{V}
 \DeclareUTFcomposite[\UTFencname]{x01B3}{\m}{Y}
@@ -1212,7 +1319,7 @@
 \DeclareUTFcomposite[\UTFencname]{x021B}{\textcommabelow}{t}
 \DeclareUTFcharacter[\UTFencname]{x021C}{\YOGH}
 \DeclareUTFcharacter[\UTFencname]{x021D}{\yogh}
-\DeclareUTFcharacter[\UTFencname]{x021D}{\textyogh}
+\DeclareUTFcharacter[\UTFencname]{x021D}{\textyogh}  %   TIPA-Z   ???
 \DeclareUTFcomposite[\UTFencname]{x021E}{\v}{H}
 \DeclareUTFcomposite[\UTFencname]{x021F}{\v}{h}
 \DeclareUTFcomposite[\UTFencname]{x0220}{\M}{N}
@@ -1289,10 +1396,11 @@
 \DeclareUTFcharacter[\UTFencname]{x0260}{\texthtg}
 %\DeclareUTFcomposite[\UTFencname]{x0261}{\?}{g} % script
 \DeclareUTFcharacter[\UTFencname]{x0261}{\textscriptg}
+\let\textg\textscriptg  %  added for v0.7  RRM  2006/04/09
 %\DeclareUTFcomposite[\UTFencname]{x0262}{\?}{G} % small
 \DeclareUTFcharacter[\UTFencname]{x0262}{\textscg}
 \DeclareUTFcomposite[\UTFencname]{x0263}{\m}{g}
-\DeclareUTFcharacter[\UTFencname]{x0263}{\textbabygamma}     % TIPA-G
+\DeclareUTFcharacter[\UTFencname]{x0263}{\textbabygamma}
 \DeclareUTFcharacter[\UTFencname]{x0264}{\textramshorns} % ram's horn %  TIPA-7
 %\DeclareUTFcomposite[\UTFencname]{x0265}{\?}{h} % turned
 \DeclareUTFcharacter[\UTFencname]{x0265}{\textturnh}    % TIPA-4
@@ -1305,6 +1413,7 @@
 \DeclareUTFcharacter[\UTFencname]{x0268}{\textbari}    % TIPA-1
 \DeclareUTFcomposite[\UTFencname]{x0269}{\m}{i}
 \DeclareUTFcharacter[\UTFencname]{x0269}{\textiota} % ?? see x0196
+\DeclareUTFcharacter[\UTFencname]{x0269}{\textvibyi} %  ?? 
 %\DeclareUTFcomposite[\UTFencname]{x026A}{\?}{I} % small
 \DeclareUTFcharacter[\UTFencname]{x026A}{\textsci}     % TIPA-I
 %\DeclareUTFcomposite[\UTFencname]{x026B}{\?}{l} % with middle tilde
@@ -1347,6 +1456,8 @@
 \DeclareUTFcharacter[\UTFencname]{x027D}{\textrtailr}
 %\DeclareUTFcomposite[\UTFencname]{x027E}{\?}{r} % with fishhook
 \DeclareUTFcharacter[\UTFencname]{x027E}{\textfishhookr}  %  TIPA-R
+\DeclareUTFcharacter[\UTFencname]{x027F}{\textlhti} %
+\DeclareUTFcharacter[\UTFencname]{x027F}{\textlhtlongi} %
 %\DeclareUTFcomposite[\UTFencname]{x027F}{\?}{r} % reversed with fishhook
 %\DeclareUTFcomposite[\UTFencname]{x0280}{\?}{R} % small
 \DeclareUTFcharacter[\UTFencname]{x0280}{\textscr}
@@ -1371,7 +1482,7 @@
 \DeclareUTFcharacter[\UTFencname]{x0288}{\textrtailt}
 \DeclareUTFcomposite[\UTFencname]{x0289}{\B}{u}
 \DeclareUTFcharacter[\UTFencname]{x0289}{\textbaru}        % TIPA-0
-%\DeclareUTFcharacter[\UTFencname]{x028A}{\textscupsilon}  % TIPA-U
+%\DeclareUTFcharacter[\UTFencname]{x028A}{\textscupsilon}  % TIPA-U  ???
 \DeclareUTFcomposite[\UTFencname]{x028B}{\m}{u}
 \DeclareUTFcomposite[\UTFencname]{x028B}{\m}{v}
 \DeclareUTFcharacter[\UTFencname]{x028B}{\textscriptv}  % TIPA-V
@@ -1388,7 +1499,8 @@
 %\DeclareUTFcomposite[\UTFencname]{x0291}{\?}{z} % with curl
 \DeclareUTFcharacter[\UTFencname]{x0291}{\textctz}
 \DeclareUTFcomposite[\UTFencname]{x0292}{\m}{z}
-\DeclareUTFcharacter[\UTFencname]{x0292}{\ezh}          % TIPA-Z
+\DeclareUTFcharacter[\UTFencname]{x0292}{\ezh}
+\DeclareUTFcharacter[\UTFencname]{x0292}{\textezh}          % TIPA-Z
 %\DeclareUTFcomposite[\UTFencname]{x0293}{\?}{\ezh} % with curl
 \DeclareUTFcharacter[\UTFencname]{x0293}{\textctyogh}
 \DeclareUTFcharacter[\UTFencname]{x0294}{\textglotstop} %  TIPA-P
@@ -1550,7 +1662,7 @@
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textinvsca} % ??
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textctstretchc} % ??
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textctstretchcvar} % ??
-%\DeclareUTFcharacter[\UTFencname]{x????}{\texthtrtaild} % ??
+%\DeclareUTFcharacter[\UTFencname]{x????}{\texthtrtaild} % ??  Hooktop right-tail D
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textfrhookd} % ??
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textfrhookdvar} % ??
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textdblig} % ??
@@ -1565,8 +1677,6 @@
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textbktailgamma} % ??
 %\DeclareUTFcharacter[\UTFencname]{x????}{\texthtrtailhth} % ??
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textheng} % ??
-%\DeclareUTFcharacter[\UTFencname]{x????}{\textlhti} % ??
-%\DeclareUTFcharacter[\UTFencname]{x????}{\textlhtlongi} % ?? see x0196
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textrevscl} % ???
 %\DeclareUTFcharacter[\UTFencname]{x????}{\texthmlig} % ???
 %\DeclareUTFcharacter[\UTFencname]{x????}{\textnrleg} % ???
@@ -2009,10 +2119,16 @@
 \DeclareUTFcharacter[\UTFencname]{x2039}{\guilsinglleft}
 \DeclareUTFcharacter[\UTFencname]{x203A}{\guilsinglright}
 \DeclareUTFcharacter[\UTFencname]{x203B}{\textreferencemark}
+%\DeclareUTFcharacter[\UTFencname]{x203C}{\textdblexclam}
 \DeclareUTFcharacter[\UTFencname]{x203D}{\textinterrobang}
 \DeclareUTFcharacter[\UTFencname]{x203F}{\textbottomtiebar}
 \DeclareUTFcharacter[\UTFencname]{x2044}{\textfractionsolidus}
-\DeclareUTFcharacter[\UTFencname]{x204B}{\textpilcrow}
+\DeclareUTFcharacter[\UTFencname]{x2045}{\textlquill}
+\DeclareUTFcharacter[\UTFencname]{x2046}{\textrquill}
+%\DeclareUTFcharacter[\UTFencname]{x2047}{\textdblquestion}
+%\DeclareUTFcharacter[\UTFencname]{x2048}{\textquestexclam}
+%\DeclareUTFcharacter[\UTFencname]{x2049}{\textexclamquest}
+%\DeclareUTFcharacter[\UTFencname]{x204B}{\textreversepilcrow}
 \DeclareUTFcharacter[\UTFencname]{x2052}{\textdiscount}
 
 %\DeclareUTFcharacter[\UTFencname]{x20A0}{\texteurocurrency}
@@ -2038,15 +2154,19 @@
 %\DeclareUTFcharacter[\UTFencname]{x????}{\quotesstraightdblbase}
 
 \DeclareUTFcharacter[\UTFencname]{x2103}{\textcelsius}
+%\DeclareUTFcharacter[\UTFencname]{x2103}{\textfahrenheit}
 \DeclareUTFcharacter[\UTFencname]{x210F}{\hbar}
 \DeclareUTFcharacter[\UTFencname]{x2116}{\textnumero}
 \DeclareUTFcharacter[\UTFencname]{x2117}{\textcircledP}
 \DeclareUTFcharacter[\UTFencname]{x211E}{\textrecipe}
 \DeclareUTFcharacter[\UTFencname]{x2120}{\textservicemark}
 \DeclareUTFcharacter[\UTFencname]{x2122}{\texttrademark}
+%\DeclareUTFcharacter[\UTFencname]{x2125}{\textounce}
 \DeclareUTFcharacter[\UTFencname]{x2126}{\textohm}
 \DeclareUTFcharacter[\UTFencname]{x2127}{\textmho}
-\DeclareUTFcharacter[\UTFencname]{x212E}{\textestimate}
+%\DeclareUTFcharacter[\UTFencname]{x212A}{\textkelvin}
+%\DeclareUTFcharacter[\UTFencname]{x212B}{\textangstrom}
+\DeclareUTFcharacter[\UTFencname]{x212E}{\textestimated}
 
 \DeclareUTFcharacter[\UTFencname]{x2132}{\Finv}
 \DeclareUTFcharacter[\UTFencname]{x2135}{\aleph}
@@ -2072,10 +2192,17 @@
 \DeclareUTFcharacter[\UTFencname]{x2198}{\textglobfall}
 \DeclareUTFcharacter[\UTFencname]{x2199}{\textswarrow}
 
+\DeclareUTFcharacter[\UTFencname]{x2212}{\textminus}
+%\DeclareUTFcharacter[\UTFencname]{x2213}{\textmp}
 \DeclareUTFcharacter[\UTFencname]{x221A}{\textsurd}
+%\DeclareUTFcharacter[\UTFencname]{x2329}{\textlangle}% few fonts
+%\DeclareUTFcharacter[\UTFencname]{x232A}{\textrangle}% few fonts
 \DeclareUTFcharacter[\UTFencname]{x2422}{\textblank}
 \DeclareUTFcharacter[\UTFencname]{x2423}{\textvisiblespace}
 \DeclareUTFcharacter[\UTFencname]{x25E6}{\textopenbullet}
+\DeclareUTFcharacter[\UTFencname]{x266A}{\textmusicalnote}
+%\DeclareUTFcharacter[\UTFencname]{x271D}{\textdied}
+%\DeclareUTFcharacter[\UTFencname]{x272D}{\textborn}
 
 \DeclareRobustCommand{\T}[1]{\~{\m{#1}}}
 
