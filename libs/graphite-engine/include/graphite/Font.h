@@ -393,10 +393,22 @@ protected:
 
 private:
 	FontFace * m_pfface;	// set up with Graphite tables
+
+	// Cache of common tables:
+	const void * m_pHead;
+	const void * m_pHmtx;
+	const void * m_pLoca;
+	const void * m_pGlyf;
+	size_t m_cbHmtxSize;
+	size_t m_cbLocaSize;
+	bool m_fTablesCached;
+
 	void initialiseFontFace(bool fDumbFallback);
+	void EnsureTablesCached();
 };
 
-inline Font::Font() : m_pfface(0) { }
+inline Font::Font() : m_pfface(0), m_fTablesCached(false)
+{ }
 
 } // namespace gr
 

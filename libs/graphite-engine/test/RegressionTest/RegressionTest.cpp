@@ -124,9 +124,10 @@ int main(int argc, char* argv[])
 
 //	::ReleaseDC(NULL, g_hdc);
 
-g_strmMemUsage.open("SegMemoryUsage.log");
-g_smu.prettyPrint(g_strmMemUsage);
-g_strmMemUsage.close();
+	// Output segment memory usage information.
+	//g_strmMemUsage.open("SegMemoryUsage.log");
+	//g_smu.prettyPrint(g_strmMemUsage);
+	//g_strmMemUsage.close();
 
 	return g_errorCount;
 }
@@ -310,12 +311,13 @@ int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, R
 
 	Segment * pseg = *ppsegRet;
 
-pseg->calculateMemoryUsage(g_smu);
+	pseg->calculateMemoryUsage(g_smu);
 
-//g_fmu = Font::calculateMemoryUsage();
-//g_strmMemUsage.open("fontMemoryUsage.log");
-//g_fmu.prettyPrint(g_strmMemUsage);
-//g_strmMemUsage.close();	
+	// Calculate and output font memory usage.
+	//g_fmu = Font::calculateMemoryUsage();
+	//g_strmMemUsage.open("fontMemoryUsage.log");
+	//g_fmu.prettyPrint(g_strmMemUsage);
+	//g_strmMemUsage.close();	
 
 	//	Test results.
 	int segMin = pseg->startCharacter();

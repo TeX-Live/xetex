@@ -1245,8 +1245,8 @@ protected:
 
 	int	m_ichwBeforeAssoc;		// index of associated character in the string
 	int	m_ichwAfterAssoc;		// (relative to the official beginning of the segment)
-								// char might possibly not be officially in this segment
-
+								// char might possibly not be officially in this segment,
+								// in which case value is infinity
 
 	// Measurements for highlighting an entire cluster, relative to origin of this slot,
 	// which is the cluster base.

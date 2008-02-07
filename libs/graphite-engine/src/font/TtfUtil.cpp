@@ -80,7 +80,7 @@ namespace
 	}
 
 #define MAKE_TAG(a,b,c,d) ((a << 24UL) + (b << 16UL) + (c << 8UL) + (d))
-	const gr::fontTableId32 id_to_tag_map[] = {
+	const gr::fontTableId32 mapIdToTag[] = {
 		MAKE_TAG('c','m','a','p'),
 		MAKE_TAG('c','v','t',' '),
 		MAKE_TAG('c','r','y','p'),
@@ -105,7 +105,8 @@ namespace
 		MAKE_TAG('S','i','l','f'),
 		MAKE_TAG('S','i','l','e'),
 		MAKE_TAG('S','i','l','l')
-	};
+ 	};
+
 
 /*----------------------------------------------------------------------------------------------
 	Table of standard Postscript glyph names. From Martin Hosken. Disagress with ttfdump.exe
@@ -1897,9 +1898,10 @@ bool CalcAbsolutePoints(int * prgnX, int * prgnY, int cnPoints)
 ---------------------------------------------------------------------------------------------*/
 gr::fontTableId32 TableIdTag(const TableId tid)
 {
-	assert(sizeof(id_to_tag_map) == sizeof(gr::fontTableId32) * ktiLast);
+	assert(sizeof(mapIdToTag) == sizeof(gr::fontTableId32) * ktiLast);
 	assert(tid < ktiLast);
-	return id_to_tag_map[tid];
+
+	return mapIdToTag[tid];
 }
 
 /*----------------------------------------------------------------------------------------------
