@@ -346,22 +346,27 @@ GrResult GrEngine::ReadFontTables(Font * pfont, bool fItalic)
     		&m_fxdBadVersion);
 	if (!fOk)
 	{
-		wchar_t rgch1[50];
-		wchar_t rgch2[50];
-#if defined(_WIN32)
-		// This version does not work in Windows, in spite of being documented:
-		// swprintf(rgch, 50, L"%d", (m_fxdBadVersion >> 16));
-		// Removing the size argument make it work.
-		swprintf(rgch1, L"%d", (m_fxdBadVersion >> 16));
-		swprintf(rgch2, L"%d", (m_fxdBadVersion & 0x0000FFFF));
-#else
-		swprintf(rgch1, 50, L"%d", (m_fxdBadVersion >> 16));
-		swprintf(rgch2, 50, L"%d", (m_fxdBadVersion & 0x0000FFFF));
-#endif
+//		wchar_t rgch1[50];
+//		wchar_t rgch2[50];
+//#if defined(_WIN32)
+//		// This version does not work in Windows, in spite of being documented:
+//		// swprintf(rgch, 50, L"%d", (m_fxdBadVersion >> 16));
+//		// Removing the size argument make it work.
+//		swprintf(rgch1, L"%d", (m_fxdBadVersion >> 16));
+//		swprintf(rgch2, L"%d", (m_fxdBadVersion & 0x0000FFFF));
+//#else
+//		swprintf(rgch1, 50, L"%d", (m_fxdBadVersion >> 16));
+//		swprintf(rgch2, 50, L"%d", (m_fxdBadVersion & 0x0000FFFF));
+//#endif
+		char rgch[50]; // more than enough space to print two 16-bit ints
+		char *pch = &rgch[0];
+		sprintf(rgch, "%d.%d", (m_fxdBadVersion >> 16), (m_fxdBadVersion & 0x0000FFFF));
 		std::wstring stu = L"unsupported version (";
-		stu.append(rgch1);
-		stu.append(L".");
-		stu.append(rgch2);
+		//stu.append(rgch1);
+		//stu.append(L".");
+		//stu.append(rgch2);
+		while (*pch != 0)
+			stu.push_back((wchar_t)*pch++);
 		stu.append(L") of Graphite tables");
 		m_stuInitError.assign(stu.c_str());
 		m_ferr = kferrBadVersion;
