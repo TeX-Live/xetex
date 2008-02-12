@@ -3098,27 +3098,34 @@ for j:=1 to n do append_to_name(TEX_format_default[j]);
 @x
 @p function make_name_string:str_number;
 var k:1..file_name_size; {index into |name_of_file|}
+save_area_delimiter, save_ext_delimiter: pool_pointer;
+save_name_in_progress, save_stop_at_space: boolean;
 begin if (pool_ptr+name_length>pool_size)or(str_ptr=max_strings)or
  (cur_length>0) then
   make_name_string:="?"
 else  begin for k:=1 to name_length do append_char(xord[name_of_file[k]]);
   make_name_string:=make_string;
-  end;
   {At this point we also set |cur_name|, |cur_ext|, and |cur_area| to
    match the contents of |name_of_file|.}
-  k:=1;
+  save_area_delimiter:=area_delimiter; save_ext_delimiter:=ext_delimiter;
+  save_name_in_progress:=name_in_progress; save_stop_at_space:=stop_at_space;
   name_in_progress:=true;
   begin_name;
   stop_at_space:=false;
+  k:=1;
   while (k<=name_length)and(more_name(name_of_file[k])) do
     incr(k);
-  stop_at_space:=true;
+  stop_at_space:=save_stop_at_space;
   end_name;
-  name_in_progress:=false;
+  name_in_progress:=save_name_in_progress;
+  area_delimiter:=save_area_delimiter; ext_delimiter:=save_ext_delimiter;
+  end;
 end;
 @y
 @p function make_name_string:str_number;
-var k:1..file_name_size; {index into |name_of_file|}
+var k:0..file_name_size; {index into |name_of_file|}
+save_area_delimiter, save_ext_delimiter: pool_pointer;
+save_name_in_progress, save_stop_at_space: boolean;
 begin if (pool_ptr+name_length>pool_size)or(str_ptr=max_strings)or
  (cur_length>0) then
   make_name_string:="?"
@@ -3126,6 +3133,20 @@ else  begin
   make_utf16_name;
   for k:=0 to name_length16-1 do append_char(name_of_file16[k]);
   make_name_string:=make_string;
+  {At this point we also set |cur_name|, |cur_ext|, and |cur_area| to
+   match the contents of |name_of_file|.}
+  save_area_delimiter:=area_delimiter; save_ext_delimiter:=ext_delimiter;
+  save_name_in_progress:=name_in_progress; save_stop_at_space:=stop_at_space;
+  name_in_progress:=true;
+  begin_name;
+  stop_at_space:=false;
+  k:=0;
+  while (k<name_length16)and(more_name(name_of_file16[k])) do
+    incr(k);
+  stop_at_space:=save_stop_at_space;
+  end_name;
+  name_in_progress:=save_name_in_progress;
+  area_delimiter:=save_area_delimiter; ext_delimiter:=save_ext_delimiter;
   end;
 end;
 function u_make_name_string(var f:unicode_file):str_number;

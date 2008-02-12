@@ -200,7 +200,7 @@ versions of the program.
 @y
 @d file_name_size == maxint
 @d ssup_error_line = 255
-@d ssup_max_strings == 262143
+@d ssup_max_strings == 2097151
 {Larger values than 65536 cause the arrays consume much more memory.}
 @d ssup_trie_opcode == 65535
 @d ssup_trie_size == @"3FFFFF
@@ -233,7 +233,7 @@ versions of the program.
 @!sup_mem_bot = 1;
 
 @!inf_main_memory = 3000;
-@!sup_main_memory = 32000000;
+@!sup_main_memory = 256000000;
 
 @!inf_trie_size = 8000;
 @!sup_trie_size = ssup_trie_size;
@@ -1827,10 +1827,10 @@ forced execution stops by the operating system. To diminish the chance
 of this happening, a counter is used to keep track of the recursion
 depth, in conjunction with a constant called |expand_depth|.
 
-Note that this does not catch all possible infinite recursion loops,
-just the ones that exhaust the application calling stack. The
-actual maximum value of |expand_depth| is outside of our control, but
-the initial setting of |10000| should be enough to prevent problems.
+This does not catch all possible infinite recursion loops, just the ones
+that exhaust the application calling stack. The actual maximum value of
+|expand_depth| is outside of our control, but the initial setting of
+|10000| should be enough to prevent problems.
 @^system dependencies@>
 
 @<Global...@>=
@@ -2221,22 +2221,39 @@ name_of_file[name_length+1]:=0;
 @z
 
 @x [29.525] l.10163 - make_name_string
+@p function make_name_string:str_number;
+var k:1..file_name_size; {index into |name_of_file|}
+begin if (pool_ptr+name_length>pool_size)or(str_ptr=max_strings)or
+ (cur_length>0) then
+  make_name_string:="?"
+else  begin for k:=1 to name_length do append_char(xord[name_of_file[k]]);
   make_name_string:=make_string;
   end;
 @y
+@p function make_name_string:str_number;
+var k:1..file_name_size; {index into |name_of_file|}
+save_area_delimiter, save_ext_delimiter: pool_pointer;
+save_name_in_progress, save_stop_at_space: boolean;
+begin if (pool_ptr+name_length>pool_size)or(str_ptr=max_strings)or
+ (cur_length>0) then
+  make_name_string:="?"
+else  begin for k:=1 to name_length do append_char(xord[name_of_file[k]]);
   make_name_string:=make_string;
-  end;
   {At this point we also set |cur_name|, |cur_ext|, and |cur_area| to
    match the contents of |name_of_file|.}
-  k:=1;
+  save_area_delimiter:=area_delimiter; save_ext_delimiter:=ext_delimiter;
+  save_name_in_progress:=name_in_progress; save_stop_at_space:=stop_at_space;
   name_in_progress:=true;
   begin_name;
   stop_at_space:=false;
+  k:=1;
   while (k<=name_length)and(more_name(name_of_file[k])) do
     incr(k);
-  stop_at_space:=true;
+  stop_at_space:=save_stop_at_space;
   end_name;
-  name_in_progress:=false;
+  name_in_progress:=save_name_in_progress;
+  area_delimiter:=save_area_delimiter; ext_delimiter:=save_ext_delimiter;
+  end;
 @z
 
 @x [29.526] l.10194 - stop scanning file name if we're at end-of-line.
