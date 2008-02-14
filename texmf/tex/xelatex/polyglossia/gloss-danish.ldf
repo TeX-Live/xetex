@@ -6,7 +6,7 @@
          \adddialect\l@danish0
 \fi
 
-\def\danish@captions{%
+\def\captionsdanish{%
   \def\prefacename{Forord}%
   \def\refname{Litteratur}%
   \def\abstractname{Resumé}%
@@ -28,7 +28,7 @@
   \def\alsoname{Se også}}%
   \def\proofname{Bevis}%
   \def\glossaryname{Gloseliste}%
-  \def\today{\localdanish{\number\day.~\ifcase\month\or
+  \def\today{\textdanish{\number\day.~\ifcase\month\or
     januar\or februar\or marts\or april\or maj\or juni\or
     juli\or august\or september\or oktober\or november\or december\fi
     \space\number\year}}
@@ -44,7 +44,7 @@
    \danish@language%
    \local@hyphenmins{danish}{2}{3}%
    \frenchspacing%
-   \danish@captions%
+   \captionsdanish%
    \local@marks{danish}%
    }
 

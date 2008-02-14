@@ -2,48 +2,63 @@
 \usepackage[no-math]{fontspec}
 \usepackage{xltxtra,url}
 \usepackage{polyglossia,hijrical}
-\background[calendar=gregorian,locale=mashriq]{arabic}
-\load[dialect=british]{english}\load{farsi}
+\setdefaultlanguage[calendar=gregorian,locale=mashriq]{arabic}
+\setotherlanguage[dialect=british]{english}
+\setotherlanguage{farsi}
 \setromanfont{Junicode}
 \defaultfontfeatures{Scale=MatchLowercase}
 \setmonofont{Inconsolata}
 \setsansfont{Lucida Sans Unicode}
 \newfontfamily\arabicfont[Script=Arabic,Scale=1.5]{Scheherazade}
 \newfontfamily\farsifont[Script=Arabic,Scale=1.1,WordSpace=2]{IranNastaliq}
+\parindent 0pt
 \begin{document}
 \section{\arabicfont لغات مختلفة}
 
 
-{\Large العربية}\footnote{ من «\LR{\url{http://ar.wikipedia.org/wiki/}\RL{لغة عربية}}»} أكبر لغات المجموعة السامية من حيث عدد المتحدثين، وإحدى أكثر اللغات انتشارا في العالم، يتحدثها أكثر من ٤٢٢ مليون نسمة،١ ويتوزع متحدثوها في المنطقة المعروفة باسم الوطن العربي، بالإضافة إلى العديد من المناطق الأخرى المجاورة كالأحواز وتركيا وتشاد ومالي والسنغال. وللغة العربية أهمية قصوى لدى أتباع الديانة الإسلامية، فهي لغة مصدري التشريع الأساسيين في الإسلام: القرآن، والأحاديث النبوية المروية عن النبي محمد، ولا تتم الصلاة في الإسلام (وعبادات أخرى) إلا بإتقان بعض من كلمات هذه اللغة. والعربية هي أيضاً لغة طقسية رئيسية لدى عدد من الكنائس المسيحية في العالم العربي، كما كتبت بها الكثير من أهم الأعمال الدينية والفكرية اليهودية في العصور الوسطى. وإثر انتشار الإسلام، وتأسيسه دولا، ارتفعت مكانة اللغة العربية، وأصبحت لغة السياسة والعلم والأدب لقرون طويلة في الأراضي التي حكمها المسلمون، وأثرت العربية، تأثيرا مباشرا أو غير مباشر على كثير من اللغات الأخرى في العالم الإسلامي، كالتركية والفارسية والأردية مثلا.
-%
-%العربية لغة رسمية في كل دول العالم العربي إضافة إلى كونها لغة رسمية في دول السنغال، ومالي، وتشاد، وإريتيريا وإسرائيل. وقد اعتمدت العربية كإحدى لغات منظمة الأمم المتحدة الرسمية الست.
-%
-%تحتوي العربية على 28 حرفا مكتوبا وتكتب من اليمين إلى اليسار - بعكس الكثير من لغات العالم - ومن أعلى الصفحة إلى أسفلها.
-%
-%يطلق العرب على اللغة العربية لقب "لغة الضاد" لاعتقادهم بأنها الوحيدة بين لغات العالم التي تحتوي على حرف الضاد.
-
+{\Large العربية}\footnote{%
+	من «\LR{\url{http://ar.wikipedia.org/wiki/}\RL{لغة عربية}}»} 
+أكبر لغات المجموعة السامية من حيث عدد المتحدثين، وإحدى أكثر اللغات انتشارا في
+العالم، يتحدثها أكثر من ٤٢٢ مليون نسمة،١ ويتوزع متحدثوها في المنطقة المعروفة
+باسم الوطن العربي، بالإضافة إلى العديد من المناطق الأخرى المجاورة كالأحواز وتركيا
+وتشاد ومالي والسنغال. وللغة العربية أهمية قصوى لدى أتباع الديانة الإسلامية، فهي
+لغة مصدري التشريع الأساسيين في الإسلام: القرآن، والأحاديث النبوية المروية عن النبي
+محمد، ولا تتم الصلاة في الإسلام (وعبادات أخرى) إلا بإتقان بعض من كلمات هذه اللغة.
+والعربية هي أيضاً لغة طقسية رئيسية لدى عدد من الكنائس المسيحية في العالم العربي،
+كما كتبت بها الكثير من أهم الأعمال الدينية والفكرية اليهودية في العصور الوسطى.
+وإثر انتشار الإسلام، وتأسيسه دولا، ارتفعت مكانة اللغة العربية، وأصبحت لغة السياسة
+والعلم والأدب لقرون طويلة في الأراضي التي حكمها المسلمون، وأثرت العربية، تأثيرا
+مباشرا أو غير مباشر على كثير من اللغات الأخرى في العالم الإسلامي، كالتركية
+والفارسية والأردية مثلا.
 
 \begin{farsi}
-{\Large فارسی} یا پارسی، (که دری، فارسی دری، و پارسی دری نیز نامیده می‌شود) زبانی است که در کشورهای ایران، افغانستان، تاجیکستان و ازبکستان به آن سخن می‌رانند. (برخی زبان فارسی در تاجیکستان و ازبکستان و چین را فارسی تاجیکی نام می‌گذارند).
+{\Large فارسی}\footnote{%
+	از «\LR{\url{http://fa.wikipedia.org/wiki/}\RL{فارسي}}»}
+یا پارسی، (که دری، فارسی دری، و پارسی دری نیز نامیده می‌شود) زبانی است که
+در کشورهای ایران، افغانستان، تاجیکستان و ازبکستان به آن سخن می‌رانند.
+(برخی زبان فارسی در تاجیکستان و ازبکستان و چین را فارسی تاجیکی نام
+می‌گذارند).  
 \end{farsi}
 
-\setLR\rmfamily
 \bigskip
 
 \begin{english}
-\textbf{English}\footnote{\rmfamily From \url{http://en.wikipedia.org/wiki/English_language}} is a West Germanic language originating in England, and the first language for most people in Australia, Canada, the Commonwealth Caribbean, Ireland, New Zealand, the United Kingdom and the United States of America (also commonly known as the Anglosphere). It is used extensively as a second language and as an official language throughout the world, especially in Commonwealth countries and in many international organisations.
-%
-%Modern English is sometimes described as the global lingua franca.[1][2] English is a dominant international language in communications, science, business, aviation, entertainment, radio and diplomacy.[3] The influence of the British Empire is the primary reason for the initial spread of the language far beyond the British Isles.[4] Since World War II, the growing economic and cultural influence of the United States has significantly accelerated the adoption of English.[2]
+\textbf{English}\footnote{%
+	From \url{http://en.wikipedia.org/wiki/English_language}} 
+is a West Germanic language originating in England, and the first language for
+most people in Australia, Canada, the Commonwealth Caribbean, Ireland, New
+Zealand, the United Kingdom and the United States of America (also commonly
+known as the Anglosphere). It is used extensively as a second language and as
+an official language throughout the world, especially in Commonwealth countries
+and in many international organisations.
 
-%A working knowledge of English is required in certain fields, professions, and occupations. As a result, over a billion people speak English at least at a basic level (see English language learning and teaching). English is one of six official languages of the United Nations.
 \end{english}
 \bigskip
-
-\setRL\arabicfont
 
 \section{\arabicfont أعمال تأريخية (\LR{\rmfamily Calendar operations})}
 
 
-\LR{\localenglish{\rmfamily\today}} = \today\ = \Hijritoday  \footnote{ محسوب ب‍ \textsf{hijrical.sty}} 
+\LR{\localenglish{\rmfamily\today}} = \today\ = \Hijritoday\footnote{ 
+	محسوب ب‍ \textsf{hijrical.sty}} 
 
 \end{document}

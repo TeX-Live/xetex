@@ -6,30 +6,30 @@
    \adddialect\l@icelandic0%
 \fi
 
-\def\icelandic@captions{%
-   \def\refname{\localicelandic{Heimildir}}%
-   \def\abstractname{\localicelandic{Útdráttur}}%
-   \def\bibname{\localicelandic{Heimildir}}%
-   \def\prefacename{\localicelandic{Formáli}}%
-   \def\chaptername{\localicelandic{Kafli}}%
-   \def\appendixname{\localicelandic{Viðauki}}%
-   \def\contentsname{\localicelandic{Efnisyfirlit}}%
-   \def\listfigurename{\localicelandic{Myndaskrá}}%
-   \def\listtablename{\localicelandic{Töfluskrá}}%
-   \def\indexname{\localicelandic{Atriðisorðaskrá}}%
-   \def\figurename{\localicelandic{Mynd}}%
-   \def\tablename{\localicelandic{Tafla}}%
-   %\def\thepart{\localicelandic{}}%
-   \def\partname{\localicelandic{Hluti}}%
-   \def\pagename{\localicelandic{Blaðsíða}}%
-   \def\seename{\localicelandic{Sjá}}%
-   \def\alsoname{\localicelandic{Sjá einnig}}%
-   \def\enclname{\localicelandic{Hjálagt}}%
-   \def\ccname{\localicelandic{Samrit}}%
-   \def\headtoname{\localicelandic{Til:}}%
-   \def\proofname{\localicelandic{Sönnun}}% for AMS-\LaTeX
-   \def\glossaryname{\localicelandic{Orðalisti}}%
-   \def\today{\localicelandic{\number\day.~\ifcase\month\or
+\def\captionsicelandic{%
+   \def\refname{\texticelandic{Heimildir}}%
+   \def\abstractname{\texticelandic{Útdráttur}}%
+   \def\bibname{\texticelandic{Heimildir}}%
+   \def\prefacename{\texticelandic{Formáli}}%
+   \def\chaptername{\texticelandic{Kafli}}%
+   \def\appendixname{\texticelandic{Viðauki}}%
+   \def\contentsname{\texticelandic{Efnisyfirlit}}%
+   \def\listfigurename{\texticelandic{Myndaskrá}}%
+   \def\listtablename{\texticelandic{Töfluskrá}}%
+   \def\indexname{\texticelandic{Atriðisorðaskrá}}%
+   \def\figurename{\texticelandic{Mynd}}%
+   \def\tablename{\texticelandic{Tafla}}%
+   %\def\thepart{\texticelandic{}}%
+   \def\partname{\texticelandic{Hluti}}%
+   \def\pagename{\texticelandic{Blaðsíða}}%
+   \def\seename{\texticelandic{Sjá}}%
+   \def\alsoname{\texticelandic{Sjá einnig}}%
+   \def\enclname{\texticelandic{Hjálagt}}%
+   \def\ccname{\texticelandic{Samrit}}%
+   \def\headtoname{\texticelandic{Til:}}%
+   \def\proofname{\texticelandic{Sönnun}}% for AMS-\LaTeX
+   \def\glossaryname{\texticelandic{Orðalisti}}%
+   \def\today{\texticelandic{\number\day.~\ifcase\month\or
     janúar\or febrúar\or mars\or apríl\or maí\or
     júní\or júlí\or ágúst\or september\or
     október\or nóvember\or desember\fi
@@ -43,7 +43,7 @@
 \def\blockextras@icelandic{%
    \icelandic@language%
    \local@hyphenmins{icelandic}{2}{2}%
-   \icelandic@captions%
+   \captionsicelandic%
    \local@marks{icelandic}%
    \@ifundefined{setLR}{}{\setLR}%
    }

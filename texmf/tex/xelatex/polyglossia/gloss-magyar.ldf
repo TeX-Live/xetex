@@ -13,37 +13,37 @@
   \let\l@hungarian\l@magyar
 \fi
 
-\def\magyar@captions{%
-   \def\refname{\localmagyar{Hivatkozások}}%
-   \def\abstractname{\localmagyar{Kivonat}}%
-   \def\bibname{\localmagyar{Irodalomjegyzék}}%
-   \def\prefacename{\localmagyar{Előszó}}%
-   \def\chaptername{\localmagyar{fejezet}}%
-   \def\appendixname{\localmagyar{Függelék}}%
-   \def\contentsname{\localmagyar{Tartalomjegyzék}}%
-   \def\listfigurename{\localmagyar{Ábrák jegyzéke}}%
-   \def\listtablename{\localmagyar{Táblázatok jegyzéke}}%
-   \def\indexname{\localmagyar{Tárgymutató}}%
-   \def\figurename{\localmagyar{ábra}}%
-   \def\tablename{\localmagyar{táblázat}}%
-   %\def\thepart{\localmagyar{}}%
-   \def\partname{\localmagyar{rész}}%
-   \def\pagename{\localmagyar{oldal}}%
-   \def\seename{\localmagyar{lásd}}%
-   \def\alsoname{\localmagyar{lásd még}}%
-   \def\enclname{\localmagyar{Melléklet}}%
-   \def\ccname{\localmagyar{Körlevél–címzettek}}%
-   \def\headtoname{\localmagyar{Címzett}}%
-   \def\proofname{\localmagyar{Bizonyítás}}% for AMS-\LaTeX
-   \def\glossaryname{\localmagyar{Szójegyzék}}%
-   \def\today{\localmagyar{%
+\def\captionsmagyar{%
+   \def\refname{\textmagyar{Hivatkozások}}%
+   \def\abstractname{\textmagyar{Kivonat}}%
+   \def\bibname{\textmagyar{Irodalomjegyzék}}%
+   \def\prefacename{\textmagyar{Előszó}}%
+   \def\chaptername{\textmagyar{fejezet}}%
+   \def\appendixname{\textmagyar{Függelék}}%
+   \def\contentsname{\textmagyar{Tartalomjegyzék}}%
+   \def\listfigurename{\textmagyar{Ábrák jegyzéke}}%
+   \def\listtablename{\textmagyar{Táblázatok jegyzéke}}%
+   \def\indexname{\textmagyar{Tárgymutató}}%
+   \def\figurename{\textmagyar{ábra}}%
+   \def\tablename{\textmagyar{táblázat}}%
+   %\def\thepart{\textmagyar{}}%
+   \def\partname{\textmagyar{rész}}%
+   \def\pagename{\textmagyar{oldal}}%
+   \def\seename{\textmagyar{lásd}}%
+   \def\alsoname{\textmagyar{lásd még}}%
+   \def\enclname{\textmagyar{Melléklet}}%
+   \def\ccname{\textmagyar{Körlevél–címzettek}}%
+   \def\headtoname{\textmagyar{Címzett}}%
+   \def\proofname{\textmagyar{Bizonyítás}}% for AMS-\LaTeX
+   \def\glossaryname{\textmagyar{Szójegyzék}}%
+   \def\today{\textmagyar{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or
     április\or május\or június\or
     július\or augusztus\or szeptember\or
     október\or november\or december\fi
     \space\number\day.}}%
-   \def\ondatemagyar{\localmagyar{%
+   \def\ondatemagyar{\textmagyar{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or
     április\or május\or június\or
@@ -68,7 +68,7 @@
 \def\blockextras@magyar{%
    \magyar@language%
    \local@hyphenmins{magyar}{2}{2}%
-   \magyar@captions%
+   \captionsmagyar%
    \local@marks{magyar}%
    \@ifundefined{setLR}{}{\setLR}%
    }

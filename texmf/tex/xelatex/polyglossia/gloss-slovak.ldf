@@ -6,30 +6,30 @@
    \adddialect\l@slovak0%
 \fi
 
-\def\slovak@captions{%
-   \def\refname{\localslovak{Referencie}}%
-   \def\abstractname{\localslovak{Abstrakt}}%
-   \def\bibname{\localslovak{Literatúra}}%
-   \def\prefacename{\localslovak{Úvod}}%
-   \def\chaptername{\localslovak{Kapitola}}%
-   \def\appendixname{\localslovak{Dodatok}}%
-   \def\contentsname{\localslovak{Obsah}}%
-   \def\listfigurename{\localslovak{Zoznam obrázkov}}%
-   \def\listtablename{\localslovak{Zoznam tabuliek}}%
-   \def\indexname{\localslovak{Index}}%
-   \def\figurename{\localslovak{Obrázok}}%
-   \def\tablename{\localslovak{Tabuľka}}%
-   %\def\thepart{\localslovak{}}%
-   \def\partname{\localslovak{Časť}}%
-   \def\pagename{\localslovak{Strana}}%
-   \def\seename{\localslovak{viď}}%
-   \def\alsoname{\localslovak{viď tiež}}%
-   \def\enclname{\localslovak{Prílohy}}%
-   \def\ccname{\localslovak{CC}}%
-   \def\headtoname{\localslovak{Komu}}%
-   \def\proofname{\localslovak{Dôkaz}}% for AMS-\LaTeX
-   \def\glossaryname{\localslovak{Glossary}}%
-   \def\today{\localslovak{\number\day.~\ifcase\month\or
+\def\captionsslovak{%
+   \def\refname{\textslovak{Referencie}}%
+   \def\abstractname{\textslovak{Abstrakt}}%
+   \def\bibname{\textslovak{Literatúra}}%
+   \def\prefacename{\textslovak{Úvod}}%
+   \def\chaptername{\textslovak{Kapitola}}%
+   \def\appendixname{\textslovak{Dodatok}}%
+   \def\contentsname{\textslovak{Obsah}}%
+   \def\listfigurename{\textslovak{Zoznam obrázkov}}%
+   \def\listtablename{\textslovak{Zoznam tabuliek}}%
+   \def\indexname{\textslovak{Index}}%
+   \def\figurename{\textslovak{Obrázok}}%
+   \def\tablename{\textslovak{Tabuľka}}%
+   %\def\thepart{\textslovak{}}%
+   \def\partname{\textslovak{Časť}}%
+   \def\pagename{\textslovak{Strana}}%
+   \def\seename{\textslovak{viď}}%
+   \def\alsoname{\textslovak{viď tiež}}%
+   \def\enclname{\textslovak{Prílohy}}%
+   \def\ccname{\textslovak{CC}}%
+   \def\headtoname{\textslovak{Komu}}%
+   \def\proofname{\textslovak{Dôkaz}}% for AMS-\LaTeX
+   \def\glossaryname{\textslovak{Glossary}}%
+   \def\today{\textslovak{\number\day.~\ifcase\month\or
     januára\or februára\or marca\or apríla\or mája\or
     júna\or júla\or augusta\or septembra\or októbra\or
     novembra\or decembra\fi
@@ -43,7 +43,7 @@
 \def\blockextras@slovak{%
    \slovak@language%
    \local@hyphenmins{slovak}{2}{2}%
-   \slovak@captions%
+   \captionsslovak%
    \local@marks{slovak}%
    \@ifundefined{setLR}{}{\setLR}%
    }

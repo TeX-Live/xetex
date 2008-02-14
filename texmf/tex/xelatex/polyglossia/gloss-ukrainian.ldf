@@ -10,36 +10,53 @@
 \fi
 
 \def\ukrainian@font{%
+\font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
 \@ifundefined{ukrainianfont}{%
       \@ifundefined{cyrillicfont}{%
-	\addfontfeature{Script=Cyrillic,Language=Ukrainian}}{\cyrillicfont}}%
-      {\ukrainianfont}}
+        \zf@check@ot@script{cyrl}%
+	\if@tempswa%
+	  \addfontfeature{Script=Cyrillic}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the Cyrillic script!^^J
+	  Please define \string\cyrillicfont\space or \string\ukrainianfont\space with \newfontfamily}%
+	\fi%
+	\zf@check@ot@lang{UKR}%
+	\if@tempswa\addfontfeature{Language=Ukrainian}\fi
+	}%
+        {\cyrillicfont%
+	\zf@check@ot@lang{UKR}%
+	\if@tempswa\addfontfeature{Language=Ukrainian}\fi%
+        }%
+     }% 
+     {\ukrainianfont}%
+}%
 
-\def\ukrainian@captions{%
-   \def\refname{\localukrainian{Література}}%
-   \def\abstractname{\localukrainian{Анотація}}%
-   \def\bibname{\localukrainian{Бібліоґрафія}}%
-   \def\prefacename{\localukrainian{Вступ}}%
-   \def\chaptername{\localukrainian{Розділ}}%
-   \def\appendixname{\localukrainian{Додаток}}%
-   \def\contentsname{\localukrainian{Зміст}}%
-   \def\listfigurename{\localukrainian{Перелік ілюстрацій}}%
-   \def\listtablename{\localukrainian{Перелік таблиць}}%
-   \def\indexname{\localukrainian{Покажчик}}%
-   \def\authorname{\localukrainian{Іменний покажчик}}% babel has "Їменний покажчик"
-   \def\figurename{\localukrainian{Рис.}}%
-   \def\tablename{\localukrainian{Табл.}}%
-   %\def\thepart{\localukrainian{}}%
-   \def\partname{\localukrainian{Частина}}%
-   \def\pagename{\localukrainian{с.}}%
-   \def\seename{\localukrainian{див.}}%
-   \def\alsoname{\localukrainian{див.\ також}}%
-   \def\enclname{\localukrainian{вкладка}}%
-   \def\ccname{\localukrainian{копія}}%
-   \def\headtoname{\localukrainian{До}}%
-   \def\proofname{\localukrainian{Доведення}}% for AMS-\LaTeX
-   \def\glossaryname{\localukrainian{Словник термінів}}%
-   \def\today{\localukrainian{\number\day~\ifcase\month\or
+\def\captionsukrainian{%
+   \def\refname{\textukrainian{Література}}%
+   \def\abstractname{\textukrainian{Анотація}}%
+   \def\bibname{\textukrainian{Бібліоґрафія}}%
+   \def\prefacename{\textukrainian{Вступ}}%
+   \def\chaptername{\textukrainian{Розділ}}%
+   \def\appendixname{\textukrainian{Додаток}}%
+   \def\contentsname{\textukrainian{Зміст}}%
+   \def\listfigurename{\textukrainian{Перелік ілюстрацій}}%
+   \def\listtablename{\textukrainian{Перелік таблиць}}%
+   \def\indexname{\textukrainian{Покажчик}}%
+   \def\authorname{\textukrainian{Іменний покажчик}}% babel has "Їменний покажчик"
+   \def\figurename{\textukrainian{Рис.}}%
+   \def\tablename{\textukrainian{Табл.}}%
+   %\def\thepart{\textukrainian{}}%
+   \def\partname{\textukrainian{Частина}}%
+   \def\pagename{\textukrainian{с.}}%
+   \def\seename{\textukrainian{див.}}%
+   \def\alsoname{\textukrainian{див.\ також}}%
+   \def\enclname{\textukrainian{вкладка}}%
+   \def\ccname{\textukrainian{копія}}%
+   \def\headtoname{\textukrainian{До}}%
+   \def\proofname{\textukrainian{Доведення}}% for AMS-\LaTeX
+   \def\glossaryname{\textukrainian{Словник термінів}}%
+   \def\today{\textukrainian{\number\day~\ifcase\month\or
     січня\or
     лютого\or
     березня\or
@@ -77,7 +94,7 @@
    \ukrainian@language%
    \local@hyphenmins{ukrainian}{2}{2}%
    \frenchspacing%
-   \ukrainian@captions%
+   \captionsukrainian%
    \local@marks{ukrainian}%
    \@ifundefined{setLR}{}{\setLR}%
    \ukrainian@font%

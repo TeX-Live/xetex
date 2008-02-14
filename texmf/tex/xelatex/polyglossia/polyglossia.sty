@@ -3,22 +3,6 @@
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY?
 \RequirePackage{fontspec} %which itself depends on xkeyval
-% TODO - add better font and direction switching mechanisms 
-%        for ex. if Arabic is background, English paragraph 
-% 	 should be \setLR with appropriate font
-%      - improve the user interface:
-%        * \usepackage[lang1,lang2]{polyglossia} as with babel  -> DONE
-%        * \usepackage{polyglossia} followed by 
-%          \setmainlanguage[<options>]{<lang>}   == background
-%          \setotherlanguages{lang1,lang2,lang3}
-%       OR \setotherlanguage[<options>]{lang} etc
-%      - 
-%      - for languages with hyphenation patterns but without
-%        a gloss-* module, allow to load it with only a warning message
-%      - avoid loading gloss file more than once
-%      - 
-%      - 
-%
 \providecommand*{\xpg@nopatterns}[1]{%
    \PackageWarningNoLine{polyglossia}%
       {No hyphenation patterns were loaded for `#1'\MessageBreak
@@ -26,8 +10,9 @@
 \providecommand*{\xpg@nolang}[1]{%
    \PackageWarningNoLine{polyglossia}%
       {Couldn't find file gloss-#1.ldf!}%
-      %TODO Will try to at least load the hyphenation patterns for #1.
+      %TODO try at least to load the hyphenation patterns for #1.
       }
+%FIXME: this needs to be tested!
 \def\opt@enabled{on}
 \def\opt@disabled{off}
 \define@key{polyglossia}{localmarks}[on]{%
@@ -85,46 +70,70 @@
       \edef\@tmpa{arabic}%
       \edef\@tmpb{#2}%
       \ifx\@tmpb\@tmpa%
-      \newenvironment{Arabic}[1][]{\begin{otherlanguage}[####1]{Arabic}}%
+      \newenvironment{Arabic}[1][]{\begin{otherlanguage}[####1]{arabic}}%
          {\end{otherlanguage}}%
       \else%   
       \newenvironment{#2}[1][]{\begin{otherlanguage}[####1]{#2}}%
          {\end{otherlanguage}}%
       \fi%
-      \expandafter\newcommand\csname local#2\endcsname[2][]{%
-      \foreignlanguage[####1]{#2}{####2}}%
-      \expandafter\gdef\csname #2@loaded\endcsname{}}%
+      \expandafter\newcommand\csname text#2\endcsname[2][]{%
+       \foreignlanguage[####1]{#2}{####2}}%
+      %\csgdef{text#2}####1{\foreignlanguage{#2}{####1}}%
+      %\csgdef{text#2}[####1]####2{\foreignlanguage[####1]{#2}{####2}}%
+      \csletcs{local#2}{text#2}%
+      \csgdef{#2@loaded}{}%
+     }%
      {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
-    \AtBeginDocument{\selectlanguage[#1]{#2}}%
-    \PackageInfo{polyglossia}{Background language set as #2. }}%
-   {\xpg@nolang{#2}}%
-}
+    %% The following settings are for the default language and script:
+    \AtBeginDocument{%
+    \selectlanguage[#1]{#2}%
+    \selectbackgroundlanguage{#2}}%
+   }%
+   %ELSE
+   {\xpg@nolang{#2}}}%
 \let\background=\setdefaultlanguage
+
+% This saves the normalfont for the latin script since we may change normalfont in other scripts
+\let\normalfontlatin=\normalfont%
+
+\def\reset@latin@script{%
+   \@ifundefined{setLR}{}{\setLR}%
+   \normalfontlatin}
+
+\newcommand{\selectbackgroundlanguage}[1]{%
+    \ifcsundef{selectnormalfont#1}{}{\csname selectnormalfont#1\endcsname}%
+    \ifcsundef{#1@numbers}{}{\csname #1@numbers\endcsname}%
+    %\PackageInfo{polyglossia}{Background language set as #1.}
+    }
 
 \newcommand{\setotherlanguage}[2][]{%
    \IfFileExists{gloss-#2.ldf}%
-   {\ifcsundef{#2@loaded}% from etoolbox.sty
+   {\ifcsundef{#2@loaded}%
      {\input{gloss-#2.ldf}%
       \setkeys{#2}{#1}%
       \edef\@tmpa{arabic}%
       \edef\@tmpb{#2}%
       \ifx\@tmpb\@tmpa%
-      \newenvironment{Arabic}[1][]{\begin{otherlanguage}[####1]{Arabic}}%
+      \newenvironment{Arabic}[1][]{\begin{otherlanguage}[####1]{arabic}}%
          {\end{otherlanguage}}%
       \else%   
       \newenvironment{#2}[1][]{\begin{otherlanguage}[####1]{#2}}%
          {\end{otherlanguage}}%
       \fi%
-      \expandafter\newcommand\csname local#2\endcsname[2][]{%
+      \expandafter\newcommand\csname text#2\endcsname[2][]{%
          \foreignlanguage[####1]{#2}{####2}}%
-      \expandafter\gdef\csname #2@loaded\endcsname{}}%
-     {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}}%
-   {\xpg@nolang{#2}%
+      \csletcs{local#2}{text#2}%
+      \csgdef{#2@loaded}{}%
+     }%
+     {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
+   }%
+   %ELSE  
+   {\xpg@nolang{#2}}%
    %TODO \expandafter\ifx\csname l@#2\endcsname\@undefined
    %\xpg@nopatterns{#2}\expandafter\adddialect\csname l@#2\endcsname 0%
    %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
-   }%
 }
+
 \let\load=\setotherlanguage
 
 \newcommand\setotherlanguages[1]{%
@@ -199,3 +208,4 @@
    \@temp}
 \ProcessOptions*
 \endinput
+

@@ -6,30 +6,30 @@
    \adddialect\l@czech0%
 \fi
 
-\def\czech@captions{%
-   \def\refname{\localczech{Reference}}%
-   \def\abstractname{\localczech{Abstrakt}}%
-   \def\bibname{\localczech{Literatura}}%
-   \def\prefacename{\localczech{Předmluva}}%
-   \def\chaptername{\localczech{Kapitola}}%
-   \def\appendixname{\localczech{Dodatek}}%
-   \def\contentsname{\localczech{Obsah}}%
-   \def\listfigurename{\localczech{Seznam obrázků}}%
-   \def\listtablename{\localczech{Seznam tabulek}}%
-   \def\indexname{\localczech{Index}}%
-   \def\figurename{\localczech{Obrázek}}%
-   \def\tablename{\localczech{Tabulka}}%
-   %\def\thepart{\localczech{}}%
-   \def\partname{\localczech{Část}}%
-   \def\pagename{\localczech{Strana}}%
-   \def\seename{\localczech{viz}}%
-   \def\alsoname{\localczech{viz}}%
-   \def\enclname{\localczech{Příloha}}%
-   \def\ccname{\localczech{Na vědomí:}}%
-   \def\headtoname{\localczech{Komu}}%
-   \def\proofname{\localczech{Důkaz}}% for AMS-\LaTeX
-   \def\glossaryname{\localczech{Glosář}}%
-   \def\today{\localczech{\number\day.~\ifcase\month\or
+\def\captionsczech{%
+   \def\refname{\textczech{Reference}}%
+   \def\abstractname{\textczech{Abstrakt}}%
+   \def\bibname{\textczech{Literatura}}%
+   \def\prefacename{\textczech{Předmluva}}%
+   \def\chaptername{\textczech{Kapitola}}%
+   \def\appendixname{\textczech{Dodatek}}%
+   \def\contentsname{\textczech{Obsah}}%
+   \def\listfigurename{\textczech{Seznam obrázků}}%
+   \def\listtablename{\textczech{Seznam tabulek}}%
+   \def\indexname{\textczech{Index}}%
+   \def\figurename{\textczech{Obrázek}}%
+   \def\tablename{\textczech{Tabulka}}%
+   %\def\thepart{\textczech{}}%
+   \def\partname{\textczech{Část}}%
+   \def\pagename{\textczech{Strana}}%
+   \def\seename{\textczech{viz}}%
+   \def\alsoname{\textczech{viz}}%
+   \def\enclname{\textczech{Příloha}}%
+   \def\ccname{\textczech{Na vědomí:}}%
+   \def\headtoname{\textczech{Komu}}%
+   \def\proofname{\textczech{Důkaz}}% for AMS-\LaTeX
+   \def\glossaryname{\textczech{Glosář}}%
+   \def\today{\textczech{\number\day.~\ifcase\month\or
     ledna\or února\or března\or dubna\or května\or
     června\or července\or srpna\or září\or
     října\or listopadu\or prosince\fi
@@ -45,7 +45,7 @@
    \czech@language%
    \local@hyphenmins{czech}{2}{2}%
    \frenchspacing%
-   \czech@captions%
+   \captionsczech%
    \local@marks{czech}%
    \@ifundefined{setLR}{}{\setLR}%
    }

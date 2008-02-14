@@ -6,7 +6,7 @@
    \adddialect\l@italian0
 \fi
 
-\def\italian@captions{%
+\def\captionsitalian{%
   \def\prefacename{Prefazione}%
   \def\refname{Riferimenti bibliografici}%
   \def\abstractname{Sommario}%
@@ -28,7 +28,7 @@
   \def\alsoname{vedi anche}%
   \def\proofname{Dimostrazione}%
   \def\glossaryname{Glossario}%
-   \def\today{\localitalian{\number\day~\ifcase\month\or
+   \def\today{\textitalian{\number\day~\ifcase\month\or
     gennaio\or febbraio\or marzo\or aprile\or maggio\or giugno\or
     luglio\or agosto\or settembre\or ottobre\or novembre\or
     dicembre\fi\space \number\year}}
@@ -39,7 +39,7 @@
 \def\blockextras@italian{%
    \italian@language%
    \local@hyphenmins{italian}{2}{2}%
-   \italian@captions%
+   \captionsitalian%
    \local@marks{italian}%
 %TODO	\clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
    }

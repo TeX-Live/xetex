@@ -1,5 +1,7 @@
 \ProvidesFile{gloss-hebrew.ldf}[polyglossia: module for hebrew]
 \RequirePackage{bidi}
+%%TODO: Implement hebrew calendar
+%% hebcal.sty
 \makeatletter
 
 \ifx\l@hebrew\@undefined
@@ -11,7 +13,7 @@
 
 \providehyphenmins{\CurrentOption}{\thr@@\thr@@}
 
-\def\hebrew@captions{%
+\def\captionshebrew{%
   \def\prefacename{\@ensure@RL{מבוא}}%
   \def\refname{\@ensure@RL{רשימט מקורוט}}%
   \def\abstractname{\@ensure@RL{טקציר}}%
@@ -33,9 +35,13 @@
   \def\seename{\@ensure@RL{ראח}}%
   \def\alsoname{\@ensure@RL{ראח ג ם}}% check
   \def\proofname{\@ensure@RL{חוכהח}}
-  \def\glossaryname{\@ensure@LR{Glossary}}% <-- Needs translation
+  \def\glossaryname{\@ensure@LR{Glossary}}% <-- Needs translation 
+}
+\def\datehebrew{%
   \def\today{%TODO if calendar=hebrew \Hebrewtoday \else
-  \@ensure@RL{\number\day\space ב\hebrewgregmonth{\month}\space\number\year}}
+    \@ensure@RL{{\reset@font\number\day}%
+    \space ב\hebrewgregmonth{\month}\space%
+    {\reset@font\number\year}}}%
 }
 
 \def\hebrewgregmonth#1{\ifcase#1%
@@ -93,6 +99,24 @@
 
 \def\hebrew@language{\language=\l@hebrew}
 
+\def\hebrew@font{%
+  \@ifundefined{hebrewfont}{%
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@check@ot@script{hebr}%
+    \if@tempswa%
+      \addfontfeature{Script=Hebrew}%
+    \else%
+      \PackageError{polyglossia}{^^J
+      The current font does not contain the Hebrew script!^^J
+      Please define \string\hebrewfont\space with \string\newfontfamily}%
+    \fi%
+    }%
+{\hebrewfont}}
+
+\def\selectnormalfonthebrew{%
+   \let\normalfont=\hebrew@font%
+   \def\reset@font{\normalfont}}
+
 \def\noextras@hebrew{%
    %\nohebrew@numbers%
    %\nohebrew@punctuation
@@ -103,7 +127,8 @@
    \local@hyphenmins{hebrew}{1}{1}%
    %\hebrew@punctuation%
    \local@marks{hebrew}%
-   \hebrew@captions%
+   \captionshebrew%
+   \datehebrew%
    %\hebrew@numbers%
    \@ifundefined{hebrewfont}{\addfontfeature{Script=Arabic,Language=Arabic}}{\hebrewfont}
    \setRL\setfootnoteRL
@@ -117,6 +142,3 @@
    }
 
 \endinput
-
-%TODO: Implement hebrew calendar
-\InputIfFileExists{hebcal.sty}

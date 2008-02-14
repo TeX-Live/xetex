@@ -1,3 +1,10 @@
+%TODO
+%% · change into a proper package
+%% · use calc
+%% · \def\today{\ftoday} -> use instead \JalaliToday etc. as in hebcal.sty
+%% · define also \JalaliTodayInEnglish
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Modified from Arabiftoday.sty which is part of the Arabi package:
 %%%  Copyright (C) 2006 Youssef Jabri
 %%% itself a modification of the code in the FarsiTeX system:

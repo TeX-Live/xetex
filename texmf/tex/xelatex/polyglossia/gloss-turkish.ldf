@@ -21,7 +21,7 @@
    \XeTeXinterchartokenstate=0%
 }
 
-\def\turkish@captions{%
+\def\captionsturkish{%
   \def\prefacename{Önsöz}%
   \def\refname{Kaynaklar}%
   \def\abstractname{Özet}%
@@ -62,7 +62,7 @@
    \turkish@language%
    \local@hyphenmins{turkish}{2}{2}%
    \turkish@punctuation%
-   \turkish@captions%
+   \captionsturkish%
    \local@marks{turkish}%
    \addfontfeature{Language=Turkish}%
 }

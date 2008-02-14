@@ -8,20 +8,23 @@
 \fi
 
 \def\syriac@font{%
-\@ifundefined{syriacfont}{\addfontfeature{Script=Syriac,Language=Syriac}}{\syriacfont}}
-
-\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
+  \@ifundefined{syriacfont}{%
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@check@ot@script{syrc}%
+    \if@tempswa%
+      \addfontfeature{Script=Syriac}%
+    \else%
+      \PackageError{polyglossia}{^^J
+      The current font does not contain the Syriac script!^^J
+      Please define \string\syriacfont\space with \string\newfontfamily}%
+    \fi%
+    }%
+  {\syriacfont}%
+}
 
 %\define@key{polyglossia}{syriaclocale}[default]{%
 %	\def\@syriac@locale{#1}}
-
-\def\syriacmonth#1{\ifcase#1%
-  \or ܟܢܘܢ ܐܚܪܝ\or ܫܒܛ\or ܐܕܪ\or ܢܝܣܢ\or ܐܝܪ\or ܚܙܝܪܢ\or ܬܡܘܙ\or ܐܒ\or ܐܝܠܘܠ% ܐܠܘܠ
-    \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
-    \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
-    \fi}
-
-%\def\syriac@captions{%
+%\def\captionssyriac{%
 %\def\prefacename{\@ensure@RL{}}% 
 %\def\refname{\@ensure@RL{}}
 %\def\abstractname{\@ensure@RL{}}%
@@ -44,8 +47,16 @@
 %\def\alsoname{\@ensure@RL{}}%<<\alefhamza\nun\za\ra
 %\def\proofname{\@ensure@RL{}}% for AMS-\LaTeX
 %\def\glossaryname{\@ensure@RL{}}%<<
-%\def\today{\@ensure@RL{\number\day\space\@syriacmonth{\@syriac@locale}{\month}\space\number\year}}
 %}
+
+\def\datesyriac{%
+  \def\syriac@month##1{\ifcase##1%
+  \or ܟܢܘܢ ܐܚܪܝ\or ܫܒܛ\or ܐܕܪ\or ܢܝܣܢ\or ܐܝܪ\or ܚܙܝܪܢ\or ܬܡܘܙ\or ܐܒ\or ܐܝܠܘܠ% ܐܠܘܠ
+   \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
+   \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
+   \fi}
+   \def\today{\@ensure@RL{{\reset@font\number\day}\space\syriac@month{\month}\space{\reset@font\number\year}}}
+}
 
 \def\syriac@zero{}
 
@@ -86,19 +97,18 @@
 
 \def\blockextras@syriac{%
    \syriac@language%
-   \local@hyphenmins{syriac}{1}{1}%
-   %\syriac@punctuation%
-   \local@marks{syriac}%
-   \syriac@captions%
-   %\syriac@numbers%
    \syriac@font
+   %\local@hyphenmins{syriac}{1}{1}%
+   \local@marks{syriac}%
+   %\captionssyriac%
+   \datesyriac%
+   %\syriac@numbers%
    \setRL\setfootnoteRL
-   }{}
+   }
 
 \def\inlineextras@syriac{%
    \syriac@language%
-   \local@hyphenmins{syriac}{1}{1}%
-   %\syriac@punctuation%
+   %\local@hyphenmins{syriac}{1}{1}%
    \syriac@font
    }
 

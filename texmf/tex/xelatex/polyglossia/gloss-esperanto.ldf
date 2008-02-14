@@ -6,30 +6,30 @@
    \adddialect\l@esperanto0%
 \fi
 
-\def\esperanto@captions{%
-   \def\refname{\localesperanto{Citaĵoj}}%
-   \def\abstractname{\localesperanto{Resumo}}%
-   \def\bibname{\localesperanto{Bibliografio}}%
-   \def\prefacename{\localesperanto{Antaŭparolo}}%
-   \def\chaptername{\localesperanto{Ĉapitro}}%
-   \def\appendixname{\localesperanto{Apendico}}%
-   \def\contentsname{\localesperanto{Enhavo}}%
-   \def\listfigurename{\localesperanto{Listo de figuroj}}%
-   \def\listtablename{\localesperanto{Listo de tabeloj}}%
-   \def\indexname{\localesperanto{Indekso}}%
-   \def\figurename{\localesperanto{Figuro}}%
-   \def\tablename{\localesperanto{Tabelo}}%
-   %\def\thepart{\localesperanto{}}%
-   %\def\partname{\localesperanto{}}%
-   \def\pagename{\localesperanto{Paĝo}}%
-   \def\seename{\localesperanto{vidu}}%
-   \def\alsoname{\localesperanto{Parto}}%
-   \def\enclname{\localesperanto{Aldono(j)}}%
-   \def\ccname{\localesperanto{Kopie al}}%
-   \def\headtoname{\localesperanto{Al}}%
-   \def\proofname{\localesperanto{Pruvo}}% for AMS-\LaTeX
-   \def\glossaryname{\localesperanto{Glosaro}}%
-   \def\today{\localesperanto{\number\day{--a}~de~\ifcase\month\or
+\def\captionsesperanto{%
+   \def\refname{\textesperanto{Citaĵoj}}%
+   \def\abstractname{\textesperanto{Resumo}}%
+   \def\bibname{\textesperanto{Bibliografio}}%
+   \def\prefacename{\textesperanto{Antaŭparolo}}%
+   \def\chaptername{\textesperanto{Ĉapitro}}%
+   \def\appendixname{\textesperanto{Apendico}}%
+   \def\contentsname{\textesperanto{Enhavo}}%
+   \def\listfigurename{\textesperanto{Listo de figuroj}}%
+   \def\listtablename{\textesperanto{Listo de tabeloj}}%
+   \def\indexname{\textesperanto{Indekso}}%
+   \def\figurename{\textesperanto{Figuro}}%
+   \def\tablename{\textesperanto{Tabelo}}%
+   %\def\thepart{\textesperanto{}}%
+   %\def\partname{\textesperanto{}}%
+   \def\pagename{\textesperanto{Paĝo}}%
+   \def\seename{\textesperanto{vidu}}%
+   \def\alsoname{\textesperanto{Parto}}%
+   \def\enclname{\textesperanto{Aldono(j)}}%
+   \def\ccname{\textesperanto{Kopie al}}%
+   \def\headtoname{\textesperanto{Al}}%
+   \def\proofname{\textesperanto{Pruvo}}% for AMS-\LaTeX
+   \def\glossaryname{\textesperanto{Glosaro}}%
+   \def\today{\textesperanto{\number\day{--a}~de~\ifcase\month\or
     januaro\or februaro\or marto\or aprilo\or majo\or junio\or
     julio\or aŭgusto\or septembro\or oktobro\or novembro\or
     decembro\fi,\space \number\year}}%
@@ -56,7 +56,7 @@
 \def\blockextras@esperanto{%
    \esperanto@language%
    \local@hyphenmins{esperanto}{2}{2}%
-   \esperanto@captions%
+   \captionsesperanto%
    \local@marks{esperanto}%
    \@ifundefined{setLR}{}{\setLR}%
    }

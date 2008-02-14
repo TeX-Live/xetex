@@ -13,30 +13,30 @@
   \let\l@usorbian\l@uppersorbian
 \fi
 
-\def\usorbian@captions{%
-   \def\refname{\localusorbian{Referency}}%
-   \def\abstractname{\localusorbian{Abstrakt}}%
-   \def\bibname{\localusorbian{Literatura}}%
-   \def\prefacename{\localusorbian{Zawod}}%
-   \def\chaptername{\localusorbian{Kapitl}}%
-   \def\appendixname{\localusorbian{Dodawki}}%
-   \def\contentsname{\localusorbian{Wobsah}}%
-   \def\listfigurename{\localusorbian{Zapis wobrazow}}%
-   \def\listtablename{\localusorbian{Zapis tabulkow}}%
-   \def\indexname{\localusorbian{Indeks}}%
-   \def\figurename{\localusorbian{Wobraz}}%
-   \def\tablename{\localusorbian{Tabulka}}%
-   %\def\thepart{\localusorbian{}}%
-   \def\partname{\localusorbian{Dźěl}}%
-   \def\pagename{\localusorbian{Strona}}%
-   \def\seename{\localusorbian{hl.}}%
-   \def\alsoname{\localusorbian{hl.~tež}}%
-   \def\enclname{\localusorbian{Přłoha}}%
-   \def\ccname{\localusorbian{CC}}%
-   \def\headtoname{\localusorbian{Komu}}%
-   \def\proofname{\localusorbian{Proof}}% for AMS-\LaTeX
-   \def\glossaryname{\localusorbian{Glossary}}% <-- needs translation
-   \def\today{\localusorbian{\number\day.~\ifcase\month\or
+\def\captionsusorbian{%
+   \def\refname{\textusorbian{Referency}}%
+   \def\abstractname{\textusorbian{Abstrakt}}%
+   \def\bibname{\textusorbian{Literatura}}%
+   \def\prefacename{\textusorbian{Zawod}}%
+   \def\chaptername{\textusorbian{Kapitl}}%
+   \def\appendixname{\textusorbian{Dodawki}}%
+   \def\contentsname{\textusorbian{Wobsah}}%
+   \def\listfigurename{\textusorbian{Zapis wobrazow}}%
+   \def\listtablename{\textusorbian{Zapis tabulkow}}%
+   \def\indexname{\textusorbian{Indeks}}%
+   \def\figurename{\textusorbian{Wobraz}}%
+   \def\tablename{\textusorbian{Tabulka}}%
+   %\def\thepart{\textusorbian{}}%
+   \def\partname{\textusorbian{Dźěl}}%
+   \def\pagename{\textusorbian{Strona}}%
+   \def\seename{\textusorbian{hl.}}%
+   \def\alsoname{\textusorbian{hl.~tež}}%
+   \def\enclname{\textusorbian{Přłoha}}%
+   \def\ccname{\textusorbian{CC}}%
+   \def\headtoname{\textusorbian{Komu}}%
+   \def\proofname{\textusorbian{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\textusorbian{Glossary}}% <-- needs translation
+   \def\today{\textusorbian{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or meje\or junija\or
     julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
@@ -56,7 +56,7 @@
 \def\blockextras@usorbian{%
    \usorbian@language%
    \local@hyphenmins{usorbian}{2}{2}%
-   \usorbian@captions%
+   \captionsusorbian%
    \local@marks{usorbian}%
    \@ifundefined{setLR}{}{\setLR}%
    }

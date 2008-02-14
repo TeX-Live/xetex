@@ -6,30 +6,30 @@
    \adddialect\l@slovene0%
 \fi
 
-\def\slovene@captions{%
-   \def\refname{\localslovene{Literatura}}%
-   \def\abstractname{\localslovene{Povzetek}}%
-   \def\bibname{\localslovene{Literatura}}%
-   \def\prefacename{\localslovene{Predgovor}}%
-   \def\chaptername{\localslovene{Poglavje}}%
-   \def\appendixname{\localslovene{Dodatek}}%
-   \def\contentsname{\localslovene{Kazalo}}%
-   \def\listfigurename{\localslovene{Slike}}%
-   \def\listtablename{\localslovene{Tabele}}%
-   \def\indexname{\localslovene{Stvarno kazalo}}%
-   \def\figurename{\localslovene{Slika}}%
-   \def\tablename{\localslovene{Tabela}}%
-   %\def\thepart{\localslovene{}}%
-   \def\partname{\localslovene{Del}}%
-   \def\pagename{\localslovene{Stran}}%
-   \def\seename{\localslovene{glej}}%
-   \def\alsoname{\localslovene{glej tudi}}%
-   \def\enclname{\localslovene{Priloge}}%
-   \def\ccname{\localslovene{Kopije}}%
-   \def\headtoname{\localslovene{Prejme}}%
-   \def\proofname{\localslovene{Dokaz}}% for AMS-\LaTeX
-   \def\glossaryname{\localslovene{Glossary}}% <-- needs translation
-   \def\today{\localslovene{\number\day.~\ifcase\month\or
+\def\captionsslovene{%
+   \def\refname{\textslovene{Literatura}}%
+   \def\abstractname{\textslovene{Povzetek}}%
+   \def\bibname{\textslovene{Literatura}}%
+   \def\prefacename{\textslovene{Predgovor}}%
+   \def\chaptername{\textslovene{Poglavje}}%
+   \def\appendixname{\textslovene{Dodatek}}%
+   \def\contentsname{\textslovene{Kazalo}}%
+   \def\listfigurename{\textslovene{Slike}}%
+   \def\listtablename{\textslovene{Tabele}}%
+   \def\indexname{\textslovene{Stvarno kazalo}}%
+   \def\figurename{\textslovene{Slika}}%
+   \def\tablename{\textslovene{Tabela}}%
+   %\def\thepart{\textslovene{}}%
+   \def\partname{\textslovene{Del}}%
+   \def\pagename{\textslovene{Stran}}%
+   \def\seename{\textslovene{glej}}%
+   \def\alsoname{\textslovene{glej tudi}}%
+   \def\enclname{\textslovene{Priloge}}%
+   \def\ccname{\textslovene{Kopije}}%
+   \def\headtoname{\textslovene{Prejme}}%
+   \def\proofname{\textslovene{Dokaz}}% for AMS-\LaTeX
+   \def\glossaryname{\textslovene{Glossary}}% <-- needs translation
+   \def\today{\textslovene{\number\day.~\ifcase\month\or
     januar\or februar\or marec\or april\or maj\or junij\or
     julij\or avgust\or september\or oktober\or november\or december\fi
     \space \number\year}}}
@@ -42,7 +42,7 @@
 \def\blockextras@slovene{%
    \slovene@language%
    \local@hyphenmins{slovene}{2}{2}%
-   \slovene@captions%
+   \captionsslovene%
    \local@marks{slovene}%
    \@ifundefined{setLR}{}{\setLR}%
    }

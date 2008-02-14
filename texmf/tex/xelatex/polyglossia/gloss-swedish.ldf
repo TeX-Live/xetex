@@ -6,30 +6,30 @@
    \adddialect\l@swedish0%
 \fi
 
-\def\swedish@captions{%
-   \def\refname{\localswedish{Referenser}}%
-   \def\abstractname{\localswedish{Sammanfattning}}%
-   \def\bibname{\localswedish{Litteraturförteckning}}%
-   \def\prefacename{\localswedish{Förord}}%
-   \def\chaptername{\localswedish{Kapitel}}%
-   \def\appendixname{\localswedish{Bilaga}}%
-   \def\contentsname{\localswedish{Innehåll}}%
-   \def\listfigurename{\localswedish{Figurer}}%
-   \def\listtablename{\localswedish{Tabeller}}%
-   \def\indexname{\localswedish{Sakregister}}%
-   \def\figurename{\localswedish{Figur}}%
-   \def\tablename{\localswedish{Tabell}}%
-   %\def\thepart{\localswedish{}}%
-   \def\partname{\localswedish{Del}}%
-   \def\pagename{\localswedish{Sida}}%
-   \def\seename{\localswedish{se}}%
-   \def\alsoname{\localswedish{se även}}%
-   \def\enclname{\localswedish{Bil.}}%
-   \def\ccname{\localswedish{Kopia för kännedom}}%
-   \def\headtoname{\localswedish{Till}}%
-   \def\proofname{\localswedish{Bevis}}% for AMS-\LaTeX
-   \def\glossaryname{\localswedish{Ordlista}}%
-   \def\today{\localswedish{%
+\def\captionsswedish{%
+   \def\refname{\textswedish{Referenser}}%
+   \def\abstractname{\textswedish{Sammanfattning}}%
+   \def\bibname{\textswedish{Litteraturförteckning}}%
+   \def\prefacename{\textswedish{Förord}}%
+   \def\chaptername{\textswedish{Kapitel}}%
+   \def\appendixname{\textswedish{Bilaga}}%
+   \def\contentsname{\textswedish{Innehåll}}%
+   \def\listfigurename{\textswedish{Figurer}}%
+   \def\listtablename{\textswedish{Tabeller}}%
+   \def\indexname{\textswedish{Sakregister}}%
+   \def\figurename{\textswedish{Figur}}%
+   \def\tablename{\textswedish{Tabell}}%
+   %\def\thepart{\textswedish{}}%
+   \def\partname{\textswedish{Del}}%
+   \def\pagename{\textswedish{Sida}}%
+   \def\seename{\textswedish{se}}%
+   \def\alsoname{\textswedish{se även}}%
+   \def\enclname{\textswedish{Bil.}}%
+   \def\ccname{\textswedish{Kopia för kännedom}}%
+   \def\headtoname{\textswedish{Till}}%
+   \def\proofname{\textswedish{Bevis}}% for AMS-\LaTeX
+   \def\glossaryname{\textswedish{Ordlista}}%
+   \def\today{\textswedish{%
     \number\day~\ifcase\month\or
     januari\or februari\or mars\or april\or maj\or juni\or
     juli\or augusti\or september\or oktober\or november\or
@@ -50,7 +50,7 @@
 \def\blockextras@swedish{%
    \swedish@language%
    \local@hyphenmins{swedish}{2}{2}%
-   \swedish@captions%
+   \captionsswedish%
    \frenchspacing%
    \local@marks{swedish}%
    \@ifundefined{setLR}{}{\setLR}%

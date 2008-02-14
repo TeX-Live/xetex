@@ -22,30 +22,30 @@
 %}
 
 
-\def\samin@captions{%
-   \def\refname{\localsamin{Čujuhusat}}%
-   \def\abstractname{\localsamin{Čoahkkáigeassu}}%
-   \def\bibname{\localsamin{Girjjálašvuohta}}%
-   \def\prefacename{\localsamin{Ovdasátni}}%
-   \def\chaptername{\localsamin{Kapihttal}}%
-   \def\appendixname{\localsamin{Čuovus}}%
-   \def\contentsname{\localsamin{Sisdoallu}}%
-   \def\listfigurename{\localsamin{Govvosat}}%
-   \def\listtablename{\localsamin{Tabeallat}}%
-   \def\indexname{\localsamin{Registtar}}%
-   \def\figurename{\localsamin{Govus}}%
-   \def\tablename{\localsamin{Tabealla}}%
-   \def\thepart{\localsamin{}}%
-   \def\partname{\localsamin{Oassi}}%
-   \def\pagename{\localsamin{Siidu}}%
-   \def\seename{\localsamin{geahča}}%
-   \def\alsoname{\localsamin{geahča maiddái}}%
-   \def\enclname{\localsamin{Mielddus}}%
-   \def\ccname{\localsamin{Kopia sáddejuvvon}}%
-   \def\headtoname{\localsamin{Vuostáiváldi}}%
-   \def\proofname{\localsamin{Duođaštus}}% for AMS-\LaTeX
-   \def\glossaryname{\localsamin{Sátnelistu}}%
-   \def\today{\localsamin{\ifcase\month\or
+\def\captionssamin{%
+   \def\refname{\textsamin{Čujuhusat}}%
+   \def\abstractname{\textsamin{Čoahkkáigeassu}}%
+   \def\bibname{\textsamin{Girjjálašvuohta}}%
+   \def\prefacename{\textsamin{Ovdasátni}}%
+   \def\chaptername{\textsamin{Kapihttal}}%
+   \def\appendixname{\textsamin{Čuovus}}%
+   \def\contentsname{\textsamin{Sisdoallu}}%
+   \def\listfigurename{\textsamin{Govvosat}}%
+   \def\listtablename{\textsamin{Tabeallat}}%
+   \def\indexname{\textsamin{Registtar}}%
+   \def\figurename{\textsamin{Govus}}%
+   \def\tablename{\textsamin{Tabealla}}%
+   \def\thepart{\textsamin{}}%
+   \def\partname{\textsamin{Oassi}}%
+   \def\pagename{\textsamin{Siidu}}%
+   \def\seename{\textsamin{geahča}}%
+   \def\alsoname{\textsamin{geahča maiddái}}%
+   \def\enclname{\textsamin{Mielddus}}%
+   \def\ccname{\textsamin{Kopia sáddejuvvon}}%
+   \def\headtoname{\textsamin{Vuostáiváldi}}%
+   \def\proofname{\textsamin{Duođaštus}}% for AMS-\LaTeX
+   \def\glossaryname{\textsamin{Sátnelistu}}%
+   \def\today{\textsamin{\ifcase\month\or
     ođđajagemánu\or
     guovvamánu\or
     njukčamánu\or
@@ -68,7 +68,7 @@
 \def\blockextras@samin{%
    \samin@language%
    \local@hyphenmins{samin}{2}{2}%
-   \samin@captions%
+   \captionssamin%
    \local@marks{samin}%
    \@ifundefined{setLR}{}{\setLR}%
    }

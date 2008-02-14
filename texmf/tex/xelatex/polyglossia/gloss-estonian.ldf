@@ -6,30 +6,30 @@
    \adddialect\l@estonian0%
 \fi
 
-\def\estonian@captions{%
-   \def\refname{\localestonian{Viited}}%
-   \def\abstractname{\localestonian{Kokkuvõte}}%
-   \def\bibname{\localestonian{Kirjandus}}%
-   \def\prefacename{\localestonian{Sissejuhatus}}%
-   \def\chaptername{\localestonian{Peatükk}}%
-   \def\appendixname{\localestonian{Lisa}}%
-   \def\contentsname{\localestonian{Sisukord}}%
-   \def\listfigurename{\localestonian{Joonised}}%
-   \def\listtablename{\localestonian{Tabelid}}%
-   \def\indexname{\localestonian{Indeks}}%
-   \def\figurename{\localestonian{Joonis}}%
-   \def\tablename{\localestonian{Tabel}}%
-   %\def\thepart{\localestonian{}}%
-   \def\partname{\localestonian{Osa}}%
-   \def\pagename{\localestonian{Lk.}}%
-   \def\seename{\localestonian{vt.}}%
-   \def\alsoname{\localestonian{vt. ka}}%
-   \def\enclname{\localestonian{Lisa(d)}}%
-   \def\ccname{\localestonian{Koopia(d)}}%
-   %\def\headtoname{\localestonian{}}%
-   \def\proofname{\localestonian{Korrektuur}}% for AMS-\LaTeX
-   \def\glossaryname{\localestonian{Glossary}}% <-- need translation
-   \def\today{\localestonian{\number\day.\space\ifcase\month\or
+\def\captionsestonian{%
+   \def\refname{\textestonian{Viited}}%
+   \def\abstractname{\textestonian{Kokkuvõte}}%
+   \def\bibname{\textestonian{Kirjandus}}%
+   \def\prefacename{\textestonian{Sissejuhatus}}%
+   \def\chaptername{\textestonian{Peatükk}}%
+   \def\appendixname{\textestonian{Lisa}}%
+   \def\contentsname{\textestonian{Sisukord}}%
+   \def\listfigurename{\textestonian{Joonised}}%
+   \def\listtablename{\textestonian{Tabelid}}%
+   \def\indexname{\textestonian{Indeks}}%
+   \def\figurename{\textestonian{Joonis}}%
+   \def\tablename{\textestonian{Tabel}}%
+   %\def\thepart{\textestonian{}}%
+   \def\partname{\textestonian{Osa}}%
+   \def\pagename{\textestonian{Lk.}}%
+   \def\seename{\textestonian{vt.}}%
+   \def\alsoname{\textestonian{vt. ka}}%
+   \def\enclname{\textestonian{Lisa(d)}}%
+   \def\ccname{\textestonian{Koopia(d)}}%
+   %\def\headtoname{\textestonian{}}%
+   \def\proofname{\textestonian{Korrektuur}}% for AMS-\LaTeX
+   \def\glossaryname{\textestonian{Glossary}}% <-- need translation
+   \def\today{\textestonian{\number\day.\space\ifcase\month\or
     jaanuar\or veebruar\or märts\or aprill\or mai\or juuni\or
     juuli\or august\or september\or oktoober\or november\or
     detsember\fi\space\number\year.\space a.}}}
@@ -44,7 +44,7 @@
    \estonian@language%
    \local@hyphenmins{estonian}{2}{2}%
    \frenchspacing%
-   \estonian@captions%
+   \captionsestonian%
    \local@marks{estonian}%
    \@ifundefined{setLR}{}{\setLR}%
    }

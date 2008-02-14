@@ -6,28 +6,28 @@
    \adddialect\l@latvian0
 \fi
 
-\def\latvian@captions{%
-   \def\prefacename{\locallatvian{Priekšvārds}}%
-   \def\refname{\locallatvian{Literatūras saraksts}}%
-   \def\abstractname{\locallatvian{Anotācija}}%
-   \def\bibname{\locallatvian{Literatūra}}%
-   \def\chaptername{\locallatvian{Nodaļa}}%
-   \def\appendixname{\locallatvian{Pielikums}}%
-   \def\contentsname{\locallatvian{Saturs}}%
-   \def\listfigurename{\locallatvian{Attēlu saraksts}}%
-   \def\listtablename{\locallatvian{Tabulu saraksts}}%
-   \def\indexname{\locallatvian{Index}}%
-   \def\figurename{\locallatvian{Att.}}%
-   \def\tablename{\locallatvian{Tabula}}%
-   \def\partname{\locallatvian{Daļa}}%
-   \def\enclname{\locallatvian{encl}}%
-   \def\ccname{\locallatvian{cc}}%
-   \def\headtoname{\locallatvian{To}}%
-   \def\pagename{\locallatvian{lpp.}}%
-   \def\seename{\locallatvian{sk.}}%
-   \def\alsoname{\locallatvian{sk. arī}}%
-   \def\proofname{\locallatvian{Pierādījums}}%
-   \def\today{\locallatvian{%
+\def\captionslatvian{%
+   \def\prefacename{\textlatvian{Priekšvārds}}%
+   \def\refname{\textlatvian{Literatūras saraksts}}%
+   \def\abstractname{\textlatvian{Anotācija}}%
+   \def\bibname{\textlatvian{Literatūra}}%
+   \def\chaptername{\textlatvian{Nodaļa}}%
+   \def\appendixname{\textlatvian{Pielikums}}%
+   \def\contentsname{\textlatvian{Saturs}}%
+   \def\listfigurename{\textlatvian{Attēlu saraksts}}%
+   \def\listtablename{\textlatvian{Tabulu saraksts}}%
+   \def\indexname{\textlatvian{Index}}%
+   \def\figurename{\textlatvian{Att.}}%
+   \def\tablename{\textlatvian{Tabula}}%
+   \def\partname{\textlatvian{Daļa}}%
+   \def\enclname{\textlatvian{encl}}%
+   \def\ccname{\textlatvian{cc}}%
+   \def\headtoname{\textlatvian{To}}%
+   \def\pagename{\textlatvian{lpp.}}%
+   \def\seename{\textlatvian{sk.}}%
+   \def\alsoname{\textlatvian{sk. arī}}%
+   \def\proofname{\textlatvian{Pierādījums}}%
+   \def\today{\textlatvian{%
       \number\year.\thinspace gada%
       \space\number\day.\thinspace%
       \ifcase\month\or%
@@ -43,7 +43,7 @@
 \def\blockextras@latvian{%
    \latvian@language%
    \local@hyphenmins{latvian}{2}{2}%
-   \latvian@captions%
+   \captionslatvian%
    \local@marks{latvian}%
    }
 

@@ -21,60 +21,60 @@
 %TODO option brazil
 \newif\if@brazil
 % \adddialect\l@brazil\l@portuges TODO
-\def\p@rtuges@captions{\if@brazil\brazil@captions\else\portuges@captions\fi}
+\def\p@captionsrtuges{\if@brazil\brazil@captions\else\portuges@captions\fi}
 
-\def\portuges@captions{%
-   \def\refname{\localportuges{Referências}}%
-   \def\abstractname{\localportuges{Resumo}}%
-   \def\bibname{\localportuges{Bibliografia}}%
-   \def\prefacename{\localportuges{Prefácio}}%
-   \def\chaptername{\localportuges{Capítulo}}%
-   \def\appendixname{\localportuges{Apêndice}}%
-   \def\contentsname{\localportuges{Conteúdo}}%
-   \def\listfigurename{\localportuges{Lista de Figuras}}%
-   \def\listtablename{\localportuges{Lista de Tabelas}}%
-   \def\indexname{\localportuges{Índice}}%
-   \def\figurename{\localportuges{Figura}}%
-   \def\tablename{\localportuges{Tabela}}%
-   %\def\thepart{\localportuges{}}%
-   \def\partname{\localportuges{Parte}}%
-   \def\pagename{\localportuges{Página}}%
-   \def\seename{\localportuges{ver}}%
-   \def\alsoname{\localportuges{ver também}}%
-   \def\enclname{\localportuges{Anexo}}%
-   \def\ccname{\localportuges{Com cópia a}}%
-   \def\headtoname{\localportuges{Para}}%
-   \def\proofname{\localportuges{Demonstração}}% for AMS-\LaTeX
-   \def\glossaryname{\localportuges{Glossário}}%
-   \def\today{\localportuges{\number\day\space de\space\ifcase\month\or
+\def\captionsportuges{%
+   \def\refname{\textportuges{Referências}}%
+   \def\abstractname{\textportuges{Resumo}}%
+   \def\bibname{\textportuges{Bibliografia}}%
+   \def\prefacename{\textportuges{Prefácio}}%
+   \def\chaptername{\textportuges{Capítulo}}%
+   \def\appendixname{\textportuges{Apêndice}}%
+   \def\contentsname{\textportuges{Conteúdo}}%
+   \def\listfigurename{\textportuges{Lista de Figuras}}%
+   \def\listtablename{\textportuges{Lista de Tabelas}}%
+   \def\indexname{\textportuges{Índice}}%
+   \def\figurename{\textportuges{Figura}}%
+   \def\tablename{\textportuges{Tabela}}%
+   %\def\thepart{\textportuges{}}%
+   \def\partname{\textportuges{Parte}}%
+   \def\pagename{\textportuges{Página}}%
+   \def\seename{\textportuges{ver}}%
+   \def\alsoname{\textportuges{ver também}}%
+   \def\enclname{\textportuges{Anexo}}%
+   \def\ccname{\textportuges{Com cópia a}}%
+   \def\headtoname{\textportuges{Para}}%
+   \def\proofname{\textportuges{Demonstração}}% for AMS-\LaTeX
+   \def\glossaryname{\textportuges{Glossário}}%
+   \def\today{\textportuges{\number\day\space de\space\ifcase\month\or
       Janeiro\or Fevereiro\or Março\or Abril\or Maio\or Junho\or
       Julho\or Agosto\or Setembro\or Outubro\or Novembro\or Dezembro%
       \fi\space de\space\number\year}}}
 
-\def\brazil@captions{%
-   \def\refname{\localportuges{Referências}}%
-   \def\abstractname{\localportuges{Resumo}}%
-   \def\bibname{\localportuges{Referências Bibliográficas}}%
-   \def\prefacename{\localportuges{Prefácio}}%
-   \def\chaptername{\localportuges{Capítulo}}%
-   \def\appendixname{\localportuges{Apêndice}}%
-   \def\contentsname{\localportuges{Sumário}}%
-   \def\listfigurename{\localportuges{Lista de Figuras}}%
-   \def\listtablename{\localportuges{Lista de Tabelas}}%
-   \def\indexname{\localportuges{Índice Remissivo}}%
-   \def\figurename{\localportuges{Figura}}%
-   \def\tablename{\localportuges{Tabela}}%
-   %\def\thepart{\localportuges{}}%
-   \def\partname{\localportuges{Parte}}%
-   \def\pagename{\localportuges{Página}}%
-   \def\seename{\localportuges{veja}}%
-   \def\alsoname{\localportuges{veja também}}%
-   \def\enclname{\localportuges{Anexo}}%
-   \def\ccname{\localportuges{Cópia para}}%
-   \def\headtoname{\localportuges{Para}}%
-   \def\proofname{\localportuges{Demonstração}}% for AMS-\LaTeX
-   \def\glossaryname{\localportuges{Glossary}}%
-   \def\today{\localportuges{\number\day\space de\space\ifcase\month\or
+\def\captionsbrazil{%
+   \def\refname{\textportuges{Referências}}%
+   \def\abstractname{\textportuges{Resumo}}%
+   \def\bibname{\textportuges{Referências Bibliográficas}}%
+   \def\prefacename{\textportuges{Prefácio}}%
+   \def\chaptername{\textportuges{Capítulo}}%
+   \def\appendixname{\textportuges{Apêndice}}%
+   \def\contentsname{\textportuges{Sumário}}%
+   \def\listfigurename{\textportuges{Lista de Figuras}}%
+   \def\listtablename{\textportuges{Lista de Tabelas}}%
+   \def\indexname{\textportuges{Índice Remissivo}}%
+   \def\figurename{\textportuges{Figura}}%
+   \def\tablename{\textportuges{Tabela}}%
+   %\def\thepart{\textportuges{}}%
+   \def\partname{\textportuges{Parte}}%
+   \def\pagename{\textportuges{Página}}%
+   \def\seename{\textportuges{veja}}%
+   \def\alsoname{\textportuges{veja também}}%
+   \def\enclname{\textportuges{Anexo}}%
+   \def\ccname{\textportuges{Cópia para}}%
+   \def\headtoname{\textportuges{Para}}%
+   \def\proofname{\textportuges{Demonstração}}% for AMS-\LaTeX
+   \def\glossaryname{\textportuges{Glossary}}%
+   \def\today{\textportuges{\number\day\space de\space\ifcase\month\or
       janeiro\or fevereiro\or março\or abril\or maio\or junho\or
       julho\or agosto\or setembro\or outubro\or novembro\or dezembro%
       \fi\space de\space\number\year}}}
@@ -87,7 +87,7 @@
 \def\blockextras@portuges{%
    \portuges@language%
    \local@hyphenmins{portuges}{2}{3}%
-   \p@rtuges@captions%
+   \p@captionsrtuges%
    \local@marks{portuges}%
    \@ifundefined{setLR}{}{\setLR}%
    }

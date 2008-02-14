@@ -1,0 +1,76 @@
+\ProvidesFile{gloss-divehi.ldf}[polyglossia: module for divehi]
+\RequirePackage{bidi}
+\makeatletter
+
+\ifx\l@divehi\@undefined%
+   \xpg@nopatterns{Divehi}%
+   \adddialect\l@divehi0%
+\fi
+
+%\def\captionsdivehi{%
+%   \def\refname{\textdivehi{<++>}}%
+%   \def\abstractname{\textdivehi{<++>}}%
+%   \def\bibname{\textdivehi{<++>}}%
+%   \def\prefacename{\textdivehi{<++>}}%
+%   \def\chaptername{\textdivehi{<++>}}%
+%   \def\appendixname{\textdivehi{<++>}}%
+%   \def\contentsname{\textdivehi{<++>}}%
+%   \def\listfigurename{\textdivehi{<++>}}%
+%   \def\listtablename{\textdivehi{<++>}}%
+%   \def\indexname{\textdivehi{<++>}}%
+%   \def\figurename{\textdivehi{<++>}}%
+%   \def\tablename{\textdivehi{<++>}}%
+%   \def\thepart{\textdivehi{}}%
+%   \def\partname{\textdivehi{<++>}}%
+%   \def\pagename{\textdivehi{<++>}}%
+%   \def\seename{\textdivehi{<++>}}%
+%   \def\alsoname{\textdivehi{<++>}}%
+%   \def\enclname{\textdivehi{<++>}}%
+%   \def\ccname{\textdivehi{<++>}}%
+%   \def\headtoname{\textdivehi{<++>}}%
+%   \def\proofname{\textdivehi{<++>}}% for AMS-\LaTeX
+%   \def\glossaryname{\textdivehi{<++>}}%
+%   }
+%\def\datedivehi{\def\today{\textdivehi{<++>}}}
+
+\def\divehi@language{\protect\language=\l@divehi}
+
+\def\divehi@font{%
+\font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+\@ifundefined{divehifont}{%
+      \@ifundefined{thaanafont}{%
+        \zf@check@ot@script{thaa}%
+	\if@tempswa%
+	  \addfontfeature{Script=Thaana}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the Thaana script!^^J
+	  Please define \string\thaanafont\space or \string\divehifont\space with \string\newfontfamily}%
+	\fi%
+	}%
+      {\thaanafont}}% 
+{\divehifont}%
+}
+
+\def\selectnormalfontdivehi{%
+   \let\normalfont=\divehi@font%
+   \def\reset@font{\normalfont}}
+
+\def\noextras@divehi{%
+   }
+
+\def\blockextras@divehi{%
+   \divehi@language%
+   \divehi@font%
+   %\divehi@captions%
+   %\local@marks{divehi}%
+   \setRL\setfootnoteRL%
+   %\def\footnoterule{\RLfootnoterule}%
+   }
+
+\def\inlineextras@divehi{%
+   \divehi@language%
+   \divehi@font%
+   }
+
+\endinput

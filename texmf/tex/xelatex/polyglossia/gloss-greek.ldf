@@ -34,7 +34,7 @@
 
 \define@key{greek}{variant}[monotonic]{%
 \def\@tmpa{#1}%
-\def\greek@captions{\polygreekcaptions}%
+\def\captionsgreek{\polygreekcaptions}%
 \ifx\@tmpa\tmp@polytonic%
    \def\greek@variant{\l@polygreek}%
    \typeout{Option: Polytonic Greek}%
@@ -52,7 +52,7 @@
             \typeout{Option: Ancient Greek}%
 	 \else%
 	     \def\greek@variant{\l@monogreek}% monotonic
-             \def\greek@captions{\monogreekcaptions}%
+             \def\captionsgreek{\monogreekcaptions}%
              \typeout{Option: Monotonic Greek}%
 	 \fi%
       \fi%
@@ -68,7 +68,7 @@
 % This should set the defaults
 \setkeys{greek}{variant,numerals}
 
-%TODO simplify greek@captions using xgreek.sty as a model ?
+%TODO simplify captionsgreek using xgreek.sty as a model ?
 %
 %\def\polytonicn@mes{%
 %  \def\refname{Ἀναφορὲς}%
@@ -81,27 +81,27 @@
 
 
 \def\monogreekcaptions{%
-   \def\refname{\localgreek{Αναφορές}}%
-   \def\abstractname{\localgreek{Περίληψη}}%
-   \def\bibname{\localgreek{Βιβλιογραφία}}%
-   \def\prefacename{\localgreek{Πρόλογος}}%
-   \def\chaptername{\localgreek{Κεφάλαιο}}%
-   \def\appendixname{\localgreek{Παράρτημα}}%
-   \def\contentsname{\localgreek{Περιεχόμενα}}%
-   \def\listfigurename{\localgreek{Κατάλογος σχημάτων}}%
-   \def\listtablename{\localgreek{Κατάλογος πινάκων}}%
-   \def\indexname{\localgreek{Ευρετήριο}}%
-   \def\figurename{\localgreek{Σχήμα}}%
-   \def\tablename{\localgreek{Πίνακας}}%
-   \def\partname{\localgreek{Μέρος}}%
-   \def\pagename{\localgreek{Σελίδα}}%
-   \def\seename{\localgreek{βλέπε}}%
-   \def\alsoname{\localgreek{βλέπε επίσης}}%
-   \def\enclname{\localgreek{Συνημμένα}}%
-   \def\ccname{\localgreek{Κοινοποίηση}}%
-   \def\headtoname{\localgreek{Προς}}%
-   \def\proofname{\localgreek{Απόδειξη}}% for AMS-\LaTeX
-   \def\today{\localgreek{\number\day\space%
+   \def\refname{\textgreek{Αναφορές}}%
+   \def\abstractname{\textgreek{Περίληψη}}%
+   \def\bibname{\textgreek{Βιβλιογραφία}}%
+   \def\prefacename{\textgreek{Πρόλογος}}%
+   \def\chaptername{\textgreek{Κεφάλαιο}}%
+   \def\appendixname{\textgreek{Παράρτημα}}%
+   \def\contentsname{\textgreek{Περιεχόμενα}}%
+   \def\listfigurename{\textgreek{Κατάλογος σχημάτων}}%
+   \def\listtablename{\textgreek{Κατάλογος πινάκων}}%
+   \def\indexname{\textgreek{Ευρετήριο}}%
+   \def\figurename{\textgreek{Σχήμα}}%
+   \def\tablename{\textgreek{Πίνακας}}%
+   \def\partname{\textgreek{Μέρος}}%
+   \def\pagename{\textgreek{Σελίδα}}%
+   \def\seename{\textgreek{βλέπε}}%
+   \def\alsoname{\textgreek{βλέπε επίσης}}%
+   \def\enclname{\textgreek{Συνημμένα}}%
+   \def\ccname{\textgreek{Κοινοποίηση}}%
+   \def\headtoname{\textgreek{Προς}}%
+   \def\proofname{\textgreek{Απόδειξη}}% for AMS-\LaTeX
+   \def\today{\textgreek{\number\day\space%
       \ifcase\month\or%
       Ιανουαρίου\or
       Φεβρουαρίου\or
@@ -118,27 +118,27 @@
       \space\number\year}}}
 
 \def\polygreekcaptions{%
-   \def\refname{\localgreek{Ἀναφορές}}%
-   \def\abstractname{\localgreek{Περίληψη}}%
-   \def\bibname{\localgreek{Βιβλιογραφία}}%
-   \def\prefacename{\localgreek{Πρόλογος}}%
-   \def\chaptername{\localgreek{Κεφάλαιο}}%
-   \def\appendixname{\localgreek{Παράρτημα}}%
-   \def\contentsname{\localgreek{Περιεχόμενα}}%
-   \def\listfigurename{\localgreek{Κατάλογος σχημάτων}}%
-   \def\listtablename{\localgreek{Κατάλογος πινάκων}}%
-   \def\indexname{\localgreek{Εὑρετήριο}}%
-   \def\figurename{\localgreek{Σχῆμα}}%
-   \def\tablename{\localgreek{Πίνακας}}%
-   \def\partname{\localgreek{Μέρος}}%
-   \def\pagename{\localgreek{Σελίδα}}%
-   \def\seename{\localgreek{βλέπε}}%
-   \def\alsoname{\localgreek{βλέπε ἐπίσης}}%
-   \def\enclname{\localgreek{Συνημμένα}}%
-   \def\ccname{\localgreek{Κοινοποίηση}}%
-   \def\headtoname{\localgreek{Πρὸς}}%
-   \def\proofname{\localgreek{Ἀπόδειξη}}% for AMS-\LaTeX
-   \def\today{\localgreek{\number\day \space%
+   \def\refname{\textgreek{Ἀναφορές}}%
+   \def\abstractname{\textgreek{Περίληψη}}%
+   \def\bibname{\textgreek{Βιβλιογραφία}}%
+   \def\prefacename{\textgreek{Πρόλογος}}%
+   \def\chaptername{\textgreek{Κεφάλαιο}}%
+   \def\appendixname{\textgreek{Παράρτημα}}%
+   \def\contentsname{\textgreek{Περιεχόμενα}}%
+   \def\listfigurename{\textgreek{Κατάλογος σχημάτων}}%
+   \def\listtablename{\textgreek{Κατάλογος πινάκων}}%
+   \def\indexname{\textgreek{Εὑρετήριο}}%
+   \def\figurename{\textgreek{Σχῆμα}}%
+   \def\tablename{\textgreek{Πίνακας}}%
+   \def\partname{\textgreek{Μέρος}}%
+   \def\pagename{\textgreek{Σελίδα}}%
+   \def\seename{\textgreek{βλέπε}}%
+   \def\alsoname{\textgreek{βλέπε ἐπίσης}}%
+   \def\enclname{\textgreek{Συνημμένα}}%
+   \def\ccname{\textgreek{Κοινοποίηση}}%
+   \def\headtoname{\textgreek{Πρὸς}}%
+   \def\proofname{\textgreek{Ἀπόδειξη}}% for AMS-\LaTeX
+   \def\today{\textgreek{\number\day \space%
       \ifcase\month\or%
       Ἰανουαρίου\or
       Φεβρουαρίου\or
@@ -240,7 +240,22 @@
 \def\greek@language{\protect\language=\greek@variant}
 
 \def\greek@font{%
-\@ifundefined{greekfont}{\addfontfeature{Script=Greek,Language=Greek}}{\greekfont}}
+  \@ifundefined{greekfont}{%
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@check@ot@script{grek}%
+    \if@tempswa%
+      \addfontfeature{Script=Greek}%
+    \else%
+      \PackageError{polyglossia}{^^J
+      The current font does not contain the Greek script!^^J
+      Please define \string\greekfont\space with \string\newfontfamily}%
+    \fi%
+    }%
+    {\greekfont}} 
+
+\def\selectnormalfontgreek{%
+   \let\normalfont=\greek@font%
+   \def\reset@font{\normalfont}}
 
 \def\noextras@greek{%
    \nogreek@numbers}
@@ -249,7 +264,7 @@
    \greek@language%
    \local@hyphenmins{greek}{1}{1}%
    \local@marks{greek}%
-   \greek@captions%
+   \captionsgreek%
    \greek@numbers% TODO implement option Numerals=latin/greek
    \greek@font%
    }{}

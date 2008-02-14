@@ -29,30 +29,30 @@
    \let\@Alph\@Alph@eng \let\@alph\@alph@eng
 }
 
-\def\bulgarian@captions{%
-   \def\refname{\localbulgarian{Литература}}%
-   \def\abstractname{\localbulgarian{Абстракт}}%
-   \def\bibname{\localbulgarian{Библиография}}%
-   \def\prefacename{\localbulgarian{Предговор}}%
-   \def\chaptername{\localbulgarian{Глава}}%
-   \def\appendixname{\localbulgarian{Приложение}}%
-   \def\contentsname{\localbulgarian{Съдържание}}%
-   \def\listfigurename{\localbulgarian{Списхrdsnк на фигурите}}%
-   \def\listtablename{\localbulgarian{Списхrdsnк на таблиците}}%
-   \def\indexname{\localbulgarian{Азбуцhен указател}}%
-   \def\figurename{\localbulgarian{Фигура}}%
-   \def\tablename{\localbulgarian{Таблица}}%
-   %\def\thepart{\localbulgarian{}}%
-   %\def\partname{\localbulgarian{}}%
-   \def\pagename{\localbulgarian{Стр.}}%
-   \def\seename{\localbulgarian{вж.}}%
-   \def\alsoname{\localbulgarian{вж.\ също и}}%
-   \def\enclname{\localbulgarian{Приложения}}%
-   \def\ccname{\localbulgarian{копия}}%
-   %\def\headtoname{\localbulgarian{}}%
-   \def\proofname{\localbulgarian{Proof}}% for AMS-\LaTeX
-   \def\glossaryname{\localbulgarian{Glossary}}%
-   \def\today{\localbulgarian{\number\day~\ifcase\month\or
+\def\captionsbulgarian{%
+   \def\refname{\textbulgarian{Литература}}%
+   \def\abstractname{\textbulgarian{Абстракт}}%
+   \def\bibname{\textbulgarian{Библиография}}%
+   \def\prefacename{\textbulgarian{Предговор}}%
+   \def\chaptername{\textbulgarian{Глава}}%
+   \def\appendixname{\textbulgarian{Приложение}}%
+   \def\contentsname{\textbulgarian{Съдържание}}%
+   \def\listfigurename{\textbulgarian{Списхrdsnк на фигурите}}%
+   \def\listtablename{\textbulgarian{Списхrdsnк на таблиците}}%
+   \def\indexname{\textbulgarian{Азбуцhен указател}}%
+   \def\figurename{\textbulgarian{Фигура}}%
+   \def\tablename{\textbulgarian{Таблица}}%
+   %\def\thepart{\textbulgarian{}}%
+   %\def\partname{\textbulgarian{}}%
+   \def\pagename{\textbulgarian{Стр.}}%
+   \def\seename{\textbulgarian{вж.}}%
+   \def\alsoname{\textbulgarian{вж.\ също и}}%
+   \def\enclname{\textbulgarian{Приложения}}%
+   \def\ccname{\textbulgarian{копия}}%
+   %\def\headtoname{\textbulgarian{}}%
+   \def\proofname{\textbulgarian{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\textbulgarian{Glossary}}%
+   \def\today{\textbulgarian{\number\day~\ifcase\month\or
        януари\or
        февруари\or
        март\or
@@ -72,21 +72,44 @@
 
 \def\bulgarian@language{\protect\language=\l@bulgarian}
 
+\def\bulgarian@font{%
+\font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+\@ifundefined{bulgarianfont}{%
+      \@ifundefined{cyrillicfont}{%
+        \zf@check@ot@script{cyrl}%
+	\if@tempswa%
+	  \addfontfeature{Script=Cyrillic}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the Cyrillic script!^^J
+	  Please define \string\cyrillicfont\space or \string\bulgarianfont\space with \string\newfontfamily}%
+	\fi%
+	\zf@check@ot@lang{BGR}%
+	\if@tempswa\addfontfeature{Language=Bulgarian}\fi
+	}%
+      {\cyrillicfont%
+	\zf@check@ot@lang{BGR}%
+	\if@tempswa\addfontfeature{Language=Bulgarian}\fi%
+      }}% 
+{\bulgarianfont}}
+
 \def\noextras@bulgarian{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@bulgarian{%
    \bulgarian@language%
+   \bulgarian@font%
    \local@hyphenmins{bulgarian}{2}{2}%
    \frenchspacing%
-   \bulgarian@captions%
+   \captionsbulgarian%
    \local@marks{bulgarian}%
    \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@bulgarian{%
    \bulgarian@language%
+   \bulgarian@font%
    \local@hyphenmins{bulgarian}{2}{2}%
    \frenchspacing%
    }

@@ -6,30 +6,30 @@
    \adddialect\l@romanian0%
 \fi
 
-\def\romanian@captions{%
-   \def\refname{\localromanian{Bibliografie}}%
-   \def\abstractname{\localromanian{Rezumat}}%
-   \def\bibname{\localromanian{Bibliografie}}%
-   \def\prefacename{\localromanian{Prefaţă}}%
-   \def\chaptername{\localromanian{Capitolul}}%
-   \def\appendixname{\localromanian{Anexa}}%
-   \def\contentsname{\localromanian{Cuprins}}%
-   \def\listfigurename{\localromanian{Listă de figuri}}%
-   \def\listtablename{\localromanian{Listă de tabele}}%
-   \def\indexname{\localromanian{Glosar}}%
-   \def\figurename{\localromanian{Figura}}%
-   \def\tablename{\localromanian{Tabela}}%
-   %\def\thepart{\localromanian{}}%
-   \def\partname{\localromanian{Partea}}%
-   \def\pagename{\localromanian{Pagina}}%
-   \def\seename{\localromanian{Vezi}}%
-   \def\alsoname{\localromanian{Vezi de asemenea}}%
-   \def\enclname{\localromanian{Anexă}}%
-   \def\ccname{\localromanian{Copie}}%
-   \def\headtoname{\localromanian{Pentru}}%
-   \def\proofname{\localromanian{Demonstraţie}}% for AMS-\LaTeX
-   \def\glossaryname{\localromanian{Glosar}}%
-   \def\today{\localromanian{\number\day~\ifcase\month\or
+\def\captionsromanian{%
+   \def\refname{\textromanian{Bibliografie}}%
+   \def\abstractname{\textromanian{Rezumat}}%
+   \def\bibname{\textromanian{Bibliografie}}%
+   \def\prefacename{\textromanian{Prefaţă}}%
+   \def\chaptername{\textromanian{Capitolul}}%
+   \def\appendixname{\textromanian{Anexa}}%
+   \def\contentsname{\textromanian{Cuprins}}%
+   \def\listfigurename{\textromanian{Listă de figuri}}%
+   \def\listtablename{\textromanian{Listă de tabele}}%
+   \def\indexname{\textromanian{Glosar}}%
+   \def\figurename{\textromanian{Figura}}%
+   \def\tablename{\textromanian{Tabela}}%
+   %\def\thepart{\textromanian{}}%
+   \def\partname{\textromanian{Partea}}%
+   \def\pagename{\textromanian{Pagina}}%
+   \def\seename{\textromanian{Vezi}}%
+   \def\alsoname{\textromanian{Vezi de asemenea}}%
+   \def\enclname{\textromanian{Anexă}}%
+   \def\ccname{\textromanian{Copie}}%
+   \def\headtoname{\textromanian{Pentru}}%
+   \def\proofname{\textromanian{Demonstraţie}}% for AMS-\LaTeX
+   \def\glossaryname{\textromanian{Glosar}}%
+   \def\today{\textromanian{\number\day~\ifcase\month\or
     ianuarie\or februarie\or martie\or aprilie\or mai\or
     iunie\or iulie\or august\or septembrie\or octombrie\or
     noiembrie\or decembrie\fi
@@ -43,7 +43,7 @@
 \def\blockextras@romanian{%
    \romanian@language%
    \local@hyphenmins{romanian}{2}{2}%
-   \romanian@captions%
+   \captionsromanian%
    \local@marks{romanian}%
    \@ifundefined{setLR}{}{\setLR}%
    }

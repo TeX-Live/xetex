@@ -8,29 +8,29 @@
    \adddialect\l@german0
 \fi
 
-\def\german@captions{%
-   \def\prefacename{\localgerman{Vorwort}}%
-   \def\refname{\localgerman{Literatur}}%
-   \def\abstractname{\localgerman{Zusammenfassung}}%
-   \def\bibname{\localgerman{Literaturverzeichnis}}%
-   \def\chaptername{\localgerman{Kapitel}}%
-   \def\appendixname{\localgerman{Anhang}}%
-   \def\contentsname{\localgerman{Inhaltsverzeichnis}}%
-   \def\listfigurename{\localgerman{Abbildungsverzeichnis}}%
-   \def\listtablename{\localgerman{Tabellenverzeichnis}}%
-   \def\indexname{\localgerman{Index}}%
-   \def\figurename{\localgerman{Abbildung}}%
-   \def\tablename{\localgerman{Tabelle}}%
-   \def\partname{\localgerman{Teil}}%
-   \def\enclname{\localgerman{Anlage(n)}}%
-   \def\ccname{\localgerman{Verteiler}}%
+\def\captionsgerman{%
+   \def\prefacename{\textgerman{Vorwort}}%
+   \def\refname{\textgerman{Literatur}}%
+   \def\abstractname{\textgerman{Zusammenfassung}}%
+   \def\bibname{\textgerman{Literaturverzeichnis}}%
+   \def\chaptername{\textgerman{Kapitel}}%
+   \def\appendixname{\textgerman{Anhang}}%
+   \def\contentsname{\textgerman{Inhaltsverzeichnis}}%
+   \def\listfigurename{\textgerman{Abbildungsverzeichnis}}%
+   \def\listtablename{\textgerman{Tabellenverzeichnis}}%
+   \def\indexname{\textgerman{Index}}%
+   \def\figurename{\textgerman{Abbildung}}%
+   \def\tablename{\textgerman{Tabelle}}%
+   \def\partname{\textgerman{Teil}}%
+   \def\enclname{\textgerman{Anlage(n)}}%
+   \def\ccname{\textgerman{Verteiler}}%
    \def\headtoname{An}%
-   \def\pagename{\localgerman{Seite}}%
-   \def\seename{\localgerman{siehe}}%
-   \def\alsoname{\localgerman{siehe auch}}%
-   \def\proofname{\localgerman{Beweis}}% for AMS-\LaTeX
-   \def\glossaryname{\localgerman{Glossar}}%
-   \def\today{\localgerman{\number\day.%
+   \def\pagename{\textgerman{Seite}}%
+   \def\seename{\textgerman{siehe}}%
+   \def\alsoname{\textgerman{siehe auch}}%
+   \def\proofname{\textgerman{Beweis}}% for AMS-\LaTeX
+   \def\glossaryname{\textgerman{Glossar}}%
+   \def\today{\textgerman{\number\day.%
       \space \ifcase\month%
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
       Juli\or August\or September\or Oktober\or November\or%
@@ -47,10 +47,9 @@
    \german@language%
    \local@hyphenmins{german}{2}{2}%
    \frenchspacing%
-   \german@captions%
+   \captionsgerman%
    \local@marks{german}%
-   \@ifundefined{setLR}{}{\setLR}%
-   \rmfamily%
+   \reset@latin@script%
 }
 
 \def\inlineextras@german{%

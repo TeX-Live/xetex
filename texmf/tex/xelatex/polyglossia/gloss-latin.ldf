@@ -14,29 +14,29 @@
    \nonfrenchspacing%
 }
 
-\def\latin@captions{%
-   \def\prefacename{\locallatin{Praefatio}}%
-   \def\refname{\locallatin{Conspectus librorum}}%
-   \def\abstractname{\locallatin{Summarium}}%
-   \def\bibname{\locallatin{Conspectus librorum}}%
-   \def\chaptername{\locallatin{Caput}}%
-   \def\appendixname{\locallatin{Additamentum}}%
-   \def\contentsname{\locallatin{Index}}%
-   \def\listfigurename{\locallatin{Conspectus descriptionum}}%
-   \def\listtablename{\locallatin{Conspectus tabularum}}%
-   \def\indexname{\locallatin{Index rerum notabilium}}%
-   \def\figurename{\locallatin{Descriptio}}%
-   \def\tablename{\locallatin{Tabula}}%
-   \def\partname{\locallatin{Pars}}%
-   \def\enclname{\locallatin{Additur}}%
-   \def\ccname{\locallatin{Exemplar}}%
+\def\captionslatin{%
+   \def\prefacename{\textlatin{Praefatio}}%
+   \def\refname{\textlatin{Conspectus librorum}}%
+   \def\abstractname{\textlatin{Summarium}}%
+   \def\bibname{\textlatin{Conspectus librorum}}%
+   \def\chaptername{\textlatin{Caput}}%
+   \def\appendixname{\textlatin{Additamentum}}%
+   \def\contentsname{\textlatin{Index}}%
+   \def\listfigurename{\textlatin{Conspectus descriptionum}}%
+   \def\listtablename{\textlatin{Conspectus tabularum}}%
+   \def\indexname{\textlatin{Index rerum notabilium}}%
+   \def\figurename{\textlatin{Descriptio}}%
+   \def\tablename{\textlatin{Tabula}}%
+   \def\partname{\textlatin{Pars}}%
+   \def\enclname{\textlatin{Additur}}%
+   \def\ccname{\textlatin{Exemplar}}%
    \def\headtoname{\ignorespaces}%
-   \def\pagename{\locallatin{pagina}}%
-   \def\seename{\locallatin{cfr.}}%
-   \def\alsoname{\locallatin{cfr.}}%
-   \def\proofname{\locallatin{Demonstratio}}% for AMS-\LaTeX
-   \def\glossaryname{\locallatin{Glossarium}}%
-   \def\today{\locallatin{\uppercase\expandafter{\romannumeral\day}%
+   \def\pagename{\textlatin{pagina}}%
+   \def\seename{\textlatin{cfr.}}%
+   \def\alsoname{\textlatin{cfr.}}%
+   \def\proofname{\textlatin{Demonstratio}}% for AMS-\LaTeX
+   \def\glossaryname{\textlatin{Glossarium}}%
+   \def\today{\textlatin{\uppercase\expandafter{\romannumeral\day}%
       \space \ifcase\month%
       \or Januarii\or Februarii\or Martii\or Aprilis\or Maji\or Junii\or%
       Julii\or Augusti\or Septembris\or Octobris\or Novembris\or%
@@ -54,7 +54,7 @@
    \latin@language%
    \local@hyphenmins{latin}{2}{2}%
    \frenchspacing%
-   \latin@captions%
+   \captionslatin%
    \local@marks{latin}%
 }
 

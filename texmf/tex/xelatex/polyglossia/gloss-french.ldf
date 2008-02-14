@@ -27,6 +27,8 @@
     \XeTeXcharclass `\» 8%
     \XeTeXinterchartoks 8 0 = {\kern.1667em}%
     \XeTeXinterchartoks 0 8 = {\unskip\kern.1667em}%
+    \XeTeXinterchartoks 8 7 = {\unskip\kern.1667em}% "»;" -> "» ;"
+    \XeTeXinterchartoks 7 8 = {\unskip\kern.1667em}% "?»" -> "? »"
 }
 
 \let\@aifORI\@afterindentfalse%
@@ -68,19 +70,19 @@
 %      \addfontfeature{Mapping=sansaccents}% <<< TODO!
 %   \fi}
 
-\def\french@captions{%
-   \def\refname{\localfrench{Références}}%
-   \def\abstractname{\localfrench{Résumé}}%
-   \def\bibname{\localfrench{Bibliographie}}%
-   \def\prefacename{\localfrench{Préface}}%
-   \def\chaptername{\localfrench{Chapitre}}%
-   \def\appendixname{\localfrench{Annexe}}%
-   \def\contentsname{\localfrench{Table des matières}}%
-   \def\listfigurename{\localfrench{Table des figures}}%
-   \def\listtablename{\localfrench{Liste des tableaux}}%
-   \def\indexname{\localfrench{Index}}%
-   \def\figurename{\localfrench{\scshape Fig.}}%
-   \def\tablename{\localfrench{\scshape Tab.}}%
+\def\captionsfrench{%
+   \def\refname{\textfrench{Références}}%
+   \def\abstractname{\textfrench{Résumé}}%
+   \def\bibname{\textfrench{Bibliographie}}%
+   \def\prefacename{\textfrench{Préface}}%
+   \def\chaptername{\textfrench{Chapitre}}%
+   \def\appendixname{\textfrench{Annexe}}%
+   \def\contentsname{\textfrench{Table des matières}}%
+   \def\listfigurename{\textfrench{Table des figures}}%
+   \def\listtablename{\textfrench{Liste des tableaux}}%
+   \def\indexname{\textfrench{Index}}%
+   \def\figurename{\textfrench{\scshape Fig.}}%
+   \def\tablename{\textfrench{\scshape Tab.}}%
    \def\@Fpt{\ifcase\value{part}\or Première\or Deuxième\or%
    Troisième\or Quatrième\or Cinquième\or Sixième\or%
    Septième\or Huitième\or Neuvième\or Dixième\or Onzième\or%
@@ -88,15 +90,17 @@
    Seizième\or Dix-septième\or Dix-huitième\or Dix-neuvième\or%
    Vingtième\fi\space}%
    \def\thepart{}%
-   \def\partname{\localfrench{\protect\@Fpt partie}}%
-   \def\pagename{\localfrench{page}}%
-   \def\seename{\localfrench{\emph{voir}}}%
-   \def\alsoname{\localfrench{\emph{voir aussi}}}%
-   \def\enclname{\localfrench{P.~J. }}%
-   \def\ccname{\localfrench{Copie à }}%
+   \def\partname{\textfrench{\protect\@Fpt partie}}%
+   \def\pagename{\textfrench{page}}%
+   \def\seename{\textfrench{\emph{voir}}}%
+   \def\alsoname{\textfrench{\emph{voir aussi}}}%
+   \def\enclname{\textfrench{P.~J. }}%
+   \def\ccname{\textfrench{Copie à }}%
    \def\headtoname{}%
-   \def\proofname{\localfrench{Démonstration}}% for AMS-\LaTeX
-   \def\today{\localfrench{\ifx\ier\undefined\def\ier{er}\fi%
+   \def\proofname{\textfrench{Démonstration}}% for AMS-\LaTeX
+   }
+\def\datefrench{%
+   \def\today{\textfrench{\ifx\ier\undefined\def\ier{er}\fi%
       \ifnum\day=1\relax 1\ier%
       \else \number\day\fi%
       \space \ifcase\month%
@@ -116,7 +120,8 @@
    \local@hyphenmins{french}{2}{2}%
    \french@punctuation%
    \french@indent%
-   \french@captions%
+   \captionsfrench%
+   \datefrench%
    \local@marks{french}%
    \french@guillemets%
    \@ifundefined{setLR}{}{\setLR}%

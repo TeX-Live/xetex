@@ -1,0 +1,204 @@
+\ProvidesFile{gloss-thai.ldf}[polyglossia: module for thai]
+%% This is based on thai-latex for Babel:
+%%%% Copyright (C) 1999 - 2006
+%%%%           by Surapant Meknavin,
+%%%%              Theppitak Karoonboonyanan (thep at linux.thai.net),
+%%%%              Chanop Silpa-Anan (chanop at debian.org),
+%%%%              Poonlap Veerathanabutr (poonlap at linux.thai.net)
+%%%%              Thai Linux Working Group
+%%%%              http://linux.thai.net/
+%%%%
+%%%% Please report errors to: Theppitak Karoonboonyanan
+%%%%                           (thep at linux.thai.net)
+%%%%
+%%%%   This file is part of the babel system, it provides the source
+%%%%   code for the Thai language definition file.  The original version
+%%%%   was written by Surapant Meknavin.
+%%%%
+%%%%   It is currently maintained by Theppitak Karoonboonyanan
+%%%%   (thep at linux.thai.net), Chanop Silpa-Anan (chanop at debian.org)
+%%%%   and Poonlap Veerathanabutr (poonlap at linux.thai.net).
+\makeatletter
+
+\ifx\l@thai\@undefined%
+   \xpg@nopatterns{Thai}%
+   \adddialect\l@thai0%
+\fi
+
+%TODO : implement this
+\newif\if@thai@numerals
+\def\tmp@thai{thai}
+\define@key{thai}{numerals}[arabic]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@thai\@thai@numeralstrue\else%
+	  \@thai@numeralsfalse\fi%
+	}
+
+\def\captionsthai{%
+   \def\refname{\textthai{หนังสืออ้างอิง}}%
+   \def\abstractname{\textthai{บทคัดย่อ}}%
+   \def\bibname{\textthai{บรรณานุกรม}}%
+   \def\prefacename{\textthai{คำนำ}}%
+   \def\chaptername{\textthai{บทที่}}%
+   \def\appendixname{\textthai{ภาคผนวก}}%
+   \def\contentsname{\textthai{สารบัญ}}%
+   \def\listfigurename{\textthai{สารบัญรูป}}%
+   \def\listtablename{\textthai{สารบัญตาราง}}%
+   \def\indexname{\textthai{ดรรชนี}}%
+   \def\figurename{\textthai{รูปที่}}%
+   \def\tablename{\textthai{ตารางที่}}%
+   %\def\thepart{\textthai{}}%
+   \def\partname{\textthai{ภาค}}%
+   \def\pagename{\textthai{หน้า}}%
+   \def\seename{\textthai{ดู}}%
+   \def\alsoname{\textthai{ดูเพิ่มเติม}}%
+   \def\enclname{\textthai{สิ่งที่แนบมาด้วย}}%
+   \def\ccname{\textthai{สำเนาถึง}}%
+   \def\headtoname{\textthai{เรียน}}%
+   \def\proofname{\textthai{พิสูจน์}}% for AMS-\LaTeX
+   %\def\glossaryname{\textthai{}}%
+}
+\def\datethai{%   
+   \def\thai@month{%
+     \ifcase\month\or
+       มกราคม\or กุมภาพันธ์\or มีนาคม\or เมษายน
+      \or พฤษภาคม\or มิถุนายน\or กรกฎาคม\or สิงหาคม
+      \or กันยายน \or ตุลาคม\or พฤศจิกายน\or ธันวาคม\fi}%
+   \newcount\thai@year%
+   \thai@year=\year%
+   \advance\thai@year by 543%
+   \def\today{\textthai{\thainumber\day \space \thai@month\space พ.ศ.~\thainumber\thai@year}}%
+}
+
+\def\thai@language{\protect\language=\l@thai}
+
+% for testing purposes: change color at word boundaries:
+%   \newif\ifred\redtrue
+%   \ifred\color{black}\redfalse\else\color{red}\redtrue\fi
+%FIXME thai-latex had "plus 0.6pt", but 5pt seems to give better results! -> change to .4em perhaps?
+\def\wbr{\hskip0pt plus .4em\relax} %%OR \char"200B = ZWSP ? Does not work
+%\catcode"200b=\active
+%\def^^200b{\hskip 0pt plus .4em}
+
+\def\thainumber#1{\if@thai@numerals{\protect\thai@font\addfontfeature{Mapping=thaidigits}\number#1}\else{\reset@font\number#1}\fi}
+
+\def\thainum#1{\expandafter\thainumber\csname c@#1\endcsname}
+\def\thaibracenum#1{(\expandafter\thainumber\csname c@#1\endcsname)}
+\def\thaialph#1{\expandafter\@thaialph\csname c@#1\endcsname}
+\def\@thaialph#1{%
+  \ifcase#1\or ก\or ข\or ค\or ง\or จ\or ฉ\or ช\or ซ\or ฌ\or ญ\or ฎ\or
+   ฏ\or ฐ\or ฑ\or ฒ\or ณ\or ด\or ต\or ถ\or ท\or ธ\or น\or บ\or ป\or ผ\or
+   ฝ\or พ\or ฟ\or ภ\or ม\or ย\or ร\or ล\or ว\or ศ\or ษ\or ส\or ห\or ฬ\or อ\or
+     ฮ\else\@ctrerr\fi}
+\def\thaiAlph#1{\expandafter\@thaiAlph\csname c@#1\endcsname}
+\def\@thaiAlph#1{%
+  \ifcase#1\or ก\or ข\or ฃ\or ค\or ฅ\or ฆ\or ง\or จ\or ฉ\or ช\or ซ\or
+   ฌ\or ญ\or ฎ\or ฏ\or ฐ\or ฑ\or ฒ\or ณ\or ด\or ต\or ถ\or ท\or ธ\or น\or
+    บ\or ป\or ผ\or ฝ\or พ\or ฟ\or ภ\or ม\or ย\or ร\or ฤ\or ล\or ฦ\or ว\or
+     ศ\or ษ\or ส\or ห\or ฬ\or อ\or ฮ\else\@ctrerr\fi}
+     
+\def\thai@font{%
+  \@ifundefined{thaifont}{%
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@check@ot@script{thai}%
+    \if@tempswa%
+      \addfontfeature{Script=Thai}%
+    \else%
+      \PackageError{polyglossia}{^^J
+      The current font does not contain the Thai script!^^J
+      Please define \string\thaifont\space with \string\newfontfamily}%
+    \fi%
+    }%
+    {\thaifont}} 
+
+\def\selectnormalfontthai{%
+   \let\normalfont=\thai@font%
+   \def\reset@font{\normalfont}}
+
+\def\noextras@thai{%
+   }
+
+\def\blockextras@thai{%
+   \thai@language%
+   \local@hyphenmins{thai}{11}{11}%
+   \captionsthai%
+   \datethai%
+   \local@marks{thai}%
+   \thai@font%
+   \@ifundefined{setLR}{}{\setLR}%
+   \renewcommand{\baselinestretch}{1.2}%
+   }
+
+\def\inlineextras@thai{%
+   \thai@language%
+   \local@hyphenmins{thai}{11}{11}%
+   \thai@font%
+   }
+
+\endinput
+
+%TODO 
+\DeclareOption{thainumber}{
+%\catcode`\@=11
+\pagenumbering{thainum}
+\renewcommand\theenumi{\thainumber\c@enumi}
+\renewcommand\theenumii{\@thaialph\c@enumii}
+\@ifundefined{thechapter}%
+  {\renewcommand\thesection{\thainumber\c@section}%
+   \renewcommand\thesubsection{\thesection.\thainumber\c@subsection}%
+   \renewcommand\thesubsubsection{\thesubsection.\thainumber\c@subsubsection}%
+   \renewcommand\theparagraph    {\thesubsubsection.\thainumber\c@paragraph}%
+   \renewcommand\thesubparagraph {\theparagraph.\thainumber\c@subparagraph}%
+   \renewcommand\theequation{\thainumber\c@equation}%
+   \renewcommand\thetable{\thainumber\c@table}%
+   \renewcommand\thefigure{\thainumber\c@figure}}%
+  {\renewcommand\thepart{\thainumber\c@part}%
+   \renewcommand\thechapter{\thainumber\c@chapter}%
+   \renewcommand\thesection{\thechapter.\thainumber\c@section}%
+   \renewcommand\thesubsection{\thesection.\thainumber\c@subsection}%
+   \renewcommand\thesubsubsection{\thesubsection.\thainumber\c@subsubsection}%
+   \renewcommand\theparagraph    {\thesubsubsection.\thainumber\c@paragraph}%
+   \renewcommand\thesubparagraph {\theparagraph.\thainumber\c@subparagraph}%
+   \renewcommand\theequation%
+       {\ifnum \c@chapter>\z@ \thechapter.\fi \thainumber\c@equation}%
+   \renewcommand \thetable%
+       {\ifnum \c@chapter>\z@ \thechapter.\fi \thainumber\c@table}%
+   \renewcommand \thefigure%
+       {\ifnum \c@chapter>\z@ \thechapter.\fi \thainumber\c@figure}}
+\renewcommand\thefootnote{\thainumber\c@footnote}
+\def\@thmcounter#1{\noexpand\thainum{#1}}
+\@ifclassloaded{book}{%
+  % redefine page numbering for frontmatter and mainmatter
+  \def\ps@headnum{\let\@mkboth\@gobbletwo
+       \def\@oddhead{\reset@font\hfil\thepage\hfil}\let\@oddfoot\@empty
+       \let\@evenhead\@oddhead\let\@evenfoot\@empty}
+  \let\@ltxfrontmatter\frontmatter
+  \renewcommand\frontmatter{\@ltxfrontmatter\pagestyle{headnum}\pagenumbering{thaibracenum}}
+  \let\@ltxmainmatter\mainmatter
+  \renewcommand\mainmatter{\@ltxmainmatter\pagestyle{headings}\pagenumbering{thainum}}
+}{}
+\def\datethai{%
+  \def\today{\thainumber\day \space \th@month\space พ.ศ.~\thainumber\th@year}}
+\relax
+}
+
+\@ifclassloaded{book}{%
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@thaialph\c@chapter}}
+}{}
+\@ifclassloaded{report}{%
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@thaialph\c@chapter}}
+}{}
+\@ifclassloaded{article}{%
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@thaialph\c@section}}
+}{}

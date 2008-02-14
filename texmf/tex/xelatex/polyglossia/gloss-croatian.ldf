@@ -6,30 +6,30 @@
    \adddialect\l@croatian0%
 \fi
 
-\def\croatian@captions{%
-   \def\refname{\localcroatian{Literatura}}%
-   \def\abstractname{\localcroatian{Sažetak}}%
-   \def\bibname{\localcroatian{Bibliografija}}%
-   \def\prefacename{\localcroatian{Predgovor}}%
-   \def\chaptername{\localcroatian{Poglavlje}}%
-   \def\appendixname{\localcroatian{Dodatak}}%
-   \def\contentsname{\localcroatian{Sadržaj}}%
-   \def\listfigurename{\localcroatian{Popis slika}}%
-   \def\listtablename{\localcroatian{Popis tablica}}%
-   \def\indexname{\localcroatian{Indeks}}%
-   \def\figurename{\localcroatian{Slika}}%
-   \def\tablename{\localcroatian{Tablica}}%
-   %\def\thepart{\localcroatian{}}%
-   \def\partname{\localcroatian{}}%
-   \def\pagename{\localcroatian{Stranica}}%
-   \def\seename{\localcroatian{Vidjeti}}%
-   \def\alsoname{\localcroatian{Vidjeti i}}%
-   \def\enclname{\localcroatian{Prilozi}}%
-   \def\ccname{\localcroatian{Kopije}}%
-   \def\headtoname{\localcroatian{Prima}}%
-   \def\proofname{\localcroatian{Dokaz}}% for AMS-\LaTeX
-   \def\glossaryname{\localcroatian{Kazalo}}%
-   \def\today{\localcroatian{\number\day.~\ifcase\month\or
+\def\captionscroatian{%
+   \def\refname{\textcroatian{Literatura}}%
+   \def\abstractname{\textcroatian{Sažetak}}%
+   \def\bibname{\textcroatian{Bibliografija}}%
+   \def\prefacename{\textcroatian{Predgovor}}%
+   \def\chaptername{\textcroatian{Poglavlje}}%
+   \def\appendixname{\textcroatian{Dodatak}}%
+   \def\contentsname{\textcroatian{Sadržaj}}%
+   \def\listfigurename{\textcroatian{Popis slika}}%
+   \def\listtablename{\textcroatian{Popis tablica}}%
+   \def\indexname{\textcroatian{Indeks}}%
+   \def\figurename{\textcroatian{Slika}}%
+   \def\tablename{\textcroatian{Tablica}}%
+   %\def\thepart{\textcroatian{}}%
+   \def\partname{\textcroatian{}}%
+   \def\pagename{\textcroatian{Stranica}}%
+   \def\seename{\textcroatian{Vidjeti}}%
+   \def\alsoname{\textcroatian{Vidjeti i}}%
+   \def\enclname{\textcroatian{Prilozi}}%
+   \def\ccname{\textcroatian{Kopije}}%
+   \def\headtoname{\textcroatian{Prima}}%
+   \def\proofname{\textcroatian{Dokaz}}% for AMS-\LaTeX
+   \def\glossaryname{\textcroatian{Kazalo}}%
+   \def\today{\textcroatian{\number\day.~\ifcase\month\or
     siječnja\or veljače\or ožujka\or travnja\or svibnja\or
     lipnja\or srpnja\or kolovoza\or rujna\or listopada\or studenog\or
     prosinca\fi \space \number\year.}}}
@@ -42,7 +42,7 @@
 \def\blockextras@croatian{%
    \croatian@language%
    \local@hyphenmins{croatian}{2}{2}%
-   \croatian@captions%
+   \captionscroatian%
    \local@marks{croatian}%
    \@ifundefined{setLR}{}{\setLR}%
    }

@@ -5,30 +5,30 @@
     \xpg@nopatterns{Albanian}
     \adddialect\l@albanian0\fi
 
-\def\albanian@captions{%
-   \def\refname{\localalbanian{Referencat}}%
-   \def\abstractname{\localalbanian{Përmbledhja}}%
-   \def\bibname{\localalbanian{Bibliografia}}%
-   \def\prefacename{\localalbanian{Parathenia}}%
-   \def\chaptername{\localalbanian{Kapitulli}}%
-   \def\appendixname{\localalbanian{Shtesa}}%
-   \def\contentsname{\localalbanian{Përmbajta}}%
-   \def\listfigurename{\localalbanian{Figurat}}%
-   \def\listtablename{\localalbanian{Tabelat}}%
-   \def\indexname{\localalbanian{Indeksi}}%
-   \def\figurename{\localalbanian{Figura}}%
-   \def\tablename{\localalbanian{Tabela}}%
-   %\def\thepart{\localalbanian{}}%
-   \def\partname{\localalbanian{Pjesa}}%
-   \def\pagename{\localalbanian{Faqe}}%
-   \def\seename{\localalbanian{shiko}}%
-   \def\alsoname{\localalbanian{shiko dhe}}%
-   %\def\enclname{\localalbanian{}}%
-   %\def\ccname{\localalbanian{}}%
-   %\def\headtoname{\localalbanian{}}%
-   \def\proofname{\localalbanian{Vërtetim}}% for AMS-\LaTeX
-   \def\glossaryname{\localalbanian{Përhasja e Fjalëve}}%
-   \def\today{\localalbanian{{\number\day~\ifcase\month\or
+\def\captionsalbanian{%
+   \def\refname{\textalbanian{Referencat}}%
+   \def\abstractname{\textalbanian{Përmbledhja}}%
+   \def\bibname{\textalbanian{Bibliografia}}%
+   \def\prefacename{\textalbanian{Parathenia}}%
+   \def\chaptername{\textalbanian{Kapitulli}}%
+   \def\appendixname{\textalbanian{Shtesa}}%
+   \def\contentsname{\textalbanian{Përmbajta}}%
+   \def\listfigurename{\textalbanian{Figurat}}%
+   \def\listtablename{\textalbanian{Tabelat}}%
+   \def\indexname{\textalbanian{Indeksi}}%
+   \def\figurename{\textalbanian{Figura}}%
+   \def\tablename{\textalbanian{Tabela}}%
+   %\def\thepart{\textalbanian{}}%
+   \def\partname{\textalbanian{Pjesa}}%
+   \def\pagename{\textalbanian{Faqe}}%
+   \def\seename{\textalbanian{shiko}}%
+   \def\alsoname{\textalbanian{shiko dhe}}%
+   %\def\enclname{\textalbanian{}}%
+   %\def\ccname{\textalbanian{}}%
+   %\def\headtoname{\textalbanian{}}%
+   \def\proofname{\textalbanian{Vërtetim}}% for AMS-\LaTeX
+   \def\glossaryname{\textalbanian{Përhasja e Fjalëve}}%
+   \def\today{\textalbanian{{\number\day~\ifcase\month\or
     Janar\or Shkurt\or Mars\or Prill\or Maj\or
     Qershor\or Korrik\or Gusht\or Shtator\or Tetor\or Nëntor\or
     Dhjetor\fi \space \number\year}}}}
@@ -43,7 +43,7 @@
    \albanian@language%
    \local@hyphenmins{albanian}{2}{2}%
    \french@indent%
-   \albanian@captions%
+   \captionsalbanian%
    \local@marks{albanian}%
    \@ifundefined{setLR}{}{\setLR}%
    }

@@ -6,31 +6,31 @@
    \adddialect\l@irish0%
 \fi
 
-\def\irish@captions{%
-   \def\refname{\localirish{Tagairtí}}%
-   \def\abstractname{\localirish{Achoimre}}%
-   \def\bibname{\localirish{Leabharliosta}}%
-   \def\prefacename{\localirish{Réamhrá}}%    <-- also "Brollach"
-   \def\refname{\localirish{Tagairtí}}%
-   \def\chaptername{\localirish{Tagairtí}}%
-   \def\appendixname{\localirish{Aguisín}}%
-   \def\contentsname{\localirish{Clár Ábhair}}%
-   \def\listfigurename{\localirish{Léaráidí}}%
-   \def\listtablename{\localirish{Táblaí}}%
-   \def\indexname{\localirish{Innéacs}}%
-   \def\figurename{\localirish{Léaráid}}%
-   \def\tablename{\localirish{Tábla}}%
-   %\def\thepart{\localirish{}}%
-   \def\partname{\localirish{Cuid}}%
-   \def\pagename{\localirish{Leathanach}}%
-   \def\seename{\localirish{féach}}%
-   \def\alsoname{\localirish{féach freisin}}%
-   \def\enclname{\localirish{faoi iamh}}%
-   \def\ccname{\localirish{cc}}%
-   \def\headtoname{\localirish{Go}}%
-   \def\proofname{\localirish{Cruthúnas}}% for AMS-\LaTeX
-   \def\glossaryname{\localirish{Glossary}}%
-   \def\today{\localirish{%
+\def\captionsirish{%
+   \def\refname{\textirish{Tagairtí}}%
+   \def\abstractname{\textirish{Achoimre}}%
+   \def\bibname{\textirish{Leabharliosta}}%
+   \def\prefacename{\textirish{Réamhrá}}%    <-- also "Brollach"
+   \def\refname{\textirish{Tagairtí}}%
+   \def\chaptername{\textirish{Tagairtí}}%
+   \def\appendixname{\textirish{Aguisín}}%
+   \def\contentsname{\textirish{Clár Ábhair}}%
+   \def\listfigurename{\textirish{Léaráidí}}%
+   \def\listtablename{\textirish{Táblaí}}%
+   \def\indexname{\textirish{Innéacs}}%
+   \def\figurename{\textirish{Léaráid}}%
+   \def\tablename{\textirish{Tábla}}%
+   %\def\thepart{\textirish{}}%
+   \def\partname{\textirish{Cuid}}%
+   \def\pagename{\textirish{Leathanach}}%
+   \def\seename{\textirish{féach}}%
+   \def\alsoname{\textirish{féach freisin}}%
+   \def\enclname{\textirish{faoi iamh}}%
+   \def\ccname{\textirish{cc}}%
+   \def\headtoname{\textirish{Go}}%
+   \def\proofname{\textirish{Cruthúnas}}% for AMS-\LaTeX
+   \def\glossaryname{\textirish{Glossary}}%
+   \def\today{\textirish{%
     \number\day\space \ifcase\month\or
     Eanáir\or Feabhra\or Márta\or Aibreán\or
     Bealtaine\or Meitheamh\or Iúil\or Lúnasa\or
@@ -46,7 +46,7 @@
 \def\blockextras@irish{%
    \irish@language%
    \local@hyphenmins{irish}{2}{2}%
-   \irish@captions%
+   \captionsirish%
    \local@marks{irish}%
    \@ifundefined{setLR}{}{\setLR}%
    }

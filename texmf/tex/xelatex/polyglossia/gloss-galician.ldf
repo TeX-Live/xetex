@@ -6,30 +6,30 @@
    \adddialect\l@galician0%
 \fi
 
-\def\galician@captions{%
-   \def\refname{\localgalician{Referencias}}%
-   \def\abstractname{\localgalician{Resumo}}%
-   \def\bibname{\localgalician{Bibliografía}}%
-   \def\prefacename{\localgalician{Prefacio}}%
-   \def\chaptername{\localgalician{Capítulo}}%
-   \def\appendixname{\localgalician{Apéndice}}%
-   \def\contentsname{\localgalician{Índice Xeral}}%
-   \def\listfigurename{\localgalician{Índice de Figuras}}%
-   \def\listtablename{\localgalician{Índice de Táboas}}%
-   \def\indexname{\localgalician{Índice de Materias}}%
-   \def\figurename{\localgalician{Figura}}%
-   \def\tablename{\localgalician{Táboa}}%
-   %\def\thepart{\localgalician{}}%
-   \def\partname{\localgalician{Parte}}%
-   \def\pagename{\localgalician{Páxina}}%
-   \def\seename{\localgalician{véxase}}%
-   \def\alsoname{\localgalician{véxase tamén}}%
-   \def\enclname{\localgalician{Adxunto}}%
-   \def\ccname{\localgalician{Copia a}}%
-   \def\headtoname{\localgalician{A}}%
-   \def\proofname{\localgalician{Demostración}}% for AMS-\LaTeX
-   \def\glossaryname{\localgalician{Glosario}}%
-   \def\today{\localgalician{\number\day~de\space\ifcase\month\or
+\def\captionsgalician{%
+   \def\refname{\textgalician{Referencias}}%
+   \def\abstractname{\textgalician{Resumo}}%
+   \def\bibname{\textgalician{Bibliografía}}%
+   \def\prefacename{\textgalician{Prefacio}}%
+   \def\chaptername{\textgalician{Capítulo}}%
+   \def\appendixname{\textgalician{Apéndice}}%
+   \def\contentsname{\textgalician{Índice Xeral}}%
+   \def\listfigurename{\textgalician{Índice de Figuras}}%
+   \def\listtablename{\textgalician{Índice de Táboas}}%
+   \def\indexname{\textgalician{Índice de Materias}}%
+   \def\figurename{\textgalician{Figura}}%
+   \def\tablename{\textgalician{Táboa}}%
+   %\def\thepart{\textgalician{}}%
+   \def\partname{\textgalician{Parte}}%
+   \def\pagename{\textgalician{Páxina}}%
+   \def\seename{\textgalician{véxase}}%
+   \def\alsoname{\textgalician{véxase tamén}}%
+   \def\enclname{\textgalician{Adxunto}}%
+   \def\ccname{\textgalician{Copia a}}%
+   \def\headtoname{\textgalician{A}}%
+   \def\proofname{\textgalician{Demostración}}% for AMS-\LaTeX
+   \def\glossaryname{\textgalician{Glosario}}%
+   \def\today{\textgalician{\number\day~de\space\ifcase\month\or
     xaneiro\or febreiro\or marzo\or abril\or maio\or xuño\or
     xullo\or agosto\or setembro\or outubro\or novembro\or decembro\fi
     \space de~\number\year}}}
@@ -42,7 +42,7 @@
 \def\blockextras@galician{%
    \galician@language%
    \local@hyphenmins{galician}{2}{2}%
-   \galician@captions%
+   \captionsgalician%
    \local@marks{galician}%
    \@ifundefined{setLR}{}{\setLR}%
    }

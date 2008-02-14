@@ -6,30 +6,30 @@
    \adddialect\l@basque0%
 \fi
 
-\def\basque@captions{%
-   \def\refname{\localbasque{Erreferentziak}}%
-   \def\abstractname{\localbasque{Laburpena}}%
-   \def\bibname{\localbasque{Bibliografia}}%
-   \def\prefacename{\localbasque{Hitzaurrea}}%
-   \def\chaptername{\localbasque{Kapitulua}}%
-   \def\appendixname{\localbasque{Eranskina}}%
-   \def\contentsname{\localbasque{Gaien Aurkibidea}}%
-   \def\listfigurename{\localbasque{Irudien Zerrenda}}%
-   \def\listtablename{\localbasque{Taulen Zerrenda}}%
-   \def\indexname{\localbasque{Kontzeptuen Aurkibidea}}%
-   \def\figurename{\localbasque{Irudia}}%
-   \def\tablename{\localbasque{Taula}}%
-   \def\thepart{\localbasque{}}%
-   \def\partname{\localbasque{Atala}}%
-   \def\pagename{\localbasque{Orria}}%
-   \def\seename{\localbasque{Ikusi}}%
-   \def\alsoname{\localbasque{Ikusi, halaber}}%
-   \def\enclname{\localbasque{Erantsia}}%
-   \def\ccname{\localbasque{Kopia}}%
-   \def\headtoname{\localbasque{Nori}}%
-   \def\proofname{\localbasque{Frogapena}}% for AMS-\LaTeX
-   \def\glossaryname{\localbasque{Glosarioa}}%
-   \def\today{\localbasque{\number\year.eko\space\ifcase\month\or
+\def\captionsbasque{%
+   \def\refname{\textbasque{Erreferentziak}}%
+   \def\abstractname{\textbasque{Laburpena}}%
+   \def\bibname{\textbasque{Bibliografia}}%
+   \def\prefacename{\textbasque{Hitzaurrea}}%
+   \def\chaptername{\textbasque{Kapitulua}}%
+   \def\appendixname{\textbasque{Eranskina}}%
+   \def\contentsname{\textbasque{Gaien Aurkibidea}}%
+   \def\listfigurename{\textbasque{Irudien Zerrenda}}%
+   \def\listtablename{\textbasque{Taulen Zerrenda}}%
+   \def\indexname{\textbasque{Kontzeptuen Aurkibidea}}%
+   \def\figurename{\textbasque{Irudia}}%
+   \def\tablename{\textbasque{Taula}}%
+   \def\thepart{\textbasque{}}%
+   \def\partname{\textbasque{Atala}}%
+   \def\pagename{\textbasque{Orria}}%
+   \def\seename{\textbasque{Ikusi}}%
+   \def\alsoname{\textbasque{Ikusi, halaber}}%
+   \def\enclname{\textbasque{Erantsia}}%
+   \def\ccname{\textbasque{Kopia}}%
+   \def\headtoname{\textbasque{Nori}}%
+   \def\proofname{\textbasque{Frogapena}}% for AMS-\LaTeX
+   \def\glossaryname{\textbasque{Glosarioa}}%
+   \def\today{\textbasque{\number\year.eko\space\ifcase\month\or
     urtarrilaren\or otsailaren\or martxoaren\or apirilaren\or
     maiatzaren\or ekainaren\or uztailaren\or abuztuaren\or
     irailaren\or urriaren\or azaroaren\or
@@ -43,7 +43,7 @@
 \def\blockextras@basque{%
    \basque@language%
    \local@hyphenmins{basque}{2}{2}%
-   \basque@captions%
+   \captionsbasque%
    \local@marks{basque}%
    \@ifundefined{setLR}{}{\setLR}%
    }

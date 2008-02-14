@@ -6,30 +6,30 @@
    \adddialect\l@scottish0%
 \fi
 
-\def\scottish@captions{%
-   \def\refname{\localscottish{Iomraidh}}%
-   \def\abstractname{\localscottish{Brìgh}}%
-   \def\bibname{\localscottish{Leabhraichean}}%
-   \def\prefacename{\localscottish{Preface}}%    <-- needs translation
-   \def\chaptername{\localscottish{Caibideil}}%
-   \def\appendixname{\localscottish{Ath-sgr`ıobhadh}}%
-   \def\contentsname{\localscottish{Clàr-obrach}}%
-   \def\listfigurename{\localscottish{Liosta Dhealbh }}%
-   \def\listtablename{\localscottish{Liosta Chlàr}}%
-   \def\indexname{\localscottish{Clàr-innse}}%
-   \def\figurename{\localscottish{Dealbh}}%
-   \def\tablename{\localscottish{Clàr}}%
-   %\def\thepart{\localscottish{}}%
-   \def\partname{\localscottish{Cuid}}%
-   \def\pagename{\localscottish{t.d.}}%
-   \def\seename{\localscottish{see}}%    <-- needs translation
-   \def\alsoname{\localscottish{see also}}%    <-- needs translation
-   \def\enclname{\localscottish{a-staigh}}%
-   \def\ccname{\localscottish{lethbhreac gu}}%
-   \def\headtoname{\localscottish{gu}}%
-   \def\proofname{\localscottish{Proof}}%    <-- needs translation 
-   \def\glossaryname{\localscottish{Glossary}}%    <-- needs translation
-   \def\today{\localscottish{%
+\def\captionsscottish{%
+   \def\refname{\textscottish{Iomraidh}}%
+   \def\abstractname{\textscottish{Brìgh}}%
+   \def\bibname{\textscottish{Leabhraichean}}%
+   \def\prefacename{\textscottish{Preface}}%    <-- needs translation
+   \def\chaptername{\textscottish{Caibideil}}%
+   \def\appendixname{\textscottish{Ath-sgr`ıobhadh}}%
+   \def\contentsname{\textscottish{Clàr-obrach}}%
+   \def\listfigurename{\textscottish{Liosta Dhealbh }}%
+   \def\listtablename{\textscottish{Liosta Chlàr}}%
+   \def\indexname{\textscottish{Clàr-innse}}%
+   \def\figurename{\textscottish{Dealbh}}%
+   \def\tablename{\textscottish{Clàr}}%
+   %\def\thepart{\textscottish{}}%
+   \def\partname{\textscottish{Cuid}}%
+   \def\pagename{\textscottish{t.d.}}%
+   \def\seename{\textscottish{see}}%    <-- needs translation
+   \def\alsoname{\textscottish{see also}}%    <-- needs translation
+   \def\enclname{\textscottish{a-staigh}}%
+   \def\ccname{\textscottish{lethbhreac gu}}%
+   \def\headtoname{\textscottish{gu}}%
+   \def\proofname{\textscottish{Proof}}%    <-- needs translation 
+   \def\glossaryname{\textscottish{Glossary}}%    <-- needs translation
+   \def\today{\textscottish{%
     \number\day\space \ifcase\month\or
     am Faoilteach\or an Gearran\or am Màrt\or an Giblean\or
     an Cèitean\or an t-Òg mhios\or an t-Iuchar\or
@@ -45,7 +45,7 @@
 \def\blockextras@scottish{%
    \scottish@language%
    \local@hyphenmins{scottish}{2}{2}%
-   \scottish@captions%
+   \captionsscottish%
    \local@marks{scottish}%
    \@ifundefined{setLR}{}{\setLR}%
    }

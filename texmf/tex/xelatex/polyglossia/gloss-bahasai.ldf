@@ -30,30 +30,30 @@
   \fi
 \fi
 
-\def\bahasai@captions{%
-   \def\refname{\localbahasai{Pustaka}}%
-   \def\abstractname{\localbahasai{Ringkasan}}%
-   \def\bibname{\localbahasai{Bibliografi}}%
-   \def\prefacename{\localbahasai{Pendahuluan}}%
-   \def\chaptername{\localbahasai{Bab}}%
-   \def\appendixname{\localbahasai{Lampiran}}%
-   \def\contentsname{\localbahasai{Daftar Isi}}%
-   \def\listfigurename{\localbahasai{Daftar Gambar}}%
-   \def\listtablename{\localbahasai{Daftar Tabel}}%
-   \def\indexname{\localbahasai{Indeks}}%
-   \def\figurename{\localbahasai{Gambar}}%
-   \def\tablename{\localbahasai{Tabel}}%
+\def\captionsbahasai{%
+   \def\refname{\textbahasai{Pustaka}}%
+   \def\abstractname{\textbahasai{Ringkasan}}%
+   \def\bibname{\textbahasai{Bibliografi}}%
+   \def\prefacename{\textbahasai{Pendahuluan}}%
+   \def\chaptername{\textbahasai{Bab}}%
+   \def\appendixname{\textbahasai{Lampiran}}%
+   \def\contentsname{\textbahasai{Daftar Isi}}%
+   \def\listfigurename{\textbahasai{Daftar Gambar}}%
+   \def\listtablename{\textbahasai{Daftar Tabel}}%
+   \def\indexname{\textbahasai{Indeks}}%
+   \def\figurename{\textbahasai{Gambar}}%
+   \def\tablename{\textbahasai{Tabel}}%
    %\def\thepart{}%
-   \def\partname{\localbahasai{Bagian}}%
-   \def\pagename{\localbahasai{Halaman}}%
-   \def\seename{\localbahasai{lihat}}%
-   \def\alsoname{\localbahasai{lihat juga}}%
-   \def\enclname{\localbahasai{Lampiran}}%
+   \def\partname{\textbahasai{Bagian}}%
+   \def\pagename{\textbahasai{Halaman}}%
+   \def\seename{\textbahasai{lihat}}%
+   \def\alsoname{\textbahasai{lihat juga}}%
+   \def\enclname{\textbahasai{Lampiran}}%
    \def\ccname{cc}%
    \def\headtoname{Kepada}%
-   \def\proofname{\localbahasai{Bukti}}% for AMS-\LaTeX
-   \def\glossaryname{\localbahasai{Daftar Istilah}}%
-   \def\today{\localbahasai{\number\day~\ifcase\month\or
+   \def\proofname{\textbahasai{Bukti}}% for AMS-\LaTeX
+   \def\glossaryname{\textbahasai{Daftar Istilah}}%
+   \def\today{\textbahasai{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Maret\or April\or Mei\or Juni\or
     Juli\or Agustus\or September\or Oktober\or Nopember\or Desember\fi
     \space \number\year}}}
@@ -66,7 +66,7 @@
 \def\blockextras@bahasai{%
    \bahasai@language%
    \local@hyphenmins{bahasai}{2}{2}%
-   \bahasai@captions%
+   \captionsbahasai%
    \local@marks{bahasai}%
    \@ifundefined{setLR}{}{\setLR}%
    }

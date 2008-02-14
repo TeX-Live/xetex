@@ -6,30 +6,30 @@
    \adddialect\l@interlingua0%
 \fi
 
-\def\interlingua@captions{%
-   \def\refname{\localinterlingua{Referentias}}%
-   \def\abstractname{\localinterlingua{Summario}}%
-   \def\bibname{\localinterlingua{Bibliographia}}%
-   \def\prefacename{\localinterlingua{Prefacio}}%
-   \def\chaptername{\localinterlingua{Capitulo}}%
-   \def\appendixname{\localinterlingua{Appendice}}%
-   \def\contentsname{\localinterlingua{Contento}}%
-   \def\listfigurename{\localinterlingua{Lista de figuras}}%
-   \def\listtablename{\localinterlingua{Lista de tabellas}}%
-   \def\indexname{\localinterlingua{Indice}}%
-   \def\figurename{\localinterlingua{Figura}}%
-   \def\tablename{\localinterlingua{Tabella}}%
-   \def\partname{\localinterlingua{Parte}}%
-   %\def\thepart{\localinterlingua{}}%
-   \def\pagename{\localinterlingua{Pagina}}%
-   \def\seename{\localinterlingua{vide}}%
-   \def\alsoname{\localinterlingua{vide etiam}}%
-   \def\enclname{\localinterlingua{Incluso}}%
-   \def\ccname{\localinterlingua{Copia}}%
-   \def\headtoname{\localinterlingua{A}}%
-   \def\proofname{\localinterlingua{Prova}}% for AMS-\LaTeX
-   \def\glossaryname{\localinterlingua{Glossario}}%
-   \def\today{\localinterlingua{le~\number\day\space de \ifcase\month\or
+\def\captionsinterlingua{%
+   \def\refname{\textinterlingua{Referentias}}%
+   \def\abstractname{\textinterlingua{Summario}}%
+   \def\bibname{\textinterlingua{Bibliographia}}%
+   \def\prefacename{\textinterlingua{Prefacio}}%
+   \def\chaptername{\textinterlingua{Capitulo}}%
+   \def\appendixname{\textinterlingua{Appendice}}%
+   \def\contentsname{\textinterlingua{Contento}}%
+   \def\listfigurename{\textinterlingua{Lista de figuras}}%
+   \def\listtablename{\textinterlingua{Lista de tabellas}}%
+   \def\indexname{\textinterlingua{Indice}}%
+   \def\figurename{\textinterlingua{Figura}}%
+   \def\tablename{\textinterlingua{Tabella}}%
+   \def\partname{\textinterlingua{Parte}}%
+   %\def\thepart{\textinterlingua{}}%
+   \def\pagename{\textinterlingua{Pagina}}%
+   \def\seename{\textinterlingua{vide}}%
+   \def\alsoname{\textinterlingua{vide etiam}}%
+   \def\enclname{\textinterlingua{Incluso}}%
+   \def\ccname{\textinterlingua{Copia}}%
+   \def\headtoname{\textinterlingua{A}}%
+   \def\proofname{\textinterlingua{Prova}}% for AMS-\LaTeX
+   \def\glossaryname{\textinterlingua{Glossario}}%
+   \def\today{\textinterlingua{le~\number\day\space de \ifcase\month\or
     januario\or februario\or martio\or april\or maio\or junio\or
     julio\or augusto\or septembre\or octobre\or novembre\or
     decembre\fi
@@ -43,7 +43,7 @@
 \def\blockextras@interlingua{%
    \interlingua@language%
    \local@hyphenmins{interlingua}{2}{2}%
-   \interlingua@captions%
+   \captionsinterlingua%
    \local@marks{interlingua}%
    \@ifundefined{setLR}{}{\setLR}%
    }

@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-arabic.ldf}[polyglossia: module for arabic]
 \RequirePackage{bidi}
+\RequirePackage{hijrical}
 \makeatletter
 
 \ifx\l@arabic\@undefined
@@ -56,7 +57,7 @@
 
 \def\@arabic@month#1{\expandafter\csname arabicgregmonth@#1\endcsname}
 
-\def\arabic@captions{%
+\def\captionsarabic{%
 \def\prefacename{\@ensure@RL{مدخل}}% 
 \def\refname{\@ensure@RL{المراجع}}
 \def\abstractname{\@ensure@RL{ملخص}}%
@@ -79,10 +80,12 @@
 \def\alsoname{\@ensure@RL{راجع أيضاً}}%<<\alefhamza\nun\za\ra
 \def\proofname{\@ensure@RL{برهان}}% for AMS-\LaTeX
 \def\glossaryname{\@ensure@RL{قاموس}}%<<
-% TODO define a defaultLRlanguage … \def\LRtoday{\localdefaultLRlanguage{\today}}
-\def\today{%
- \if@rl%
-   \if@hijrical\RequirePackage{hijrical}%
+% TODO define a defaultLRlanguage … \def\LRtoday{\textdefaultLRlanguage{\today}}
+}
+\def\datearabic{%
+ \def\today{%
+  \if@rl%
+   \if@hijrical%
      \@ensure@RL{\Hijritoday}%
    \else%
      \@ensure@RL{\arabicnumber\day\space\@arabic@month{\@arabic@locale}{\month}%
@@ -92,17 +95,16 @@
       \ifcase\month\or January\or February\or March\or April\or May\or June\or%
       July\or August\or September\or October\or November\or December\fi%
       \space\number\day, \number\year%
- \fi}%
-}
+ \fi}}
 
 \def\arabic@numbers{%
-\renewcommand{\thepage}{\protect\arabicnumber{\the\c@page}}%
-\renewcommand{\thesection}{\protect\arabic@font\protect\arabicnumber{\the\c@section}}%
-\renewcommand{\thesubsection}{\protect\arabic@font\protect\@ensure@RL{\protect\arabicnumber{\the\c@subsection}\textrm{–}\protect\arabicnumber{\the\c@section}}}%
-\renewcommand{\thepart}{\protect\arabic@font\protect\arabicnumber{\the\c@part}}%
-%\renewcommand{\thefootnote}{\arabicnumber{\the\c@footnote}} %-> don't use this!
-\renewcommand{\thefigure}{\protect\arabic@font\protect\arabicnumber{\the\c@figure}}%
-\renewcommand{\thetable}{\protect\arabic@font\protect\arabicnumber{\the\c@table}}%
+\renewcommand{\thepage}{\protect\arabicnumber{\c@page}}%
+\renewcommand{\thesection}{\protect\arabic@font\protect\arabicnumber{\c@section}}%
+\renewcommand{\thesubsection}{\protect\arabic@font\protect\@ensure@RL{\protect\arabicnumber{\c@subsection}\textrm{–}\protect\arabicnumber{\c@section}}}%
+\renewcommand{\thepart}{\protect\arabic@font\protect\arabicnumber{\c@part}}%
+\renewcommand{\thefootnote}{\protect\arabic@font\protect\arabicnumber{\c@footnote}}%
+\renewcommand{\thefigure}{\protect\arabic@font\protect\arabicnumber{\c@figure}}%
+\renewcommand{\thetable}{\protect\arabic@font\protect\arabicnumber{\c@table}}%
 }
 
 \input{abjad.def} %TODO add error message
@@ -110,11 +112,26 @@
 \def\arabic@language{\language=\l@arabic}
 
 \def\arabic@font{%
-\@ifundefined{arabicfont}{\addfontfeature{Script=Arabic,Language=Arabic}}{\arabicfont}}
+  \@ifundefined{arabicfont}{%
+    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+    \zf@check@ot@script{arab}%
+    \if@tempswa%
+      \addfontfeature{Script=Arabic}%
+    \else%
+      \PackageError{polyglossia}{^^J
+      The current font does not contain the Arabic script!^^J
+      Please define \string\arabicfont\space with \string\newfontfamily}%
+    \fi%
+    }%
+  {\arabicfont}% 
+}
+
+\def\selectnormalfontarabic{%
+   \let\normalfont=\arabic@font%
+   \def\reset@font{\normalfont}}
 
 \def\noextras@arabic{%
    %\noarabic@numbers%
-   %\noarabic@punctuation
    }
 
 \def\blockextras@arabic{%
@@ -122,16 +139,15 @@
    \arabic@font%
    \local@hyphenmins{arabic}{1}{1}%
    \local@marks{arabic}%
-   \arabic@captions%
-   \arabic@numbers%
+   \captionsarabic%
+   \datearabic%
    \setRL\setfootnoteRL%
    \def\footnoterule{\RLfootnoterule}%
-   \def\reset@font{\arabic@font}%
-   }{}
+   }
 
 \def\inlineextras@arabic{%
    \arabic@language%
-   \arabic@font
+   \arabic@font%
    \local@hyphenmins{arabic}{1}{1}%
    }
 

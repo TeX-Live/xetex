@@ -6,29 +6,29 @@
    \adddialect\l@spanish0
 \fi
 
-\def\spanish@captions{%
-   \def\prefacename{\localspanish{Prefacio}}%
-   \def\refname{\localspanish{Referencias}}%
-   \def\abstractname{\localspanish{Resumen}}%
-   \def\bibname{\localgerman{Bibliografía}}%
-   \def\chaptername{\localspanish{Capítulo}}%
-   \def\appendixname{\localspanish{Apéndice}}%
-   \def\contentsname{\localspanish{Índice general}}%
-   \def\listfigurename{\localspanish{Índice de figuras}}%
-   \def\listtablename{\localspanish{Índice de cuadros}}%
-   \def\indexname{\localspanish{Índice alfabético}}%
-   \def\figurename{\localspanish{Figura}}%
-   \def\tablename{\localspanish{Cuadro}}%
-   \def\partname{\localspanish{Parte}}%
-   \def\enclname{\localspanish{Adjunto(s)}}%
-   \def\ccname{\localspanish{Copia a}}%
-   \def\headtoname{\localspanish{A}}%
-   \def\pagename{\localspanish{Página}}%
-   \def\seename{\localspanish{véase}}%
-   \def\alsoname{\localspanish{véase también}}%
-   \def\proofname{\localspanish{Prueba}}% for AMS-\LaTeX
-   \def\glossaryname{\localspanish{Glosario}}%
-   \def\today{\localspanish{\number\day\NonBreakingSpace de%
+\def\captionsspanish{%
+   \def\prefacename{\textspanish{Prefacio}}%
+   \def\refname{\textspanish{Referencias}}%
+   \def\abstractname{\textspanish{Resumen}}%
+   \def\bibname{\textgerman{Bibliografía}}%
+   \def\chaptername{\textspanish{Capítulo}}%
+   \def\appendixname{\textspanish{Apéndice}}%
+   \def\contentsname{\textspanish{Índice general}}%
+   \def\listfigurename{\textspanish{Índice de figuras}}%
+   \def\listtablename{\textspanish{Índice de cuadros}}%
+   \def\indexname{\textspanish{Índice alfabético}}%
+   \def\figurename{\textspanish{Figura}}%
+   \def\tablename{\textspanish{Cuadro}}%
+   \def\partname{\textspanish{Parte}}%
+   \def\enclname{\textspanish{Adjunto(s)}}%
+   \def\ccname{\textspanish{Copia a}}%
+   \def\headtoname{\textspanish{A}}%
+   \def\pagename{\textspanish{Página}}%
+   \def\seename{\textspanish{véase}}%
+   \def\alsoname{\textspanish{véase también}}%
+   \def\proofname{\textspanish{Prueba}}% for AMS-\LaTeX
+   \def\glossaryname{\textspanish{Glosario}}%
+   \def\today{\textspanish{\number\day\NonBreakingSpace de%
       \space \ifcase\month%
       \or enero\or febrero\or marzo\or abril\or mayo\or junio\or%
       julio\or agosto\or septiembre\or octubre\or noviembre\or%
@@ -45,7 +45,7 @@
    \spanish@language%
    \local@hyphenmins{spanish}{2}{2}%
    \frenchspacing%
-   \spanish@captions%
+   \captionsspanish%
    \local@marks{spanish}%
 }
 

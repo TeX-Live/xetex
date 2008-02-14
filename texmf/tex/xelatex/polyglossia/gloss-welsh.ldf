@@ -6,30 +6,30 @@
    \adddialect\l@welsh0%
 \fi
 
-\def\welsh@captions{%
-   \def\refname{\localwelsh{Cyfeiriadau}}%
-   \def\abstractname{\localwelsh{Crynodeb}}%
-   \def\bibname{\localwelsh{Llyfryddiaeth}}%
-   \def\prefacename{\localwelsh{Rhagair}}%
-   \def\chaptername{\localwelsh{Pennod}}%
-   \def\appendixname{\localwelsh{Atodiad}}%
-   \def\contentsname{\localwelsh{Cynnwys}}%
-   \def\listfigurename{\localwelsh{Rhestr Ddarluniau}}%
-   \def\listtablename{\localwelsh{Rhestr Dablau}}%
-   \def\indexname{\localwelsh{Mynegai}}%
-   \def\figurename{\localwelsh{Darlun}}%
-   \def\tablename{\localwelsh{Taflen}}%
-   %\def\thepart{\localwelsh{}}%
-   \def\partname{\localwelsh{Rhan}}%
-   \def\pagename{\localwelsh{tudalen}}%
-   \def\seename{\localwelsh{gweler}}%
-   \def\alsoname{\localwelsh{gweler hefyd}}%
-   \def\enclname{\localwelsh{amgaeëdig}}%
-   \def\ccname{\localwelsh{copïau}}%
-   \def\headtoname{\localwelsh{At}}%
-   \def\proofname{\localwelsh{Prawf}}% for AMS-\LaTeX
-   \def\glossaryname{\localwelsh{Rhestr termau}}%
-   \def\today{\localwelsh{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else%
+\def\captionswelsh{%
+   \def\refname{\textwelsh{Cyfeiriadau}}%
+   \def\abstractname{\textwelsh{Crynodeb}}%
+   \def\bibname{\textwelsh{Llyfryddiaeth}}%
+   \def\prefacename{\textwelsh{Rhagair}}%
+   \def\chaptername{\textwelsh{Pennod}}%
+   \def\appendixname{\textwelsh{Atodiad}}%
+   \def\contentsname{\textwelsh{Cynnwys}}%
+   \def\listfigurename{\textwelsh{Rhestr Ddarluniau}}%
+   \def\listtablename{\textwelsh{Rhestr Dablau}}%
+   \def\indexname{\textwelsh{Mynegai}}%
+   \def\figurename{\textwelsh{Darlun}}%
+   \def\tablename{\textwelsh{Taflen}}%
+   %\def\thepart{\textwelsh{}}%
+   \def\partname{\textwelsh{Rhan}}%
+   \def\pagename{\textwelsh{tudalen}}%
+   \def\seename{\textwelsh{gweler}}%
+   \def\alsoname{\textwelsh{gweler hefyd}}%
+   \def\enclname{\textwelsh{amgaeëdig}}%
+   \def\ccname{\textwelsh{copïau}}%
+   \def\headtoname{\textwelsh{At}}%
+   \def\proofname{\textwelsh{Prawf}}% for AMS-\LaTeX
+   \def\glossaryname{\textwelsh{Rhestr termau}}%
+   \def\today{\textwelsh{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else%
     \number\day\fi\space\ifcase\month\or
      Ionawr\or Chwefror\or Mawrth\or Ebrill\or
      Mai\or Mehefin\or Gorffennaf\or Awst\or
@@ -44,7 +44,7 @@
 \def\blockextras@welsh{%
    \welsh@language%
    \local@hyphenmins{welsh}{2}{2}%
-   \welsh@captions%
+   \captionswelsh%
    \local@marks{welsh}%
    \@ifundefined{setLR}{}{\setLR}%
    }

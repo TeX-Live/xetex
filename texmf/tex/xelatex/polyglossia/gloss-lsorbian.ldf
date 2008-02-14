@@ -13,30 +13,30 @@
   \let\l@lsorbian\l@lowersorbian
 \fi
 
-\def\lsorbian@captions{%
-   \def\refname{\locallsorbian{Referency}}%
-   \def\abstractname{\locallsorbian{Abstrakt}}%
-   \def\bibname{\locallsorbian{Literatura}}%
-   \def\prefacename{\locallsorbian{Zawod}}%
-   \def\chaptername{\locallsorbian{Kapitl}}%
-   \def\appendixname{\locallsorbian{Dodawki}}%
-   \def\contentsname{\locallsorbian{Wopśimjeśe}}%
-   \def\listfigurename{\locallsorbian{Zapis wobrazow}}%
-   \def\listtablename{\locallsorbian{Zapis tabulkow}}%
-   \def\indexname{\locallsorbian{Indeks}}%
-   \def\figurename{\locallsorbian{Wobraz}}%
-   \def\tablename{\locallsorbian{Tabulka}}%
-   %\def\thepart{\locallsorbian{}}%
-   \def\partname{\locallsorbian{Źěl}}%
-   \def\pagename{\locallsorbian{Strona}}%
-   \def\seename{\locallsorbian{gl.}}%
-   \def\alsoname{\locallsorbian{gl.~teke}}%
-   \def\enclname{\locallsorbian{Pśiłoga}}%
-   \def\ccname{\locallsorbian{CC}}%
-   \def\headtoname{\locallsorbian{Komu}}%
-   \def\proofname{\locallsorbian{Proof}}% for AMS-\LaTeX
-   \def\glossaryname{\locallsorbian{Glossary}}%
-   \def\today{\locallsorbian{\number\day.~\ifcase\month\or
+\def\captionslsorbian{%
+   \def\refname{\textlsorbian{Referency}}%
+   \def\abstractname{\textlsorbian{Abstrakt}}%
+   \def\bibname{\textlsorbian{Literatura}}%
+   \def\prefacename{\textlsorbian{Zawod}}%
+   \def\chaptername{\textlsorbian{Kapitl}}%
+   \def\appendixname{\textlsorbian{Dodawki}}%
+   \def\contentsname{\textlsorbian{Wopśimjeśe}}%
+   \def\listfigurename{\textlsorbian{Zapis wobrazow}}%
+   \def\listtablename{\textlsorbian{Zapis tabulkow}}%
+   \def\indexname{\textlsorbian{Indeks}}%
+   \def\figurename{\textlsorbian{Wobraz}}%
+   \def\tablename{\textlsorbian{Tabulka}}%
+   %\def\thepart{\textlsorbian{}}%
+   \def\partname{\textlsorbian{Źěl}}%
+   \def\pagename{\textlsorbian{Strona}}%
+   \def\seename{\textlsorbian{gl.}}%
+   \def\alsoname{\textlsorbian{gl.~teke}}%
+   \def\enclname{\textlsorbian{Pśiłoga}}%
+   \def\ccname{\textlsorbian{CC}}%
+   \def\headtoname{\textlsorbian{Komu}}%
+   \def\proofname{\textlsorbian{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\textlsorbian{Glossary}}%
+   \def\today{\textlsorbian{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or maja\or
     junija\or julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
@@ -50,7 +50,7 @@
 \def\blockextras@lsorbian{%
    \lsorbian@language%
    \local@hyphenmins{lsorbian}{2}{2}%
-   \lsorbian@captions%
+   \captionslsorbian%
    \local@marks{lsorbian}%
    \@ifundefined{setLR}{}{\setLR}%
    }

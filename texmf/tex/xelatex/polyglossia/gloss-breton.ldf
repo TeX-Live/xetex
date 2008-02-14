@@ -23,30 +23,30 @@
 }
 
 
-\def\breton@captions{%
-   \def\refname{\localbreton{Daveennoù}}%
-   \def\abstractname{\localbreton{Dvierrañ}}%
-   \def\bibname{\localbreton{Lennadurezh}}%
-   \def\prefacename{\localbreton{Rakskrid}}%
-   \def\chaptername{\localbreton{Pennad}}%
-   \def\appendixname{\localbreton{Stagadenn}}%
-   \def\contentsname{\localbreton{Taolenn}}%
-   \def\listfigurename{\localbreton{Listenn ar Figurennoù}}%
-   \def\listtablename{\localbreton{Listenn an taolennoù}}%
-   \def\indexname{\localbreton{Meneger}}%
-   \def\figurename{\localbreton{Figurenn}}%
-   \def\tablename{\localbreton{Taolenn}}%
-   \def\thepart{\localbreton{}}%
-   \def\partname{\localbreton{Lodenn}}%
-   \def\pagename{\localbreton{Pajenn}}%
-   \def\seename{\localbreton{Gwelout}}%
-   \def\alsoname{\localbreton{Gwelout ivez}}%
-   \def\enclname{\localbreton{Dielloù kevret}}%
-   \def\ccname{\localbreton{Eilskrid da}}%
-   \def\headtoname{\localbreton{evit}}%
-   \def\proofname{\localbreton{Proof}}% for AMS-\LaTeX
-   \def\glossaryname{\localbreton{Glossary}}%
-   \def\today{\localbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
+\def\captionsbreton{%
+   \def\refname{\textbreton{Daveennoù}}%
+   \def\abstractname{\textbreton{Dvierrañ}}%
+   \def\bibname{\textbreton{Lennadurezh}}%
+   \def\prefacename{\textbreton{Rakskrid}}%
+   \def\chaptername{\textbreton{Pennad}}%
+   \def\appendixname{\textbreton{Stagadenn}}%
+   \def\contentsname{\textbreton{Taolenn}}%
+   \def\listfigurename{\textbreton{Listenn ar Figurennoù}}%
+   \def\listtablename{\textbreton{Listenn an taolennoù}}%
+   \def\indexname{\textbreton{Meneger}}%
+   \def\figurename{\textbreton{Figurenn}}%
+   \def\tablename{\textbreton{Taolenn}}%
+   \def\thepart{\textbreton{}}%
+   \def\partname{\textbreton{Lodenn}}%
+   \def\pagename{\textbreton{Pajenn}}%
+   \def\seename{\textbreton{Gwelout}}%
+   \def\alsoname{\textbreton{Gwelout ivez}}%
+   \def\enclname{\textbreton{Dielloù kevret}}%
+   \def\ccname{\textbreton{Eilskrid da}}%
+   \def\headtoname{\textbreton{evit}}%
+   \def\proofname{\textbreton{Proof}}% for AMS-\LaTeX
+   \def\glossaryname{\textbreton{Glossary}}%
+   \def\today{\textbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
     \number\day\fi \space a\space viz\space\ifcase\month\or
     Genver\or C'hwevrer\or Meurzh\or Ebrel\or Mae\or Mezheven\or
     Gouere\or Eost\or Gwengolo\or Here\or Du\or Kerzu\fi
@@ -62,7 +62,7 @@
    \breton@language%
    \local@hyphenmins{breton}{2}{2}%
    \breton@punctuation%
-   \breton@captions%
+   \captionsbreton%
    \local@marks{breton}%
    \@ifundefined{setLR}{}{\setLR}%
    }

@@ -1,0 +1,72 @@
+=== THIS IS THE TODO LIST FOR THE POLYGLOSSIA PACKAGE ===
+
+polyglossia.sty:
+	 * add better font and direction switching mechanisms 
+  	   for ex. if Arabic is background, English paragraph 
+	   should be \setLR with appropriate font
+	 * for languages with hyphenation patterns but without
+	   a gloss-* module, allow to load it with only a warning message
+	 * MAKE polyglossia cooperate with Babel-aware packages and classes, for
+	   example scrlttr2! Lines 1347 to 1708 of scrlttr2.cls are a sort of 
+	   patch for Babel, which is not compatible with polyglossia right now...
+	   One easy way to solve this is to \let \captions<lang> = \<lang>@captions
+	   in all gloss files (or to rename all of them!). 
+	   Also put \definitions of \today outside of captions and define them 
+	   as \date<lang> ?
+         * test the localmarks option
+	 * 
+
+gloss-arabic.ldf:
+	* check locales: if morocco or algeria : use western numerals but don't 
+	  override the numbers key
+	* define a defaultLRlanguage … \def\LRtoday{\localdefaultLRlanguage{\today}}
+	* test and improve layout of RL documents (headers etc)
+
+gloss-english.ldf: 
+	* change format to Day Month Year when dialect is british
+
+gloss-farsi.ldf:
+	* add option for months 
+	* implement ftoday.sty?
+
+gloss-finnish.ldf:
+	* hyphenpenalty as in Babel?
+
+gloss-french.ldf:
+	* \define@key{french}{guillemets}[normal]{
+	* \addfontfeature{Mapping=sansaccents}% <<< TODO!
+
+gloss-german.ldf
+	* add option for ngerman
+
+gloss-greek.ldf
+	* implement option for numerals
+
+gloss-hebrew.ldf
+	* \def\today{%TODO if calendar=hebrew \Hebrewtoday \else
+	* insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
+	* insert geresh (\char"05F3) after letter if it is alone
+	* Implement hebrew calendar
+
+gloss-italian.ldf
+	* \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
+	
+gloss-lsorbian.ldf
+	* implement option date=old
+
+gloss-norsk.ldf
+	* ADD OPTION for nynorsk
+
+gloss-portuges.ldf
+	* option brazil
+
+gloss-ukrainian.ldf and others
+	* add stuff from Babel ? (operators etc)
+
+hijrical.sty
+	* \def\CYearsFromHijri#1{%yields the corr julian or gregorian years
+
+** ADD support for thai using thai-latex package : almost done!
+
+** UPDATE ldf for spanish using new ldf for Babel by J Bezos
+          and add option for mexican (using mx package)

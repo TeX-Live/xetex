@@ -6,29 +6,29 @@
    \adddialect\l@polish0
 \fi
 
-\def\polish@captions{%
-  \def\prefacename{\localpolish{Przedmowa}}%
-  \def\refname{\localpolish{Literatura}}%
-  \def\abstractname{\localpolish{Streszczenie}}%
-  \def\bibname{\localpolish{Bibliografia}}%
-  \def\chaptername{\localpolish{Rozdział}}%
-  \def\appendixname{\localpolish{Dodatek}}%
-  \def\contentsname{\localpolish{Spis treści}}%
-  \def\listfigurename{\localpolish{Spis rysunków}}%
-  \def\listtablename{\localpolish{Spis tablic}}%
-  \def\indexname{\localpolish{Indeks}}%
-  \def\figurename{\localpolish{Rysunek}}%
-  \def\tablename{\localpolish{Tablica}}%
-  \def\partname{\localpolish{Część}}%
-  \def\enclname{\localpolish{Załącznik}}%
-  \def\ccname{\localpolish{Kopie:}}%
-  \def\headtoname{\localpolish{Do}}%
-  \def\pagename{\localpolish{Strona}}%
-  \def\seename{\localpolish{Porównaj}}%
-  \def\alsoname{\localpolish{Porównaj także}}%
-  \def\proofname{\localpolish{Dowód}}%
-  \def\glossaryname{\localpolish{Glossary}}% <-- Needs translation
-  \def\today{\localpolish{\ifcase\month\or%
+\def\captionspolish{%
+  \def\prefacename{\textpolish{Przedmowa}}%
+  \def\refname{\textpolish{Literatura}}%
+  \def\abstractname{\textpolish{Streszczenie}}%
+  \def\bibname{\textpolish{Bibliografia}}%
+  \def\chaptername{\textpolish{Rozdział}}%
+  \def\appendixname{\textpolish{Dodatek}}%
+  \def\contentsname{\textpolish{Spis treści}}%
+  \def\listfigurename{\textpolish{Spis rysunków}}%
+  \def\listtablename{\textpolish{Spis tablic}}%
+  \def\indexname{\textpolish{Indeks}}%
+  \def\figurename{\textpolish{Rysunek}}%
+  \def\tablename{\textpolish{Tablica}}%
+  \def\partname{\textpolish{Część}}%
+  \def\enclname{\textpolish{Załącznik}}%
+  \def\ccname{\textpolish{Kopie:}}%
+  \def\headtoname{\textpolish{Do}}%
+  \def\pagename{\textpolish{Strona}}%
+  \def\seename{\textpolish{Porównaj}}%
+  \def\alsoname{\textpolish{Porównaj także}}%
+  \def\proofname{\textpolish{Dowód}}%
+  \def\glossaryname{\textpolish{Glossary}}% <-- Needs translation
+  \def\today{\textpolish{\ifcase\month\or%
       stycznia\or lutego\or marca\or kwietnia\or maja\or czerwca\or%
       lipca\or sierpnia\or września\or października\or%
       listopada\or grudnia\fi%
@@ -44,7 +44,7 @@
    \polish@language%
    \local@hyphenmins{polish}{2}{2}%
    \frenchspacing%
-   \polish@captions%
+   \captionspolish%
    \local@marks{polish}%
 }
 

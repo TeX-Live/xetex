@@ -28,46 +28,70 @@
 \def\tmp@uk{uk}
 \def\tmp@british{british}
 \def\tmp@american{american}
-\def\en@dialect{\l@english}
-\def\english@language{\protect\language=\en@dialect}
+\def\tmp@australian{australian}
+\def\tmp@newzealand{newzealand}
+\def\en@dialect{english}
+\def\english@language{\expandafter\protect\expandafter\language=\csname l@\en@dialect\endcsname}
+
+\newif\if@ordinalmonthday
 
 \define@key{english}{dialect}[american]{%
   \def\@tmpa{#1}
-  \ifx\@tmpa\tmp@uk\def\en@dialect{\l@british}
+  \ifx\@tmpa\tmp@uk\def\en@dialect{british}\@ordinalmonthdaytrue
      \typeout{Option: english dialect=british}
-  \else\ifx\@tmpa\tmp@british\def\en@dialect{\l@british}
-     \typeout{Option: english dialect=british}%
-  \else\ifx\@tmpa\tmp@us\def\en@dialect{\l@american}
-     \typeout{Option: english dialect=american}%
-  \else\ifx\@tmpa\tmp@american\def\en@dialect{\l@american}
+  \else\ifx\@tmpa\tmp@british\def\en@dialect{british}\@ordinalmonthdaytrue
+     \typeout{Option: english dialect=british}
+  \else\ifx\@tmpa\tmp@us\def\en@dialect{american}\@ordinalmonthdayfalse
      \typeout{Option: english dialect=american}
-  \fi\fi\fi\fi}
+  \else\ifx\@tmpa\tmp@australian\def\en@dialect{british}\@ordinalmonthdayfalse
+     \typeout{Option: english dialect=australian}
+  \else\ifx\@tmpa\tmp@newzealand\def\en@dialect{british}\@ordinalmonthdayfalse
+     \typeout{Option: english dialect=newzealand}
+  \fi\fi\fi\fi\fi}
 
-\def\english@captions{%
-   \def\prefacename{\localenglish{Preface}}%
-   \def\refname{\localenglish{References}}%
-   \def\abstractname{\localenglish{Abstract}}%
-   \def\bibname{\localenglish{Bibliography}}%
-   \def\chaptername{\localenglish{Chapter}}%
-   \def\appendixname{\localenglish{Appendix}}%
-   \def\contentsname{\localenglish{Contents}}%
-   \def\listfigurename{\localenglish{List of Figures}}%
-   \def\listtablename{\localenglish{List of Tables}}%
-   \def\indexname{\localenglish{Index}}%
-   \def\figurename{\localenglish{Figure}}%
-   \def\tablename{\localenglish{Table}}%
-   \def\partname{\localenglish{Part}}%
-   \def\enclname{\localenglish{encl}}%
-   \def\ccname{\localenglish{cc}}%
-   \def\headtoname{\localenglish{To}}%
-   \def\pagename{\localenglish{Page}}%
-   \def\seename{\localenglish{see}}%
-   \def\alsoname{\localenglish{see also}}%
-   \def\proofname{\localenglish{Proof}}%
-   %TODO change format to Day Month Year when dialect is british
-   \def\today{\localenglish{%
-    \ifx\en@dialect\l@british%
-      \number\day\space%
+\def\tmp@cardinal{cardinal}
+\define@key{english}{monthday}[ordinal]{%
+  \def\@tmpa{#1}
+  \ifx\@tmpa\tmp@cardinal\@ordinalmonthdayfalse
+  \else\@ordinalmonthdaytrue
+  \fi}
+
+\def\captionsenglish{%
+   \def\prefacename{\textenglish{Preface}}%
+   \def\refname{\textenglish{References}}%
+   \def\abstractname{\textenglish{Abstract}}%
+   \def\bibname{\textenglish{Bibliography}}%
+   \def\chaptername{\textenglish{Chapter}}%
+   \def\appendixname{\textenglish{Appendix}}%
+   \def\contentsname{\textenglish{Contents}}%
+   \def\listfigurename{\textenglish{List of Figures}}%
+   \def\listtablename{\textenglish{List of Tables}}%
+   \def\indexname{\textenglish{Index}}%
+   \def\figurename{\textenglish{Figure}}%
+   \def\tablename{\textenglish{Table}}%
+   \def\partname{\textenglish{Part}}%
+   \def\enclname{\textenglish{encl}}%
+   \def\ccname{\textenglish{cc}}%
+   \def\headtoname{\textenglish{To}}%
+   \def\pagename{\textenglish{Page}}%
+   \def\seename{\textenglish{see}}%
+   \def\alsoname{\textenglish{see also}}%
+   \def\proofname{\textenglish{Proof}}%
+  } 
+\def\dateenglish{%
+   \def\english@day{\if@ordinalmonthday%
+      \ifcase\day\or
+      1st\or 2nd\or 3rd\or 4th\or 5th\or
+      6th\or 7th\or 8th\or 9th\or 10th\or
+      11th\or 12th\or 13th\or 14th\or 15th\or
+      16th\or 17th\or 18th\or 19th\or 20th\or
+      21st\or 22nd\or 23rd\or 24th\or 25th\or
+      26th\or 27th\or 28th\or 29th\or 30th\or
+      31st\fi
+      \else\number\day\fi}%
+   \def\today{\textenglish{%
+    \ifx\en@dialect\tmp@british%
+      \english@day\space%
      \ifcase\month\or%
       January\or February\or March\or April\or May\or June\or%
       July\or August\or September\or October\or November\or December\fi%
@@ -76,27 +100,24 @@
      \ifcase\month\or%
       January\or February\or March\or April\or May\or June\or%
       July\or August\or September\or October\or November\or December\fi%
-      \space\number\day, \number\year%
-     \fi}}}
+      \space\english@day, \number\year%
+      \fi}}
+  }
 
 \def\noextras@english{}
 
 \def\blockextras@english{%
    \english@language%
    \local@hyphenmins{english}{2}{3}%
-   \english@captions%
+   \captionsenglish%
+   \dateenglish%
    \local@marks{english}%
-   \@ifundefined{setLR}{}{\setLR}%
-   \rmfamily%
-   %\english@OCP%
-   %\english@font
+   \reset@latin@script%
    }
 
 \def\inlineextras@english{%
    \english@language%
    \local@hyphenmins{english}{2}{3}%
-   %\english@OCP%
-   %\english@font
    }
 
 \endinput

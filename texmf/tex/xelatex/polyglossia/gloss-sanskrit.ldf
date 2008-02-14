@@ -10,47 +10,71 @@
   \fi%
 \fi
 
-%\def\sanskrit@captions{%
-%   \def\refname{\localsanskrit{<++>}}%
-%   \def\abstractname{\localsanskrit{<++>}}%
-%   \def\bibname{\localsanskrit{<++>}}%
-%   \def\prefacename{\localsanskrit{<++>}}%
-%   \def\chaptername{\localsanskrit{<++>}}%
-%   \def\appendixname{\localsanskrit{<++>}}%
-%   \def\contentsname{\localsanskrit{<++>}}%
-%   \def\listfigurename{\localsanskrit{<++>}}%
-%   \def\listtablename{\localsanskrit{<++>}}%
-%   \def\indexname{\localsanskrit{<++>}}%
-%   \def\figurename{\localsanskrit{<++>}}%
-%   \def\tablename{\localsanskrit{<++>}}%
-%   \def\thepart{\localsanskrit{}}%
-%   \def\partname{\localsanskrit{<++>}}%
-%   \def\pagename{\localsanskrit{<++>}}%
-%   \def\seename{\localsanskrit{<++>}}%
-%   \def\alsoname{\localsanskrit{<++>}}%
-%   \def\enclname{\localsanskrit{<++>}}%
-%   \def\ccname{\localsanskrit{<++>}}%
-%   \def\headtoname{\localsanskrit{<++>}}%
-%   \def\proofname{\localsanskrit{<++>}}% for AMS-\LaTeX
-%   \def\glossaryname{\localsanskrit{<++>}}%
-%   \def\today{\localsanskrit{<++>}}}
+%\def\captionssanskrit{%
+%   \def\refname{\textsanskrit{<++>}}%
+%   \def\abstractname{\textsanskrit{<++>}}%
+%   \def\bibname{\textsanskrit{<++>}}%
+%   \def\prefacename{\textsanskrit{<++>}}%
+%   \def\chaptername{\textsanskrit{<++>}}%
+%   \def\appendixname{\textsanskrit{<++>}}%
+%   \def\contentsname{\textsanskrit{<++>}}%
+%   \def\listfigurename{\textsanskrit{<++>}}%
+%   \def\listtablename{\textsanskrit{<++>}}%
+%   \def\indexname{\textsanskrit{<++>}}%
+%   \def\figurename{\textsanskrit{<++>}}%
+%   \def\tablename{\textsanskrit{<++>}}%
+%   \def\thepart{\textsanskrit{}}%
+%   \def\partname{\textsanskrit{<++>}}%
+%   \def\pagename{\textsanskrit{<++>}}%
+%   \def\seename{\textsanskrit{<++>}}%
+%   \def\alsoname{\textsanskrit{<++>}}%
+%   \def\enclname{\textsanskrit{<++>}}%
+%   \def\ccname{\textsanskrit{<++>}}%
+%   \def\headtoname{\textsanskrit{<++>}}%
+%   \def\proofname{\textsanskrit{<++>}}% for AMS-\LaTeX
+%   \def\glossaryname{\textsanskrit{<++>}}%
+%   \def\today{\textsanskrit{<++>}}}
 
 \def\sanskrit@language{\protect\language=\l@sanskrit}
+
+\def\sanskrit@font{%
+\@ifundefined{sanskritfont}{%
+      \@ifundefined{devanagarifont}{%
+        \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+        \zf@check@ot@script{deva}%
+	\if@tempswa%
+	  \addfontfeature{Script=Devanagari}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the devanagari script!^^J
+	  Please define \string\devanagarifont\space or \string\sanskritfont\space with \string\newfontfamily}%
+	\fi%
+	\zf@check@ot@lang{SAN}%
+	\if@tempswa\addfontfeature{Language=Sanskrit}\fi%
+	}%
+        {\devanagarifont%
+         \zf@check@ot@lang{SAN}%
+         \if@tempswa\addfontfeature{Language=Sanskrit}\fi%
+	}
+     }% 
+     {\sanskritfont}%
+}
 
 \def\noextras@sanskrit{%
    }
 
 \def\blockextras@sanskrit{%
    \sanskrit@language%
-   \local@hyphenmins{sanskrit}{2}{2}%
-   %\sanskrit@captions%
+   \local@hyphenmins{sanskrit}{1}{5}%
+   %\captionssanskrit%
    %\local@marks{sanskrit}%
+   \sanskrit@font%
    \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@sanskrit{%
    \sanskrit@language%
-   \local@hyphenmins{sanskrit}{2}{2}%
+   \local@hyphenmins{sanskrit}{1}{5}%
    }
 
 \endinput

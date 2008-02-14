@@ -7,8 +7,6 @@
   \adddialect\l@farsi0
 \fi
 
-\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
-
 \define@key{polyglossia}{farsilocale}[default]{%
 	\def\@farsi@locale{#1}}
 %TODO add option for months 
@@ -27,7 +25,7 @@
   \or کانون ثانی\or شباط\or اذار%؛\or ادار
     \or نیسان\or ایار\or حزیران\or تموز\or آب\or ایلول\or تشرین اول\or تشرین ثانی\or کانون اول\fi}
 
-\def\farsi@captions{%
+\def\captionsfarsi{%
 %\def\prefacename{\@ensure@RL{مدخل}}% 
 %\def\refname{\@ensure@RL{مراجع}}
 %\def\abstractname{\@ensure@RL{ملخص}}%
@@ -49,25 +47,51 @@
 %\def\alsoname{\@ensure@RL{راجع أيضاً}}%<<\alefhamza\nun\za\ra
 %\def\proofname{\@ensure@RL{برهان}}% for AMS-\LaTeX
 %\def\glossaryname{\@ensure@RL{قاموس}}%<<
-\def\today{\@ensure@RL{\farsinumber\day\space\farsigregmonth{\month}\space\farsinumber\year}}
+}
+\def\datefarsi{%
+   \def\today{\@ensure@RL{\farsinumber\day\space\farsigregmonth{\month}\space\farsinumber\year}}%
 }
 
 %TODO
 \def\farsi@numbers{%
-\renewcommand{\thepage}{\farsinumber{\the\c@page}}
-\renewcommand{\thesection}{\farsinumber{\the\c@section}}
-\renewcommand{\thesubsection}{\@ensure@RL{\farsinumber{\the\c@subsection}–\farsinumber{\the\c@section}}}
-\renewcommand{\thepart}{\farsinumber{\the\c@part}}
-%\renewcommand{\thefootnote}{\farsinumber{\the\c@footnote}}
-\renewcommand{\thefigure}{\farsinumber{\the\c@figure}}
-\renewcommand{\thetable}{\farsinumber{\the\c@table}}
+\renewcommand{\thepage}{\protect\farsinumber{\c@page}}%
+\renewcommand{\thesection}{\protect\farsi@font\protect\farsinumber{\c@section}}%
+\renewcommand{\thesubsection}{\protect\farsi@font\protect\@ensure@RL{\protect\farsinumber{\c@subsection}\textrm{–}\protect\farsinumber{\c@section}}}%
+\renewcommand{\thepart}{\protect\farsi@font\protect\farsinumber{\c@part}}%
+\renewcommand{\thefootnote}{\protect\farsi@font\protect\farsinumber{\c@footnote}}%
+\renewcommand{\thefigure}{\protect\farsi@font\protect\farsinumber{\c@figure}}%
+\renewcommand{\thetable}{\protect\farsi@font\protect\farsinumber{\c@table}}%
 }
 
 \input{abjad.def}
 
 \def\farsi@language{\language=\l@farsi}
 
-\def\farsi@font{\@ifundefined{farsifont}{\addfontfeature{Script=Arabic,Language=Farsi}}{\farsifont}}
+\def\farsi@font{%
+\font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+\@ifundefined{farsifont}{%
+      \@ifundefined{arabicfont}{%
+        \zf@check@ot@script{arab}%
+	\if@tempswa%
+	  \addfontfeature{Script=Arabic}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the Arabic script!^^J
+	  Please define \string\arabicfont\space or \string\farsifont\space with \newfontfamily}%
+	\fi%
+	\zf@check@ot@lang{FAR}%
+	\if@tempswa\addfontfeature{Language=Farsi}\fi
+	}%
+      {\arabicfont%
+       \zf@check@ot@lang{FAR}%
+       \if@tempswa\addfontfeature{Language=Farsi}\fi}
+      }% 
+{\farsifont}}
+
+
+\def\selectnormalfontfarsi{%
+   \let\normalfont=\farsi@font%
+   \def\reset@font{\normalfont}}
 
 \def\noextras@farsi{%
    %\nofarsi@numbers%
@@ -76,34 +100,24 @@
 \def\blockextras@farsi{%
    \farsi@language%
    \farsi@font%
-   \local@hyphenmins{farsi}{1}{1}%
+   %\local@hyphenmins{farsi}{1}{1}%
    \local@marks{farsi}%
-   \farsi@captions%
-   \farsi@numbers%
+   \captionsfarsi%
+   \datefarsi%
+   %\farsi@numbers%
    \setRL\setfootnoteRL%
    \def\footnoterule{\RLfootnoterule}%
-   \def\reset@font{\farsi@font}%
    }{}
 
 \def\inlineextras@farsi{%
    \farsi@language%
    \farsi@font%
-   \local@hyphenmins{farsi}{1}{1}%
+   %\local@hyphenmins{farsi}{1}{1}%
    }
 
 \endinput
 
 %TODO
-\InputIfFileExists{ftoday.sty}{%
-  \message{Loading the definitions for the Jalali calendar}}{%
-  \errhelp{I can't find the ftoday.sty file for the Jalali calendar}%
-  \errmessage{Since I do not know what the Jalali calendar is^^J
-    I can't typeset the Farsi date.^^J
-    I stop here, while you get a suitable ftoday.sty file}\@@end
-}
-
-%%\def\today{\ftoday} -> use instead \JalaliToday etc. as in hebcal.sty
-%% define also \JalaliTodayInEnglish !
 
 \newsavebox\@Arabitempboxa
 

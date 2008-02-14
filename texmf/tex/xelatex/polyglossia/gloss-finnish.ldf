@@ -6,30 +6,30 @@
    \adddialect\l@finnish0%
 \fi
 
-\def\finnish@captions{%
-   \def\refname{\localfinnish{Viitteet}}%
-   \def\abstractname{\localfinnish{Tiivistelmä}}%
-   \def\bibname{\localfinnish{Kirjallisuutta}}%
-   \def\prefacename{\localfinnish{Esipuhe}}%
-   \def\chaptername{\localfinnish{Luku}}%
-   \def\appendixname{\localfinnish{Liite}}%
-   \def\contentsname{\localfinnish{Sisältö}}%
-   \def\listfigurename{\localfinnish{Kuvat}}%
-   \def\listtablename{\localfinnish{Taulukot}}%
-   \def\indexname{\localfinnish{Hakemisto}}%
-   \def\figurename{\localfinnish{Kuva}}%
-   \def\tablename{\localfinnish{Taulukko}}%
-   %\def\thepart{\localfinnish{}}%
-   \def\partname{\localfinnish{Osa}}%
-   \def\pagename{\localfinnish{Sivu}}%
-   \def\seename{\localfinnish{katso}}%
-   \def\alsoname{\localfinnish{katso myös}}%
-   \def\enclname{\localfinnish{Liitteet}}%
-   \def\ccname{\localfinnish{Jakelu}}%
-   \def\headtoname{\localfinnish{Vastaanottaja}}%
-   \def\proofname{\localfinnish{Todistus}}% for AMS-\LaTeX
-   \def\glossaryname{\localfinnish{Sanasto}}%
-   \def\today{\localfinnish{\number\day.~\ifcase\month\or
+\def\captionsfinnish{%
+   \def\refname{\textfinnish{Viitteet}}%
+   \def\abstractname{\textfinnish{Tiivistelmä}}%
+   \def\bibname{\textfinnish{Kirjallisuutta}}%
+   \def\prefacename{\textfinnish{Esipuhe}}%
+   \def\chaptername{\textfinnish{Luku}}%
+   \def\appendixname{\textfinnish{Liite}}%
+   \def\contentsname{\textfinnish{Sisältö}}%
+   \def\listfigurename{\textfinnish{Kuvat}}%
+   \def\listtablename{\textfinnish{Taulukot}}%
+   \def\indexname{\textfinnish{Hakemisto}}%
+   \def\figurename{\textfinnish{Kuva}}%
+   \def\tablename{\textfinnish{Taulukko}}%
+   %\def\thepart{\textfinnish{}}%
+   \def\partname{\textfinnish{Osa}}%
+   \def\pagename{\textfinnish{Sivu}}%
+   \def\seename{\textfinnish{katso}}%
+   \def\alsoname{\textfinnish{katso myös}}%
+   \def\enclname{\textfinnish{Liitteet}}%
+   \def\ccname{\textfinnish{Jakelu}}%
+   \def\headtoname{\textfinnish{Vastaanottaja}}%
+   \def\proofname{\textfinnish{Todistus}}% for AMS-\LaTeX
+   \def\glossaryname{\textfinnish{Sanasto}}%
+   \def\today{\textfinnish{\number\day.~\ifcase\month\or
     tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
     toukokuuta\or kesäkuuta\or heinäkuuta\or elokuuta\or
     syyskuuta\or lokakuuta\or marraskuuta\or joulukuuta\fi
@@ -45,7 +45,7 @@
    \finnish@language%
    \local@hyphenmins{finnish}{2}{2}%
    \frenchspacing%
-   \finnish@captions%
+   \captionsfinnish%
    \local@marks{finnish}%
    \@ifundefined{setLR}{}{\setLR}%
    }
