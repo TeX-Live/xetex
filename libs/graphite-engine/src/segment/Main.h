@@ -165,6 +165,12 @@ struct Rect
 
 #include "GrWrappers.h"
 
+#ifndef _WIN32
+#ifndef HAVE_FABSF
+extern float fabsf(float x);	/* defined in Platform.cpp */
+#endif
+#endif
+
 //#include "IGrDebug.h"
 //#include "GrSegmentDebug.h"
 //#include "GrEngineDebug.h"
