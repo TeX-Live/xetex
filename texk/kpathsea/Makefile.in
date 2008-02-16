@@ -1,4 +1,5 @@
-# $Id: Makefile.in 4670 2007-07-28 00:14:47Z karl $
+# $Id: Makefile.in 6449 2008-01-30 14:56:21Z martin $
+# @configure_input@
 # Makefile for kpathsea.  Public domain.
 version = @KPSEVERSION@
 

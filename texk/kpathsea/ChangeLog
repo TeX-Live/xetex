@@ -1,3 +1,223 @@
+2008-02-14  Karl Berry  <karl@tug.org>
+
+	* texmf.in (font_mem_size): increase to 3000000.
+	(font_max): increase to 5000 (max_font_max increased in tex.ch).
+
+2008-02-11  Karl Berry  <karl@tug.org>
+
+	* install.texi: mention mktexfmt, other mktex updates.
+	(Bug report from Ken Brooks, 03 Aug 2006 15:15:03.)
+
+2008-02-08  Karl Berry  <karl@tug.org>
+
+	* texmf.in: texlive2008 to match texmf/web2c/texmf.cnf.
+
+2008-01-29  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Convert from autoconf-2.13 to autoconf-2.59+:
+	* Makefile.in: Add @configure_input@ line.
+	* aclocal.m4 (new): Generated (aclocal -I ../m4).
+	* configure: Regenerated (autoconf).
+
+2008-01-25  Karl Berry  <karl@tug.org>
+
+	* variable.c (expand): do ~ expansion here too, for --expand-var,
+	or mktexnam fails.
+	Report from Werner Lemberg, 24 Jan 2008 02:19:49.
+	* kpathsea.texi (Auxiliary tasks): document this.
+
+2008-01-21  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c, kpathsea.texi: document --all and --subdir.
+
+	* db.c through tex-file.c: replace FSF physical address with url.
+
+2008-01-18  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c (subdir_match): XRETALLOC is a statement not a function.
+	* pathsearch.c (search_list): remove unused variable uniq_list.
+
+2008-01-16  Karl Berry  <karl@tug.org>
+
+	* absolute.c through config.h: replace FSF physical address with url.
+
+2008-01-15  Karl Berry  <karl@tug.org>
+
+	* variable.c (kpse_var_value): only free if new memory.
+	
+	* tex-file.c (kpse_find_file_generic): call kpse_make_tex if the
+	first element of the list is NULL, not the list itself.
+
+2008-01-14  Karl Berry  <karl@tug.org>
+
+	* variable.c (kpse_var_value): also do ~ expansion.
+	* variable.h: adjust comments.
+	* kpathsea.texi (Auxiliary tasks): document this.
+
+	* tilde.c (HOMEVAR): new #define; "USERPROFILE" on Windows,
+	"HOME" else.
+	* tilde.h: adjust comments.
+	* kpathsea.texi (Tilde expansion): document this.
+
+2008-01-13  Karl Berry  <karl@tug.org>
+
+	* remote.c-no: remove this stub.  Suggestion from Martin.
+
+	* mktexpk: use $MT_MKTEXDIR in the error message if making
+	PKDESTDIR fails, instead of hardwiring mktexdir.
+	From Javier, 7 Jan 2008 11:33:18.
+
+	* kpsewhich.c (subdir_match): protect again loc going infinitely
+	negative.  Found by dak, 8 Jan 2008 14:51:08.
+
+2008-01-05  Karl Berry  <karl@tug.org>
+
+	* texmf.in (progname, engine): distinguish the unset values.
+	(main_memory): increase to 3M.
+	(font_mem_size): increase to 2.5M.
+	(trie_size): increase to 400K.
+	(save_size): increase to 50K.
+	These size changes per gwtex (except a bit more).
+
+2008-01-02  Karl Berry  <karl@tug.org>
+
+	* c-std.h (ALLOC_RETURN_TYPE) [!STDC_HEADERS]: just use void in
+	the unlikely event we're declaring *alloc ourselves.  No modern
+	system uses char * for them.
+
+2007-12-23  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c (subdir_match): new fn.
+	(lookup): call it if requested.
+	(subdir_paths): new global.
+	(read_command_line): new option --subdir.
+
+2007-12-22  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c (lookup): handle --all for regular lookups as well
+		as user-specific paths.
+	* pathsearch.c (search_list): uniqify list before returning.
+	(kpse_path_search_list_generic): new fn.
+	(kpse_all_path_search_list, kpse_path_search_list): rewrite to
+		call ..._generic.
+	* pathsearch.h (kpse_path_search_list_generic): declare it.
+	* str-list.c (str_list_uniqify): new fn.
+	* str-list.h (str_list_uniqify): declare it.
+	* tex-file.c (kpse_find_file_generic): new name for kpse_find_file
+		code, with addition of argument to find all.
+        (kpse_find_file): rewrite to call ..._generic.
+	* tex-file.h (kpse_find_file_generic): declare it.
+
+2007-12-17  Karl Berry  <karl@tug.org>
+
+	* kpathsea.texi (Path searching options): clarify --expand-path doc.
+
+2007-12-15  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c (read_command_line, USAGE): improve --version and
+	--help messages.
+
+2007-12-01  Karl Berry  <karl@tug.org>
+
+	* texmf.in (MPMEMS, MFBASES, TEXFORMATS): switch to /$engine,
+	to try to avoid finding a format for the wrong engine.
+	From Akira.
+
+2007-11-05  Karl Berry  <karl@tug.org>
+
+	* texmf.in (allow_multiple_suffixes): unimplemented.
+	Reported by Akira, 17 Feb 2007 15:44:39.
+
+2007-10-24  Karl Berry  <karl@tug.org>
+
+	* mktexpk (MODE) <720>: epscszz.  From Akira.
+	(PKDESTDIR): Quote.  From Paul Vojta,
+	tex-k 22 Oct 2007 17:38:56.
+
+2007-09-11  Karl Berry  <karl@tug.org>
+
+	* texmf.in (TRFONTS): don't recurse through /usr.
+	Report from Michail Vidiassov, mp-i 10 Sep 2007 12:55:10.
+
+2007-08-27  Karl Berry  <karl@tug.org>
+
+	* fontmap.c (map_file_parse): free the original pointer, not the
+	potentially moved one (after whitespace skipping). 
+	From: "George N. White III", 25 Jul 2007 11:27:12.
+
+2007-07-29  Karl Berry  <karl@tug.org>
+
+	* depend.mk: regenerate again.
+
+2007-07-24  Karl Berry  <karl@tug.org>
+
+	* recorder.h (kpse_input, kpse_output): use const_string as
+	argument, not just char *, to avoid warning.
+
+	* fontmap.c (map_file_parse): kpse_record_input if requested.
+	From Akira, 23 Jul 2007 10:20:58 (original report from George
+	White).
+
+2007-07-15  Karl Berry  <karl@tug.org>
+
+	* depend.mak: update.
+
+2007-07-06  Karl Berry  <karl@tug.org>
+
+	* tex-file.c (init_path) <kpse_lua_format>: let's make the format
+	name be lua rather than luatex; otherwise kpsewhich -format=luatex
+	finds kpse_tex_format sometimes, and it seems unnecessary to debug
+	that just now.
+	Also, set suffix_search_only=true.
+	(LUA_SUFFIXES): put compiled suffixes first.
+
+2007-07-05  Karl Berry  <karl@tug.org>
+
+	* tex-file.h (kpse_file_format_type): define kpse_lua_format.
+	* tex-file.c (LUA_ENVS, LUA_SUFFIXES): new macros
+	(init_path): initialize kpse_lua_format.
+
+	* texmf.in (LUAINPUTS): add $TEXINPUTS per Hans and Taco.
+
+2007-06-14  Karl Berry  <karl@tug.org>
+
+	* texmf.in: doc fix ({a,b} is not deprecated).
+
+2007-05-19  Karl Berry  <karl@tug.org>
+
+	* texmf.in (SYSTEXMF): add TEXMFSYSVAR (thread around 7mar07).
+
+2007-05-05  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c (find_format): hardware kpse_dvips_config_format for
+	config.ps.
+
+	* texmf.in (TEXMFMAIN, TEXMFDIST, TEXMFLOCAL, TEXMFSYSVAR,
+	TEXMFSYSCONFIG, VARTEXFONTS, MIMELIBDIR, MAILCAPLIBDIR, TEXMFNCF):
+	use @texmf@ etc. expansions so that (hopefully)
+	--disable-multiplatform works again.  For TEXMFCNF, restore
+	inclusion of $TEXMF/web2c, too.  Reported by Peter M.
+
+2007-03-21  Karl Berry  <karl@tug.org>
+
+	* install.texi (Shared library): remove mention of klibtool.
+
+2007-03-09  Akira Kakuto  <kakuto@fsci.fuk.kindai.ac.jp>
+
+	* tex-file.c (kpse_init_format): reduce to just .fmt;
+	and allow both .t42 and .T42.
+
+2007-02-26  Karl Berry  <karl@tug.org>
+
+	* bugs.texi (Logging): mention pdftex -recorder and strace et al.
+	(Bug checklist): Remove my old physical address.
+
+2007-02-02  Karl Berry  <karl@tug.org>
+
+	* texmf.in (OVFFONTS): search for vf.
+	(OFMFONTS): explicitly adding TFMFONTS seems unnecessary.
+	From Hans and Taco, 25 Jan 2007.
+
 2006-12-30  Karl Berry  <karl@tug.org>
 
 	* configure.in (KPSEVERSION): 3.5.6.
