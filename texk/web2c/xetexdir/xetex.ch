@@ -8679,6 +8679,21 @@ begin
 	end
 end;
 
+procedure bad_utf8_warning;
+var
+	i: integer;
+begin
+	begin_diagnostic;
+	print_nl("Invalid UTF-8 byte sequence");
+	if terminal_input then print(" in terminal input")
+	else begin
+		print(" at line ");
+		print_int(line);
+	end;
+	print("; reading remainder as raw bytes.");
+	end_diagnostic(false);
+end;
+
 @z
 
 @x
