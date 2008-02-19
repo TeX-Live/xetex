@@ -2791,7 +2791,8 @@ get_uni_c(UFILE* f)
 				switch (extraBytes) {	/* note: code falls through cases! */
 					default:
 					bad_utf8:
-						rval = 0xfffd;
+						if (rval > 0x100)
+							rval = 0xfffd;
 						f->savedChar = c;
 					case 5:
 					case 4:
