@@ -1,3 +1,108 @@
+2008-02-14  Karl Berry  <karl@tug.org>
+
+	* tex.ch (max_font_max): increase to 5000.
+	Taco mail to tex-live, 13 Feb 2008 10:00:35.
+	
+	* tex.ch (make_name_string): further change from
+	Jonathan, tex-implementors  12 Feb 2008 14:33:56.
+
+2008-02-11  Karl Berry  <karl@tug.org>
+
+	* tex.ch (make_name_string): avoid clobbering globals via
+	    This is TeX ...
+	    **abc%
+	    *de
+	From Akira and Jonathan Kew, tex-implementors 02 Feb 2008 20:42:18
+	et al.
+
+2008-01-29  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Convert from autoconf-2.13 to autoconf-2.59+:
+	* Makefile.in, doc/Makefile.in, mpdir/Makefile.in:
+	Add @configure_input@ lines.
+	* aclocal.m4 (new): Generated (aclocal -I ../m4).
+	* configure: Regenerated (autoconf).
+
+2008-01-18  Karl Berry  <karl@tug.org>
+
+	* cpascal.h (recorder_record_input, recorder_record_output): need
+	const_string as arg to avoid warnings compiling *extra.c.
+	* texmfmp.c (user_progname): make const_string a la dump_name,
+	since we assign them.
+
+2008-01-02  Jonathan Kew  <jonathan_kew@sil.org>
+
+	* tex.ch (expand_depth, et al.): when calling expand, don't
+	recurse enough to clobber the os stack.  Default value 10000.
+
+2007-12-24  Karl Berry  <karl@tug.org>
+
+	* doc/web2c.texi (gftodvi invocation): talk a bit more about slant
+	fonts, pursuant to DEK's message to tex-k of 10 Jul 2005 18:38:11.
+
+2007-12-19  Martin Schröder <martin@oneiros.de>
+
+	* tex.ch (ssup_max_strings): increase to 2097151
+		 (sup_main_memory): increase to 256000000
+
+2007-12-19  Karl Berry  <karl@tug.org>
+
+	* tangle.ch (max_bytes): increase to 65535.
+
+	* config.h (LONGINTEGER_TYPE): switch to off_t.
+	
+	(Both of these from Martin S.)
+
+2007-10-23  Karl Berry  <karl@tug.org>
+
+	* config.h (LONGINTEGER_TYPE): #define, depending on the C version.
+	(longinteger): typedef.
+
+2007-10-01  Karl Berry  <karl@tug.org>
+
+	* cpascal.h (floor): #undef, since MaxOSX #defines it.
+	From Peter Dyballa, metapost list, 27 Sep 2007 15:25:03.
+
+2007-09-18  Karl Berry  <karl@tug.org>
+
+	* tex.ch (29.530): Wording of "Type <return>" msg.
+
+2007-09-16  Karl Berry  <karl@tug.org>
+
+	* c-auto.in (EDITOR): doc fix.
+
+2007-09-12  Karl Berry  <karl@tug.org>
+
+	* c-auto.in (EDITOR) [WIN32]: need "", and emacs preferred.
+	From Akira.
+
+2007-09-09  Karl Berry  <karl@tug.org>
+
+	* c-auto.in (EDITOR): 'quote' the filename.
+	Reported by Frank K, 17 Jul 2007 17:00:41, debian bug 433455.
+
+2007-08-24  Karl Berry  <karl@tug.org>
+
+	* doc/web2c.texi (Initial MetaPost): change pragma link.
+
+2007-07-15  Karl Berry  <karl@tug.org>
+
+	* tex.ch,
+	* alephdir/com16bit-rc2.ch,
+	* omegadir/com16bit.ch: fixes from Akira so "tex %" followed
+	by RET is stable.  Also sync aleph/omega constants with tex.
+	Mail of 14 Jul 2007 09:35:02.
+
+2007-03-30  Karl Berry  <karl@tug.org>
+
+	* tex.ch (sup_buf_size): increase to 30,000,000 per Hans mail to
+	tex-live, 30 Mar 2007 16:52:09.
+
+2007-01-10  Karl Berry  <karl@tug.org>
+
+	* Makefile.in (programs): include $(pdftosrc), which has always
+	been built, but missing from the install.
+
 2007-01-01  Karl Berry  <karl@tug.org>
 
 	* config.h (inline) [__cplusplus]: #undef inline under C++, since

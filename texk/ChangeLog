@@ -1,3 +1,26 @@
+2008-02-02  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Convert from autoconf-2.13 to autoconf-2.59+:
+	* configure.in: Use KPSE_CONFIG_SUBDIRS.
+	* Makefile.in: Add @configure_input@ line.
+	* aclocal.m4 (new): Generated (aclocal -I m4).
+	* configure: Regenerated (autoconf).
+
+2008-02-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.in: Removed configure kludge for dvipos.
+	* configure: Regenerated (autoconf2.13).
+
+2008-01-13  Karl Berry  <karl@tug.org>
+
+	* withenable.ac (afm2pl, dtl): more --without options.
+	Found by Patrice.
+
+2007-01-10  Karl Berry  <karl@tug.org>
+
+	* dvipos/Makefile (DEFS): add -I../../../texk for
+	kpathsea/kpathsea.h
+
 2006-12-05  Karl Berry  <karl@tug.org>
 
 	* configure: trying dvipng again.

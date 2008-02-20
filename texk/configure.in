@@ -1,3 +1,6 @@
+dnl Public domain.  Originally written many years ago by Karl Berry and
+dnl Thomas Esser, and others.
+dnl
 dnl Top-level configure for kpathsea-using programs.
 dnl Our job is to run configure in the relevant subdirectories.
 dnl
@@ -12,7 +15,7 @@ dnl
 AC_INIT(kpathsea/kpathsea.texi)
 
 dnl These configure scripts won't work with anything else.
-AC_PREREQ(2.13)
+AC_PREREQ(2.59)
 
 AC_PROG_MAKE_SET
 
@@ -44,7 +47,9 @@ if test "x$with_x" = xno; then
   with_xdvik=no
 fi
 
-PKGS='
+AC_CONFIG_SUBDIRS([kpathsea web2c])
+
+KPSE_CONFIG_SUBDIRS([
  afm2pl
  bibtex8
  cjkutils
@@ -57,9 +62,11 @@ PKGS='
  dvipdfm
  dvipdfmx
  dvipng
+ dvipos
  dvipsk
  gsftopk
  lacheck
+ lcdf-typetools
  makeindexk
  musixflx
  ps2pkm
@@ -72,17 +79,7 @@ PKGS='
  xdv2pdf
  xdvik
  xdvipdfmx
-'
-
-ESUBDIRS=
-for pkg in $PKGS; do
-  if eval "test \"x`echo '$with_'${pkg}`\" != xno"; then
-    ESUBDIRS="$ESUBDIRS $pkg"
-  fi
-done
-AC_SUBST(ESUBDIRS)
-
-AC_CONFIG_SUBDIRS(kpathsea web2c $ESUBDIRS)
+])
 
 KPSE_CONFIG_FILES([Makefile])
 AC_OUTPUT
