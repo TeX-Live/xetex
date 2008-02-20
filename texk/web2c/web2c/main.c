@@ -23,9 +23,9 @@
    entirely on one line.  */
 #define max_line_length 78
 
-#define max_strings 20000
-#define hash_prime 101
-#define sym_table_size 3000
+#define max_strings 50000
+#define hash_prime 7883
+#define sym_table_size 50000
 #define unused 271828
 
 /* Says whether to give voluminous progress reports.  */
@@ -267,7 +267,10 @@ main P2C(int, argc, string *, argv)
   xfclose (coerce, coerce_name);
 
   if (debug)
-    fprintf (stderr, "%d symbols.\n", next_sym_free);
+    {
+      fprintf (stderr, "%d symbols.\n", next_sym_free);
+      fprintf (stderr, "%d strings.\n", next_string_free);
+    }
 
   return EXIT_SUCCESS;
 }

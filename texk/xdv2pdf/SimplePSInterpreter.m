@@ -3,7 +3,7 @@
 //  T1Wrap
 //
 //  Created by Massimiliano Gubinelli on 10/02/2005.
-//  Copyright 2005 Massimiliano Gubinelli.
+//  Copyright 2005 Massimiliano Gubinelli. All rights reserved.
 //
 
 // Based on a Perl script by Jonathan Kew, SIL International (February 2005)

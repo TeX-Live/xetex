@@ -88,9 +88,9 @@
 #define edit_var "MFEDIT"
 #endif /* MF */
 #ifdef MP
-#define BANNER "This is MetaPost, Version 0.993"
+#define BANNER "This is MetaPost, Version 1.002"
 #define COPYRIGHT_HOLDER "AT&T Bell Laboratories"
-#define AUTHOR "John Hobby"
+#define AUTHOR "John Hobby.\nCurrent maintainer of MetaPost: Taco Hoekwater"
 #define PROGRAM_HELP MPHELP
 #define BUG_ADDRESS "tex-k@mail.tug.org"
 #define DUMP_VAR MPmemdefault
@@ -115,7 +115,7 @@ char **argv;
 int argc;
 
 /* If the user overrides argv[0] with -progname.  */
-static string user_progname;
+static const_string user_progname;
 
 /* The C version of what might wind up in DUMP_VAR.  */
 static const_string dump_name;
@@ -187,6 +187,7 @@ maininit P2C(int, ac, string *, av)
   /* Must be initialized before options are parsed.  */
   interactionoption = 4;
 
+  /* Have things to record as we go along.  */
   kpse_record_input = recorder_record_input;
   kpse_record_output = recorder_record_output;
 
@@ -199,13 +200,17 @@ maininit P2C(int, ac, string *, av)
      the web (which would read the base file, etc.).  */
   parse_options (ac, av);
   
+  /* If -progname was not specified, default to the dump name.  */
+  if (!user_progname)
+    user_progname = dump_name;
+  
   /* Do this early so we can inspect program_invocation_name and
      kpse_program_name below, and because we have to do this before
      any path searching.  */
   kpse_set_program_name (argv[0], user_progname);
 
   /* FIXME: gather engine names in a single spot. */
-  xputenv("engine", TEXMFENGINENAME);
+  xputenv ("engine", TEXMFENGINENAME);
   
   /* Were we given a simple filename? */
   main_input_file = get_input_file_name();
@@ -963,14 +968,12 @@ parse_options P2C(int, argc,  string *, argv)
       
     } else if (ARGUMENT_IS (DUMP_OPTION)) {
       dump_name = optarg;
-      if (!user_progname) user_progname = optarg;
       dumpoption = true;
 
 #ifdef TeX
     /* FIXME: Obsolete -- for backward compatibility only. */
     } else if (ARGUMENT_IS ("efmt")) {
       dump_name = optarg;
-      if (!user_progname) user_progname = optarg;
       dumpoption = true;
 #endif
 
