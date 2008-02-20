@@ -41,6 +41,9 @@ Description:
 
 #ifndef _WIN32
 #include "GrMstypes.h"
+#ifndef HAVE_FABSF
+float fabsf(float x);
+#endif
 #endif
 #include "GrDebug.h"
 
@@ -164,12 +167,6 @@ struct Rect
 //#include "GrUtil.h"
 
 #include "GrWrappers.h"
-
-#ifndef _WIN32
-#ifndef HAVE_FABSF
-extern float fabsf(float x);	/* defined in Platform.cpp */
-#endif
-#endif
 
 //#include "IGrDebug.h"
 //#include "GrSegmentDebug.h"
