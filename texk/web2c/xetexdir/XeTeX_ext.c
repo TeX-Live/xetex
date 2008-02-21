@@ -2774,7 +2774,7 @@ int
 get_uni_c(UFILE* f)
 {
 	int	rval;
-	unsigned c;
+	int c;
 
 	if (f->savedChar != -1) {
 		rval = f->savedChar;
@@ -2788,16 +2788,6 @@ get_uni_c(UFILE* f)
 			if (rval != EOF) {
 				UInt16 extraBytes = bytesFromUTF8[rval];
 				switch (extraBytes) {	/* note: code falls through cases! */
-					default:
-					bad_utf8:
-						if (rval > 0x100)	/* part-way through a sequence */
-							rval = 0xfffd;
-						f->savedChar = c;	/* save the byte that wasn't valid */
-					case 5:
-					case 4:
-						badutf8warning();
-						f->encodingMode = RAW;
-						return rval;		/* return without adjusting by offsetsFromUTF8 */
 					case 3: c = getc(f->f);
 						if (c < 0x80 || c >= 0xc0) goto bad_utf8;
 						rval <<= 6; rval += c;
@@ -2807,7 +2797,16 @@ get_uni_c(UFILE* f)
 					case 1: c = getc(f->f);
 						if (c < 0x80 || c >= 0xc0) goto bad_utf8;
 						rval <<= 6; rval += c;
-					case 0:	;
+					case 0:
+						break;
+
+					bad_utf8:
+						if (c != EOF)
+							ungetc(c, f->f);
+					case 5:
+					case 4:
+						badutf8warning();
+						return 0xfffd;		/* return without adjusting by offsetsFromUTF8 */
 				};
 				rval -= offsetsFromUTF8[extraBytes];
 			}
