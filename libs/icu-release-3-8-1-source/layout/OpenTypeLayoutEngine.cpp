@@ -33,6 +33,7 @@ UOBJECT_DEFINE_RTTI_IMPLEMENTATION(OpenTypeLayoutEngine)
 #define kernFeatureTag LE_KERN_FEATURE_TAG
 #define markFeatureTag LE_MARK_FEATURE_TAG
 #define mkmkFeatureTag LE_MKMK_FEATURE_TAG
+#define loclFeatureTag LE_LOCL_FEATURE_TAG
 
 // 'dlig' not used at the moment
 #define dligFeatureTag 0x646C6967
@@ -47,8 +48,9 @@ UOBJECT_DEFINE_RTTI_IMPLEMENTATION(OpenTypeLayoutEngine)
 #define paltFeatureMask 0x08000000UL
 #define markFeatureMask 0x04000000UL
 #define mkmkFeatureMask 0x02000000UL
+#define loclFeatureMask 0x01000000UL
 
-#define minimalFeatures     (ccmpFeatureMask | markFeatureMask | mkmkFeatureMask)
+#define minimalFeatures     (ccmpFeatureMask | markFeatureMask | mkmkFeatureMask | loclFeatureMask)
 #define ligaFeatures        (ligaFeatureMask | cligFeatureMask | minimalFeatures)
 #define kernFeatures        (kernFeatureMask | paltFeatureMask | minimalFeatures)
 #define kernAndLigaFeatures (ligaFeatures    | kernFeatures)
@@ -61,7 +63,8 @@ static const FeatureMap featureMap[] =
 	{kernFeatureTag, kernFeatureMask},
     {paltFeatureTag, paltFeatureMask},
     {markFeatureTag, markFeatureMask},
-    {mkmkFeatureTag, mkmkFeatureMask}
+    {mkmkFeatureTag, mkmkFeatureMask},
+    {loclFeatureTag, loclFeatureMask}
 };
 
 static const le_int32 featureMapCount = LE_ARRAY_SIZE(featureMap);
@@ -69,7 +72,7 @@ static const le_int32 featureMapCount = LE_ARRAY_SIZE(featureMap);
 OpenTypeLayoutEngine::OpenTypeLayoutEngine(const LEFontInstance *fontInstance, le_int32 scriptCode, le_int32 languageCode,
                         le_int32 typoFlags, const GlyphSubstitutionTableHeader *gsubTable)
     : LayoutEngine(fontInstance, scriptCode, languageCode, typoFlags), fFeatureMask(minimalFeatures),
-      fFeatureMap(featureMap), fFeatureMapCount(featureMapCount), fFeatureOrder(FALSE),
+      fFeatureMap(featureMap), fFeatureParamList(NULL), fFeatureMapCount(featureMapCount), fFeatureOrder(FALSE),
       fGSUBTable(gsubTable), fGDEFTable(NULL), fGPOSTable(NULL), fSubstitutionFilter(NULL)
 {
     static const le_uint32 gdefTableTag = LE_GDEF_TABLE_TAG;
@@ -168,9 +171,8 @@ le_int32 OpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[], le_i
 
     glyphStorage.allocateGlyphArray(outCharCount, rightToLeft, success);
     glyphStorage.allocateAuxData(success);
-
     for (le_int32 i = 0; i < outCharCount; i += 1) {
-        glyphStorage.setAuxData(i, fFeatureMask, success);
+        glyphStorage.setAuxData(i, fFeatureMask, (void *) fFeatureParamList, success);
     }
 
     return outCharCount;
@@ -212,7 +214,7 @@ le_int32 OpenTypeLayoutEngine::glyphPostProcessing(LEGlyphStorage &tempGlyphStor
 
     glyphStorage.adoptGlyphArray(tempGlyphStorage);
     glyphStorage.adoptCharIndicesArray(tempGlyphStorage);
-    glyphStorage.adoptAuxDataArray(tempGlyphStorage);
+    glyphStorage.adoptAuxDataArrays(tempGlyphStorage);
     glyphStorage.adoptGlyphCount(tempGlyphStorage);
 
     return glyphStorage.getGlyphCount();
@@ -271,8 +273,10 @@ void OpenTypeLayoutEngine::adjustGlyphPositions(const LEUnicode chars[], le_int3
     }
 
     le_int32 glyphCount = glyphStorage.getGlyphCount();
+    if (glyphCount == 0)
+        return;
 
-    if (glyphCount > 0 && fGPOSTable != NULL) {
+    if (fGPOSTable != NULL) {
         GlyphPositionAdjustments *adjustments = new GlyphPositionAdjustments(glyphCount);
         le_int32 i;
 
@@ -330,6 +334,10 @@ void OpenTypeLayoutEngine::adjustGlyphPositions(const LEUnicode chars[], le_int3
         glyphStorage.adjustPosition(glyphCount, xAdjust, -yAdjust, success);
 
         delete adjustments;
+    }
+    else {
+        // if there was no GPOS table, maybe there's non-OpenType kerning we can use
+        LayoutEngine::adjustGlyphPositions(chars, offset, count, reverse, glyphStorage, success);
     }
 
     LEGlyphID zwnj  = fFontInstance->mapCharToGlyph(0x200C);
