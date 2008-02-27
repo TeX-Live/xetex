@@ -151,7 +151,7 @@ void OpenTypeLayoutEngine::setScriptAndLanguageTags()
     fLangSysTag = getLangSysTag(fLanguageCode);
 }
 
-le_int32 OpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[], le_int32 offset, le_int32 count, le_int32 max, le_bool rightToLeft,
+le_int32 OpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[], le_int32 offset, le_int32 count, le_int32 max, le_bool rightToLeft, le_bool doCanonGSUB,
                 LEUnicode *&outChars, LEGlyphStorage &glyphStorage, LEErrorCode &success)
 {
     if (LE_FAILURE(success)) {
@@ -163,7 +163,7 @@ le_int32 OpenTypeLayoutEngine::characterProcessing(const LEUnicode chars[], le_i
         return 0;
     }
 
-    le_int32 outCharCount = LayoutEngine::characterProcessing(chars, offset, count, max, rightToLeft, outChars, glyphStorage, success);
+    le_int32 outCharCount = LayoutEngine::characterProcessing(chars, offset, count, max, rightToLeft, doCanonGSUB, outChars, glyphStorage, success);
 
     if (LE_FAILURE(success)) {
         return 0;
@@ -235,7 +235,7 @@ le_int32 OpenTypeLayoutEngine::computeGlyphs(const LEUnicode chars[], le_int32 o
         return 0;
     }
 
-    outCharCount = characterProcessing(chars, offset, count, max, rightToLeft, outChars, fakeGlyphStorage, success);
+    outCharCount = characterProcessing(chars, offset, count, max, rightToLeft, (fGSUBTable == NULL), outChars, fakeGlyphStorage, success);
 
     if (LE_FAILURE(success)) {
         return 0;
