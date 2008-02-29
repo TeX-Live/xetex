@@ -128,7 +128,7 @@ xetexdir/etex.version: $(srcdir)/etexdir/etex.ch
 # The C sources.
 xetex_c = xetexini.c xetex0.c xetex1.c xetex2.c
 xetex_o = xetexini.o xetex0.o xetex1.o xetex2.o xetexextra.o
-xetex_add_o = trans.o XeTeX_ext.o xetex_pool.o $(xetex_platform_o)
+xetex_add_o = trans.o XeTeX_ext.o xetex_pool.o xetex_synctex.o $(xetex_platform_o)
 
 # these compilations require the path to TECkit headers;
 # just setting it in XCFLAGS doesn't seem to work when we're called
@@ -167,6 +167,10 @@ pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp $(srcdir)/xetexdir/pdfimage.h
 
 XeTeX_pic.o: $(srcdir)/xetexdir/XeTeX_pic.c $(srcdir)/xetexdir/XeTeX_ext.h $(XeTeXImageHdrs)
 	$(compile) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
+
+# sync
+xetex_synctex.o: $(srcdir)/synctex/synctex.c
+	$(compile) $(ALL_CFLAGS) $(TECKITFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 # Layout library
 xetex_ot_layout_o = \
@@ -247,11 +251,13 @@ xetex.p xetex.pool: ./otangle xetex.web
 #   Sources for xetex.web:
 xetex_web_srcs = $(srcdir)/tex.web \
   $(srcdir)/etexdir/etex.ch \
+  $(srcdir)/synctex/synctex.ch \
   $(srcdir)/etexdir/tex.ch0 \
   $(srcdir)/tex.ch \
   $(srcdir)/etexdir/tex.ch1 \
   $(srcdir)/etexdir/tex.ech \
-  $(srcdir)/xetexdir/xetex.ch
+  $(srcdir)/xetexdir/xetex.ch \
+  $(srcdir)/xetexdir/sync-xetex.ch
 xetex.web: tie xetexdir/xetex.mk $(xetex_web_srcs)
 	$(TIE) -m xetex.web $(xetex_web_srcs)
 
@@ -286,7 +292,7 @@ xetex-clean: # etrip-clean
 	$(LIBTOOL) --mode=clean $(RM) xetex
 	rm -f $(xetex_o) $(xetex_c) xetexextra.c xetex_pool.c xetexcoerce.h xetexd.h
 	rm -f xetexdir/xetexextra.h xetexdir/xetex.version
-	rm -f xetex.p xetex.pool xetex.web xetex.ch
+	rm -f xetex.p xetex.pool xetex.web
 	rm -f xetex.fmt xetex.log
 	rm -f hello.dvi hello.log xfoo.out openout.log one.two.log uno.log
 	rm -f just.log batch.log write18.log mltextst.log texput.log
