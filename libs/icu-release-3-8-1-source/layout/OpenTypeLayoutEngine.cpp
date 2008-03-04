@@ -235,7 +235,8 @@ le_int32 OpenTypeLayoutEngine::computeGlyphs(const LEUnicode chars[], le_int32 o
         return 0;
     }
 
-    outCharCount = characterProcessing(chars, offset, count, max, rightToLeft, (fGSUBTable == NULL), outChars, fakeGlyphStorage, success);
+    outCharCount = characterProcessing(chars, offset, count, max, rightToLeft, (fGSUBTable == NULL && fGPOSTable == NULL),
+                                       outChars, fakeGlyphStorage, success);
 
     if (LE_FAILURE(success)) {
         return 0;
