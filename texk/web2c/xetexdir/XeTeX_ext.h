@@ -281,6 +281,10 @@ extern "C" {
 	void terminatefontmanager();
 	int maketexstring(const char* s);
 
+#ifndef XETEX_MAC
+typedef void* ATSUStyle; /* dummy declaration just so the stubs can compile */
+#endif
+
 	int atsufontget(int what, ATSUStyle style);
 	int atsufontget1(int what, ATSUStyle style, int param);
 	int atsufontget2(int what, ATSUStyle style, int param1, int param2);

@@ -2261,10 +2261,6 @@ double Fix2X(Fixed f)
 #endif
 
 /* these are here, not XeTeX_mac.c, because we need stubs on other platforms */
-#ifndef XETEX_MAC
-typedef void* ATSUStyle; /* dummy declaration just so the stubs can compile */
-#endif
-
 void
 atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
 {
