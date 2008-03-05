@@ -509,8 +509,18 @@ else begin
 @z
 
 @x
+@!init function get_strings_started:boolean; {initializes the string pool,
+  but returns |false| if something goes wrong}
+label done,exit;
+var k,@!l:0..255; {small indices or counters}
+@!m,@!n:text_char; {characters input from |pool_file|}
+@!g:str_number; {garbage}
+@!a:integer; {accumulator for check sum}
+@!c:boolean; {check sum has been checked}
 begin pool_ptr:=0; str_ptr:=0; str_start[0]:=0;
 @y
+@!init function get_strings_started:boolean; {initializes the string pool,
+  but returns |false| if something goes wrong}
 begin pool_ptr:=0; str_ptr:=0;
 @z
 
@@ -7458,7 +7468,6 @@ var
 	corners: array[0..3] of real_point;
 	x_size_req,y_size_req: real;
 	check_keywords: boolean;
-	x_size, y_size: real;
 	xmin,xmax,ymin,ymax: real;
 	i: small_number;
 	page: integer;

@@ -192,7 +192,7 @@ XeTeXFontMgr_FC.o: $(srcdir)/xetexdir/XeTeXFontMgr_FC.cpp  $(XeTeXFontHdrs)
 	$(CXX) $(ICUCFLAGS) $(FTFLAGS) $(FONTCONFIGCPPFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 XeTeXFontMgr_Mac.o: $(srcdir)/xetexdir/XeTeXFontMgr_Mac.mm  $(XeTeXFontHdrs)
-	gcc -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(CXX) -ObjC++ $(ICUCFLAGS) $(FTFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
 cmaps.o: $(srcdir)/xetexdir/cmaps.cpp
 	$(CXX) $(ICUCFLAGS) $(ALL_CXXFLAGS) $(XETEX_DEFINES) -c $< -o $@

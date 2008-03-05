@@ -191,6 +191,11 @@ maininit P2C(int, ac, string *, av)
   kpse_record_input = recorder_record_input;
   kpse_record_output = recorder_record_output;
 
+#if defined (pdfTeX) || defined(XeTeX) || defined(__syncTeX__)
+  /* 0 means don't use Synchronize TeXnology.  */
+  synctexoption = 0;
+#endif
+
 #if defined(pdfTeX)
   ptexbanner = BANNER;
 #endif
@@ -395,7 +400,7 @@ topenin P1H(void)
       unsigned char *ptr = (unsigned char *)&(argv[i][0]);
       /* need to interpret UTF8 from the command line */
       UInt32 rval;
-      while (rval = *(ptr++)) {
+      while ((rval = *(ptr++)) != 0) {
         UInt16 extraBytes = bytesFromUTF8[rval];
         switch (extraBytes) { /* note: code falls through cases! */
           case 5: rval <<= 6; if (*ptr) rval += *(ptr++);
@@ -895,6 +900,10 @@ static struct option long_options[]
       { "no-shell-escape",           0, &shellenabledp, -1 },
       { "debug-format",              0, &debugformatfile, 1 },
       { "src-specials",              2, 0, 0 },
+#if defined(pdfTeX) || defined(XeTeX) || defined(__syncTeX__)
+      /* Synchronization: just like "interaction" above */
+      { "synctex",                   1, 0, 0 },
+#endif
 #endif /* TeX */
 #if defined (TeX) || defined (MF) || defined (MP)
       { "file-line-error-style",     0, &filelineerrorstylep, 1 },
@@ -1073,6 +1082,11 @@ parse_options P2C(int, argc,  string *, argv)
     } else if (ARGUMENT_IS ("help")) {
         usagehelp (PROGRAM_HELP, BUG_ADDRESS);
 
+#if defined (pdfTeX) || defined(XeTeX) || defined(__syncTeX__)
+    } else if (ARGUMENT_IS ("synctex")) {
+		/* Synchronize TeXnology: catching the command line option as an unsigned long  */
+		synctexoption = (int) strtoul(optarg, NULL, 0);
+ #endif
     } else if (ARGUMENT_IS ("version")) {
         char *versions;
 #if defined (pdfTeX) || defined(XeTeX)
@@ -1909,7 +1923,7 @@ maketexstring(const_string s)
   len = strlen(s);
   checkpoolpointer (poolptr, len); /* in the XeTeX case, this may be more than enough */
 #ifdef XeTeX
-  while (rval = *(cp++)) {
+  while ((rval = *(cp++)) != 0) {
   UInt16 extraBytes = bytesFromUTF8[rval];
   switch (extraBytes) { /* note: code falls through cases! */
     case 5: rval <<= 6; if (*cp) rval += *(cp++);
