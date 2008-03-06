@@ -56,7 +56,7 @@ install: install-exec install-data
 uninstall: uninstall-exec uninstall-data
 
 distclean::
-	$(RM) config.h
+	$(RM) c-auto.h
 
 install-exec:
 	$(SHELL) $(top_srcdir)/../mkinstalldirs $(bindir)

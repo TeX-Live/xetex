@@ -33,7 +33,7 @@ IN THE SOFTWARE.
 
 #import <unistd.h> // for getopt()
 
-#include "config.h"
+#include "c-auto.h"
 
 static inline UInt16
 SWAP16(UInt16 v)
