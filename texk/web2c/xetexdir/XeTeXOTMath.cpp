@@ -194,7 +194,7 @@ getnativemathexparam(int f, int n)
 }
 
 int
-getotmathvariant(int f, int g, int v, int* adv, int horiz)
+getotmathvariant(int f, int g, int v, integer* adv, int horiz)
 {
 	int	rval = g;
 	*adv = -1;

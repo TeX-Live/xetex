@@ -310,7 +310,7 @@ void synctexstartinput(void)
     if ((NULL != synctex_ctxt.file)
         || ((SYNCTEX_IS_ENABLED && synctex_dot_open()) != 0)) {
         char *tmp = gettexstring(curinput.namefield);
-        fprintf(synctex_ctxt.file,"i:%u:%s\n",curinput.synctextagfield,tmp);
+        fprintf(synctex_ctxt.file,"i:%lu:%s\n",curinput.synctextagfield,tmp);
         xfree(tmp);
     }
 #  if SYNCTEX_DEBUG
@@ -359,7 +359,7 @@ void synctexsheet(integer mag)
             else {
                 synctex_ctxt.scale = 8192;
              }
-            fprintf(synctex_ctxt.file, "z:%ld\n", ((SYNCTEX_IS_PDF != 0) ? 0 : 578));
+            fprintf(synctex_ctxt.file, "z:%d\n", ((SYNCTEX_IS_PDF != 0) ? 0 : 578));
 #  if SYNCTEX_DEBUG
             fprintf(stdout, "\nSynchronize DEBUG: synctex_ctxt.scale:%u\n",synctex_ctxt.scale);
 #  endif
@@ -451,8 +451,8 @@ void synctexsheet(integer mag)
 /*  Recording a "h:..." line  */
 void synctex_hlist_recorder(halfword p)
 {
-    fprintf(synctex_ctxt.file, "h:%u:%u(%i,%i,%i,%i,%i)\n",
-            SYNCTEX_TAG(p), SYNCTEX_LINE(p),
+    fprintf(synctex_ctxt.file, "h:%lu:%lu(%ld,%ld,%ld,%ld,%ld)\n",
+            (unsigned long)SYNCTEX_TAG(p), (unsigned long)SYNCTEX_LINE(p),
             curh UNIT,
             curv UNIT,
             SYNCTEX_WIDTH(p) UNIT,
@@ -531,7 +531,7 @@ void synctextsilh(halfword p)
 /*  Recording a "$:..." line  */
 void synctex_math_recorder(halfword p)
 {
-    fprintf(synctex_ctxt.file, "$:%u:%u(%i,%i)\n",
+    fprintf(synctex_ctxt.file, "$:%lu:%lu(%ld,%ld)\n",
             SYNCTEX_TAG(p), SYNCTEX_LINE(p),
             synctex_ctxt.h UNIT,
             synctex_ctxt.v UNIT);
@@ -562,7 +562,7 @@ void synctexmath(halfword p)
 /*  Recording a "g:..." line  */
 void synctex_glue_recorder(halfword p)
 {
-    fprintf(synctex_ctxt.file, "g:%u:%u(%i,%i)\n",
+    fprintf(synctex_ctxt.file, "g:%lu:%lu(%ld,%ld)\n",
             SYNCTEX_TAG(p), SYNCTEX_LINE(p),
             synctex_ctxt.h UNIT,
             synctex_ctxt.v UNIT);
@@ -603,7 +603,7 @@ void synctexglue(halfword p)
 /*  Recording a "k:..." line  */
 void synctex_kern_recorder(halfword p)
 {
-    fprintf(synctex_ctxt.file, "k:%u:%u(%i,%i,%i)\n",
+    fprintf(synctex_ctxt.file, "k:%lu:%lu(%ld,%ld,%ld)\n",
             SYNCTEX_TAG(p), SYNCTEX_LINE(p),
             synctex_ctxt.h UNIT,
             synctex_ctxt.v UNIT,
@@ -649,7 +649,7 @@ void synctex_terminate(void)
     fprintf(stdout, "\nSynchronize DEBUG: synctex_terminate\n");
 #  endif
     if (synctex_ctxt.file != NULL) {
-        fprintf(synctex_ctxt.file, "#:%u\n",synctex_ctxt.count);
+        fprintf(synctex_ctxt.file, "#:%lu\n",synctex_ctxt.count);
         xfclose(synctex_ctxt.file, synctex_ctxt.name);
         xfree(synctex_ctxt.name);
     }
