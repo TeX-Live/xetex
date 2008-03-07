@@ -51,6 +51,11 @@ if [ -e Work/texk/xdv2pdf/xdv2pdf ]; then
 	done
 fi
 
+if [ -e Work/texk/xdvipdfmx/src/xdvipdfmx ]; then
+	cp -pf Work/texk/xdvipdfmx/src/xdvipdfmx ${texbindir}/xdvipdfmx
+	echo ${texbindir}/xdvipdfmx >> ${filelist}
+fi
+
 # copy our texmf additions into the local texmf tree
 texmflocal=`kpsewhich --var-value TEXMFLOCAL`
 if [ -z "${texmflocal}" ]; then
