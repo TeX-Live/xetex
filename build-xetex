@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Top-level script to compile xetex (and xdv2pdf on OS X)
+# Top-level script to compile xetex and xdvipdfmx (and xdv2pdf on OS X)
 # from the source tree as found in Subversion
 
 echo "###### CONFIGURING XETEX"
@@ -42,6 +42,9 @@ find . -name configure -exec chmod +x {} \;
 
 # fix up symlink possibly lost in ViewVC's tarball generation :(
 test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-6-source libs/icu-xetex
+
+# workaround for configure problem on Leopard; to be removed later
+export ac_cv_exeext=''
 
 # run the configure script, which will create a Work subtree
 sh ./runConfigure.sh || {
