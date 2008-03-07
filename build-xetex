@@ -54,8 +54,8 @@ echo "###### BUILDING LIBRARIES AND XETEX"
 # make libraries first (not handled by the xetex makefile)
 LIBS=`find Work/libs -type d -maxdepth 1 -mindepth 1 | sed -e 's/Work\/libs\///'`
 if [ "`uname`" = "Darwin" ]; then
-	# don't need libpng or xpdf on Darwin; we use QuickTime & Quartz
-	LIBS=`echo "$LIBS" | grep -v 'libpng\|xpdf'`
+	# don't need xpdf on Darwin; we use Quartz
+	LIBS=`echo "$LIBS" | grep -v 'xpdf'`
 fi
 echo "### Static libs to be built:"
 echo "${LIBS}"
@@ -122,6 +122,13 @@ if [ "`uname`" = "Darwin" ]; then
 	}
 	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
 fi
+
+# build xdvipdfmx
+(cd Work/texk/xdvipdfmx && ${GNUMAKE}) || {
+	echo "### failed to build the xdvipdfmx driver"
+	exit 1
+}
+PRODUCTS="${PRODUCTS} Work/texk/xdvipdfmx/src/xdvipdfmx"
 
 # show the executables we made (assuming the build was successful)
 echo "### Products built successfully:"

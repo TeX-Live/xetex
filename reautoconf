@@ -31,7 +31,7 @@
 topdir=`pwd`
 
 # "acold" runs autoconf-2.13
-# "acnew" runs autoconf-2.59
+# "acnew" runs current autoconf
 
 acold () {	# $dir=current
 	echo "    Running autoconf-2.13 in \`$dir'"
@@ -68,8 +68,8 @@ acnew () {	# $dir=current, $dir/$rdir->./texk/m4 with the KPSE macros.
 	#}
 	#echo "Running aclocal-1.9 (patched) in \`$dir'"
 	#$topdir/config/aclocal-1.9peb --force $arg || return
-	echo "    Running autoconf-2.59 in \`$dir'"
-	/usr/bin/autoconf --force || return
+	echo "    Running autoconf in \`$dir'"
+	autoconf --force || return
 	#rm -rf autom4te.cache
 }
 
@@ -91,7 +91,7 @@ for dir in `find libs texk -name configure.in | sed 's,/configure.in$,,'`; do
 		*/curl)		# Is automade.
 		;;
 		texk)	rdir=m4
-			(cd $dir; acold)
+			(cd $dir; acnew)
 		;;
 		*/icu*|*/fontconfig)		# ICU and fontconfig need new autoconf
 			(cd $dir; acnew)
