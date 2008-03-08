@@ -3,7 +3,25 @@
 # Top-level script to compile xetex and xdvipdfmx (and xdv2pdf on OS X)
 # from the source tree as found in Subversion
 
-echo "###### CONFIGURING XETEX"
+# where we'll do our build
+WORKDIR=Work
+
+# If we have an argument, put that into lots of *FLAGS variables
+# (use this for "-arch ppc" on Mac OS X to build PPC binaries on Intel hardware;
+#  unlikely to be useful for anything else)
+
+if [ -n "$@" ]; then
+	export CFLAGS="$@"
+	export CXXFLAGS="$@"
+	export LDFLAGS="$@"
+	export XCFLAGS="$@"
+	export XCXXFLAGS="$@"
+	export XLDFLAGS="$@"
+	export XXOBJCFLAGS="$@"
+	WORKDIR=`echo "Work$@" | sed -e 's/ //g'`
+fi
+
+echo "###### BUILDING IN $WORKDIR"
 
 real_path() # function to resolve symlinks in path, as not everyone has realpath(1)
 {
@@ -35,27 +53,33 @@ fi
 
 # do some cleanup if needed
 test ! -f Makefile || ${GNUMAKE} clean
-rm -rf Work
+rm -rf "$WORKDIR"
 find . -name config.cache -print -exec rm -f {} \;
 
 find . -name configure -exec chmod +x {} \;
 
 # fix up symlink possibly lost in ViewVC's tarball generation :(
-test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-6-source libs/icu-xetex
+test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-8-1-source libs/icu-xetex
 
 # workaround for configure problem on Leopard; to be removed later
 export ac_cv_exeext=''
 
-# run the configure script, which will create a Work subtree
-sh ./runConfigure.sh || {
+# create a $WORKDIR subtree and run the configure script
+
+test -d "$WORKDIR" || mkdir "$WORKDIR"
+
+echo "###### CONFIGURING XETEX"
+
+(cd "$WORKDIR" &&
+ sh ../runConfigure.sh || {
 	echo "### configure script appears to have failed"
 	exit 1
-}
+ })
 
 echo "###### BUILDING LIBRARIES AND XETEX"
 
 # make libraries first (not handled by the xetex makefile)
-LIBS=`find Work/libs -type d -maxdepth 1 -mindepth 1 | sed -e 's/Work\/libs\///'`
+LIBS=`find $WORKDIR/libs -type d -maxdepth 1 -mindepth 1 | sed -e "s/$WORKDIR\/libs\///"`
 if [ "`uname`" = "Darwin" ]; then
 	# don't need xpdf on Darwin; we use Quartz
 	LIBS=`echo "$LIBS" | grep -v 'xpdf'`
@@ -63,7 +87,7 @@ fi
 echo "### Static libs to be built:"
 echo "${LIBS}"
 for f in ${LIBS}; do
-	( cd Work/libs/${f} && echo "### Running ${GNUMAKE} in `pwd`" && ${GNUMAKE} ) || {
+	( cd $WORKDIR/libs/${f} && echo "### Running ${GNUMAKE} in `pwd`" && ${GNUMAKE} ) || {
 		echo "### library build appears to have failed for ${f}"
 		exit 1
 	}
@@ -80,7 +104,8 @@ done
 	KPSEWHICH=`which kpsewhich`
 	if [ ! -e "${KPSEWHICH}" ]; then
 		echo "### No kpsewhich found -- are you sure you have TeX installed?"
-		exit 1
+		echo "### Using default paths; hope that will be OK!"
+		KPSEWHICH=
 	else
 		using_tex_dist=`dirname ${KPSEWHICH} | grep -c texbin`
 		if [ "${using_tex_dist}" = "1" ]; then
@@ -100,38 +125,42 @@ done
 		fi
 	fi
 	
-	WEB2CDIR=`dirname \`kpsewhich texmf.cnf\``
-	REALPATHPREFIX=`real_path ${PREFIX}`
-	if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
-		if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
-			WEB2CDIR=`echo ${WEB2CDIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
-			echo "### WEB2CDIR seems to contain symlink; honouring it."
+	if [ -z "$KPSEWHICH" ]; then
+		WEB2CDIR="${DATADIR}/texmf/web2c"
+	else
+		WEB2CDIR=`dirname \`kpsewhich texmf.cnf\``
+		REALPATHPREFIX=`real_path ${PREFIX}`
+		if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
+			if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
+				WEB2CDIR=`echo ${WEB2CDIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
+				echo "### WEB2CDIR seems to contain symlink; honouring it."
+			fi
 		fi
 	fi
 	# -------
 
-echo "### Making xetex binary using: 'cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex'"
-(cd Work/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex) || {
+echo "### Making xetex binary using: 'cd $WORKDIR/texk/web2c && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex'"
+(cd "$WORKDIR/texk/web2c" && ${GNUMAKE} web2cdir=${WEB2CDIR} xetex) || {
 	echo "### failed to build the xetex binary"
 	exit 1
 }
-PRODUCTS=Work/texk/web2c/xetex
+PRODUCTS="$WORKDIR/texk/web2c/xetex"
 
 # xdv2pdf is for Mac OS X only, don't try to build on Linux or *BSD.
 if [ "`uname`" = "Darwin" ]; then
-	(cd Work/texk/xdv2pdf && ${GNUMAKE} all) || {
+	(cd "$WORKDIR/texk/xdv2pdf" && ${GNUMAKE} all) || {
 		echo "### failed to build the xdv2pdf driver for Mac OS X"
 		exit 1
 	}
-	PRODUCTS="${PRODUCTS} Work/texk/xdv2pdf/xdv2pdf Work/texk/xdv2pdf/T1Wrap"
+	PRODUCTS="${PRODUCTS} $WORKDIR/texk/xdv2pdf/xdv2pdf $WORKDIR/texk/xdv2pdf/T1Wrap"
 fi
 
 # build xdvipdfmx
-(cd Work/texk/xdvipdfmx && ${GNUMAKE}) || {
+(cd "$WORKDIR/texk/xdvipdfmx" && ${GNUMAKE}) || {
 	echo "### failed to build the xdvipdfmx driver"
 	exit 1
 }
-PRODUCTS="${PRODUCTS} Work/texk/xdvipdfmx/src/xdvipdfmx"
+PRODUCTS="${PRODUCTS} $WORKDIR/texk/xdvipdfmx/src/xdvipdfmx"
 
 # show the executables we made (assuming the build was successful)
 echo "### Products built successfully:"

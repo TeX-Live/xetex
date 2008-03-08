@@ -1,10 +1,5 @@
 #!/bin/sh
 
-# create the Work subtree where we'll actually build stuff
-
-test -d Work || mkdir Work
-cd Work
-
 # defaults in case we don't find a teTeX installation
 PREFIX=/usr/local/teTeX
 DATADIR=/usr/local/teTeX/share
@@ -21,7 +16,8 @@ real_path() # function to resolve symlinks in path, as not everyone has realpath
 KPSEWHICH=`which kpsewhich`
 if [ ! -e "${KPSEWHICH}" ]; then
 	echo "### No kpsewhich found -- are you sure you have TeX installed?"
-	exit 1
+	echo "### Using default paths; hope that will be OK!"
+	KPSEWHICH=
 else
 	using_tex_dist=`dirname ${KPSEWHICH} | grep -c texbin`
 	if [ "${using_tex_dist}" = "1" ]; then
@@ -53,18 +49,23 @@ fi
 # (In the case of standard TL installation, PREFIX and DATADIR are identical.)
 # Of course, it would be better if kpsewhich could return non-realpath.
 
-WEB2CDIR=`dirname \`kpsewhich texmf.cnf\``
-REALPATHPREFIX=`real_path ${PREFIX}`
-if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
-	if [ "`echo ${DATADIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${DATADIR}" ]; then
-		DATADIR=`echo ${DATADIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
-		echo "### DATADIR seems to contain symlink; honouring it."
-	fi
-	if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
-		WEB2CDIR=`echo ${WEB2CDIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
-		echo "### WEB2CDIR seems to contain symlink; honouring it."
+if [ -z "$KPSEWHICH" ]; then
+	WEB2CDIR="${DATADIR}/texmf/web2c"
+else
+	WEB2CDIR=`dirname \`kpsewhich texmf.cnf\``
+	REALPATHPREFIX=`real_path ${PREFIX}`
+	if [ ! "${REALPATHPREFIX}" = "${PREFIX}" ]; then
+		if [ "`echo ${DATADIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${DATADIR}" ]; then
+			DATADIR=`echo ${DATADIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
+			echo "### DATADIR seems to contain symlink; honouring it."
+		fi
+		if [ "`echo ${WEB2CDIR} | sed -e 's!${REALPATHPREFIX}!!'`" = "${WEB2CDIR}" ]; then
+			WEB2CDIR=`echo ${WEB2CDIR} | sed -e "s!${REALPATHPREFIX}!${PREFIX}!"`
+			echo "### WEB2CDIR seems to contain symlink; honouring it."
+		fi
 	fi
 fi
+
 echo "### Using paths:"
 echo "###   PREFIX          = ${PREFIX}"
 echo "###   PREFIX realpath = ${REALPATHPREFIX}"
