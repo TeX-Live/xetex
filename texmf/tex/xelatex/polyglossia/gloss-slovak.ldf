@@ -25,10 +25,10 @@
    \def\seename{\textslovak{viď}}%
    \def\alsoname{\textslovak{viď tiež}}%
    \def\enclname{\textslovak{Prílohy}}%
-   \def\ccname{\textslovak{CC}}%
-   \def\headtoname{\textslovak{Komu}}%
+   \def\ccname{\textslovak{cc.}}%
+   \def\headtoname{\textslovak{Pre}}% was komu
    \def\proofname{\textslovak{Dôkaz}}% for AMS-\LaTeX
-   \def\glossaryname{\textslovak{Glossary}}%
+   \def\glossaryname{\textslovak{Slovník}}%
    \def\today{\textslovak{\number\day.~\ifcase\month\or
     januára\or februára\or marca\or apríla\or mája\or
     júna\or júla\or augusta\or septembra\or októbra\or

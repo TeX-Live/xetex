@@ -1,0 +1,99 @@
+\ProvidesFile{gloss-hindi.ldf}[polyglossia: module for hindi]
+% UTF-8 strings kindly provided by Zdenek Wagner, 10-03-2008
+\makeatletter
+
+\ifx\l@hindi\@undefined%
+   \xpg@nopatterns{Hindi}%
+   \adddialect\l@hindi0%
+\fi
+
+\def\captionshindi{%
+     \def\abstractname{\texthindi{सारांश}}%
+     \def\appendixname{\texthindi{परिशिष्ट}}%
+     \def\bibname{\texthindi{संदर ग्रन्थ}}% (?)
+     \def\ccname{}%
+     \def\chaptername{\texthindi{अध्याय}}%
+     \def\contentsname{\texthindi{विषय सूची}}%
+     \def\enclname{}%
+     \def\figurename{\texthindi{चित्र}}% रेखाचित्र
+     \def\headpagename{\texthindi{पृषठ}}%
+     \def\headtoname{}%
+     \def\indexname{\texthindi{सूची}}%
+     %              सूचक
+     %              अनुक्रमणिका
+     %              अनुक्रमणि
+     \def\listfigurename{\texthindi{चित्रों की सूची}}%
+     \def\listtablename{\texthindi{तालिकाओं की सूची}}%
+     \def\pagename{\texthindi{पृषठ}}%
+     \def\partname{\texthindi{खणड}}%
+     \def\prefacename{\texthindi{प्रस्तावना}}% प्राक्कथन
+     \def\refname{\texthindi{हवाले}}%
+     \def\tablename{\texthindi{तालिका}}%
+     \def\seename{\texthindi{देखिए}}%
+     \def\alsoname{\texthindi{और देखिए}}%
+     \def\alsoseename{\texthindi{और देखिए}}%
+}
+\def\datehindi{%
+   \def\today{\texthindi{\number\day\space\ifcase\month\or
+     जनवरी\or
+     फ़रवरी\or
+     मार्च\or
+     अपरैल\or
+     मई\or
+     जून\or
+     जलाई\or
+     अगस्त\or
+     सितम्बर\or
+     अक्तूबर\or
+     नवम्बर\or
+     दिसम्बर\fi
+     \space\number\year}}%
+}
+
+%TODO Option to use \l@sanskrit instead?
+\def\hindi@language{\protect\language=\l@hindi}
+
+\def\hindi@font{%
+\font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+\@ifundefined{hindifont}{%
+      \@ifundefined{devanagarifont}{%
+        \zf@check@ot@script{deva}%
+	\if@tempswa%
+	  \addfontfeature{Script=Devanagari}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the Devanagari script!^^J
+	  Please define \string\devanagarifont\space or \string\hindifont\space with \string\newfontfamily}%
+	\fi%
+	\zf@check@ot@lang{HIN}%
+	\if@tempswa\addfontfeature{Language=Hindi}\fi%
+	}%
+      {\devanagarifont%
+	\zf@check@ot@lang{HIN}%
+	\if@tempswa\addfontfeature{Language=Hindi}\fi%
+      }}% 
+     {\hindifont}%
+}
+
+\def\selectnormalfonthindi{%
+   \let\normalfont=\hindi@font%
+   \def\reset@font{\normalfont}}
+
+\def\noextras@hindi{%
+   }
+
+\def\blockextras@hindi{%
+   \hindi@language%
+   \hindi@font%
+   %\local@hyphenmins{hindi}{2}{2}%
+   \hindi@captions%
+   \local@marks{hindi}%
+   }
+
+\def\inlineextras@hindi{%
+   \hindi@language%
+   \hindi@font%
+   %\local@hyphenmins{hindi}{2}{2}%
+   }
+
+\endinput

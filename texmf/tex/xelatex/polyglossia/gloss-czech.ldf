@@ -28,7 +28,7 @@
    \def\ccname{\textczech{Na vědomí:}}%
    \def\headtoname{\textczech{Komu}}%
    \def\proofname{\textczech{Důkaz}}% for AMS-\LaTeX
-   \def\glossaryname{\textczech{Glosář}}%
+   \def\glossaryname{\textczech{Slovník}}%was Glosář
    \def\today{\textczech{\number\day.~\ifcase\month\or
     ledna\or února\or března\or dubna\or května\or
     června\or července\or srpna\or září\or
