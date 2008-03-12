@@ -14,6 +14,7 @@ Description:
 
 #include "main.h"
 #include "MemoryUsage.h"
+#include <cstring>
 
 //:>********************************************************************************************
 //:>	Global variables
@@ -415,7 +416,7 @@ int RunOneTestCase(TestCase * ptcase, Segment * psegPrev, Segment ** ppsegRet, R
 		{
 			LgIpValidResult ipvr = ppainter->isValidInsertionPoint(ichar);
 			if ((ipvr == kipvrOK && !ptcase->InsPtFlag(ichar)) // TODO: handle kipvrUnknown
-				|| ipvr != kipvrOK && ptcase->InsPtFlag(ichar))
+				|| (ipvr != kipvrOK && ptcase->InsPtFlag(ichar)))
 			{
 				OutputErrorWithValues(ptcase, "ERROR: valid insertion point ", ichar,
 					(ipvr == kipvrOK), ptcase->InsPtFlag(ichar));
