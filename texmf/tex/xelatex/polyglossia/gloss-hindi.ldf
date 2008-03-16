@@ -1,5 +1,7 @@
 \ProvidesFile{gloss-hindi.ldf}[polyglossia: module for hindi]
 % UTF-8 strings kindly provided by Zdenek Wagner, 10-03-2008
+% TODO: add option for velthuis transliteration with link to
+% Velthuis Devanagari project: http://devnag.sarovar.org. 
 \makeatletter
 
 \ifx\l@hindi\@undefined%
@@ -50,7 +52,7 @@
      \space\number\year}}%
 }
 
-%TODO Option to use \l@sanskrit instead?
+%TODO ADD option to use hyphenation of \l@sanskrit 
 \def\hindi@language{\protect\language=\l@hindi}
 
 \def\hindi@font{%
