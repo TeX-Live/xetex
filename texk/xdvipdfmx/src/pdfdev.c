@@ -824,7 +824,7 @@ dev_set_font (int font_id)
     if (font->bold <= 0.0)
       len = sprintf(format_buffer, " 0 Tr");
     else
-      len = sprintf(format_buffer, " 2 Tr %.2f w", font->bold); /* _FIXME_ */
+      len = sprintf(format_buffer, " 2 Tr %.6f w", font->bold); /* _FIXME_ */
     pdf_doc_add_page_content(format_buffer, len);
   }
   text_state.bold_param = font->bold;
