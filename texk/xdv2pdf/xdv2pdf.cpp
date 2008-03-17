@@ -330,8 +330,10 @@ readUnsigned(FILE* f, int k)
 void
 setColor(CGColorRef color, bool force = false)
 {
-	if (force || !gCurrentColor || !CGColorEqualToColor(color, gCurrentColor))
+	if (force || !gCurrentColor || !CGColorEqualToColor(color, gCurrentColor)) {
 		CGContextSetFillColorWithColor(gCtx, color);
+		CGContextSetStrokeColorWithColor(gCtx, color);
+	}
 	gCurrentColor = color;
 }
 
