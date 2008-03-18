@@ -62,11 +62,4 @@ extern "C" {
 };
 #endif
 
-#ifdef XETEX_OT_MATH_IMPLEMENTATION
-/* internal functions */
-
-/* get a math font constant, scaled according to the font size */
-int getMathConstant(LEFontInstance*	fontInst, mathConstantIndex whichConstant);
-#endif
-
 #endif

@@ -165,6 +165,7 @@ int findNextGraphiteBreak(int iOffset, int iBrkVal);
 
 int usingOpenType(XeTeXLayoutEngine engine);
 int usingGraphite(XeTeXLayoutEngine engine);
+int isOpenTypeMathFont(XeTeXLayoutEngine engine);
 
 int findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v);
 

@@ -1058,6 +1058,17 @@ int usingGraphite(XeTeXLayoutEngine engine)
 	return engine->grFont != NULL;
 }
 
+#define kMATHTableTag	0x4D415448 /* 'MATH' */
+
+int isOpenTypeMathFont(XeTeXLayoutEngine engine)
+{
+	if (engine->layoutEngine != NULL) {
+		if (engine->font->getFontTable(kMATHTableTag) != NULL)
+			return 1;
+	}
+	return 0;
+}
+
 int
 findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v)
 	/* s...e is a "feature=setting" string; look for this in the font */
