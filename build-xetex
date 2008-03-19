@@ -56,7 +56,9 @@ test ! -f Makefile || ${GNUMAKE} clean
 rm -rf "$WORKDIR"
 find . -name config.cache -print -exec rm -f {} \;
 
+# set executable bits that ViewVC's tarball may have lost
 find . -name configure -exec chmod +x {} \;
+find . -name xdv2pdf_mergemarks -exec chmod +x {} \;
 
 # fix up symlink possibly lost in ViewVC's tarball generation :(
 test -d libs/icu-xetex -o -L libs/icu-xetex || ln -fs icu-release-3-8-1-source libs/icu-xetex
