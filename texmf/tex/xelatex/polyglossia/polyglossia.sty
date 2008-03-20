@@ -65,7 +65,7 @@
    \IfFileExists{gloss-#2.ldf}%
    {\ifcsundef{#2@loaded}% from etoolbox.sty
      {\input{gloss-#2.ldf}%
-      % NEED TO CHANGE THIS because \arabic is a built-in LaTeX command:
+      % This is needed because \arabic is a built-in LaTeX command:
       % so now we have \begin{Arabic}... instead of \begin{arabic}...  
       \edef\@tmpa{arabic}%
       \edef\@tmpb{#2}%
@@ -77,7 +77,11 @@
          {\end{otherlanguage}}%
       \fi%
       \expandafter\newcommand\csname text#2\endcsname[2][]{%
-       \foreignlanguage[####1]{#2}{####2}}%
+       \foreignlanguage[####1]{#2}{%
+       \ifcsundef{#2@font}{%
+       \PackageWarning{polyglossia}{ #2@font is not defined ^^J
+       in gloss-#2.ldf}}%
+       {\expandafter\csname #2@font\endcsname}####2}}%
       %\csgdef{text#2}####1{\foreignlanguage{#2}{####1}}%
       %\csgdef{text#2}[####1]####2{\foreignlanguage[####1]{#2}{####2}}%
       \csletcs{local#2}{text#2}%
@@ -121,7 +125,11 @@
          {\end{otherlanguage}}%
       \fi%
       \expandafter\newcommand\csname text#2\endcsname[2][]{%
-         \foreignlanguage[####1]{#2}{####2}}%
+       \foreignlanguage[####1]{#2}{%
+       \ifcsundef{#2@font}{%
+       \PackageWarning{polyglossia}{#2@font is not defined ^^J
+       in gloss-#2.ldf}}%
+       {\expandafter\csname #2@font\endcsname}####2}}%
       \csletcs{local#2}{text#2}%
       \csgdef{#2@loaded}{}%
      }%
