@@ -1,12 +1,24 @@
 \ProvidesFile{gloss-german.ldf}[polyglossia: module for german]
 \makeatletter
 
-%TODO add option for ngerman
-
 \ifx\l@german\@undefined
    \xpg@nopatterns{german}
    \adddialect\l@german0
 \fi
+
+
+\def\tmp@new{new}
+\def\tmp@old{old}
+\define@key{german}{hyphenation}[new]{%
+   \def\@tmpa{#1}%
+   \ifx\@tmpa\tmp@old%
+     \def\german@hyph{\l@german}%
+   \else%
+     \def\german@hyph{\l@ngerman}%
+   \fi%
+}
+
+\setkeys{german}{hyphenation}
 
 \def\captionsgerman{%
    \def\prefacename{\textgerman{Vorwort}}%
@@ -30,14 +42,17 @@
    \def\alsoname{\textgerman{siehe auch}}%
    \def\proofname{\textgerman{Beweis}}% for AMS-\LaTeX
    \def\glossaryname{\textgerman{Glossar}}%
+}
+\def\dategerman{%   
    \def\today{\textgerman{\number\day.%
       \space \ifcase\month%
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
       Juli\or August\or September\or Oktober\or November\or%
       Dezember\fi%
-      \space \number\year}}}
+      \space \number\year}}%
+}
 
-\def\german@language{\protect\language=\l@german}
+\def\german@language{\protect\language=\german@hyph}
 
 \def\noextras@german{%
    \nonfrenchspacing%
@@ -48,6 +63,7 @@
    \local@hyphenmins{german}{2}{2}%
    \frenchspacing%
    \captionsgerman%
+   \dategerman%
    \local@marks{german}%
    \reset@latin@script%
 }

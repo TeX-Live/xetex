@@ -78,7 +78,7 @@
    \def\headtoname{\textrussian{вх.}}%
    \def\pagename{\textrussian{с.}}%
    \def\seename{\textrussian{см.}}%
-   \def\alsoname{\textrussian{см. также}}%
+   \def\alsoname{\textrussian{см.~также}}%
    \def\proofname{\textrussian{Доказательство}}%
 }
 \def\daterussian{%
@@ -118,7 +118,7 @@
    \def\headtoname{\textrussian{вх.}}%
    \def\pagename{\textrussian{с.}}%
    \def\seename{\textrussian{см.}}%
-   \def\alsoname{\textrussian{см. также}}%
+   \def\alsoname{\textrussian{см.~также}}%
    \def\proofname{\textrussian{Доказательство}}%
 }  
 \def\daterussianold{
