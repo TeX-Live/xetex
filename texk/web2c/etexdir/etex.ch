@@ -1,6 +1,6 @@
-% This is etex.ch in text format, as of October 12, 2004.
+% This is etex.ch, a
 % WEB change file containing code for various features extending TeX;
-% to be applied to tex.web (Version 3.141592) in order to define the
+% to be applied to tex.web in order to define the
 % e-TeX program.
  
 % Note: This file defines etex.web in terms of changes to be applied to
@@ -119,7 +119,6 @@
 % Version 2.3 development was started in Feb 2008; released in Mon Year.
 %             fixed a bug in hyph_code handling (\savinghyphcodes)
 %                 reported by Vladimir Volovich <vvv@@vsu.ru>, Feb 2008.
-%             minimally adapted to tex.web 3.1415926, jfk, 19 Mar 2008
 
 % Although considerable effort has been expended to make the e-TeX program
 % correct and reliable, no warranty is implied; the author disclaims any

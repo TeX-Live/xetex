@@ -164,6 +164,7 @@
 @define procedure kpseresetprogramname ();
 @define procedure kpsesetprogramenabled ();
 @define procedure libcfree ();
+@define procedure printcstring ();
 @define procedure printreal ();
 @define procedure printversionandexit ();
 @define procedure putbyte ();
@@ -202,8 +203,9 @@
 @define var argc;
 @define var argv;
 @define var kpathseaversionstring;
-@define var versionstring;
+@define var promptfilenamehelpmsg;
 @define var recorderenabled;
+@define var versionstring;
 
 {These are all set by getopt.  optiontable is really _getopt_long_options.}
 @define var optarg;

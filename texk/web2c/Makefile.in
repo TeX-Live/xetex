@@ -1,4 +1,4 @@
-# $Id: //depot/Build/source.development/TeX/texk/web2c/Makefile.in#66 $
+# $Id: Makefile.in 7124 2008-03-24 15:47:15Z martin $
 # @configure_input@
 # Makefile for web2c --kb@mail.tug.org. Public domain.
 version = @WEB2CVERSION@
@@ -121,7 +121,7 @@ tex = tex
 mf = mf
 @MFN@mfn = mf-nowin
 #  
-default all: programs manpages doc/web2c.info @FMU@ dumps
+default all: programs manpages doc/web2c.info @FMU@
 check: dumps
 
 bibtex: bibtex.o
@@ -555,6 +555,7 @@ trip-clean:
 # 
 # Helper makefile fragment for pdf*tex.
 kpse_include pdftexdir/pdftexlib.mk
+#LUATEXkpse_include pdftexdir/luatexlib.mk
 # 
 # Makefile fragments:
 kpse_include etexdir/etex.mk
@@ -562,22 +563,28 @@ kpse_include omegadir/omega.mk
 kpse_include alephdir/aleph.mk
 kpse_include pdftexdir/pdftex.mk
 kpse_include xetexdir/xetex.mk
+#LUATEXkpse_include luatexdir/luatex.mk
+
 # 
-# Common
+# non-engine programs.
 programs = bibtex ctangle ctie cweave dvicopy dvitomp dvitype gftodvi gftopk \
  gftype mft $(odvicopy) $(odvitype) $(otangle) patgen $(pdftosrc) \
  pktogf pktype pltotf pooltype tangle tftopl tie $(ttf2afm) \
  vftovp vptovf weave
-engines = $(tex) $(etex) $(mf) $(mfn) $(mpost) \
+
+# include $(metapost) from metapost.mk even though it also includes
+# dvitomp.  Hopefully that doesn't hurt.
+engines = $(tex) $(etex) $(mf) $(mfn) $(metapost) \
           $(omega) $(aleph) \
           $(pdftex) $(pdfetex) \
-          $(xetex)
+          $(xetex) #LUATEX\
+#LUATEX          $(luatex)
 
 programs: $(programs) $(engines) $(mpware_programs) \
           $(omegafonts_programs) $(otps_programs) $(pdftosrc)
 
 # Additional dependencies for relinking.
-# Note that each program and engine already depends on $(web2c_programs).
+# Each program and engine already depends on $(web2c_programs).
 $(web2c_programs) tangleboot ctangleboot: $(kpathsea) $(proglib)
 
 # 
@@ -688,8 +695,6 @@ cwebboot-clean:
 	rm -f cwebboot.o
 
 # Even web2c itself uses the library.
-# It's annoying to have to give all the filenames here, 
-# but texmfmp.c is an exception.
 lib_sources = lib/alloca.c lib/basechsuffix.c lib/chartostring.c \
   lib/eofeoln.c lib/fprintreal.c lib/input2int.c lib/inputint.c lib/main.c \
   lib/openclose.c lib/printversion.c lib/uexit.c lib/usage.c lib/version.c \
@@ -720,6 +725,9 @@ all_fmts = tex.fmt $(fmts)
 all_bases = mf.base $(bases)
 all_mems = mpost.mem $(mems)
 
+# We used to build these by default, but nowadays the dumps are created
+# completely separately, e.g., at runtime by mktexfmt.  So just leave it
+# as an optional extra target.
 dumps: fmts bases mems
 fmts: $(all_fmts)
 bases: $(all_bases)
@@ -809,7 +817,7 @@ $(web2cdir)::
 install-programs: $(programs) $(bindir)
 	for p in $(programs); do $(INSTALL_LIBTOOL_PROG) $$p $(bindir); done
 
-# Installation of each of the three main engines.
+# Installation of the main engines.
 install-tex: install-tex-exec install-tex-data
 install-mf: install-mf-exec install-mf-data
 install-mpost: install-mpost-exec install-mpost-data
@@ -1120,7 +1128,7 @@ installcheck:
 
 # 
 # Cleaning.
-all_subdirs = doc lib man $(mpware) web2c window $(omegafonts) $(otps) $(pdftexdir) $(mpostdir)
+all_subdirs = doc lib man $(mpware) web2c window $(omegafonts) $(otps) $(pdftexdir) $(mpostdir) #LUATEX $(luatexdir)
 
 # Having a multiple-target rule with the subdir loop fails because of
 # the dependencies introduced by clean.mk.  Yet, we want the

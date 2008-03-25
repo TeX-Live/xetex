@@ -53,7 +53,7 @@
 #elif defined (Aleph)
 #include <alephdir/alephextra.h>
 #else
-#define BANNER "This is TeX, Version 3.141592"
+#define BANNER "This is TeX, Version 3.1415926"
 #define COPYRIGHT_HOLDER "D.E. Knuth"
 #define AUTHOR NULL
 #define PROGRAM_HELP TEXHELP
@@ -191,7 +191,7 @@ maininit P2C(int, ac, string *, av)
   kpse_record_input = recorder_record_input;
   kpse_record_output = recorder_record_output;
 
-#if defined (pdfTeX) || defined(XeTeX) || defined(__syncTeX__)
+#if /*defined (pdfTeX) ||*/ defined(XeTeX) || defined(__syncTeX__)
   /* 0 means don't use Synchronize TeXnology.  */
   synctexoption = 0;
 #endif
@@ -297,8 +297,18 @@ maininit P2C(int, ac, string *, av)
   /* If we've set up the fmt/base default in any of the various ways
      above, also set its length.  */
   if (dump_name) {
-    /* adjust array for Pascal and provide extension */
-    DUMP_VAR = concat3 (" ", dump_name, DUMP_EXT);
+    const_string with_ext = NULL;
+    unsigned name_len = strlen (dump_name);
+    unsigned ext_len = strlen (DUMP_EXT);
+    
+    /* Provide extension if not there already.  */
+    if (name_len > ext_len
+        && FILESTRCASEEQ (dump_name + name_len - ext_len, DUMP_EXT)) {
+      with_ext = dump_name;
+    } else {
+      with_ext = concat (dump_name, DUMP_EXT);
+    }
+    DUMP_VAR = concat (" ", with_ext); /* adjust array for Pascal */
     DUMP_LENGTH_VAR = strlen (DUMP_VAR + 1);
   } else {
     /* For dump_name to be NULL is a bug.  */
@@ -900,7 +910,7 @@ static struct option long_options[]
       { "no-shell-escape",           0, &shellenabledp, -1 },
       { "debug-format",              0, &debugformatfile, 1 },
       { "src-specials",              2, 0, 0 },
-#if defined(pdfTeX) || defined(XeTeX) || defined(__syncTeX__)
+#if /*defined(pdfTeX) ||*/ defined(XeTeX) || defined(__syncTeX__)
       /* Synchronization: just like "interaction" above */
       { "synctex",                   1, 0, 0 },
 #endif
@@ -1082,7 +1092,7 @@ parse_options P2C(int, argc,  string *, argv)
     } else if (ARGUMENT_IS ("help")) {
         usagehelp (PROGRAM_HELP, BUG_ADDRESS);
 
-#if defined (pdfTeX) || defined(XeTeX) || defined(__syncTeX__)
+#if /*defined (pdfTeX) ||*/ defined(XeTeX) || defined(__syncTeX__)
     } else if (ARGUMENT_IS ("synctex")) {
 		/* Synchronize TeXnology: catching the command line option as an unsigned long  */
 		synctexoption = (int) strtoul(optarg, NULL, 0);
@@ -1589,7 +1599,7 @@ getrandomseed()
 boolean
 input_line P1C(FILE *, f)
 {
-  int i;
+  int i = EOF;
 
   /* Recognize either LF or CR as a line terminator.  */
   last = first;
@@ -1908,6 +1918,8 @@ checkpoolpointer (poolpointer poolptr, size_t len)
   }
 }
 
+#ifndef MP  /* MP has its own in mpdir/utils.c */
+
 #ifndef XeTeX	/* XeTeX uses this from XeTeX_mac.c */
 static
 #endif
@@ -1942,14 +1954,15 @@ maketexstring(const_string s)
   else
     strpool[poolptr++] = rval;
   }
-#else
+#else /* ! XeTeX */
   while (len-- > 0)
     strpool[poolptr++] = *s++;
-#endif
+#endif /* ! XeTeX */
 
   return (makestring());
 }
-#endif
+#endif /* !MP */
+#endif /* !pdfTeX */
 
 strnumber
 makefullnamestring()

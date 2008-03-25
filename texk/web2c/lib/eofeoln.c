@@ -1,6 +1,10 @@
 /* eofeoln.c: implement Pascal's ideas for end-of-file and end-of-line
    testing.  Public domain. */
 
+#ifdef __MINGW32__
+#define _UWIN 1
+#endif
+
 #include "config.h"
 
 
