@@ -1098,24 +1098,23 @@ pdf_load_native_font (const char *ps_name,
     error = pdf_load_native_font_from_path(ps_name, layout_dir, extend, slant, embolden);
   }
   else {
-    ATSFontRef  fontRef;
     CFStringRef theName = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
                             ps_name, kCFStringEncodingASCII, kCFAllocatorNull);
-    fontRef = ATSFontFindFromPostScriptName(theName, kATSOptionFlagsDefault);
+    ATSFontRef fontRef = ATSFontFindFromPostScriptName(theName, kATSOptionFlagsDefault);
     CFRelease(theName);
     if (fontRef != 0) {
       CFStringRef atsName = NULL;
       OSStatus status = ATSFontGetName(fontRef, kATSOptionFlagsDefault, &atsName);
       if (status == noErr) {
-        FSSpec   pathSpec;
-        FT_Long  index;
         int bufferSize = CFStringGetLength(atsName) * 4 + 1;
         char* fontName = NEW(bufferSize, char);
         if (CFStringGetCString(atsName, fontName, bufferSize, kCFStringEncodingUTF8)) {
-          FT_Error ftErr = FT_GetFile_From_Mac_ATS_Name(fontName, &pathSpec, &index);
+          FT_Long index;
+          UInt8   path[PATH_MAX + 1];
+          FT_Error ftErr = FT_GetFilePath_From_Mac_ATS_Name(fontName, path, PATH_MAX, &index);
           if (ftErr == 0) {
             FT_Face face;
-            ftErr = FT_New_Face_From_FSSpec(ftLib, &pathSpec, index, &face);
+            ftErr = FT_New_Face(ftLib, (char*)path, index, &face);
             if (ftErr == 0) {
               error = pdf_insert_native_fontmap_record(ps_name, NULL, 0, face,
                                                        layout_dir, extend, slant, embolden);
@@ -1124,7 +1123,8 @@ pdf_load_native_font (const char *ps_name,
         }
         RELEASE(fontName);
       }
-      CFRelease(atsName);
+      if (atsName != NULL)
+        CFRelease(atsName);
     }
   }
 
