@@ -970,8 +970,10 @@ parse_options P2C(int, argc,  string *, argv)
 
 #ifdef XeTeX
     } else if (ARGUMENT_IS ("papersize")) {
+      extern const_string papersize;
       papersize = optarg;
     } else if (ARGUMENT_IS ("output-driver")) {
+      extern const_string outputdriver;
       outputdriver = optarg;
 #endif
 
