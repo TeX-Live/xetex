@@ -191,8 +191,8 @@ typedef struct
 } GlyphBBox;
 
 
-extern char *outputdriver;
-extern char *papersize;
+extern const_string outputdriver;
+extern const_string papersize;
 
 /* For Unicode encoding form interpretation... */
 extern const UInt32 offsetsFromUTF8[6];

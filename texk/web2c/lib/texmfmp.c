@@ -609,7 +609,7 @@ ipcpage P1C(int, is_eof)
 {
   static boolean begun = false;
   unsigned len = 0;
-  string p = "";
+  string p = (string)"";
 
   if (!begun) {
     string name; /* Just the filename.  */
@@ -1645,7 +1645,7 @@ input_line P1C(FILE *, f)
 
 /* This string specifies what the `e' option does in response to an
    error message.  */ 
-static char *edit_value = EDITOR;
+static const_string edit_value = EDITOR;
 
 /* This procedure originally due to sjc@s1-c.  TeX & Metafont call it when
    the user types `e' in response to an error, invoking a text editor on
