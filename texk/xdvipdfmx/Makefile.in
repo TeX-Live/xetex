@@ -44,7 +44,15 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	ltmain.sh missing mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/maw-kpse.m4 \
+	$(top_srcdir)/m4/maw-libs.m4 $(top_srcdir)/m4/maw-macos.m4 \
+	$(top_srcdir)/m4/maw-time.m4 \
+	$(top_srcdir)/../../libs/libpng/withenable.ac \
+	$(top_srcdir)/../../libs/libpng/libpng.ac \
+	$(top_srcdir)/../../libs/zlib/withenable.ac \
+	$(top_srcdir)/../../libs/zlib/zlib.ac \
+	$(top_srcdir)/../../libs/freetype2/withenable.ac \
+	$(top_srcdir)/../../libs/freetype2/freetype2.ac \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -96,6 +104,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DSYMUTIL = @DSYMUTIL@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -126,6 +135,7 @@ MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
+NMEDIT = @NMEDIT@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -196,6 +206,7 @@ xdvipdfmx_LDFLAGS = @xdvipdfmx_LDFLAGS@
 
 # skip the data subdir; we rely on dvipdfmx to provide those files
 SUBDIRS = src
+ACLOCAL_AMFLAGS = -I m4
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -396,6 +407,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
+	$(mkdir_p) $(distdir)/../../libs/freetype2 $(distdir)/../../libs/libpng $(distdir)/../../libs/zlib $(distdir)/m4
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
