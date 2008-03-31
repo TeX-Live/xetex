@@ -7080,8 +7080,11 @@ end else
     begin cur_lang:=what_lang(#); l_hyf:=what_lhm(#); r_hyf:=what_rhm(#);
     set_hyph_index;
     end
+
+@<Advance \(p)past a whatsit node in the \(l)|line_break| loop@>=@+
+adv_past(cur_p)
 @y
-@ @d adv_past(#)==@+if subtype(#)=language_node then
+@ @d adv_past_linebreak(#)==@+if subtype(#)=language_node then
     begin cur_lang:=what_lang(#); l_hyf:=what_lhm(#); r_hyf:=what_rhm(#);
     set_hyph_index;
     end
@@ -7091,6 +7094,22 @@ end else
   or (subtype(#)=pdf_node)
   then
     begin act_width:=act_width+width(#); end
+
+@<Advance \(p)past a whatsit node in the \(l)|line_break| loop@>=@+
+adv_past_linebreak(cur_p)
+@z
+
+@x
+@ @<Advance \(p)past a whatsit node in the \(p)pre-hyphenation loop@>=@+
+adv_past(s)
+@y
+@ @d adv_past_prehyph(#)==@+if subtype(#)=language_node then
+    begin cur_lang:=what_lang(#); l_hyf:=what_lhm(#); r_hyf:=what_rhm(#);
+    set_hyph_index;
+    end
+
+@<Advance \(p)past a whatsit node in the \(p)pre-hyphenation loop@>=@+
+adv_past_prehyph(s)
 @z
 
 @x
