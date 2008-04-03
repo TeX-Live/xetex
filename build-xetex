@@ -81,7 +81,8 @@ echo "###### CONFIGURING XETEX"
 echo "###### BUILDING LIBRARIES AND XETEX"
 
 # make libraries first (not handled by the xetex makefile)
-LIBS=`find $WORKDIR/libs -type d -maxdepth 1 -mindepth 1 | sed -e "s/$WORKDIR\/libs\///"`
+# we use "sort -r" to ensure zlib is built before teckit, which needs it
+LIBS=`find $WORKDIR/libs -type d -maxdepth 1 -mindepth 1 | sed -e "s/$WORKDIR\/libs\///" | sort -r`
 if [ "`uname`" = "Darwin" ]; then
 	# don't need xpdf on Darwin; we use Quartz
 	LIBS=`echo "$LIBS" | grep -v 'xpdf'`
