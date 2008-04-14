@@ -11,9 +11,8 @@
 %%   (C) 2006/2007  Will Robertson
 %%   License information appended
 %% 
-%% 
 \ProvidesPackage{xltxtra}
-  [2007/09/01 v0.3b Improvements for the "XeLaTeX" format]
+  [2008/03/11 v0.3c Improvements for the "XeLaTeX" format]
 \newif\if@xxt@nosscript@
 \newif\if@xxt@nologos@
 \newif\if@xxt@nohyphen@
@@ -152,33 +151,40 @@
 \fi
 \DeclareRobustCommand*\realsubscript[1]{%
   \begingroup
-    \c@zf@script 1818326126\relax
-    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
-    \zf@set@font@type
-    \ifzf@atsui
-      \zf@make@aat@feature@string{10}{2}%
-      \unless\ifx\@tempa\@empty
-        {\addfontfeature{VerticalPosition=Inferior}#1}%
-      \else
-        \fakesubscript{#1}%
-      \fi
-    \fi
-    \ifzf@icu
-      \zf@check@ot@feat{+subs}%
-      \if@tempswa
-        {\addfontfeature{VerticalPosition=Inferior}#1}%
-      \else
-        \zf@check@ot@feat{+sinf}%
-        \if@tempswa
-          {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
+    \ifcsname zf@family@fontdef\f@family\endcsname
+      \c@zf@script 1818326126\relax
+      \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+      \zf@set@font@type
+      \ifzf@atsui
+        \zf@make@aat@feature@string{10}{2}%
+        \unless\ifx\@tempa\@empty
+          {\addfontfeature{VerticalPosition=Inferior}#1}%
         \else
           \fakesubscript{#1}%
         \fi
       \fi
+      \ifzf@icu
+        \zf@check@ot@feat{+subs}%
+        \if@tempswa
+          {\addfontfeature{VerticalPosition=Inferior}#1}%
+        \else
+          \zf@check@ot@feat{+sinf}%
+          \if@tempswa
+            {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
+          \else
+            \fakesubscript{#1}%
+          \fi
+        \fi
+      \else
+        \fakesubscript{#1}%
+      \fi
+    \else
+      \fakesubscript{#1}%
     \fi
   \endgroup}
 \DeclareRobustCommand*\realsuperscript[1]{%
   \begingroup
+    \ifcsname zf@family@fontdef\f@family\endcsname
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
@@ -197,6 +203,11 @@
       \else
         \fakesuperscript{#1}%
       \fi
+    \else
+      \fakesuperscript{#1}%
+    \fi
+    \else
+      \fakesuperscript{#1}%
     \fi
   \endgroup}
 \def\@makefnmark{\mbox{\normalfont\textsuperscript{\@thefnmark}}}

@@ -4,7 +4,7 @@
 %</internal>
 %<*readme>
 -------------------------
-THE XLTXTRA PACKAGE v0.3b
+THE XLTXTRA PACKAGE v0.3c
 
 This package provides a few small features that 
 are useful for XeLaTeX.
@@ -249,7 +249,7 @@ This work consists of the file  xltxtra.dtx
 %
 %    \begin{macrocode}
 \ProvidesPackage{xltxtra}
-  [2007/09/01 v0.3b Improvements for the "XeLaTeX" format]  
+  [2008/03/11 v0.3c Improvements for the "XeLaTeX" format]  
 %    \end{macrocode}
 %
 % \changes{v0.3}{2007/05/29}{Added proper documentation.}
@@ -533,34 +533,41 @@ This work consists of the file  xltxtra.dtx
 %    \begin{macrocode}
 \DeclareRobustCommand*\realsubscript[1]{%
   \begingroup
-    \c@zf@script 1818326126\relax
-    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
-    \zf@set@font@type
-    \ifzf@atsui
-      \zf@make@aat@feature@string{10}{2}%
-      \unless\ifx\@tempa\@empty
-        {\addfontfeature{VerticalPosition=Inferior}#1}%
-      \else
-        \fakesubscript{#1}%
-      \fi
-    \fi
-    \ifzf@icu
-      \zf@check@ot@feat{+subs}%
-      \if@tempswa
-        {\addfontfeature{VerticalPosition=Inferior}#1}%
-      \else
-        \zf@check@ot@feat{+sinf}%
-        \if@tempswa
-          {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
+    \ifcsname zf@family@fontdef\f@family\endcsname
+      \c@zf@script 1818326126\relax
+      \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+      \zf@set@font@type
+      \ifzf@atsui
+        \zf@make@aat@feature@string{10}{2}%
+        \unless\ifx\@tempa\@empty
+          {\addfontfeature{VerticalPosition=Inferior}#1}%
         \else
           \fakesubscript{#1}%
         \fi
       \fi
+      \ifzf@icu
+        \zf@check@ot@feat{+subs}%
+        \if@tempswa
+          {\addfontfeature{VerticalPosition=Inferior}#1}%
+        \else
+          \zf@check@ot@feat{+sinf}%
+          \if@tempswa
+            {\addfontfeature{VerticalPosition=ScientificInferior}#1}%
+          \else
+            \fakesubscript{#1}%
+          \fi
+        \fi
+      \else
+        \fakesubscript{#1}%
+      \fi
+    \else
+      \fakesubscript{#1}%
     \fi
   \endgroup}
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented.}
 % \changes{v0.3}{2007/05/29}{Fixes to catch up with fontspec. Name change.}
+% \changes{v0.3c}{2008/03/02}{Fixed crash when used with a TFM font.}
 % \end{macro}
 %
 % \begin{macro}{\realsuperscript}
@@ -568,6 +575,7 @@ This work consists of the file  xltxtra.dtx
 %    \begin{macrocode}
 \DeclareRobustCommand*\realsuperscript[1]{%
   \begingroup
+    \ifcsname zf@family@fontdef\f@family\endcsname
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
@@ -586,11 +594,17 @@ This work consists of the file  xltxtra.dtx
       \else
         \fakesuperscript{#1}%
       \fi
+    \else
+      \fakesuperscript{#1}%
+    \fi
+    \else
+      \fakesuperscript{#1}%
     \fi
   \endgroup}
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented.}
 % \changes{v0.3}{2007/05/29}{Fixes to catch up with fontspec. Name change.}
+% \changes{v0.3c}{2008/03/02}{Fixed crash when used with a TFM font.}
 % \end{macro}
 %
 % Patching footnotes:
