@@ -11,6 +11,7 @@
 %%   (C) 2006/2007  Will Robertson
 %%   License information appended
 %% 
+%% 
 \ProvidesPackage{xltxtra}
   [2008/03/11 v0.3c Improvements for the "XeLaTeX" format]
 \newif\if@xxt@nosscript@
@@ -155,14 +156,6 @@
       \c@zf@script 1818326126\relax
       \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
       \zf@set@font@type
-      \ifzf@atsui
-        \zf@make@aat@feature@string{10}{2}%
-        \unless\ifx\@tempa\@empty
-          {\addfontfeature{VerticalPosition=Inferior}#1}%
-        \else
-          \fakesubscript{#1}%
-        \fi
-      \fi
       \ifzf@icu
         \zf@check@ot@feat{+subs}%
         \if@tempswa
@@ -175,9 +168,14 @@
             \fakesubscript{#1}%
           \fi
         \fi
-      \else
-        \fakesubscript{#1}%
-      \fi
+      \else\ifzf@atsui
+        \zf@make@aat@feature@string{10}{2}%
+        \unless\ifx\@tempa\@empty
+          {\addfontfeature{VerticalPosition=Inferior}#1}%
+        \else
+          \fakesubscript{#1}%
+        \fi
+      \fi\fi
     \else
       \fakesubscript{#1}%
     \fi
@@ -185,27 +183,24 @@
 \DeclareRobustCommand*\realsuperscript[1]{%
   \begingroup
     \ifcsname zf@family@fontdef\f@family\endcsname
-    \c@zf@script 1818326126\relax
-    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
-    \zf@set@font@type
-    \ifzf@atsui
-      \zf@make@aat@feature@string{10}{1}%
-      \unless\ifx\@tempa\@empty
-        {\addfontfeature{VerticalPosition=Superior}#1}%
-      \else
-        \fakesuperscript{#1}%
-      \fi
-    \fi
-    \ifzf@icu
-      \zf@check@ot@feat{+sups}%
-      \if@tempswa
-        {\addfontfeature{VerticalPosition=Superior}#1}%
-      \else
-        \fakesuperscript{#1}%
-      \fi
-    \else
-      \fakesuperscript{#1}%
-    \fi
+      \c@zf@script 1818326126\relax
+      \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+      \zf@set@font@type
+      \ifzf@icu
+        \zf@check@ot@feat{+sups}%
+        \if@tempswa
+          {\addfontfeature{VerticalPosition=Superior}#1}%
+        \else
+          \fakesuperscript{#1}%
+        \fi
+      \else\ifzf@atsui
+        \zf@make@aat@feature@string{10}{1}%
+        \unless\ifx\@tempa\@empty
+          {\addfontfeature{VerticalPosition=Superior}#1}%
+        \else
+         \fakesuperscript{#1}%
+        \fi
+      \fi\fi
     \else
       \fakesuperscript{#1}%
     \fi
@@ -216,16 +211,15 @@
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
-    \ifzf@atsui
-      {\addfontfeature{VerticalPosition=Superior}#1}%
-       \textfractionsolidus
-      {\addfontfeature{VerticalPosition=Inferior}#2}%
-    \fi
     \ifzf@icu
       {\addfontfeature{VerticalPosition=Numerator}#1}%
        \textfractionsolidus
       {\addfontfeature{VerticalPosition=Denominator}#2}%
-    \fi
+    \else\ifzf@atsui
+      {\addfontfeature{VerticalPosition=Superior}#1}%
+       \textfractionsolidus
+      {\addfontfeature{VerticalPosition=Inferior}#2}%
+    \fi\fi
   \endgroup}
 \newcommand\namedglyph[1]{%
   \@tempcnta=\XeTeXglyphindex "#1"\relax

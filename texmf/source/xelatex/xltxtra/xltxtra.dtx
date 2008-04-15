@@ -133,7 +133,7 @@ This work consists of the file  xltxtra.dtx
 %
 % These two macros have been redefined to take advantage, if possible, of actual superior or inferior glyphs in the main document font. This is very important for high-quality typesetting — compare this first example to the third; yes, they are the same font.
 % \begin{quotation}\color{niceblue}
-%	\fontspec{Hoefler Text}
+%	\fontspec{Skia}
 %	  |\textsuperscript     | \textsuperscript{abcdefghijklmnopqrstuvwxyz1234567890}\par
 %	  |\textsubscript       | \textsubscript{abcdefghijklmnopqrstuvwxyz1234567890}
 % \end{quotation}
@@ -146,7 +146,7 @@ This work consists of the file  xltxtra.dtx
 % \end{quotation}
 % The original definitions are available in starred verions of the commands:
 % \begin{quotation}\color{niceblue}
-%	\fontspec{Hoefler Text}
+%	\fontspec{Skia}
 %	  |\textsuperscript*    | \textsuperscript*{abcdefghijklmnopqrstuvwxyz1234567890}\par
 %	  |\textsubscript*      | \textsubscript*{abcdefghijklmnopqrstuvwxyz1234567890}
 % \end{quotation}
@@ -219,14 +219,14 @@ This work consists of the file  xltxtra.dtx
 % \subsection{Vulgar fractions}
 % The \cmd\vfrac\ command for setting `vulgar' fractions based on AAT or OpenType font features. Not really recommended for many purposes, depending on your text, but it's a good example of how to program such things using \pkg{fontspec}.
 % \begin{example}
-%   \fontspec{Hoefler Text}
-%   AAT: \vfrac{123}{456}\par
+%   \fontspec{Skia}
+%   AAT: \vfrac{123}{456}\\
 %   \fontspec{Warnock Pro}
 %   ICU: \vfrac{123}{456}
 % \end{example}
 % \noindent (This can be achieved in regular \LaTeX\ with the \pkg{nicefrac} package, but don't believe its name: these fractions aren't nice!)
 %
-% Only use it when you know it will work; no warnings are given if the font doesn't support it.
+% Only use it when you know it will work; no warnings are given if the font doesn't support the necessary features.
 %
 % \subsection{Named glyphs}
 % Along the way somewhere, \XeTeX\ added support for selecting glyphs from a TrueType-based OpenType font based on their internal glyph name. Jonathan Kew posted the following definition as a nice interface to it.
@@ -537,14 +537,6 @@ This work consists of the file  xltxtra.dtx
       \c@zf@script 1818326126\relax
       \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
       \zf@set@font@type
-      \ifzf@atsui
-        \zf@make@aat@feature@string{10}{2}%
-        \unless\ifx\@tempa\@empty
-          {\addfontfeature{VerticalPosition=Inferior}#1}%
-        \else
-          \fakesubscript{#1}%
-        \fi
-      \fi
       \ifzf@icu
         \zf@check@ot@feat{+subs}%
         \if@tempswa
@@ -557,9 +549,14 @@ This work consists of the file  xltxtra.dtx
             \fakesubscript{#1}%
           \fi
         \fi
-      \else
-        \fakesubscript{#1}%
-      \fi
+      \else\ifzf@atsui
+        \zf@make@aat@feature@string{10}{2}%
+        \unless\ifx\@tempa\@empty
+          {\addfontfeature{VerticalPosition=Inferior}#1}%
+        \else
+          \fakesubscript{#1}%
+        \fi
+      \fi\fi
     \else
       \fakesubscript{#1}%
     \fi
@@ -576,27 +573,24 @@ This work consists of the file  xltxtra.dtx
 \DeclareRobustCommand*\realsuperscript[1]{%
   \begingroup
     \ifcsname zf@family@fontdef\f@family\endcsname
-    \c@zf@script 1818326126\relax
-    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
-    \zf@set@font@type
-    \ifzf@atsui
-      \zf@make@aat@feature@string{10}{1}%
-      \unless\ifx\@tempa\@empty
-        {\addfontfeature{VerticalPosition=Superior}#1}%
-      \else
-        \fakesuperscript{#1}%
-      \fi
-    \fi
-    \ifzf@icu
-      \zf@check@ot@feat{+sups}%
-      \if@tempswa
-        {\addfontfeature{VerticalPosition=Superior}#1}%
-      \else
-        \fakesuperscript{#1}%
-      \fi
-    \else
-      \fakesuperscript{#1}%
-    \fi
+      \c@zf@script 1818326126\relax
+      \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+      \zf@set@font@type
+      \ifzf@icu
+        \zf@check@ot@feat{+sups}%
+        \if@tempswa
+          {\addfontfeature{VerticalPosition=Superior}#1}%
+        \else
+          \fakesuperscript{#1}%
+        \fi
+      \else\ifzf@atsui
+        \zf@make@aat@feature@string{10}{1}%
+        \unless\ifx\@tempa\@empty
+          {\addfontfeature{VerticalPosition=Superior}#1}%
+        \else
+         \fakesuperscript{#1}%
+        \fi
+      \fi\fi
     \else
       \fakesuperscript{#1}%
     \fi
@@ -627,16 +621,15 @@ This work consists of the file  xltxtra.dtx
     \c@zf@script 1818326126\relax
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
     \zf@set@font@type
-    \ifzf@atsui
-      {\addfontfeature{VerticalPosition=Superior}#1}%
-       \textfractionsolidus
-      {\addfontfeature{VerticalPosition=Inferior}#2}%
-    \fi
     \ifzf@icu
       {\addfontfeature{VerticalPosition=Numerator}#1}%
        \textfractionsolidus
       {\addfontfeature{VerticalPosition=Denominator}#2}%      
-    \fi
+    \else\ifzf@atsui
+      {\addfontfeature{VerticalPosition=Superior}#1}%
+       \textfractionsolidus
+      {\addfontfeature{VerticalPosition=Inferior}#2}%
+    \fi\fi
   \endgroup}
 %    \end{macrocode}
 % \changes{v0.1}{2006/05/03}{Implemented.}
