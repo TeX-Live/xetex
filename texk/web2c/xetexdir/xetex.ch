@@ -8783,6 +8783,11 @@ begin
 	end_diagnostic(false);
 end;
 
+function get_input_normalization_state: integer;
+begin
+	get_input_normalization_state:=XeTeX_input_normalization_state;
+end;
+
 @z
 
 @x
