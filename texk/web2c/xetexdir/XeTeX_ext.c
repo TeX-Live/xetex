@@ -2379,7 +2379,7 @@ double Fix2X(Fixed f)
 
 /* these are here, not XeTeX_mac.c, because we need stubs on other platforms */
 void
-atsugetfontmetrics(ATSUStyle style, Fixed* ascent, Fixed* descent, Fixed* xheight, Fixed* capheight, Fixed* slant)
+atsugetfontmetrics(ATSUStyle style, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant)
 {
 #ifdef XETEX_MAC
 	*ascent = *descent = *xheight = *capheight = *slant = 0;
