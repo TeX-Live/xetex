@@ -40,11 +40,10 @@ DIST_COMMON = $(noinst_HEADERS) $(pkginclude_HEADERS) \
 	$(top_srcdir)/source/Public-headers/Makefile.am
 subdir = lib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/ax_misc.m4 \
-	$(top_srcdir)/ax_prog_rc.m4 \
-	$(top_srcdir)/../../libs/zlib/withenable.ac \
-	$(top_srcdir)/../../libs/zlib/zlib.ac \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_misc.m4 \
+	$(top_srcdir)/m4/ax_prog_rc.m4 \
+	$(top_srcdir)/../zlib/withenable.ac \
+	$(top_srcdir)/../zlib/zlib.ac $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -59,12 +58,43 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgincludedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
+TECkit_Compiler_x86_la_LIBADD =
+am__TECkit_Compiler_x86_la_SOURCES_DIST = $(teckitdir)/Compiler.cpp \
+	$(teckitdir)/UnicodeNames.cpp
+@OLD_LIB_NAMES_TRUE@am_TECkit_Compiler_x86_la_OBJECTS = Compiler.lo \
+@OLD_LIB_NAMES_TRUE@	UnicodeNames.lo
+TECkit_Compiler_x86_la_OBJECTS = $(am_TECkit_Compiler_x86_la_OBJECTS)
+TECkit_Compiler_x86_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(TECkit_Compiler_x86_la_LDFLAGS) $(LDFLAGS) -o $@
+@OLD_LIB_NAMES_TRUE@am_TECkit_Compiler_x86_la_rpath = -rpath $(libdir)
+TECkit_x86_la_LIBADD =
+am__TECkit_x86_la_SOURCES_DIST = $(teckitdir)/Engine.cpp \
+	$(teckitdir)/Engine_ver.rc
+@OLD_LIB_NAMES_TRUE@am_TECkit_x86_la_OBJECTS = Engine.lo
+TECkit_x86_la_OBJECTS = $(am_TECkit_x86_la_OBJECTS)
+TECkit_x86_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(TECkit_x86_la_LDFLAGS) $(LDFLAGS) -o $@
+@OLD_LIB_NAMES_TRUE@am_TECkit_x86_la_rpath = -rpath $(libdir)
 libTECkit_la_LIBADD =
-am_libTECkit_la_OBJECTS = Engine.lo
+am__libTECkit_la_SOURCES_DIST = $(teckitdir)/Engine.cpp
+@OLD_LIB_NAMES_FALSE@am_libTECkit_la_OBJECTS = Engine.lo
 libTECkit_la_OBJECTS = $(am_libTECkit_la_OBJECTS)
+libTECkit_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(libTECkit_la_LDFLAGS) $(LDFLAGS) -o $@
+@OLD_LIB_NAMES_FALSE@am_libTECkit_la_rpath = -rpath $(libdir)
 libTECkit_Compiler_la_LIBADD =
-am_libTECkit_Compiler_la_OBJECTS = Compiler.lo UnicodeNames.lo
+am__libTECkit_Compiler_la_SOURCES_DIST = $(teckitdir)/Compiler.cpp \
+	$(teckitdir)/UnicodeNames.cpp
+@OLD_LIB_NAMES_FALSE@am_libTECkit_Compiler_la_OBJECTS = Compiler.lo \
+@OLD_LIB_NAMES_FALSE@	UnicodeNames.lo
 libTECkit_Compiler_la_OBJECTS = $(am_libTECkit_Compiler_la_OBJECTS)
+libTECkit_Compiler_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(libTECkit_Compiler_la_LDFLAGS) $(LDFLAGS) -o $@
+@OLD_LIB_NAMES_FALSE@am_libTECkit_Compiler_la_rpath = -rpath $(libdir)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -77,9 +107,12 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libTECkit_la_SOURCES) $(libTECkit_Compiler_la_SOURCES)
-DIST_SOURCES = $(libTECkit_la_SOURCES) \
-	$(libTECkit_Compiler_la_SOURCES)
+SOURCES = $(TECkit_Compiler_x86_la_SOURCES) $(TECkit_x86_la_SOURCES) \
+	$(libTECkit_la_SOURCES) $(libTECkit_Compiler_la_SOURCES)
+DIST_SOURCES = $(am__TECkit_Compiler_x86_la_SOURCES_DIST) \
+	$(am__TECkit_x86_la_SOURCES_DIST) \
+	$(am__libTECkit_la_SOURCES_DIST) \
+	$(am__libTECkit_Compiler_la_SOURCES_DIST)
 pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(noinst_HEADERS) $(pkginclude_HEADERS)
 ETAGS = etags
@@ -149,6 +182,8 @@ STRIP = @STRIP@
 VERSION = @VERSION@
 ZLIBCPPFLAGS = @ZLIBCPPFLAGS@
 ZLIBDEP = @ZLIBDEP@
+ZLIBDIR = @ZLIBDIR@
+ZLIBSRCDIR = @ZLIBSRCDIR@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -207,15 +242,43 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = 1.6
-ZLIBDIR = $(top_builddir)/../zlib
-ZLIBSRCDIR = $(top_srcdir)/../zlib
 AM_CPPFLAGS = -I$(top_srcdir)/source/Public-headers $(ZLIBCPPFLAGS)
-AM_CFLAGS = $(AM_CPPFLAGS)
-lib_LTLIBRARIES = libTECkit_Compiler.la libTECkit.la
+@OLD_LIB_NAMES_FALSE@lib_LTLIBRARIES = libTECkit_Compiler.la libTECkit.la
+@OLD_LIB_NAMES_TRUE@lib_LTLIBRARIES = TECkit_Compiler_x86.la TECkit_x86.la
 teckitdir = $(top_srcdir)/source
-libTECkit_Compiler_la_SOURCES = $(teckitdir)/Compiler.cpp \
-	$(teckitdir)/UnicodeNames.cpp
-libTECkit_la_SOURCES = $(teckitdir)/Engine.cpp
+@SYSTEM_ZLIB_FALSE@ZLIB_CFLAGS = -I$(ZLIBSRCDIR)
+@SYSTEM_ZLIB_TRUE@ZLIB_CFLAGS = @ZLIBCPPFLAGS@
+AM_CFLAGS = $(AM_CPPFLAGS)
+@OLD_LIB_NAMES_TRUE@OLD_LIB_LDFLAGS = -module -avoid-version -Wl,--add-stdcall-alias
+@OLD_LIB_NAMES_TRUE@TECkit_x86_la_CFLAGS = $(ZLIB_CFLAGS)
+@OLD_LIB_NAMES_TRUE@TECkit_x86_la_SOURCES = $(teckitdir)/Engine.cpp $(teckitdir)/Engine_ver.rc
+@OLD_LIB_NAMES_TRUE@TECkit_x86_la_LDFLAGS = $(LDFLAGS) \
+@OLD_LIB_NAMES_TRUE@	$(OLD_LIB_LDFLAGS) -no-undefined $(LDZLIB) \
+@OLD_LIB_NAMES_TRUE@	-Wl,Engine_ver.o
+
+# --> RC Support, only for the Windows libs
+@OLD_LIB_NAMES_TRUE@TECkit_x86_la_DEPENDENCIES = $(ZLIBDEP) \
+@OLD_LIB_NAMES_TRUE@	Engine_ver.o
+@OLD_LIB_NAMES_TRUE@TECkit_Compiler_x86_la_CFLAGS = $(ZLIB_CFLAGS)
+@OLD_LIB_NAMES_TRUE@TECkit_Compiler_x86_la_SOURCES =  \
+@OLD_LIB_NAMES_TRUE@	$(teckitdir)/Compiler.cpp \
+@OLD_LIB_NAMES_TRUE@	$(teckitdir)/UnicodeNames.cpp
+@OLD_LIB_NAMES_TRUE@TECkit_Compiler_x86_la_LDFLAGS = $(LDFLAGS) \
+@OLD_LIB_NAMES_TRUE@	$(OLD_LIB_LDFLAGS) -no-undefined $(LDZLIB) \
+@OLD_LIB_NAMES_TRUE@	-Wl,Compiler_ver.o
+@OLD_LIB_NAMES_TRUE@TECkit_Compiler_x86_la_DEPENDENCIES = $(ZLIBDEP) \
+@OLD_LIB_NAMES_TRUE@	Compiler_ver.o
+@OLD_LIB_NAMES_FALSE@libTECkit_la_CFLAGS = $(ZLIB_CFLAGS)
+@OLD_LIB_NAMES_FALSE@libTECkit_la_SOURCES = $(teckitdir)/Engine.cpp
+@OLD_LIB_NAMES_FALSE@libTECkit_la_LDFLAGS = $(LDFLAGS) -no-undefined $(LDZLIB)
+@OLD_LIB_NAMES_FALSE@libTECkit_la_DEPENDENCIES = $(ZLIBDEP)
+@OLD_LIB_NAMES_FALSE@libTECkit_Compiler_la_CFLAGS = $(ZLIB_CFLAGS)
+@OLD_LIB_NAMES_FALSE@libTECkit_Compiler_la_SOURCES =  \
+@OLD_LIB_NAMES_FALSE@	$(teckitdir)/Compiler.cpp \
+@OLD_LIB_NAMES_FALSE@	$(teckitdir)/UnicodeNames.cpp
+@OLD_LIB_NAMES_FALSE@libTECkit_Compiler_la_LDFLAGS = $(LDFLAGS) -no-undefined $(LDZLIB)
+@OLD_LIB_NAMES_FALSE@libTECkit_Compiler_la_DEPENDENCIES = $(ZLIBDEP)
+# <-- RC Support	
 noinst_HEADERS = $(teckitdir)/Compiler.h $(teckitdir)/Engine.h \
 	$(teckitdir)/ulong_chartraits.h $(teckitdir)/TECkit_Format.h
 EXTRA_DIST = $(teckitdir)/NormalizationData.c
@@ -283,10 +346,14 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+TECkit_Compiler_x86.la: $(TECkit_Compiler_x86_la_OBJECTS) $(TECkit_Compiler_x86_la_DEPENDENCIES) 
+	$(TECkit_Compiler_x86_la_LINK) $(am_TECkit_Compiler_x86_la_rpath) $(TECkit_Compiler_x86_la_OBJECTS) $(TECkit_Compiler_x86_la_LIBADD) $(LIBS)
+TECkit_x86.la: $(TECkit_x86_la_OBJECTS) $(TECkit_x86_la_DEPENDENCIES) 
+	$(TECkit_x86_la_LINK) $(am_TECkit_x86_la_rpath) $(TECkit_x86_la_OBJECTS) $(TECkit_x86_la_LIBADD) $(LIBS)
 libTECkit.la: $(libTECkit_la_OBJECTS) $(libTECkit_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libTECkit_la_OBJECTS) $(libTECkit_la_LIBADD) $(LIBS)
+	$(libTECkit_la_LINK) $(am_libTECkit_la_rpath) $(libTECkit_la_OBJECTS) $(libTECkit_la_LIBADD) $(LIBS)
 libTECkit_Compiler.la: $(libTECkit_Compiler_la_OBJECTS) $(libTECkit_Compiler_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libTECkit_Compiler_la_OBJECTS) $(libTECkit_Compiler_la_LIBADD) $(LIBS)
+	$(libTECkit_Compiler_la_LINK) $(am_libTECkit_Compiler_la_rpath) $(libTECkit_Compiler_la_OBJECTS) $(libTECkit_Compiler_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -319,13 +386,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-Engine.lo: $(teckitdir)/Engine.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Engine.lo -MD -MP -MF $(DEPDIR)/Engine.Tpo -c -o Engine.lo `test -f '$(teckitdir)/Engine.cpp' || echo '$(srcdir)/'`$(teckitdir)/Engine.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/Engine.Tpo $(DEPDIR)/Engine.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(teckitdir)/Engine.cpp' object='Engine.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Engine.lo `test -f '$(teckitdir)/Engine.cpp' || echo '$(srcdir)/'`$(teckitdir)/Engine.cpp
-
 Compiler.lo: $(teckitdir)/Compiler.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Compiler.lo -MD -MP -MF $(DEPDIR)/Compiler.Tpo -c -o Compiler.lo `test -f '$(teckitdir)/Compiler.cpp' || echo '$(srcdir)/'`$(teckitdir)/Compiler.cpp
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/Compiler.Tpo $(DEPDIR)/Compiler.Plo
@@ -339,6 +399,13 @@ UnicodeNames.lo: $(teckitdir)/UnicodeNames.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(teckitdir)/UnicodeNames.cpp' object='UnicodeNames.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UnicodeNames.lo `test -f '$(teckitdir)/UnicodeNames.cpp' || echo '$(srcdir)/'`$(teckitdir)/UnicodeNames.cpp
+
+Engine.lo: $(teckitdir)/Engine.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Engine.lo -MD -MP -MF $(DEPDIR)/Engine.Tpo -c -o Engine.lo `test -f '$(teckitdir)/Engine.cpp' || echo '$(srcdir)/'`$(teckitdir)/Engine.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/Engine.Tpo $(DEPDIR)/Engine.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(teckitdir)/Engine.cpp' object='Engine.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Engine.lo `test -f '$(teckitdir)/Engine.cpp' || echo '$(srcdir)/'`$(teckitdir)/Engine.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -543,6 +610,10 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-pkgincludeHEADERS
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-libLTLIBRARIES uninstall-pkgincludeHEADERS
 
+@OLD_LIB_NAMES_TRUE@Engine_ver.o: $(teckitdir)/Engine_ver.rc
+@OLD_LIB_NAMES_TRUE@	$(RC) $(AM_RCFLAGS) $(RCFLAGS) -o $@ $<
+@OLD_LIB_NAMES_TRUE@Compiler_ver.o: $(teckitdir)/Compiler_ver.rc
+@OLD_LIB_NAMES_TRUE@	$(RC) $(AM_RCFLAGS) $(RCFLAGS) -o $@ $<
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

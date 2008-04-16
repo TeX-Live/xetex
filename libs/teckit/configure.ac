@@ -11,6 +11,7 @@ AM_MAINTAINER_MODE
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
@@ -27,14 +28,24 @@ AC_ARG_WITH(old-lib-names,
 esac],[oldnames=false])
 AM_CONDITIONAL(OLD_LIB_NAMES, test x$oldnames = xtrue)
 
-sinclude(../../libs/zlib/withenable.ac)
-sinclude(../../libs/zlib/zlib.ac)
-
 # Checks for libraries.
-## NO! see above
-## AC_CHECK_LIB(z, compress)
-## AM_CONDITIONAL(SYSTEM_ZLIB, test x$ac_cv_lib_z_compress = xyes)
-## SYSTEM_ZLIB=no
+if test x$enable_tetex_build = xyes; then
+  AC_MSG_NOTICE([Building within teTeX/TeXLive])
+  sinclude(../zlib/withenable.ac)
+  sinclude(../zlib/zlib.ac)
+  ZLIBSRCDIR="\$(top_srcdir)"/../zlib
+  ZLIBDIR="\$(top_builddir)"/../zlib
+else
+  AC_MSG_NOTICE([Not doing a teTeX/TeXLive-style build])
+  sinclude(zlib-1.2.3/withenable.ac)
+  sinclude(zlib-1.2.3/zlib.ac)
+  ZLIBSRCDIR="\$(top_srcdir)"/zlib-1.2.3
+  ZLIBDIR=
+fi
+AC_SUBST(ZLIBSRCDIR)
+AC_SUBST(ZLIBDIR)
+
+AM_CONDITIONAL(SYSTEM_ZLIB, test x$using_system_zlib = xyes)
 
 # Checks for header files.
 AC_HEADER_STDC
