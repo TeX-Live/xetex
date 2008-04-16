@@ -106,7 +106,9 @@ authorization from SIL International.
 @d XeTeX_use_glyph_metrics_code = 3 {non-zero to use exact glyph height/depth}
 @d XeTeX_inter_char_tokens_code = 4 {non-zero to enable \\XeTeXinterchartokens insertion}
 @#
-@d XeTeX_default_input_mode_code    = 5 {input mode for newly opened files}
+@d XeTeX_input_normalization_code = 5 {normalization mode: 1 = NFC, 2 = NFD, else none}
+@#
+@d XeTeX_default_input_mode_code    = 6 {input mode for newly opened files}
 @d XeTeX_input_mode_auto    = 0
 @d XeTeX_input_mode_utf8    = 1
 @d XeTeX_input_mode_utf16be = 2
@@ -114,9 +116,9 @@ authorization from SIL International.
 @d XeTeX_input_mode_raw     = 4
 @d XeTeX_input_mode_icu_mapping = 5
 @#
-@d XeTeX_default_input_encoding_code = 6 {|str_number| of encoding name if mode = ICU}
+@d XeTeX_default_input_encoding_code = 7 {|str_number| of encoding name if mode = ICU}
 @#
-@d eTeX_states=7 {number of \eTeX\ state variables in |eqtb|}
+@d eTeX_states=8 {number of \eTeX\ state variables in |eqtb|}
 @z
 
 @x
@@ -8231,6 +8233,8 @@ font_char_ic_code: begin scan_font_ident; q:=cur_val; scan_usv_num;
 @d XeTeX_dash_break_state == eTeX_state(XeTeX_dash_break_code)
 @d XeTeX_dash_break_en == (XeTeX_dash_break_state>0)
 
+@d XeTeX_input_normalization_state == eTeX_state(XeTeX_input_normalization_code)
+
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
 @z
@@ -8244,6 +8248,7 @@ eTeX_state_code+XeTeX_upwards_code:print_esc("XeTeXupwardsmode");
 eTeX_state_code+XeTeX_use_glyph_metrics_code:print_esc("XeTeXuseglyphmetrics");
 eTeX_state_code+XeTeX_inter_char_tokens_code:print_esc("XeTeXinterchartokenstate");
 eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
+eTeX_state_code+XeTeX_input_normalization_code:print_esc("XeTeXinputnormalization");
 @z
 
 @x
@@ -8262,6 +8267,9 @@ primitive("XeTeXinterchartokenstate",assign_int,eTeX_state_base+XeTeX_inter_char
 
 primitive("XeTeXdashbreakstate",assign_int,eTeX_state_base+XeTeX_dash_break_code);
 @!@:XeTeX_dash_break_state_}{\.{\\XeTeX_dash_break_state} primitive@>
+
+primitive("XeTeXinputnormalization",assign_int,eTeX_state_base+XeTeX_input_normalization_code);
+@!@:XeTeX_input_normalization_}{\.{\\XeTeX_input_normalization} primitive@>
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
