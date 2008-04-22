@@ -300,7 +300,7 @@ conversion_error(int errcode)
 	begindiagnostic();
 	printnl('U');
 	printcstring("nicode conversion failed (ICU error code = ");
-	printint(errorCode);
+	printint(errcode);
 	printcstring(") discarding any remaining text");
 	enddiagnostic(1);
 }
