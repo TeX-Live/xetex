@@ -254,7 +254,14 @@ setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 				UErrorCode	err = 0;
 				UConverter*	cnv = ucnv_open(name, &err);
 				if (cnv == NULL) {
-					fprintf(stderr, "! Error %d creating Unicode converter for %s\n", err, name);
+					begindiagnostic();
+					printnl('E');
+					printcstring("rror ");
+					printint(err);
+					printcstring(" creating Unicode converter for `");
+					printcstring(name);
+					printcstring("'; reading as raw bytes");
+					enddiagnostic(1);
 					f->encodingMode = RAW;
 				}
 				else {
@@ -290,7 +297,12 @@ buffer_overflow()
 static void
 conversion_error(int errcode)
 {
-	fprintf(stderr, "! Unicode conversion failed: error code = %d\n", errcode);
+	begindiagnostic();
+	printnl('U');
+	printcstring("nicode conversion failed (ICU error code = ");
+	printint(errorCode);
+	printcstring(") discarding any remaining text");
+	enddiagnostic(1);
 }
 
 #ifdef WORDS_BIGENDIAN
@@ -486,7 +498,14 @@ linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
 		char* locale = (char*)gettexstring(localeStrNum);
 		brkIter = ubrk_open(UBRK_LINE, locale, NULL, 0, &status);
 		if (U_FAILURE(status)) {
-			fprintf(stderr, "\n! error %d creating linebreak iterator for locale \"%s\", trying default. ", status, locale);
+			begindiagnostic();
+			printnl('E');
+			printcstring("rror ");
+			printint(status);
+			printcstring(" creating linebreak iterator for locale `");
+			printcstring(locale);
+			printcstring("'; trying default locale `en_us'.");
+			enddiagnostic(1);
 			if (brkIter != NULL)
 				ubrk_close(brkIter);
 			status = 0;
@@ -546,7 +565,12 @@ getencodingmodeandinfo(integer* info)
 	/* try for an ICU converter */
 	cnv = ucnv_open(name, &err);
 	if (cnv == NULL) {
-		fprintf(stderr, "! unknown encoding \"%s\"; reading as raw bytes\n", name);
+		begindiagnostic();
+		printnl('U'); /* ensure message starts on a new line */
+		printcstring("nknown encoding `");
+		printcstring(name);
+		printcstring("'; reading as raw bytes");
+		enddiagnostic(1);
 		return RAW;
 	}
 	else {
