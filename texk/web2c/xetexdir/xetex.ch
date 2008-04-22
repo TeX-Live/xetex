@@ -3747,7 +3747,9 @@ g_sign:=glue_sign(this_box); p:=list_ptr(this_box);
 incr(cur_s);
 if cur_s>0 then dvi_out(push);
 if cur_s>max_push then max_push:=cur_s;
-save_loc:=dvi_offset+dvi_ptr; left_edge:=cur_h; cur_v:=cur_v-height(this_box);
+save_loc:=dvi_offset+dvi_ptr; left_edge:=cur_h;
+@<Start vlist {\sl Sync\TeX} information record@>;
+cur_v:=cur_v-height(this_box);
 @y
 @!cur_g:scaled; {rounded equivalent of |cur_glue| times the glue ratio}
 @!upwards:boolean; {whether we're stacking upwards}
@@ -3759,6 +3761,7 @@ incr(cur_s);
 if cur_s>0 then dvi_out(push);
 if cur_s>max_push then max_push:=cur_s;
 save_loc:=dvi_offset+dvi_ptr; left_edge:=cur_h;
+@<Start vlist {\sl Sync\TeX} information record@>;
 if upwards then cur_v:=cur_v+depth(this_box) else cur_v:=cur_v-height(this_box);
 @z
 
@@ -3776,7 +3779,16 @@ move_past: if upwards then cur_v:=cur_v-rule_ht else cur_v:=cur_v+rule_ht;
 
 @x
 @<Output a box in a vlist@>=
-if list_ptr(p)=null then cur_v:=cur_v+height(p)+depth(p)
+if list_ptr(p)=null then begin
+  cur_v:=cur_v+height(p);
+  if type(p)=vlist_node then begin
+	  @<Record void vlist {\sl Sync\TeX} information@>;
+    end
+  else begin
+      @<Record void hlist {\sl Sync\TeX} information@>;
+    end;
+  cur_v:=cur_v+depth(p);
+end
 else  begin cur_v:=cur_v+height(p); synch_v;
   save_h:=dvi_h; save_v:=dvi_v;
   if cur_dir=right_to_left then cur_h:=left_edge-shift_amount(p)
@@ -3788,9 +3800,16 @@ else  begin cur_v:=cur_v+height(p); synch_v;
   end
 @y
 @<Output a box in a vlist@>=
-if list_ptr(p)=null then
-  if upwards then cur_v:=cur_v-height(p)-depth(p)
-  else cur_v:=cur_v+height(p)+depth(p)
+if list_ptr(p)=null then begin
+  if upwards then cur_v:=cur_v-depth(p) else cur_v:=cur_v+height(p);
+  if type(p)=vlist_node then begin
+	  @<Record void vlist {\sl Sync\TeX} information@>;
+    end
+  else begin
+      @<Record void hlist {\sl Sync\TeX} information@>;
+    end;
+  if upwards then cur_v:=cur_v-height(p) else cur_v:=cur_v+depth(p);
+end
 else  begin if upwards then cur_v:=cur_v-depth(p) else cur_v:=cur_v+height(p); synch_v;
   save_h:=dvi_h; save_v:=dvi_v;
   if cur_dir=right_to_left then cur_h:=left_edge-shift_amount(p)
@@ -3809,13 +3828,10 @@ if upwards then cur_v:=cur_v-rule_ht else cur_v:=cur_v+rule_ht;
 @z
 
 @x
-begin
-@<Record sheet {\sl synctex} information@>
-if tracing_output>0 then
+begin if tracing_output>0 then
 @y
 begin
 if job_name=0 then open_log_file;
-@<Record sheet {\sl synctex} information@>
 if tracing_output>0 then
 @z
 
@@ -8785,7 +8801,8 @@ end;
 
 function get_input_normalization_state: integer;
 begin
-	get_input_normalization_state:=XeTeX_input_normalization_state;
+	if eqtb=nil then get_input_normalization_state:=0
+	else get_input_normalization_state:=XeTeX_input_normalization_state;
 end;
 
 @z
