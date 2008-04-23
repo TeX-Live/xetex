@@ -228,6 +228,13 @@ temp_ptr:=lig_stack; lig_stack:=link(temp_ptr);
 free_node(temp_ptr,small_node_size); {{\sl Sync\TeX} watch point: proper size!}
 @z
 
+@x
+history:=spotless; {ready to go!}
+@y
+synctex:=synctexoption; {{\sl Sync\TeX}: read command-line option if given}
+history:=spotless; {ready to go!}
+@z
+
 @x tex.web l.24288
 begin @<Finish the extensions@>;
 @y
