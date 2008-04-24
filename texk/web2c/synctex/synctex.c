@@ -76,6 +76,8 @@ Please, do not remove these explanations.
 
 #  define SYNCTEX_DEBUG 0
 
+#  define SYNCTEX_GZ 1
+
 /* Debugging: define the next macro to "return;" in order to disable the synctex code
  * only suplemental function calls will be used. The compiler may optimize them. */
 #  define SYNCTEX_RETURN_IF_DISABLED ;
@@ -218,10 +220,21 @@ EXTERN char *gettexstring(int n);
 
 #   include <stdio.h>
 #   include <stdarg.h>
- 
+
+#if SYNCTEX_GZ
+# include "zlib.h"
+# define FPRINTF gzprintf
+#else
+# define FPRINTF fprintf
+#endif
+
 /*  Here are all the local variables gathered in one "synchronization context"  */
 static struct {
+#if SYNCTEX_GZ
+    gzFile file;                /*  the foo.synctex I/O identifier  */
+#else
     FILE *file;                 /*  the foo.synctex I/O identifier  */
+#endif
     char *name;                 /*  the real "foo.synctex" name  */
     char *root_name;            /*  in general jobname.tex  */
     integer count;              /*  The number of interesting records in "foo.synctex"  */
@@ -251,7 +264,11 @@ void synctex_abort(void)
     printf("\nSynchronize DEBUG: synctex_abort\n");
 #endif
     if (NULL != st_FILE) {
+#if SYNCTEX_GZ
+        gzclose(st_FILE);
+#else
         xfclose(st_FILE, synctex_ctxt.name);
+#endif
         SYNCTEX_FREE(synctex_ctxt.name);
         synctex_ctxt.name = NULL;
     }
@@ -263,7 +280,11 @@ void synctex_abort(void)
 static inline int synctex_record_preamble(void);
 static inline int synctex_record_input(integer tag, char *name);
 
+#if SYNCTEX_GZ
+static char *synctex_suffix = ".synctex.gz";
+#else
 static char *synctex_suffix = ".synctex";
+#endif
 static char *synctex_working = "(working)";
 
 /*  synctex_dot_open ensures that the foo.synctex file is open.
@@ -308,7 +329,11 @@ static FILE *synctex_dot_open(void)
         SYNCTEX_FREE(tmp);
         strcat(the_syncname, synctex_suffix);
         strcat(the_syncname, synctex_working);
+#if SYNCTEX_GZ
+        st_FILE = gzopen(the_syncname, FOPEN_WBIN_MODE);
+#else
         st_FILE = xfopen(the_syncname, FOPEN_WBIN_MODE);
+#endif
 #if SYNCTEX_DEBUG
         printf("\nwarning: Synchronize DEBUG: synctex_dot_open 2\n");
 #endif
@@ -461,15 +486,14 @@ void synctexterminate(void)
     printf("\nSynchronize DEBUG: synctexterminate\n");
 #endif
 	char *tmp = gettexstring(jobname);
-	char * suffix = ".synctex";
-	char * the_real_syncname = xmalloc(strlen(tmp) + strlen(suffix) + 1);
+	char * the_real_syncname = xmalloc(strlen(tmp) + strlen(synctex_suffix) + 1);
 	if(NULL == the_real_syncname) {
 		SYNCTEX_FREE(tmp);
 		synctex_abort();
 		return;
 	}
 	strcpy(the_real_syncname, tmp);
-	strcat(the_real_syncname, suffix);
+	strcat(the_real_syncname, synctex_suffix);
 	remove(the_real_syncname);
     if (NULL != st_FILE) {
 		if (totalpages > 0) {
@@ -554,7 +578,7 @@ void synctexteehs(void)
 }
 
 #define SYNCTEX_DEBUG_SAVINGS /*if(NULL!=synctex_ctxt.recorder){\
-            fprintf(st_FILE, "SAVED ");\
+            FPRINTF(st_FILE, "SAVED ");\
             (*synctex_ctxt.recorder) (synctex_ctxt.node);}*/
 
 static inline void synctex_record_vlist(halfword p);
@@ -906,7 +930,7 @@ void synctexcurrent(void)
 	if (SYNCTEX_IGNORE(nothing)) {
         return;
     }
-	size_t len = fprintf(synctex_ctxt.file,"x%i,%i:%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"x%i,%i:%i,%i\n",
 		synctex_ctxt.tag,synctex_ctxt.line,
 		curh UNIT,curv UNIT);
 	if(len) {
@@ -929,8 +953,8 @@ static inline int synctex_record_settings(void)
     if(NULL == st_FILE) {
         return 0;
     }
-	if(synctex_ctxt.file) {
-		size_t len = fprintf(synctex_ctxt.file,"Output:%s\nMagnification:%i\nUnit:%i\nX Offset:%i\nY Offset:%i\n",
+	if(st_FILE) {
+		size_t len = FPRINTF(st_FILE,"Output:%s\nMagnification:%i\nUnit:%i\nX Offset:%i\nY Offset:%i\n",
 			SYNCTEX_OUTPUT,synctex_ctxt.magnification,synctex_ctxt.unit,
 			((SYNCTEX_OFFSET_IS_PDF != 0) ? 0 : 4736287 UNIT),
 			((SYNCTEX_OFFSET_IS_PDF != 0) ? 0 : 4736287 UNIT));
@@ -949,7 +973,7 @@ static inline int synctex_record_preamble(void)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_preamble\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"SyncTeX Version:%i\n",SYNCTEX_VERSION);
+	size_t len = FPRINTF(st_FILE,"SyncTeX Version:%i\n",SYNCTEX_VERSION);
 	if(len) {
 		synctex_ctxt.total_length = len;
 		return 0;
@@ -964,7 +988,7 @@ static inline int synctex_record_input(integer tag, char *name)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_input\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"Input:%i:%s\n",tag,name);
+	size_t len = FPRINTF(st_FILE,"Input:%i:%s\n",tag,name);
 	if(len) {
 		synctex_ctxt.total_length += len;
 		return 0;
@@ -979,7 +1003,7 @@ static inline int synctex_record_anchor(void)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_anchor\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"!%i\n",synctex_ctxt.total_length);
+	size_t len = FPRINTF(st_FILE,"!%i\n",synctex_ctxt.total_length);
 	if(len) {
 		synctex_ctxt.total_length = len;
 		++synctex_ctxt.count;
@@ -995,7 +1019,7 @@ static inline int synctex_record_content(void)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_content\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"Content:\n");
+	size_t len = FPRINTF(st_FILE,"Content:\n");
 	if(len) {
 		synctex_ctxt.total_length += len;
 		return 0;
@@ -1011,7 +1035,7 @@ static inline int synctex_record_sheet(integer sheet)
     printf("\nSynchronize DEBUG: synctex_record_sheet\n");
 #endif
 	if(SYNCTEX_NOERR == synctex_record_anchor()) {
-		size_t len = fprintf(synctex_ctxt.file,"{%i\n",sheet);
+		size_t len = FPRINTF(st_FILE,"{%i\n",sheet);
 		if(len) {
 			synctex_ctxt.total_length += len;
 			++synctex_ctxt.count;
@@ -1029,7 +1053,7 @@ static inline int synctex_record_teehs(integer sheet)
     printf("\nSynchronize DEBUG: synctex_record_teehs\n");
 #endif
 	if(SYNCTEX_NOERR == synctex_record_anchor()) {
-		size_t len = fprintf(synctex_ctxt.file,"}%i\n",sheet);
+		size_t len = FPRINTF(st_FILE,"}%i\n",sheet);
 		if(len) {
 			synctex_ctxt.total_length += len;
 			++synctex_ctxt.count;
@@ -1046,7 +1070,7 @@ static inline void synctex_record_void_vlist(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_void_vlist\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"v%i,%i:%i,%i:%i,%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"v%i,%i:%i,%i:%i,%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,box_node_size),
 				SYNCTEX_LINE_MODEL(p,box_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1068,7 +1092,7 @@ static inline void synctex_record_vlist(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_vlist\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"[%i,%i:%i,%i:%i,%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"[%i,%i:%i,%i:%i,%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,box_node_size),
 				SYNCTEX_LINE_MODEL(p,box_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1090,7 +1114,7 @@ static inline void synctex_record_tsilv(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_tsilv\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"]\n");
+	size_t len = FPRINTF(st_FILE,"]\n");
 	if(len) {
 		synctex_ctxt.total_length += len;
 		return;
@@ -1105,7 +1129,7 @@ static inline void synctex_record_void_hlist(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_void_hlist\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"h%i,%i:%i,%i:%i,%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"h%i,%i:%i,%i:%i,%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,box_node_size),
 				SYNCTEX_LINE_MODEL(p,box_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1127,7 +1151,7 @@ static inline void synctex_record_hlist(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_hlist\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"(%i,%i:%i,%i:%i,%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"(%i,%i:%i,%i:%i,%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,box_node_size),
 				SYNCTEX_LINE_MODEL(p,box_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1149,7 +1173,7 @@ static inline void synctex_record_tsilh(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_tsilh\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,")\n");
+	size_t len = FPRINTF(st_FILE,")\n");
 	if(len) {
 		synctex_ctxt.total_length += len;
         ++synctex_ctxt.count;
@@ -1164,7 +1188,7 @@ static inline int synctex_record_count(void) {
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_count\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"Count:%i\n",synctex_ctxt.count);
+	size_t len = FPRINTF(st_FILE,"Count:%i\n",synctex_ctxt.count);
 	if(len) {
 		synctex_ctxt.total_length += len;
 		return 0;
@@ -1180,12 +1204,12 @@ static inline int synctex_record_postamble(void)
     printf("\nSynchronize DEBUG: synctex_record_postamble\n");
 #endif
 	if(SYNCTEX_NOERR == synctex_record_anchor()) {
-		size_t len = fprintf(synctex_ctxt.file,"Postamble:\n");
+		size_t len = FPRINTF(st_FILE,"Postamble:\n");
 		if(len) {
 			synctex_ctxt.total_length += len;
 			if(synctex_record_count() || synctex_record_anchor()) {
 			} else {
-				len = fprintf(synctex_ctxt.file,"Post scriptum:\n");
+				len = FPRINTF(st_FILE,"Post scriptum:\n");
 				if(len) {
 					synctex_ctxt.total_length += len;
 					return 0;
@@ -1203,7 +1227,7 @@ static inline void synctex_record_glue(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_glue_recorder\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"g%i,%i:%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"g%i,%i:%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,medium_node_size),
 				SYNCTEX_LINE_MODEL(p,medium_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT);
@@ -1222,7 +1246,7 @@ static inline void synctex_record_kern(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_kern_recorder\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"k%i,%i:%i,%i:%i\n",
+	size_t len = FPRINTF(st_FILE,"k%i,%i:%i,%i:%i\n",
 				SYNCTEX_TAG_MODEL(p,medium_node_size),
 				SYNCTEX_LINE_MODEL(p,medium_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1242,7 +1266,7 @@ static inline void synctex_record_rule(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_record_tsilh\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"r%i,%i:%i,%i:%i,%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"r%i,%i:%i,%i:%i,%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,rule_node_size),
 				SYNCTEX_LINE_MODEL(p,rule_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1268,7 +1292,7 @@ void synctex_math_recorder(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_math_recorder\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"$%i,%i:%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"$%i,%i:%i,%i\n",
 				SYNCTEX_TAG_MODEL(p,medium_node_size),
 				SYNCTEX_LINE_MODEL(p,medium_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT);
@@ -1287,7 +1311,7 @@ void synctex_kern_recorder(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_kern_recorder\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"k%i,%i:%i,%i:%i\n",
+	size_t len = FPRINTF(st_FILE,"k%i,%i:%i,%i:%i\n",
 				SYNCTEX_TAG_MODEL(p,medium_node_size),
 				SYNCTEX_LINE_MODEL(p,medium_node_size),
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
@@ -1307,7 +1331,7 @@ void synctex_char_recorder(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_char_recorder\n");
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"c%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"c%i,%i\n",
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT);
 	if(len) {
 		synctex_ctxt.total_length += len;
@@ -1324,7 +1348,7 @@ void synctex_node_recorder(halfword p)
 #if SYNCTEX_DEBUG > 999
     printf("\nSynchronize DEBUG: synctex_node_recorder(0x%x)\n",p);
 #endif
-	size_t len = fprintf(synctex_ctxt.file,"?%i,%i:%i,%i\n",
+	size_t len = FPRINTF(st_FILE,"?%i,%i:%i,%i\n",
 				synctex_ctxt.curh UNIT, synctex_ctxt.curv UNIT,
 				mem[p].hh.b0,mem[p].hh.b1);
 	if(len) {
