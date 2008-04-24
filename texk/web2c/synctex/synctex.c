@@ -934,7 +934,7 @@ void synctexcurrent(void)
 		synctex_ctxt.tag,synctex_ctxt.line,
 		curh UNIT,curv UNIT);
 	if(len) {
-		synctex_ctxt.total_length = len;
+		synctex_ctxt.total_length += len;
 		return;
 	}
     synctex_abort();
