@@ -1,6 +1,6 @@
 /* Some definitions that get appended to the `coerce.h' file that web2c
    outputs.  */
-/* $Id: coerce.h 7124 2008-03-24 15:47:15Z martin $ */
+/* $Id: coerce.h 7379 2008-04-11 16:47:47Z karl $ */
 
 /* The C compiler ignores most unnecessary casts (i.e., casts of
    something to its own type).  However, for structures, it doesn't.
@@ -54,9 +54,11 @@ extern void remembersourceinfo P2H(strnumber, int);
 #include <luatexdir/luatex.h>
 #endif /* luaTeX */
 
-#ifdef pdfTeX
+/* When compiling the lib in luatexdir, we -DpdfTeX so code can be more
+   easily shared.  But we can't have both pdftexd.h and luatexd.h, etc.  */
+#if defined (pdfTeX) && !defined (luaTeX)
 #include <pdftexdir/pdftex.h>
-#endif /* pdfTeX */
+#endif /* pdfTeX and not luaTeX */
 
 #ifdef XeTeX
 #include <xetexdir/xetex.h>

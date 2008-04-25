@@ -739,6 +739,7 @@ CXXHACKLINK
 CXXHACKLDLIBS
 PTEX
 PETEX
+LTEX
 XETEX
 build
 build_cpu
@@ -1387,6 +1388,7 @@ Optional Packages:
   --without-aleph            don't compile and install Aleph
   --without-pdftex           don't compile and install pdfTeX
   --without-pdfetex          don't compile and install pdfeTeX
+  --without-luatex           don't compile and install luaTeX
   --without-xetex            don't compile and install XeTeX
   --with-cxx-runtime-hack    link C++ runtime statically
   --with-editor=CMD       invoke CMD from the e option vi +%d %s
@@ -5326,6 +5328,13 @@ fi
 
 
 
+# Check whether --with-luatex was given.
+if test "${with_luatex+set}" = set; then
+  withval=$with_luatex;
+fi
+
+
+
 # Check whether --with-xetex was given.
 if test "${with_xetex+set}" = set; then
   withval=$with_xetex;
@@ -7067,6 +7076,19 @@ $as_echo "$as_me: WARNING: Not all sources of pdfeTeX are available." >&2;}
   with_pdfetex=no
 fi
 
+# For luaTeX.
+if test -d $srcdir/luatexdir; then
+  # Create build dir, if necessary.
+  test -d luatexdir || mkdir luatexdir
+  test "${with_luatex+set}" = set || with_luatex=yes
+else
+  if test "x$with_luatex" = xyes; then
+    { $as_echo "$as_me:$LINENO: WARNING: The luaTeX sources are not available." >&5
+$as_echo "$as_me: WARNING: The luaTeX sources are not available." >&2;}
+  fi
+  with_luatex=no
+fi
+
 # For XeTeX
 if test -d $srcdir/xetexdir \
     && test -d $srcdir/etexdir; then
@@ -7081,6 +7103,7 @@ fi
 
 # Check whether C++ compiler works.  Prevent exit if it doesn't.
 if test "x$with_pdftex"  = xyes ||
+   test "x$with_luatex"  = xyes ||
    test "x$with_pdfetex" = xyes ||
    test "x$with_xetex"   = xyes
 then
@@ -7847,11 +7870,15 @@ $as_echo "$as_me: WARNING: No C++ compiler: pdfTeX will not be compiled." >&2;}
   test "x$with_pdfetex" = xyes \
     && { $as_echo "$as_me:$LINENO: WARNING: No C++ compiler: pdfeTeX will not be compiled." >&5
 $as_echo "$as_me: WARNING: No C++ compiler: pdfeTeX will not be compiled." >&2;}
+  test "x$with_luatex" = xyes \
+    && { $as_echo "$as_me:$LINENO: WARNING: No C++ compiler: luaTeX will not be compiled." >&5
+$as_echo "$as_me: WARNING: No C++ compiler: luaTeX will not be compiled." >&2;}
   test "x$with_xetex" = xyes \
     && { $as_echo "$as_me:$LINENO: WARNING: No C++ compiler: XeTeX will not be compiled." >&5
 $as_echo "$as_me: WARNING: No C++ compiler: XeTeX will not be compiled." >&2;}
   with_pdftex=no
   with_pdfetex=no
+  with_luatex=no
   with_xetex=no
   true
 }
@@ -7869,6 +7896,7 @@ CXXHACKLINK='$(kpathsea_cxx_link)'
 CXXHACKLDLIBS='$(LOADLIBES)'
 if test "x$with_cxx_runtime_hack" = xyes &&
    { test "x$with_pdftex"  = xyes ||
+     test "x$with_luatex"  = xyes ||
      test "x$with_pdfetex" = xyes ||
      test "x$with_xetex"   = xyes; }
 then
@@ -7934,6 +7962,13 @@ if test "x$with_pdfetex" = xyes; then
   PETEX=
 else
   PETEX='#! '
+fi
+
+
+if test "x$with_luatex" = xyes; then
+  LTEX=
+else
+  LTEX='#! '
 fi
 
 
@@ -10290,6 +10325,13 @@ ac_config_files="$ac_config_files pdftexdir/Makefile:pdftexdir/Makefile.aux"
 
 fi
 
+# Ditto luatex.
+if test "$with_luatex" = yes; then
+  ac_config_files="$ac_config_files luatexdir/Makefile.aux:luatexdir/Makefile.in"
+ac_config_files="$ac_config_files luatexdir/Makefile:luatexdir/Makefile.aux"
+
+fi
+
 test -d tests || mkdir tests
 
 # Is libm present.  FIXME: do we need it at all?
@@ -11359,6 +11401,8 @@ do
     "otps/Makefile") CONFIG_FILES="$CONFIG_FILES otps/Makefile:otps/Makefile.aux" ;;
     "pdftexdir/Makefile.aux") CONFIG_FILES="$CONFIG_FILES pdftexdir/Makefile.aux:pdftexdir/Makefile.in" ;;
     "pdftexdir/Makefile") CONFIG_FILES="$CONFIG_FILES pdftexdir/Makefile:pdftexdir/Makefile.aux" ;;
+    "luatexdir/Makefile.aux") CONFIG_FILES="$CONFIG_FILES luatexdir/Makefile.aux:luatexdir/Makefile.in" ;;
+    "luatexdir/Makefile") CONFIG_FILES="$CONFIG_FILES luatexdir/Makefile:luatexdir/Makefile.aux" ;;
     "Makefile.aux") CONFIG_FILES="$CONFIG_FILES Makefile.aux:Makefile.in" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile:Makefile.aux" ;;
     "lib/Makefile.aux") CONFIG_FILES="$CONFIG_FILES lib/Makefile.aux:lib/Makefile.in" ;;
@@ -12096,6 +12140,76 @@ done
 kpse_substs=`echo "$kpse_substs" | sed -e 's,%,\\\/,g' \
   -e 's/kpse_include /kpse_include[ 	]*/g'`
 (eval $kpse_substs -e '/^kpse_include/d' "$kpse_input") > pdftexdir/Makefile.aux
+ ;;
+    "luatexdir/Makefile.aux":F) # Discard the file just generated and first resolve kpse_include's
+  kpse_input=`case luatexdir/Makefile.in in
+  [\\/$]*) # Absolute
+    test -f "luatexdir/Makefile.in" || { { $as_echo "$as_me:$LINENO: error: cannot find input file: luatexdir/Makefile.in" >&5
+$as_echo "$as_me: error: cannot find input file: luatexdir/Makefile.in" >&2;}
+   { (exit 1); exit 1; }; }
+    echo "luatexdir/Makefile.in";;
+  *) # Relative
+    if test -f "luatexdir/Makefile.in"; then
+      # Build tree
+      echo "luatexdir/Makefile.in"
+    elif test -f "$srcdir/luatexdir/Makefile.in"; then
+      # Source tree
+      echo "$srcdir/luatexdir/Makefile.in"
+    else
+      # /dev/null tree
+      { { $as_echo "$as_me:$LINENO: error: cannot find input file: luatexdir/Makefile.in" >&5
+$as_echo "$as_me: error: cannot find input file: luatexdir/Makefile.in" >&2;}
+   { (exit 1); exit 1; }; }
+    fi;;
+  esac` || { (exit 1); exit 1; }
+# Replace lines of the form "kpse_include foo" with the contents of foo:
+# first, from the kpse_include lines construct a list of file names.
+# From that list, we construct a second list of those files that exist.
+# Then we construct a list of sed commands for including those files,
+# and a sed command that removes the kpse_include lines. We don't attempt
+# to read non-existent files because some (buggy) versions of sed choke
+# on this. Have to use sed because old (Ultrix, SunOs) awk does not support
+# getline or system. (Anyway, configure scripts aren't supposed to use awk.)
+# Can't use only one -e and commands {dr foo} because foo has to be last.
+# Be careful, because the filename may contain /.
+# Be careful with whitespace; we need to use echo.
+kpse_file_substs=`sed -n '/^kpse_include/s%[ 	]*\(.*\)%\1%p' "$kpse_input"`
+if test x"$kpse_file_substs" = x; then
+  { $as_echo "$as_me:$LINENO: WARNING: No need to use \`KPSE_CONFIG_FILES' for input \`luatexdir/Makefile.in'
+               without any \`kpse_include' directives" >&5
+$as_echo "$as_me: WARNING: No need to use \`KPSE_CONFIG_FILES' for input \`luatexdir/Makefile.in'
+               without any \`kpse_include' directives" >&2;}
+fi
+# Create the sed command line ...
+# Input lines containing "@configure_input@" are output twice,
+# first with our modifications and then unmodified.
+kpse_substs="sed -e '/@configure_input@/ { h; \
+  s,@configure_input@,luatexdir/Makefile.aux.  Generated from `echo luatexdir/Makefile.in |
+  sed 's,.*/,,'` by configure.,; G; }'"
+for kpse_inc in $kpse_file_substs; do
+  kpse_read=`case $kpse_inc in
+    [\\/$]*) # Absolute
+      if test -f "$kpse_inc"; then
+        echo "$kpse_inc"
+      fi;;
+    *) # Relative
+      if test -f "$kpse_inc"; then
+        # Build tree
+        echo "$kpse_inc"
+      elif test -f "$srcdir/$kpse_inc"; then
+        # Source tree
+        echo "$srcdir/$kpse_inc"
+      fi;;
+  esac`
+  if test -n "$kpse_read"; then
+    kpse_mung=`echo $kpse_inc | sed 's,/,%,g'`
+    kpse_substs="$kpse_substs -e '/^kpse_include $kpse_mung$/r $kpse_read'"
+  fi
+done
+# ... and fix the whitespace and escaped slashes.
+kpse_substs=`echo "$kpse_substs" | sed -e 's,%,\\\/,g' \
+  -e 's/kpse_include /kpse_include[ 	]*/g'`
+(eval $kpse_substs -e '/^kpse_include/d' "$kpse_input") > luatexdir/Makefile.aux
  ;;
     "Makefile.aux":F) # Discard the file just generated and first resolve kpse_include's
   kpse_input=`case Makefile.in in
