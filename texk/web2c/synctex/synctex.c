@@ -518,12 +518,14 @@ void synctexterminate(boolean log_opened)
     if (synctex_ctxt.busy_name) {
 		if (totalpages > 0) {
 			synctex_record_postamble();
+			/*  renaming the working synctex file */
+			rename(synctex_ctxt.busy_name,the_real_syncname); /* close the file? */
+			if(log_opened) {
+				printf("\nSyncTeX written on %s",the_real_syncname); /* SyncTeX also refers to the contents */
+			}
 		}
-		/*  renaming the working synctex file */
-		rename(synctex_ctxt.busy_name,the_real_syncname); /* close the file? */
-		if(log_opened) {
-			printf("\nSyncTeX written on %s",the_real_syncname); /* SyncTeX also refers to the contents */
-		}
+		else
+			remove(synctex_ctxt.busy_name);
 	}
 	SYNCTEX_FREE(the_real_syncname);
 	SYNCTEX_FREE(tmp);
