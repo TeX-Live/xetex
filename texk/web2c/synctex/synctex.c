@@ -512,10 +512,12 @@ void synctexterminate(boolean log_opened)
 	strcpy(the_real_syncname, tmp);
 	strcat(the_real_syncname, synctex_suffix);
 	remove(the_real_syncname);/* I don't know if the previous run was made with the uncompressed mode */
-	if (!SYNCTEX_NO_GZ) {
-		strcat(the_real_syncname, synctex_suffix_gz);
-	}
+	strcat(the_real_syncname, synctex_suffix_gz);
 	remove(the_real_syncname);
+	if (SYNCTEX_NO_GZ) {
+		strcpy(the_real_syncname, tmp);
+		strcat(the_real_syncname, synctex_suffix);
+	}
     if (SYNCTEX_FILE) {
 		if (totalpages > 0) {
 			synctex_record_postamble();
