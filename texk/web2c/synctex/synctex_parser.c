@@ -841,33 +841,31 @@ void _synctex_display_input(synctex_node_t node) {
 
 /*  Ensures that the buffer contains at least size bytes.
  *  Passing a negative size argument means the whole buffer length.
- *  The return value is the number of bytes read form the scanner's file.
- *  -1 is returned if there was no more material available. */
+ *  The return value is the number of bytes now available in the buffer.
+ *  -1 is returned in case of error. */
 int _synctex_fill_buffer_up_to_size(synctex_scanner_t scanner, int size) {
+	int count = END - PTR; /* count is the number of unparsed chars in the buffer */
 	if(size<0) {
 		size = SYNCTEX_BUF_SIZE;
 	}
-	if(size<=END-PTR) {
-		return 0;
+	if(size<=count) {
+		return count;
 	}
 	if(F) {
 		/* Copy the remaining part of the buffer to the beginning,
 		 * then read the next part of the file */
-		size_t count = END - PTR; /* count now holds the number of unparsed chars in the buffer */
 		int read = 0;
 		if(count) {
 			memmove(START, PTR, count);
-			PTR = START + count; /* the next character after the move, will change. */
-		} else {
-			PTR = START;
 		}
+		PTR = START + count; /* the next character after the move, will change. */
 		/* Fill the buffer up to its end */
 		read = gzread(F,(void *)PTR,SYNCTEX_BUF_SIZE - count);
 		if(read>0) {
 			END = PTR + read;
 			PTR = START;
-			if(size<=END-PTR) {
-				return read;
+			if(SYNCTEX_BUF_SIZE==size || size<=END-PTR) {
+				return END - PTR;
 			}
 			return -1;
 		} else if(read<0) {
@@ -877,9 +875,13 @@ int _synctex_fill_buffer_up_to_size(synctex_scanner_t scanner, int size) {
 		} else {
 			gzclose(F);
 			F = NULL;
-			return -1;
+			END = PTR;
+			PTR = START;
+			return END - PTR; /* there might be a bit of text left */
 		}
 	}
+	if(END-PTR > 0)
+		return END - PTR;
 	/* There was nothing left in the file */
 	return -1;
 }
@@ -908,13 +910,14 @@ int _synctex_next_line(synctex_scanner_t scanner) {
  *  First file separators are skipped
  */
 int _synctex_decode_int(synctex_scanner_t scanner, int* valueRef) {
-	unsigned char * ptr = PTR;
+	unsigned char * ptr;
 	unsigned char * end = NULL;
 	int result = 0;
 	if(NULL == scanner) return -1;
 	if(END-PTR<=15) {
 		_synctex_fill_buffer_up_to_size(scanner, -1);
 	}
+	ptr = PTR;
 	if(PTR>=END) return -1;
 	if(*ptr==':' || *ptr==',') {
 		++ptr;
