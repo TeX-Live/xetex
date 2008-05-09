@@ -3580,20 +3580,18 @@ begin if f<=256+font_base then
 dvi_out(length(font_name[f]));
 @<Output the font name whose internal number is |f|@>;
 @y
-if font_mapping[f]<>nil then begin
-  l:=0;
-  k:=str_start_macro(font_name[f]);
-  while (l=0) and (k<str_start_macro(font_name[f]+1)) do begin
-    if so(str_pool[k]) = ":" then l:=k-str_start_macro(font_name[f]);
-    incr(k);
-  end;
-  dvi_out(l);
-  for k:=str_start_macro(font_name[f]) to str_start_macro(font_name[f])+l-1 do
-    dvi_out(so(str_pool[k]));
-end else begin
-dvi_out(length(font_name[f]));
-@<Output the font name whose internal number is |f|@>;
+l:=0; k:=str_start_macro(font_name[f]);
+{search for colon; we will truncate the name there}
+while (l=0) and (k<str_start_macro(font_name[f]+1)) do begin
+  if so(str_pool[k]) = ":" then l:=k-str_start_macro(font_name[f]);
+  incr(k);
 end;
+if l=0 then l:=length(font_name[f]); {no colon found}
+dvi_out(l);
+for k:=str_start_macro(font_area[f]) to str_start_macro(font_area[f]+1)-1 do
+  dvi_out(so(str_pool[k]));
+for k:=str_start_macro(font_name[f]) to str_start_macro(font_name[f])+l-1 do
+  dvi_out(so(str_pool[k]));
 end;
 @z
 
