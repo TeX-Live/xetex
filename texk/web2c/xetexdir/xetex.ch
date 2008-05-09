@@ -65,7 +65,7 @@ authorization from SIL International.
 
 @d XeTeX_version=0
 @d XeTeX_revision==".998"
-@d XeTeX_version_string=='-0.998.2-dev' {current \XeTeX\ version}
+@d XeTeX_version_string=='-0.998.3-dev' {current \XeTeX\ version}
 @z
 
 @x
@@ -118,7 +118,8 @@ authorization from SIL International.
 @#
 @d XeTeX_default_input_encoding_code = 7 {|str_number| of encoding name if mode = ICU}
 @#
-@d eTeX_states=8 {number of \eTeX\ state variables in |eqtb|}
+@d XeTeX_tracing_fonts_code = 8 {non-zero to log native fonts used}
+@d eTeX_states=9 {number of \eTeX\ state variables in |eqtb|}
 @z
 
 @x
@@ -8328,6 +8329,7 @@ font_char_ic_code: begin scan_font_ident; q:=cur_val; scan_usv_num;
 @d XeTeX_dash_break_en == (XeTeX_dash_break_state>0)
 
 @d XeTeX_input_normalization_state == eTeX_state(XeTeX_input_normalization_code)
+@d XeTeX_tracing_fonts_state == eTeX_state(XeTeX_tracing_fonts_code)
 
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
@@ -8343,6 +8345,7 @@ eTeX_state_code+XeTeX_use_glyph_metrics_code:print_esc("XeTeXuseglyphmetrics");
 eTeX_state_code+XeTeX_inter_char_tokens_code:print_esc("XeTeXinterchartokenstate");
 eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 eTeX_state_code+XeTeX_input_normalization_code:print_esc("XeTeXinputnormalization");
+eTeX_state_code+XeTeX_tracing_fonts_code:print_esc("XeTeXtracingfonts");
 @z
 
 @x
@@ -8364,6 +8367,8 @@ primitive("XeTeXdashbreakstate",assign_int,eTeX_state_base+XeTeX_dash_break_code
 
 primitive("XeTeXinputnormalization",assign_int,eTeX_state_base+XeTeX_input_normalization_code);
 @!@:XeTeX_input_normalization_}{\.{\\XeTeX_input_normalization} primitive@>
+
+primitive("XeTeXtracingfonts",assign_int,eTeX_state_base+XeTeX_tracing_fonts_code);
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
@@ -8895,8 +8900,13 @@ end;
 
 function get_input_normalization_state: integer;
 begin
-	if eqtb=nil then get_input_normalization_state:=0
+	if eqtb=nil then get_input_normalization_state:=0 { may be called before eqtb is initialized }
 	else get_input_normalization_state:=XeTeX_input_normalization_state;
+end;
+
+function get_tracing_fonts_state: integer;
+begin
+	get_tracing_fonts_state:=XeTeX_tracing_fonts_state;
 end;
 
 @z
