@@ -105,6 +105,6 @@ if [ "`uname`" = "Darwin" ]; then
   if [ "`uname -p`" = "powerpc" ]; then
 	# hack the resulting ICU platform.h file to claim that nl_langinfo() is not available
 	# ....hoping for 10.2 compatibility :)
-	perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/$10/;' libs/icu-xetex/common/unicode/platform.h
+	perl -pi.bak -e 's/(define\s+U_HAVE_NL_LANGINFO(?:_CODESET)?\s+)1/${1}0/;' libs/icu-xetex/common/unicode/platform.h
   fi
 fi
