@@ -65,7 +65,7 @@ authorization from SIL International.
 
 @d XeTeX_version=0
 @d XeTeX_revision==".998"
-@d XeTeX_version_string=='-0.998.3' {current \XeTeX\ version}
+@d XeTeX_version_string=='-0.998.4-dev' {current \XeTeX\ version}
 @z
 
 @x
@@ -8662,12 +8662,15 @@ begin
 	end_diagnostic(false);
 end;
 
-procedure font_mapping_warning(mappingNameP:void_pointer; mappingNameLen:integer);
+procedure font_mapping_warning(mappingNameP:void_pointer;
+	mappingNameLen:integer;
+	warningType:integer); { 0: just logging; 1: file not found; 2: can't load }
 var
 	i: integer;
 begin
 	begin_diagnostic;
-	print_nl("Font mapping `");
+	if warningType=0 then print_nl("Loaded font mapping `")
+	else print_nl("Font mapping `");
 	print_utf8_str(mappingNameP, mappingNameLen);
 	print("' for font `");
 	i := 1;
@@ -8675,7 +8678,13 @@ begin
 		print_visible_char(name_of_file[i]); { this is already UTF-8 }
 		incr(i);
 	end;
-	print("' not found.");
+	case warningType of
+		1: print("' not found.");
+		2: begin print("' not usable;");
+		     print_nl("bad mapping file or incorrect mapping type.");
+		   end;
+		othercases print("'.")
+	endcases;
 	end_diagnostic(false);
 end;
 
