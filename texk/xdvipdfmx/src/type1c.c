@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/type1c.c,v 1.21 2005/07/17 09:53:38 hirata Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/type1c.c,v 1.23 2008/01/06 09:12:06 matthias Exp $
 
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -161,15 +161,26 @@ pdf_font_open_type1c (pdf_font *font)
 }
 
 static void
-add_SimpleMetrics (pdf_font *font, double *widths, card16 num_glyphs)
+add_SimpleMetrics (pdf_font *font, cff_font *cffont,
+		   double *widths, card16 num_glyphs)
 {
   pdf_obj *fontdict;
   int      code, firstchar, lastchar;
   char    *usedchars;
   pdf_obj *tmp_array;
+  double   scaling;
 
   fontdict  = pdf_font_get_resource(font);
   usedchars = pdf_font_get_usedchars(font);
+
+  /* The widhts array in the font dictionary must be given relative
+   * to the default scaling of 1000:1, not relative to the scaling
+   * given by the font matrix.
+   */
+  if (cff_dict_known(cffont->topdict, "FontMatrix"))
+    scaling = 1000*cff_dict_get(cffont->topdict, "FontMatrix", 0);
+  else
+    scaling = 1;
 
   tmp_array = pdf_new_array();
   if (num_glyphs <= 1) {
@@ -192,7 +203,7 @@ add_SimpleMetrics (pdf_font *font, double *widths, card16 num_glyphs)
     for (code = firstchar; code <= lastchar; code++) {
       if (usedchars[code]) {
 	pdf_add_array(tmp_array,
-		      pdf_new_number(ROUND(widths[code], 1.0)));
+		      pdf_new_number(ROUND(scaling*widths[code], 1.0)));
       } else {
 	pdf_add_array(tmp_array, pdf_new_number(0.0));
       }
@@ -316,22 +327,6 @@ pdf_font_load_type1c (pdf_font *font)
    */
   enc_vec = NULL;
   if (encoding_id >= 0) {
-    if (pdf_encoding_is_predefined(encoding_id)) {
-      pdf_add_dict(fontdict,
-		   pdf_new_name("Encoding"),
-		   pdf_new_name(pdf_encoding_get_name(encoding_id)));
-    } else {
-#if 0
-      /*
-       * Gs not working with this.
-       */
-      pdf_add_dict(fontdict,
-		   pdf_new_name("Encoding"),
-		   pdf_get_encoding_reference(encoding_id));
-#endif
-      if (!pdf_lookup_dict(fontdict, "ToUnicode"))
-      pdf_attach_ToUnicode_CMap(fontdict, encoding_id, usedchars);
-    }
     enc_vec = pdf_encoding_get_encoding(encoding_id);
   } else {
     pdf_obj *tounicode;
@@ -352,15 +347,15 @@ pdf_font_load_type1c (pdf_font *font)
       }
     }
     if (!pdf_lookup_dict(fontdict, "ToUnicode")) {
-    tounicode = pdf_create_ToUnicode_CMap(fullname,
-					  enc_vec, usedchars);
-    if (tounicode) {
-      pdf_add_dict(fontdict,
+      tounicode = pdf_create_ToUnicode_CMap(fullname,
+					    enc_vec, usedchars);
+      if (tounicode) {
+	pdf_add_dict(fontdict,
                      pdf_new_name("ToUnicode"),
                      pdf_ref_obj (tounicode));
-      pdf_release_obj(tounicode);
+	pdf_release_obj(tounicode);
+      }
     }
-  }
   }
 
   /*
@@ -716,7 +711,7 @@ pdf_font_load_type1c (pdf_font *font)
   }
 
   /* Handle Widths in fontdict. */
-  add_SimpleMetrics(font, widths, num_glyphs);
+  add_SimpleMetrics(font, cffont, widths, num_glyphs);
 
   /*
    * CharSet might be recommended for subsetted font, but it is meaningful
