@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/tt_aux.c,v 1.7 2004/09/11 14:50:29 hirata Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/tt_aux.c,v 1.8 2008/05/08 10:14:58 chofchof Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -213,7 +213,7 @@ pdf_obj *tt_get_fontdesc (sfnt *sfont, int *embed, int type, const char* fontnam
     pdf_add_dict (descriptor,
 		pdf_new_name ("Descent"),
 		pdf_new_number (PDFUNIT(os2->sTypoDescender)));
-    stemv = (os2->usWeightClass/65)*(os2->usWeightClass/65)+50; /* arbitrary */
+    stemv = (os2->usWeightClass/65.)*(os2->usWeightClass/65.)+50; /* arbitrary */
     pdf_add_dict (descriptor,
 		pdf_new_name ("StemV"),
 		pdf_new_number (stemv));
@@ -234,9 +234,11 @@ pdf_obj *tt_get_fontdesc (sfnt *sfont, int *embed, int type, const char* fontnam
 		  );
     }
     /* optional */
-    pdf_add_dict (descriptor,
-		pdf_new_name ("AvgWidth"),
-		pdf_new_number (PDFUNIT(os2->xAvgCharWidth)));
+    if (os2->xAvgCharWidth != 0) {
+      pdf_add_dict (descriptor,
+		  pdf_new_name ("AvgWidth"),
+		  pdf_new_number (PDFUNIT(os2->xAvgCharWidth)));
+    }
   }
   
   /* BoundingBox (array) */

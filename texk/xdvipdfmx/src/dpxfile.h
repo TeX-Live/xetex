@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/dpxfile.h,v 1.6 2005/07/20 10:41:54 hirata Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/dpxfile.h,v 1.7 2008/05/08 18:51:59 chofchof Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -31,6 +31,7 @@
 #define DPX_RES_TYPE_TTFONT   0x11
 #define DPX_RES_TYPE_OTFONT   0x12
 #define DPX_RES_TYPE_PKFONT   0x13
+#define DPX_RES_TYPE_DFONT    0x14
 
 #define DPX_RES_TYPE_ENC      0x20
 #define DPX_RES_TYPE_CMAP     0x21
