@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-slovak.ldf}[polyglossia: module for slovak]
 \makeatletter
+\csdef{slovak@font}{\normalfontlatin}
 
 \ifx\l@slovak\@undefined%
    \xpg@nopatterns{Slovak}%

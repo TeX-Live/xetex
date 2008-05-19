@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-dutch.ldf}[polyglossia: module for dutch]
 \makeatletter
+\csdef{dutch@font}{\normalfontlatin}
 
 \ifx\l@dutch\@undefined
    \xpg@nopatterns{Dutch}

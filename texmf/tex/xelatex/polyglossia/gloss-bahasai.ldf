@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-bahasai.ldf}[polyglossia: module for bahasa indonesia]
 \makeatletter
+\csdef{bahasai@font}{\normalfontlatin}
 
 \ifx\l@bahasa\@undefined
   \ifx\l@bahasai\@undefined

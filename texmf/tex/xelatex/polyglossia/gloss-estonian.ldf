@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-estonian.ldf}[polyglossia: module for estonian]
 \makeatletter
+\csdef{estonian@font}{\normalfontlatin}
 
 \ifx\l@estonian\@undefined%
    \xpg@nopatterns{Estonian}%

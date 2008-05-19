@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-basque.ldf}[polyglossia: module for basque]
 \makeatletter
+\csdef{basque@font}{\normalfontlatin}
 
 \ifx\l@basque\@undefined%
    \xpg@nopatterns{Basque}%

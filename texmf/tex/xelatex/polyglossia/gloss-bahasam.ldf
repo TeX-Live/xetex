@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-bahasam.ldf}[polyglossia: module for bahasa malaysia]
 \makeatletter
+\csdef{bahasam@font}{\normalfontlatin}
 
 \ifx\l@malay\@undefined
   \ifx\l@meyalu\@undefined

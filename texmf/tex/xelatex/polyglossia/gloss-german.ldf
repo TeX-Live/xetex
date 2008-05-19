@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-german.ldf}[polyglossia: module for german]
 \makeatletter
+\csdef{german@font}{\normalfontlatin}
 
 \ifx\l@german\@undefined
    \xpg@nopatterns{german}

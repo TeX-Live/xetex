@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-croatian.ldf}[polyglossia: module for croatian]
 \makeatletter
+\csdef{croatian@font}{\normalfontlatin}
 
 \ifx\l@croatian\@undefined%
    \xpg@nopatterns{Croatian}%

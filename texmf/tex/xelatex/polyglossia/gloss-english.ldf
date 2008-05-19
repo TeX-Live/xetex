@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-english.ldf}[polyglossia: module for english]
 \makeatletter
+\csdef{english@font}{\normalfontlatin}
 
 \ifx\l@english\@undefined
    \ifx\l@USenglish\@undefined

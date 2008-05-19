@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-albanian.ldf}[polyglossia: module for albanian]
 \makeatletter
+\csdef{albanian@font}{\normalfontlatin}
 
 \ifx\l@albanian\@undefined
     \xpg@nopatterns{Albanian}

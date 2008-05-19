@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-slovenian.ldf}[polyglossia: module for slovenian]
 \makeatletter
+\csdef{slovenian@font}{\normalfontlatin}
 
 \ifx\l@slovenian\@undefined%
  \ifx\l@slovene\@undefined%

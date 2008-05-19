@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-usorbian.ldf}[polyglossia: module for upper sorbian]
 \makeatletter
+\csdef{usorbian@font}{\normalfontlatin}
 
 \ifx\l@uppersorbian\@undefined
   \ifx\l@usorbian\@undefined

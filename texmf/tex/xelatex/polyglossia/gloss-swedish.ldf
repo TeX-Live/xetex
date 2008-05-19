@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-swedish.ldf}[polyglossia: module for swedish]
 \makeatletter
+\csdef{swedish@font}{\normalfontlatin}
 
 \ifx\l@swedish\@undefined%
    \xpg@nopatterns{<Lang>}%

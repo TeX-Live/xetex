@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-<lang>.ldf}[polyglossia: module for <lang>]
 \makeatletter
+\csdef{template@font}{\normalfontlatin}
 
 \ifx\l@<lang>\@undefined%
    \xpg@nopatterns{<Lang>}%

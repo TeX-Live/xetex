@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-spanish.ldf}[polyglossia: module for spanish]
 \makeatletter
+\csdef{spanish@font}{\normalfontlatin}
 
 \ifx\l@spanish\@undefined
    \xpg@nopatterns{spanish}

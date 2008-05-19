@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-samin.ldf}[polyglossia: module for samin]
 \makeatletter
+\csdef{samin@font}{\normalfontlatin}
 
 \ifx\l@samin\@undefined%
    \xpg@nopatterns{<Lang>}%
