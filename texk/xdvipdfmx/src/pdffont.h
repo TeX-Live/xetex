@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/pdffont.h,v 1.9 2008/05/08 18:51:59 chofchof Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/pdffont.h,v 1.10 2008/05/18 14:49:20 chofchof Exp $
 
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -79,9 +79,9 @@ extern FT_Face  pdf_font_get_ft_face    (pdf_font *font);
 #endif
 
 extern char    *pdf_font_get_ident      (pdf_font *font);
-
-extern char    *pdf_font_get_uniqueTag  (pdf_font *font);
+extern char    *pdf_font_get_mapname    (pdf_font *font);
 extern char    *pdf_font_get_fontname   (pdf_font *font); /* without unique tag */
+extern char    *pdf_font_get_uniqueTag  (pdf_font *font);
 
 extern pdf_obj *pdf_font_get_resource   (pdf_font *font);
 extern pdf_obj *pdf_font_get_descriptor (pdf_font *font);

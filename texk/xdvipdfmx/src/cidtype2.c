@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/cidtype2.c,v 1.35 2008/05/08 18:51:59 chofchof Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/cidtype2.c,v 1.36 2008/05/17 04:18:47 chofchof Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -1062,7 +1062,7 @@ CIDFont_type2_open (CIDFont *font, const char *name,
 	       pdf_new_name("Subtype"),
 	       pdf_new_name("CIDFontType2"));
 
-  font->descriptor = tt_get_fontdesc(sfont, &(opt->embed), 0, name);
+  font->descriptor = tt_get_fontdesc(sfont, &(opt->embed), opt->stemv, 0, name);
   if (!font->descriptor) {
     ERROR("Could not obtain necessary font info.");
   }

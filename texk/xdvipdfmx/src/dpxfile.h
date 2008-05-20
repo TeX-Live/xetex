@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/dpxfile.h,v 1.7 2008/05/08 18:51:59 chofchof Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/dpxfile.h,v 1.8 2008/05/18 12:05:22 chofchof Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -25,6 +25,8 @@
 #ifndef _DPXFILE_H_
 #define _DPXFILE_H_
 
+#define DPX_CONFIG_FILE "dvipdfmx.cfg"
+
 #define DPX_RES_TYPE_FONTMAP  0x00
 
 #define DPX_RES_TYPE_T1FONT   0x10
@@ -39,6 +41,9 @@
 #define DPX_RES_TYPE_AGL      0x23
 
 #define DPX_RES_TYPE_ICCPROFILE 0x30
+
+#define DPX_RES_TYPE_BINARY   0x40
+#define DPX_RES_TYPE_TEXT     0x41
 
 #include "mfileio.h"
 extern FILE *dpx_open_file (const char *filename, int type);

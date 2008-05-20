@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/cidtype0.c,v 1.37 2008/05/08 10:14:58 chofchof Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/cidtype0.c,v 1.38 2008/05/17 04:18:47 chofchof Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -831,7 +831,7 @@ CIDFont_type0_open (CIDFont *font, const char *name,
 
   /* getting font info. from TrueType tables */
   if ((font->descriptor
-       = tt_get_fontdesc(sfont, &(opt->embed), 0, name)) == NULL)
+       = tt_get_fontdesc(sfont, &(opt->embed), opt->stemv, 0, name)) == NULL)
     ERROR("Could not obtain necessary font info.");
 
   if (opt->embed) {
@@ -1243,7 +1243,7 @@ CIDFont_type0_t1copen (CIDFont *font, const char *name,
 
   /* getting font info. from TrueType tables */
   if ((font->descriptor
-       = tt_get_fontdesc(sfont, &(opt->embed), 0, name)) == NULL)
+       = tt_get_fontdesc(sfont, &(opt->embed), opt->stemv, 0, name)) == NULL)
     ERROR("Could not obtain necessary font info.");
 
   if (opt->embed) {

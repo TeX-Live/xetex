@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/pdffont.c,v 1.20 2008/05/09 05:59:51 chofchof Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/pdffont.c,v 1.23 2008/05/18 14:49:20 chofchof Exp $
 
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -686,8 +686,6 @@ pdf_font_findresource (const char *tex_name,
       font->subtype     = PDF_FONT_FONTTYPE_TYPE0;
       font->encoding_id = cmap_id;
 
-      mrec->opt.flags  &= ~FONTMAP_OPT_REMAP; /* _FIXME_ */
-
       font_cache.count++;
 
       if (__verbose) {
@@ -717,9 +715,9 @@ pdf_font_findresource (const char *tex_name,
 	 *       with two different encodings
 	 */
 	if (!strcmp(fontname, font->ident)   &&
-            mrec->opt.index == font->index   &&
 	    encoding_id == font->encoding_id) {
-	  found = 1;
+          if (mrec && mrec->opt.index == font->index)
+            found = 1;
 	}
 	break;
       case PDF_FONT_FONTTYPE_TYPE3:
@@ -844,6 +842,14 @@ pdf_font_get_ident (pdf_font *font)
   ASSERT(font);
 
   return font->ident;
+}
+
+char *
+pdf_font_get_mapname (pdf_font *font)
+{
+  ASSERT(font);
+
+  return font->map_name;
 }
 
 char *

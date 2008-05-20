@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/pdfencoding.c,v 1.8 2008/04/28 18:14:59 matthias Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/pdfencoding.c,v 1.9 2008/05/13 12:23:45 matthias Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -321,7 +321,7 @@ load_encoding_file (const char *filename)
     enc_name = parse_pdf_name(&p, endptr);
 
   skip_white(&p, endptr);
-  encoding_array = parse_pdf_array(&p, endptr);
+  encoding_array = parse_pdf_array(&p, endptr, NULL);
   RELEASE(wbuf);
   if (!encoding_array) {
     if (enc_name)

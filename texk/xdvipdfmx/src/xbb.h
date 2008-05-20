@@ -1,12 +1,10 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/system.h,v 1.7 2008/05/18 10:40:40 chofchof Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/xbb.h,v 1.1 2008/05/17 07:22:21 chofchof Exp $
     
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
-    Copyright (C) 2002 by Jin-Hwan Cho and Shunsaku Hirata,
+    Copyright (C) 2008 by Jin-Hwan Cho, Matthias Franz, and Shunsaku Hirata,
     the dvipdfmx project team <dvipdfmx@project.ktug.or.kr>
     
-    Copyright (C) 1998, 1999 by Mark A. Wicks <mwicks@kettering.edu>
-
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -22,32 +20,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 */
 
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#ifndef _XBB_H_
+#define _XBB_H_
 
-#ifdef MIKTEX
-#include <miktex/Core/Core>
-#include "gnu-miktex.h"
-#include <miktex/KPSE/Emulation>
-#else
-#include <kpathsea/c-auto.h>
-#include <kpathsea/kpathsea.h>
-#endif
+#define EBB_OUTPUT 0
+#define XBB_OUTPUT 1
 
-#ifdef WIN32
-#  undef ERROR
-#  undef NO_ERROR
-#  undef RGB
-#  undef CMYK
-#  undef SETLINECAP
-#  undef SETLINEJOIN
-#  undef SETMITERLIMIT
-#  pragma warning(disable : 4101 4018)
-#else
-#  ifndef __cdecl
-#  define __cdecl
-#  endif
-#  define CDECL
-#endif /* WIN32 */
+extern int extractbb(int argc, char *argv[], int mode);
 
-#endif /* _SYSTEM_H_ */
+#endif /* _XBB_H_ */

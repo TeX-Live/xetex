@@ -1,8 +1,8 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/type1c.c,v 1.23 2008/01/06 09:12:06 matthias Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/type1c.c,v 1.26 2008/05/18 17:05:56 chofchof Exp $
 
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
-    Copyright (C) 2002 by Jin-Hwan Cho and Shunsaku Hirata,
+    Copyright (C) 2008 by Jin-Hwan Cho, Matthias Franz, and Shunsaku Hirata,
     the dvipdfmx project team <dvipdfmx@project.ktug.or.kr>
 
     Copyright (C) 1998, 1999 by Mark A. Wicks <mwicks@kettering.edu>
@@ -63,6 +63,8 @@
 #include "cs_type2.h"
 
 #include "type1c.h"
+
+#include "tfm.h"
 
 int
 pdf_font_open_type1c (pdf_font *font)
@@ -142,7 +144,7 @@ pdf_font_open_type1c (pdf_font *font)
    * Create font descriptor from OpenType tables.
    * We can also use CFF TOP DICT/Private DICT for this.
    */
-  tmp = tt_get_fontdesc(sfont, &embedding, 1, fontname);
+  tmp = tt_get_fontdesc(sfont, &embedding, -1, 1, fontname);
   if (!tmp) {
     ERROR("Could not obtain neccesary font info from OpenType table.");
     return -1;
@@ -165,7 +167,7 @@ add_SimpleMetrics (pdf_font *font, cff_font *cffont,
 		   double *widths, card16 num_glyphs)
 {
   pdf_obj *fontdict;
-  int      code, firstchar, lastchar;
+  int      code, firstchar, lastchar, tfm_id;
   char    *usedchars;
   pdf_obj *tmp_array;
   double   scaling;
@@ -200,15 +202,22 @@ add_SimpleMetrics (pdf_font *font, cff_font *cffont,
       pdf_release_obj(tmp_array);
       return;
     }
+    tfm_id = tfm_open(pdf_font_get_mapname(font), 0);
     for (code = firstchar; code <= lastchar; code++) {
       if (usedchars[code]) {
+        double width;
+        if (tfm_id < 0) /* tfm is not found */
+          width = scaling * widths[code];
+        else
+          width = 1000. * tfm_get_width(tfm_id, code);
 	pdf_add_array(tmp_array,
-		      pdf_new_number(ROUND(scaling*widths[code], 1.0)));
+		      pdf_new_number(ROUND(width, 1.0)));
       } else {
 	pdf_add_array(tmp_array, pdf_new_number(0.0));
       }
     }
   }
+
   if (pdf_array_length(tmp_array) > 0) {
     pdf_add_dict(fontdict,
 		 pdf_new_name("Widths"),  pdf_ref_obj(tmp_array));
