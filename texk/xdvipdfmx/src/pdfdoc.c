@@ -455,9 +455,9 @@ asn_date (char *date_string)
   tz_offset = bd_time->tm_gmtoff;
 #else
 #  ifdef HAVE_TIMEZONE
-  tz_offset = -timezone
+  tz_offset = -timezone;
 #  else
-  tz_offset = compute_timezone_offset()
+  tz_offset = compute_timezone_offset();
 #  endif /* HAVE_TIMEZONE */
 #endif /* HAVE_TM_GMTOFF */
 
