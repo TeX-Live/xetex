@@ -1,4 +1,4 @@
-/*  $Header: /home/cvsroot/dvipdfmx/src/pdfdoc.c,v 1.52 2008/05/20 13:05:14 matthias Exp $
+/*  $Header: /home/cvsroot/dvipdfmx/src/pdfdoc.c,v 1.53 2008/05/21 06:58:37 chofchof Exp $
  
     This is dvipdfmx, an eXtended version of dvipdfm by Mark A. Wicks.
 
@@ -444,22 +444,23 @@ compute_timezone_offset()
 static long
 asn_date (char *date_string)
 {
-#ifndef HAVE_TIMEZONE
-# ifdef HAVE_TM_GMTOFF
+#ifdef HAVE_TM_GMTOFF
 #  define timezone (-bd_time->tm_gmtoff)
-# else
-#  define timezone (-compute_timezone_offset())
-# endif /* not HAVE_TM_GMTOFF */
-#endif  /* not HAVE_TIMEZONE */
+#else
+#  ifndef HAVE_TIMEZONE
+     long timezone = -compute_timezone_offset();
+#  endif  /* not HAVE_TIMEZONE */
+#endif /* not HAVE_TM_GMTOFF */
   time_t      current_time;
   struct tm  *bd_time;
 
   time(&current_time);
   bd_time = localtime(&current_time);
-  sprintf(date_string, "D:%04d%02d%02d%02d%02d%02d%+03ld'%02ld'",
+  sprintf(date_string, "D:%04d%02d%02d%02d%02d%02d%c%02ld'%02ld'",
 	  bd_time->tm_year + 1900, bd_time->tm_mon + 1, bd_time->tm_mday,
 	  bd_time->tm_hour, bd_time->tm_min, bd_time->tm_sec,
-	  (-timezone / 3600), (timezone % 3600) / 60);
+	  (-timezone > 0) ? '+' : '-', labs(timezone) / 3600,
+                                       (labs(timezone) / 60) % 60);
 
   return strlen(date_string);
 }
