@@ -2328,7 +2328,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=xdvipdfmx
- VERSION=0.6
+ VERSION=0.7
 
 
 cat >>confdefs.h <<_ACEOF
@@ -24566,6 +24566,37 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 $as_echo "$have_app_services" >&6; }
 
 
+# check that it's valid to define XETEX and possibly XETEX_MAC
+if test "x$have_app_services" = xyes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define XETEX
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define XETEX_MAC
+_ACEOF
+
+elif test "x$have_libfontconfig" = xyes; then
+  cat >>confdefs.h <<\_ACEOF
+#define XETEX 1
+_ACEOF
+
+else
+  { { $as_echo "$as_me:$LINENO: error: fontconfig library or ApplicationServices framework not found.
+This version of xdvipdfmx requires either ApplicationServices (on Mac OS X)
+or the fontconfig library (on other platforms) to be available, otherwise it
+cannot support XeTeX output using standard system-installed fonts.
+    " >&5
+$as_echo "$as_me: error: fontconfig library or ApplicationServices framework not found.
+This version of xdvipdfmx requires either ApplicationServices (on Mac OS X)
+or the fontconfig library (on other platforms) to be available, otherwise it
+cannot support XeTeX output using standard system-installed fonts.
+    " >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
 if test "x$enable_tetex_build" = xyes; then
   # Get these common libraries from the sources, too.
   # Seems like it would be simpler to treat kpathsea this way too, but
@@ -25330,25 +25361,6 @@ _ACEOF
 #define HAVE_ZLIB_COMPRESS2 1
 _ACEOF
 
-
-  # for tetex/tex live build we may need to define XETEX and XETEX_MAC
-  if test "x$have_app_services" = xyes; then
-
-cat >>confdefs.h <<\_ACEOF
-#define XETEX
-_ACEOF
-
-
-cat >>confdefs.h <<\_ACEOF
-#define XETEX_MAC
-_ACEOF
-
-  elif test "x$have_libfontconfig" = xyes; then
-    cat >>confdefs.h <<\_ACEOF
-#define XETEX 1
-_ACEOF
-
-  fi
 
   # tetex/tex live build; this always has kpathsea, xbasename, etc.,
   # as we're building from current sources.  Do this stuff at the end so
