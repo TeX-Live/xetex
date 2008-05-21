@@ -1,12 +1,29 @@
 /* Some definitions that get appended to the `coerce.h' file that web2c
    outputs.  */
-/* $Id: coerce.h 7379 2008-04-11 16:47:47Z karl $ */
+/* $Id: coerce.h 7719 2008-04-29 08:03:54Z thoekwater $ */
 
 /* The C compiler ignores most unnecessary casts (i.e., casts of
    something to its own type).  However, for structures, it doesn't.
    Therefore, we have to redefine these macros so they don't cast
    cast their argument (of type memoryword or fourquarters,
    respectively).  */
+
+#ifdef luaTeX
+
+#ifdef	print_word
+#undef	print_word
+#define	print_word(x)	zprint_word (x)
+#endif
+
+/* luatex doesn't have tfm_qqqq */
+
+#ifdef	eq_destroy
+#undef	eq_destroy
+#define	eq_destroy(x)	zeq_destroy(x)
+#endif
+
+#else /* luaTeX */
+
 #ifdef	printword
 #undef	printword
 #define	printword(x)	zprintword (x)
@@ -20,6 +37,8 @@
 #ifdef	eqdestroy
 #undef	eqdestroy
 #define	eqdestroy(x)	zeqdestroy(x)
+#endif
+
 #endif
 
 /* And we use the opportunity to declare a few functions that could not be
