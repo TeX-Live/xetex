@@ -444,23 +444,28 @@ compute_timezone_offset()
 static long
 asn_date (char *date_string)
 {
-#ifdef HAVE_TM_GMTOFF
-#  define timezone (-bd_time->tm_gmtoff)
-#else
-#  ifndef HAVE_TIMEZONE
-     long timezone = -compute_timezone_offset();
-#  endif  /* not HAVE_TIMEZONE */
-#endif /* not HAVE_TM_GMTOFF */
+  long        tz_offset;
   time_t      current_time;
   struct tm  *bd_time;
 
   time(&current_time);
   bd_time = localtime(&current_time);
+
+#ifdef HAVE_TM_GMTOFF
+  tz_offset = bd_time->tm_gmtoff;
+#else
+#  ifdef HAVE_TIMEZONE
+  tz_offset = -timezone
+#  else
+  tz_offset = compute_timezone_offset()
+#  endif /* HAVE_TIMEZONE */
+#endif /* HAVE_TM_GMTOFF */
+
   sprintf(date_string, "D:%04d%02d%02d%02d%02d%02d%c%02ld'%02ld'",
 	  bd_time->tm_year + 1900, bd_time->tm_mon + 1, bd_time->tm_mday,
 	  bd_time->tm_hour, bd_time->tm_min, bd_time->tm_sec,
-	  (-timezone > 0) ? '+' : '-', labs(timezone) / 3600,
-                                       (labs(timezone) / 60) % 60);
+	  (tz_offset > 0) ? '+' : '-', labs(tz_offset) / 3600,
+                                      (labs(tz_offset) / 60) % 60);
 
   return strlen(date_string);
 }
