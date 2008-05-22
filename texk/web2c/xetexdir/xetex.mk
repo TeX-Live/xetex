@@ -4,10 +4,6 @@
 
 Makefile: $(srcdir)/xetexdir/xetex.mk
 
-# this should probably move to common.mk some day,
-# but need to check possible effect on other programs
-ALL_CXXFLAGS = @CXXFLAGS@
-
 # We build xetex unless configure decides to skip it
 xetex = @XETEX@ xetex
 
@@ -145,7 +141,7 @@ jpegimage.o: $(srcdir)/xetexdir/jpegimage.c $(srcdir)/xetexdir/jpegimage.h
 	$(compile) $(ALL_CFLAGS) -c $< -o $@
 
 pngimage.o: $(srcdir)/xetexdir/pngimage.c $(srcdir)/xetexdir/pngimage.h
-	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) -c $< -o $@
+	$(compile) $(ALL_CFLAGS) $(LIBPNGCPPFLAGS) $(ZLIBCPPFLAGS) -c $< -o $@
 
 pdfimage.o: $(srcdir)/xetexdir/pdfimage.cpp $(srcdir)/xetexdir/pdfimage.h
 	$(CXX) $(ALL_CFLAGS) $(LIBXPDFCPPFLAGS) -c $< -o $@
@@ -191,7 +187,7 @@ XeTeXOTMath.o: $(srcdir)/xetexdir/XeTeXOTMath.cpp $(XeTeXFontHdrs)
 
 # special rules for files that need the TECkit headers as well
 XeTeX_ext.o: $(srcdir)/xetexdir/XeTeX_ext.c xetexd.h
-	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(LIBPNGCPPFLAGS) $(LIBXPDFCPPFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
+	$(compile) $(ICUCFLAGS) $(FTFLAGS) $(TECKITFLAGS) $(LIBPNGCPPFLAGS) $(LIBXPDFCPPFLAGS) $(ZLIBCPPFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 XeTeX_mac.o: $(srcdir)/xetexdir/XeTeX_mac.c xetexd.h
 	$(compile) $(ICUCFLAGS) $(TECKITFLAGS) $(ALL_CFLAGS) $(XETEX_DEFINES) -c $< -o $@
 
@@ -279,7 +275,7 @@ xefmts: $(all_xefmts)
 
 xefmtdir = $(web2cdir)/xetex
 $(xefmtdir)::
-	$(SHELL) $(top_srcdir)/../mkinstalldirs $(xefmtdir)
+	$(SHELL) $(top_srcdir)/../mkinstalldirs ${DESTDIR}$(xefmtdir)
 
 xetex.fmt: xetex
 	$(dumpenv) $(MAKE) progname=xetex files="xetex.ini unicode-letters.tex plain.tex cmr10.tfm" prereq-check
@@ -298,7 +294,7 @@ install-xetex-dumps: install-xetex-fmts
 
 install-programs: @XETEX@ install-xetex-programs
 install-xetex-programs: xetex $(bindir)
-	for p in xetex; do $(INSTALL_LIBTOOL_PROG) $$p $(bindir); done
+	for p in xetex; do $(INSTALL_LIBTOOL_PROG) $$p ${DESTDIR}$(bindir); done
 
 install-links: @XETEX@ install-xetex-links
 install-xetex-links: install-xetex-programs
@@ -308,13 +304,13 @@ install-xetex-links: install-xetex-programs
 install-fmts: @XETEX@ install-xetex-fmts
 install-xetex-fmts: xefmts $(xefmtdir)
 	xefmts="$(all_xefmts)"; \
-	  for f in $$xefmts; do $(INSTALL_DATA) $$f $(xefmtdir)/$$f; done
+	  for f in $$xefmts; do $(INSTALL_DATA) $$f ${DESTDIR}$(xefmtdir)/$$f; done
 	xefmts="$(xefmts)"; \
 	  for f in $$xefmts; do base=`basename $$f .fmt`; \
-	    (cd $(bindir) && (rm -f $$base; $(LN) xetex $$base)); done
+	    (cd ${DESTDIR}$(bindir) && (rm -f $$base; $(LN) xetex $$base)); done
 
 install-data:: @XETEX@ install-xetex-data
 install-xetex-pool: xetex.pool $(texpooldir)
-	$(INSTALL_DATA) xetex.pool $(texpooldir)/xetex.pool
+	$(INSTALL_DATA) xetex.pool ${DESTDIR}$(texpooldir)/xetex.pool
 
 # end of xetex.mk
