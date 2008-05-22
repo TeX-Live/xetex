@@ -106,7 +106,9 @@ This work consists of the file  xe-inputenc.dtx
 %
 % It seems useful, then, to provide an `override package' for \pkg{inputenc} that interprets the wishes of the user without adding the code to break \XeTeX's attempted reading of the input file.
 %
-% In this first hasty release of the package, any package options given to the override \pkg{xe-inputenc} are passed directly to \XeTeX's low-level commands \cmd\XeTeXinputencoding\ and \cmd\XeTeXdefaultencoding. These two commands set the encoding for subsequent reading of, respectively, the current file and all future files read.
+% In this first hasty release of the package, any package options given to the override \pkg{xe-inputenc} are passed directly to \XeTeX's low-level command \cmd\XeTeXinputencoding. This command sets the encoding for subsequent reading of the current file. All other files are still interpreted as \textsc{utf8} else problems arise when reading |.aux| files (etc.), which are always \emph{written} in the \textsc{utf8} encoding.
+%
+% The best solution, possibly, would be to declare \cmd\XeTeXinputencoding\ explicitly to |"utf8"| for all \XeTeX-written files, and use \cmd\XeTeXdefaultencoding\ to read all other input files in the encoding specified by the options to this package.
 %
 % An exhaustive list of input encodings supported by \XeTeX\ is shown here: \url{http://www.iana.org/assignments/character-sets}. Luckily, most or all of the encoding names supported by the traditional \pkg{inputenc} share their names here. TODO: provide a complete and correct mapping from \pkg{inputenc}'s encoding options to \XeTeX's.
 %
