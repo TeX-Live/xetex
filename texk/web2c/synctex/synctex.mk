@@ -37,6 +37,8 @@
 
 synctex_dir = $(srcdir)/synctex
 
+Makefile: $(synctex_dir)/synctex.mk
+
 # for all the engines, this trick allows to enable or disable SyncTeX support from here.
 # One of the synctex functions is called before the main_control routine
 # this is why we must include synctex.h header
@@ -200,10 +202,14 @@ xetexd.h-with_synctex = if test -z "`grep __SyncTeX__ xetexd.h`";\
 xetexd.h-without_synctex = echo "warning: SyncTeX is NOT enabled"
 
 # the synctex tool, this is not yet implemented
-synctex_parser.c synctex_parser.h synctex_main.c:
-	cat $(synctex_dir)/$@ >$@
-synctex:synctex_main.o synctex_parser.o
-	$(link_command) synctex_main.o synctex_parser.o
+synctex_parser.o: $(synctex_dir)/synctex_parser.c $(synctex_dir)/synctex_parser.h
+	$(compile) -c -I$(synctex_dir) $(ZLIBCPPFLAGS) -o $@ $<
+
+synctex_main.o: $(synctex_dir)/synctex_main.c $(synctex_dir)/synctex_parser.h
+	$(compile) -c -I$(synctex_dir) $(ZLIBCPPFLAGS) -o $@ $<
+
+synctex:synctex_main.o synctex_parser.o $(ZLIBDEPS)
+	$(link_command) synctex_main.o synctex_parser.o $(LDZLIB)
 
 # Cleaning up.
 clean:: synctex-clean

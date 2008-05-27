@@ -281,7 +281,7 @@ proceed:
 #endif
 	/*  We assume that viewer is not so big: */
 #   define SYNCTEX_STR_SIZE 65536
-	if(strlen(viewer)>=65536) {
+	if(viewer && strlen(viewer)>=65536) {
 		synctex_help_view("Viewer command is too long");
 		return -1;
 	}
@@ -425,7 +425,7 @@ proceed:
 							"middle:%s\n"
 							"after:%s\n",
 							output,
-							synctex_node_sheet(node),
+							synctex_node_page(node),
 							synctex_node_h(node),
 							synctex_node_v(node),
 							synctex_node_box_h(node),
@@ -501,6 +501,8 @@ int synctex_edit(int argc, char *argv[]) {
 	synctex_scanner_t scanner = NULL;
 	char * synctex = NULL;
 	size_t size = 0;
+	const char * suffix = ".synctex";
+	const char * suffix_gz = ".gz";
 	char * ptr = NULL;
 	char * where = NULL;
 	/* required */
@@ -514,6 +516,7 @@ int synctex_edit(int argc, char *argv[]) {
 		start = end+1;
 		x = strtof(start,&end);
 		if(end>start && strlen(end)>1 && *end==':') {
+			start = end+1;
 			y = strtof(start,&end);
 			if(end>start && strlen(end)>1 && *end==':') {
 				output = ++end;
@@ -571,7 +574,7 @@ proceed:
 	printf("context:%s\n",context);
 	printf("cwd:%s\n",getcwd(NULL,0));
 #endif
-	size = strlen(output)+9;
+	size = strlen(output)+strlen(suffix)+strlen(suffix_gz)+1;
 	synctex = (char *)malloc(size);
 	if(NULL == synctex) {
 		synctex_help_edit("No more memory");
@@ -594,21 +597,32 @@ proceed:
 		} while(where = strstr(ptr+1,SYNCTEX_PATH_EXTENSION_SEPARATOR));
 		*ptr = '\0';
 	}
-	if(0 == strlcat(synctex,".synctex",size)){
+	if(0 == strlcat(synctex,suffix,size)){
 		synctex_help_edit("Concatenation problem");
 		return -1;
 	}
-	size = 0;
 	scanner = synctex_scanner_new_with_contents_of_file(synctex);
+	if(!scanner) {
+		if(0 == strlcat(synctex,suffix_gz,size)){
+			synctex_help_view("Concatenation problem (can't add suffix '%s')",suffix_gz);
+			return -1;
+		}
+		scanner = synctex_scanner_new_with_contents_of_file(synctex);
+		if(!scanner) {
+			synctex_help_view("No SyncTeX available");
+			return -1;
+		}
+	}
 	free(synctex);
 	synctex = NULL;
+	size = 0;
 	if(scanner && synctex_edit_query(scanner,page,x,y)) {
 		synctex_node_t node = NULL;
 		char * input = NULL;
 		if((node = synctex_next_result(scanner))
 				&& (input = (char *)synctex_scanner_get_name(scanner,synctex_node_tag(node)))) {
 			/* filtering the command */
-			if(strlen(editor)) {
+			if(editor && strlen(editor)) {
 				char * buffer = NULL;
 				char * buffer_cur = NULL;
 				int printed;
@@ -675,8 +689,8 @@ proceed:
 				do {
 					printf(	"Output:%s\n"
 							"Input:%s\n"
-							"Line:%f\n"
-							"Column:%s\n"
+							"Line:%i\n"
+							"Column:%i\n"
 							"Offset:%i\n"
 							"Context:%s\n",
 							output,

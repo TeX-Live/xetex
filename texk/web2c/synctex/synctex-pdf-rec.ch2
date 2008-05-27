@@ -22,6 +22,14 @@
 %
 
 @x
+margin_kern_node,
+kern_node: begin
+@y
+margin_kern_node:cur_h:=cur_h+width(p); {separate the |margin_kern_node| case in |hlist_out|}
+kern_node: begin
+@z
+
+@x
 procedure pdf_hlist_out; {output an |hlist_node| box}
 @y
 procedure pdf_hlist_out; {output an |hlist_node| box}
@@ -59,8 +67,10 @@ while p<>null do
 @z
 
 @x
+margin_kern_node,
 kern_node:cur_h:=cur_h+width(p);
 @y
+margin_kern_node:cur_h:=cur_h+width(p);
 kern_node: begin
   @<Record |kern_node| {\sl Sync\TeX} information@>;
   cur_h:=cur_h+width(p);
