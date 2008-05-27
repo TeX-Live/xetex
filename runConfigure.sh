@@ -94,9 +94,9 @@ if [ "`uname`" = "FreeBSD" ]; then
 	# of course, this will not be the choice when XeTeX becomes a FreeBSD
 	# port; all needed libraries will then be dependencies and handled
 	# automatically by the Ports System. In meantime...
-	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} ${SYSTEM_LIBS_PATHS}"
+	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} ${SYSTEM_LIBS_PATHS} --disable-threads"
 else
-	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib --with-old-mac-fonts"
+	CONFIGURECMD="../configure --prefix=${PREFIX} --datadir=${DATADIR} --with-system-zlib --with-old-mac-fonts --disable-threads"
 fi
 echo ${CONFIGURECMD}
 ${CONFIGURECMD} || exit 1
