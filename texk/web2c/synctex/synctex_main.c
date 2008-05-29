@@ -43,7 +43,7 @@ This is the command line interface to the synctex_parser.c.
 #   include <stdarg.h>
 #   include "synctex_parser.h"
 
-#   include "openbsd-compat.h"
+/*#   include "openbsd-compat.h"*/
 
 int main(int argc, char *argv[]);
 
