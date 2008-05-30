@@ -198,7 +198,7 @@ export needs_icu
 
 # we need graphite for xetex, unless specifically disabled
 test ! -d $srcdir/$GRAPHITEDIR && : ${needs_graphite=no}
-test "$with_graphite" != no    && : ${needs_graphite=no}
+test "$with_graphite" = no     && : ${needs_graphite=no}
 test "$with_xetex"   != no     && : ${needs_graphite=yes}
 : ${needs_graphite=no}
 export needs_graphite
