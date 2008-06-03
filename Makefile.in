@@ -181,11 +181,11 @@ $(FREETYPEDIR)/lib/.libs/libttf.a:
 $(FREETYPE2DIR)/.libs/libfreetype.a:
 	cd $(FREETYPE2DIR); $(MAKE)
 $(TECKITDIR)/libTECkit.a:
-        cd $(TECKITDIR); $(MAKE)
+	cd $(TECKITDIR); $(MAKE)
 $(ICUDIR)/lib/libsicudata.a $(ICUDIR)/lib/libsicule.a $(ICUDIR)/lib/libsicuuc.a:
-        cd $(ICUDIR); $(MAKE)
+	cd $(ICUDIR); $(MAKE)
 $(GRAPHITEDIR)/src/.libs/libgraphite.a:
-        cd $(GRAPHITEDIR); $(MAKE)
+	cd $(GRAPHITEDIR); $(MAKE)
 
 # Prevent GNU make v3 from overflowing arg limit on SysV.
 .NOEXPORT:

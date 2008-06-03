@@ -1,4 +1,4 @@
-# $Id: Makefile.in 8396 2008-05-28 18:29:28Z karl $
+# $Id: Makefile.in 8441 2008-05-31 23:30:52Z vvv $
 # @configure_input@
 # Makefile for web2c --kb@mail.tug.org. Public domain.
 version = @WEB2CVERSION@
@@ -69,9 +69,7 @@ socketlibs = @socketlibs@
 
 common_makeargs = $(MFLAGS) CC='$(CC)' CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' $(XMAKEARGS)
 window_makeargs = x_cppflags='$(x_cppflags)' $(common_makeargs)
-install_makeargs = INSTALL='$(INSTALL)' INSTALL_DATA='$(INSTALL_DATA)' \
-  INSTALL_PROGRAM='$(INSTALL_PROGRAM)' \
-  $(makevars) $(common_makeargs)  
+install_makeargs = $(makevars) $(common_makeargs)
 
 proglib = lib/lib.a
 windowlib = window/window.a
@@ -839,7 +837,8 @@ $(web2cdir)::
 # add to this target via a dependency-only rule, to install their
 # respective engines.
 install-programs: $(programs) $(basic_engines) $(bindir)
-	for p in $(programs); do $(INSTALL_LIBTOOL_PROG) $$p $(bindir); done
+	for p in $(programs) $(basic_engines); do \
+	  $(INSTALL_LIBTOOL_PROG) $$p $(bindir); done
 
 # We do not attempt to install any of the per-format symlinks, leaving
 # that to a separate run of texlinks.
