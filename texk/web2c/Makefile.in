@@ -1,4 +1,4 @@
-# $Id: Makefile.in 8441 2008-05-31 23:30:52Z vvv $
+# $Id: Makefile.in 8587 2008-06-06 02:11:01Z vvv $
 # @configure_input@
 # Makefile for web2c --kb@mail.tug.org. Public domain.
 version = @WEB2CVERSION@
@@ -581,7 +581,7 @@ kpse_include pdftexdir/pdftexlib.mk
 kpse_include luatexdir/luatexlib.mk
 # 
 # Makefile fragments:
-kpse_include synctex/synctex.mk
+kpse_include synctexdir/synctex.mk
 kpse_include etexdir/etex.mk
 kpse_include omegadir/omega.mk
 kpse_include alephdir/aleph.mk
