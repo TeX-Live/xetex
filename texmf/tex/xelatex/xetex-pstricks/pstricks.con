@@ -4,5 +4,5 @@
 % but given a xetex-specific name to avoid confusing other programs
 
 \input xetex-pstricks.con
-\endinput
 
+\endinput

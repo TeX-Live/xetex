@@ -5,6 +5,8 @@
 %% Version 97 patch 2 (1997/04/28)
 %%
 %% For use with xdvipdfmx
+%% Created by SMiyata based on standard pstricks.con from TeXLive distribution.
+%% This file may be distributed, used and modified freely.
 
 \def\pstdriver{xdvipdfmx}
 \def\pstverb#1{\special{pst: #1}}  % Check catcode of "
@@ -44,6 +46,7 @@
 \def\c@lor@ps@cmyk#1\@@{#1 setcmykcolor}
 \def\c@lor@ps@gray#1\@@{#1 setgray}
 \pstcustomize
+\typeout{Using PSTricks configuration for XeTeX+xdvipdfmx}
 \def\@@scalebox{%
 \leavevmode
 \hbox{%
