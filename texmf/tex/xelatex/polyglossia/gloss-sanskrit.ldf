@@ -10,6 +10,28 @@
   \fi%
 \fi
 
+%%  requested from Yves Codet:
+%François, would it be possible to modify "gloss-sanskrit.ldf" so as  
+%to add a non-breaking space before punctuation marks, danda (U+0964)  
+%and double danda (U+0965)? 
+
+\def\sanskrit@punctuation{%
+    \frenchspacing%
+    \XeTeXinterchartokenstate=1%
+    \XeTeXcharclass `\! 7%
+    \XeTeXcharclass `\? 7%
+    \XeTeXcharclass `\; 7%
+    \XeTeXcharclass `\: 7%
+    \XeTeXcharclass `\। 7%
+    \XeTeXcharclass `\॥ 7%
+    \XeTeXinterchartoks 0 7 = {\unskip\kern.1667em}%
+}
+
+\def\nosanskrit@punctuation{%
+    \nonfrenchspacing%
+    \XeTeXinterchartokenstate=0%
+}
+
 %\def\captionssanskrit{%
 %   \def\refname{\textsanskrit{<++>}}%
 %   \def\abstractname{\textsanskrit{<++>}}%
@@ -61,10 +83,11 @@
 }
 
 \def\noextras@sanskrit{%
-   }
+   \nosanskrit@punctuation}
 
 \def\blockextras@sanskrit{%
    \sanskrit@language%
+   \sanskrit@punctuation%
    \local@hyphenmins{sanskrit}{1}{5}%
    %\captionssanskrit%
    %\local@marks{sanskrit}%
