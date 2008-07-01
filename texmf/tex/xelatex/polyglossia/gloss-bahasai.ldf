@@ -61,12 +61,6 @@
 
 \def\bahasai@language{\protect\language=\l@bahasai}
 
-\def\blockextras@bahasai{%
-   \local@hyphenmins{bahasai}{2}{2}%
-   }
-
-\def\inlineextras@bahasai{%
-   \local@hyphenmins{bahasai}{2}{2}%
-   }
+\setlocalhyphenmins{bahasai}{2}{2}
 
 \endinput

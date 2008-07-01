@@ -203,7 +203,7 @@
       \setkeys{#2}{#1}%
       \xpg@csifdef@warn{#2@font}%
       \xpg@csifdef@warn{#2@language}%
-      %setlocalhyphenmins{#2} TODO
+      \use@localhyphenmins{#1}%
       \csname inlineextras@#2\endcsname#3}%
 }}
 
@@ -237,11 +237,11 @@
    \xpg@initial@setup%
    \edef\languagename{#1}%
    \ifdefined\RL%
-   \ifcsundef{#1@RL}{\@rlfalse}{\@rltrue}%
+   \ifcsundef{#1@RL}{\setLR}{\setRL}%
    \fi%
    \xpg@csifdef@warn{#1@font}%
    \xpg@csifdef@warn{#1@language}%
-   %setlocalhyphenmins{#1} TODO
+   \use@localhyphenmins{#1}%
    \xpg@csifdef{captions#1}%
    \xpg@csifdef{date#1}%
    \xpg@csifdef{#1@numbers}%
@@ -260,12 +260,12 @@
    \selectlanguage[#1]{#2}%
    }{}
 
-%TODO -> \setlocalhyphenmins ?
-\newcommand{\local@hyphenmins}[3]{%
-   \@ifundefined{#1hyphenmins}{}%
-   {\expandafter\xdef\csname #1hyphenmins\endcsname{}}%
-   \lefthyphenmin=#2\righthyphenmin=#3\relax%
-}
+\newcommand{\setlocalhyphenmins}[3]{%
+   \providehyphenmins{#1}{#2#3}}
+
+\def\use@localhyphenmins#1{%
+   \ifcsundef{#1hyphenmins}{}%
+   {\expandafter\expandafter\expandafter\set@hyphenmins\csname #1hyphenmins\endcsname\relax}}
 
 \DeclareOption{ngerman}{%
 \@ifundefined{xpg@main@language}%
@@ -287,13 +287,14 @@
  {\edef\@temp{\noexpand\setdefaultlanguage[variant=ancient]{greek}}}%
  {\edef\@temp{\noexpand\setotherlanguage[variant=ancient]{greek}}}%
    \@temp}
+%FIXME THIS DOES NOT WORK !!!
 \DeclareOption*{%
 \@ifundefined{xpg@main@language}%
 {\edef\@temp{\noexpand\setdefaultlanguage{\CurrentOption}}}%
 {\edef\@temp{\noexpand\setotherlanguage{\CurrentOption}}}%
    \@temp}
 \ProcessOptions*
-%This is for compatibility with biblatex: 
+%This is for compatibility with biblatex and perhaps other pkgs: 
 \def\languageshorthands#1{\relax}
 \endinput
 

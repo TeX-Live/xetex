@@ -41,12 +41,6 @@
 
 \def\slovenian@language{\protect\language=\l@slovenian}
 
-\def\blockextras@slovenian{%
-   \local@hyphenmins{slovenian}{2}{2}%
-   }
-
-\def\inlineextras@slovenian{%
-   \local@hyphenmins{slovenian}{2}{2}%
-   }
+\setlocalhyphenmins{slovenian}{2}{2}%
 
 \endinput

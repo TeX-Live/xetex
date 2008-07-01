@@ -37,18 +37,18 @@
 \def\danish@language{%
    \protect\language=\l@danish}
 
+\setlocalhyphenmins{danish}{2}{3}%
+
 \def\noextras@danish{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@danish{%
-   \local@hyphenmins{danish}{2}{3}%
    \frenchspacing%
    }
 
 \def\inlineextras@danish{%
    \frenchspacing%
-   \local@hyphenmins{danish}{2}{3}%
    }
 
 \endinput

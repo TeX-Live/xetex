@@ -37,13 +37,10 @@
 
 \def\italian@language{\protect\language=\l@italian}
 
-\def\blockextras@italian{%
-   \local@hyphenmins{italian}{2}{2}%
-   %TODO \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
-   }
+\setlocalhyphenmins{italian}{2}{2}%
 
-\def\inlineextras@italian{%
-   \local@hyphenmins{italian}{2}{2}%
-   }
+%\def\blockextras@italian{%
+%   %TODO ? \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
+%   }
 
 \endinput

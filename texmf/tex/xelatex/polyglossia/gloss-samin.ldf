@@ -66,12 +66,6 @@
 
 \def\samin@language{\protect\language=\l@samin}
 
-\def\blockextras@samin{%
-   \local@hyphenmins{samin}{2}{2}%
-   }
-
-\def\inlineextras@samin{%
-   \local@hyphenmins{samin}{2}{2}%
-   }
+\setlocalhyphenmins{samin}{2}{2}%
 
 \endinput

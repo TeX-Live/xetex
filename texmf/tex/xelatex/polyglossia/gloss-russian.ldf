@@ -159,18 +159,19 @@
 
 \def\russian@language{\protect\language=\l@russian}
 
+\setlocalhyphenmins{russian}{2}{2}%
+
 \def\noextras@russian{%
    \nonfrenchspacing%
+   \def\@seccntformat##1{\csname the##1\endcsname\quad}% = LaTeX kernel
    }
    
 \def\blockextras@russian{%
-   \local@hyphenmins{russian}{2}{2}%
    \frenchspacing%
    \russian@capsformat%
    }
 
 \def\inlineextras@russian{%
-   \local@hyphenmins{russian}{2}{2}%
    \frenchspacing%
    }
 

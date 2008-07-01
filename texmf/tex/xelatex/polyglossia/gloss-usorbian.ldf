@@ -54,12 +54,6 @@
 
 \def\usorbian@language{\protect\language=\l@usorbian}
 
-\def\blockextras@usorbian{%
-   \local@hyphenmins{usorbian}{2}{2}%
-   }
-
-\def\inlineextras@usorbian{%
-   \local@hyphenmins{usorbian}{2}{2}%
-   }
+\setlocalhyphenmins{usorbian}{2}{2}%
 
 \endinput

@@ -37,17 +37,17 @@
 
 \def\polish@language{\protect\language=\l@polish}
 
+\setlocalhyphenmins{polish}{2}{2}%
+
 \def\noextras@polish{%
    \nonfrenchspacing%
 }
 
 \def\blockextras@polish{%
-   \local@hyphenmins{polish}{2}{2}%
    \frenchspacing%
 }
 
 \def\inlineextras@polish{%
-   \local@hyphenmins{polish}{2}{2}%
    \frenchspacing%
 }
 

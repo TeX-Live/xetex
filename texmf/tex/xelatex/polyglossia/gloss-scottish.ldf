@@ -43,12 +43,6 @@
 
 \def\scottish@language{\protect\language=\l@scottish}
 
-\def\blockextras@scottish{%
-   \local@hyphenmins{scottish}{2}{2}%
-   }
-
-\def\inlineextras@scottish{%
-   \local@hyphenmins{scottish}{2}{2}%
-   }
+\setlocalhyphenmins{scottish}{2}{2}%
 
 \endinput

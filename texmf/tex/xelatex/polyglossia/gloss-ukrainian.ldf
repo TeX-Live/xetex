@@ -86,17 +86,17 @@
 
 \def\ukrainian@language{\protect\language=\l@ukrainian}
 
+\setlocalhyphenmins{ukrainian}{2}{2}%
+
 \def\noextras@ukrainian{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@ukrainian{%
-   \local@hyphenmins{ukrainian}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@ukrainian{%
-   \local@hyphenmins{ukrainian}{2}{2}%
    \frenchspacing%
    }
 

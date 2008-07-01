@@ -36,12 +36,6 @@
 
 \def\croatian@language{\protect\language=\l@croatian}
 
-\def\blockextras@croatian{%
-   \local@hyphenmins{croatian}{2}{2}%
-   }
-
-\def\inlineextras@croatian{%
-   \local@hyphenmins{croatian}{2}{2}%
-   }
+\setlocalhyphenmins{croatian}{2}{2}
 
 \endinput

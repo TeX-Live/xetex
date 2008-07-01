@@ -634,11 +634,12 @@
 \def\greek@numbers{%
    \let\latin@alph\@alph%
    \let\latin@Alph\@Alph%
-   \def\greek@alph##1{\protect\greeknumber{##1}}%
-   \def\greek@Alph##1{\protect\Greeknumber{##1}}%
-   \let\@alph\greek@alph%
-   \let\@Alph\greek@Alph%
-   }
+   \if@greek@numerals
+      \def\greek@alph##1{\protect\greeknumber{##1}}%
+      \def\greek@Alph##1{\protect\Greeknumber{##1}}%
+      \let\@alph\greek@alph%
+      \let\@Alph\greek@Alph%
+   \fi}
 
 \def\nogreek@numbers{%
   \let\@alph\latin@alph%
@@ -667,21 +668,15 @@
    \let\normalfont=\greek@font%
    \def\reset@font{\normalfont}}
 
+\setlocalhyphenmins{greek}{2}{2}%
+
 \def\noextras@greek{%
-   \if@greek@numerals\nogreek@numbers\fi%
    \nofrench@indent%
    }
 
 \def\blockextras@greek{%
-   \local@hyphenmins{greek}{2}{2}%
    \frenchspacing%
    \french@indent%
-   \if@greek@numerals\greek@numbers\fi%
-   }
-
-\def\inlineextras@greek{%
-   \local@hyphenmins{greek}{2}{2}%
-   \if@greek@numerals\greek@numbers\fi%
    }
 
 \endinput

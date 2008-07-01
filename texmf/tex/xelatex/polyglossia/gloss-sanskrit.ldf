@@ -57,8 +57,6 @@
 %   \def\glossaryname{\textsanskrit{<++>}}%
 %   \def\today{\textsanskrit{<++>}}}
 
-\def\sanskrit@language{\protect\language=\l@sanskrit}
-
 \def\sanskrit@font{%
 \@ifundefined{sanskritfont}{%
       \@ifundefined{devanagarifont}{%
@@ -90,17 +88,16 @@
    \let\ttfamily=\sanskrit@font%
    \def\reset@font{\normalfont}}
 
+\def\sanskrit@language{\protect\language=\l@sanskrit}
+
+\setlocalhyphenmins{sanskrit}{1}{5}%
+
 \def\noextras@sanskrit{%
    \nosanskrit@punctuation%
    }
 
 \def\blockextras@sanskrit{%
    \sanskrit@punctuation%
-   \local@hyphenmins{sanskrit}{1}{5}%
-   }
-
-\def\inlineextras@sanskrit{%
-   \local@hyphenmins{sanskrit}{1}{5}%
    }
 
 \endinput

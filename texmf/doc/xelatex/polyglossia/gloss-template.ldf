@@ -35,8 +35,6 @@
    \def\today{\text<lang>{<++>}}%
    }
 
-\def\<lang>@language{\protect\language=\l@<lang>}
-
 \def\<lang>@font{%
 \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
 \@ifundefined{<lang>font}{%
@@ -76,15 +74,17 @@
    \let\normalfont=\<lang>@font%
    \def\reset@font{\normalfont}}
 
+\def\<lang>@language{\protect\language=\l@<lang>}
+
+\setlocalhyphenmins{<lang>}{2}{2}%
+
 \def\noextras@<lang>{%
    }
 
 \def\blockextras@<lang>{%
-   \local@hyphenmins{<lang>}{2}{2}%
    }
 
 \def\inlineextras@<lang>{%
-   \local@hyphenmins{<lang>}{2}{2}%
    }
 
 \endinput

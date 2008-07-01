@@ -37,17 +37,17 @@
 
 \def\estonian@language{\protect\language=\l@estonian}
 
+\setlocalhyphenmins{estonian}{2}{2}%
+
 \def\noextras@estonian{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@estonian{%
-   \local@hyphenmins{estonian}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@estonian{%
-   \local@hyphenmins{estonian}{2}{2}%
    \frenchspacing%
    }
 

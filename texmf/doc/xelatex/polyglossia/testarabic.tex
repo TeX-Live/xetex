@@ -1,5 +1,6 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper]{scrartcl}%
 \usepackage[no-math]{fontspec}
+\usepackage{bidi}
 \usepackage{xltxtra,url}
 \usepackage{polyglossia,hijrical}
 \setdefaultlanguage[calendar=gregorian,locale=mashriq]{arabic}
@@ -9,15 +10,17 @@
 \defaultfontfeatures{Scale=MatchLowercase}
 \setmonofont{Inconsolata}
 \setsansfont{Lucida Sans Unicode}
-\newfontfamily\arabicfont[Script=Arabic,Scale=1.5]{Scheherazade}
+\newfontfamily\arabicfont[Script=Arabic,Scale=1.3]{Scheherazade}%{Adobe Arabic}%
+\newfontfamily\arabicfonttt[Script=Arabic,Scale=.75]{DejaVu Sans Mono}
 \newfontfamily\farsifont[Script=Arabic,Scale=1.1,WordSpace=2]{IranNastaliq}
 \parindent 0pt
 \begin{document}
-\section{\arabicfont لغات مختلفة}
+\pagenumbering{alph}
+\section{لغات مختلفة}
 
 
-{\Large العربية}\footnote{%
-	من «\LR{\url{http://ar.wikipedia.org/wiki/}\RL{لغة عربية}}»} 
+\textbf{العربية}\footnote{%
+من «\LR{\textenglish{\url{http://ar.wikipedia.org/wiki/}}\RL{\ttfamily لغة عربية}}»} 
 أكبر لغات المجموعة السامية من حيث عدد المتحدثين، وإحدى أكثر اللغات انتشارا في
 العالم، يتحدثها أكثر من ٤٢٢ مليون نسمة،١ ويتوزع متحدثوها في المنطقة المعروفة
 باسم الوطن العربي، بالإضافة إلى العديد من المناطق الأخرى المجاورة كالأحواز وتركيا
@@ -31,9 +34,9 @@
 مباشرا أو غير مباشر على كثير من اللغات الأخرى في العالم الإسلامي، كالتركية
 والفارسية والأردية مثلا.
 
+\textfarsi{\bfseries فارسی}\footnote{%
+از «\LR{\textenglish{\url{http://fa.wikipedia.org/wiki/}}\RL{\ttfamily فارسي}}»}
 \begin{farsi}
-{\Large فارسی}\footnote{%
-	از «\LR{\url{http://fa.wikipedia.org/wiki/}\RL{فارسي}}»}
 یا پارسی، (که دری، فارسی دری، و پارسی دری نیز نامیده می‌شود) زبانی است که
 در کشورهای ایران، افغانستان، تاجیکستان و ازبکستان به آن سخن می‌رانند.
 (برخی زبان فارسی در تاجیکستان و ازبکستان و چین را فارسی تاجیکی نام
@@ -52,13 +55,39 @@ known as the Anglosphere). It is used extensively as a second language and as
 an official language throughout the world, especially in Commonwealth countries
 and in many international organisations.
 
+\textarabic{١ ٢ ٣}
+
 \end{english}
 \bigskip
 
-\section{\arabicfont أعمال تأريخية (\LR{\rmfamily Calendar operations})}
+\section{أعمال تأريخية (\textenglish{Calendar operations})}
 
 
-\LR{\localenglish{\rmfamily\today}} = \today\ = \Hijritoday\footnote{ 
-	محسوب ب‍ \textsf{hijrical.sty}} 
+\textenglish{\today} = \today\ = \Hijritoday\footnote{ 
+	محسوب بـ \textenglish{\textsf{hijrical.sty}}} 
 
+\newpage
+\subsection{فلان}
+\textenglish{1 2 3}
+
+\subsubsection{فلان فلان}
+\begin{enumerate}
+	\item مثال
+	\item مثال
+		\begin{enumerate}
+			\item مثال
+			\item مثال
+		\end{enumerate}
+
+	\item مثال	
+\end{enumerate}
+
+\begin{table}
+	\centering
+	\begin{tabular}{cc}
+		ب & ا \\
+		د & ج 
+	\end{tabular}
+	\caption{هذا المثال}
+\end{table}
 \end{document}

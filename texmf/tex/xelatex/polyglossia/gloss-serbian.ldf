@@ -124,19 +124,15 @@
 %TODO when available load latin hyphenation patterns as well!
 \def\serbian@language{\protect\language=\l@serbian}
 
+\setlocalhyphenmins{serbian}{2}{2}%
+
 \def\noextras@serbian{%
    \nofrench@indent%
    }
 
 \def\blockextras@serbian{%
-   \local@hyphenmins{serbian}{2}{2}%
    \french@indent%
    }
-
-\def\inlineextras@serbian{%
-   \local@hyphenmins{serbian}{2}{2}%
-   }
-
 \endinput
 % TODO ? stuff from babel
 

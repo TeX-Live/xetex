@@ -40,17 +40,17 @@
 
 \def\norsk@language{\protect\language=\l@norsk}
 
+\setlocalhyphenmins{norsk}{2}{2}%
+
 \def\noextras@norsk{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@norsk{%
-   \local@hyphenmins{norsk}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@norsk{%
-   \local@hyphenmins{norsk}{2}{2}%
    \frenchspacing%
    }
 

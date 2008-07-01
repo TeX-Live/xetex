@@ -38,17 +38,17 @@
 
 \def\finnish@language{\protect\language=\l@finnish}
 
+\setlocalhyphenmins{finnish}{2}{2}%
+
 \def\noextras@finnish{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@finnish{%
-   \local@hyphenmins{finnish}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@finnish{%
-   \local@hyphenmins{finnish}{2}{2}%
    \frenchspacing%
    }
 

@@ -93,17 +93,17 @@
       }}% 
 {\bulgarianfont}}
 
+\setlocalhyphenmins{bulgarian}{2}{2}%
+
 \def\noextras@bulgarian{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@bulgarian{%
-   \local@hyphenmins{bulgarian}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@bulgarian{%
-   \local@hyphenmins{bulgarian}{2}{2}%
    \frenchspacing%
    }
 

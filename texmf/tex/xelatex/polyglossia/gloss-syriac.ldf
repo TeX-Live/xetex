@@ -79,7 +79,7 @@
    \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
    \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
    \fi}
-   \def\today{\@ensure@RL{{\reset@font\number\day}\space\syriac@month{\month}\space{\reset@font\number\year}}}
+   \def\today{\@ensure@RL{\arabicnumber\day\space\syriac@month{\month}\space\arabicnumber\year}}
 }
 
 \def\syriac@zero{}

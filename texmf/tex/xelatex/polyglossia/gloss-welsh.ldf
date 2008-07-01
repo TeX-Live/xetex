@@ -42,12 +42,6 @@
 
 \def\welsh@language{\protect\language=\l@welsh}
 
-\def\blockextras@welsh{%
-   \local@hyphenmins{welsh}{2}{3}%
-   }
-
-\def\inlineextras@welsh{%
-   \local@hyphenmins{welsh}{2}{3}%
-   }
+\setlocalhyphenmins{welsh}{2}{3}%
 
 \endinput

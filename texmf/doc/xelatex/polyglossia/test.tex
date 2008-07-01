@@ -8,7 +8,7 @@
 \usepackage{xltxtra,url}
 \usepackage{polyglossia}
 \setdefaultlanguage{french}
-\setotherlanguage[dialect=british,monthday=cardinal]{english}
+\setotherlanguage[dialect=british,monthday=ordinal]{english}
 \setotherlanguage[variant=poly]{greek}
 \setotherlanguage[numerals=thai]{thai}
 \setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew}
@@ -16,7 +16,7 @@
 \defaultfontfeatures{Scale=MatchLowercase,RawFeature={+locl}}
 \setmonofont{Inconsolata}
 \setsansfont{Gill Sans Std}
-\newfontfamily\arabicfont[Script=Arabic]{Scheherazade}%{Adobe Arabic}
+\newfontfamily\arabicfont[Script=Arabic]{Adobe Arabic}%{Scheherazade}%
 \newfontfamily\syriacfont[ExternalLocation="/mnt/data/fonts/syriac/",
                           Script=Syriac]{SyrCOMJerusalem.otf}
 \newfontfamily\hebrewfont[Script=Hebrew,Scale=1]{Adobe Hebrew}
@@ -83,13 +83,13 @@ Quamquam sermone nativo fungi desinit, cumque nostris diebus perpauci Latine loq
 \end{greek}
 \end{quote}
 
-\begin{hebrew}
+\begin{hebrew}[numerals=hebrew]
 \textbf{עברית} היא שפה ממשפחת השפות השמיות, הידועה כשפתו של העם היהודי, ואשר ניב מודרני שלה משמש כשפה הרשמית והעיקרית של מדינת ישראל. \\
-(\today)
+(\today\ : \hebrewtoday)
 \end{hebrew}
 
 \begin{syriac}%\footnotesize
-	ܠܫܢܐ ܐܪܡܝܐ ܐܘ ܐܪܡܝܬ ܗܘ ܠܫܢ̈ܐ ܥܡ ܬܫܥܝܬܐ ܕ\textrm{3000} ܫܢ̈ܝܐ܂ ܗܘܐ ܠܫܢܐ ܕܡܠܟܘ̈ܬܐ ܘܬܘܕ̈ܝܬܐ܂ ܥܡ ܠܫܢܐ ܥܒܪܝܐ܄ ܗܘܐ ܠܫܢܐ ܕܣܦܪ̈ܐ ܕܕܢܝܐܝܠ ܘܥܙܪܐ ܘܗܘ ܠܫܢܐ ܚܕܢܝܐ ܕܬܠܡܘܕ܂ ܐܪܡܝܐ ܗܘܐ ܠܫܢܐ ܕܝܫܘܥ܂ ܐܕܝܘܡ܄ ܐܪܡܝܐ ܗܘ ܠܫܢܐ ܕܟܠܕ̈ܝܐ܄ ܐܬܘܪ̈ܝܐ܄ ܡܪ̈ܘܢܝܐ܄ ܘܣܘܪ̈ܝܝܐ܀ \\
+ܠܫܢܐ ܐܪܡܝܐ ܐܘ ܐܪܡܝܬ ܗܘ ܠܫܢ̈ܐ ܥܡ ܬܫܥܝܬܐ ܕ\textrm{3000} ܫܢ̈ܝܐ܂ ܗܘܐ ܠܫܢܐ ܕܡܠܟܘ̈ܬܐ ܘܬܘܕ̈ܝܬܐ܂ ܥܡ ܠܫܢܐ ܥܒܪܝܐ܄ ܗܘܐ ܠܫܢܐ ܕܣܦܪ̈ܐ ܕܕܢܝܐܝܠ ܘܥܙܪܐ ܘܗܘ ܠܫܢܐ ܚܕܢܝܐ ܕܬܠܡܘܕ܂ ܐܪܡܝܐ ܗܘܐ ܠܫܢܐ ܕܝܫܘܥ܂ ܐܕܝܘܡ܄ ܐܪܡܝܐ ܗܘ ܠܫܢܐ ܕܟܠܕ̈ܝܐ܄ ܐܬܘܪ̈ܝܐ܄ ܡܪ̈ܘܢܝܐ܄ ܘܣܘܪ̈ܝܝܐ܀ \\
 (\today)
 \end{syriac}
 

@@ -43,32 +43,16 @@
     januara\or februara\or měrca\or apryla\or maja\or
     junija\or julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
-    \space \number\year}}}
+    \space \number\year}}%
+    \def\oldtoday{\textlsorbian{\number\day.~\ifcase\month\or
+    wjelikego rožka\or małego rožka\or nalětnika\or
+    jatšownika\or rožownika\or smažnika\or pražnika\or
+    žnjeńca\or požnjeńca\or winowca\or nazymnika\or 
+    godownika\fi\space \number\year}}%
+    }
 
 \def\lsorbian@language{\protect\language=\l@lsorbian}
 
-\def\blockextras@lsorbian{%
-   \local@hyphenmins{lsorbian}{2}{2}%
-   }
-
-\def\inlineextras@lsorbian{%
-   \local@hyphenmins{lsorbian}{2}{2}%
-   }
+\setlocalhyphenmins{lsorbian}{2}{2}%
 
 \endinput
-% TODO
-%implement this as option date=old
-%
-%\def\today{\number\day.~\ifcase\month\or
-%    wjelikego rožka\or
-%    małego rožka\or
-%    nalětnika\or
-%    jatšownika\or
-%    rožownika\or
-%    smažnika\or
-%    pražnika\or
-%    žnjeńca\or
-%    požnjeńca\or
-%    winowca\or
-%    nazymnika\or
-%    godownika\fi \space \number\year}

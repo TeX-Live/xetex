@@ -68,13 +68,7 @@
    \let\ontoday\@undefined
    }
 
-\def\blockextras@magyar{%
-   \local@hyphenmins{magyar}{2}{2}%
-   }
-
-\def\inlineextras@magyar{%
-   \local@hyphenmins{magyar}{2}{2}%
-   }
+\setlocalhyphenmins{magyar}{2}{2}%
 
 \endinput
 

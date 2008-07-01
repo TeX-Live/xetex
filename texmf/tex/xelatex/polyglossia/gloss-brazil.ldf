@@ -45,12 +45,6 @@
      
 \def\brazil@language{\protect\language=\l@portuges}
 
-\def\blockextras@brazil{%
-   \local@hyphenmins{brazil}{2}{3}%
-   }
-
-\def\inlineextras@brazil{%
-   \local@hyphenmins{brazil}{2}{3}%
-   }
+\setlocalhyphenmins{brazil}{2}{3}
 
 \endinput

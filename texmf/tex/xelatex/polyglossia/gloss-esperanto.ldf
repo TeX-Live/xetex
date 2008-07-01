@@ -51,12 +51,6 @@
 
 \def\esperanto@language{\protect\language=\l@esperanto}
 
-\def\blockextras@esperanto{%
-   \local@hyphenmins{esperanto}{2}{2}%
-   }
-
-\def\inlineextras@esperanto{%
-   \local@hyphenmins{esperanto}{2}{2}%
-   }
+\setlocalhyphenmins{esperanto}{2}{2}%
 
 \endinput

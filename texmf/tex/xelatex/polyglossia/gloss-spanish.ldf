@@ -41,18 +41,17 @@
 
 \def\spanish@language{\protect\language=\l@spanish}
 
+\setlocalhyphenmins{spanish}{2}{2}%
+
 \def\noextras@spanish{%
    \nonfrenchspacing%
 }
 
 \def\blockextras@spanish{%
-   \local@hyphenmins{spanish}{2}{2}%
    \frenchspacing%
 }
 
 \def\inlineextras@spanish{%
-   \spanish@language%
-   \local@hyphenmins{spanish}{2}{2}%
    \frenchspacing%
 }
 

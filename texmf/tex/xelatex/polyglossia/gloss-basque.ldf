@@ -38,12 +38,6 @@
 
 \def\basque@language{\protect\language=\l@basque}
 
-\def\blockextras@basque{%
-   \local@hyphenmins{basque}{2}{2}%
-   }
-
-\def\inlineextras@basque{%
-   \local@hyphenmins{basque}{2}{2}%
-   }
+\setlocalhyphenmins{basque}{2}{2}
 
 \endinput

@@ -38,17 +38,17 @@
 
 \def\czech@language{\protect\language=\l@czech}
 
+\setlocalhyphenmins{czech}{2}{2}%
+
 \def\noextras@czech{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@czech{%
-   \local@hyphenmins{czech}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@czech{%
-   \local@hyphenmins{czech}{2}{2}%
    \frenchspacing%
    }
 

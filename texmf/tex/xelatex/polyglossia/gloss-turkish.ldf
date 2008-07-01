@@ -61,17 +61,17 @@
 
 \def\turkish@language{\protect\language=\l@turkish}
 
+\setlocalhyphenmins{turkish}{2}{2}%
+
 \def\noextras@turkish{%
    \noturkish@punctuation%
 }
 
 \def\blockextras@turkish{%
-   \local@hyphenmins{turkish}{2}{2}%
    \turkish@punctuation%
 }
 
 \def\inlineextras@turkish{%
-   \local@hyphenmins{turkish}{2}{2}%
    \turkish@punctuation%
 }
 

@@ -105,19 +105,19 @@
 
 \def\french@language{\protect\language=\l@french}
 
+\setlocalhyphenmins{french}{2}{2}%
+
 \def\noextras@french{%
    \nofrench@punctuation%
    \nofrench@indent}
 
 \def\blockextras@french{%
-   \local@hyphenmins{french}{2}{2}%
    \french@punctuation%
    \french@indent%
    \french@guillemets%
    }
 
 \def\inlineextras@french{%
-   \local@hyphenmins{french}{2}{2}%
    \french@punctuation%
    \french@guillemets%
    }

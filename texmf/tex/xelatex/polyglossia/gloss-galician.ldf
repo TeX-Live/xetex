@@ -37,12 +37,6 @@
 
 \def\galician@language{\protect\language=\l@galician}
 
-\def\blockextras@galician{%
-   \local@hyphenmins{galician}{2}{2}%
-   }
-
-\def\inlineextras@galician{%
-   \local@hyphenmins{galician}{2}{2}%
-   }
+\setlocalhyphenmins{galician}{2}{2}%
 
 \endinput

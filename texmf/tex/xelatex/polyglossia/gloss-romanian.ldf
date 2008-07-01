@@ -41,12 +41,6 @@
 
 \def\romanian@language{\protect\language=\l@romanian}
 
-\def\blockextras@romanian{%
-   \local@hyphenmins{romanian}{2}{2}%
-   }
-
-\def\inlineextras@romanian{%
-   \local@hyphenmins{romanian}{2}{2}%
-   }
+\setlocalhyphenmins{romanian}{2}{2}%
 
 \endinput

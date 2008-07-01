@@ -25,13 +25,15 @@
 	\fi}
 
 \newif\if@hijrical
-%\def\tmp@hijri{hijri}
-%\def\tmp@islamic{islamic}
-\def\tmp@gregorian{gregorian}
+\def\tmp@hijri{hijri}
+\def\tmp@islamic{islamic}
 \define@key{arabic}{calendar}[islamic]{%
 	\def\@tmpa{#1}%
-	\ifx\@tmpa\tmp@gregorian\@hijricalfalse\else%
-	\@hijricaltrue\fi}
+        \ifx\@tmpa\tmp@hijri\@hijricaltrue%
+	\else%
+	  \ifx\@tmpa\tmp@islamic\@hijricaltrue%
+	\else\@hijricalfalse%
+	\fi\fi}
 
 % This should set the defaults
 \setkeys{arabic}{locale,calendar,numerals}
@@ -151,6 +153,7 @@
 
 \def\noarabic@globalnumbers{
    \let\@arabic\@latinarabic%
+   \renewcommand\thefootnote{\protect\number{\c@footnote}}%
    }
 
 \def\arabic@language{\language=\l@arabic}

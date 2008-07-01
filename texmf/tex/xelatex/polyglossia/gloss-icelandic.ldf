@@ -41,13 +41,7 @@
 
 \def\icelandic@language{\protect\language=\l@icelandic}
 
-\def\blockextras@icelandic{%
-   \local@hyphenmins{icelandic}{2}{2}%
-   }
-
-\def\inlineextras@icelandic{%
-   \local@hyphenmins{icelandic}{2}{2}%
-   }
+\setlocalhyphenmins{icelandic}{2}{2}%
 
 \endinput
 

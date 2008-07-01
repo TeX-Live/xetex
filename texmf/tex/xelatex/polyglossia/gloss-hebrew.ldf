@@ -1,7 +1,6 @@
 \ProvidesFile{gloss-hebrew.ldf}[polyglossia: module for hebrew]
 \RequirePackage{bidi}
-%%TODO: Implement hebrew calendar
-%% hebcal.sty
+\RequirePackage{hebrewcal}
 \makeatletter
 
 \ifx\l@hebrew\@undefined
@@ -11,39 +10,63 @@
 
 \def\hebrew@RL{\relax}
 
-%ADD OPTION FOR calendar and load hebcal.sty if needed
+\newif\if@calendar@hebrew
+\def\tmp@hebrew{hebrew}
+\define@key{hebrew}{calendar}[gregorian]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@hebrew%
+        \@calendar@hebrewtrue%
+	\else%
+          \@calendar@hebrewfalse%
+	\fi}
 
-\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
+% hebrewcal.sty also defines the boolean key fullyear (default=false)
+
+\newif\if@hebrew@numerals
+\def\tmp@hebrew{hebrew}
+\define@key{hebrew}{numerals}[arabic]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@hebrew%
+	  \@hebrew@numeralstrue%
+	\else%
+          \@hebrew@numeralsfalse%
+	\fi}
+
+\setkeys{hebrew}{numerals}
 
 \def\captionshebrew{%
-  \def\prefacename{\@ensure@RL{מבוא}}%
-  \def\refname{\@ensure@RL{רשימט מקורוט}}%
-  \def\abstractname{\@ensure@RL{טקציר}}%
-  \def\bibname{\@ensure@RL{ביבליו גרפיח}}%
-  \def\chaptername{\@ensure@RL{פרק}}%
-  \def\appendixname{\@ensure@RL{נספה}}%
-  \def\contentsname{\@ensure@RL{טוכן עניינים}}%
-  \def\listfigurename{\@ensure@RL{רשימט איורים}}%
-  \def\listtablename{\@ensure@RL{רשימט תבלאוט}}%
-  \def\indexname{\@ensure@RL{מפטה}}%
-  \def\figurename{\@ensure@RL{איור}}%
-  \def\tablename{\@ensure@RL{תבלח}}%
-  \def\partname{\@ensure@RL{הלק}}%
-  \def\enclname{\@ensure@RL{רצ"ב}}%
-  \def\ccname{\@ensure@RL{חעטקי ם}}%
-  \def\headtoname{\@ensure@RL{אל}}%
-  \def\pagename{\@ensure@RL{עמוד}}%
-  \def\psname{\@ensure@RL{נ.ב.}}%
-  \def\seename{\@ensure@RL{ראח}}%
-  \def\alsoname{\@ensure@RL{ראח ג ם}}% check
-  \def\proofname{\@ensure@RL{חוכהח}}
-  \def\glossaryname{\@ensure@LR{Glossary}}% <-- Needs translation 
+  \def\prefacename{מבוא}%
+  \def\refname{רשימט מקורוט}%
+  \def\abstractname{טקציר}%
+  \def\bibname{ביבליו גרפיח}%
+  \def\chaptername{פרק}%
+  \def\appendixname{נספה}%
+  \def\contentsname{טוכן עניינים}%
+  \def\listfigurename{רשימט איורים}%
+  \def\listtablename{רשימט תבלאוט}%
+  \def\indexname{מפטה}%
+  \def\figurename{איור}%
+  \def\tablename{תבלח}%
+  \def\partname{הלק}%
+  \def\enclname{רצ"ב}%
+  \def\ccname{חעטקי ם}%
+  \def\headtoname{אל}%
+  \def\pagename{עמוד}%
+  \def\psname{נ.ב.}%
+  \def\seename{ראח}%
+  \def\alsoname{ראח ג ם}% check
+  \def\proofname{חוכהח}
+  \def\glossaryname{אגרון מונחים}% check 
 }
 \def\datehebrew{%
-  \def\today{%TODO if calendar=hebrew \Hebrewtoday \else
-    \@ensure@RL{{\reset@font\number\day}%
-    \space ב\hebrewgregmonth{\month}\space%
-    {\reset@font\number\year}}}%
+  \def\today{%
+    \if@calendar@hebrew%
+      \hebrewtoday%
+    \else%
+      \hebrewnumber\day%
+      \space ב\hebrewgregmonth{\month}\space%
+      \hebrewnumber\year%
+     \fi}%
 }
 
 \def\hebrewgregmonth#1{\ifcase#1%
@@ -93,7 +116,7 @@
 \def\heb@num@iv#1{%
   \ifcase#1\or\char"05D0\char"05F3 \or\char"05D1\char"05F3 \or\char"05D2\char"05F3 %
            \or\char"05D3\char"05F3 \or\char"05D4\char"05F3 \or\char"05D5\char"05F3 %
-	   \or\char"05D6\char"05F3 \or\char"05D7\char"05F3 \or\char"05D8\char"05F3 \fi
+	   \or\char"05D6\char"05F3 \or\char"05D7\char"05F3 \or\char"05D8\char"05F3\fi
   \ifnum#1=\z@\fi\heb@num@iii}
 %TODO [optionally] 
 % -insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
@@ -109,6 +132,22 @@
   \let\@alph\@latinalph%
   \let\@Alph\@latinAlph%
   }
+
+\def\hebrewnumber#1{%
+   \if@hebrew@numerals\hebrewalph{#1}%
+   \else{\reset@font\number#1}%
+   \fi}
+
+\def\hebrew@globalnumbers{%
+   \let\@latinarabic\@arabic%
+   \let\@arabic\hebrewnumber%
+   \renewcommand\thefootnote{\protect\hebrewnumber{\c@footnote}}%
+   }
+
+\def\nohebrew@globalnumbers{
+   \let\@arabic\@latinarabic%
+   \renewcommand\thefootnote{\protect\number{\c@footnote}}%
+   }
 
 \def\hebrew@language{\language=\l@hebrew}
 
@@ -161,3 +200,4 @@
    \def\reset@font{\normalfont}}
 
 \endinput
+%%BABEL: \providehyphenmins{hebrew}{\thr@@\thr@@}

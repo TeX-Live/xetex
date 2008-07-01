@@ -61,12 +61,6 @@
 
 \def\bahasam@language{\protect\language=\l@bahasam}
 
-\def\blockextras@bahasam{%
-   \local@hyphenmins{bahasam}{2}{2}%
-   }
-
-\def\inlineextras@bahasam{%
-   \local@hyphenmins{bahasam}{2}{2}%
-   }
+\setlocalhyphenmins{bahasam}{2}{2}
 
 \endinput

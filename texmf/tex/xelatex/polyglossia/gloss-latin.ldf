@@ -7,14 +7,6 @@
    \adddialect\l@latin0
 \fi
 
-\def\latin@punctuation{%
-   \frenchspacing%
-}
-
-\def\nolatin@punctuation{%
-   \nonfrenchspacing%
-}
-
 \def\captionslatin{%
    \def\prefacename{\textlatin{Praefatio}}%
    \def\refname{\textlatin{Conspectus librorum}}%
@@ -46,20 +38,19 @@
       Decembris\fi%
       \space \uppercase\expandafter{\romannumeral\year}}}}
 
-\def\latin@language{%
-   \protect\language=\l@latin}
+\def\latin@language{\protect\language=\l@latin}
+
+\setlocalhyphenmins{latin}{2}{2}%
 
 \def\noextras@latin{%
-   \nolatin@punctuation%
+   \nonfrenchspacing%
 }
 
 \def\blockextras@latin{%
-   \local@hyphenmins{latin}{2}{2}%
    \frenchspacing%
 }
 
 \def\inlineextras@latin{%
-   \local@hyphenmins{latin}{2}{2}%
    \frenchspacing%
 }
 

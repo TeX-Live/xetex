@@ -55,17 +55,17 @@
 
 \def\breton@language{\protect\language=\l@breton}
 
+\setlocalhyphenmins{breton}{2}{2}
+
 \def\noextras@breton{%
-   \nobreton@punctuation
+   \nobreton@punctuation%
    }
 
 \def\blockextras@breton{%
-   \local@hyphenmins{breton}{2}{2}%
    \breton@punctuation%
    }
 
 \def\inlineextras@breton{%
-   \local@hyphenmins{breton}{2}{2}%
    \breton@punctuation%
    }
 

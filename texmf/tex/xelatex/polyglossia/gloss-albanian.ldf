@@ -36,17 +36,14 @@
 
 \def\albanian@language{\protect\language=\l@albanian}
 
+\setlocalhyphenmins{albanian}{2}{2}
+
 \def\noextras@albanian{%
    \nofrench@indent%
    }
 
 \def\blockextras@albanian{%
-   \local@hyphenmins{albanian}{2}{2}%
    \french@indent%
-   }
-
-\def\inlineextras@albanian{%
-   \local@hyphenmins{albanian}{2}{2}%
    }
 
 \endinput

@@ -39,12 +39,6 @@
 
 \def\latvian@language{\protect\language=\l@latvian}
 
-\def\blockextras@latvian{%
-   \local@hyphenmins{latvian}{2}{2}%
-   }
-
-\def\inlineextras@latvian{%
-   \local@hyphenmins{latvian}{2}{2}%
-   }
+\setlocalhyphenmins{latvian}{2}{2}%
 
 \endinput

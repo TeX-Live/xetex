@@ -105,12 +105,6 @@
       \fi}%}
   }
 
-\def\blockextras@english{%
-   \local@hyphenmins{english}{2}{3}%
-   }
-
-\def\inlineextras@english{%
-   \local@hyphenmins{english}{2}{3}%
-   }
+%\setlocalhyphenmins{english}{2}{3}% this is the default in babel
 
 \endinput

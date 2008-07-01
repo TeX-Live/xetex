@@ -84,13 +84,16 @@
 \def\thai@numbers{%
    \let\@latinalph\@alph%
    \let\@latinAlph\@Alph%
-   \let\@alph\@thaialph%
-   \let\@Alph\@thaiAlph%
+   \if@thai@numerals
+     \let\@alph\@thaialph%
+     \let\@Alph\@thaiAlph%
+   \fi
    }
 \def\nothai@numbers{%
   \let\@alph\@latinalph%
   \let\@Alph\@latinAlph%
   }
+
 \def\thai@globalnumbers{%
    % WAS: \let\plainnumber\number & \let\number\thainumber
    \let\@latinarabic\@arabic%
@@ -130,19 +133,11 @@
 
 \def\thai@language{\protect\language=\l@thai}
 
-\def\noextras@thai{%
-   \if@thai@numerals\nothai@numbers\fi%
-   }
+\setlocalhyphenmins{thai}{11}{11}%
 
 \def\blockextras@thai{%
-   \local@hyphenmins{thai}{11}{11}%
-   \renewcommand{\baselinestretch}{1.2}%
+   \renewcommand{\baselinestretch}{1.2}% FIXME restore default value in noextras?
    }
-
-\def\inlineextras@thai{%
-   \local@hyphenmins{thai}{11}{11}%
-   }
-
 \endinput
 
 %TODO ?

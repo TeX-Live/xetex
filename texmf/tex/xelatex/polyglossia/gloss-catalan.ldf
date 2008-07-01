@@ -38,12 +38,6 @@
 
 \def\catalan@language{\protect\language=\l@catalan}
 
-\def\blockextras@catalan{%
-   \local@hyphenmins{catalan}{2}{2}%
-   }
-
-\def\inlineextras@catalan{%
-   \local@hyphenmins{catalan}{2}{2}%
-   }
+\setlocalhyphenmins{catalan}{2}{2}
 
 \endinput

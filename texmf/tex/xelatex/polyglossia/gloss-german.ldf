@@ -55,17 +55,17 @@
 
 \def\german@language{\protect\language=\german@hyph}
 
+\setlocalhyphenmins{german}{2}{2}%
+
 \def\noextras@german{%
    \nonfrenchspacing%
 }
 
 \def\blockextras@german{%
-   \local@hyphenmins{german}{2}{2}%
    \frenchspacing%
 }
 
 \def\inlineextras@german{%
-   \local@hyphenmins{german}{2}{2}%
    \frenchspacing%
 }
 

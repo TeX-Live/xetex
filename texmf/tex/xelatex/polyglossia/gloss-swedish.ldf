@@ -46,17 +46,17 @@
 
 \def\swedish@language{\protect\language=\l@swedish}
 
+\setlocalhyphenmins{swedish}{2}{2}%
+
 \def\noextras@swedish{%
    \nonfrenchspacing%
    }
 
 \def\blockextras@swedish{%
-   \local@hyphenmins{swedish}{2}{2}%
    \frenchspacing%
    }
 
 \def\inlineextras@swedish{%
-   \local@hyphenmins{swedish}{2}{2}%
    \frenchspacing%
    }
 

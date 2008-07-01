@@ -44,12 +44,6 @@
      
 \def\portuges@language{\protect\language=\l@portuges}
 
-\def\blockextras@portuges{%
-   \local@hyphenmins{portuges}{2}{3}%
-   }
-
-\def\inlineextras@portuges{%
-   \local@hyphenmins{portuges}{2}{3}%
-   }
+%\setlocalhyphenmins{portuges}{2}{3}% this is the default
 
 \endinput

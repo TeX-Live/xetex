@@ -41,12 +41,6 @@
 
 \def\irish@language{\protect\language=\l@irish}
 
-\def\blockextras@irish{%
-   \local@hyphenmins{irish}{2}{2}%
-   }
-
-\def\inlineextras@irish{%
-   \local@hyphenmins{irish}{2}{3}%
-   }
+\setlocalhyphenmins{irish}{2}{2}%
 
 \endinput
