@@ -28,7 +28,7 @@
    \def\enclname{\textgalician{Adxunto}}%
    \def\ccname{\textgalician{Copia a}}%
    \def\headtoname{\textgalician{A}}%
-   \def\proofname{\textgalician{Demostración}}% for AMS-\LaTeX
+   \def\proofname{\textgalician{Demostración}}%
    \def\glossaryname{\textgalician{Glosario}}%
    \def\today{\textgalician{\number\day~de\space\ifcase\month\or
     xaneiro\or febreiro\or marzo\or abril\or maio\or xuño\or
@@ -37,19 +37,11 @@
 
 \def\galician@language{\protect\language=\l@galician}
 
-\def\noextras@galician{%
-   }
-
 \def\blockextras@galician{%
-   \galician@language%
    \local@hyphenmins{galician}{2}{2}%
-   \captionsgalician%
-   \local@marks{galician}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@galician{%
-   \galician@language%
    \local@hyphenmins{galician}{2}{2}%
    }
 

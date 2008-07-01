@@ -27,7 +27,7 @@
    %\def\enclname{\textalbanian{}}%
    %\def\ccname{\textalbanian{}}%
    %\def\headtoname{\textalbanian{}}%
-   \def\proofname{\textalbanian{Vërtetim}}% for AMS-\LaTeX
+   \def\proofname{\textalbanian{Vërtetim}}%
    \def\glossaryname{\textalbanian{Përhasja e Fjalëve}}%
    \def\today{\textalbanian{{\number\day~\ifcase\month\or
     Janar\or Shkurt\or Mars\or Prill\or Maj\or
@@ -41,16 +41,11 @@
    }
 
 \def\blockextras@albanian{%
-   \albanian@language%
    \local@hyphenmins{albanian}{2}{2}%
    \french@indent%
-   \captionsalbanian%
-   \local@marks{albanian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@albanian{%
-   \albanian@language%
    \local@hyphenmins{albanian}{2}{2}%
    }
 

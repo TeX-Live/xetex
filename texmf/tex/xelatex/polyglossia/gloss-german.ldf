@@ -41,7 +41,7 @@
    \def\pagename{\textgerman{Seite}}%
    \def\seename{\textgerman{siehe}}%
    \def\alsoname{\textgerman{siehe auch}}%
-   \def\proofname{\textgerman{Beweis}}% for AMS-\LaTeX
+   \def\proofname{\textgerman{Beweis}}%
    \def\glossaryname{\textgerman{Glossar}}%
 }
 \def\dategerman{%   
@@ -60,17 +60,11 @@
 }
 
 \def\blockextras@german{%
-   \german@language%
    \local@hyphenmins{german}{2}{2}%
    \frenchspacing%
-   \captionsgerman%
-   \dategerman%
-   \local@marks{german}%
-   \reset@latin@script%
 }
 
 \def\inlineextras@german{%
-   \german@language%
    \local@hyphenmins{german}{2}{2}%
    \frenchspacing%
 }

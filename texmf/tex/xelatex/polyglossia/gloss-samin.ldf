@@ -3,7 +3,7 @@
 \csdef{samin@font}{\normalfontlatin}
 
 \ifx\l@samin\@undefined%
-   \xpg@nopatterns{<Lang>}%
+   \xpg@nopatterns{Samin}%
    \adddialect\l@samin0%
 \fi
 
@@ -44,8 +44,10 @@
    \def\enclname{\textsamin{Mielddus}}%
    \def\ccname{\textsamin{Kopia sáddejuvvon}}%
    \def\headtoname{\textsamin{Vuostáiváldi}}%
-   \def\proofname{\textsamin{Duođaštus}}% for AMS-\LaTeX
+   \def\proofname{\textsamin{Duođaštus}}%
    \def\glossaryname{\textsamin{Sátnelistu}}%
+   }
+\def\datesamin{%   
    \def\today{\textsamin{\ifcase\month\or
     ođđajagemánu\or
     guovvamánu\or
@@ -59,23 +61,16 @@
     golggotmánu\or
     skábmamánu\or
     juovlamánu\fi
-    \space\number\day.~b.\space\number\year}}}
+    \space\number\day.~b.\space\number\year}}%
+    }
 
 \def\samin@language{\protect\language=\l@samin}
 
-\def\noextras@samin{%
-   }
-
 \def\blockextras@samin{%
-   \samin@language%
    \local@hyphenmins{samin}{2}{2}%
-   \captionssamin%
-   \local@marks{samin}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@samin{%
-   \samin@language%
    \local@hyphenmins{samin}{2}{2}%
    }
 

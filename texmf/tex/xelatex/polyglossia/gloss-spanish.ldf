@@ -27,14 +27,17 @@
    \def\pagename{\textspanish{Página}}%
    \def\seename{\textspanish{véase}}%
    \def\alsoname{\textspanish{véase también}}%
-   \def\proofname{\textspanish{Prueba}}% for AMS-\LaTeX
+   \def\proofname{\textspanish{Prueba}}%
    \def\glossaryname{\textspanish{Glosario}}%
+   }
+\def\datespanish{%   
    \def\today{\textspanish{\number\day\NonBreakingSpace de%
       \space \ifcase\month%
       \or enero\or febrero\or marzo\or abril\or mayo\or junio\or%
       julio\or agosto\or septiembre\or octubre\or noviembre\or%
       diciembre\fi%
-      \space de\NonBreakingSpace\number\year}}}
+      \space de~\number\year}}%
+      }
 
 \def\spanish@language{\protect\language=\l@spanish}
 
@@ -43,11 +46,8 @@
 }
 
 \def\blockextras@spanish{%
-   \spanish@language%
    \local@hyphenmins{spanish}{2}{2}%
    \frenchspacing%
-   \captionsspanish%
-   \local@marks{spanish}%
 }
 
 \def\inlineextras@spanish{%

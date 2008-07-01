@@ -35,8 +35,10 @@
    \def\enclname{\textmagyar{Melléklet}}%
    \def\ccname{\textmagyar{Körlevél–címzettek}}%
    \def\headtoname{\textmagyar{Címzett}}%
-   \def\proofname{\textmagyar{Bizonyítás}}% for AMS-\LaTeX
+   \def\proofname{\textmagyar{Bizonyítás}}%
    \def\glossaryname{\textmagyar{Szójegyzék}}%
+   }
+\def\datemagyar{%   
    \def\today{\textmagyar{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or
@@ -67,15 +69,10 @@
    }
 
 \def\blockextras@magyar{%
-   \magyar@language%
    \local@hyphenmins{magyar}{2}{2}%
-   \captionsmagyar%
-   \local@marks{magyar}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@magyar{%
-   \magyar@language%
    \local@hyphenmins{magyar}{2}{2}%
    }
 

@@ -5,10 +5,10 @@
 \ifx\l@slovenian\@undefined%
  \ifx\l@slovene\@undefined%
    \xpg@nopatterns{Slovenian}%
-   \adddialect\l@slovene0%
+   \adddialect\l@slovenian0%
 \fi\fi
 
-\def\captionsslovene{%
+\def\captionsslovenian{%
    \def\refname{\textslovenian{Literatura}}%
    \def\abstractname{\textslovenian{Povzetek}}%
    \def\bibname{\textslovenian{Literatura}}%
@@ -29,28 +29,23 @@
    \def\enclname{\textslovenian{Priloge}}%
    \def\ccname{\textslovenian{Kopije}}%
    \def\headtoname{\textslovenian{Prejme}}%
-   \def\proofname{\textslovenian{Dokaz}}% for AMS-\LaTeX
-   \def\glossaryname{\textslovenian{Glossary}}% <-- needs translation
+   \def\proofname{\textslovenian{Dokaz}}%
+   \def\glossaryname{\textslovenian{Glosar}}% <-- CHECK!
+   }
+\def\dateslovenian{%   
    \def\today{\textslovenian{\number\day.~\ifcase\month\or
     januar\or februar\or marec\or april\or maj\or junij\or
     julij\or avgust\or september\or oktober\or november\or december\fi
-    \space \number\year}}}
+    \space \number\year}}%
+    }
 
 \def\slovenian@language{\protect\language=\l@slovenian}
 
-\def\noextras@slovenian{%
-   }
-
 \def\blockextras@slovenian{%
-   \slovenian@language%
    \local@hyphenmins{slovenian}{2}{2}%
-   \captionsslovenian%
-   \local@marks{slovenian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@slovenian{%
-   \slovenian@language%
    \local@hyphenmins{slovenian}{2}{2}%
    }
 

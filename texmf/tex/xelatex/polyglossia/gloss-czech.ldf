@@ -28,7 +28,7 @@
    \def\enclname{\textczech{Příloha}}%
    \def\ccname{\textczech{Na vědomí:}}%
    \def\headtoname{\textczech{Komu}}%
-   \def\proofname{\textczech{Důkaz}}% for AMS-\LaTeX
+   \def\proofname{\textczech{Důkaz}}%
    \def\glossaryname{\textczech{Slovník}}%was Glosář
    \def\today{\textczech{\number\day.~\ifcase\month\or
     ledna\or února\or března\or dubna\or května\or
@@ -43,16 +43,11 @@
    }
 
 \def\blockextras@czech{%
-   \czech@language%
    \local@hyphenmins{czech}{2}{2}%
    \frenchspacing%
-   \captionsczech%
-   \local@marks{czech}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@czech{%
-   \czech@language%
    \local@hyphenmins{czech}{2}{2}%
    \frenchspacing%
    }

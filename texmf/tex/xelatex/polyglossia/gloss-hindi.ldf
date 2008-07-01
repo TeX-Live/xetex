@@ -5,8 +5,12 @@
 \makeatletter
 
 \ifx\l@hindi\@undefined%
-   \xpg@nopatterns{Hindi}%
-   \adddialect\l@hindi0%
+  \ifx\l@sanskrit\@undefined%
+    \xpg@nopatterns{Hindi}%
+    \adddialect\l@hindi0%
+  \else
+    \let\l@hindi\l@sanskrit%
+  \fi
 \fi
 
 \def\captionshindi{%
@@ -52,7 +56,6 @@
      \space\number\year}}%
 }
 
-%TODO ADD option to use hyphenation of \l@sanskrit 
 \def\hindi@language{\protect\language=\l@hindi}
 
 \def\hindi@font{%
@@ -79,23 +82,10 @@
 
 \def\selectnormalfonthindi{%
    \let\normalfont=\hindi@font%
+   \let\rmfamily=\hindi@font%
+   % TODO add setup to define Sans and Mono fonts if desired
+   \let\sffamily=\hindi@font%
+   \let\ttfamily=\hindi@font%
    \def\reset@font{\normalfont}}
-
-\def\noextras@hindi{%
-   }
-
-\def\blockextras@hindi{%
-   \hindi@language%
-   \hindi@font%
-   %\local@hyphenmins{hindi}{2}{2}%
-   \hindi@captions%
-   \local@marks{hindi}%
-   }
-
-\def\inlineextras@hindi{%
-   \hindi@language%
-   \hindi@font%
-   %\local@hyphenmins{hindi}{2}{2}%
-   }
 
 \endinput

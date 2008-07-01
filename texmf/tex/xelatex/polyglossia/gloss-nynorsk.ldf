@@ -1,0 +1,58 @@
+\ProvidesFile{gloss-nynorsk.ldf}[polyglossia: module for norwegian (Nynorsk)]
+\makeatletter
+\csdef{nynorsk@font}{\normalfontlatin}
+
+\ifx\l@nynorsk\@undefined%
+   \xpg@nopatterns{Nynorsk}%
+   \adddialect\l@nynorsk0%
+\fi
+
+\def\captionsnynorsk{%
+   \def\refname{\textnynorsk{Referansar}}%
+   \def\abstractname{\textnynorsk{Sammendrag}}%
+   \def\bibname{\textnynorsk{Litteratur}}%
+   \def\prefacename{\textnynorsk{Forord}}%
+   \def\chaptername{\textnynorsk{Kapittel}}%
+   \def\appendixname{\textnynorsk{Tillegg}}%
+   \def\contentsname{\textnynorsk{Innhald}}%
+   \def\listfigurename{\textnynorsk{Figurar}}%
+   \def\listtablename{\textnynorsk{Tabellar}}%
+   \def\indexname{\textnynorsk{Register}}%
+   \def\figurename{\textnynorsk{Figur}}%
+   \def\tablename{\textnynorsk{Tabell}}%
+   %\def\thepart{\textnynorsk{}}% <<<
+   \def\partname{\textnynorsk{Del}}%
+   \def\pagename{\textnynorsk{Side}}%
+   \def\seename{\textnynorsk{Sjå}}%
+   \def\alsoname{\textnynorsk{Sjå òg}}%
+   \def\enclname{\textnynorsk{Vedlegg}}%
+   \def\ccname{\textnynorsk{Kopi til}}%
+   \def\headtoname{\textnynorsk{Til}}%
+   \def\proofname{\textnynorsk{Bevis}}%
+   \def\glossaryname{\textnynorsk{Ordliste}}%
+   }
+\def\datenynorsk{%   
+   \def\today{\textnynorsk{\number\day.~\ifcase\month\or
+    januar\or februar\or mars\or april\or mai\or juni\or
+    juli\or august\or september\or oktober\or november\or desember
+    \fi\space\number\year}}%
+    }
+
+\def\norsk@language{\protect\language=\l@nynorsk}
+
+\def\noextras@nynorsk{%
+   \nonfrenchspacing%
+   }
+
+\def\blockextras@nynorsk{%
+   \local@hyphenmins{nynorsk}{2}{2}%
+   \frenchspacing%
+   }
+
+\def\inlineextras@nynorsk{%
+   \local@hyphenmins{nynorsk}{2}{2}%
+   \frenchspacing%
+   }
+
+\endinput
+

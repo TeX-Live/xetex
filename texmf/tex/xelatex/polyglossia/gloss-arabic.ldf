@@ -10,6 +10,8 @@
 
 \providehyphenmins{\CurrentOption}{\thr@@\thr@@}
 
+\def\arabic@RL{\relax}
+
 \define@key{arabic}{locale}[default]{%
 	\def\@arabic@locale{#1}}
 
@@ -33,10 +35,6 @@
 
 % This should set the defaults
 \setkeys{arabic}{locale,calendar,numerals}
-
-% TODO: check locales: if morocco or algeria : use western numerals
-%       but don't override the numbers key
-\def\arabicnumber#1{\if@eastern@numerals{\protect\addfontfeature{Mapping=arabicdigits}\number#1}\else{\rmfamily\number#1}\fi}
 
 \def\arabicgregmonth@default#1{\ifcase#1%
   % Egypt, Sudan, Yemen and Golf states
@@ -78,7 +76,7 @@
 \def\pagename{\@ensure@RL{صفحة}}%
 \def\seename{\@ensure@RL{راجع}}%\alefhamza\nun\za\ra
 \def\alsoname{\@ensure@RL{راجع أيضاً}}%<<\alefhamza\nun\za\ra
-\def\proofname{\@ensure@RL{برهان}}% for AMS-\LaTeX
+\def\proofname{\@ensure@RL{برهان}}%
 \def\glossaryname{\@ensure@RL{قاموس}}%<<
 % TODO define a defaultLRlanguage … \def\LRtoday{\textdefaultLRlanguage{\today}}
 }
@@ -97,17 +95,63 @@
       \space\number\day, \number\year%
  \fi}}
 
-\def\arabic@numbers{%
-\renewcommand{\thepage}{\protect\arabicnumber{\c@page}}%
-\renewcommand{\thesection}{\protect\arabic@font\protect\arabicnumber{\c@section}}%
-\renewcommand{\thesubsection}{\protect\arabic@font\protect\@ensure@RL{\protect\arabicnumber{\c@subsection}\textrm{–}\protect\arabicnumber{\c@section}}}%
-\renewcommand{\thepart}{\protect\arabic@font\protect\arabicnumber{\c@part}}%
-\renewcommand{\thefootnote}{\protect\arabic@font\protect\arabicnumber{\c@footnote}}%
-\renewcommand{\thefigure}{\protect\arabic@font\protect\arabicnumber{\c@figure}}%
-\renewcommand{\thetable}{\protect\arabic@font\protect\arabicnumber{\c@table}}%
-}
 
-\input{abjad.def} %TODO add error message
+% TODO: check locales: if morocco or algeria : use western numerals
+%       but don't override the numbers key
+\def\arabicnumber#1{\if@eastern@numerals{\protect\addfontfeature{Mapping=arabicdigits}\number#1}\else\RL{\reset@font\number#1}\fi}
+
+% adapted from thai-latex
+%\def\arabicnum#1{\expandafter\arabicnumber\csname c@#1\endcsname}
+%\def\arabicbracenum#1{(\expandafter\arabicnumber\csname c@#1\endcsname)}
+%\def\arabicornatebracenum#1{\char"FD3E\expandafter\arabicnumber\csname c@#1\endcsname\char"FD3F}
+%\def\arabicalph#1{\expandafter\@arabicalph\csname c@#1\endcsname}
+
+\IfFileExists{abjad.def}%
+  {\input{abjad.def}}%
+  {\PackageError{polyglossia}{Couldn't find abjad.def!}%
+  {Something is wrong with your installation of polyglossia!\MessageBreak
+   The file abjad.def should be included along with all *.ldf files.}}
+
+\def\arabic@numbers{%
+   \let\@latinalph\@alph%
+   \let\@latinAlph\@Alph%
+   \let\@alph\abjad%
+   \let\@Alph\abjad%
+}
+\def\noarabic@numbers{%
+  \let\@alph\@latinalph%
+  \let\@Alph\@latinAlph%
+  }
+
+\def\arabic@globalnumbers{%
+%   \renewcommand\thepage{\protect\arabicnumber{\c@page}}%
+   \let\@latinarabic\@arabic%
+   \let\@arabic\arabicnumber%
+%   \renewcommand\thepart{\protect\arabicnumber{\c@part}}%
+%   \renewcommand\theenumi{\protect\arabicnumber{\c@enumi}}%
+   % For some reason \thefootnote needs to be set separately:
+    \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
+%   \renewcommand\thesubsection{\thesection.\protect\arabicnumber{\c@subsection}}%
+%   \renewcommand\thesubsubsection{\thesubsection.\protect\arabicnumber{\c@subsubsection}}%
+%   \renewcommand\theparagraph{\thesubsubsection.\protect\arabicnumber{\c@paragraph}}%
+%   \renewcommand\thesubparagraph{\theparagraph.\protect\arabicnumber{\c@subparagraph}}%
+%   \@ifundefined{thechapter}{%
+%    \renewcommand\thesection{\protect\arabicnumber{\c@section}}%
+%    \renewcommand\theequation{\protect\arabicnumber{\c@equation}}%
+%    \renewcommand\thefigure{\protect\arabicnumber{\c@figure}}%
+%    \renewcommand\thetable{\protect\arabicnumber{\c@table}}%
+%   }{%
+%     \renewcommand\thechapter{\protect\arabicnumber{\c@chapter}}%
+%     \renewcommand\thesection{\thechapter.\protect\arabicnumber{\c@section}}%
+%     \renewcommand\theequation{\ifnum\c@chapter>\z@\thechapter.\fi\protect\arabicnumber{\c@equation}}%
+%     \renewcommand\thetable{\ifnum\c@chapter>\z@\thechapter.\fi\protect\arabicnumber{\c@table}}%
+%     \renewcommand\thefigure{\ifnum\c@chapter>\z@\thechapter.\fi\protect\arabicnumber{\c@figure}}%
+%   }%
+   }
+
+\def\noarabic@globalnumbers{
+   \let\@arabic\@latinarabic%
+   }
 
 \def\arabic@language{\language=\l@arabic}
 
@@ -125,30 +169,39 @@
     }%
   {\arabicfont}% 
 }
+% TODO add setup to define Sans and Mono Arabic fonts if desired
+\def\arabic@font@sf{%
+  \@ifundefined{arabicfontsf}{%
+%  \sffamily% FIXME
+%    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+%  \zf@check@ot@script{arab}%
+%  \if@tempswa%
+%    \addfontfeature{Script=Arabic}%
+%  \else%
+    \arabic@font%
+%  \fi%  
+  }%
+  {\arabicfontsf}%
+}
+\def\arabic@font@tt{%
+  \@ifundefined{arabicfonttt}{%
+%    \ttfamily% FIXME
+%    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+%  \zf@check@ot@script{arab}%
+%  \if@tempswa%
+%    \addfontfeature{Script=Arabic}%
+%  \else%
+    \arabic@font%
+%  \fi%  
+  }%
+  {\arabicfonttt}%
+}
 
 \def\selectnormalfontarabic{%
    \let\normalfont=\arabic@font%
+   \let\rmfamily=\arabic@font%
+   \let\sffamily=\arabic@font@sf%
+   \let\ttfamily=\arabic@font@tt%
    \def\reset@font{\normalfont}}
-
-\def\noextras@arabic{%
-   %\noarabic@numbers%
-   }
-
-\def\blockextras@arabic{%
-   \arabic@language%
-   \arabic@font%
-   \local@hyphenmins{arabic}{1}{1}%
-   \local@marks{arabic}%
-   \captionsarabic%
-   \datearabic%
-   \setRL\setfootnoteRL%
-   \def\footnoterule{\RLfootnoterule}%
-   }
-
-\def\inlineextras@arabic{%
-   \arabic@language%
-   \arabic@font%
-   \local@hyphenmins{arabic}{1}{1}%
-   }
 
 \endinput

@@ -28,29 +28,24 @@
    \def\enclname{\textromanian{Anexă}}%
    \def\ccname{\textromanian{Copie}}%
    \def\headtoname{\textromanian{Pentru}}%
-   \def\proofname{\textromanian{Demonstraţie}}% for AMS-\LaTeX
+   \def\proofname{\textromanian{Demonstraţie}}%
    \def\glossaryname{\textromanian{Glosar}}%
+   }
+\def\dateromanian{%   
    \def\today{\textromanian{\number\day~\ifcase\month\or
     ianuarie\or februarie\or martie\or aprilie\or mai\or
     iunie\or iulie\or august\or septembrie\or octombrie\or
     noiembrie\or decembrie\fi
-    \space \number\year}}}
+    \space \number\year}}%
+    }
 
 \def\romanian@language{\protect\language=\l@romanian}
 
-\def\noextras@romanian{%
-   }
-
 \def\blockextras@romanian{%
-   \romanian@language%
    \local@hyphenmins{romanian}{2}{2}%
-   \captionsromanian%
-   \local@marks{romanian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@romanian{%
-   \romanian@language%
    \local@hyphenmins{romanian}{2}{2}%
    }
 

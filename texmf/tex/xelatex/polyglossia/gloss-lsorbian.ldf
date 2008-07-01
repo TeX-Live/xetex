@@ -35,9 +35,11 @@
    \def\enclname{\textlsorbian{Pśiłoga}}%
    \def\ccname{\textlsorbian{CC}}%
    \def\headtoname{\textlsorbian{Komu}}%
-   \def\proofname{\textlsorbian{Proof}}% for AMS-\LaTeX
+   \def\proofname{\textlsorbian{Proof}}%
    \def\glossaryname{\textlsorbian{Glossary}}%
-   \def\today{\textlsorbian{\number\day.~\ifcase\month\or
+   }
+\def\datelsorbian{%
+    \def\today{\textlsorbian{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or maja\or
     junija\or julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
@@ -45,19 +47,11 @@
 
 \def\lsorbian@language{\protect\language=\l@lsorbian}
 
-\def\noextras@lsorbian{%
-   }
-
 \def\blockextras@lsorbian{%
-   \lsorbian@language%
    \local@hyphenmins{lsorbian}{2}{2}%
-   \captionslsorbian%
-   \local@marks{lsorbian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@lsorbian{%
-   \lsorbian@language%
    \local@hyphenmins{lsorbian}{2}{2}%
    }
 

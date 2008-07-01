@@ -90,7 +90,7 @@
       26th\or 27th\or 28th\or 29th\or 30th\or
       31st\fi
       \else\number\day\fi}%
-   \def\today{\textenglish{%
+   \def\today{%\textenglish{%
     \ifx\en@dialect\tmp@british%
       \english@day\space%
      \ifcase\month\or%
@@ -102,22 +102,14 @@
       January\or February\or March\or April\or May\or June\or%
       July\or August\or September\or October\or November\or December\fi%
       \space\english@day, \number\year%
-      \fi}}
+      \fi}%}
   }
 
-\def\noextras@english{}
-
 \def\blockextras@english{%
-   \english@language%
    \local@hyphenmins{english}{2}{3}%
-   \captionsenglish%
-   \dateenglish%
-   \local@marks{english}%
-   \reset@latin@script%
    }
 
 \def\inlineextras@english{%
-   \english@language%
    \local@hyphenmins{english}{2}{3}%
    }
 

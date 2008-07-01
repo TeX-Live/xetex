@@ -35,8 +35,10 @@
    \def\pagename{\textlatin{pagina}}%
    \def\seename{\textlatin{cfr.}}%
    \def\alsoname{\textlatin{cfr.}}%
-   \def\proofname{\textlatin{Demonstratio}}% for AMS-\LaTeX
+   \def\proofname{\textlatin{Demonstratio}}%
    \def\glossaryname{\textlatin{Glossarium}}%
+   }
+\def\datelatin{%   
    \def\today{\textlatin{\uppercase\expandafter{\romannumeral\day}%
       \space \ifcase\month%
       \or Januarii\or Februarii\or Martii\or Aprilis\or Maji\or Junii\or%
@@ -52,15 +54,11 @@
 }
 
 \def\blockextras@latin{%
-   \latin@language%
    \local@hyphenmins{latin}{2}{2}%
    \frenchspacing%
-   \captionslatin%
-   \local@marks{latin}%
 }
 
 \def\inlineextras@latin{%
-   \latin@language%
    \local@hyphenmins{latin}{2}{2}%
    \frenchspacing%
 }

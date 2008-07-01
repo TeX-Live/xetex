@@ -38,15 +38,11 @@
 \def\italian@language{\protect\language=\l@italian}
 
 \def\blockextras@italian{%
-   \italian@language%
    \local@hyphenmins{italian}{2}{2}%
-   \captionsitalian%
-   \local@marks{italian}%
-%TODO	\clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
+   %TODO \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
    }
 
 \def\inlineextras@italian{%
-   \italian@language%
    \local@hyphenmins{italian}{2}{2}%
    }
 

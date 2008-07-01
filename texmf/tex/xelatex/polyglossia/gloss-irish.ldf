@@ -29,7 +29,7 @@
    \def\enclname{\textirish{faoi iamh}}%
    \def\ccname{\textirish{cc}}%
    \def\headtoname{\textirish{Go}}%
-   \def\proofname{\textirish{Cruthúnas}}% for AMS-\LaTeX
+   \def\proofname{\textirish{Cruthúnas}}%
    \def\glossaryname{\textirish{Glossary}}%
    \def\today{\textirish{%
     \number\day\space \ifcase\month\or
@@ -41,19 +41,11 @@
 
 \def\irish@language{\protect\language=\l@irish}
 
-\def\noextras@irish{%
-   }
-
 \def\blockextras@irish{%
-   \irish@language%
    \local@hyphenmins{irish}{2}{2}%
-   \captionsirish%
-   \local@marks{irish}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@irish{%
-   \irish@language%
    \local@hyphenmins{irish}{2}{3}%
    }
 

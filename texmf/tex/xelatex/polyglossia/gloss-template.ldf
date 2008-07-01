@@ -28,7 +28,7 @@
    \def\enclname{\text<lang>{<++>}}%
    \def\ccname{\text<lang>{<++>}}%
    \def\headtoname{\text<lang>{<++>}}%
-   \def\proofname{\text<lang>{<++>}}% for AMS-\LaTeX
+   \def\proofname{\text<lang>{<++>}}%
    \def\glossaryname{\text<lang>{<++>}}%
    }
 \def\date<lang>{%
@@ -80,17 +80,10 @@
    }
 
 \def\blockextras@<lang>{%
-   \<lang>@language%
-   \<lang>@font%
    \local@hyphenmins{<lang>}{2}{2}%
-   \<lang>@captions%
-   \local@marks{<lang>}%
-   \reset@latin@script% <-- ONLY IF LATIN SCRIPT IS USED
    }
 
 \def\inlineextras@<lang>{%
-   \<lang>@language%
-   \<lang>@font%
    \local@hyphenmins{<lang>}{2}{2}%
    }
 

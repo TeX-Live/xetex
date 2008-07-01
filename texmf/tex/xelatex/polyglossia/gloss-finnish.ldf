@@ -28,7 +28,7 @@
    \def\enclname{\textfinnish{Liitteet}}%
    \def\ccname{\textfinnish{Jakelu}}%
    \def\headtoname{\textfinnish{Vastaanottaja}}%
-   \def\proofname{\textfinnish{Todistus}}% for AMS-\LaTeX
+   \def\proofname{\textfinnish{Todistus}}%
    \def\glossaryname{\textfinnish{Sanasto}}%
    \def\today{\textfinnish{\number\day.~\ifcase\month\or
     tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
@@ -43,16 +43,11 @@
    }
 
 \def\blockextras@finnish{%
-   \finnish@language%
    \local@hyphenmins{finnish}{2}{2}%
    \frenchspacing%
-   \captionsfinnish%
-   \local@marks{finnish}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@finnish{%
-   \finnish@language%
    \local@hyphenmins{finnish}{2}{2}%
    \frenchspacing%
    }

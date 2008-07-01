@@ -7,16 +7,23 @@
   \adddialect\l@farsi0
 \fi
 
-\define@key{polyglossia}{farsilocale}[default]{%
+\def\farsi@RL{\relax}
+
+\newif\if@western@numerals
+\def\tmp@western{western}
+\define@key{farsi}{numerals}[eastern]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@western\@western@numeralstrue\else%
+	  \@western@numeralsfalse%
+	\fi}
+
+\define@key{farsi}{locale}[default]{%
 	\def\@farsi@locale{#1}}
 %TODO add option for months 
 
-\def\farsinumber#1{\ifnum\XeTeXcharglyph"06F0 > 0%
-{\addfontfeature{Mapping=farsidigits}\number#1}%
-\else%
-{\addfontfeature{Mapping=arabicdigits}\number#1}%
-\fi}
+\setkeys{farsi}{locale,numerals}
 
+%TODO rewrite jalalical after the model of hijrical
 \input{jalalical.def}
 
 \def\farsigregmonth#1{\ifcase#1%
@@ -26,44 +33,71 @@
     \or نیسان\or ایار\or حزیران\or تموز\or آب\or ایلول\or تشرین اول\or تشرین ثانی\or کانون اول\fi}
 
 \def\captionsfarsi{%
-%\def\prefacename{\@ensure@RL{مدخل}}% 
-%\def\refname{\@ensure@RL{مراجع}}
-%\def\abstractname{\@ensure@RL{ملخص}}%
-%\def\bibname{\@ensure@RL{مصادر}}%
-%\def\chaptername{\@ensure@RL{باب}}%
-%\def\appendixname{\@ensure@RL{ملاحق}}%
+\def\prefacename{\@ensure@RL{پیشگفتار}}% 
+\def\refname{\@ensure@RL{مراجع}}%
+\def\abstractname{\@ensure@RL{چکیده}}%
+\def\bibname{\@ensure@RL{کتاب‌نامه}}%
+\def\chaptername{\@ensure@RL{فصل}}%
+\def\appendixname{\@ensure@RL{پیوست}}%
 \def\contentsname{\@ensure@RL{فهرست مطالب}}%
 \def\listfigurename{\@ensure@RL{لیست تصاویر}}%
 \def\listtablename{\@ensure@RL{لیست جداول}}%
-%\def\indexname{\@ensure@RL{فهرس}}%
+\def\indexname{\@ensure@RL{نمایه}}%
 \def\figurename{\@ensure@RL{شكل}}%
 \def\tablename{\@ensure@RL{جدول}}%
-%\def\partname{\@ensure@RL{قسم}}%
-%\def\enclname{\@ensure@RL{مرفقات}}%<-- Needs translation
-%\def\ccname{\@ensure@RL{نسخة ل‬}}% <<
-%\def\headtoname{\@ensure@RL{إلى}}%<-- Needs translation
-%\def\pagename{\@ensure@RL{صفحة}}%
-%\def\seename{\@ensure@RL{راجع}}%\alefhamza\nun\za\ra
-%\def\alsoname{\@ensure@RL{راجع أيضاً}}%<<\alefhamza\nun\za\ra
-%\def\proofname{\@ensure@RL{برهان}}% for AMS-\LaTeX
-%\def\glossaryname{\@ensure@RL{قاموس}}%<<
+\def\partname{\@ensure@RL{بخش}}%
+%\def\enclname{\@ensure@RL{}}%<-- Needs translation
+%\def\ccname{\@ensure@RL{}}%<-- Needs translation
+%\def\headtoname{\@ensure@RL{}}%<-- Needs translation
+\def\pagename{\@ensure@RL{صفحة}}%
+%\def\seename{\@ensure@RL{}}%<-- Needs translation
+%\def\alsoname{\@ensure@RL{}}%<-- Needs translation
+\def\proofname{\@ensure@RL{برهان}}%
+\def\glossaryname{\@ensure@RL{لغت‌نامه}}%<-- Needs to be checked
 }
 \def\datefarsi{%
    \def\today{\@ensure@RL{\farsinumber\day\space\farsigregmonth{\month}\space\farsinumber\year}}%
 }
 
-%TODO
-\def\farsi@numbers{%
-\renewcommand{\thepage}{\protect\farsinumber{\c@page}}%
-\renewcommand{\thesection}{\protect\farsi@font\protect\farsinumber{\c@section}}%
-\renewcommand{\thesubsection}{\protect\farsi@font\protect\@ensure@RL{\protect\farsinumber{\c@subsection}\textrm{–}\protect\farsinumber{\c@section}}}%
-\renewcommand{\thepart}{\protect\farsi@font\protect\farsinumber{\c@part}}%
-\renewcommand{\thefootnote}{\protect\farsi@font\protect\farsinumber{\c@footnote}}%
-\renewcommand{\thefigure}{\protect\farsi@font\protect\farsinumber{\c@figure}}%
-\renewcommand{\thetable}{\protect\farsi@font\protect\farsinumber{\c@table}}%
-}
+\def\farsinumber#1{\if@western@numerals\RL{\number#1}\else%
+\ifnum\XeTeXcharglyph"06F0 > 0%
+{\addfontfeature{Mapping=farsidigits}\number#1}%
+\else%
+{\addfontfeature{Mapping=arabicdigits}\number#1}%
+\fi\fi}
 
-\input{abjad.def}
+%\def\farsinum#1{\expandafter\farsinumber\csname c@#1\endcsname}
+%\def\farsibracenum#1{(\expandafter\farsinumber\csname c@#1\endcsname)}
+%\def\farsiornatebracenum#1{\char"FD3E\expandafter\farsinumber\csname c@#1\endcsname\char"FD3F}
+%\def\farsialph#1{\expandafter\@farsialph\csname c@#1\endcsname}
+
+\IfFileExists{abjad.def}%
+  {\input{abjad.def}}%
+  {\PackageError{polyglossia}{Couldn't find abjad.def!}%
+  {Something is wrong with your installation of polyglossia!\MessageBreak
+   The file abjad.def should be included along with all *.ldf files.}}
+
+\def\farsi@numbers{%
+   \let\@latinalph\@alph%
+   \let\@latinAlph\@Alph%
+   \let\@alph\abjad%
+   \let\@Alph\abjad%
+}
+\def\nofarsi@numbers{%
+  \let\@alph\@latinalph%
+  \let\@Alph\@latinAlph%
+  }
+
+\def\farsi@globalnumbers{%
+%   \renewcommand\thepage{\protect\farsinumber{\c@page}}%
+   \let\@latinarabic\@arabic%
+   \let\@arabic\farsinumber%
+   \renewcommand\thefootnote{\protect\farsinumber{\c@footnote}}%
+   }
+
+\def\nofarsi@globalnumbers{
+   \let\@arabic\@latinarabic%
+   }
 
 \def\farsi@language{\language=\l@farsi}
 
@@ -87,47 +121,41 @@
        \if@tempswa\addfontfeature{Language=Farsi}\fi}
       }% 
 {\farsifont}}
+% TODO add setup to define Sans and Mono Arabic fonts if desired
+\def\farsi@font@sf{%
+  \@ifundefined{farsifontsf}{%
+%  \sffamily% FIXME
+%    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+%  \zf@check@ot@script{arab}%
+%  \if@tempswa%
+%    \addfontfeature{Script=Arabic}%
+%  \else%
+    \farsi@font%
+%  \fi%  
+  }%
+  {\farsifontsf}%
+}
+\def\farsi@font@tt{%
+  \@ifundefined{farsifonttt}{%
+%    \ttfamily% FIXME
+%    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+%  \zf@check@ot@script{arab}%
+%  \if@tempswa%
+%    \addfontfeature{Script=Arabic}%
+%  \else%
+    \farsi@font%
+%  \fi%  
+  }%
+  {\farsifonttt}%
+}
 
 
 \def\selectnormalfontfarsi{%
    \let\normalfont=\farsi@font%
+   \let\rmfamily=\farsi@font%
+   \let\sffamily=\farsi@font@sf%
+   \let\ttfamily=\farsi@font@tt%
    \def\reset@font{\normalfont}}
-
-\def\noextras@farsi{%
-   %\nofarsi@numbers%
-   }
-
-\def\blockextras@farsi{%
-   \farsi@language%
-   \farsi@font%
-   %\local@hyphenmins{farsi}{1}{1}%
-   \local@marks{farsi}%
-   \captionsfarsi%
-   \datefarsi%
-   %\farsi@numbers%
-   \setRL\setfootnoteRL%
-   \def\footnoterule{\RLfootnoterule}%
-   }{}
-
-\def\inlineextras@farsi{%
-   \farsi@language%
-   \farsi@font%
-   %\local@hyphenmins{farsi}{1}{1}%
-   }
 
 \endinput
 
-%TODO
-
-\newsavebox\@Arabitempboxa
-
-\long\def\@makecaption#1#2{%
-  \vskip\abovecaptionskip
-  \sbox\@Arabitempboxa{\beginR #1: #2\endR}%
-  \ifdim \wd\@Arabitempboxa >\hsize
-  \beginR #1: #2\endR\par
-  \else
-    \global \@minipagefalse
-    \hb@xt@\hsize{\hfil\box\@Arabitempboxa\hfil}%
-  \fi
-  \vskip\belowcaptionskip}

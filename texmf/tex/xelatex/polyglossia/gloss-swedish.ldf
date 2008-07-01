@@ -3,7 +3,7 @@
 \csdef{swedish@font}{\normalfontlatin}
 
 \ifx\l@swedish\@undefined%
-   \xpg@nopatterns{<Lang>}%
+   \xpg@nopatterns{Swedish}%
    \adddialect\l@swedish0%
 \fi
 
@@ -28,8 +28,10 @@
    \def\enclname{\textswedish{Bil.}}%
    \def\ccname{\textswedish{Kopia för kännedom}}%
    \def\headtoname{\textswedish{Till}}%
-   \def\proofname{\textswedish{Bevis}}% for AMS-\LaTeX
+   \def\proofname{\textswedish{Bevis}}%
    \def\glossaryname{\textswedish{Ordlista}}%
+   }
+\def\dateswedish{%   
    \def\today{\textswedish{%
     \number\day~\ifcase\month\or
     januari\or februari\or mars\or april\or maj\or juni\or
@@ -49,21 +51,13 @@
    }
 
 \def\blockextras@swedish{%
-   \swedish@language%
    \local@hyphenmins{swedish}{2}{2}%
-   \captionsswedish%
    \frenchspacing%
-   \local@marks{swedish}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@swedish{%
-   \swedish@language%
    \local@hyphenmins{swedish}{2}{2}%
    \frenchspacing%
    }
 
 \endinput
-%TODO
-\addto\extrasswedish{\bbl@frenchspacing}
-\addto\noextrasswedish{\bbl@nonfrenchspacing}

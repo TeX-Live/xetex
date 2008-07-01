@@ -52,7 +52,7 @@
    \def\enclname{\textbahasam{Lampiran}}%
    \def\ccname{\textbahasam{cc}}%
    \def\headtoname{\textbahasam{Kepada}}%
-   \def\proofname{\textbahasam{Bukti}}% for AMS-\LaTeX
+   \def\proofname{\textbahasam{Bukti}}%
    \def\glossaryname{\textbahasam{Istilah}}%
    \def\today{\textbahasam{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Mac\or April\or Mei\or Jun\or
@@ -61,21 +61,12 @@
 
 \def\bahasam@language{\protect\language=\l@bahasam}
 
-\def\noextras@bahasam{%
-   }
-
 \def\blockextras@bahasam{%
-   \bahasam@language%
    \local@hyphenmins{bahasam}{2}{2}%
-   \captionsbahasam%
-   \local@marks{bahasam}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@bahasam{%
-   \bahasam@language%
    \local@hyphenmins{bahasam}{2}{2}%
-   %\bahasam@punctuation%
    }
 
 \endinput

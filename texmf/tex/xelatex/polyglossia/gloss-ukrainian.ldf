@@ -54,7 +54,7 @@
    \def\enclname{\textukrainian{вкладка}}%
    \def\ccname{\textukrainian{копія}}%
    \def\headtoname{\textukrainian{До}}%
-   \def\proofname{\textukrainian{Доведення}}% for AMS-\LaTeX
+   \def\proofname{\textukrainian{Доведення}}%
    \def\glossaryname{\textukrainian{Словник термінів}}%
    \def\today{\textukrainian{\number\day~\ifcase\month\or
     січня\or
@@ -91,20 +91,13 @@
    }
 
 \def\blockextras@ukrainian{%
-   \ukrainian@language%
    \local@hyphenmins{ukrainian}{2}{2}%
    \frenchspacing%
-   \captionsukrainian%
-   \local@marks{ukrainian}%
-   \@ifundefined{setLR}{}{\setLR}%
-   \ukrainian@font%
    }
 
 \def\inlineextras@ukrainian{%
-   \ukrainian@language%
    \local@hyphenmins{ukrainian}{2}{2}%
    \frenchspacing%
-   \ukrainian@font%
    }
 
 \endinput

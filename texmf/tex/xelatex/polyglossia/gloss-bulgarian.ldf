@@ -50,7 +50,7 @@
    \def\enclname{\textbulgarian{Приложения}}%
    \def\ccname{\textbulgarian{копия}}%
    %\def\headtoname{\textbulgarian{}}%
-   \def\proofname{\textbulgarian{Proof}}% for AMS-\LaTeX
+   \def\proofname{\textbulgarian{Proof}}%
    \def\glossaryname{\textbulgarian{Glossary}}%
    \def\today{\textbulgarian{\number\day~\ifcase\month\or
        януари\or
@@ -98,18 +98,11 @@
    }
 
 \def\blockextras@bulgarian{%
-   \bulgarian@language%
-   \bulgarian@font%
    \local@hyphenmins{bulgarian}{2}{2}%
    \frenchspacing%
-   \captionsbulgarian%
-   \local@marks{bulgarian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@bulgarian{%
-   \bulgarian@language%
-   \bulgarian@font%
    \local@hyphenmins{bulgarian}{2}{2}%
    \frenchspacing%
    }

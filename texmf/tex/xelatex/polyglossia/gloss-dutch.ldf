@@ -50,15 +50,11 @@
 }
 
 \def\blockextras@dutch{%
-   \dutch@language%
    \local@hyphenmins{dutch}{2}{2}%
    \dutch@punctuation%
-   \captionsdutch%
-   \local@marks{dutch}%
 }
 
 \def\inlineextras@dutch{%
-   \dutch@language%
    \local@hyphenmins{dutch}{2}{2}%
    \dutch@punctuation%
 }

@@ -42,15 +42,11 @@
    }
 
 \def\blockextras@danish{%
-   \danish@language%
    \local@hyphenmins{danish}{2}{3}%
    \frenchspacing%
-   \captionsdanish%
-   \local@marks{danish}%
    }
 
 \def\inlineextras@danish{%
-   \danish@language%
    \frenchspacing%
    \local@hyphenmins{danish}{2}{3}%
    }

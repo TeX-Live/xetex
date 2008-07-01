@@ -1,0 +1,56 @@
+\ProvidesFile{gloss-portuges.ldf}[polyglossia: module for portuguese]
+\makeatletter
+\csdef{portuges@font}{\normalfontlatin}
+
+%FIXME check this:
+\ifx\l@portuges\@undefined
+  \ifx\l@portuguese\@undefined
+    \xpg@nopatterns{Portuguese}
+    \adddialect\l@portuges0
+  \else
+    \let\l@portuges\l@portuguese
+  \fi
+\fi
+
+\def\captionsbrazil{%
+   \def\refname{\textbrazil{Referências}}%
+   \def\abstractname{\textbrazil{Resumo}}%
+   \def\bibname{\textbrazil{Referências Bibliográficas}}%
+   \def\prefacename{\textbrazil{Prefácio}}%
+   \def\chaptername{\textbrazil{Capítulo}}%
+   \def\appendixname{\textbrazil{Apêndice}}%
+   \def\contentsname{\textbrazil{Sumário}}%
+   \def\listfigurename{\textbrazil{Lista de Figuras}}%
+   \def\listtablename{\textbrazil{Lista de Tabelas}}%
+   \def\indexname{\textbrazil{Índice Remissivo}}%
+   \def\figurename{\textbrazil{Figura}}%
+   \def\tablename{\textbrazil{Tabela}}%
+   %\def\thepart{\textbrazil{}}%
+   \def\partname{\textbrazil{Parte}}%
+   \def\pagename{\textbrazil{Página}}%
+   \def\seename{\textbrazil{veja}}%
+   \def\alsoname{\textbrazil{veja também}}%
+   \def\enclname{\textbrazil{Anexo}}%
+   \def\ccname{\textbrazil{Cópia para}}%
+   \def\headtoname{\textbrazil{Para}}%
+   \def\proofname{\textbrazil{Demonstração}}%
+   \def\glossaryname{\textbrazil{Glossary}}%
+   }
+\def\datebrazil{%   
+   \def\today{\textbrazil{\number\day\space de\space\ifcase\month\or
+      janeiro\or fevereiro\or março\or abril\or maio\or junho\or
+      julho\or agosto\or setembro\or outubro\or novembro\or dezembro%
+      \fi\space de\space\number\year}}%
+      }
+     
+\def\brazil@language{\protect\language=\l@portuges}
+
+\def\blockextras@brazil{%
+   \local@hyphenmins{brazil}{2}{3}%
+   }
+
+\def\inlineextras@brazil{%
+   \local@hyphenmins{brazil}{2}{3}%
+   }
+
+\endinput

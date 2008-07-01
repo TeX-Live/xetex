@@ -7,6 +7,21 @@
   \adddialect\l@syriac0
 \fi
 
+\def\syriac@RL{\relax}
+
+
+\newif\if@eastern@numerals
+\def\tmp@eastern{eastern}
+\define@key{syriac}{numerals}[eastern]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@eastern%
+	  \@eastern@numeralstrue%
+	\else%
+          \@eastern@numeralsfalse%
+	\fi}
+
+\setkeys{syriac}{numerals}
+	
 \def\syriac@font{%
   \@ifundefined{syriacfont}{%
     \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
@@ -22,8 +37,17 @@
   {\syriacfont}%
 }
 
+\def\selectnormalfontsyriac{%
+   \let\normalfont=\syriac@font%
+   \let\rmfamily=\syriac@font%
+   % TODO add setup to define Sans and Mono Syriac fonts if desired
+   \let\sffamily=\syriac@font%
+   \let\ttfamily=\syriac@font%
+   \def\reset@font{\normalfont}}
+
 %\define@key{polyglossia}{syriaclocale}[default]{%
 %	\def\@syriac@locale{#1}}
+%
 %\def\captionssyriac{%
 %\def\prefacename{\@ensure@RL{}}% 
 %\def\refname{\@ensure@RL{}}
@@ -45,7 +69,7 @@
 %\def\pagename{\@ensure@RL{}}%
 %\def\seename{\@ensure@RL{}}%\alefhamza\nun\za\ra
 %\def\alsoname{\@ensure@RL{}}%<<\alefhamza\nun\za\ra
-%\def\proofname{\@ensure@RL{}}% for AMS-\LaTeX
+%\def\proofname{\@ensure@RL{}}%
 %\def\glossaryname{\@ensure@RL{}}%<<
 %}
 
@@ -75,7 +99,6 @@
   \fi
 \fi
 }
-
 \def\abj@syr@num@i#1{%
   \ifcase#1\or\char"0710 \or\char"0712 \or\char"0713 \or\char"0715 %
   \or\char"0717 \or\char"0718 \or\char"0719 \or\char"071A \or\char"071B\fi
@@ -88,28 +111,28 @@
   \ifcase#1\or\char"0729 \or\char"072A \or\char"072B \or\char"072C \fi
   \ifnum#1=\z@\fi\abj@syr@num@ii}
 
+
+\def\arabicnumber#1{\if@eastern@numerals{\protect\addfontfeature{Mapping=arabicdigits}\number#1}\else\RL{\reset@font\number#1}\fi}
+
+\def\syriac@globalnumbers{%
+   \let\@latinarabic\@arabic%
+   \let\@arabic\arabicnumber%
+   \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
+   }
+\def\nosyriac@globalnumbers{
+   \let\@arabic\@latinarabic%
+   }
+\def\syriac@numbers{%
+   \let\@latinalph\@alph%
+   \let\@latinAlph\@Alph%
+   \let\@alph\abjadsyriac%
+   \let\@Alph\abjadsyriac%
+}
+\def\nosyriac@numbers{%
+  \let\@alph\@latinalph%
+  \let\@Alph\@latinAlph%
+  }
+
 \def\syriac@language{\language=\l@syriac}
-
-\def\noextras@syriac{%
-   %\nosyriac@numbers%
-   %\nosyriac@punctuation
-   }
-
-\def\blockextras@syriac{%
-   \syriac@language%
-   \syriac@font
-   %\local@hyphenmins{syriac}{1}{1}%
-   \local@marks{syriac}%
-   %\captionssyriac%
-   \datesyriac%
-   %\syriac@numbers%
-   \setRL\setfootnoteRL
-   }
-
-\def\inlineextras@syriac{%
-   \syriac@language%
-   %\local@hyphenmins{syriac}{1}{1}%
-   \syriac@font
-   }
 
 \endinput

@@ -28,7 +28,7 @@
    \def\enclname{\textcatalan{Adjunt}}%
    \def\ccname{\textcatalan{Còpies a}}%
    \def\headtoname{\textcatalan{A}}%
-   \def\proofname{\textcatalan{Demostració}}% for AMS-\LaTeX
+   \def\proofname{\textcatalan{Demostració}}%
    \def\glossaryname{\textcatalan{Glossari}}%
    \def\today{\textcatalan{\number\day~\ifcase\month\or
     de gener\or de febrer\or de març\or d'abril\or de maig\or
@@ -38,20 +38,11 @@
 
 \def\catalan@language{\protect\language=\l@catalan}
 
-\def\noextras@catalan{%
-   %\nocatalan@punctuation
-   }
-
 \def\blockextras@catalan{%
-   \catalan@language%
    \local@hyphenmins{catalan}{2}{2}%
-   \captionscatalan%
-   \local@marks{catalan}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@catalan{%
-   \catalan@language%
    \local@hyphenmins{catalan}{2}{2}%
    }
 

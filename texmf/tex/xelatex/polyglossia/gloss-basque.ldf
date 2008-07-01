@@ -28,7 +28,7 @@
    \def\enclname{\textbasque{Erantsia}}%
    \def\ccname{\textbasque{Kopia}}%
    \def\headtoname{\textbasque{Nori}}%
-   \def\proofname{\textbasque{Frogapena}}% for AMS-\LaTeX
+   \def\proofname{\textbasque{Frogapena}}%
    \def\glossaryname{\textbasque{Glosarioa}}%
    \def\today{\textbasque{\number\year.eko\space\ifcase\month\or
     urtarrilaren\or otsailaren\or martxoaren\or apirilaren\or
@@ -38,19 +38,11 @@
 
 \def\basque@language{\protect\language=\l@basque}
 
-\def\noextras@basque{%
-   }
-
 \def\blockextras@basque{%
-   \basque@language%
    \local@hyphenmins{basque}{2}{2}%
-   \captionsbasque%
-   \local@marks{basque}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@basque{%
-   \basque@language%
    \local@hyphenmins{basque}{2}{2}%
    }
 

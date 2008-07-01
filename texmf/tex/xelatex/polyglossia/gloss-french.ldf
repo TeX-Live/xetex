@@ -32,13 +32,6 @@
     \XeTeXinterchartoks 7 8 = {\unskip\kern.1667em}% "?»" -> "? »"
 }
 
-\let\@aifORI\@afterindentfalse%
-
-\def\french@indent{\let\@afterindentfalse\@afterindenttrue%
-                        \@afterindenttrue}
-\def\nofrench@indent{\let\@afterindentfalse\@aifORI%
-                          \@afterindentfalse}
-
 %\newcounter{niveauguillemets}[paragraph]
 %
 %\def\tmp@normal{normal}
@@ -98,7 +91,7 @@
    \def\enclname{\textfrench{P.~J. }}%
    \def\ccname{\textfrench{Copie à }}%
    \def\headtoname{}%
-   \def\proofname{\textfrench{Démonstration}}% for AMS-\LaTeX
+   \def\proofname{\textfrench{Démonstration}}%
    }
 \def\datefrench{%
    \def\today{\textfrench{\ifx\ier\undefined\def\ier{er}\fi%
@@ -117,20 +110,13 @@
    \nofrench@indent}
 
 \def\blockextras@french{%
-   \french@language%
    \local@hyphenmins{french}{2}{2}%
    \french@punctuation%
    \french@indent%
-   \captionsfrench%
-   \datefrench%
-   \local@marks{french}%
    \french@guillemets%
-   \@ifundefined{setLR}{}{\setLR}%
-   \rmfamily%
    }
 
 \def\inlineextras@french{%
-   \french@language%
    \local@hyphenmins{french}{2}{2}%
    \french@punctuation%
    \french@guillemets%

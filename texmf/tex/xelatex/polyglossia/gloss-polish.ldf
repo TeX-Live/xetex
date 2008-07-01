@@ -42,15 +42,11 @@
 }
 
 \def\blockextras@polish{%
-   \polish@language%
    \local@hyphenmins{polish}{2}{2}%
    \frenchspacing%
-   \captionspolish%
-   \local@marks{polish}%
 }
 
 \def\inlineextras@polish{%
-   \polish@language%
    \local@hyphenmins{polish}{2}{2}%
    \frenchspacing%
 }

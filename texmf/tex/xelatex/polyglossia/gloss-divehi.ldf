@@ -7,6 +7,8 @@
    \adddialect\l@divehi0%
 \fi
 
+\def\divehi@RL{\relax}
+
 %\def\captionsdivehi{%
 %   \def\refname{\textdivehi{<++>}}%
 %   \def\abstractname{\textdivehi{<++>}}%
@@ -28,7 +30,7 @@
 %   \def\enclname{\textdivehi{<++>}}%
 %   \def\ccname{\textdivehi{<++>}}%
 %   \def\headtoname{\textdivehi{<++>}}%
-%   \def\proofname{\textdivehi{<++>}}% for AMS-\LaTeX
+%   \def\proofname{\textdivehi{<++>}}%
 %   \def\glossaryname{\textdivehi{<++>}}%
 %   }
 %\def\datedivehi{\def\today{\textdivehi{<++>}}}
@@ -54,23 +56,11 @@
 
 \def\selectnormalfontdivehi{%
    \let\normalfont=\divehi@font%
+   \let\rmfamily=\divehi@font%
+   % TODO add setup to define Sans and Mono fonts if desired
+   \let\sffamily=\divehi@font%
+   \let\ttfamily=\divehi@font%
    \def\reset@font{\normalfont}}
 
-\def\noextras@divehi{%
-   }
-
-\def\blockextras@divehi{%
-   \divehi@language%
-   \divehi@font%
-   %\divehi@captions%
-   %\local@marks{divehi}%
-   \setRL\setfootnoteRL%
-   %\def\footnoterule{\RLfootnoterule}%
-   }
-
-\def\inlineextras@divehi{%
-   \divehi@language%
-   \divehi@font%
-   }
 
 \endinput

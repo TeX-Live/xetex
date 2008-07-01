@@ -4,25 +4,12 @@
 
 \ifx\l@portuges\@undefined
   \ifx\l@portuguese\@undefined
-    \ifx\l@brazil\@undefined
-      \ifx\l@brazilian\@undefined
-        \xpg@nopatterns{Portuguese}
-        \adddialect\l@portuges0
-      \else
-        \let\l@portuges\l@brazilian
-      \fi
-    \else
-      \let\l@portuges\l@brazil
-    \fi
+    \xpg@nopatterns{Portuguese}
+    \adddialect\l@portuges0
   \else
     \let\l@portuges\l@portuguese
   \fi
 \fi
-
-%TODO option brazil
-\newif\if@brazil
-% \adddialect\l@brazil\l@portuges TODO
-\def\p@captionsrtuges{\if@brazil\brazil@captions\else\portuges@captions\fi}
 
 \def\captionsportuges{%
    \def\refname{\textportuges{Referências}}%
@@ -45,56 +32,23 @@
    \def\enclname{\textportuges{Anexo}}%
    \def\ccname{\textportuges{Com cópia a}}%
    \def\headtoname{\textportuges{Para}}%
-   \def\proofname{\textportuges{Demonstração}}% for AMS-\LaTeX
+   \def\proofname{\textportuges{Demonstração}}%
    \def\glossaryname{\textportuges{Glossário}}%
+   }
+\def\dateportuges{%   
    \def\today{\textportuges{\number\day\space de\space\ifcase\month\or
       Janeiro\or Fevereiro\or Março\or Abril\or Maio\or Junho\or
       Julho\or Agosto\or Setembro\or Outubro\or Novembro\or Dezembro%
-      \fi\space de\space\number\year}}}
-
-\def\captionsbrazil{%
-   \def\refname{\textportuges{Referências}}%
-   \def\abstractname{\textportuges{Resumo}}%
-   \def\bibname{\textportuges{Referências Bibliográficas}}%
-   \def\prefacename{\textportuges{Prefácio}}%
-   \def\chaptername{\textportuges{Capítulo}}%
-   \def\appendixname{\textportuges{Apêndice}}%
-   \def\contentsname{\textportuges{Sumário}}%
-   \def\listfigurename{\textportuges{Lista de Figuras}}%
-   \def\listtablename{\textportuges{Lista de Tabelas}}%
-   \def\indexname{\textportuges{Índice Remissivo}}%
-   \def\figurename{\textportuges{Figura}}%
-   \def\tablename{\textportuges{Tabela}}%
-   %\def\thepart{\textportuges{}}%
-   \def\partname{\textportuges{Parte}}%
-   \def\pagename{\textportuges{Página}}%
-   \def\seename{\textportuges{veja}}%
-   \def\alsoname{\textportuges{veja também}}%
-   \def\enclname{\textportuges{Anexo}}%
-   \def\ccname{\textportuges{Cópia para}}%
-   \def\headtoname{\textportuges{Para}}%
-   \def\proofname{\textportuges{Demonstração}}% for AMS-\LaTeX
-   \def\glossaryname{\textportuges{Glossary}}%
-   \def\today{\textportuges{\number\day\space de\space\ifcase\month\or
-      janeiro\or fevereiro\or março\or abril\or maio\or junho\or
-      julho\or agosto\or setembro\or outubro\or novembro\or dezembro%
-      \fi\space de\space\number\year}}}
+      \fi\space de\space\number\year}}%
+      }
      
 \def\portuges@language{\protect\language=\l@portuges}
 
-\def\noextras@portuges{%
-   }
-
 \def\blockextras@portuges{%
-   \portuges@language%
    \local@hyphenmins{portuges}{2}{3}%
-   \p@captionsrtuges%
-   \local@marks{portuges}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@portuges{%
-   \portuges@language%
    \local@hyphenmins{portuges}{2}{3}%
    }
 

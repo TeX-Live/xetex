@@ -9,6 +9,8 @@
   \adddialect\l@hebrew0
 \fi
 
+\def\hebrew@RL{\relax}
+
 %ADD OPTION FOR calendar and load hebcal.sty if needed
 
 \providehyphenmins{\CurrentOption}{\thr@@\thr@@}
@@ -52,7 +54,7 @@
     \or ספטמבר\or אוקטובר\or נובמבר\or דצמבר\fi}
 
 
-\def\hebrewnumeral#1{%
+\def\hebrewalph#1{%
 \ifnum#1>9999 \PackageWarning{polyglossia}{Illegal value (#1) for Hebrew numeral} {#1}
 \else
   \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for Hebrew numeral}%
@@ -71,6 +73,7 @@
   \fi
 \fi
 }
+\let\hebrewnumeral\hebrewalph
 
 \def\hebnum@zero{}
 
@@ -96,6 +99,16 @@
 % -insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
 % -insert geresh (\char"05F3) after letter if it is alone
 
+\def\hebrew@numbers{%
+   \let\@latinalph\@alph%
+   \let\@latinAlph\@Alph%
+   \let\@alph\hebrewalph%
+   \let\@Alph\hebrewalph%
+}
+\def\nohebrew@numbers{%
+  \let\@alph\@latinalph%
+  \let\@Alph\@latinAlph%
+  }
 
 \def\hebrew@language{\language=\l@hebrew}
 
@@ -113,32 +126,38 @@
     }%
 {\hebrewfont}}
 
+% TODO add setup to define Sans and Mono Hebrew fonts if desired
+\def\hebrew@font@sf{%
+  \@ifundefined{hebrewfontsf}{%
+%  \sffamily% FIXME
+%    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+%  \zf@check@ot@script{arab}%
+%  \if@tempswa%
+%    \addfontfeature{Script=Hebrew}%
+%  \else%
+    \hebrew@font%
+%  \fi%  
+  }%
+  {\hebrewfontsf}%
+}
+\def\hebrew@font@tt{%
+  \@ifundefined{hebrewfonttt}{%
+%    \ttfamily% FIXME
+%    \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+%  \zf@check@ot@script{arab}%
+%  \if@tempswa%
+%    \addfontfeature{Script=Hebrew}%
+%  \else%
+    \hebrew@font%
+%  \fi%  
+  }%
+  {\hebrewfonttt}%
+}
 \def\selectnormalfonthebrew{%
    \let\normalfont=\hebrew@font%
+   \let\rmfamily=\hebrew@font%
+   \let\sffamily=\hebrew@font@sf%
+   \let\ttfamily=\hebrew@font@tt%
    \def\reset@font{\normalfont}}
-
-\def\noextras@hebrew{%
-   %\nohebrew@numbers%
-   %\nohebrew@punctuation
-   }
-
-\def\blockextras@hebrew{%
-   \hebrew@language%
-   \local@hyphenmins{hebrew}{1}{1}%
-   %\hebrew@punctuation%
-   \local@marks{hebrew}%
-   \captionshebrew%
-   \datehebrew%
-   %\hebrew@numbers%
-   \@ifundefined{hebrewfont}{\addfontfeature{Script=Arabic,Language=Arabic}}{\hebrewfont}
-   \setRL\setfootnoteRL
-   }{}
-
-\def\inlineextras@hebrew{%
-   \hebrew@language%
-   \local@hyphenmins{hebrew}{1}{1}%
-   %\hebrew@punctuation%
-   \@ifundefined{hebrewfont}{\addfontfeature{Script=Hebrew,Language=Hebrew}}{\hebrewfont}
-   }
 
 \endinput

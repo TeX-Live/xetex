@@ -28,7 +28,7 @@
    \def\enclname{\textestonian{Lisa(d)}}%
    \def\ccname{\textestonian{Koopia(d)}}%
    %\def\headtoname{\textestonian{}}%
-   \def\proofname{\textestonian{Korrektuur}}% for AMS-\LaTeX
+   \def\proofname{\textestonian{Korrektuur}}%
    \def\glossaryname{\textestonian{Glossary}}% <-- need translation
    \def\today{\textestonian{\number\day.\space\ifcase\month\or
     jaanuar\or veebruar\or märts\or aprill\or mai\or juuni\or
@@ -42,16 +42,11 @@
    }
 
 \def\blockextras@estonian{%
-   \estonian@language%
    \local@hyphenmins{estonian}{2}{2}%
    \frenchspacing%
-   \captionsestonian%
-   \local@marks{estonian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@estonian{%
-   \estonian@language%
    \local@hyphenmins{estonian}{2}{2}%
    \frenchspacing%
    }

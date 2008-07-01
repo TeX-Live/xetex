@@ -39,17 +39,11 @@
 
 \def\latvian@language{\protect\language=\l@latvian}
 
-\def\noextras@latvian{}
-
 \def\blockextras@latvian{%
-   \latvian@language%
    \local@hyphenmins{latvian}{2}{2}%
-   \captionslatvian%
-   \local@marks{latvian}%
    }
 
 \def\inlineextras@latvian{%
-   \latvian@language%
    \local@hyphenmins{latvian}{2}{2}%
    }
 

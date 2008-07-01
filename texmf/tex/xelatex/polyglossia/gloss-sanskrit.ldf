@@ -53,7 +53,7 @@
 %   \def\enclname{\textsanskrit{<++>}}%
 %   \def\ccname{\textsanskrit{<++>}}%
 %   \def\headtoname{\textsanskrit{<++>}}%
-%   \def\proofname{\textsanskrit{<++>}}% for AMS-\LaTeX
+%   \def\proofname{\textsanskrit{<++>}}%
 %   \def\glossaryname{\textsanskrit{<++>}}%
 %   \def\today{\textsanskrit{<++>}}}
 
@@ -82,21 +82,24 @@
      {\sanskritfont}%
 }
 
+\def\selectnormalfontsanskrit{%
+   \let\normalfont=\sanskrit@font%
+   \let\rmfamily=\sanskrit@font%
+   % TODO add setup to define Sans and Mono Sanskrit fonts if desired
+   \let\sffamily=\sanskrit@font%
+   \let\ttfamily=\sanskrit@font%
+   \def\reset@font{\normalfont}}
+
 \def\noextras@sanskrit{%
-   \nosanskrit@punctuation}
+   \nosanskrit@punctuation%
+   }
 
 \def\blockextras@sanskrit{%
-   \sanskrit@language%
    \sanskrit@punctuation%
    \local@hyphenmins{sanskrit}{1}{5}%
-   %\captionssanskrit%
-   %\local@marks{sanskrit}%
-   \sanskrit@font%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@sanskrit{%
-   \sanskrit@language%
    \local@hyphenmins{sanskrit}{1}{5}%
    }
 

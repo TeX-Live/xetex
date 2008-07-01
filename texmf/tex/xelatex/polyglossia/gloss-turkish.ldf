@@ -66,19 +66,13 @@
 }
 
 \def\blockextras@turkish{%
-   \turkish@language%
    \local@hyphenmins{turkish}{2}{2}%
    \turkish@punctuation%
-   \captionsturkish%
-   \local@marks{turkish}%
-   \turkish@font%
 }
 
 \def\inlineextras@turkish{%
-   \turkish@language%
    \local@hyphenmins{turkish}{2}{2}%
    \turkish@punctuation%
-   \turkish@font%
 }
 
 \endinput

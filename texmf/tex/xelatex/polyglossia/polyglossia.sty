@@ -65,8 +65,8 @@
    \IfFileExists{gloss-#2.ldf}%
    {\ifcsundef{#2@loaded}% from etoolbox.sty
      {\input{gloss-#2.ldf}%
-      \typeout{Polyglossia: main language set to #2}%
-     \def\languagename{#2}% <-- this is needed e.g. by koma class scrlttr2.cls
+     \PackageInfo{polyglossia}{Default language is #2.}
+     \def\languagename{#2}%
       % This is needed because \arabic is a built-in LaTeX command:
       % so now we have \begin{Arabic}... instead of \begin{arabic}...  
       \edef\@tmpa{arabic}%
@@ -79,17 +79,17 @@
          {\end{otherlanguage}}%
       \fi%
       \expandafter\newcommand\csname text#2\endcsname[2][]{%
-       \foreignlanguage[####1]{#2}{%
-       \ifcsundef{#2@font}{%
-       \PackageWarning{polyglossia}{ #2@font is not defined ^^J
-       in gloss-#2.ldf}}%
-       {\expandafter\csname #2@font\endcsname}####2}}%
-      %\csgdef{text#2}####1{\foreignlanguage{#2}{####1}}%
-      %\csgdef{text#2}[####1]####2{\foreignlanguage[####1]{#2}{####2}}%
+       \ifdefined\RL%
+         \ifcsundef{#2@RL}%
+          {\@ensure@LR{\foreignlanguage[####1]{#2}{####2}}}%
+          {\@ensure@RL{\foreignlanguage[####1]{#2}{####2}}}%
+       \else
+          \foreignlanguage[####1]{#2}{####2}%
+       \fi}
       \csletcs{local#2}{text#2}%
       \csgdef{#2@loaded}{}%
       \gdef\xpg@main@language{#2}%
-     }%
+      }%
      {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
     %% The following settings are for the default language and script:
     \AtBeginDocument{%
@@ -98,20 +98,40 @@
    }%
    %ELSE
    {\xpg@nolang{#2}}}%
-\let\background=\setdefaultlanguage
 \let\setmainlanguage=\setdefaultlanguage
+
+\newcommand{\resetdefaultlanguage}[2][]{%
+    \ifcsundef{#2@loaded}{%
+     \PackageError{polyglossia}{gloss-#2.ldf is not loaded!}}%
+    {\def\languagename{#2}%
+    \selectlanguage[#1]{#2}%
+    \selectbackgroundlanguage{#2}}}
+
 
 % This saves the normalfont for the latin script since we may change normalfont in other scripts
 \let\normalfontlatin=\normalfont%
+\let\rmfamilylatin=\rmfamily%
+\let\sffamilylatin=\sffamily%
+\let\ttfamilylatin=\ttfamily%
 
 \def\reset@latin@script{%
-   \@ifundefined{setLR}{}{\setLR}%
+   \let\rmfamily=\rmfamilylatin%
+   \let\sffamily=\sffamilylatin%
+   \let\ttfamily=\ttfamilylatin%
    \normalfontlatin}
+
+\def\reset@LR{%
+   \@ifundefined{setLR}{}{\setLR}}
+
+\let\@@fterindentfalse\@afterindentfalse
+\def\french@indent{\let\@afterindentfalse\@afterindenttrue
+                        \@afterindenttrue}
+\def\nofrench@indent{\let\@afterindentfalse\@@fterindentfalse
+                          \@afterindentfalse}
 
 \newcommand{\selectbackgroundlanguage}[1]{%
     \ifcsundef{selectnormalfont#1}{}{\csname selectnormalfont#1\endcsname}%
-    \ifcsundef{#1@numbers}{}{\csname #1@numbers\endcsname}%
-    %\PackageInfo{polyglossia}{Background language set as #1.}
+    \ifcsundef{#1@globalnumbers}{}{\csname #1@globalnumbers\endcsname}%
     }
 
 \newcommand{\setotherlanguage}[2][]{%
@@ -129,11 +149,16 @@
          {\end{otherlanguage}}%
       \fi%
       \expandafter\newcommand\csname text#2\endcsname[2][]{%
-       \foreignlanguage[####1]{#2}{%
-       \ifcsundef{#2@font}{%
-       \PackageWarning{polyglossia}{#2@font is not defined ^^J
-       in gloss-#2.ldf}}%
-       {\expandafter\csname #2@font\endcsname}####2}}%
+       \ifdefined\RL%
+	  \ifcsundef{#2@RL}%
+	  {\@ensure@LR{\foreignlanguage[####1]{#2}{%
+	   {\expandafter\csname #2@font\endcsname}####2}}}%
+          {\@ensure@RL{\foreignlanguage[####1]{#2}{%
+	   {\expandafter\csname #2@font\endcsname}####2}}}%
+       \else
+          \foreignlanguage[####1]{#2}{%
+	  {\expandafter\csname #2@font\endcsname}####2}
+      \fi}
       \csletcs{local#2}{text#2}%
       \csgdef{#2@loaded}{}%
      }%
@@ -146,8 +171,6 @@
    %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
 }
 
-\let\load=\setotherlanguage
-
 \newcommand\setotherlanguages[1]{%
    \def\do##1{\setotherlanguage{##1}}%
    \docsvlist{#1}}% from etoolbox.sty
@@ -159,23 +182,36 @@
 \def\noextrascurrent#1{\@ifundefined{noextras@#1}{}%
    {\csname noextras@#1\endcsname}}
 
-\def\originalLaTeX{\@ifundefined{languagename}{}%
+\def\xpg@initial@setup{\@ifundefined{languagename}{}%
    {\noextrascurrent{\languagename}}%
    \common@language}
 
-\AtBeginDocument{\originalLaTeX}
+\AtBeginDocument{\xpg@initial@setup}
+
 \@ifundefined{foreignlanguage}{}%
    {\let\foreignlanguage\@undefined}
+
+\def\xpg@csifdef@warn#1{%
+   \ifcsundef{#1}{\PackageWarning{polyglossia}{ #1 is not defined}}%
+   {\expandafter\protect\csname #1\endcsname}}
+
+\def\xpg@csifdef#1{\ifcsundef{#1}{}{\expandafter\protect\csname #1\endcsname}}
+
 \newcommand{\foreignlanguage}[3][]{%
-   \@ifundefined{inlineextras@#2}{\xpg@nolang{#2}}{%
+   \@ifundefined{#2@loaded}{\xpg@nolang{#2}}{%
      {\def\languagename{#2}%
       \setkeys{#2}{#1}%
+      \xpg@csifdef@warn{#2@font}%
+      \xpg@csifdef@warn{#2@language}%
+      %setlocalhyphenmins{#2} TODO
       \csname inlineextras@#2\endcsname#3}%
 }}
+
 \@ifundefined{selectlanguage}{}%
    {\let\selectlanguage\@undefined}
+
 \newcommand{\selectlanguage}[2][]{%
-   \@ifundefined{blockextras@#2}{\xpg@nolang{#2}}{%
+   \@ifundefined{#2@loaded}{\xpg@nolang{#2}}{%
       \def\xpg@pop@language{%
          \xpg@set@language{\languagename}%
          \let\emp@langname\undefined}%
@@ -183,6 +219,7 @@
       \setkeys{#2}{#1}%
       \xpg@set@language{#2}%
 }}
+
 \newcommand{\xpg@set@language}[1]{%
    \select@language{#1}%
    \if@filesw%
@@ -192,21 +229,38 @@
       \addtocontents{lot}{\protect\select@language{#1}}%
    \fi%
 }
+
 \@ifundefined{select@language}{}%
    {\let\select@language\@undefined}
+
 \newcommand{\select@language}[1]{%
-   \originalLaTeX%
+   \xpg@initial@setup%
    \edef\languagename{#1}%
-   \csname blockextras@#1\endcsname%
+   \ifdefined\RL%
+   \ifcsundef{#1@RL}{\@rlfalse}{\@rltrue}%
+   \fi%
+   \xpg@csifdef@warn{#1@font}%
+   \xpg@csifdef@warn{#1@language}%
+   %setlocalhyphenmins{#1} TODO
+   \xpg@csifdef{captions#1}%
+   \xpg@csifdef{date#1}%
+   \xpg@csifdef{#1@numbers}%
+   \local@marks{#1}%
+   \xpg@csifdef{blockextras@#1}%
 }
+
 \let\xpg@pop@language\relax
+
 \@ifundefined{otherlanguage}{}%
    {\let\otherlanguage\@undefined}
 \@ifundefined{endotherlanguage}{}%
    {\let\endotherlanguage\@undefined}
+
 \newenvironment{otherlanguage}[2][]{%
    \selectlanguage[#1]{#2}%
    }{}
+
+%TODO -> \setlocalhyphenmins ?
 \newcommand{\local@hyphenmins}[3]{%
    \@ifundefined{#1hyphenmins}{}%
    {\expandafter\xdef\csname #1hyphenmins\endcsname{}}%

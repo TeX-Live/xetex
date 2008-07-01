@@ -1,19 +1,31 @@
 \ProvidesFile{gloss-serbian.ldf}[polyglossia: module for serbian]
 \makeatletter
 
+%TODO eventually there will be patterns for Serbian-Latin as well as Serbian-Cyrillic
 \ifx\l@serbian\@undefined%
-   \xpg@nopatterns{<Lang>}%
+   \xpg@nopatterns{Serbian}%
    \adddialect\l@serbian0%
 \fi
 
-\let\@aifORI\@afterindentfalse
+\newif\if@serbian@cyr
+\def\tmp@cyrillic{cyrillic}
+\define@key{serbian}{script}[cyrillic]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@cyrillic\@serbian@cyrtrue\else%
+	  \@serbian@cyrfalse\fi%
+	\fi}
 
-\def\french@indent{\let\@afterindentfalse\@afterindenttrue
-                        \@afterindenttrue}
-\def\nonfrench@indent{\let\@afterindentfalse\@aifORI
-                          \@afterindentfalse}
+\setkeys{serbian}{script}
 
 \def\captionsserbian{%
+   \if@serbian@cyr\captionsserbiancyr\else\captionsserbianlat\fi%
+   }
+
+\def\dateserbian{%
+   \if@serbian@cyr\dateserbiancyr\else\dateserbianlat\fi%
+   }
+
+\def\captionsserbianlat{%
    \def\refname{\textserbian{Literatura}}%
    \def\abstractname{\textserbian{Sažetak}}%
    \def\bibname{\textserbian{Bibliografija}}%
@@ -26,7 +38,6 @@
    \def\indexname{\textserbian{Indeks}}%
    \def\figurename{\textserbian{Slika}}%
    \def\tablename{\textserbian{Tabela}}%
-   %\def\thepart{\textserbian{}}%
    \def\partname{\textserbian{Deo}}%
    \def\pagename{\textserbian{Strana}}%
    \def\seename{\textserbian{Vidi}}%
@@ -34,16 +45,49 @@
    \def\enclname{\textserbian{Prilozi}}%
    \def\ccname{\textserbian{Kopije}}%
    \def\headtoname{\textserbian{Prima}}%
-   \def\proofname{\textserbian{Dokaz}}% for AMS-\LaTeX
-   \def\glossaryname{\textserbian{Glossary}}% <-- needs translation
+   \def\proofname{\textserbian{Dokaz}}%
+   \def\glossaryname{\textserbian{Glosar}}% <-- CHECK
+   }
+\def\dateserbianlat{%   
    \def\today{\textserbian{\number\day .~\ifcase\month\or
     januar\or februar\or mart\or april\or maj\or
     juni\or juli\or avgust\or septembar\or oktobar\or novembar\or
-    decembar\fi \space \number\year}}}
+    decembar\fi \space \number\year}}%
+    }
 
-\def\serbian@language{\protect\language=\l@serbian}
+%%%TODO ASK SOMEONE TO CHECK THESE!
+\def\captionsserbiancyr{%
+   \def\refname{\textserbian{Литература}}%
+   \def\abstractname{\textserbian{Сажетак}}%
+   \def\bibname{\textserbian{Библиографија}}%
+   \def\prefacename{\textserbian{Предговор}}%
+   \def\chaptername{\textserbian{Глава}}%
+   \def\appendixname{\textserbian{Додатак}}%
+   \def\contentsname{\textserbian{Садржај}}%
+   \def\listfigurename{\textserbian{Слике}}%
+   \def\listtablename{\textserbian{Табеле}}%
+   \def\indexname{\textserbian{Индекс}}%
+   \def\figurename{\textserbian{Слика}}%
+   \def\tablename{\textserbian{Табела}}%
+   %\def\thepart{\textserbian{}}%
+   \def\partname{\textserbian{Део}}%
+   \def\pagename{\textserbian{Страна}}%
+   \def\seename{\textserbian{Види}}%
+   \def\alsoname{\textserbian{Види такође}}%
+   \def\enclname{\textserbian{Прилоzи}}%
+   \def\ccname{\textserbian{Копије}}%
+   \def\headtoname{\textserbian{Прима}}%
+   \def\proofname{\textserbian{Докаz}}%
+   \def\glossaryname{\textserbian{Глосар}}% <-- CHECK
+   }
+\def\dateserbiancyr{%
+   \def\today{\textserbian{\number\day .~\ifcase\month\or
+    јануар\or фебруар\or март\or април\or мај\or
+    јуни\or јули\or август\or септембар\or октобар\or нобембар\or
+    децембар\fi \space \number\year}}%
+    }
 
-\def\serbian@font{%
+\def\serbian@font@cyr{%
 \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
 \@ifundefined{serbianfont}{%
       \@ifundefined{cyrillicfont}{%
@@ -66,21 +110,30 @@
      {\serbianfont}%
 }
 
+\def\serbian@font@lat{%
+  \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+   \@ifundefined{serbianfontlatin}{%
+     \zf@check@ot@lang{SRB}%
+     \if@tempswa\addfontfeature{Language=Serbian}\fi}%
+    {\serbianfontlatin}%
+}
+
+\def\serbian@font{%
+   \if@serbian@cyr\serbian@font@cyr\else\serbian@font@lat\fi}
+
+%TODO when available load latin hyphenation patterns as well!
+\def\serbian@language{\protect\language=\l@serbian}
+
 \def\noextras@serbian{%
    \nofrench@indent%
    }
 
 \def\blockextras@serbian{%
-   \serbian@language%
    \local@hyphenmins{serbian}{2}{2}%
-   \captionsserbian%
    \french@indent%
-   \local@marks{serbian}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@serbian{%
-   \serbian@language%
    \local@hyphenmins{serbian}{2}{2}%
    }
 

@@ -28,29 +28,24 @@
    \def\enclname{\textslovak{Prílohy}}%
    \def\ccname{\textslovak{cc.}}%
    \def\headtoname{\textslovak{Pre}}% was komu
-   \def\proofname{\textslovak{Dôkaz}}% for AMS-\LaTeX
+   \def\proofname{\textslovak{Dôkaz}}%
    \def\glossaryname{\textslovak{Slovník}}%
+   }
+\def\dateslovak{%   
    \def\today{\textslovak{\number\day.~\ifcase\month\or
     januára\or februára\or marca\or apríla\or mája\or
     júna\or júla\or augusta\or septembra\or októbra\or
     novembra\or decembra\fi
-    \space \number\year}}}
+    \space \number\year}}%
+    }
 
 \def\slovak@language{\protect\language=\l@slovak}
 
-\def\noextras@slovak{%
-   }
-
 \def\blockextras@slovak{%
-   \slovak@language%
    \local@hyphenmins{slovak}{2}{2}%
-   \captionsslovak%
-   \local@marks{slovak}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@slovak{%
-   \slovak@language%
    \local@hyphenmins{slovak}{2}{2}%
    }
 

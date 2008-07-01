@@ -28,7 +28,7 @@
    \def\enclname{\textesperanto{Aldono(j)}}%
    \def\ccname{\textesperanto{Kopie al}}%
    \def\headtoname{\textesperanto{Al}}%
-   \def\proofname{\textesperanto{Pruvo}}% for AMS-\LaTeX
+   \def\proofname{\textesperanto{Pruvo}}%
    \def\glossaryname{\textesperanto{Glosaro}}%
    \def\today{\textesperanto{\number\day{--a}~de~\ifcase\month\or
     januaro\or februaro\or marto\or aprilo\or majo\or junio\or
@@ -51,19 +51,11 @@
 
 \def\esperanto@language{\protect\language=\l@esperanto}
 
-\def\noextras@esperanto{%
-   }
-
 \def\blockextras@esperanto{%
-   \esperanto@language%
    \local@hyphenmins{esperanto}{2}{2}%
-   \captionsesperanto%
-   \local@marks{esperanto}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@esperanto{%
-   \esperanto@language%
    \local@hyphenmins{esperanto}{2}{2}%
    }
 

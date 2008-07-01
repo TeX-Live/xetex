@@ -45,7 +45,7 @@
    \def\enclname{\textbreton{Dielloù kevret}}%
    \def\ccname{\textbreton{Eilskrid da}}%
    \def\headtoname{\textbreton{evit}}%
-   \def\proofname{\textbreton{Proof}}% for AMS-\LaTeX
+   \def\proofname{\textbreton{Proof}}%
    \def\glossaryname{\textbreton{Glossary}}%
    \def\today{\textbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
     \number\day\fi \space a\space viz\space\ifcase\month\or
@@ -60,16 +60,11 @@
    }
 
 \def\blockextras@breton{%
-   \breton@language%
    \local@hyphenmins{breton}{2}{2}%
    \breton@punctuation%
-   \captionsbreton%
-   \local@marks{breton}%
-   \@ifundefined{setLR}{}{\setLR}%
    }
 
 \def\inlineextras@breton{%
-   \breton@language%
    \local@hyphenmins{breton}{2}{2}%
    \breton@punctuation%
    }

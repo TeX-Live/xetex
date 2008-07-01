@@ -139,7 +139,6 @@
       \space \number\year\space г.}}}
 
 % The following is based on some ideas from ruscor.sty
-
 \def\russian@capsformat{%
    \def\@seccntformat##1{\csname pre##1\endcsname%
       \csname the##1\endcsname%
@@ -165,19 +164,12 @@
    }
    
 \def\blockextras@russian{%
-   \russian@language%
-   \russian@font%
    \local@hyphenmins{russian}{2}{2}%
-   %\russian@alph%
    \frenchspacing%
-   \captions@russian%
    \russian@capsformat%
-   \local@marks{russian}%
    }
 
 \def\inlineextras@russian{%
-   \russian@language%
-   \russian@font% 
    \local@hyphenmins{russian}{2}{2}%
    \frenchspacing%
    }
