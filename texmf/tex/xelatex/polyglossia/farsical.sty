@@ -1,8 +1,10 @@
-%TODO
-%% · change into a proper package
-%% · use calc
-%% · \def\today{\ftoday} -> use instead \JalaliToday etc. as in hebcal.sty
-%% · define also \JalaliTodayInEnglish
+\ProvidesPackage{farsical}
+        [2008/07/02 v0.1 %
+         Farsi (jalali) calendar]
+\RequirePackage{bidi,calc}
+
+%TODO - rewrite completely using use calc 
+%%    - use Reingold & Dershowitz ME
 %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Modified from Arabiftoday.sty which is part of the Arabi package:
@@ -26,7 +28,7 @@
 \newcount\JALALI@latinx    \newcount\JALALI@farsix
 \newcount\JALALI@latinxi   \newcount\JALALI@farsixi
 \newcount\JALALI@latinxii  \newcount\JALALI@farsixii
-                       \newcount\JALALI@farsixiii
+                           \newcount\JALALI@farsixiii
 
 \newcount\JALALI@temp
 \newcount\JALALI@temptwo
