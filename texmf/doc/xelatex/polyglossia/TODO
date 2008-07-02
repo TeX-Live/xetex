@@ -35,8 +35,8 @@ TEST THIS:
         \fi}%
        {\PackageWarning{polyglossia}{#1: Invalid value for key Direction}}% 
     \define@key[xpg@setup]{#1}{hyphenmins}[{2,2}]{%
-           \def\@tmpb{\xpg@first{##1}}%
-           \def\@tmpc{\xpg@second{##1}}%
+           \edef\@tmpb{\xpg@first{##1}}%
+           \edef\@tmpc{\xpg@second{##1}}%
 	   \providehyphenmins{#1}{\@tmpb\@tmpc\relax}%
          }%
     \define@boolkeys[xpg@setup]{#1}[#1@]{frenchspacing,frenchindent}[false]%

@@ -270,6 +270,36 @@
    \ifcsundef{#1hyphenmins}{}%
    {\expandafter\expandafter\expandafter\set@hyphenmins\csname #1hyphenmins\endcsname\relax}}
 
+\DeclareOption{USenglish}{%
+\@ifundefined{xpg@main@language}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[variant=american]{english}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[variant=american]{english}}}%
+   \@temp}
+\DeclareOption{american}{%
+\@ifundefined{xpg@main@language}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[variant=american]{english}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[variant=american]{english}}}%
+   \@temp}
+\DeclareOption{UKenglish}{%
+\@ifundefined{xpg@main@language}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[variant=british]{english}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[variant=british]{english}}}%
+   \@temp}
+\DeclareOption{british}{%
+\@ifundefined{xpg@main@language}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[variant=british]{english}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[variant=british]{english}}}%
+   \@temp}
+\DeclareOption{australian}{%
+\@ifundefined{xpg@main@language}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[variant=australian]{english}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[variant=australian]{english}}}%
+   \@temp}
+\DeclareOption{newzealand}{%
+\@ifundefined{xpg@main@language}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[variant=newzealand]{english}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[variant=newzealand]{english}}}%
+   \@temp}
 \DeclareOption{ngerman}{%
 \@ifundefined{xpg@main@language}%
  {\edef\@temp{\noexpand\setdefaultlanguage[hyphenation=new]{german}}}%

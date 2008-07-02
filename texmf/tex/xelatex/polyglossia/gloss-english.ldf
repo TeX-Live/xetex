@@ -31,23 +31,23 @@
 \def\tmp@american{american}
 \def\tmp@australian{australian}
 \def\tmp@newzealand{newzealand}
-\def\en@dialect{english}
-\def\english@language{\expandafter\protect\expandafter\language=\csname l@\en@dialect\endcsname}
+\def\en@variant{english}
+\def\english@language{\expandafter\protect\expandafter\language=\csname l@\en@variant\endcsname}
 
 \newif\if@ordinalmonthday
 
-\define@key{english}{dialect}[american]{%
+\define@key{english}{variant}[american]{%
   \def\@tmpa{#1}
-  \ifx\@tmpa\tmp@uk\def\en@dialect{british}\@ordinalmonthdaytrue
-     \typeout{Option: english dialect=british}
-  \else\ifx\@tmpa\tmp@british\def\en@dialect{british}\@ordinalmonthdaytrue
-     \typeout{Option: english dialect=british}
-  \else\ifx\@tmpa\tmp@us\def\en@dialect{american}\@ordinalmonthdayfalse
-     \typeout{Option: english dialect=american}
-  \else\ifx\@tmpa\tmp@australian\def\en@dialect{british}\@ordinalmonthdayfalse
-     \typeout{Option: english dialect=australian}
-  \else\ifx\@tmpa\tmp@newzealand\def\en@dialect{british}\@ordinalmonthdayfalse
-     \typeout{Option: english dialect=newzealand}
+  \ifx\@tmpa\tmp@uk\def\en@variant{british}\@ordinalmonthdaytrue
+     \xpg@info{Option: english variant=british}
+  \else\ifx\@tmpa\tmp@british\def\en@variant{british}\@ordinalmonthdaytrue
+     \xpg@info{Option: english variant=british}
+  \else\ifx\@tmpa\tmp@us\def\en@variant{american}\@ordinalmonthdayfalse
+     \xpg@info{Option: english variant=american}
+  \else\ifx\@tmpa\tmp@australian\def\en@variant{british}\@ordinalmonthdayfalse
+     \xpg@info{Option: english variant=australian}
+  \else\ifx\@tmpa\tmp@newzealand\def\en@variant{british}\@ordinalmonthdayfalse
+     \xpg@info{Option: english variant=newzealand}
   \fi\fi\fi\fi\fi}
 
 \def\tmp@cardinal{cardinal}
@@ -91,7 +91,7 @@
       31st\fi
       \else\number\day\fi}%
    \def\today{%\textenglish{%
-    \ifx\en@dialect\tmp@british%
+    \ifx\en@variant\tmp@british%
       \english@day\space%
      \ifcase\month\or%
       January\or February\or March\or April\or May\or June\or%
