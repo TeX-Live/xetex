@@ -8,8 +8,6 @@
   \adddialect\l@arabic0
 \fi
 
-\providehyphenmins{\CurrentOption}{\thr@@\thr@@}
-
 \def\arabic@RL{\relax}
 
 \define@key{arabic}{locale}[default]{%
@@ -192,29 +190,10 @@
   }
 
 \def\arabic@globalnumbers{%
-%   \renewcommand\thepage{\protect\arabicnumber{\c@page}}%
    \let\@latinarabic\@arabic%
    \let\@arabic\arabicnumber%
-%   \renewcommand\thepart{\protect\arabicnumber{\c@part}}%
-%   \renewcommand\theenumi{\protect\arabicnumber{\c@enumi}}%
    % For some reason \thefootnote needs to be set separately:
     \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
-%   \renewcommand\thesubsection{\thesection.\protect\arabicnumber{\c@subsection}}%
-%   \renewcommand\thesubsubsection{\thesubsection.\protect\arabicnumber{\c@subsubsection}}%
-%   \renewcommand\theparagraph{\thesubsubsection.\protect\arabicnumber{\c@paragraph}}%
-%   \renewcommand\thesubparagraph{\theparagraph.\protect\arabicnumber{\c@subparagraph}}%
-%   \@ifundefined{thechapter}{%
-%    \renewcommand\thesection{\protect\arabicnumber{\c@section}}%
-%    \renewcommand\theequation{\protect\arabicnumber{\c@equation}}%
-%    \renewcommand\thefigure{\protect\arabicnumber{\c@figure}}%
-%    \renewcommand\thetable{\protect\arabicnumber{\c@table}}%
-%   }{%
-%     \renewcommand\thechapter{\protect\arabicnumber{\c@chapter}}%
-%     \renewcommand\thesection{\thechapter.\protect\arabicnumber{\c@section}}%
-%     \renewcommand\theequation{\ifnum\c@chapter>\z@\thechapter.\fi\protect\arabicnumber{\c@equation}}%
-%     \renewcommand\thetable{\ifnum\c@chapter>\z@\thechapter.\fi\protect\arabicnumber{\c@table}}%
-%     \renewcommand\thefigure{\ifnum\c@chapter>\z@\thechapter.\fi\protect\arabicnumber{\c@figure}}%
-%   }%
    }
 
 \def\noarabic@globalnumbers{

@@ -1,6 +1,11 @@
 \ProvidesFile{gloss-greek.ldf}[polyglossia: module for greek]
 \makeatletter
-%% Fixes taken from xgreek.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The code in this file was initially adapted from the antomega
+%% module for greek. Currently large parts of it derive from the 
+%% package xgreek.sty (c) Apostolos Syropoulos 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% these fixes are taken verbatim from xgreek.sty:
 \global\lccode"0386="03AC \global\uccode"0386="0391
 \global\lccode"0388="03AD \global\uccode"0388="0395
 \global\lccode"0389="03AC \global\uccode"0389="0397
@@ -327,7 +332,7 @@
    \adddialect\l@ancientgreek\l@greek
 \fi
 
-%set the defaults
+%set monotonic as default
 \def\greek@variant{\l@monogreek}% monotonic
 \def\captionsgreek{\monogreekcaptions}%
 \def\dategreek{\datemonogreek}%
@@ -435,7 +440,6 @@
       Οκτωβρίου\or
       Νοεμβρίου\or
       Δεκεμβρίου\fi}}%
-
 \def\polygreekcaptions{%
    \def\refname{\textgreek{Ἀναφορές}}%
    \def\abstractname{\textgreek{Περίληψη}}%
@@ -480,7 +484,7 @@
       Ὀκτωβρίου\or
       Νοεμβρίου\or
       Δεκεμβρίου\fi}}%
-% The captions for ancient greek are taken from xgreek.sty by Apostolos Syropoulos
+% this is copied verbatim from xgreek.sty:      
 \def\ancientgreekcaptions{%
   \def\prefacename{Προοίμιον}%
   \def\refname{Αναφοραί}%
@@ -531,6 +535,8 @@
       Νοεμβρίου\or
       Δεκεμβρίου\fi}}
 
+% the code for alphabetic numbers and attic numerals 
+% is copied verbatim from xgreek.sty
 \def\gr@ill@value#1{%
   \xpg@warning{Illegal value (#1) for greeknumeral}}
 \DeclareRobustCommand\anw@false{%

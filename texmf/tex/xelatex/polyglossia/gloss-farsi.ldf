@@ -1,5 +1,6 @@
 \ProvidesFile{gloss-farsi.ldf}[polyglossia: module for farsi]
-\RequirePackage{bidi,farsical}
+\RequirePackage{bidi}
+\RequirePackage{farsical}
 \makeatletter
 
 \ifx\l@farsi\@undefined
@@ -17,9 +18,11 @@
 	  \@western@numeralsfalse%
 	\fi}
 
+% NOT YET USED	
 \define@key{farsi}{locale}[default]{%
 	\def\@farsi@locale{#1}}
-%TODO add option for months 
+
+%TODO add option for CALENDAR
 
 \setkeys{farsi}{locale,numerals}
 
@@ -58,9 +61,9 @@
 
 \def\farsinumber#1{\if@western@numerals\RL{\number#1}\else%
 \ifnum\XeTeXcharglyph"06F0 > 0%
-{\addfontfeature{Mapping=farsidigits}\number#1}%
+{\protect\addfontfeature{Mapping=farsidigits}\number#1}%
 \else%
-{\addfontfeature{Mapping=arabicdigits}\number#1}%
+{\protect\addfontfeature{Mapping=arabicdigits}\number#1}%
 \fi\fi}
 
 %\def\farsinum#1{\expandafter\farsinumber\csname c@#1\endcsname}
@@ -118,14 +121,15 @@
   }
 
 \def\farsi@globalnumbers{%
-%   \renewcommand\thepage{\protect\farsinumber{\c@page}}%
    \let\@latinarabic\@arabic%
    \let\@arabic\farsinumber%
+   % For some reason \thefootnote needs to be set separately:
    \renewcommand\thefootnote{\protect\farsinumber{\c@footnote}}%
    }
 
 \def\nofarsi@globalnumbers{
    \let\@arabic\@latinarabic%
+   \renewcommand\thefootnote{\protect\number{\c@footnote}}%
    }
 
 \def\farsi@language{\language=\l@farsi}
@@ -177,7 +181,6 @@
   }%
   {\farsifonttt}%
 }
-
 
 \def\selectnormalfontfarsi{%
    \let\normalfont=\farsi@font%

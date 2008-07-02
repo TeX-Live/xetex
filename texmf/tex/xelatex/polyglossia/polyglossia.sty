@@ -320,7 +320,7 @@
  {\edef\@temp{\noexpand\setdefaultlanguage[variant=ancient]{greek}}}%
  {\edef\@temp{\noexpand\setotherlanguage[variant=ancient]{greek}}}%
    \@temp}
-%FIXME THIS DOES NOT WORK !!!
+%%% FIXME: this does not work when gloss-<option>.ldf contains a \RequirePackage command !!!
 \DeclareOption*{%
 \@ifundefined{xpg@main@language}%
 {\edef\@temp{\noexpand\setdefaultlanguage{\CurrentOption}}}%
