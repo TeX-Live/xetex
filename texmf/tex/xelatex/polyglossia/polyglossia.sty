@@ -1,17 +1,21 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/06/02 v1.0 
+\ProvidesPackage{polyglossia}[2008/07/01 v1.0 
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY?
 \RequirePackage{fontspec} %which itself depends on xkeyval
-\providecommand*{\xpg@nopatterns}[1]{%
+\providecommand*{\xpg@warning}[1]{%
    \PackageWarningNoLine{polyglossia}%
-      {No hyphenation patterns were loaded for `#1'\MessageBreak
+   {***** #1 *****}}      
+\providecommand*{\xpg@info}[1]{%
+   \PackageInfo{polyglossia}%
+   {***** #1 *****\@gobble}}
+\providecommand*{\xpg@nopatterns}[1]{%
+   \xpg@warning{No hyphenation patterns were loaded for `#1'\MessageBreak
          I will use the patterns loaded for \string\language=0\MessageBreak instead}}
 \providecommand*{\xpg@nolang}[1]{%
-   \PackageWarningNoLine{polyglossia}%
-      {Couldn't find file gloss-#1.ldf!}%
+   \xpg@warning{Couldn't find file gloss-#1.ldf!}}%
       %TODO try at least to load the hyphenation patterns for #1.
-      }
+
 %FIXME: this needs to be tested!
 \def\opt@enabled{on}
 \def\opt@disabled{off}
@@ -41,7 +45,7 @@
                {{####3}}}}}
    \else\ifx\@tmpa\opt@disabled
       \def\local@marks#1{}
-      \typeout{Polyglossia package option: localmarks=off}
+      \xpg@info{Option: localmarks=off}
    \fi\fi
 }
 \DeclareOption{nolocalmarks}{\setkeys{polyglossia}{localmarks=off}}
@@ -65,7 +69,7 @@
    \IfFileExists{gloss-#2.ldf}%
    {\ifcsundef{#2@loaded}% from etoolbox.sty
      {\input{gloss-#2.ldf}%
-     \PackageInfo{polyglossia}{Default language is #2.}
+     \xpg@info{Default language is #2.}
      \def\languagename{#2}%
       % This is needed because \arabic is a built-in LaTeX command:
       % so now we have \begin{Arabic}... instead of \begin{arabic}...  
@@ -79,18 +83,17 @@
          {\end{otherlanguage}}%
       \fi%
       \expandafter\newcommand\csname text#2\endcsname[2][]{%
-       \ifdefined\RL%
-         \ifcsundef{#2@RL}%
+      \ifcsdef{RL}%
+      {\ifcsundef{#2@RL}%
           {\@ensure@LR{\foreignlanguage[####1]{#2}{####2}}}%
-          {\@ensure@RL{\foreignlanguage[####1]{#2}{####2}}}%
-       \else
-          \foreignlanguage[####1]{#2}{####2}%
-       \fi}
+	  {\@ensure@RL{\foreignlanguage[####1]{#2}{####2}}}}%
+      {\foreignlanguage[####1]{#2}{####2}}%
+      }%
       \csletcs{local#2}{text#2}%
       \csgdef{#2@loaded}{}%
       \gdef\xpg@main@language{#2}%
       }%
-     {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
+    {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
     %% The following settings are for the default language and script:
     \AtBeginDocument{%
     \selectlanguage[#1]{#2}%
@@ -98,6 +101,7 @@
    }%
    %ELSE
    {\xpg@nolang{#2}}}%
+
 \let\setmainlanguage=\setdefaultlanguage
 
 \newcommand{\resetdefaultlanguage}[2][]{%
@@ -236,9 +240,8 @@
 \newcommand{\select@language}[1]{%
    \xpg@initial@setup%
    \edef\languagename{#1}%
-   \ifdefined\RL%
-   \ifcsundef{#1@RL}{\setLR}{\setRL}%
-   \fi%
+   \ifcsundef{RL}{}%
+   {\ifcsundef{#1@RL}{\setLR}{\setRL}}%
    \xpg@csifdef@warn{#1@font}%
    \xpg@csifdef@warn{#1@language}%
    \use@localhyphenmins{#1}%

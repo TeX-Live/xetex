@@ -317,17 +317,20 @@
    \fi
 \fi
 \ifx\l@monogreek\@undefined
-      \PackageWarningNoLine{polyglossia}%
-      {No hyphenation patterns were loaded for Monotonic Greek\MessageBreak
+      \xpg@warning{No hyphenation patterns were loaded for Monotonic Greek\MessageBreak
          I will use the patterns loaded for \string\l@greek instead}
    \adddialect\l@monogreek\l@greek
 \fi
 \ifx\l@ancientgreek\@undefined
-      \PackageWarningNoLine{polyglossia}%
-      {No hyphenation patterns were loaded for Ancient Greek\MessageBreak
+      \xpg@warning{No hyphenation patterns were loaded for Ancient Greek\MessageBreak
          I will use the patterns loaded for \string\l@greek instead}
    \adddialect\l@ancientgreek\l@greek
 \fi
+
+%set the defaults
+\def\greek@variant{\l@monogreek}% monotonic
+\def\captionsgreek{\monogreekcaptions}%
+\def\dategreek{\datemonogreek}%
 
 \def\tmp@mono{mono}
 \def\tmp@monotonic{monotonic}
@@ -343,30 +346,30 @@
    \def\greek@variant{\l@polygreek}%
    \def\captionsgreek{\polygreekcaptions}%
    \def\dategreek{\datepolygreek}%
-   \typeout{Option: Polytonic Greek}%
+   \xpg@info{Option: Polytonic Greek}%
 \else%
    \ifx\@tmpa\tmp@poly%
       \def\greek@variant{\l@polygreek}%
       \def\captionsgreek{\polygreekcaptions}%
       \def\dategreek{\datepolygreek}%
-      \typeout{Option: Polytonic Greek}%
+      \xpg@info{Option: Polytonic Greek}%
    \else%
       \ifx\@tmpa\tmp@ancient%
          \def\greek@variant{\l@ancientgreek}%
          \def\captionsgreek{\ancientgreekcaptions}%
 	 \def\dategreek{\dateancientgreek}%
-         \typeout{Option: Ancient Greek}%
+         \xpg@info{Option: Ancient Greek}%
       \else%
          \ifx\@tmpa\tmp@ancientgreek%
 	    \def\greek@variant{\l@ancientgreek}%
             \def\captionsgreek{\ancientgreekcaptions}%
 	    \def\dategreek{\dateancientgreek}%
-            \typeout{Option: Ancient Greek}%
+            \xpg@info{Option: Ancient Greek}%
 	 \else%
 	     \def\greek@variant{\l@monogreek}% monotonic
              \def\captionsgreek{\monogreekcaptions}%
 	     \def\dategreek{\datemonogreek}%
-             \typeout{Option: Monotonic Greek}%
+             \xpg@info{Option: Monotonic Greek}%
 	 \fi%
       \fi%
    \fi%
@@ -385,7 +388,7 @@
 \else\@attic@numeralstrue\fi}
 
 % This sets the defaults
-\setkeys{greek}{variant,numerals,attic=false}
+\setkeys{greek}{numerals,attic=false}
 
 \def\monogreekcaptions{%
    \def\refname{\textgreek{Αναφορές}}%
@@ -529,7 +532,7 @@
       Δεκεμβρίου\fi}}
 
 \def\gr@ill@value#1{%
-  \PackageWarning{polyglossia}{Illegal value (#1) for greeknumeral}}
+  \xpg@warning{Illegal value (#1) for greeknumeral}}
 \DeclareRobustCommand\anw@false{%
   \DeclareRobustCommand\anw@print{}}
 \DeclareRobustCommand\anw@true{%
@@ -592,12 +595,10 @@
         \@attic@num#1\relax
         \ifnum\@attic@num<\@ne%
           \space%
-          \PackageWarning{xgreek}{%
-          Illegal value (\the\@attic@num) for acrophonic Attic numeral}%
+          \xpg@warning{Illegal value (\the\@attic@num) for acrophonic Attic numeral}%
         \else\ifnum\@attic@num>249999%
           \space%
-          \PackageWarning{xgreek}{%
-          Illegal value (\the\@attic@num) for acrophonic Attic numeral}%
+	  \xpg@warning{Illegal value (\the\@attic@num) for acrophonic Attic numeral}%
         \else
             \@whilenum\@attic@num>49999\do{%
                \char"10147\advance\@attic@num-50000}%

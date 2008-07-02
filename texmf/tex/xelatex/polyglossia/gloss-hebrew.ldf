@@ -78,9 +78,9 @@
 
 
 \def\hebrewalph#1{%
-\ifnum#1>9999 \PackageWarning{polyglossia}{Illegal value (#1) for Hebrew numeral} {#1}
+\ifnum#1>9999 \xpg@warning{Illegal value (#1) for Hebrew numeral} {#1}
 \else
-  \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for Hebrew numeral}%
+  \ifnum#1<\z@\space\xpg@warning{Illegal value (#1) for Hebrew numeral}%
   \else
     \ifnum#1<10\expandafter\heb@num@i\number#1%
     \else
