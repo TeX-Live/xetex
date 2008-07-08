@@ -33,8 +33,11 @@
 	\else\@hijricalfalse%
 	\fi\fi}
 
+\define@key{arabic}{hijricorrection}[0]{%
+	\gdef\@hijri@correction{#1}}%
+
 % This should set the defaults
-\setkeys{arabic}{locale,calendar,numerals}
+\setkeys{arabic}{locale,calendar,numerals,hijricorrection}
 
 \def\arabicgregmonth@default#1{\ifcase#1%
   % Egypt, Sudan, Yemen and Golf states
@@ -84,7 +87,7 @@
  \def\today{%
   \if@rl%
    \if@hijrical%
-     \@ensure@RL{\Hijritoday}%
+     \@ensure@RL{\Hijritoday[\@hijri@correction]}%
    \else%
      \@ensure@RL{\arabicnumber\day\space\@arabic@month{\@arabic@locale}{\month}%
         \space\arabicnumber\year}%
@@ -190,15 +193,19 @@
   }
 
 \def\arabic@globalnumbers{%
-   \let\@latinarabic\@arabic%
+   \let\default@arabic\@arabic%
    \let\@arabic\arabicnumber%
-   % For some reason \thefootnote needs to be set separately:
-    \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
+   % For some reason these need to be set separately:
+   \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
+   \ifcsundef{thechapter}{}{\renewcommand\thechapter{\protect\arabicnumber{\c@chapter}}}% <<<<<<<<<<
+   \ifcsundef{thesection}{}{\renewcommand\thesection{\protect\arabicnumber{\c@section}}}% <<<<<<<<<<
    }
 
 \def\noarabic@globalnumbers{
-   \let\@arabic\@latinarabic%
+   \let\@arabic\default@arabic%
    \renewcommand\thefootnote{\protect\number{\c@footnote}}%
+   \ifcsundef{thechapter}{}{\renewcommand\thechapter{\protect\number{\c@chapter}}}% <<<<<<<<<<
+   \ifcsundef{thesection}{}{\renewcommand\thesection{\protect\number{\c@section}}}% <<<<<<<<<<
    }
 
 \def\arabic@language{\language=\l@arabic}

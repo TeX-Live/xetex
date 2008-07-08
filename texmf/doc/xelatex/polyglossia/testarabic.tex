@@ -1,10 +1,9 @@
-\documentclass[a4paper]{scrartcl}%
+\documentclass[a4paper]{book}%
 \usepackage[no-math]{fontspec}
-\usepackage{bidi}
-\usepackage{xltxtra,url}
-\usepackage{polyglossia,hijrical}
-\setdefaultlanguage[calendar=gregorian,locale=mashriq]{arabic}
-\setotherlanguage[dialect=british]{english}
+\usepackage{xltxtra,url,amsmath}
+\usepackage{polyglossia}
+\setdefaultlanguage[calendar=hijri,hijricorrection=1,locale=mashriq]{arabic}
+\setotherlanguage[variant=british]{english}
 \setotherlanguage{farsi}
 \setromanfont{Junicode}
 \defaultfontfeatures{Scale=MatchLowercase}
@@ -14,8 +13,16 @@
 \newfontfamily\arabicfonttt[Script=Arabic,Scale=.75]{DejaVu Sans Mono}
 \newfontfamily\farsifont[Script=Arabic,Scale=1.1,WordSpace=2]{IranNastaliq}
 \parindent 0pt
+\title{امتحان تأييد اللغة العربية}
+\author{فرانسوا شاريت}
 \begin{document}
 \pagenumbering{alph}
+%\def\today{\Hijritoday[1]}
+\maketitle
+\tableofcontents
+
+\chapter{امتحان}
+\pagenumbering{arabic}
 \section{لغات مختلفة}
 
 
@@ -66,9 +73,9 @@ and in many international organisations.
 \textenglish{\today} = \today\ = \Hijritoday\footnote{ 
 	محسوب بـ \textenglish{\textsf{hijrical.sty}}} 
 
-\newpage
+%\newpage
 \subsection{فلان}
-\textenglish{1 2 3}
+\textenglish{This is English: a b c}
 
 \subsubsection{فلان فلان}
 \begin{enumerate}
@@ -85,9 +92,18 @@ and in many international organisations.
 \begin{table}
 	\centering
 	\begin{tabular}{cc}
-		ب & ا \\
-		د & ج 
+		ا & ب  \\
+		ج & د  
 	\end{tabular}
 	\caption{هذا المثال}
 \end{table}
+
+\[
+x^\text{مال مال}
+\]
+
+\begin{equation}
+	x^2 + y^2 = z^2
+	\label{test}
+\end{equation}
 \end{document}
