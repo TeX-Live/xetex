@@ -1,0 +1,220 @@
+%% 
+%% This is file `poem.sty',
+%% Copyright(C) 2002, 2004  Behdad Esfahbod <behdad@farsitex.org>
+%% 
+%% It may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.2
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% TODO: Add some penalties and whistles to newpoem
+%%
+\ifx\fmtname{LaTeX2e}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{persianpoem}%
+	[2004/09/27 Environments for Setting Persian Poetry]
+\else
+	\typeout{2004/09/27 Environments for Setting Persian Poetry}
+\fi
+
+\def\poemcolsepskip{.1\versewidth plus .1\versewidth minus .05\versewidth}
+\def\poemmarginskip{1em plus 1fil minus 1em}
+\def\poemextrabaselineskip{0\baselineskip}
+\def\poemskip{\medskip}
+\def\poemblocksep{\quad$\Box$}
+
+%% oldpoem environment
+
+\newdimen\versewidth
+
+\def\poem@verse#1{%
+	\ifdim\wd#1>\new@poem@width
+		\xdef\new@poem@width{\the\wd#1}%
+		\ifdim\new@poem@width>\poem@width
+			\xdef\poem@width{\new@poem@width}%
+			\global\let\poem@needrun\relax
+		\fi
+	\fi
+	\hbox to\poem@width{\unhbox#1}%
+}
+\def\poem@linebegin{\vadjust{}\hskip\@flushglue\hskip\poemmarginskip\relax}
+\def\poem@lineend{\nobreak\hskip\poemmarginskip\hskip\@flushglue\vadjust{}}
+\def\poem@lineversesep{%
+	\nobreak
+	\hskip\z@ plus 1filll%
+	\penalty600%
+	\hskip\poemcolsepskip
+	\hskip\z@ plus -2filll%
+	\vadjust{}%
+	\nobreak
+	\hskip\z@ plus 1filll%
+}
+
+\def\poem@lineparsebegin{%
+	\halign\bgroup
+		\global\setbox\verse@i=\hbox{\ignorespaces##\unskip}&&
+		\global\setbox\verse@ii=\hbox{\ignorespaces##\unskip}
+		\cr
+}
+\def\poem@lineparseend{%
+	\crcr\egroup
+	\vskip-\baselineskip
+}
+\def\oldpoem@cr{%
+  \cr\poem@line
+}
+
+\newbox\verse@i
+\newbox\verse@ii
+\newif\ifpoem@started
+
+\def\poem@line{%
+	\poem@lineparseend
+%
+	\ifdim\wd\verse@i>\z@\global\poem@startedtrue\fi
+	\ifdim\wd\verse@ii>\z@\global\poem@startedtrue\fi
+	\ifpoem@started
+	  \ifdim\wd\verse@ii>\z@\else
+		  \nopagebreak[3]
+	  \fi
+	  \leavevmode
+	  \poem@linebegin
+	  \poem@verse\verse@i
+	  \ifdim\wd\verse@ii>\z@
+		  \poem@lineversesep
+		  \poem@verse\verse@ii
+	  \fi
+	  \poem@lineend
+	  \nopagebreak
+	  \endgraf
+	  \vskip\poemextrabaselineskip
+	\fi
+%
+	\poem@lineparsebegin
+}
+\def\@oldpoem{%
+	\stepcounter{poem@no}
+        \ifnum\max@poem@no<\number\c@poem@no%
+		\xdef\poem@width{\z@}%
+        \else
+		\xdef\poem@width{\poem@prop{poem@width}}%
+	\fi
+	\xdef\new@poem@width{\z@}%
+	\global\versewidth=\poem@width
+	\poemskip\leavevmode\par
+	\begingroup
+	\tabskip=\z@
+	\parskip=\z@
+	\parindent=\z@
+	\parfillskip=\z@
+	\rightskip=\z@
+	\leftskip=\z@
+	\widowpenalty=10000%	No break between verses of the same line.
+	\clubpenalty=10000%	Same as above.  Not really needed.
+	\def\newblock{\hfil\poemblocksep\hfil\null}%
+	\def\par{\oldpoem@cr}% Redefine \par for possible \obeylines
+	\def\\{\global\poem@startedtrue\oldpoem@cr}%
+	\global\poem@startedfalse
+	\csname poem@obeylines\endcsname
+	\let\poem@obeylines\relax
+	\poem@lineparsebegin
+}
+\def\@endoldpoem{%
+	\cr
+	\ifdim\wd\verse@i>\z@\poem@line\else\ifdim\wd\verse@ii>\z@\poem@line\else
+		\noalign{%
+			\skip0=\poemextrabaselineskip
+			\vskip-\skip0
+			\vskip-\baselineskip
+		}%
+	\fi\fi
+	\poem@lineparseend
+	\endgroup
+	\par
+	\vskip\baselineskip
+	\poemskip
+	\ifdim\new@poem@width<\poem@width
+		\global\let\poem@needrun\relax
+	\fi
+        \poem@write@aux{poem@width@\romannumeral\c@poem@no}{\new@poem@width}%
+	\ifx\AtEndDocument\undefined\poem@finish\fi
+}
+\newenvironment{oldpoem}{\@oldpoem}{\@endoldpoem}
+
+\expandafter\def\csname oldpoem*\endcsname{\let\poem@obeylines=\obeylines\oldpoem}
+\expandafter\def\csname endoldpoem*\endcsname{\endoldpoem}
+
+
+\def\poem@finish{%
+	\poem@write@aux{max@poem@no}{\number\c@poem@no}%
+	\ifx\poem@needrun\relax
+		\@@warning{Unjustified poetry.  Rerun to get poems right}%
+		\global\let\poem@needrun\undefined
+	\fi
+}
+\ifx\AtEndDocument\undefined\else\AtEndDocument\poem@finish\fi
+
+\newcounter{poem@no}\setcounter{poem@no}{\z@}
+\ifx\max@poem@no\undefined
+        \def\max@poem@no{0}%
+\fi
+
+\newcommand{\poem@prop}[1]{\@nameuse{#1@\romannumeral\c@poem@no}}
+
+\newcommand{\poem@write@aux}[2]{%
+        \def\@x{\immediate\write\@auxout{\global\noexpand\@namedef{#1}{#2}}}%
+        \@x
+}
+
+%% newpoem environment
+
+\def\@newpoem{%
+	\par
+	\begingroup
+	\parskip=\z@
+	\parindent=\z@
+	\def\[{\@settab\@tabplus\ignorespaces}%
+	\def\]{\@tabminus\ignorespaces}%
+	\def\newblock{\poemblocksep}%
+	\let\newpoem@tabcr\@tabcr
+	\def\par{% Redefine \par for possible \obeylines
+	  \ifpoem@started\else
+	    \ifdim\wd\@curline>\z@\global\poem@startedtrue\else
+	      \@stopfield
+	      \ifdim\wd\@curfield>\z@\global\poem@startedtrue\fi
+	      \@contfield
+	    \fi
+	  \fi
+	  \ifpoem@started\newpoem@tabcr\fi}%
+	\def\@tabcr{\global\poem@startedtrue\newpoem@tabcr}%
+	\global\poem@startedfalse
+	\csname poem@obeylines\endcsname
+	\let\poem@obeylines\relax
+	\begin{tabbing}%
+}
+\def\@endnewpoem{%
+	\global\poem@startedfalse
+	\ifdim\wd\@curline>\z@\global\poem@startedtrue\else
+	  \@stopfield
+	  \ifdim\wd\@curfield>\z@\global\poem@startedtrue\fi
+	  \@contfield
+	\fi
+	\ifpoem@started\else\let\@stopline\@stopfield\fi
+	\end{tabbing}%
+	\endgroup
+	\par
+}
+
+\newenvironment{newpoem}{\@newpoem}{\@endnewpoem}
+
+\expandafter\def\csname newpoem*\endcsname{\let\poem@obeylines=\obeylines\newpoem}
+\expandafter\def\csname endnewpoem*\endcsname{\endnewpoem}
+
+
+\endinput
+%%
+%% End of file `poem.sty'.
+

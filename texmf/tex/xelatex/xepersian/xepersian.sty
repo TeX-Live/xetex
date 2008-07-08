@@ -1,0 +1,526 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{xepersian}[2008/07/08 v0.14
+	Typesetting Persian with XeTeX]
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{amsmath,amsthm}
+\usepackage{xunicode,bidi}
+\usepackage{arabxetex}
+\usepackage{xltxtra}
+\newfontinstance\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
+\newfontinstance\arabicfont[Script=Arabic,Scale=1.2]{Scheherazade}
+\usepackage{persianpoem,fmultico}
+\makeatletter
+\renewcommand{\thepage}{\textfarsi{\the\c@page}}
+\renewcommand{\thepart}{\textfarsi{\the\c@part}}
+%
+\renewcommand{\thefootnote}{\textfarsi{\arabic{footnote}}}
+\renewcommand{\thefigure}{\textfarsi{\arabic{figure}}}
+\renewcommand{\thetable}{\textfarsi{\arabic{table}}}
+\renewcommand{\theequation}{\textfarsi{\arabic{equation}}}
+%
+\renewcommand{\figurename}{\textfarsi{شکل}}
+\renewcommand{\tablename}{\textfarsi{جدول}}
+\renewcommand{\contentsname}{\textfarsi{فهرست مطالب}}%
+\renewcommand{\listfigurename}{\textfarsi{لیست تصاویر}}%
+\renewcommand{\listtablename}{\textfarsi{لیست جداول}}%
+\renewcommand{\appendixname}{\textfarsi{پیوست}}%
+\renewcommand{\indexname}{\textfarsi{نمایه}}%
+\@ifclassloaded{article}{%
+\renewcommand{\thesection}{\textfarsi{\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\refname}{\textfarsi{مراجع}}%
+\renewcommand{\abstractname}{\textfarsi{چکیده}}%
+\usepackage{makeidx}
+\usepackage{robustindex}
+\makeindex
+}{}
+\@ifclassloaded{amsart}{%
+\renewcommand{\thesection}{\textfarsi{\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\refname}{\textfarsi{مراجع}}%
+\renewcommand{\abstractname}{\textfarsi{چکیده}}%
+\usepackage{robustindex}
+\makeindex
+}{}
+\@ifclassloaded{report}{%
+\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
+\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
+\renewcommand{\abstractname}{\textfarsi{چکیده}}%
+\renewcommand{\chaptername}{\textfarsi{فصل}}%
+\renewcommand{\partname}{\textfarsi{بخش}}%
+\usepackage{makeidx}
+\usepackage{robustindex}
+\makeindex
+}{}
+\@ifclassloaded{amsbook}{%
+\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
+\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
+\renewcommand{\chaptername}{\textfarsi{فصل}}%
+\renewcommand{\partname}{\textfarsi{بخش}}%
+\usepackage{robustindex}
+\makeindex
+}{}
+\@ifclassloaded{bookest}{%
+\NoHyper
+\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
+\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
+\renewcommand{\chaptername}{\textfarsi{فصل}}%
+\renewcommand{\partname}{\textfarsi{بخش}}%
+\usepackage{makeidx}
+\usepackage{robustindex}
+\makeindex
+}{}
+\@ifclassloaded{book}{%
+\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
+\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
+\renewcommand{\chaptername}{\textfarsi{فصل}}%
+\renewcommand{\partname}{\textfarsi{بخش}}%
+\usepackage{makeidx}
+\usepackage{robustindex}
+\makeindex
+}{}
+\@ifclassloaded{refrep}{%
+\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
+\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
+\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
+\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
+\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
+\renewcommand{\chaptername}{\textfarsi{فصل}}%
+\renewcommand{\partname}{\textfarsi{بخش}}%
+\usepackage{makeidx}
+\usepackage{robustindex}
+\makeindex
+}{}
+%\renewcommand{\prefacename}{\textfarsi{پیشگفتار}}%
+
+
+%To convert the MILADI date to SHAMSI date, taken from farsitex
+\newif\ifFT@leap \newif\ifFT@kabiseh
+\newcount\FT@i  \newcount\FT@y  \newcount\FT@m  \newcount\FT@d
+\newcount\FT@latini    \newcount\FT@farsii
+\newcount\FT@latinii   \newcount\FT@farsiii
+\newcount\FT@latiniii  \newcount\FT@farsiiii
+\newcount\FT@latiniv   \newcount\FT@farsiiv
+\newcount\FT@latinv    \newcount\FT@farsiv
+\newcount\FT@latinvi   \newcount\FT@farsivi
+\newcount\FT@latinvii  \newcount\FT@farsivii
+\newcount\FT@latinviii \newcount\FT@farsiviii
+\newcount\FT@latinix   \newcount\FT@farsiix
+\newcount\FT@latinx    \newcount\FT@farsix
+\newcount\FT@latinxi   \newcount\FT@farsixi
+\newcount\FT@latinxii  \newcount\FT@farsixii
+                       \newcount\FT@farsixiii
+
+\newcount\FT@temp
+\newcount\FT@temptwo
+\newcount\FT@tempthree
+\newcount\FT@yModHundred
+\newcount\FT@thirtytwo
+\newcount\FT@dn
+\newcount\FT@sn
+\newcount\FT@mminusone
+
+\def\ftoday{%
+\FT@y=\year \FT@m=\month \FT@d=\day
+%
+\FT@temp=\FT@y
+\divide\FT@temp by 100\relax
+\multiply\FT@temp by 100\relax
+\FT@yModHundred=\FT@y
+\advance\FT@yModHundred by -\FT@temp\relax
+%
+\ifodd\FT@yModHundred
+   \FT@leapfalse
+\else
+   \FT@temp=\FT@yModHundred
+   \divide\FT@temp by 2\relax
+   \ifodd\FT@temp\FT@leapfalse
+   \else
+      \ifnum\FT@yModHundred=0%
+         \FT@temp=\FT@y
+         \divide\FT@temp by 400\relax
+         \multiply\FT@temp by 400\relax
+         \ifnum\FT@y=\FT@temp\FT@leaptrue\else\FT@leapfalse\fi
+      \else\FT@leaptrue
+      \fi
+   \fi
+\fi
+%
+\FT@latini=31\relax
+\ifFT@leap
+  \FT@latinii = 29\relax
+\else
+  \FT@latinii = 28\relax
+\fi
+\FT@latiniii = 31\relax
+\FT@latiniv  = 30\relax
+\FT@latinv = 31\relax
+\FT@latinvi = 30\relax
+\FT@latinvii = 31\relax
+\FT@latinviii = 31\relax
+\FT@latinix = 30\relax
+\FT@latinx = 31\relax
+\FT@latinxi = 30\relax
+\FT@latinxii = 31\relax
+%
+\FT@thirtytwo=32\relax
+%
+\FT@temp=\FT@y
+\advance\FT@temp by -17\relax
+\FT@temptwo=\FT@temp
+\divide\FT@temptwo by 33\relax
+\multiply\FT@temptwo by 33\relax
+\advance\FT@temp by -\FT@temptwo
+\ifnum\FT@temp=\FT@thirtytwo\FT@kabisehfalse
+\else
+   \FT@temptwo=\FT@temp
+   \divide\FT@temptwo by 4\relax
+   \multiply\FT@temptwo by 4\relax
+   \advance\FT@temp by -\FT@temptwo
+   \ifnum\FT@temp=\z@\FT@kabisehtrue\else\FT@kabisehfalse\fi
+\fi
+%
+% --BE
+% In fact farsii is equal to the Leap years from a fixed year to the last
+% year minus the Kabise years from a fixed year to the last year plus a const.
+%
+\FT@tempthree=\FT@y                 % Number of Leap years
+\advance\FT@tempthree by -1
+\FT@temp=\FT@tempthree              % T := (MY-1) div 4
+\divide\FT@temp by 4\relax
+\FT@temptwo=\FT@tempthree           % T := T - ((MY-1) div 100)
+\divide\FT@temptwo by 100\relax
+\advance\FT@temp by -\FT@temptwo
+\FT@temptwo=\FT@tempthree           % T := T + ((MY-1) div 400)
+\divide\FT@temptwo by 400\relax
+\advance\FT@temp by \FT@temptwo
+\advance\FT@tempthree by -611       % Number of Kabise years
+\FT@temptwo=\FT@tempthree           % T := T - ((SY+10) div 33) * 8
+\divide\FT@temptwo by 33\relax
+\multiply\FT@temptwo by 8\relax
+\advance\FT@temp by -\FT@temptwo
+\FT@temptwo=\FT@tempthree           %
+\divide\FT@temptwo by 33\relax
+\multiply\FT@temptwo by 33\relax
+\advance\FT@tempthree by -\FT@temptwo
+\ifnum\FT@tempthree=32\advance\FT@temp by 1\fi % if (SY+10) mod 33=32 then Inc(T);
+\divide\FT@tempthree by 4\relax     % T := T - ((SY+10) mod 33) div 4
+\advance\FT@temp by -\FT@tempthree
+\advance\FT@temp by -137            % T := T - 137  Adjust the value
+\FT@farsii=31
+\advance\FT@farsii by -\FT@temp                 % now 31 - T is the farsii
+%
+\FT@farsiii = 30\relax
+\ifFT@kabiseh
+  \FT@farsiiii = 30\relax
+\else
+  \FT@farsiiii = 29\relax
+\fi
+\FT@farsiiv  = 31\relax
+\FT@farsiv   = 31\relax
+\FT@farsivi  = 31\relax
+\FT@farsivii = 31\relax
+\FT@farsiviii= 31\relax
+\FT@farsiix  = 31\relax
+\FT@farsix   = 30\relax
+\FT@farsixi  = 30\relax
+\FT@farsixii = 30\relax
+\FT@farsixiii= 30\relax
+%
+\FT@dn= 0\relax
+\FT@sn= 0\relax
+\FT@mminusone=\FT@m
+\advance\FT@mminusone by -1\relax
+%
+\FT@i=0\relax
+\ifnum\FT@i < \FT@mminusone
+\loop
+\advance \FT@i by 1\relax
+\advance\FT@dn by \csname FT@latin\romannumeral\the\FT@i\endcsname
+\ifnum\FT@i<\FT@mminusone \repeat
+\fi
+\advance \FT@dn by \FT@d
+%
+\FT@i=1\relax
+\FT@sn = \FT@farsii
+\ifnum \FT@sn<\FT@dn
+\loop
+\advance \FT@i by 1\relax
+\advance\FT@sn by \csname FT@farsi\romannumeral\the\FT@i\endcsname
+\ifnum \FT@sn<\FT@dn \repeat
+\fi
+\ifnum \FT@i < 4
+   \FT@m = 9 \advance\FT@m by \FT@i
+   \advance \FT@y by -622\relax
+\else
+   \FT@m = \FT@i \advance \FT@m by -3\relax
+   \advance \FT@y by -621\relax
+\fi
+\advance\FT@sn by -\csname FT@farsi\romannumeral\the\FT@i%
+\endcsname
+\ifnum\FT@i = 1
+  \FT@d = \FT@dn \advance \FT@d by 30 \advance\FT@d by -\FT@farsii
+\else
+  \FT@d = \FT@dn \advance \FT@d by -\FT@sn
+\fi
+\beginL\number\FT@d\endL\space%
+%Changedc from here YJ
+\farsimonth{\FT@m}\space\beginL\number\FT@y\endL%
+}
+% added \farsimonth YJ
+\def\farsimonth#1{\ifcase#1\or فروردین\or 
+اردیبهشت\or 
+خرداد\or تیر\or 
+مرداد\or 
+شهریور\or مهر\or 
+آبان\or آذر\or 
+دی\or بهمن\or 
+اسفند\fi}
+
+%The figure or table caption
+\newsavebox\@Arabitempboxa
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@Arabitempboxa{\beginR #1: #2\endR}%
+  \ifdim \wd\@Arabitempboxa >\hsize
+  \beginR #1: #2\endR\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@Arabitempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+\makeatother
+\makeatletter
+%The correct the right footnorerule so it does not overlap the texts
+\def\r@fn{%
+  \hbox to \columnwidth
+  {\beginR \vbox{\kern -3\p@
+   \hrule width .4\columnwidth \kern2.6\p@}\hfil\endR}}
+\def\footnoterule{\r@fn}
+\makeatother
+
+
+%a command to put a footnote from left to right
+%while in a right to left context
+\newcommand{\Footnote}[1]{%
+\bgroup% To make the scope of the change local
+\footnotemark%
+\renewcommand{\thefootnote}{\arabic{footnote}}%
+\unsetRL%
+\footnotetext{#1}%
+\egroup
+}
+
+%we have to swap the following two characters
+%when we are in a Right-to-Left environment
+\makeatletter
+\catcode"00AB=\active%left double quote
+\catcode"00BB=\active%right double quote
+\def«{\if@rl\char"00BB\else\char"00AB\fi{}}
+\def»{\if@rl\char"00AB\else\char"00BB\fi{}}
+\makeatother
+
+%For Right-to-Left two column command, I guess taken from rlbabel
+\makeatletter 
+\let\@old@outputdblcol\@outputdblcol
+\newcommand{\rl@outputdblcol}{%
+  \if@firstcolumn
+    \global \@firstcolumnfalse
+    \global \setbox\@leftcolumn \box\@outputbox
+  \else
+    \global \@firstcolumntrue
+    \setbox\@outputbox \vbox {\hb@xt@\textwidth {%
+                              \hskip\columnwidth%
+                              \hfil\vrule\@width\columnseprule\hfil
+                              \hb@xt@\columnwidth {%
+                                \box\@leftcolumn \hss}%
+                              \hb@xt@\columnwidth {%
+                                \hskip-\textwidth%
+                                \box\@outputbox \hss}%
+                              \hskip\columnsep%
+                              \hskip\columnwidth}}%
+    \@combinedblfloats
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi
+        {\@outputpage
+         \@startdblcolumn}%
+    \endgroup
+ \fi}
+\newcommand{\rldblcolumn}{\renewcommand{\@outputdblcol}{\rl@outputdblcol}}
+\newcommand{\lrdblcolumn}{\renewcommand{\@outputdblcol}{\@old@outputdblcol}}
+%set the default direction of the twocolumn texts to Right-to-Left
+\rldblcolumn
+\makeatother
+
+
+% define the XePersian logo
+\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
+  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
+\def\XePersian{\leavevmode$\smash{\hbox{X\lower.5ex
+  \hbox{\kern-.125em\reflect{E}}\raise.4ex\hbox{\kern-.05em
+   \special{x:gsave}\special{x:scale .72 .72}P\special{x:grestore}\kern-.1667em\lower1ex\hbox{E}}r\lower.5ex
+  \hbox{\kern-.125em\reflect{S}}\reflect{i}\lower.5ex
+  \hbox{\kern-.125em\reflect{A}}\reflect{n}}}$}
+
+\newcommand{\eng}[1]{\textroman{ #1}}
+\newcommand{\fars}[1]{\textfarsi{#1}}
+\newcommand{\arabt}[1]{\textarabic{#1}}
+
+\makeatletter 
+\let\@utitle=\title
+\def\title#1{\@utitle{\textfarsi{#1}}}
+\let\@uthor=\author
+\def\author#1{\@uthor{\textfarsi{#1}}}
+\let\@ufootnote=\footnote
+\def\footnote#1{\@ufootnote{\textfarsi{#1}}}
+\let\@uthanks=\thanks
+\def\thanks#1{\@uthanks{\textfarsi{#1}}}
+\def\today{\textfarsi{\ftoday}}
+\let\@urightmark=\rightmark
+\def\rightmark{\textfarsi{\@urightmark}}
+\let\@uleftmark=\leftmark
+\def\leftmark{\textfarsi{\@uleftmark}}
+\let\normalfont=\farsifont
+\let\@uframetitle=\frametitle
+\def\frametitle#1{\@uframetitle{\centerline{\textfarsi{#1}}}}
+\let\@uframesubtitle=\framesubtitle
+\def\framesubtitle#1{\@uframesubtitle{\centerline{\textfarsi{#1}}}}
+\let\@usubtitle=\subtitle
+\def\subtitle#1{\@usubtitle{\textfarsi{#1}}}
+\let\@uinstitute=\institute
+\def\institute#1{\@uinstitute{\textfarsi{#1}}}
+\let\@ucaption=\caption
+\def\caption#1{\@ucaption{\textfarsi{#1}}}
+\makeatother
+\makeatletter 
+%To fix tabular problem in bidi. Taken from farsitex
+\newif\if@tabsw
+\global\@tabswfalse
+\def\@tabular{\if@rl\global\@tabswtrue\fi
+     \leavevmode \hbox \bgroup \if@tabsw\beginR\normalfont \fi
+     $\let\@acol\@tabacol
+     \let\@classz\@tabclassz
+     \let\@classiv\@tabclassiv \let\\\@tabularcr\@tabarray}
+\def\endtabular{\crcr\egroup\if@tabsw\egroup\endR\egroup\fi
+		 \egroup $\if@tabsw\endR\fi \egroup
+		 \global\@tabswfalse}
+\expandafter \let \csname endtabular*\endcsname = \endtabular
+
+\def\@array[#1]#2{\setbox\@arstrutbox=\hbox{\vrule
+     height\arraystretch \ht\strutbox
+     depth\arraystretch \dp\strutbox
+     width\z@}\@mkpream{#2}\edef\@preamble{%
+\halign \noexpand\@halignto
+\bgroup \tabskip\z@ \@arstrut \@preamble \tabskip\z@ \cr}%
+\let\@startpbox\@@startpbox \let\@endpbox\@@endpbox
+\if #1t\vtop \else \if#1b\vbox \else \vcenter \fi\fi
+\bgroup \let\par\relax
+\let\@sharp##\let\protect\relax \lineskip\z@\baselineskip\z@
+\if@tabsw\hbox\bgroup\beginR\vbox\bgroup\fi
+\@preamble}
+
+%taken from rlbabel.ldf
+\newif\if@rl
+\AtBeginDocument{% Here we set the main document direction
+  \newif\if@rlmain%
+  \if@rl% e.g: if the options to babel were [english,hebrew]
+    \@rlmaintrue%
+  \else%  e.g: if the options to babel were [hebrew,english]
+    \@rlmainfalse%
+  \fi%
+}
+
+%To fix eqref problem taken from amsmath
+\let\@@text=\text
+\def\text#1{\@@text{\RL{#1}}}
+
+\def\tagform@#1{\maketag@@@{)\ignorespaces\text{#1}\unskip\@@italiccorr(}}
+\renewcommand{\eqref}[1]{(\ref{#1})}
+
+%To fix equation numbers. taken from amsmath
+{\renewenvironment{equation}{%
+  \unsetRL
+  \incr@eqnum
+  \mathdisplay@push
+  \st@rredfalse \global\@eqnswtrue
+  \mathdisplay{equation}%
+\setRL
+}{%
+\unsetRL
+  \endmathdisplay{equation}%
+  \mathdisplay@pop
+  \ignorespacesafterend
+\setRL
+}}
+\makeatother
+%to make the digits in math formula persian
+\font\tenrgm="Nazli" at 12pt
+\font\sevrgm="Nazli" at 10pt
+\font\fivrgm="Nazli" at 7pt
+\newfam\fardig
+\textfont\fardig=\tenrgm
+\scriptfont\fardig=\sevrgm
+\scriptscriptfont\fardig=\fivrgm
+\def\maths{
+  \XeTeXmathcode`0="7 \fardig "06F0%
+  \XeTeXmathcode`1="7 \fardig "06F1%
+  \XeTeXmathcode`2="7 \fardig "06F2%
+  \XeTeXmathcode`3="7 \fardig "06F3%
+  \XeTeXmathcode`4="7 \fardig "06F4%
+  \XeTeXmathcode`5="7 \fardig "06F5%
+  \XeTeXmathcode`6="7 \fardig "06F6%
+  \XeTeXmathcode`7="7 \fardig "06F7%
+  \XeTeXmathcode`8="7 \fardig "06F8%
+  \XeTeXmathcode`9="7 \fardig "06F9%
+  \XeTeXmathcode`.="7 \fardig "066B%decimal point
+}
+\XeTeXmathcode`٫="7 \fardig "066B%decimal point
+\XeTeXmathcode`۰="7 \fardig "06F0%
+\XeTeXmathcode`۱="7 \fardig "06F1%
+\XeTeXmathcode`۲="7 \fardig "06F2%
+\XeTeXmathcode`۳="7 \fardig "06F3%
+\XeTeXmathcode`۴="7 \fardig "06F4%
+\XeTeXmathcode`۵="7 \fardig "06F5%
+\XeTeXmathcode`۶="7 \fardig "06F6%
+\XeTeXmathcode`۷="7 \fardig "06F7%
+\XeTeXmathcode`۸="7 \fardig "06F8%
+\XeTeXmathcode`۹="7 \fardig "06F9%
+%to resolve a problem we encounter when using power
+%or index in math formula
+\makeatletter\def\arabtex@codes{}\makeatother
+
+
+
+
+\endinput
+
+
+
+
+
+
+
+
+
+
+
+
