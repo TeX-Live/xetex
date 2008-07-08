@@ -1,0 +1,322 @@
+\documentclass{report}
+\usepackage{xepersian}
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\pagestyle{headings}
+\title{حروف‌چینی فارسی در \eng{\XePersian}\\[0.2cm]نسخهٔ ۰/۱۴}
+\author{وفا خلیقی\thanks{پست الکترونیک:~\eng{vafa.khalighi@students.mq.edu.au}}}
+\begin{document}
+\maths
+\begin{farsi}
+\maketitle
+\tableofcontents
+\chapter{مقدمه}
+به حروف‌چینی فارسی ‪ ‬با ‪\eng{\XePersian} ‬خوش آمدید. هدف \eng{\XePersian} ارائه یک بستهٔ کاملاً کامل و پایدار برای حروف‌چینی است. لطفاً به خاطر داشته باشید که \eng{\XePersian} هنوز در حالت آزمایش است و این نسخهٔ ۰/۱۴ از آن است. من سعی کرده‌ام، می‌کنم و خواهم کرد تا تمام امکانات حروف‌چینی فارسی را در \eng{\XePersian} جمع کنم. اما این خود نیاز به آزمایش و امتحان دارد تا اشکالات پیدا و رفع شود.
+
+لطفاً قبل از استفاده از \eng{\XePersian} این سند را بدقت بخوانید تا با دستورات و امکانات \eng{\XePersian} آشنا شوید.
+
+همچنین اگر اشکالی، پیشنهادی و یا سؤالی دارید، می‌توانید آن را به نویسندهٔ \eng{\XePersian} گزارش دهید تا مؤلف \eng{\XePersian} بتواند نسخهٔ بعدی کاملتری را ارائه دهد.
+
+دوست دارم از ته قلبم از آقای \eng{Jonathan Kew } برای پشتیبانی‌ها و اعتمادشان به من تشکر کنم.
+
+در اینجا نیز دوست دارم از مسئولان پروژه‌های تک‌پارسی و فارسی‌تک تشکر و قدردانی کنم به این خاطر که نوشتن \eng{\XePersian} ممکن نبود مگر با مطالعهٔ کدهای این دو پروژه. همچنین تعدادی از امکانات فارسی‌تک و  تک‌پارسی در \eng{\XePersian} گنجانده شده است.
+
+در پایان نیز دوست دارم صمیمانه از دوستان خوب و نازنینم در وبلاگ فارسی‌لاتک، آقایان مصطفی واحدی، مهدی امیدعلی، مرتضی خدادادیان، وحید قاسمیان و بسیاری از دوستان دیگر تشکر کنم. بدون نظرات و پشتیبانی‌های این دوستان، من نمی‌توانستم انگیزهٔ لازم را در انجام این کار پیدا کنم.
+\chapter{فلسفه و دستورات \eng{\XePersian}}
+فلسفهٔ \eng{\XePersian} این است که یک استفاده کنندهٔ معمولی باید قادر باشد به راحتی به حروف‌چینی فارسی بپردازد. در حال حاضر \eng{\XePersian} با کلاسهای \eng{article, amsart, amsbook, report, book, bookest, refrep} و \eng{beamer} به زیبایی و آسانی کار می‌کند. در هر نسخه از \eng{\XePersian} تلاش بر این است تا حداقل سه کلاس دیگر نیز به آن اضافه شود. همچنین در هر نسخه بسته‌های زیادی نیز به \eng{\XePersian} اضافه خواهند شد تا کاربران آزادی کامل در حروف‌چینی فارسی داشته باشند.
+\section{فونتهای فارسی}
+تعدادی فونتهای فارسی مناسب با \eng{\XePersian} عرضه می‌شوند. این فونتها در پوشهٔ \eng{True Type Fonts} قرار دارند. لطفاً قبل از انجام هر کاری این فونتها را روی سیستم خود نصب کنید.
+\section{اسکلت یک متن فارسی ساده در \eng{\XePersian}}
+\subsection{طبقات \eng{article} و \eng{amsart}}
+\setLR
+\verb|\documentclass{article}|\\
+\verb|\usepackage{xepersian}|\\
+\verb|\title{|\textfarsi{عنوان مطلب}\verb|}|\\
+\verb|\author{|\textfarsi{نام نویسنده}\verb|}|\\
+\verb|\begin{document}|\\
+\verb|\maths|\\
+\verb|\begin{farsi}|\\
+\verb|\maketitle|\\
+\verb|\tableofcontents|\\
+\verb|\section{|\textfarsi{یک قسمت}\verb|}|
+
+$\vdots$
+
+\verb|\subsection{|\textfarsi{یک زیر قسمت}\verb|}|
+
+$\vdots$
+
+\verb|\subsubsection{|\textfarsi{یک زیر زیر قسمت}\verb|}|
+
+$\vdots$
+
+\verb|\end{farsi}|\\
+\verb|\end{document}|
+\setRL
+\newpage
+\subsection{طبقهٔ \eng{beamer}}
+\setLR
+\verb|\documentclass{beamer}|\\
+\verb|\usepackage{xepersian}|\\
+\verb|\title{|\textfarsi{عنوان مطلب}\verb|}|\\
+\verb|\author{|\textfarsi{نام نویسنده}\verb|}|\\
+\verb|\begin{document}|\\
+\verb|\maths|\\
+\verb|\begin{farsi}|\\
+\verb|\frame{\maketitle}|\\
+\verb|\section{|\textfarsi{یک قسمت}\verb|}|\\
+\verb|\frametitle{|\textfarsi{مطلب}\verb|}|\\
+\verb|\framesubtitle{|\textfarsi{زیر مطلب}\verb|}|
+
+$\vdots$
+
+\verb|\end{frame}|
+
+$\vdots$
+
+\verb|\end{farsi}|\\
+\verb|\end{document}|
+\setRL
+\subsection{سایر طبقات}
+\setLR
+\verb|\documentclass{book}|\\
+\verb|\usepackage{xepersian}|\\
+\verb|\title{|\textfarsi{عنوان مطلب}\verb|}|\\
+\verb|\author{|\textfarsi{نام نویسنده}\verb|}|\\
+\verb|\begin{document}|\\
+\verb|\maths|\\
+\verb|\begin{farsi}|\\
+\verb|\maketitle|\\
+\verb|\tableofcontents|\\
+\verb|\chapter{|\textfarsi{یک فصل}\verb|}|
+
+$\vdots$
+
+\verb|\section{|\textfarsi{یک قسمت}\verb|}|
+
+$\vdots$
+
+\verb|\subsection{|\textfarsi{یک زیر قسمت}\verb|}|
+
+$\vdots$
+
+\verb|\subsubsection{|\textfarsi{یک زیر زیر قسمت}\verb|}|
+
+$\vdots$
+
+\verb|\end{farsi}|\\
+\verb|\end{document}|
+\setRL
+\newpage
+\section{نکات}
+\begin{itemize}
+\item \eng{\XePersian}
+بصورت مستقل اعداد را فارسی نشان می‌دهد و نیازی به فایلهای \eng{farsidigits.map} و \eng{farsidigits.tec} ندارد.
+\item \eng{\XePersian}
+فونت نازلی را برای فونت فارسی به عنوان پیش‌فرض استفاده می‌کند لذا باید این فونت را روی سیستم خود نصب کرده باشید. اگر می‌خواهید از فونت دیگری به عنوان فونت فارسی استفاده کنید، می‌توانید دستور زیر را در پیش‌درآمد فایل خود قرار دهید:
+
+\setLR
+\verb|\newfontinstance\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{name of your font}|
+\setRL
+\item \eng{\XePersian}
+فونت شهرزاد را برای فونت عربی به عنوان پیش‌فرض استفاده می‌کند لذا باید این فونت را روی سیتم خود نصب کرده باشید. اگر می‌خواهید از فونت دیگری به عنوان فونت عربی استفاده کنید، می‌توانید دستور زیرا را در پیش‌درآمد فایل خود قرار دهید:
+
+\setLR
+\verb|\newfontinstance\arabicfont[Script=Arabic,Scale=1.2]{name of your font}|
+\setRL
+
+\item
+اگر می‌خواهید پاراگرافی انگلیسی بنویسید باید آن پاراگراف را بعد از دستور \verb|\end{farsi}| بنویسید و اگر دوباره خواستید فارسی بنویسید می‌توانید از محیط زیر استفاده کنید:
+
+\setLR
+\verb|\begin{farsi}|
+
+$\vdots$
+
+\verb|\end{farsi}|
+\setRL
+
+\item
+اگر می‌خواهید پاراگرافی عربی بنویسید، می‌توانید از محیط زیر استفاده کنید:
+
+\setLR
+\verb|\begin{arab}|
+
+$\vdots$
+
+\verb|\end{arab}|
+\setRL
+
+\item \eng{\XePersian}
+بصورت پیش‌فرض بسته‌های \eng{amsmath, amssymb, amsthm} و دیگر بسته‌های مربوط را فراخوانی می‌کند لذا شما نباید این بسته‌ها را دوباره در پیش‌درآمد فایل خود فراخوانی کنید.
+\item \eng{\XePersian}
+بصورت خودکار بستهٔ \eng{graphicx} را فراخوانی می‌کند لذا شما نباید این بسته را در پیش‌درآمد فایل خود فراخوانی کنید.
+
+\end{itemize}
+\newpage
+\section{دستورات کلیدی \eng{\XePersian}}
+\verb|\XePersian|:
+برای قرار دادن نماد \eng{\XePersian}. البته اگر در محیط فارسی هستید باید از شکل
+\verb|\eng{\XePersian}|
+این دستور استفاده کنید.
+
+\vspace{0.5cm}
+
+\verb|\fars{}|:
+برای قرار دادن کلمه/کلمات و یا جمله‌ای فارسی زمانی که در محیط فارسی نیستیم. کلمه/کلمات و یا جمله فارسی درون \verb|{}| قرار می‌گیرد.
+
+\vspace{0.5cm}
+
+\verb|\eng{}|:
+برای قرار دادن کلمه/کلمات و یا جمله‌ای انگلیسی زمانی که در محیط فارسی و یا عربی هستیم. کلمه/کلمات و یا جلمه انگلیسی درون \verb|{}| قرار می‌گیرد.
+
+\vspace{0.5cm}
+
+\verb|\arabt{}|:
+برای قرار دادن کلمه/کلمات و یا جمله‌ای عربی زمانی که در محیط عربی نیستیم. کلمه/کلمات و یا جمله عربی درون \verb|{}| قرار می‌گیرد.
+
+
+
+\vspace{0.5cm}
+
+\verb|\footnote{}|:
+برای قرار دادن زیرنویس فارسی. متن فارسی را درون \verb|{}| قرار می‌دهیم.
+
+\vspace{0.5cm}
+
+\verb|\Footnote{}|:
+برای قرار دادن زیرنویس انگلیسی. متن انگلیسی را درون \verb|{}| قرار می‌دهیم.
+
+\vspace{0.5cm}
+
+\verb|\maths|:
+این فرمان باعث فارسی شدن اعداد در محیط‌های ریاضی می‌شود. لطفاً به خاطر داشته باشید که شما باید این فرمان را بعد از \verb|\begin{document}| قرار دهید.
+\newpage
+\chapter{امکانات حروف‌چینی فارسی در \eng{\XePersian}}
+\section{حروف‌چینی شعر}
+حروف‌چینی شعر از فارسی‌تک به \eng{\XePersian} اضافه شده است. در اینجا لازم می‌دانم از آقای بهداد اسفهبد که مؤلف اصلی آن هستند تشکر کنم.
+
+\vspace{0.5cm}
+
+لطفاً به خاطر داشته باشید که برای حروف‌چینی شعر نیازی به قراردادن بسته‌ای خاص ندارید؛ \eng{\XePersian} این کار را بصورت خودکار انجام می‌دهد.
+\subsection{حروف‌چینی شعر سنتی}
+حروف‌چینی شعر سنتی در محیطی به نام \eng{oldpoem} انجام می‌گیرد. این محیط دو حالت دارد:
+\subsubsection{حالت معمولی}
+\begin{oldpoem}
+هله رفتیم و گرانی ز جمالت بردیم&
+جهت توشهٔ ره ذکر وصالت بردیم\\
+تا که ما را و ترا تذکرهٔ خوش باشد&
+دل خسته بتو دادیم و خیالت بردیم\\
+آن خیال رُخ خوبت که قمر بندهٔ اوست&
+وان خَم ابروی مانند هلالت بردیم\\
+و آن شکرخندهٔ خوبت که شکر تشنهٔ اوست&
+ز شکر خانهٔ مجموع خصالت بردیم\\
+چون کبوتر چو بپریم بتو بازآییم&
+زانکه ما این پَر و بال از پَر و بالت بردیم\\
+هر کجا پرد فرعی، بسوی اصل آید&
+هر چه داریم هم از عزّ و جلالت بردیم\\
+شمس تبریز شنو خدمت ما را زصبا&
+گر شمالست و صبا هم ز شمالت بردیم
+
+\end{oldpoem}
+شعر بالا با کد زیر تولید شده است:
+
+\setLR
+\verb|\documentclass{article}|\\
+\verb|\usepackage{xepersian}|\\
+\verb|\begin{document}|\\
+\verb|\begin{oldpoem}|\\
+\textfarsi{هله رفتیم و گرانی ز جمالت بردیم}\verb|&|\\
+\textfarsi{جهت توشهٔ ره ذکر وصالت بردیم}\verb|\\|\\
+\textfarsi{تا که ما را و ترا تذکرهٔ خوش باشد}\verb|&|\\
+\textfarsi{دل خسته بتو دادیم و خیالت بردیم}\verb|\\|\\
+\textfarsi{آن خیال رُخ خوبت که قمر بندهٔ اوست}\verb|&|\\
+\textfarsi{وان خَم ابروی مانند هلالت بردیم}\verb|\\|\\
+\textfarsi{و آن شکرخندهٔ خوبت که شکر تشنهٔ اوست}\verb|&|\\
+\textfarsi{ز شکر خانهٔ مجموع خصالت بردیم}\verb|\\|\\
+\textfarsi{چون کبوتر چو بپریم بتو بازآییم}\verb|&|\\
+\textfarsi{زانکه ما این پَر و بال از پَر و بالت بردیم}\verb|\\|\\
+\textfarsi{هر کجا پرد فرعی، بسوی اصل آید}\verb|&|\\
+\textfarsi{هر چه داریم هم از عزّ و جلالت بردیم}\verb|\\|\\
+\textfarsi{شمس تبریز شنو خدمت ما را زصبا}\verb|&|\\
+\textfarsi{گر شمالست و صبا هم ز شمالت بردیم}\\
+\verb|\end{oldpoem}|\\
+\verb|\end{document}|
+\setRL
+\subsubsection{حالت ستاره‌دار}
+\begin{oldpoem*}
+هله رفتیم و گرانی ز جمالت بردیم&
+جهت توشهٔ ره ذکر وصالت بردیم\\
+تا که ما را و ترا تذکرهٔ خوش باشد&
+دل خسته بتو دادیم و خیالت بردیم\\
+آن خیال رُخ خوبت که قمر بندهٔ اوست&
+وان خَم ابروی مانند هلالت بردیم\\
+و آن شکرخندهٔ خوبت که شکر تشنهٔ اوست&
+ز شکر خانهٔ مجموع خصالت بردیم\\
+چون کبوتر چو بپریم بتو بازآییم&
+زانکه ما این پَر و بال از پَر و بالت بردیم\\
+هر کجا پرد فرعی، بسوی اصل آید&
+هر چه داریم هم از عزّ و جلالت بردیم\\
+شمس تبریز شنو خدمت ما را زصبا&
+گر شمالست و صبا هم ز شمالت بردیم
+
+\end{oldpoem*}
+شعر بالا با کد زیر تولید شده است:
+
+\setLR
+\verb|\documentclass{article}|\\
+\verb|\usepackage{xepersian}|\\
+\verb|\begin{document}|\\
+\verb|\begin{oldpoem*}|\\
+\textfarsi{هله رفتیم و گرانی ز جمالت بردیم}\verb|&|\\
+\textfarsi{جهت توشهٔ ره ذکر وصالت بردیم}\verb|\\|\\
+\textfarsi{تا که ما را و ترا تذکرهٔ خوش باشد}\verb|&|\\
+\textfarsi{دل خسته بتو دادیم و خیالت بردیم}\verb|\\|\\
+\textfarsi{آن خیال رُخ خوبت که قمر بندهٔ اوست}\verb|&|\\
+\textfarsi{وان خَم ابروی مانند هلالت بردیم}\verb|\\|\\
+\textfarsi{و آن شکرخندهٔ خوبت که شکر تشنهٔ اوست}\verb|&|\\
+\textfarsi{ز شکر خانهٔ مجموع خصالت بردیم}\verb|\\|\\
+\textfarsi{چون کبوتر چو بپریم بتو بازآییم}\verb|&|\\
+\textfarsi{زانکه ما این پَر و بال از پَر و بالت بردیم}\verb|\\|\\
+\textfarsi{هر کجا پرد فرعی، بسوی اصل آید}\verb|&|\\
+\textfarsi{هر چه داریم هم از عزّ و جلالت بردیم}\verb|\\|\\
+\textfarsi{شمس تبریز شنو خدمت ما را زصبا}\verb|&|\\
+\textfarsi{گر شمالست و صبا هم ز شمالت بردیم}\\
+\verb|\end{oldpoem*}|\\
+\verb|\end{document}|
+\setRL
+\subsection{حروف‌چینی شعر نو}
+حروف‌چینی شعر نو نیز در محیطی به نام \eng{newpoem} امکان پذیر است. این محیط دارای دو حالت معمولی و ستاره‌دار می‌باشد.
+\section{تهیه اسلاید}
+به آسانی می‌توانید اسلایدهای زیبایی را با کلاس \eng{beamer} در \eng{\XePersian} درست کنید. دو مثال نیز در پوشهٔ \eng{doc} موجود می‌باشد. در نسخه‌های بعدی تلاش خواهد شد تا کلاسها و بسته‌های مختلف و متنوع دیگری را برای تهیه اسلاید در \eng{\XePersian} فراهم آورد.
+\section{نوشتهٔ سرصفحه}
+برای فعال کردن نوشتهٔ سر صفحه سه راه وجود دارد:
+\begin{itemize}
+\item
+در پیش‌درآمد فایل خود دستور \verb|\pagestyle{headings}| را قرار دهید.
+\item
+در پیش‌درآمد فایل خود دستور \verb|\pagestyle{myheadings}| را قرار  دهید و سپس \eng{\texttt{myheadings}} را تعریف کنید.
+\item
+از بستهٔ \eng{\texttt{fancyhdr}} استفاده کنید که کاملاً با \eng{\XePersian} سازگار است.
+\end{itemize}
+\section{قرار دادن عکس}
+قرار دادن عکس نیز به آسانی امکان پذیر  است. هر چند  که می‌توانید از دستورات 
+\eng{\XeTeX}
+ استفاده کنید اما دستور 
+\verb|\includegraphics|
+ پیشنهاد می‌شود.
+\section{جدول}
+به آسانی می‌توانید جدول خود را در 
+\eng{\XePersian}
+ تولید کنید.
+\section{حروف‌چینی یک متن در چند ستون}
+می‌توانید تا ۵ ستون داشته باشید. برای حروف‌چینی یک متن در چند ستون از محیط زیر استفاده می‌کنیم:
+
+\setLR
+\verb|\begin{multicols}{number of columns}|
+
+$\vdots$
+
+\verb|\end{multicols}|
+\setRL
+\end{farsi}
+\end{document}
