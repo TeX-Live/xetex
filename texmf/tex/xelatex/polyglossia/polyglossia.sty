@@ -5,21 +5,29 @@
 \RequirePackage{fontspec} %which itself depends on xkeyval
 \providecommand*{\xpg@warning}[1]{%
    \PackageWarning{polyglossia}%
-   {***** #1 *****}}      
+   {#1}}      
 \providecommand*{\xpg@info}[1]{%
    \PackageInfo{polyglossia}%
-   {***** #1 *****\@gobble}} %% the \@gobble is to prevent displaying the line nr
+   {#1\@gobble}} %% the \@gobble is to prevent displaying the line nr
 \providecommand*{\xpg@nopatterns}[1]{%
    \xpg@warning{No hyphenation patterns were loaded for `#1'\MessageBreak
          I will use the patterns loaded for \string\language=0\MessageBreak instead}}
 \providecommand*{\xpg@nolang}[1]{%
    \xpg@warning{Couldn't find file gloss-#1.ldf!}}%
       %TODO try at least to load the hyphenation patterns for #1.
+\def\xpg@ill@value#1#2{%
+  \xpg@warning{Illegal value (#1) for #2}}
+  
+\def\xpg@csifdef@warn#1{%
+   \ifcsundef{#1}{\PackageWarning{polyglossia}{ #1 is not defined}}%
+   {\expandafter\protect\csname #1\endcsname}}
+
+\def\xpg@csifdef#1{\ifcsundef{#1}{\relax}{\expandafter\protect\csname #1\endcsname}}
+
 
 \def\@@ensure@dir#1{\ifcsundef{@ensure@dir}{#1}{\@ensure@dir{#1}}}
 \def\@@ensure@maindir#1{\ifcsundef{@ensure@maindir}{#1}{\@ensure@maindir{#1}}}
 
-%FIXME: this needs to be tested!
 \def\opt@enabled{on}
 \def\opt@disabled{off}
 \define@key{polyglossia}{localmarks}[on]{%
@@ -30,8 +38,10 @@
             \begingroup%
                \let\label\relax \let\index\relax \let\glossary\relax%
                \unrestored@protected@xdef\@themark%
-	       {{\foreignlanguage{##1}{\protect\@@ensure@maindir{####1}}}%
-	        {\foreignlanguage{##1}{\protect\@@ensure@maindir{####2}}}}%
+	       {{\foreignlanguage{##1}{%	         
+	          \protect\@@ensure@maindir{####1}}}%
+	        {\foreignlanguage{##1}{% 
+		  \protect\@@ensure@maindir{####2}}}}%
                \@temptokena \expandafter{\@themark}%
                \mark{\the\@temptokena}%
             \endgroup%
@@ -39,7 +49,8 @@
             \def\markright####1{%
                \begingroup%
                   \let\label\relax \let\index\relax \let\glossary\relax%
-                  \expandafter\@markright\@themark{\foreignlanguage{##1}{\protect\@@ensure@maindir{####1}}}%
+                  \expandafter\@markright\@themark%
+		  {\foreignlanguage{##1}{\protect\@@ensure@maindir{####1}}}%
                   \@temptokena \expandafter{\@themark}%
                   \mark{\the\@temptokena}%
                \endgroup%
@@ -50,9 +61,9 @@
    \else\ifx\@tmpa\opt@disabled
       \def\local@marks#1{}
       \xpg@info{Option: localmarks=off}
-   \fi\fi
+      \fi%
+   \fi%
 }
-\DeclareOption{nolocalmarks}{\setkeys{polyglossia}{localmarks=off}}
 \setkeys{polyglossia}{localmarks=on}
 
 %% Use the etoolbox macros instead!
@@ -99,7 +110,17 @@
       }%
     {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
     %% The following settings are for the default language and script:
-    \ifcsundef{#2@RL}{}{\@rlmaintrue\@rl@footnotetrue}%
+    \ifcsundef{#2@RL}{}%
+    {\@rlmaintrue\@rl@footnotetrue%
+      \let\@@oddfoot\@oddfoot%
+      \let\@@evenfoot\@evenfoot%
+      \let\@oddfoot\@@evenfoot%
+      \let\@evenfoot\@@oddfoot%
+      \let\@@oddhead\@oddhead%
+      \let\@@evenhead\@evenhead%
+      \let\@oddhead\@@evenhead%
+      \let\@evenhead\@@oddhead%
+    }%
     \AtBeginDocument{%
     \selectlanguage[#1]{#2}%
     \selectbackgroundlanguage{#2}}%
@@ -158,16 +179,13 @@
          {\end{otherlanguage}}%
       \fi%
       \expandafter\newcommand\csname text#2\endcsname[2][]{%
-       \ifdefined\RL%
+      \ifcsdef{RL}{%
 	  \ifcsundef{#2@RL}%
-	  {\@ensure@LR{\foreignlanguage[####1]{#2}{%
-	   {\expandafter\csname #2@font\endcsname}####2}}}%
-          {\@ensure@RL{\foreignlanguage[####1]{#2}{%
-	   {\expandafter\csname #2@font\endcsname}####2}}}%
-       \else
-          \foreignlanguage[####1]{#2}{%
-	  {\expandafter\csname #2@font\endcsname}####2}
-      \fi}
+	  {\@ensure@LR{\foreignlanguage[####1]{#2}{####2}}}%
+          {\@ensure@RL{\foreignlanguage[####1]{#2}{####2}}}%
+       }{% else
+          \foreignlanguage[####1]{#2}{####2}%
+       }}%
       \csletcs{local#2}{text#2}%
       \csgdef{#2@loaded}{}%
      }%
@@ -199,20 +217,17 @@
 \ifcsundef{foreignlanguage}{}%
    {\let\foreignlanguage\@undefined}
 
-\def\xpg@csifdef@warn#1{%
-   \ifcsundef{#1}{\PackageWarning{polyglossia}{ #1 is not defined}}%
-   {\expandafter\protect\csname #1\endcsname}}
-
-\def\xpg@csifdef#1{\ifcsundef{#1}{}{\expandafter\protect\csname #1\endcsname}}
-
 \newcommand{\foreignlanguage}[3][]{%
    \ifcsundef{#2@loaded}{\xpg@nolang{#2}}{%
      {\def\languagename{#2}%
       \setkeys{#2}{#1}%
       \xpg@csifdef@warn{#2@font}%
       \xpg@csifdef@warn{#2@language}%
-      \use@localhyphenmins{#1}%
-      \csname inlineextras@#2\endcsname#3}%
+      \xpg@csifdef{date#2}%
+      \xpg@csifdef{#2@numbers}%
+      \use@localhyphenmins{#2}%
+      \xpg@csifdef{inlineextras@#2}%
+      #3}%
 }}
 
 \ifcsundef{selectlanguage}{}%
@@ -222,7 +237,7 @@
    \ifcsundef{#2@loaded}{\xpg@nolang{#2}}{%
       \def\xpg@pop@language{%
          \xpg@set@language{\languagename}%
-         \let\emp@langname\undefined}%
+         \let\emp@langname\@undefined}%
       \aftergroup\xpg@pop@language%
       \setkeys{#2}{#1}%
       \xpg@set@language{#2}%
@@ -274,6 +289,14 @@
    \ifcsundef{#1hyphenmins}{}%
    {\expandafter\expandafter\expandafter\set@hyphenmins\csname #1hyphenmins\endcsname\relax}}
 
+%% package options
+\DeclareOption{nolocalmarks}{\setkeys{polyglossia}{localmarks=off}}
+\DeclareOption{quiet}{%
+   \gdef\@latex@info#1{\relax}% no latex info
+   \gdef\@font@info#1{\relax}% no latex font info
+   \gdef\@font@warning#1{\relax}% no latex font warnings
+   \gdef\zf@PackageInfo#1{\relax}% no fontspec info
+   \gdef\xpg@info#1{\relax}}% no polyglossia info
 \DeclareOption{USenglish}{%
 \ifcsundef{xpg@main@language}%
  {\edef\@temp{\noexpand\setdefaultlanguage[variant=american]{english}}}%
@@ -306,8 +329,8 @@
    \@temp}
 \DeclareOption{ngerman}{%
 \ifcsundef{xpg@main@language}%
- {\edef\@temp{\noexpand\setdefaultlanguage[hyphenation=new]{german}}}%
- {\edef\@temp{\noexpand\setotherlanguage[hyphenation=new]{german}}}%
+ {\edef\@temp{\noexpand\setdefaultlanguage[spelling=new]{german}}}%
+ {\edef\@temp{\noexpand\setotherlanguage[spelling=new]{german}}}%
    \@temp}
 \DeclareOption{polygreek}{%
 \ifcsundef{xpg@main@language}%
@@ -325,11 +348,12 @@
  {\edef\@temp{\noexpand\setotherlanguage[variant=ancient]{greek}}}%
    \@temp}
 %%% FIXME: this does not work when gloss-<option>.ldf contains a \RequirePackage command !!!
+%%%        let's try with \AtEndOfPackage (not tested)
 \DeclareOption*{%
 \ifcsundef{xpg@main@language}%
 {\edef\@temp{\noexpand\setdefaultlanguage{\CurrentOption}}}%
 {\edef\@temp{\noexpand\setotherlanguage{\CurrentOption}}}%
-   \@temp}
+   \AtEndOfPackage{\@temp}}
 \ProcessOptions*
 %This is for compatibility with biblatex and perhaps other pkgs: 
 \def\languageshorthands#1{\relax}

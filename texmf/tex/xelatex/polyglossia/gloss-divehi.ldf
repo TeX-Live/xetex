@@ -62,5 +62,12 @@
    \let\ttfamily=\divehi@font%
    \def\reset@font{\normalfont}}
 
+\def\blockextras@divehi{%
+   \let\@@MakeUppercase\MakeUppercase%
+   \def\MakeUppercase##1{##1}%
+   }
+\def\noextras@divehi{%
+   \let\MakeUppercase\@@MakeUppercase%
+   }
 
 \endinput

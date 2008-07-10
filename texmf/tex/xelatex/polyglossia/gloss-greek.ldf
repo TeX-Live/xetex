@@ -537,8 +537,6 @@
 
 % the code for alphabetic numbers and attic numerals 
 % is copied verbatim from xgreek.sty
-\def\gr@ill@value#1{%
-  \xpg@warning{Illegal value (#1) for greeknumeral}}
 \DeclareRobustCommand\anw@false{%
   \DeclareRobustCommand\anw@print{}}
 \DeclareRobustCommand\anw@true{%

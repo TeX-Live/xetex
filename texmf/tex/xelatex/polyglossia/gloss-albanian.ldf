@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-albanian.ldf}[polyglossia: module for albanian]
 \makeatletter
-\csdef{albanian@font}{\normalfontlatin}
+\def\albanian@font{\normalfontlatin}
 
 \ifx\l@albanian\@undefined
     \xpg@nopatterns{Albanian}
@@ -29,6 +29,8 @@
    %\def\headtoname{\textalbanian{}}%
    \def\proofname{\textalbanian{Vërtetim}}%
    \def\glossaryname{\textalbanian{Përhasja e Fjalëve}}%
+   }
+\def\datealbanian{%
    \def\today{\textalbanian{{\number\day~\ifcase\month\or
     Janar\or Shkurt\or Mars\or Prill\or Maj\or
     Qershor\or Korrik\or Gusht\or Shtator\or Tetor\or Nëntor\or

@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-basque.ldf}[polyglossia: module for basque]
 \makeatletter
-\csdef{basque@font}{\normalfontlatin}
+\def\basque@font{\normalfontlatin}
 
 \ifx\l@basque\@undefined%
    \xpg@nopatterns{Basque}%
@@ -30,6 +30,8 @@
    \def\headtoname{\textbasque{Nori}}%
    \def\proofname{\textbasque{Frogapena}}%
    \def\glossaryname{\textbasque{Glosarioa}}%
+   }
+\def\datebasque{%
    \def\today{\textbasque{\number\year.eko\space\ifcase\month\or
     urtarrilaren\or otsailaren\or martxoaren\or apirilaren\or
     maiatzaren\or ekainaren\or uztailaren\or abuztuaren\or

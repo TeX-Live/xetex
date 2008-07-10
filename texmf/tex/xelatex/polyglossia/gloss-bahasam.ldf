@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-bahasam.ldf}[polyglossia: module for bahasa malaysia]
 \makeatletter
-\csdef{bahasam@font}{\normalfontlatin}
+\def\bahasam@font{\normalfontlatin}
 
 \ifx\l@malay\@undefined
   \ifx\l@meyalu\@undefined
@@ -54,6 +54,8 @@
    \def\headtoname{\textbahasam{Kepada}}%
    \def\proofname{\textbahasam{Bukti}}%
    \def\glossaryname{\textbahasam{Istilah}}%
+   }
+\def\datebahasam{%
    \def\today{\textbahasam{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Mac\or April\or Mei\or Jun\or
     Julai\or Ogos\or September\or Oktober\or November\or Disember\fi

@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-croatian.ldf}[polyglossia: module for croatian]
 \makeatletter
-\csdef{croatian@font}{\normalfontlatin}
+\def\croatian@font{\normalfontlatin}
 
 \ifx\l@croatian\@undefined%
    \xpg@nopatterns{Croatian}%
@@ -29,6 +29,8 @@
    \def\headtoname{\textcroatian{Prima}}%
    \def\proofname{\textcroatian{Dokaz}}%
    \def\glossaryname{\textcroatian{Kazalo}}%
+   }
+\def\datecroatian{%
    \def\today{\textcroatian{\number\day.~\ifcase\month\or
     siječnja\or veljače\or ožujka\or travnja\or svibnja\or
     lipnja\or srpnja\or kolovoza\or rujna\or listopada\or studenog\or

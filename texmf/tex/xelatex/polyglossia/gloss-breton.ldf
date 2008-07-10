@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-breton.ldf}[polyglossia: module for breton]
 \makeatletter
-\csdef{breton@font}{\normalfontlatin}
+\def\breton@font{\normalfontlatin}
 
 \ifx\l@breton\@undefined%
    \xpg@nopatterns{Breton}%
@@ -47,6 +47,8 @@
    \def\headtoname{\textbreton{evit}}%
    \def\proofname{\textbreton{Proof}}%
    \def\glossaryname{\textbreton{Glossary}}%
+   }
+\def\datebreton{%
    \def\today{\textbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
     \number\day\fi \space a\space viz\space\ifcase\month\or
     Genver\or C'hwevrer\or Meurzh\or Ebrel\or Mae\or Mezheven\or

@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-catalan.ldf}[polyglossia: module for catalan]
 \makeatletter
-\csdef{catalan@font}{\normalfontlatin}
+\def\catalan@font{\normalfontlatin}
 
 \ifx\l@catalan\@undefined%
    \xpg@nopatterns{Catalan}%
@@ -30,6 +30,8 @@
    \def\headtoname{\textcatalan{A}}%
    \def\proofname{\textcatalan{Demostració}}%
    \def\glossaryname{\textcatalan{Glossari}}%
+   }
+\datecatalan{%   
    \def\today{\textcatalan{\number\day~\ifcase\month\or
     de gener\or de febrer\or de març\or d'abril\or de maig\or
     de juny\or de juliol\or d'agost\or de setembre\or d'octubre\or

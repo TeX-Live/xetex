@@ -52,7 +52,9 @@
   \def\alsoname{ayrıca bkz.}%
   \def\proofname{Kanıt}%
   \def\glossaryname{Glossary}% <-- Needs translation
-  \def\today{\number\day~\ifcase\month\or
+   }
+\def\dateturkish{%
+   \def\today{\number\day~\ifcase\month\or
     Ocak\or Şubat\or Mart\or Nisan\or Mayıs\or Haziran\or
     Temmuz\or Ağustos\or Eylül\or Ekim\or Kasım\or
     Aralık\fi

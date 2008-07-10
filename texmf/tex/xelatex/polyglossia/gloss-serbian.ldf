@@ -18,14 +18,14 @@
 \setkeys{serbian}{script}
 
 \def\captionsserbian{%
-   \if@serbian@cyr\captionsserbiancyr\else\captionsserbianlat\fi%
+   \if@serbian@cyr\captionsserbian@cyr\else\captionsserbian@lat\fi%
    }
 
 \def\dateserbian{%
-   \if@serbian@cyr\dateserbiancyr\else\dateserbianlat\fi%
+   \if@serbian@cyr\dateserbian@cyr\else\dateserbian@lat\fi%
    }
 
-\def\captionsserbianlat{%
+\def\captionsserbian@lat{%
    \def\refname{\textserbian{Literatura}}%
    \def\abstractname{\textserbian{Sažetak}}%
    \def\bibname{\textserbian{Bibliografija}}%
@@ -48,7 +48,7 @@
    \def\proofname{\textserbian{Dokaz}}%
    \def\glossaryname{\textserbian{Glosar}}% <-- CHECK
    }
-\def\dateserbianlat{%   
+\def\dateserbian@lat{%   
    \def\today{\textserbian{\number\day .~\ifcase\month\or
     januar\or februar\or mart\or april\or maj\or
     juni\or juli\or avgust\or septembar\or oktobar\or novembar\or
@@ -56,7 +56,7 @@
     }
 
 %%%TODO ASK SOMEONE TO CHECK THESE!
-\def\captionsserbiancyr{%
+\def\captionsserbian@cyr{%
    \def\refname{\textserbian{Литература}}%
    \def\abstractname{\textserbian{Сажетак}}%
    \def\bibname{\textserbian{Библиографија}}%
@@ -80,7 +80,7 @@
    \def\proofname{\textserbian{Докаz}}%
    \def\glossaryname{\textserbian{Глосар}}% <-- CHECK
    }
-\def\dateserbiancyr{%
+\def\dateserbian@cyr{%
    \def\today{\textserbian{\number\day .~\ifcase\month\or
     јануар\or фебруар\or март\or април\or мај\or
     јуни\or јули\or август\or септембар\or октобар\or нобембар\or

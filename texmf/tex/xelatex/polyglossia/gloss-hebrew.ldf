@@ -102,21 +102,21 @@
 
 %Hebrew alphabetic numerals (primitive implementation -- the code in Babel is more complex):
 \def\heb@num@i#1{%
-  \ifcase#1\or\char"05D0 \or\char"05D1 \or\char"05D2 \or\char"05D3 \or\char"05D4 %
-           \or\char"05D5 \or\char"05D6 \or\char"05D7 \or\char"05D8 \fi
+  \ifcase#1\or\char"05D0\or\char"05D1\or\char"05D2\or\char"05D3\or\char"05D4%
+           \or\char"05D5\or\char"05D6\or\char"05D7\or\char"05D8\fi
   \ifnum#1=\z@\hebnum@zero\fi}
 \def\heb@num@ii#1{%
-  \ifcase#1\or\char"05D9 \or\char"05DB \or\char"05DC \or\char"05DE \or\char"05E0 %
-           \or\char"05E1 \or\char"05E2 \or\char"05E4 \or\char"05E6 \fi 
+  \ifcase#1\or\char"05D9\or\char"05DB\or\char"05DC\or\char"05DE\or\char"05E0%
+           \or\char"05E1\or\char"05E2\or\char"05E4\or\char"05E6\fi 
   \ifnum#1=\z@\fi\heb@num@i}
 \def\heb@num@iii#1{%
-  \ifcase#1\or\char"05E7 \or\char"05E8 \or\char"05E9 \or\char"05EA \or\char"05DA %
-           \or\char"05DD \or\char"05DF \or\char"05E3 \or\char"05E5 \fi
+  \ifcase#1\or\char"05E7\or\char"05E8\or\char"05E9\or\char"05EA\or\char"05DA%
+           \or\char"05DD\or\char"05DF\or\char"05E3\or\char"05E5\fi
   \ifnum#1=\z@\fi\heb@num@ii}
 \def\heb@num@iv#1{%
-  \ifcase#1\or\char"05D0\char"05F3 \or\char"05D1\char"05F3 \or\char"05D2\char"05F3 %
-           \or\char"05D3\char"05F3 \or\char"05D4\char"05F3 \or\char"05D5\char"05F3 %
-	   \or\char"05D6\char"05F3 \or\char"05D7\char"05F3 \or\char"05D8\char"05F3\fi
+  \ifcase#1\or\char"05D0\char"05F3\or\char"05D1\char"05F3\or\char"05D2\char"05F3%
+           \or\char"05D3\char"05F3\or\char"05D4\char"05F3\or\char"05D5\char"05F3%
+	   \or\char"05D6\char"05F3\or\char"05D7\char"05F3\or\char"05D8\char"05F3\fi
   \ifnum#1=\z@\fi\heb@num@iii}
 %TODO [optionally] 
 % -insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
@@ -199,5 +199,11 @@
    \let\ttfamily=\hebrew@font@tt%
    \def\reset@font{\normalfont}}
 
+\def\blockextras@hebrew{%
+   \let\@@MakeUppercase\MakeUppercase%
+   \def\MakeUppercase##1{##1}%
+   }
+\def\noextras@hebrew{%
+   \let\MakeUppercase\@@MakeUppercase%
+   }
 \endinput
-%%BABEL: \providehyphenmins{hebrew}{\thr@@\thr@@}

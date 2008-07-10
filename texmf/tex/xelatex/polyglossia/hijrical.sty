@@ -46,7 +46,9 @@
        \FormatHijriDateEnglish%
     \fi}
 % added option \Hijritoday[n] (default 0) for adjusting the date + n days
-\newcommand\Hijritoday[1][0]{\@ifundefined{c@adj@day}{\global\newcounter{adj@day}}{}%
+\@ifundefined{@hijri@correction}{\gdef\@hijri@correction{0}}{}
+\newcommand\Hijritoday[1][\@hijri@correction]{%
+ \@ifundefined{c@adj@day}{\global\newcounter{adj@day}}{}%
  \setcounter{adj@day}{\the\day+#1}% 
  \Hijridate{\year}{\month}{\value{adj@day}}}
 %\def\Hijritoday{\Hijridate{\year}{\month}{\day}}
@@ -64,7 +66,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 شوال\or ذو القعدة\or ذو الحجة\fi}
 
 \def\FormatHijriDateEnglish{%
-\theHijriday\space\HijriMonthTranslit{\value{Hijrimonth}}\space\theHijriyear}
+\number\value{Hijriday}\space\HijriMonthTranslit{\value{Hijrimonth}}\space\number\value{Hijriyear}}
 
 %FIXME : this is already in gloss-arabic
 \def\@rabicnumb@r#1{\@ifundefined{arabicnumber}{{\addfontfeature{Mapping=arabicdigits} #1}}%

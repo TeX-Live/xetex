@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-portuges.ldf}[polyglossia: module for portuguese]
 \makeatletter
-\csdef{portuges@font}{\normalfontlatin}
+\def\portuges@font{\normalfontlatin}
 
 %FIXME check this:
 \ifx\l@portuges\@undefined

@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-nynorsk.ldf}[polyglossia: module for norwegian (Nynorsk)]
 \makeatletter
-\csdef{nynorsk@font}{\normalfontlatin}
+\def\nynorsk@font{\normalfontlatin}
 
 \ifx\l@nynorsk\@undefined%
    \xpg@nopatterns{Nynorsk}%

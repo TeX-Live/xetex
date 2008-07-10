@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-bahasai.ldf}[polyglossia: module for bahasa indonesia]
 \makeatletter
-\csdef{bahasai@font}{\normalfontlatin}
+\def\bahasai@font{\normalfontlatin}
 
 \ifx\l@bahasa\@undefined
   \ifx\l@bahasai\@undefined
@@ -54,6 +54,8 @@
    \def\headtoname{Kepada}%
    \def\proofname{\textbahasai{Bukti}}%
    \def\glossaryname{\textbahasai{Daftar Istilah}}%
+   }
+\def\datebahasai{%
    \def\today{\textbahasai{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Maret\or April\or Mei\or Juni\or
     Juli\or Agustus\or September\or Oktober\or Nopember\or Desember\fi

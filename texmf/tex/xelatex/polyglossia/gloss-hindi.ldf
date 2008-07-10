@@ -88,4 +88,12 @@
    \let\ttfamily=\hindi@font%
    \def\reset@font{\normalfont}}
 
+\def\blockextras@hindi{%
+   \let\@@MakeUppercase\MakeUppercase%
+   \def\MakeUppercase##1{##1}%
+   }
+\def\noextras@hindi{%
+   \let\MakeUppercase\@@MakeUppercase%
+   }
+
 \endinput

@@ -1,26 +1,26 @@
 \documentclass[a4paper]{book}%
 \usepackage[no-math]{fontspec}
 \usepackage{xltxtra,url,amsmath}
-\usepackage{polyglossia}
-\setdefaultlanguage[calendar=hijri,hijricorrection=1,locale=mashriq]{arabic}
+\usepackage[quiet]{polyglossia}
+\setdefaultlanguage[calendar=gregorian,hijricorrection=1,locale=syria]{arabic}
 \setotherlanguage[variant=british]{english}
 \setotherlanguage{farsi}
 \setromanfont{Junicode}
 \defaultfontfeatures{Scale=MatchLowercase}
 \setmonofont{Inconsolata}
 \setsansfont{Lucida Sans Unicode}
-\newfontfamily\arabicfont[Script=Arabic,Scale=1.3]{Scheherazade}%{Adobe Arabic}%
+\newfontfamily\arabicfont[Script=Arabic,Scale=1.3]{Adobe Arabic}%{Scheherazade}%
 \newfontfamily\arabicfonttt[Script=Arabic,Scale=.75]{DejaVu Sans Mono}
 \newfontfamily\farsifont[Script=Arabic,Scale=1.1,WordSpace=2]{IranNastaliq}
 \parindent 0pt
+\makeatletter
+\makeatother
 \title{امتحان تأييد اللغة العربية}
 \author{فرانسوا شاريت}
 \begin{document}
 \pagenumbering{alph}
-%\def\today{\Hijritoday[1]}
 \maketitle
 \tableofcontents
-
 \chapter{امتحان}
 \pagenumbering{arabic}
 \section{لغات مختلفة}
@@ -50,8 +50,7 @@
 می‌گذارند).  
 \end{farsi}
 
-\bigskip
-
+\newpage
 \begin{english}
 \textbf{English}\footnote{%
 	From \url{http://en.wikipedia.org/wiki/English_language}} 
@@ -65,17 +64,17 @@ and in many international organisations.
 \textarabic{١ ٢ ٣}
 
 \end{english}
-\bigskip
+\clearpage
 
-\section{أعمال تأريخية (\textenglish{Calendar operations})}
+\section{أعمال تأريخية \textenglish{(Calendar operations)}}
 
 
-\textenglish{\today} = \today\ = \Hijritoday\footnote{ 
+\textenglish{\today} = \LR{\today} = \today\ = \Hijritoday\footnote{ 
 	محسوب بـ \textenglish{\textsf{hijrical.sty}}} 
 
 %\newpage
 \subsection{فلان}
-\textenglish{This is English: a b c}
+\textenglish{This is English: a b c}\marginpar{انكليزي} %FIXME! cf farsitex?
 
 \subsubsection{فلان فلان}
 \begin{enumerate}
@@ -89,7 +88,7 @@ and in many international organisations.
 	\item مثال	
 \end{enumerate}
 
-\begin{table}
+\begin{table}[h]
 	\centering
 	\begin{tabular}{cc}
 		ا & ب  \\

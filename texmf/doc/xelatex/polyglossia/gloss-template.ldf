@@ -1,6 +1,5 @@
 \ProvidesFile{gloss-<lang>.ldf}[polyglossia: module for <lang>]
 \makeatletter
-\csdef{template@font}{\normalfontlatin}
 
 \ifx\l@<lang>\@undefined%
    \xpg@nopatterns{<Lang>}%
@@ -35,6 +34,8 @@
    \def\today{\text<lang>{<++>}}%
    }
 
+%\def\<lang>@font{\normalfontlatin} % <== if the script is Latin
+% else:
 \def\<lang>@font{%
 \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
 \@ifundefined{<lang>font}{%
@@ -87,4 +88,3 @@
 \def\inlineextras@<lang>{%
    }
 
-\endinput

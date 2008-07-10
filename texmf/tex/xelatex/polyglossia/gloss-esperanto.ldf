@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-esperanto.ldf}[polyglossia: module for esperanto]
 \makeatletter
-\csdef{esperanto@font}{\normalfontlatin}
+\def\esperanto@font{\normalfontlatin}
 
 \ifx\l@esperanto\@undefined%
    \xpg@nopatterns{Esperanto}%
@@ -30,24 +30,27 @@
    \def\headtoname{\textesperanto{Al}}%
    \def\proofname{\textesperanto{Pruvo}}%
    \def\glossaryname{\textesperanto{Glosaro}}%
-   \def\today{\textesperanto{\number\day{--a}~de~\ifcase\month\or
+   }
+\def\dateesperanto{%   
+   \def\today{\textesperanto{\number\day{–a}~de~\ifcase\month\or
     januaro\or februaro\or marto\or aprilo\or majo\or junio\or
     julio\or aŭgusto\or septembro\or oktobro\or novembro\or
     decembro\fi,\space \number\year}}%
-   \def\@esper#1{%
-      \ifcase#1\or a\or b\or c\or ĉ\or d\or e\or f\or g\or ĝ\or
-        h\or ĥ\or i\or j\or ĵ\or k\or l\or m\or n\or o\or
-        p\or r\or s\or ŝ\or t\or u\or ŭ\or v\or z\else\@ctrerr\fi}%
-   \def\@Esper#1{%
-      \ifcase#1\or A\or B\or C\or Ĉ\or D\or E\or F\or G\or Ĝ\or
-        H\or Ĥ\or I\or J\or Ĵ\or K\or L\or M\or N\or O\or
-        P\or R\or S\or Ŝ\or T\or U\or Ŭ\or V\or Z\else\@ctrerr\fi}%
    \def\hodiau{la \today}%
-    \def\hodiaun{la \number\day --an~de~\ifcase\month\or
+   \def\hodiaun{la \number\day{–an}~de~\ifcase\month\or
       januaro\or februaro\or marto\or aprilo\or majo\or junio\or
       julio\or aŭgusto\or septembro\or oktobro\or novembro\or
       decembro\fi, \space \number\year}%
     }
+\def\@esper#1{%
+   \ifcase#1\or a\or b\or c\or ĉ\or d\or e\or f\or g\or ĝ\or
+     h\or ĥ\or i\or j\or ĵ\or k\or l\or m\or n\or o\or
+     p\or r\or s\or ŝ\or t\or u\or ŭ\or v\or z\else\xpg@ill@value{#1}{@esper}\fi}%
+\def\@Esper#1{%
+   \ifcase#1\or A\or B\or C\or Ĉ\or D\or E\or F\or G\or Ĝ\or
+     H\or Ĥ\or I\or J\or Ĵ\or K\or L\or M\or N\or O\or
+     P\or R\or S\or Ŝ\or T\or U\or Ŭ\or V\or Z\else\xpg@ill@value{#1}{@Esper}\fi}%
+
 
 \def\esperanto@language{\protect\language=\l@esperanto}
 

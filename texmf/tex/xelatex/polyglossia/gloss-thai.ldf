@@ -52,9 +52,9 @@
 \def\datethai{%   
    \def\thai@month{%
      \ifcase\month\or
-       มกราคม\or กุมภาพันธ์\or มีนาคม\or เมษายน
-      \or พฤษภาคม\or มิถุนายน\or กรกฎาคม\or สิงหาคม
-      \or กันยายน \or ตุลาคม\or พฤศจิกายน\or ธันวาคม\fi}%
+       มกราคม\or กุมภาพันธ์\or มีนาคม\or เมษายน%
+      \or พฤษภาคม\or มิถุนายน\or กรกฎาคม\or สิงหาคม%
+      \or กันยายน\or ตุลาคม\or พฤศจิกายน\or ธันวาคม\fi}%
    \newcount\thai@year%
    \thai@year=\year%
    \advance\thai@year by 543%
@@ -73,13 +73,13 @@
   \ifcase#1\or ก\or ข\or ค\or ง\or จ\or ฉ\or ช\or ซ\or ฌ\or ญ\or ฎ\or
    ฏ\or ฐ\or ฑ\or ฒ\or ณ\or ด\or ต\or ถ\or ท\or ธ\or น\or บ\or ป\or ผ\or
    ฝ\or พ\or ฟ\or ภ\or ม\or ย\or ร\or ล\or ว\or ศ\or ษ\or ส\or ห\or ฬ\or อ\or
-     ฮ\else\@ctrerr\fi}
+   ฮ\else\xpg@ill@value{#1}{@thaialph}\fi}
 \def\thaiAlph#1{\expandafter\@thaiAlph\csname c@#1\endcsname}
 \def\@thaiAlph#1{%
   \ifcase#1\or ก\or ข\or ฃ\or ค\or ฅ\or ฆ\or ง\or จ\or ฉ\or ช\or ซ\or
    ฌ\or ญ\or ฎ\or ฏ\or ฐ\or ฑ\or ฒ\or ณ\or ด\or ต\or ถ\or ท\or ธ\or น\or
     บ\or ป\or ผ\or ฝ\or พ\or ฟ\or ภ\or ม\or ย\or ร\or ฤ\or ล\or ฦ\or ว\or
-     ศ\or ษ\or ส\or ห\or ฬ\or อ\or ฮ\else\@ctrerr\fi}
+     ศ\or ษ\or ส\or ห\or ฬ\or อ\or ฮ\else\xpg@ill@value{#1}{@thaialph}\fi}
      
 \def\thai@numbers{%
    \let\@latinalph\@alph%
@@ -95,19 +95,13 @@
   }
 
 \def\thai@globalnumbers{%
-   % WAS: \let\plainnumber\number & \let\number\thainumber
    \let\@latinarabic\@arabic%
    \let\@arabic\thainumber%
    \renewcommand{\thefootnote}{\protect\thainumber{\c@footnote}}%
-   %\renewcommand{\thepage}{\protect\thainumber{\c@page}}%
-   %\renewcommand{\thesection}{\protect\thai@font\protect\thainumber{\c@section}}%
-   %\renewcommand{\thesubsection}{\protect\thai@font\protect\thainumber{\c@subsection}\textrm{–}\protect\thainumber{\c@section}}%
-   %\renewcommand{\thepart}{\protect\thai@font\protect\thainumber{\c@part}}%
-   %\renewcommand{\thefigure}{\protect\thai@font\protect\thainumber{\c@figure}}%
-   %\renewcommand{\thetable}{\protect\thai@font\protect\thainumber{\c@table}}%
    }
-\def\nothai@globalnumbers{
+\def\nothai@globalnumbers{%
    \let\@arabic\@latinarabic%
+   \renewcommand{\thefootnote}{\protect\number{\c@footnote}}%
    }
 
 \def\thai@font{%

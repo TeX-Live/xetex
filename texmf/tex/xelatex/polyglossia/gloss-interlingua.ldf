@@ -29,6 +29,8 @@
    \def\headtoname{\textinterlingua{A}}%
    \def\proofname{\textinterlingua{Prova}}%
    \def\glossaryname{\textinterlingua{Glossario}}%
+   }
+\def\dateinterlingua{%
    \def\today{\textinterlingua{le~\number\day\space de \ifcase\month\or
     januario\or februario\or martio\or april\or maio\or junio\or
     julio\or augusto\or septembre\or octobre\or novembre\or

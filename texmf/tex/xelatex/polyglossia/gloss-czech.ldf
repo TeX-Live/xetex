@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-czech.ldf}[polyglossia: module for czech]
 \makeatletter
-\csdef{czech@font}{\normalfontlatin}
+\def\czech@font{\normalfontlatin}
 
 \ifx\l@czech\@undefined%
    \xpg@nopatterns{Czech}%
@@ -30,6 +30,8 @@
    \def\headtoname{\textczech{Komu}}%
    \def\proofname{\textczech{Důkaz}}%
    \def\glossaryname{\textczech{Slovník}}%was Glosář
+   }
+\def\dateczech{%
    \def\today{\textczech{\number\day.~\ifcase\month\or
     ledna\or února\or března\or dubna\or května\or
     června\or července\or srpna\or září\or

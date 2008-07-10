@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-finnish.ldf}[polyglossia: module for finnish]
 \makeatletter
-\csdef{finnish@font}{\normalfontlatin}
+\def\finnish@font{\normalfontlatin}
 
 \ifx\l@finnish\@undefined%
    \xpg@nopatterns{Finnish}%
@@ -30,6 +30,8 @@
    \def\headtoname{\textfinnish{Vastaanottaja}}%
    \def\proofname{\textfinnish{Todistus}}%
    \def\glossaryname{\textfinnish{Sanasto}}%
+   }
+\def\datefinnish{%
    \def\today{\textfinnish{\number\day.~\ifcase\month\or
     tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
     toukokuuta\or kesäkuuta\or heinäkuuta\or elokuuta\or

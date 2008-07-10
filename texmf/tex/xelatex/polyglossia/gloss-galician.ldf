@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-galician.ldf}[polyglossia: module for galician]
 \makeatletter
-\csdef{galician@font}{\normalfontlatin}
+\def\galician@font{\normalfontlatin}
 
 \ifx\l@galician\@undefined%
    \xpg@nopatterns{Galician}%
@@ -30,6 +30,8 @@
    \def\headtoname{\textgalician{A}}%
    \def\proofname{\textgalician{Demostración}}%
    \def\glossaryname{\textgalician{Glosario}}%
+   }
+\def\dategalician{%
    \def\today{\textgalician{\number\day~de\space\ifcase\month\or
     xaneiro\or febreiro\or marzo\or abril\or maio\or xuño\or
     xullo\or agosto\or setembro\or outubro\or novembro\or decembro\fi

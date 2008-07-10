@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-latvian.ldf}[polyglossia: module for latvian]
 \makeatletter
-\csdef{latvian@font}{\normalfontlatin}
+\def\latvian@font{\normalfontlatin}
 
 \ifx\l@latvian\@undefined
    \xpg@nopatterns{Latvian}
@@ -28,6 +28,8 @@
    \def\seename{\textlatvian{sk.}}%
    \def\alsoname{\textlatvian{sk. arī}}%
    \def\proofname{\textlatvian{Pierādījums}}%
+   }
+\def\datelatvian{%
    \def\today{\textlatvian{%
       \number\year.\thinspace gada%
       \space\number\day.\thinspace%

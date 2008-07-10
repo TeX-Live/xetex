@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-irish.ldf}[polyglossia: module for irish]
 \makeatletter
-\csdef{irish@font}{\normalfontlatin}
+\def\irish@font{\normalfontlatin}
 
 \ifx\l@irish\@undefined%
    \xpg@nopatterns{Irish}%
@@ -31,6 +31,8 @@
    \def\headtoname{\textirish{Go}}%
    \def\proofname{\textirish{Cruthúnas}}%
    \def\glossaryname{\textirish{Glossary}}%
+   }
+\def\dateirish{%
    \def\today{\textirish{%
     \number\day\space \ifcase\month\or
     Eanáir\or Feabhra\or Márta\or Aibreán\or

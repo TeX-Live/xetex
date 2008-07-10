@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-polish.ldf}[polyglossia: module for polish]
 \makeatletter
-\csdef{polish@font}{\normalfontlatin}
+\def\polish@font{\normalfontlatin}
 
 \ifx\l@polish\@undefined
    \xpg@nopatterns{polish}
@@ -29,7 +29,9 @@
   \def\alsoname{\textpolish{Porównaj także}}%
   \def\proofname{\textpolish{Dowód}}%
   \def\glossaryname{\textpolish{Glossary}}% <-- Needs translation
-  \def\today{\textpolish{\ifcase\month\or%
+   }
+\def\datepolish{%
+   \def\today{\textpolish{\ifcase\month\or%
       stycznia\or lutego\or marca\or kwietnia\or maja\or czerwca\or%
       lipca\or sierpnia\or września\or października\or%
       listopada\or grudnia\fi%

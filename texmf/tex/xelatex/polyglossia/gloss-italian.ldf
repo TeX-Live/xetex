@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-italian.ldf}[polyglossia: module for italian]
 \makeatletter
-\csdef{italian@font}{\normalfontlatin}
+\def\italian@font{\normalfontlatin}
 
 \ifx\l@italian\@undefined
    \xpg@nopatterns{Italian}
@@ -29,6 +29,8 @@
   \def\alsoname{vedi anche}%
   \def\proofname{Dimostrazione}%
   \def\glossaryname{Glossario}%
+   }
+\def\dateitalian{%
    \def\today{\textitalian{\number\day~\ifcase\month\or
     gennaio\or febbraio\or marzo\or aprile\or maggio\or giugno\or
     luglio\or agosto\or settembre\or ottobre\or novembre\or

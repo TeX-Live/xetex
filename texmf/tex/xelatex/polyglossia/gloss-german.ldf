@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-german.ldf}[polyglossia: module for german]
 \makeatletter
-\csdef{german@font}{\normalfontlatin}
+\def\german@font{\normalfontlatin}
 
 \ifx\l@german\@undefined
    \xpg@nopatterns{german}
@@ -10,7 +10,7 @@
 
 \def\tmp@new{new}
 \def\tmp@old{old}
-\define@key{german}{hyphenation}[new]{%
+\define@key{german}{spelling}[new]{%
    \def\@tmpa{#1}%
    \ifx\@tmpa\tmp@old%
      \def\german@hyph{\l@german}%
@@ -19,7 +19,7 @@
    \fi%
 }
 
-\setkeys{german}{hyphenation}
+\setkeys{german}{spelling}
 
 \def\captionsgerman{%
    \def\prefacename{\textgerman{Vorwort}}%

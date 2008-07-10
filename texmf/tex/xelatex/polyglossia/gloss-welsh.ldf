@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-welsh.ldf}[polyglossia: module for welsh]
 \makeatletter
-\csdef{welsh@font}{\normalfontlatin}
+\def\welsh@font{\normalfontlatin}
 
 \ifx\l@welsh\@undefined%
    \xpg@nopatterns{Welsh}%

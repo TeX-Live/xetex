@@ -1,6 +1,6 @@
 \ProvidesFile{gloss-estonian.ldf}[polyglossia: module for estonian]
 \makeatletter
-\csdef{estonian@font}{\normalfontlatin}
+\def\estonian@font{\normalfontlatin}
 
 \ifx\l@estonian\@undefined%
    \xpg@nopatterns{Estonian}%
@@ -30,6 +30,8 @@
    %\def\headtoname{\textestonian{}}%
    \def\proofname{\textestonian{Korrektuur}}%
    \def\glossaryname{\textestonian{Glossary}}% <-- need translation
+   }
+\def\dateestonian{%
    \def\today{\textestonian{\number\day.\space\ifcase\month\or
     jaanuar\or veebruar\or märts\or aprill\or mai\or juuni\or
     juuli\or august\or september\or oktoober\or november\or

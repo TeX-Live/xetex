@@ -28,37 +28,20 @@
      {\russianfont}%
 }
 
-%\def\russian@punctuation{%
-%   \frenchspacing%
-%   \def\No{№\kern.1667em}%
-%   \def\cyrdash{—}%
-%   \def\PlainTextEmDash{\ifdim\lastskip>\z@\unskip\nobreak\hskip.2em\fi%
-%      \cyrdash\hskip.2em\ignorespaces}%
-%   \def\CompoundNamesEmDash{\leavevmode\ifdim\lastskip>\z@\unskip\fi%
-%      \nobreak\cyrdash\penalty\exhyphenpenalty\hskip\z@skip\ignorespaces}%
-%   \def\DirectSpeechEmDash{\leavevmode%
-%      \nobreak\cyrdash\nobreak\hskip.35em\ignorespaces}}
-%
-%\def\norussian@punctuation{%
-%   \nonfrenchspacing%
-%   \let\No\@undefined%
-%   \let\cyrdash\@undefined%
-%   \let\PlainTextEmDash\@undefined%
-%   \let\CompoundNamesEmDash\@undefined%
-%   \let\DirectSpeechEmDash\@undefined%
-%}
-
 \def\tmp@old{old}
-\def\tmp@modern{modern}
-\def\captions@russian{\captionsrussian\daterussian}
-
-\define@key{russian}{orthography}[modern]{%
+\define@key{russian}{spelling}[modern]{%
    \def\@tmpa{#1}%
-   \ifx\@tmpa\tmp@old\def\captions@russian{\captionsrussianold\daterussianold}%
-   \else\def\captions@russian{\captionsrussian\daterussian}%
+   \ifx\@tmpa\tmp@old
+    \def\captionsrussian{\captionsrussian@old}
+    \def\daterussian{\daterussian@old}%
+   \else%
+     \def\captionsrussian{\captionsrussian@modern}
+     \def\daterussian{\daterussian@modern}%
    \fi}
 
-\def\captionsrussian{%
+\setkeys{russian}{spelling}
+
+\def\captionsrussian@modern{%
    \def\prefacename{\textrussian{Предисловие}}%
    \def\refname{\textrussian{Примечания}}%
    \def\abstractname{\textrussian{Аннотация}}%
@@ -81,7 +64,7 @@
    \def\alsoname{\textrussian{см.~также}}%
    \def\proofname{\textrussian{Доказательство}}%
 }
-\def\daterussian{%
+\def\daterussian@modern{%
       \def\today{\textrussian{\number\day%
       \space\ifcase\month\or%
       января\or
@@ -98,7 +81,7 @@
       декабря\fi%
       \space \number\year\space г.}}}
      
-\def\captionsrussianold{%
+\def\captionsrussian@old{%
    \def\prefacename{\textrussian{Предисловіе}}%
    \def\refname{\textrussian{Примѣчанія}}%
    \def\abstractname{\textrussian{Аннотація}}%
@@ -121,7 +104,7 @@
    \def\alsoname{\textrussian{см.~также}}%
    \def\proofname{\textrussian{Доказательство}}%
 }  
-\def\daterussianold{
+\def\daterussian@old{
       \def\today{\textrussian{\number\day%
       \space\ifcase\month\or%
       января\or
@@ -176,3 +159,24 @@
    }
 
 \endinput
+
+%\def\russian@punctuation{%
+%   \frenchspacing%
+%   \def\No{№\kern.1667em}%
+%   \def\cyrdash{—}%
+%   \def\PlainTextEmDash{\ifdim\lastskip>\z@\unskip\nobreak\hskip.2em\fi%
+%      \cyrdash\hskip.2em\ignorespaces}%
+%   \def\CompoundNamesEmDash{\leavevmode\ifdim\lastskip>\z@\unskip\fi%
+%      \nobreak\cyrdash\penalty\exhyphenpenalty\hskip\z@skip\ignorespaces}%
+%   \def\DirectSpeechEmDash{\leavevmode%
+%      \nobreak\cyrdash\nobreak\hskip.35em\ignorespaces}}
+%
+%\def\norussian@punctuation{%
+%   \nonfrenchspacing%
+%   \let\No\@undefined%
+%   \let\cyrdash\@undefined%
+%   \let\PlainTextEmDash\@undefined%
+%   \let\CompoundNamesEmDash\@undefined%
+%   \let\DirectSpeechEmDash\@undefined%
+%}
+

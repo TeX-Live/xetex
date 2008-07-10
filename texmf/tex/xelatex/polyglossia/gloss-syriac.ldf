@@ -135,4 +135,12 @@
 
 \def\syriac@language{\language=\l@syriac}
 
+\def\blockextras@syriac{%
+   \let\@@MakeUppercase\MakeUppercase%
+   \def\MakeUppercase##1{##1}%
+   }
+\def\noextras@syriac{%
+   \let\MakeUppercase\@@MakeUppercase%
+   }
+
 \endinput
