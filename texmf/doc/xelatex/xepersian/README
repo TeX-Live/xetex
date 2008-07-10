@@ -1,10 +1,10 @@
 -------------------------------
-The XePersian Package v0.14
+The XePersian Package v0.15
 
-Updates: fixed the \numberwithin bug.
+Updates: some bug fixes, no need to have \maths, redefined XePersian logo.
 
 XePersian is a package written for XeLaTeX that allows users to typeset
-Persian/Arabic properly. The current version is 0.14 and it will be
+Persian/Arabic properly. The current version is 0.15 and it will be
 developed to meet the needs of Persian typesetting properly.
 
 In order to use XePersian without getting any problem, the users are
