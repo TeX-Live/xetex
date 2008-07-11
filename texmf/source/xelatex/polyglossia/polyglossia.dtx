@@ -2,22 +2,28 @@
 % polyglossia.dtx generated using mkpolyglossiadtx.pl
 % (derived from makedtx.pl version  (c) Nicola Talbot)
 % 
-% Created on 2008/7/11 0:29
+% Created on 2008/7/11 16:39
 %<*internal>
 \iffalse
 %</internal>
 %<*README.txt>
 
-----------------------------
-THE POLYGLOSSIA PACKAGE v1.0
+   ¦----------------------------------------------¦
+   ¦                                              ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0           ¦
+   ¦                                              ¦
+   ¦ Modern multilingual typesetting with XeLaTeX ¦
+   ¦                                              ¦
+   ¦----------------------------------------------¦
 
-This package provides a complete replacement to Babel for users of XeLaTeX.
+This package for provides a complete Babel replacement for users of XeLaTeX.
+The initial version includes support for 54 different languages.
 
-Polyglossia is used to automate the following tasks:
+Polyglossia makes it possible to automate the following tasks:
 
 * Loading the appropriate hyphenation patterns.
 * Setting the script and language tags of the current font (if possible and
-  available).
+  available), using the package fontspec.
 * Switching to a font assigned by the user to a particular script or language.
 * Adjusting some typographical conventions in function of the current language
   (such as afterindent, frenchindent, spaces before or after punctuation marks, 
@@ -26,10 +32,10 @@ Polyglossia is used to automate the following tasks:
 * Adapting the formatting of dates (for non-gregorian calendars via external
   packages bundled with polyglossia: currently the hebrew, islamic and farsi
   calendars are supported).
-* For languages that have their own numeration system, the formatting of numbers 
-  is modified appropriately.
-* Ensuring the proper directionality if the document contains bidirectional
-  text (via the package bidi, available separately on CTAN).
+* For languages that have their own numeration system, modifyinf the formatting 
+  of numbers appropriately.
+* Ensuring the proper directionality if the document contains languages 
+  written from right to left (via the package bidi, available separately).
 
 Several features of Babel that do not make sense in the XeTeX world (like font 
 encodings, shorthands, etc) are not supported.
@@ -38,17 +44,16 @@ Polyglossia is distributed in the traditional way with *.dtx and *.ins files,
 and also comes with a TDS-conformant ready-to-unpack zip file.
 
 To install from source (i.e. using polyglossia.dtx), run 
-	xetex polyglossia.ins  
-(NB: not tex!! otherwise the UTF-8 characters will come out garbled)
-You will then also need to compile the *.map files using teckit_compile.
-The PDF documentation can be regenerated using 
 	xelatex polyglossia.dtx
+which will generate all files and produce the pdf documentation all at once. 
+Alternatively if you have the file polyglossia.ins run
+	xetex polyglossia.ins 
+and follow the instructions displayed.
 
-----------------------------
-François Charette, July 2008
-<firmicus ατ gmx δοτ net>
-
-
+  ------------------------------
+   François Charette, July 2008
+    <firmicus ατ gmx δοτ net>
+  ------------------------------
 %</README.txt>
 %<*internal>
 \fi
@@ -168,7 +173,8 @@ François Charette, July 2008
 %<*driver>
 \documentclass[11pt]{ltxdoc}
 \usepackage{xltxtra}
-\usepackage{xspace,fancyvrb,paralist}
+\usepackage{xspace,fancyvrb}
+\usepackage[neverdecrease]{paralist}
 \usepackage[dvipdfm]{color}
 \definecolor{myblue}{rgb}{0.02,0.04,0.48}
 \definecolor{lightblue}{rgb}{0.61,.8,.8}
@@ -190,9 +196,12 @@ François Charette, July 2008
     ]{hyperref}
 \usepackage{polyglossia,farsical}
 \setmainlanguage[variant=uk]{english}
-\setotherlanguages{arabic,hebrew,syriac,greek}
+\setotherlanguages{arabic,hebrew,syriac,greek,russian}
+\newcommand*\Cmd[1]{\cmd{#1}\DescribeMacro{#1}\xspace}
 \newcommand*\pkg[1]{\textsf{\color{myblue}#1}}
-\newcommand*\TB[1]{\textcolor{myred}{#1}}
+\newcommand*\file[1]{\texttt{\color{myblue}#1}}
+\newcommand*\TR[1]{\textcolor{myred}{#1}}
+\newcommand*\TB[1]{\textcolor{myblue}{\bf #1}}
 \def\eg{\textit{e.g.,}\xspace}
 \def\ie{\textit{i.e.,}\xspace}
 \def\ca{\textit{ca.}\@\xspace}
@@ -221,11 +230,10 @@ François Charette, July 2008
   \marginpar{\raggedleft
     \small\ifx\thisversion\fileversion\color{blue}\else\color[gray]{0.5}\fi
     $\rightarrow$\,{\notefont #1:~New!}}}
-
-\newcommand\displaycmd[1]{%
-\\\centerline{\bfseries\cmd{\setdefaultlanguage[<opts>]\{lang\}}}} 
-
-\renewenvironment{itemize}{\begin{compactitem}[\textbf{·}]}{\end{compactitem}}
+\newcommand\displaycmd[2]{%
+  \\\DescribeMacro{#2}\centerline{\cmd{#1}}} 
+\renewenvironment{itemize}{\begin{compactitem}[\char"2023]}%[{\fontspec{DejaVu Sans}\char"25BB}]}%
+		{\end{compactitem}}
 \renewenvironment{enumerate}{\begin{compactenum}}{\end{compactenum}}
     
 %% Sidenote font
@@ -235,14 +243,14 @@ François Charette, July 2008
 %% fontspec declarations:
 \setromanfont[Mapping=tex-text]{Linux Libertine}
 \defaultfontfeatures{Scale=MatchLowercase}
-\setmonofont{Consolas}
+\setmonofont{DejaVu Sans Mono}%{Consolas}
 \setsansfont{Lucida Sans Unicode}
 \newfontfamily\arabicfont[Script=Arabic,Scale=1.5]{Scheherazade}
 \newfontfamily\farsifont[Script=Arabic,Scale=1.33]{Farsi Simple Bold}
 \newfontfamily\syriacfont[Script=Syriac,Scale=1.5,ExternalLocation="/mnt/data/fonts/syriac/"]{SyrCOMJerusalem.otf}
 \newfontfamily\hebrewfont[Script=Hebrew]{SBL Hebrew}
 
-\newcommand\Babel{\pkg{babel}}
+\newcommand\Babel{\pkg{babel}\xspace}
 
 \linespread{1.05}
 \frenchspacing
@@ -288,28 +296,35 @@ François Charette, July 2008
 % \section{Introduction}
 % 
 % Polyglossia is a package for facilitating multilingual typesetting with \XeLaTeX.
-% Basically, it can be used as a replacement of \pkg{Babel} for performing the 
+% Basically, it can be used as a replacement of \Babel{} for performing the 
 % following tasks automatically:
+% 
 % \begin{enumerate}
 % \item Loading the appropriate hyphenation patterns.
 % \item Setting the script and language tags of the current font (if possible and
-%   available).
+%       available), via the package \pkg{fontspec}.
 % \item Switching to a font assigned by the user to a particular script or language.
 % \item Adjusting some typographical conventions in function of the current language
-%   (such as afterindent, frenchindent, spaces before or after punctuation marks, 
-%   etc.).
-% \item Redefining the document strings (like “chapter”, “figure”, “bibliography”).
+%       (such as afterindent, frenchindent, spaces before or after punctuation marks, 
+%       etc.).
+% \item Redefining all document strings (like “chapter”, “figure”, “bibliography”).
 % \item Adapting the formatting of dates (for non-gregorian calendars via external
-%   packages bundled with polyglossia: currently the hebrew, islamic and farsi
-%   calendars are supported).
-% \item For languages that have their own numeration system, the formatting of numbers 
-%   is modified appropriately.
-% \item Ensuring the proper directionality if the document contains bidirectional
-%   text (via the package \pkg{bidi}, available separately on CTAN).
+%       packages bundled with polyglossia: currently the hebrew, islamic and farsi
+%       calendars are supported).
+% \item For languages that have their own numeration system, modifying the formatting 
+%       of numbers appropriately (this also includes redefining the alphabetic sequence 
+%       for non-Latin alphabets).
+% \item Ensuring the proper directionality if the document contains languages 
+%       that are written from right to left (via the package \pkg{bidi}, 
+%       available separately).
 % \end{enumerate}
 % 
-% Several features of \pkg{Babel} that do not make sense in the \XeTeX\ world (like font 
-% encodings, shorthands, etc.) are not supported.
+% Several features of \Babel{} that do not make sense in the \XeTeX\ world (like font 
+% encodings, shorthands, etc.) are (obviously) not supported.
+% Generally speaking, \pkg{polyglossia} aims to remain as compatible as possible
+% with the fundamental features of \Babel{} while being cleaner, light-weight,
+% and modern. The package \pkg{antomega} has been much beneficial in our attempt to 
+% reach this objective.
 % 
 % \paragraph{Requirements:} The current version of \pkg{polyglossia} makes use of some convenient
 % macros defined in the \pkg{etoolbox} package by Philipp Lehmann. Being designed 
@@ -320,51 +335,59 @@ François Charette, July 2008
 % 
 % \section{Loading language definition files}
 % 
-% As with \pkg{babel}, \pkg{polyglossia} allows to load language definition files 
-% as package options. In most cases, option \textsf{lang} will load the file
-% \textsf{gloss-lang.ldf}. The \textit{first} language listed in 
-% ¦\usepackage[lang1,lang2,…]{polyglossia}¦ will be
-% the default language for the document.\footnote{ %
-% 	Note that this is the opposite convention of Babel!}
-% You can also determine the default 
-% language by means of the command: 
-% 	\displaycmd{\setdefaultlanguage[<opts>]\{lang\}} 
-% (or equivalently \cmd\setmainlanguage), 
-% which has the advantage of being more explicit and of allowing to set 
+% \subsection{The recommended way}
+% You can determine the default language by means of the command: 
+% 	\displaycmd{\setdefaultlanguage[⟨options⟩]\{lang\}}{\setdefaultlanguage} 
+% (or equivalently \Cmd\setmainlanguage). 
+% Secondary languages can be loaded with 
+% 	\displaycmd{\setotherlanguage[⟨options⟩]\{lang\}}{\setotherlanguage}.
+% These commands have the advantage of being explicit and of allowing to set 
 % language-specific options.\footnote{ %
 % 	More on language-specific options below.}
-% Secondary languages can be loaded with
-% 	\displaycmd{\setotherlanguage[<opts>]\{lang\}}.
 % It is also possible to load a series of secondary languages at once using 
-% 	\displaycmd{\setotherlanguages\{lang1,lang2,lang3,…\}}
+% 	\displaycmd{\setotherlanguages\{lang1,lang2,lang3,…\}}{\setotherlanguages}.
+% Language-specific options can be set or changed at any time by means of 
+% 	\displaycmd{\setkeys\{⟨lang⟩\}\{opt1=value1,opt2=value2,…\}}{\setkeys}.
+% 	
+% 
+% \subsection{The “Babel way”}
+% As with \Babel{}, \pkg{polyglossia} also allows to load language definition files 
+% as package options. In most cases, option \texttt{⟨lang⟩} will load the file
+% \file{gloss-⟨lang⟩.ldf}. Note however that the \textit{first} language listed in \\
+% \centerline{\cmd{\usepackage[lang1,lang2,…]{polyglossia}}}
+% will be the default language for the document, which
+% is the opposite convention of \Babel.
+% Note also that this method may not work in some cases, and should be 
+% considered deprecated.
 % 
 % \subsection{Supported languages}
 % 
-% Here is a list of all languages currently supported.
+% Table~\ref{tab:lang} lists all languages currently supported.
 % Those in red have specific options and/or command 
-% that are explained in section \ref{specific}
+% that are explained in section \ref{specific} below.
 % 
-% \begin{center}
-% \hrule
-% \begin{tabular}{lllll}
-% albanian &   czech    &  \TB{german}   & \TB{magyar}&   slovak	\\
-% \TB{arabic}& danish   &  \TB{greek}    &   norsk    &   slovenian\\
-% bahasai  &   divehi   &  \TB{hebrew}   &   nynorsk  &   spanish	\\
+% \begin{table}[h]\centering
+% \label{tab:lang}
+% \begin{tabular}{lllll}\hline
+% albanian &   czech    &  \TR{german}   & \TR{magyar}&   slovak	\\
+% \TR{arabic}& danish   &  \TR{greek}    &   norsk    &   slovenian\\
+% bahasai  &   divehi   &  \TR{hebrew}   &   nynorsk  &   spanish	\\
 % bahasam  &   dutch    &    hindi       &   polish   &   swedish	\\
-% basque   &\TB{english}&    icelandic   &   portuges & \TB{syriac} \\
-% brazil   &\TB{esperanto}&  interlingua &   romanian & \TB{thai} \\
-% breton   &   estonian &    irish       &\TB{russian}&   turkish	\\
-% \TB{bulgarian}&\TB{farsi}& italian     &   samin    & \TB{ukrainian} \\
-% catalan  &   finnish  &    latin       &   sanskrit & \TB{usorbian} \\
+% basque   &\TR{english}&    icelandic   &   portuges & \TR{syriac} \\
+% brazil   &\TR{esperanto}&  interlingua &   romanian & \TR{thai} \\
+% breton   &   estonian &    irish       &\TR{russian}&   turkish	\\
+% bulgarian&\TR{farsi}  &    italian     &   samin    &   ukrainian \\
+% catalan  &   finnish  &    latin       &   sanskrit &\TR{usorbian} \\
 % coptic   &   french   &    latvian     &   scottish &   welsh	\\
-% croatian &   galician & \TB{lsorbian}  &\TB{serbian}&  		\\
+% croatian &   galician & \TR{lsorbian}  &\TR{serbian}&  		\\
+% \hline
 % \end{tabular}
-% \hrule
-% \end{center}
-% \bigskip
-% \noindent
+% \caption{Languages currently supported in \pkg{polyglossia}}
+% \end{table}
+% 
 % Some options are convenient shortcuts for loading languages with 
 % specific options:
+% 
 % \begin{itemize}
 % \item american = english with option ‘variant=american’
 % \item USenglish = english with option ‘variant=american’
@@ -381,201 +404,274 @@ François Charette, July 2008
 % prevents the redefinition of the internal \LaTeX\ macros 
 % \cmd\markboth\ and \cmd\markright.
 % 
-% \section{Other commands}
-% \begin{itemize}
-% \item \cmd\selectbackgroundlanguage\ (not really useful for the user)
+% \section{Language-switching commands}
 % 
-% \item \cmd\resetdefaultlanguage\ (experimental): 
-% 	completely switches the default language
-%  	to another one in the middle of a document.
+% Whenever a language definition file \file{gloss-⟨lang⟩.ldf} is loaded,
+% the command \cmd{\text⟨lang⟩[⟨options⟩]\{…\}} \DescribeMacro{\text⟨lang⟩}
+% becomes available for short insertions of text in that language.
+% For example ¦\textrussian{\today}¦ yields \textrussian{\today}
+% Longer passages are better put between the environment ¦⟨lang⟩¦ 
+% (again with the possibility of setting language options locally.
+% \DescribeEnv{⟨lang⟩}
+% For instance the following allows us to quote the beginning 
+% of Homer’s \textit{Iliad}:
 % 
-% \item \cmd\normalfontlatin: in an environment where \cmd\normalfont\ has been redefined
-% 	to a non-latin script, this will call the font defined with \cmd\setromanfont\ etc.
-% 	Likewise it is possible to use \cmd\rmfamilylatin, \cmd\sffamilylatin, 
-% 	and \cmd\ttfamilylatin.
+% \begin{verbatim}
+% \begin{greek}[variant=ancient]
+% τὸν δ' ἠμείβετ' ἔπειτα θεά, γλαυκῶπις Ἀθήνη: “ὦ πάτερ ἡμέτερε Κρονίδη, ὕπατε
+% κρειόντων, καὶ λίην κεῖνός γε ἐοικότι κεῖται ὀλέθρῳ: ὡς ἀπόλοιτο καὶ ἄλλος,
+% ὅτις τοιαῦτά γε ῥέζοι: ἀλλά μοι ἀμφ' Ὀδυσῆι δαί̈φρονι δαίεται ἦτορ, δυσμόρῳ, ὃς
+% δὴ δηθὰ φίλων ἄπο πήματα πάσχει νήσῳ ἐν ἀμφιρύτῃ, ὅθι τ' ὀμφαλός ἐστι θαλάσσης …”
+% \end{greek} 
+% \end{verbatim}
 % 
-% \item \cmd{\text<lang>[<opts>]\{…\}}: 
-% 	For short insertions in other languages. %TODO
+% \begin{greek}[variant=ancient]
+% τὸν δ' ἠμείβετ' ἔπειτα θεά, γλαυκῶπις Ἀθήνη: “ὦ πάτερ ἡμέτερε Κρονίδη, ὕπατε
+% κρειόντων, καὶ λίην κεῖνός γε ἐοικότι κεῖται ὀλέθρῳ: ὡς ἀπόλοιτο καὶ ἄλλος,
+% ὅτις τοιαῦτά γε ῥέζοι: ἀλλά μοι ἀμφ' Ὀδυσῆι δαί̈φρονι δαίεται ἦτορ, δυσμόρῳ, ὃς
+% δὴ δηθὰ φίλων ἄπο πήματα πάσχει νήσῳ ἐν ἀμφιρύτῃ, ὅθι τ' ὀμφαλός ἐστι θαλάσσης …”
+% \end{greek} 
 % 
-% \item \cmd{\begin\{<lang>\}[<opts>]} \\
-% 	… \\
-%       \cmd{\end\{<lang>\}} For longer passages in other languages. %TODO
 %       
-% \item Also some macros defined in Babel are also provided, with a similar
-% 	behaviour: \cmd\selectlanguage, \cmd\foreignlanguage,
-% 	and the environment \cmd{otherlanguage}.
-% \end{itemize}
+% \subsection{Other commands}
+% The following commands are probably of lesser interest to the end user, but 
+% ought to be mentioned here.
+% \begin{itemize}
+% \item \Cmd\selectbackgroundlanguage: this selects the global font setup and 
+% 	the numeration definitions for the default language.
 % 
-% Since the \XeLaTeX\ format incorporates \pkg{Babel}'s \pkg{hyphen.cfg}, 
+% \item \Cmd\resetdefaultlanguage\ (experimental): 
+% 	completely switches the default language
+% 	to another one in the middle of a document: \textit{this may have adverse effects}!
+% 
+% \item \Cmd\normalfontlatin: in an environment where \cmd\normalfont\ has been redefined
+% 	to a non-latin script, this will call the font defined with \cmd\setromanfont\ etc.
+% 	Likewise it is possible to use \Cmd\rmfamilylatin, \Cmd\sffamilylatin, 
+% 	and \Cmd\ttfamilylatin.
+% 
+% \item Also some macros defined in \Babel’s \file{hyphen.cfg} (and thus usually 
+% 	compiled into the xelatex format) are redefined, but keep a similar
+% 	behaviour, namely \Cmd\selectlanguage, \Cmd\foreignlanguage,
+% 	and the environment ¦otherlanguage¦\DescribeEnv{otherlanguage}.
+% \end{itemize}
+% ^^A
+% Since the \XeLaTeX\ format incorporates \Babel{}'s \file{hyphen.cfg}, 
 % the low-level commands for hyphenation and language switching
-% defined there are also accessible. Generally speaking, \pkg{polyglossia} aims to 
-% remain as compatible as possible with the fundamental features of \pkg{Babel} 
-% while being cleaner, light-weight, and modern. The package \pkg{antomega}
-% has been quite beneficial in this regard.
+% defined there are also accessible.\footnote{ %
+% 	The file \file{hyphen\_cfg} (available on the  
+% 	\href{http://scripts.sil.org/svn-view/xetex/TRUNK/texmf/tex/xelatex/polyglossia/hyphen\_cfg}{\XeTeX\ subversion repository}) 
+% 	is meant to eventually replace \Babel’s \file{hyphen.cfg}. If you want
+% 	to experiment with it, rename it into \file{hyphen.cfg}, copy it to
+% 	\texttt{…/tex/xelatex/polyglossia/} and rebuild the xelatex format.}
 % 
 % \section{Language-specific options and commands}\label{specific}
-% \parindentoff
+% 
+% This section gives a list of all languages for which options and end-user commands are defined.
+% The default value of each option is given in italic.
+% 
 % \subsection{arabic}
-% Options: calendar = \textbf{islamic} (= hijri) or gregorian.\\
-% locale = \textbf{default}, mashriq, libya, algeria, tunisia, morocco, or mauritania.\\
-% numerals = \textbf{mashriq} or maghrib 
-% (the latter is the default when locale = algeria, tunisia or morocco).
-% 
-% Commands:
-% \cmd\arabicnumber\ and \cmd\abjad\ (see section \ref{abjad}).
-% 
-% \subsection{bulgarian}
-% 
-% \cmd\bulgarianalph\ and \cmd\bulgarianAlph\ (for alphabetic sequences).
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{calendar} = \textit{islamic} (= hijri) or gregorian
+% 	\item \TB{locale} = \textit{default},\footnote{ %
+% 			For Egypt, Sudan, Yemen and the Golf states.} 
+% 		mashriq,\footnote{ %
+% 			For Iraq, Syria, Jordan, Lebanon and Palestine.}	
+% 		libya, algeria, tunisia, morocco, or mauritania.
+% 		This setting influences the spelling of the month names for the Gregorian calendar,
+% 		as well as the form of the numerals (unless overriden by the following option).
+% 	\item \TB{numerals} = \textit{mashriq} or maghrib 
+% 		(the latter is the default when locale = algeria, tunisia or morocco)
+% 	\end{itemize}
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\abjad and \Cmd\abjadmaghribi (see section \ref{abjad})
+% 	\end{itemize}
 % 
 % \subsection{english}
-% Options: variant = \textbf{american} (= us), british (= uk), australian, newzealand.\\
-% ordinalmonthday = true/\textbf{false} (true by default only when variant = british).
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{variant} = \textit{american} (= us), british (= uk), australian or newzealand
+% 	\item \TB{ordinalmonthday} = true/\textit{false} (true by default only when variant = british)	
+% 	\end{itemize}
 % 
 % \subsection{esperanto}
-% Commands: \cmd\hodiau\ and \cmd\hodiaun\ (special forms of \cmd\today: see 
-% the \Babel\ documentation).
-% 
-% \cmd\@esper\ and \cmd\@Esper\ (analogous of \cmd\@alph\ and \cmd\@Alph).
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\hodiau\ and \Cmd\hodiaun are special forms of \cmd\today\ (see the \Babel\ documentation)
+% 	\end{itemize}
 % 
 % \subsection{farsi}
-% Options: numerals = western or \textbf{eastern}.\\
-% locale (not yet implemented).\\
-% calendar (not yet implemented).
-% 
-% Commands: \cmd\farsinumber\ and
-% \cmd\abjad\ (see section \ref{abjad}).
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{numerals} = western or \textit{eastern}
+% 	\item \TB{locale} (not yet implemented)
+% 	\item \TB{calendar} (not yet implemented)
+% 	\end{itemize}
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\abjad (see section \ref{abjad})
+% 	\end{itemize}
 % 
 % \subsection{german}
-% Option: spelling = \textbf{new} or old.
-% 
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{spelling} = \textit{new} or old
+% 	\end{itemize}
 % 
 % \subsection{greek}
-% Options: variant = \textbf{monotonic} (= mono), polytonic (= poly), or ancient.\\
-% numerals = \textbf{greek} or arabic.\\
-% attic = true/\textbf{false}.
-% 
-% Commands:
-% \cmd\greeknumber ,
-% \cmd\Greeknumber \ and
-% \cmd\atticnumeral (= \cmd\atticnum) 
-% (see section \ref{abjad}).
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{variant} = \textit{monotonic} (= mono), polytonic (= poly), or ancient
+% 	\item \TB{numerals} = \textit{greek} or arabic
+% 	\item \TB{attic} = \textit{false}/true
+% 	\end{itemize}
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\Greeknumber and \Cmd\greeknumber \ (see section \ref{abjad}).
+% 	\item The command \Cmd\atticnumeral (= \Cmd\atticnum) (activated with
+% 	  the option ¦attic=true¦), displays numbers using the acrophonic
+%           numbering system (defined in the Unicode range
+% 	  \textsf{U+10140–U+10174}).\footnote{ %
+% 	  	See the documentation of the \pkg{xgreek} package for more details.}
+% 	\end{itemize}
 % 
 % \subsection{hebrew}
-% Options: numerals = hebrew or \textbf{arabic}.\\
-% calendar = hebrew or \textbf{gregorian}.
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{numerals} = hebrew or \textit{arabic}
+% 	\item \TB{calendar} = hebrew or \textit{gregorian}	
+% 	\end{itemize}
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\hebrewnumeral\ (= \Cmd\hebrewalph) (see section \ref{abjad}).
+% 	\end{itemize}
 % 
-% Commands:
-% \cmd\hebrewnumeral\ (= \cmd\hebrewalph) (see section \ref{abjad}).
 % 
-% \subsection{lsorbian}
-% \cmd\oldtoday : see the \Babel\ documentation.
+% \subsection{lsorbian and usorbian}
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\oldtoday : see the \Babel documentation.
+% 	\end{itemize}
 % 
 % \subsection{magyar}
-% \cmd\ontoday\ (= \cmd\ondatemagyar): see the \Babel documentation.
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\ontoday\ (= \Cmd\ondatemagyar): special forms of \cmd\today\
+% 		(see the \Babel\ documentation).
+% 	\end{itemize}
+% 
 % 
 % \subsection{russian}
-% Option: spelling = \textbf{modern} or old (for captions and date only, not for hyphenation).
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{spelling} = \textit{modern} or old (for captions and date only, not for hyphenation)
+% 	\end{itemize}
 % 
 % \subsection{serbian}
-% Option: script = \textbf{cyrillic} or latin.
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{script} = \textit{cyrillic} or latin
+% 	\end{itemize}
 % 
 % \subsection{syriac}
-% Options: numerals = \textbf{eastern} or western.
-% 
-% Command: \cmd\abjadsyriac\ (see section \ref{abjad}).
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{numerals} = \textit{western} (i.e., 1234567890) or eastern 
+% 		(for which the Oriental Arabic numerals are used: \textarabic{١٢٣٤٥٦٧٨٩٠}).
+% 	\end{itemize}
+% \textbf{Commands}:
+% 	\begin{itemize}
+% 	\item \Cmd\abjadsyriac (see section \ref{abjad})
+% 	\end{itemize}
 % 
 % \subsection{thai}
-% Options: numerals = thai or \textbf{arabic}
-% 
-% Commands: \cmd\thainumber, \cmd\@thaialph\ and \cmd\@thaiAlph.
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{numerals} = thai or \textit{arabic}
+% 	\end{itemize}
 % 
 % To insert the word breaks, you need to use an external processor.
-% See the documentation to \pkg{thai-latex} and the file ¦testthai.tex¦ 
+% See the documentation to \pkg{thai-latex} and the file \file{testthai.tex}
 % that comes with this package.
 % 
-% \subsection{ukrainian}
-% Commands: \cmd\asbuk\ and \cmd\Asbuk\ for alphabetic sequences.
-% 
-% \subsection{usorbian}
-% \cmd\oldtoday: see the \Babel\ documentation.
-% 
-% 
-% \section{Alphabetic numerals in Greek, Arabic, Hebrew, Syriac and Farsi}\label{abjad}
+% \section{Alphabetic numeration in Greek, Arabic, Hebrew, Syriac and Farsi}\label{abjad}
 % 
 % In certain languages, numbers can be represented
 % by a special alphanumerical notation.\footnote{ %
-% 	See, e.g., \url{http://en.wikipedia.org/wiki/Abjad_numerals} and
-% 	\url{http://en.wikipedia.org/wiki/Hebrew_numerals}.}
-% Note that the Hebrew implementation in \pkg{polyglossia} is less sophisticated than 
-% the one in Babel, where various special cases are taken into account.
+% 	See, e.g., \url{http://en.wikipedia.org/wiki/Greek_numerals},
+% 	\url{http://en.wikipedia.org/wiki/Abjad_numerals},
+% 	and \url{http://en.wikipedia.org/wiki/Hebrew_numerals}.}
+% ^^A \url{http://en.wikipedia.org/wiki/Syriac_alphabet}
+% Note that the Hebrew implementation in \pkg{polyglossia} is currently less
+% sophisticated than the one in \Babel, where various special cases are taken into
+% account.
 % 
-% \subsection{Examples}
-% \parindentoff
-% The Greek numerals are obtained with \cmd\greeknumeral.
-% \DescribeMacro{\greeknumeral}
+% The Greek numerals are obtained with \Cmd\greeknumeral (or \Cmd\Greeknumeral\ in uppercase).
 % Example: ¦\greeknumeral{1863}¦ yields \textgreek{\greeknumeral{1863}}.
 % 
-% 
-% The Arabic \textit{abjad} numbers can be generated with the command \cmd\abjad.
-% \DescribeMacro{\abjad}
+% The Arabic \textit{abjad} numbers can be generated with the command \Cmd\abjad.
 % Example: ¦\abjad{1863}¦ yields {\arabicfont\abjad{1863}}.
-% 
 % In the Maghrib the conventions are somewhat different, and the maghribi forms 
-% of the \textit{abjad} numerals are obtained with the \cmd\abjadmaghribi\ command.
-% \DescribeMacro{\abjadmaghribi}
+% of the \textit{abjad} numerals are obtained with the \Cmd\abjadmaghribi\ command.
 % Example: ¦\abjadmaghribi{1863}¦ yields {\arabicfont\abjadmaghribi{1863}}.
 % 
-% Hebrew numerals are generated with the command \cmd\hebrewnumeral.
-% \DescribeMacro{\hebrewnumeral} Example:
+% Hebrew numerals are generated with the command \Cmd\hebrewnumeral.
+% Example:
 % ¦\hebrewnumeral{1863}¦ yields {\hebrewfont\hebrewnumeral{1863}}.
 % 
-% Experimental support is also provided for Syriac abjad numerals, which can be generated 
-% with \cmd\abjadsyriac. \DescribeMacro{\abjadsyriac}
+% Support is also provided for Syriac abjad numerals, which can be generated 
+% with \Cmd\abjadsyriac. 
 % Example: ¦\abjadsyriac{463}¦ yields {\syriacfont\abjadsyriac{463}}.
-% 
-% Note that the above macros only outputs the Unicode characters: 
-% the active font must thus contain the necessary glyphs.
 % 
 % \section{Calendars}
 % 
 % \subsection{Hebrew calendar (hebrewcal.sty)}
-% The package \pkg{hebrewcal.sty} is almost a verbatim copy of \pkg{hebcal.sty}
+% The package \file{hebrewcal.sty} is almost a verbatim copy of \file{hebcal.sty}
 % that comes with \Babel. 
+% The command \Cmd\Hebrewtoday\\ formats the current date in the Hebrew calendar 
+% (depending of the current writing direction this will automatically set either 
+% in Hebrew script or in roman transliteration).
 % 
 % \subsection{Islamic calendar (hijrical.sty)}
-% This new package computes dates in the Islamic (Hijra) calendar, which is lunar.
-% It provides two useful macros:
-% \cmd{\HijriFromGregorian\{<year>\}\{<month>\}\{<day>\}}The former command sets the counters ¦Hijriday¦, ¦Hijrimonth¦ and ¦Hijriyear¦. 
-% \cmd\Hijritoday\ formats the Hijri date for the current day. 
+% This new package computes dates in the Islamic (Hijra) calendar, which is lunar.\footnote{ %
+% 	It makes use of the arithmetical algorithm in chapter 6 of 
+% 	Reingold \& Gershowitz, \textit{Calendrical calculation: the Millenium edition} 
+% 	(Cambridge University Press, 2001).\label{reingold}}
+% It provides two macros for the end-user.
+% The command 
+% 	\displaycmd{\HijriFromGregorian\{⟨year⟩\}\{⟨month⟩\}\{⟨day⟩\}}{\HijriFromGregorian}
+% sets the counters ¦Hijriday¦, ¦Hijrimonth¦ and ¦Hijriyear¦. 
+% \Cmd\Hijritoday\ formats the Hijri date for the current day (depending of the 
+% current writing direction this is set either in Arabic or in roman transliteration). 
 % It also accepts an optional argument to add or subtract a correction
-% (in days) to the date computed by the arithmetical algorithm, since it does not always 
-% coincide with the actual date which is based on the first visibility of the lunar crescent
-% at the beginning of the lunar month.
-% For instance ¦\Hijritoday¦ could give the date \Hijritoday[-5],
-% but ¦\Hijritoday[-1]¦ will print a date one day before (\Hijritoday[-6]).
+% (in days) to the date computed by the arithmetical algorithm.\footnote{ %
+% 	The Islamic calendar is indeed a purely lunar calendar based on the observation 
+% 	of the first visibility of the lunar crescent at the beginning of the lunar month,
+% 	so their can be differences between different localities, as well as between
+% 	civil and religious authorities.}
+% For instance if ¦\Hijritoday¦ yields the date “\Hijritoday” (which is the one 
+% for \today\ indicated on the front page of \href{http://www.aljazeera.net}{aljazeera.net}), 
+% ¦\Hijritoday[1]¦ would rather print “\Hijritoday[1]” (the date given on the site 
+% \href{http://www.gulfnews.com}{gulfnews.com}).
 % 
 % \subsection{Farsi (jalālī) calendar (farsical.sty)}
 % Again this is taken almost verbatim from ¦Arabiftoday.sty¦ (in the \pkg{Arabi} package), 
-% itself a slight modification of the file ¦ftoday.sty¦ in Farsi\TeX.
+% itself a slight modification of the file ¦ftoday.sty¦ in Farsi\TeX.\footnote{ %
+% 	I intend to rewrite \pkg{farsical} from scratch using the algorithm in
+% 	Reingold \& Gershowitz (ref.~n.~\ref{reingold}).}
 % Here we have renamed the command \cmd\ftoday\ to
-% \cmd\Jalalitoday. Example: today is \Jalalitoday.
+% \Cmd\Jalalitoday. Example: today is \Jalalitoday.
+% 
 % 
 % ^^A\section{Varia}
 % 
-% ^^AThe file ¦hyphen_cfg¦ is meant to replace Babel’s ¦hyphen.cfg¦ which is normally loaded
-% ^^Ainto the \LaTeX\ format. It is a version of the standard ¦hyphen.cfg¦ that is 
-% ^^Aremoved of the meaningless portions of the code (in \XeTeX\ terms) 
-% ^^Awhile maintaining full compatibility. It has not been tested and is not supported in any ways
-% ^^A(but could well be in the future). If you want to experiment with it however, 
-% ^^Ajust rename it into ¦hyphen.cfg¦, copy it to ¦…/tex/xelatex/polyglossia/¦ 
-% ^^Aand rebuild the xelatex format.
 % 
 % \section{Acknowledgements}
 % \pkg{Polyglossia} is notable for being a recycle box of previous contributions
 % by other people. I take this opportunity to thank the following individuals,
 % whose splendid work has made my task almost trivial in comparision: Johannes
-% Braams and the numerous contributors to the \pkg{babel} package (in particular
+% Braams and the numerous contributors to the \Babel{} package (in particular
 % Boris Lavva and others for its Hebrew support), Alexej Kryukov (antomega), Will
 % Robertson (\pkg{fontspec}), Apostolos Syropoulos (\pkg{xgreek}), Youssef Jabri
 % (\pkg{arabi}), and Vafa Khalighi (\pkg{xepersian}). I should also thank other
@@ -597,7 +693,7 @@ François Charette, July 2008
 % \subsection{polyglossia.sty}
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/07/01 v1.0 
+\ProvidesPackage{polyglossia}[2008/07/11 v1.0 
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY? but so convenient!
 \RequirePackage{fontspec} %which itself depends on xkeyval
@@ -664,7 +760,7 @@ François Charette, July 2008
 }
 \setkeys{polyglossia}{localmarks=on}
 
-%% Use the etoolbox macros instead!
+%%TODO Use the etoolbox macros instead!
 %\def\oaddto#1#2{%
 %   \ifx#1\@undefined
 %      \def#1{#2}%
@@ -736,7 +832,6 @@ François Charette, July 2008
     \selectlanguage[#1]{#2}%
     \selectbackgroundlanguage{#2}}}
 
-
 % This saves the normalfont for the latin script since we may change normalfont in other scripts
 \let\normalfontlatin=\normalfont%
 \let\rmfamilylatin=\rmfamily%
@@ -791,7 +886,7 @@ François Charette, July 2008
    }%
    %ELSE  
    {\xpg@nolang{#2}}%
-   %TODO \expandafter\ifx\csname l@#2\endcsname\@undefined
+   %TODO ? \expandafter\ifx\csname l@#2\endcsname\@undefined
    %\xpg@nopatterns{#2}\expandafter\adddialect\csname l@#2\endcsname 0%
    %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
 }
@@ -2375,27 +2470,27 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    \adddialect\l@bulgarian0%
 \fi
 
-\def\bulgarianAlph#1{%
+\def\bulgarian@Alph#1{%
    \ifcase#1\or
    А\or Б\or В\or Г\or Д\or Е\or Ж\or
    З\or И\or К\or Л\or М\or Н\or О\or
    П\or Р\or С\or Т\or У\or Ф\or Х\or
    Ц\or Ч\or Ш\or Ш\or Ю\or Я\else
-   \xpg@ill@value{#1}{bulgarianAlph}\fi}%
+   \xpg@ill@value{#1}{bulgarian@Alph}\fi}%
 
-\def\bulgarianalph#1{%
+\def\bulgarian@alph#1{%
    \ifcase#1\or
    а\or б\or в\or г\or д\or е\or ж\or
    з\or и\or к\or л\or м\or н\or о\or
    п\or р\or с\or т\or у\or ф\or х\or
    ц\or ч\or ш\or щ\or ю\or я\else
-   \xpg@ill@value{#1}{bulgarianalph}\fi}%
+   \xpg@ill@value{#1}{bulgarian@alph}\fi}%
 
 \def\bulgarian@numbers{%
    \let\latin@Alph\@Alph% 
    \let\latin@alph\@alph% 
-   \let\@Alph\bulgarianAlph%
-   \let\@alph\bulgarianalph%
+   \let\@Alph\bulgarian@Alph%
+   \let\@alph\bulgarian@alph%
  }
 
 \def\nobulgarian@numbers{%
@@ -3107,15 +3202,26 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
       julio\or aŭgusto\or septembro\or oktobro\or novembro\or
       decembro\fi, \space \number\year}%
     }
-\def\@esper#1{%
+\def\esperanto@alph#1{%
    \ifcase#1\or a\or b\or c\or ĉ\or d\or e\or f\or g\or ĝ\or
      h\or ĥ\or i\or j\or ĵ\or k\or l\or m\or n\or o\or
-     p\or r\or s\or ŝ\or t\or u\or ŭ\or v\or z\else\xpg@ill@value{#1}{@esper}\fi}%
-\def\@Esper#1{%
+     p\or r\or s\or ŝ\or t\or u\or ŭ\or v\or z\else\xpg@ill@value{#1}{esperanto@alph}\fi}%
+\def\esperanto@Alph#1{%
    \ifcase#1\or A\or B\or C\or Ĉ\or D\or E\or F\or G\or Ĝ\or
      H\or Ĥ\or I\or J\or Ĵ\or K\or L\or M\or N\or O\or
-     P\or R\or S\or Ŝ\or T\or U\or Ŭ\or V\or Z\else\xpg@ill@value{#1}{@Esper}\fi}%
+     P\or R\or S\or Ŝ\or T\or U\or Ŭ\or V\or Z\else\xpg@ill@value{#1}{esperanto@Alph}\fi}%
 
+\def\esperanto@numbers{%
+   \let\latin@Alph\@Alph% 
+   \let\latin@alph\@alph% 
+   \let\@Alph\esperanto@Alph%
+   \let\@alph\esperanto@alph%
+ }
+
+\def\noesperanto@numbers{%
+   \let\@Alph\latin@Alph% 
+   \let\@alph\latin@alph%
+}
 
 \def\esperanto@language{\protect\language=\l@esperanto}
 
@@ -5681,6 +5787,29 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    \def\preparagraph{}%
    \def\presubparagraph{}}
 
+\def\russian@Alph#1{\ifcase#1\or
+   А\or Б\or В\or г\or д\or Е\or Ж\or
+   З\or И\or К\or Л\or М\or Н\or О\or
+   П\or Р\or С\or Т\or У\or Ф\or Х\or
+   Ц\or Ч\or Ш\or Щ\or Э\or Ю\or Я\else\xpg@ill@value{#1}{russian@Alph}\fi}
+\def\russian@alph#1{\ifcase#1\or 
+   а\or б\or в\or Г\or Д\or е\or ж\or
+   з\or и\or к\or л\or м\or н\or о\or
+   п\or р\or с\or т\or у\or ф\or х\or
+   ц\or ч\or ш\or щ\or э\or ю\or я\else\xpg@ill@value{#1}{russian@alph}\fi}
+
+\def\russian@numbers{%
+   \let\latin@Alph\@Alph% 
+   \let\latin@alph\@alph% 
+   \let\@Alph\russian@Alph%
+   \let\@alph\russian@alph%
+}
+
+\def\norussian@numbers{%
+   \let\@Alph\latin@Alph% 
+   \let\@alph\latin@alph%
+}
+
 \def\russian@language{\protect\language=\l@russian}
 
 \setlocalhyphenmins{russian}{2}{2}%
@@ -6357,7 +6486,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 \newif\if@eastern@numerals
 \def\tmp@eastern{eastern}
-\define@key{syriac}{numerals}[eastern]{%
+\define@key{syriac}{numerals}[western]{%
 	\def\@tmpa{#1}%
 	\ifx\@tmpa\tmp@eastern%
 	  \@eastern@numeralstrue%
@@ -6424,7 +6553,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
    \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
    \fi}
-   \def\today{\@ensure@RL{\arabicnumber\day\space\syriac@month{\month}\space\arabicnumber\year}}
+   \def\today{\@ensure@RL{\syriacnumber\day\space\syriac@month{\month}\space\syriacnumber\year}}
 }
 
 \def\syriac@zero{}
@@ -6456,13 +6585,29 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
   \ifcase#1\or\char"0729 \or\char"072A \or\char"072B \or\char"072C \fi
   \ifnum#1=\z@\fi\abj@syr@num@ii}
 
-
-\def\arabicnumber#1{\if@eastern@numerals{\protect\addfontfeature{Mapping=arabicdigits}\number#1}\else\RL{\reset@font\number#1}\fi}
+\def\syriacnumber#1{%
+   \if@eastern@numerals{%
+     \ifnum\XeTeXcharglyph"0661 > 0%
+      %%% we test for the presence of one of ١٢٣٤٥٦٧٨٩٠ in the Syriac font, 
+      %%% else we try \arabicfont if defined (and give a warning), 
+      %%% else we fall back to the Western numerals.
+       \protect\addfontfeature{Mapping=arabicdigits}\number#1}%
+     \else%
+         \ifcsdef{arabicfont}%
+         {{\protect\arabicfont\protect\addfontfeature{Mapping=arabicdigits}%
+           \number#1}%
+         \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: I am using \string\arabicfont instead}}%
+	 {\RL{\reset@font\number#1}%
+	 \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: since \string\arabicfont is not defined, we'll use Western numerals instead}}
+     \fi
+   \else%
+     \RL{\reset@font\number#1}%
+   \fi}
 
 \def\syriac@globalnumbers{%
    \let\@latinarabic\@arabic%
-   \let\@arabic\arabicnumber%
-   \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
+   \let\@arabic\syriacnumber%
+   \renewcommand\thefootnote{\protect\syriacnumber{\c@footnote}}%
    }
 \def\nosyriac@globalnumbers{
    \let\@arabic\@latinarabic%
@@ -6803,19 +6948,29 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     грудня\fi%
     \space\number\year~р.}}}
 
-\def\Asbuk#1{\expandafter\@Asbuk\csname c@#1\endcsname}
-\def\@Asbuk#1{\ifcase#1\or
+\def\ukrainian@Alph#1{\ifcase#1\or
    А\or Б\or В\or г\or д\or Е\or Є\or Ж\or
    З\or И\or І\or Ї\or Й\or К\or Л\or М\or Н\or О\or
    П\or Р\or С\or Т\or У\or Ф\or Х\or
-   Ц\or Ч\or Ш\or Щ\or Ю\or Я\else\xpg@ill@value{#1}{@Asbuk}\fi}
-\def\asbuk#1{\expandafter\@asbuk\csname c@#1\endcsname}
-\def\@asbuk#1{\ifcase#1\or 
+   Ц\or Ч\or Ш\or Щ\or Ю\or Я\else\xpg@ill@value{#1}{ukrainian@Alph}\fi}
+\def\ukrainian@alph#1{\ifcase#1\or 
    а\or б\or в\or г\or д\or е\or є\or ж\or
    з\or и\or і\or ї\or й\or к\or л\or м\or н\or о\or
    п\or р\or с\or т\or у\or ф\or х\or
-   ц\or ч\or ш\or щ\or ю\or я\else\xpg@ill@value{#1}{@asbuk}\fi}
+   ц\or ч\or ш\or щ\or ю\or я\else\xpg@ill@value{#1}{ukrainian@alph}\fi}
 
+\def\ukrainian@numbers{%
+   \let\latin@Alph\@Alph% 
+   \let\latin@alph\@alph% 
+   \let\@Alph\ukrainian@Alph%
+   \let\@alph\ukrainian@alph%
+ }
+
+\def\noukrainian@numbers{%
+   \let\@Alph\latin@Alph% 
+   \let\@alph\latin@alph%
+}
+   
 \def\ukrainian@language{\protect\language=\l@ukrainian}
 
 \setlocalhyphenmins{ukrainian}{2}{2}%
@@ -7040,16 +7195,22 @@ U+0039 <> U+0E59 ;
 % \iffalse
 %<*README.txt>
 
-----------------------------
-THE POLYGLOSSIA PACKAGE v1.0
+   ¦----------------------------------------------¦
+   ¦                                              ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0           ¦
+   ¦                                              ¦
+   ¦ Modern multilingual typesetting with XeLaTeX ¦
+   ¦                                              ¦
+   ¦----------------------------------------------¦
 
-This package provides a complete replacement to Babel for users of XeLaTeX.
+This package for provides a complete Babel replacement for users of XeLaTeX.
+The initial version includes support for 54 different languages.
 
-Polyglossia is used to automate the following tasks:
+Polyglossia makes it possible to automate the following tasks:
 
 * Loading the appropriate hyphenation patterns.
 * Setting the script and language tags of the current font (if possible and
-  available).
+  available), using the package fontspec.
 * Switching to a font assigned by the user to a particular script or language.
 * Adjusting some typographical conventions in function of the current language
   (such as afterindent, frenchindent, spaces before or after punctuation marks, 
@@ -7058,10 +7219,10 @@ Polyglossia is used to automate the following tasks:
 * Adapting the formatting of dates (for non-gregorian calendars via external
   packages bundled with polyglossia: currently the hebrew, islamic and farsi
   calendars are supported).
-* For languages that have their own numeration system, the formatting of numbers 
-  is modified appropriately.
-* Ensuring the proper directionality if the document contains bidirectional
-  text (via the package bidi, available separately on CTAN).
+* For languages that have their own numeration system, modifyinf the formatting 
+  of numbers appropriately.
+* Ensuring the proper directionality if the document contains languages 
+  written from right to left (via the package bidi, available separately).
 
 Several features of Babel that do not make sense in the XeTeX world (like font 
 encodings, shorthands, etc) are not supported.
@@ -7070,17 +7231,16 @@ Polyglossia is distributed in the traditional way with *.dtx and *.ins files,
 and also comes with a TDS-conformant ready-to-unpack zip file.
 
 To install from source (i.e. using polyglossia.dtx), run 
-	xetex polyglossia.ins  
-(NB: not tex!! otherwise the UTF-8 characters will come out garbled)
-You will then also need to compile the *.map files using teckit_compile.
-The PDF documentation can be regenerated using 
 	xelatex polyglossia.dtx
+which will generate all files and produce the pdf documentation all at once. 
+Alternatively if you have the file polyglossia.ins run
+	xetex polyglossia.ins 
+and follow the instructions displayed.
 
-----------------------------
-François Charette, July 2008
-<firmicus ατ gmx δοτ net>
-
-
+  ------------------------------
+   François Charette, July 2008
+    <firmicus ατ gmx δοτ net>
+  ------------------------------
 %</README.txt>
 %<*TODO.txt>
 === THIS IS THE TODO LIST FOR THE POLYGLOSSIA PACKAGE ===

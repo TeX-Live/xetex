@@ -1,14 +1,20 @@
 
-----------------------------
-THE POLYGLOSSIA PACKAGE v1.0
+   ¦----------------------------------------------¦
+   ¦                                              ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0           ¦
+   ¦                                              ¦
+   ¦ Modern multilingual typesetting with XeLaTeX ¦
+   ¦                                              ¦
+   ¦----------------------------------------------¦
 
-This package provides a complete replacement to Babel for users of XeLaTeX.
+This package for provides a complete Babel replacement for users of XeLaTeX.
+The initial version includes support for 54 different languages.
 
-Polyglossia is used to automate the following tasks:
+Polyglossia makes it possible to automate the following tasks:
 
 * Loading the appropriate hyphenation patterns.
 * Setting the script and language tags of the current font (if possible and
-  available).
+  available), using the package fontspec.
 * Switching to a font assigned by the user to a particular script or language.
 * Adjusting some typographical conventions in function of the current language
   (such as afterindent, frenchindent, spaces before or after punctuation marks, 
@@ -17,10 +23,10 @@ Polyglossia is used to automate the following tasks:
 * Adapting the formatting of dates (for non-gregorian calendars via external
   packages bundled with polyglossia: currently the hebrew, islamic and farsi
   calendars are supported).
-* For languages that have their own numeration system, the formatting of numbers 
-  is modified appropriately.
-* Ensuring the proper directionality if the document contains bidirectional
-  text (via the package bidi, available separately on CTAN).
+* For languages that have their own numeration system, modifyinf the formatting 
+  of numbers appropriately.
+* Ensuring the proper directionality if the document contains languages 
+  written from right to left (via the package bidi, available separately).
 
 Several features of Babel that do not make sense in the XeTeX world (like font 
 encodings, shorthands, etc) are not supported.
@@ -29,14 +35,13 @@ Polyglossia is distributed in the traditional way with *.dtx and *.ins files,
 and also comes with a TDS-conformant ready-to-unpack zip file.
 
 To install from source (i.e. using polyglossia.dtx), run 
-	xetex polyglossia.ins  
-(NB: not tex!! otherwise the UTF-8 characters will come out garbled)
-You will then also need to compile the *.map files using teckit_compile.
-The PDF documentation can be regenerated using 
 	xelatex polyglossia.dtx
+which will generate all files and produce the pdf documentation all at once. 
+Alternatively if you have the file polyglossia.ins run
+	xetex polyglossia.ins 
+and follow the instructions displayed.
 
-----------------------------
-François Charette, July 2008
-<firmicus ατ gmx δοτ net>
-
-
+  ------------------------------
+   François Charette, July 2008
+    <firmicus ατ gmx δοτ net>
+  ------------------------------
