@@ -12,7 +12,7 @@
 
 \newif\if@eastern@numerals
 \def\tmp@eastern{eastern}
-\define@key{syriac}{numerals}[eastern]{%
+\define@key{syriac}{numerals}[western]{%
 	\def\@tmpa{#1}%
 	\ifx\@tmpa\tmp@eastern%
 	  \@eastern@numeralstrue%
@@ -79,7 +79,7 @@
    \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
    \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
    \fi}
-   \def\today{\@ensure@RL{\arabicnumber\day\space\syriac@month{\month}\space\arabicnumber\year}}
+   \def\today{\@ensure@RL{\syriacnumber\day\space\syriac@month{\month}\space\syriacnumber\year}}
 }
 
 \def\syriac@zero{}
@@ -111,13 +111,29 @@
   \ifcase#1\or\char"0729 \or\char"072A \or\char"072B \or\char"072C \fi
   \ifnum#1=\z@\fi\abj@syr@num@ii}
 
-
-\def\arabicnumber#1{\if@eastern@numerals{\protect\addfontfeature{Mapping=arabicdigits}\number#1}\else\RL{\reset@font\number#1}\fi}
+\def\syriacnumber#1{%
+   \if@eastern@numerals{%
+     \ifnum\XeTeXcharglyph"0661 > 0%
+      %%% we test for the presence of one of ١٢٣٤٥٦٧٨٩٠ in the Syriac font, 
+      %%% else we try \arabicfont if defined (and give a warning), 
+      %%% else we fall back to the Western numerals.
+       \protect\addfontfeature{Mapping=arabicdigits}\number#1}%
+     \else%
+         \ifcsdef{arabicfont}%
+         {{\protect\arabicfont\protect\addfontfeature{Mapping=arabicdigits}%
+           \number#1}%
+         \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: I am using \string\arabicfont instead}}%
+	 {\RL{\reset@font\number#1}%
+	 \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: since \string\arabicfont is not defined, we'll use Western numerals instead}}
+     \fi
+   \else%
+     \RL{\reset@font\number#1}%
+   \fi}
 
 \def\syriac@globalnumbers{%
    \let\@latinarabic\@arabic%
-   \let\@arabic\arabicnumber%
-   \renewcommand\thefootnote{\protect\arabicnumber{\c@footnote}}%
+   \let\@arabic\syriacnumber%
+   \renewcommand\thefootnote{\protect\syriacnumber{\c@footnote}}%
    }
 \def\nosyriac@globalnumbers{
    \let\@arabic\@latinarabic%
