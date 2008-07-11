@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/07/01 v1.0 
+\ProvidesPackage{polyglossia}[2008/07/11 v1.0 
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY? but so convenient!
 \RequirePackage{fontspec} %which itself depends on xkeyval
@@ -66,7 +66,7 @@
 }
 \setkeys{polyglossia}{localmarks=on}
 
-%% Use the etoolbox macros instead!
+%%TODO Use the etoolbox macros instead!
 %\def\oaddto#1#2{%
 %   \ifx#1\@undefined
 %      \def#1{#2}%
@@ -138,7 +138,6 @@
     \selectlanguage[#1]{#2}%
     \selectbackgroundlanguage{#2}}}
 
-
 % This saves the normalfont for the latin script since we may change normalfont in other scripts
 \let\normalfontlatin=\normalfont%
 \let\rmfamilylatin=\rmfamily%
@@ -193,7 +192,7 @@
    }%
    %ELSE  
    {\xpg@nolang{#2}}%
-   %TODO \expandafter\ifx\csname l@#2\endcsname\@undefined
+   %TODO ? \expandafter\ifx\csname l@#2\endcsname\@undefined
    %\xpg@nopatterns{#2}\expandafter\adddialect\csname l@#2\endcsname 0%
    %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
 }
