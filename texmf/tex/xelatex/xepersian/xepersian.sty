@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/08 v0.15
+\ProvidesPackage{xepersian}[2008/07/11 v0.16
 	Typesetting Persian with XeTeX]
 \RequirePackage{amssymb}
 \RequirePackage{graphicx}
@@ -10,7 +10,6 @@
 \RequirePackage{xltxtra}
 \RequirePackage{persianpoem,fmultico}
 \RequirePackage{xcolor}
-\RequirePackage{rotating}
 \newfontinstance\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
 \newfontinstance\arabicfont[Script=Arabic,Scale=1.2]{Scheherazade}
 \newfontinstance\logofont[Script=Arabic,Scale=1.2]{IranNastaliq}
@@ -376,10 +375,8 @@
 
 
 % define the XePersian logo
-\newcommand{\XePersian}{%
-\textfarsi{\huge\logofont\addfontfeature{Color=00BB00} ف}\kern-2.3em%
-\hbox{\rotatebox{27}{\scalebox{0.85}{X\kern-.1667em\lower.5ex\hbox{\reflectbox{E}}\kern-.125em\TeX}}}
-}
+\newcommand{\XePersian}{\leavevmode$\smash{\hbox{\XeTeX\lower.2ex
+  \hbox{\kern0em \color[rgb]{0,.6,0}\logofont پارسی}}}$}
 
 \newcommand{\eng}[1]{\textroman{ #1}}
 \newcommand{\fars}[1]{\textfarsi{#1}}
