@@ -163,6 +163,8 @@
    \let\@alph\latin@alph%
 }
 
+\def\russian@language{\protect\language=\l@russian}
+
 \setlocalhyphenmins{russian}{2}{2}%
 
 \def\noextras@russian{%
