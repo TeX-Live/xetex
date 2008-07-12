@@ -1,10 +1,10 @@
 -------------------------------
-The XePersian Package v0.15
+The XePersian Package v0.161
 
-Updates: some bug fixes, no need to have \maths, redefined XePersian logo.
+Updates: removed the clash with bidi, redefined XePersian logo.
 
 XePersian is a package written for XeLaTeX that allows users to typeset
-Persian/Arabic properly. The current version is 0.15 and it will be
+Persian/Arabic properly. The current version is 0.161 and it will be
 developed to meet the needs of Persian typesetting properly.
 
 In order to use XePersian without getting any problem, the users are
@@ -22,12 +22,15 @@ These fonts are  freely available (under the GNU General Public License, Please 
 Lateef and Scheherazade fonts are produced by SIL organisation and its license is 
 ` SIL Open Font License' (please refer to http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&item_id=ArabicFonts_Download).
 
-The rest of the fonts are produced by IRMUG (Iranian Mac User Group), and are freely available. (Please
-refer to http://wiki.irmug.org/index.php/X_Series_2#Download_fonts)
+The Iran Nastaliq font is produced by Hamoonsoft and is freely available.
+
+There are some other good fonts made by IRMUG (Iranian Mac User Group) which you can download
+from http://wiki.irmug.org/index.php/X_Series_2#Download_fonts and
+http://wiki.irmug.org/index.php/XWZar
 
 
 Please report any bugs to the author (vafa.khalighi@students.mq.edu.au).
 
 -------------------------------
 Vafa Khalighi
-2008
+2008/07/12
