@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/11 v0.16
+\ProvidesPackage{xepersian}[2008/07/12 v0.161
 	Typesetting Persian with XeTeX]
 \RequirePackage{amssymb}
 \RequirePackage{graphicx}
@@ -9,7 +9,7 @@
 \RequirePackage{arabxetex}
 \RequirePackage{xltxtra}
 \RequirePackage{persianpoem,fmultico}
-\RequirePackage{xcolor}
+
 \newfontinstance\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
 \newfontinstance\arabicfont[Script=Arabic,Scale=1.2]{Scheherazade}
 \newfontinstance\logofont[Script=Arabic,Scale=1.2]{IranNastaliq}
@@ -341,7 +341,7 @@
 %For Right-to-Left two column command, I guess taken from rlbabel
 \makeatletter 
 \let\@old@outputdblcol\@outputdblcol
-\newcommand{\rl@outputdblcol}{%
+\newcommand{\rl@outputdblcolumn}{%
   \if@firstcolumn
     \global \@firstcolumnfalse
     \global \setbox\@leftcolumn \box\@outputbox
@@ -367,16 +367,20 @@
          \@startdblcolumn}%
     \endgroup
  \fi}
-\newcommand{\rldblcolumn}{\renewcommand{\@outputdblcol}{\rl@outputdblcol}}
+\newcommand{\rldblcolumn}{\renewcommand{\@outputdblcol}{\rl@outputdblcolumn}}
 \newcommand{\lrdblcolumn}{\renewcommand{\@outputdblcol}{\@old@outputdblcol}}
 %set the default direction of the twocolumn texts to Right-to-Left
 \rldblcolumn
 \makeatother
 
 
+%
 % define the XePersian logo
-\newcommand{\XePersian}{\leavevmode$\smash{\hbox{\XeTeX\lower.2ex
-  \hbox{\kern0em \color[rgb]{0,.6,0}\logofont پارسی}}}$}
+\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
+  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
+\def\XePersian{\leavevmode$\smash{\hbox{X\lower.5ex
+  \hbox{\kern-.125em\reflect{E}}Persian}}$}
+
 
 \newcommand{\eng}[1]{\textroman{ #1}}
 \newcommand{\fars}[1]{\textfarsi{#1}}
