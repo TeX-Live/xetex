@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/13 v0.1611
+\ProvidesPackage{xepersian}[2008/07/13 v0.16111
 	Typesetting Persian with XeTeX]
 \RequirePackage{amssymb}
 \RequirePackage{graphicx}
@@ -121,7 +121,6 @@
 \let\@@alph=\@alph
 \let\@@Alph=\@Alph
 \def\@arabic#1{\ifmmode\else\@number{\@@arabic#1}\fi}
-\def\@roman#1{\@latin{\@@roman#1}}
 \def\@Roman#1{\@latin{\@@Roman#1}}
 \def\arabicnorl#1{\expandafter\@@arabic\csname c@#1\endcsname}
 \def\make@lr#1{\begingroup
