@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/12 v0.161
+\ProvidesPackage{xepersian}[2008/07/13 v0.1611
 	Typesetting Persian with XeTeX]
 \RequirePackage{amssymb}
 \RequirePackage{graphicx}
@@ -12,10 +12,8 @@
 
 \newfontinstance\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
 \newfontinstance\arabicfont[Script=Arabic,Scale=1.2]{Scheherazade}
-\newfontinstance\logofont[Script=Arabic,Scale=1.2]{IranNastaliq}
 \makeatletter
-\renewcommand{\thepage}{\textfarsi{\the\c@page}}
-\renewcommand{\thepart}{\textfarsi{\the\c@part}}
+
 %
 \renewcommand{\thefootnote}{\textfarsi{\arabic{footnote}}}
 \renewcommand{\thefigure}{\textfarsi{\arabic{figure}}}
@@ -30,86 +28,110 @@
 \renewcommand{\appendixname}{\textfarsi{پیوست}}%
 \renewcommand{\indexname}{\textfarsi{نمایه}}%
 \@ifclassloaded{article}{%
-\renewcommand{\thesection}{\textfarsi{\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\refname}{\textfarsi{مراجع}}%
 \renewcommand{\abstractname}{\textfarsi{چکیده}}%
-\RequirePackage{makeidx}
-\RequirePackage{robustindex}
-\makeindex
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@farsi\c@section}}
 }{}
 \@ifclassloaded{amsart}{%
-\renewcommand{\thesection}{\textfarsi{\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\refname}{\textfarsi{مراجع}}%
 \renewcommand{\abstractname}{\textfarsi{چکیده}}%
-\RequirePackage{robustindex}
-\makeindex
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@farsi\c@section}}
 }{}
 \@ifclassloaded{report}{%
-\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
-\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
 \renewcommand{\abstractname}{\textfarsi{چکیده}}%
 \renewcommand{\chaptername}{\textfarsi{فصل}}%
 \renewcommand{\partname}{\textfarsi{بخش}}%
-\RequirePackage{makeidx}
-\RequirePackage{robustindex}
-\makeindex
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
 }{}
 \@ifclassloaded{amsbook}{%
-\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
-\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
 \renewcommand{\chaptername}{\textfarsi{فصل}}%
 \renewcommand{\partname}{\textfarsi{بخش}}%
-\RequirePackage{robustindex}
-\makeindex
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
 }{}
 \@ifclassloaded{bookest}{%
 \NoHyper
-\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
-\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
 \renewcommand{\chaptername}{\textfarsi{فصل}}%
 \renewcommand{\partname}{\textfarsi{بخش}}%
-\RequirePackage{makeidx}
-\RequirePackage{robustindex}
-\makeindex
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
 }{}
 \@ifclassloaded{book}{%
-\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
-\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
 \renewcommand{\chaptername}{\textfarsi{فصل}}%
 \renewcommand{\partname}{\textfarsi{بخش}}%
-\RequirePackage{makeidx}
-\RequirePackage{robustindex}
-\makeindex
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
 }{}
 \@ifclassloaded{refrep}{%
-\renewcommand{\thechapter}{\textfarsi{\the\c@chapter}}
-\renewcommand{\thesection}{\textfarsi{\the\c@chapter.\the\c@section}}
-\renewcommand{\thesubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection}}
-\renewcommand{\thesubsubsection}{\textfarsi{\the\c@chapter.\the\c@section.\the\c@subsection.\the\c@subsubsection}}
 \renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
 \renewcommand{\chaptername}{\textfarsi{فصل}}%
 \renewcommand{\partname}{\textfarsi{بخش}}%
-\RequirePackage{makeidx}
-\RequirePackage{robustindex}
-\makeindex
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
 }{}
 %\renewcommand{\prefacename}{\textfarsi{پیشگفتار}}%
+
+
+
+%We redefine arabic counter style
+\def\@@number#1{\ifmmode\else\beginL\fi{\farsifont #1}\ifmmode\else\endL\fi}
+\def\@@latin#1{\@@number{{\@fromrl#1}}}
+\def\@number{\protect\@@number}
+\def\@latin{\protect\@@latin}
+\let\@farsi=\@arabic
+\let\@@arabic=\@arabic
+\let\@@roman=\@roman
+\let\@@Roman=\@Roman
+\let\@@alph=\@alph
+\let\@@Alph=\@Alph
+\def\@arabic#1{\ifmmode\else\@number{\@@arabic#1}\fi}
+\def\@roman#1{\@latin{\@@roman#1}}
+\def\@Roman#1{\@latin{\@@Roman#1}}
+\def\arabicnorl#1{\expandafter\@@arabic\csname c@#1\endcsname}
+\def\make@lr#1{\begingroup
+    \toks@=\expandafter{#1}%
+    \edef\x{\endgroup
+  \def\noexpand#1{\noexpand\@number{\the\toks@}}}%
+  \x}
+\def\@character#1{\ifcase#1\or الف\or ب\or پ\or ت\or ث\or ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\fi}
+
+\def\@farsi#1{\textfarsi{\@character{\@@arabic#1}}}
 
 
 %To convert the MILADI date to SHAMSI date, taken from farsitex
@@ -509,7 +531,6 @@
 %or index in math formula
 \makeatletter\def\arabtex@codes{}\makeatother
 \AtBeginDocument{\maths}
-
 
 
 \endinput
