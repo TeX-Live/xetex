@@ -1,136 +1,55 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/13 v0.16111
+\ProvidesPackage{xepersian}[2008/07/15 v0.161111
 	Typesetting Persian with XeTeX]
-\RequirePackage{amssymb}
 \RequirePackage{graphicx}
+\RequirePackage{amssymb}
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
 \RequirePackage{fontspec}
-\RequirePackage{amsmath,amsthm}
-\RequirePackage{xunicode,bidi}
-\RequirePackage{arabxetex}
+\RequirePackage{bidi}
 \RequirePackage{xltxtra}
+\RequirePackage{xunicode}
+\RequirePackage{etoolbox}
 \RequirePackage{persianpoem,fmultico}
-
-\newfontinstance\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
-\newfontinstance\arabicfont[Script=Arabic,Scale=1.2]{Scheherazade}
-\makeatletter
-
-%
-\renewcommand{\thefootnote}{\textfarsi{\arabic{footnote}}}
-\renewcommand{\thefigure}{\textfarsi{\arabic{figure}}}
-\renewcommand{\thetable}{\textfarsi{\arabic{table}}}
-\renewcommand{\theequation}{\textfarsi{\arabic{equation}}}
-%
-\renewcommand{\figurename}{\textfarsi{شکل}}
-\renewcommand{\tablename}{\textfarsi{جدول}}
-\renewcommand{\contentsname}{\textfarsi{فهرست مطالب}}%
-\renewcommand{\listfigurename}{\textfarsi{لیست تصاویر}}%
-\renewcommand{\listtablename}{\textfarsi{لیست جداول}}%
-\renewcommand{\appendixname}{\textfarsi{پیوست}}%
-\renewcommand{\indexname}{\textfarsi{نمایه}}%
-\@ifclassloaded{article}{%
-\renewcommand{\refname}{\textfarsi{مراجع}}%
-\renewcommand{\abstractname}{\textfarsi{چکیده}}%
-\renewcommand\appendix{\par
-  \setcounter{section}{0}%
-  \setcounter{subsection}{0}%
-  \gdef\thesection{\@farsi\c@section}}
-}{}
-\@ifclassloaded{amsart}{%
-\renewcommand{\refname}{\textfarsi{مراجع}}%
-\renewcommand{\abstractname}{\textfarsi{چکیده}}%
-\renewcommand\appendix{\par
-  \setcounter{section}{0}%
-  \setcounter{subsection}{0}%
-  \gdef\thesection{\@farsi\c@section}}
-}{}
-\@ifclassloaded{report}{%
-\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
-\renewcommand{\abstractname}{\textfarsi{چکیده}}%
-\renewcommand{\chaptername}{\textfarsi{فصل}}%
-\renewcommand{\partname}{\textfarsi{بخش}}%
-%to make appendix numbering farsi
-\renewcommand\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thechapter{\@farsi\c@chapter}
-}%end appendix
-}{}
-\@ifclassloaded{amsbook}{%
-\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
-\renewcommand{\chaptername}{\textfarsi{فصل}}%
-\renewcommand{\partname}{\textfarsi{بخش}}%
-%to make appendix numbering farsi
-\renewcommand\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thechapter{\@farsi\c@chapter}
-}%end appendix
-}{}
-\@ifclassloaded{bookest}{%
-\NoHyper
-\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
-\renewcommand{\chaptername}{\textfarsi{فصل}}%
-\renewcommand{\partname}{\textfarsi{بخش}}%
-%to make appendix numbering farsi
-\renewcommand\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thechapter{\@farsi\c@chapter}
-}%end appendix
-}{}
-\@ifclassloaded{book}{%
-\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
-\renewcommand{\chaptername}{\textfarsi{فصل}}%
-\renewcommand{\partname}{\textfarsi{بخش}}%
-%to make appendix numbering farsi
-\renewcommand\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thechapter{\@farsi\c@chapter}
-}%end appendix
-}{}
-\@ifclassloaded{refrep}{%
-\renewcommand{\bibname}{\textfarsi{کتاب‌نامه}}%
-\renewcommand{\chaptername}{\textfarsi{فصل}}%
-\renewcommand{\partname}{\textfarsi{بخش}}%
-%to make appendix numbering farsi
-\renewcommand\appendix{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\thechapter{\@farsi\c@chapter}
-}%end appendix
-}{}
-%\renewcommand{\prefacename}{\textfarsi{پیشگفتار}}%
+\PackageWarning{xepersian}{\string\farsifont\ is not defined! XePersian will try to load Nazli}%
+\newfontfamily\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
 
 
 
-%We redefine arabic counter style
-\def\@@number#1{\ifmmode\else\beginL\fi{\farsifont #1}\ifmmode\else\endL\fi}
-\def\@@latin#1{\@@number{{\@fromrl#1}}}
-\def\@number{\protect\@@number}
-\def\@latin{\protect\@@latin}
-\let\@farsi=\@arabic
-\let\@@arabic=\@arabic
-\let\@@roman=\@roman
-\let\@@Roman=\@Roman
-\let\@@alph=\@alph
-\let\@@Alph=\@Alph
-\def\@arabic#1{\ifmmode\else\@number{\@@arabic#1}\fi}
-\def\@Roman#1{\@latin{\@@Roman#1}}
-\def\arabicnorl#1{\expandafter\@@arabic\csname c@#1\endcsname}
-\def\make@lr#1{\begingroup
-    \toks@=\expandafter{#1}%
-    \edef\x{\endgroup
-  \def\noexpand#1{\noexpand\@number{\the\toks@}}}%
-  \x}
-\def\@character#1{\ifcase#1\or الف\or ب\or پ\or ت\or ث\or ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\fi}
+%to make the digits in math formula persian
+\font\tenrgm="Nazli" at 12pt
+\font\sevrgm="Nazli" at 10pt
+\font\fivrgm="Nazli" at 7pt
+\newfam\fardig
+\textfont\fardig=\tenrgm
+\scriptfont\fardig=\sevrgm
+\scriptscriptfont\fardig=\fivrgm
+\def\maths{
+  \XeTeXmathcode`0="7 \fardig "06F0%
+  \XeTeXmathcode`1="7 \fardig "06F1%
+  \XeTeXmathcode`2="7 \fardig "06F2%
+  \XeTeXmathcode`3="7 \fardig "06F3%
+  \XeTeXmathcode`4="7 \fardig "06F4%
+  \XeTeXmathcode`5="7 \fardig "06F5%
+  \XeTeXmathcode`6="7 \fardig "06F6%
+  \XeTeXmathcode`7="7 \fardig "06F7%
+  \XeTeXmathcode`8="7 \fardig "06F8%
+  \XeTeXmathcode`9="7 \fardig "06F9%
+  \XeTeXmathcode`.="7 \fardig "066B%decimal point
+}
+\XeTeXmathcode`٫="7 \fardig "066B%decimal point
+\XeTeXmathcode`۰="7 \fardig "06F0%
+\XeTeXmathcode`۱="7 \fardig "06F1%
+\XeTeXmathcode`۲="7 \fardig "06F2%
+\XeTeXmathcode`۳="7 \fardig "06F3%
+\XeTeXmathcode`۴="7 \fardig "06F4%
+\XeTeXmathcode`۵="7 \fardig "06F5%
+\XeTeXmathcode`۶="7 \fardig "06F6%
+\XeTeXmathcode`۷="7 \fardig "06F7%
+\XeTeXmathcode`۸="7 \fardig "06F8%
+\XeTeXmathcode`۹="7 \fardig "06F9%
 
-\def\@farsi#1{\textfarsi{\@character{\@@arabic#1}}}
+\AtBeginDocument{\maths\setRL\farsifont}
 
 
 %To convert the MILADI date to SHAMSI date, taken from farsitex
@@ -316,6 +235,152 @@
 دی\or بهمن\or 
 اسفند\fi}
 
+\let\normalfont=\farsifont
+\def\today{\ftoday}
+\let\@footnote=\footnote
+\def\footnote#1{\@footnote{\farsifont#1}}
+\let\@uthanks=\thanks
+\def\thanks#1{\@uthanks{\farsifont#1}}
+\let\@uframetitle=\frametitle
+\def\frametitle#1{\@uframetitle{\centerline{\farsifont#1}}}
+\let\@uframesubtitle=\framesubtitle
+\def\framesubtitle#1{\@uframesubtitle{\centerline{\farsifont#1}}}
+\let\@usubtitle=\subtitle
+\def\subtitle#1{\@usubtitle{\farsifont#1}}
+\let\@uinstitute=\institute
+\def\institute#1{\@uinstitute{\farsifont#1}}
+\let\@ucaption=\caption
+\def\caption#1{\@ucaption{\farsifont#1}}
+\let\@uleftmark=\leftmark
+\def\leftmark{\beginR\farsifont\@uleftmark\endR}
+\let\@urightmark=\rightmark
+\def\rightmark{\beginR\farsifont\@urightmark\endR}
+\let\@utitle=\title
+\def\title#1{\@utitle{\farsifont#1}}
+\let\@uthor=\author
+\def\author#1{\@uthor{\farsifont#1}}
+
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thetable}{\arabic{table}}
+\renewcommand{\theequation}{\arabic{equation}}
+
+
+\renewcommand{\figurename}{\farsifont شکل}
+\renewcommand{\tablename}{\farsifont جدول}
+\renewcommand{\contentsname}{فهرست مطالب}
+\renewcommand{\listfigurename}{لیست تصاویر}
+\renewcommand{\listtablename}{لیست جداول}
+\renewcommand{\appendixname}{پیوست}
+\renewcommand{\indexname}{نمایه}
+
+
+\@ifclassloaded{article}{%
+\renewcommand{\refname}{مراجع}
+\renewcommand{\abstractname}{چکیده}
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@farsi\c@section}}
+}{}
+\@ifclassloaded{amsart}{%
+\renewcommand{\refname}{مراجع}
+\renewcommand{\abstractname}{چکیده}
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@farsi\c@section}}
+}{}
+\@ifclassloaded{report}{%
+\renewcommand{\bibname}{کتاب‌نامه}
+\renewcommand{\abstractname}{چکیده}
+\renewcommand{\chaptername}{فصل}
+\renewcommand{\partname}{بخش}
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
+}{}
+\@ifclassloaded{amsbook}{%
+\renewcommand{\bibname}{کتاب‌نامه}
+\renewcommand{\chaptername}{فصل}
+\renewcommand{\partname}{بخش}
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
+}{}
+\@ifclassloaded{bookest}{%
+\NoHyper
+\renewcommand{\bibname}{کتاب‌نامه}
+\renewcommand{\chaptername}{فصل}
+\renewcommand{\partname}{بخش}
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
+}{}
+\@ifclassloaded{book}{%
+\renewcommand{\bibname}{کتاب‌نامه}
+\renewcommand{\chaptername}{فصل}
+\renewcommand{\partname}{بخش}
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
+}{}
+\@ifclassloaded{refrep}{%
+\renewcommand{\bibname}{کتاب‌نامه}
+\renewcommand{\chaptername}{فصل}
+\renewcommand{\partname}{بخش}
+%to make appendix numbering farsi
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@farsi\c@chapter}
+}%end appendix
+}{}
+
+
+
+%We redefine arabic counter style
+\def\@@number#1{\ifmmode\else\beginL\fi{\farsifont #1}\ifmmode\else\endL\fi}
+\def\@@latin#1{\@@number{{\@fromrl#1}}}
+\def\@number{\protect\@@number}
+\def\@latin{\protect\@@latin}
+\let\@farsi=\@arabic
+\let\@@arabic=\@arabic
+\let\@@roman=\@roman
+\let\@@Roman=\@Roman
+\let\@@alph=\@alph
+\let\@@Alph=\@Alph
+\def\@arabic#1{\ifmmode\else\@number{\@@arabic#1}\fi}
+\def\@Roman#1{\@latin{\@@Roman#1}}
+\def\arabicnorl#1{\expandafter\@@arabic\csname c@#1\endcsname}
+\def\make@lr#1{\begingroup
+    \toks@=\expandafter{#1}%
+    \edef\x{\endgroup
+  \def\noexpand#1{\noexpand\@number{\the\toks@}}}%
+  \x}
+\def\@character#1{\ifcase#1\or الف\or ب\or پ\or ت\or ث\or ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\fi}
+
+\def\@farsi#1{\farsifont\@character{\@@arabic#1}}
+
+
 %The figure or table caption
 \newsavebox\@Arabitempboxa
 \long\def\@makecaption#1#2{%
@@ -328,15 +393,14 @@
     \hb@xt@\hsize{\hfil\box\@Arabitempboxa\hfil}%
   \fi
   \vskip\belowcaptionskip}
-\makeatother
-\makeatletter
+
+
 %The correct the right footnorerule so it does not overlap the texts
 \def\r@fn{%
   \hbox to \columnwidth
   {\beginR \vbox{\kern -3\p@
    \hrule width .4\columnwidth \kern2.6\p@}\hfil\endR}}
 \def\footnoterule{\r@fn}
-\makeatother
 
 
 %a command to put a footnote from left to right
@@ -350,14 +414,6 @@
 \egroup
 }
 
-%we have to swap the following two characters
-%when we are in a Right-to-Left environment
-\makeatletter
-\catcode"00AB=\active%left double quote
-\catcode"00BB=\active%right double quote
-\def«{\if@rl\char"00BB\else\char"00AB\fi{}}
-\def»{\if@rl\char"00AB\else\char"00BB\fi{}}
-\makeatother
 
 %For Right-to-Left two column command, I guess taken from rlbabel
 \makeatletter 
@@ -392,10 +448,8 @@
 \newcommand{\lrdblcolumn}{\renewcommand{\@outputdblcol}{\@old@outputdblcol}}
 %set the default direction of the twocolumn texts to Right-to-Left
 \rldblcolumn
-\makeatother
 
 
-%
 % define the XePersian logo
 \def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
   \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
@@ -403,37 +457,13 @@
   \hbox{\kern-.125em\reflect{E}}Persian}}$}
 
 
-\newcommand{\eng}[1]{\textroman{ #1}}
-\newcommand{\fars}[1]{\textfarsi{#1}}
-\newcommand{\arabt}[1]{\textarabic{#1}}
+\newenvironment{english}{\par\vspace{.5cm}\setLR\begin{rmfamily}}{\end{rmfamily}\par\vspace{.5cm}}
+\let\@uLR=\LR
+\def\LR#1{\@uLR{\rmfamily{#1}}}
+\let\@uRL=\RL
+\def\RL#1{\@uRL{\farsifont#1}}
 
-\makeatletter 
-\let\@utitle=\title
-\def\title#1{\@utitle{\textfarsi{#1}}}
-\let\@uthor=\author
-\def\author#1{\@uthor{\textfarsi{#1}}}
-\let\@ufootnote=\footnote
-\def\footnote#1{\@ufootnote{\textfarsi{#1}}}
-\let\@uthanks=\thanks
-\def\thanks#1{\@uthanks{\textfarsi{#1}}}
-\def\today{\textfarsi{\ftoday}}
-\let\@urightmark=\rightmark
-\def\rightmark{\textfarsi{\@urightmark}}
-\let\@uleftmark=\leftmark
-\def\leftmark{\textfarsi{\@uleftmark}}
-\let\normalfont=\farsifont
-\let\@uframetitle=\frametitle
-\def\frametitle#1{\@uframetitle{\centerline{\textfarsi{#1}}}}
-\let\@uframesubtitle=\framesubtitle
-\def\framesubtitle#1{\@uframesubtitle{\centerline{\textfarsi{#1}}}}
-\let\@usubtitle=\subtitle
-\def\subtitle#1{\@usubtitle{\textfarsi{#1}}}
-\let\@uinstitute=\institute
-\def\institute#1{\@uinstitute{\textfarsi{#1}}}
-\let\@ucaption=\caption
-\def\caption#1{\@ucaption{\textfarsi{#1}}}
-\makeatother
-\makeatletter 
+
 %To fix tabular problem in bidi. Taken from farsitex
 \newif\if@tabsw
 \global\@tabswfalse
@@ -493,55 +523,59 @@
   \ignorespacesafterend
 \setRL
 }}
-\makeatother
-%to make the digits in math formula persian
-\font\tenrgm="Nazli" at 12pt
-\font\sevrgm="Nazli" at 10pt
-\font\fivrgm="Nazli" at 7pt
-\newfam\fardig
-\textfont\fardig=\tenrgm
-\scriptfont\fardig=\sevrgm
-\scriptscriptfont\fardig=\fivrgm
-\def\maths{
-  \XeTeXmathcode`0="7 \fardig "06F0%
-  \XeTeXmathcode`1="7 \fardig "06F1%
-  \XeTeXmathcode`2="7 \fardig "06F2%
-  \XeTeXmathcode`3="7 \fardig "06F3%
-  \XeTeXmathcode`4="7 \fardig "06F4%
-  \XeTeXmathcode`5="7 \fardig "06F5%
-  \XeTeXmathcode`6="7 \fardig "06F6%
-  \XeTeXmathcode`7="7 \fardig "06F7%
-  \XeTeXmathcode`8="7 \fardig "06F8%
-  \XeTeXmathcode`9="7 \fardig "06F9%
-  \XeTeXmathcode`.="7 \fardig "066B%decimal point
+
+
+%almost taken verbatim from polyglossia for making abjad numbering in enumerate environment
+\providecommand*{\xpg@warning}[1]{%
+   \PackageWarning{XePersian}%
+   {#1}}      
+\ifcsdef{abjad}{}{%
+\def\abjad#1{%
+\ifnum#1>1999 \xpg@warning{Illegal value (#1) for abjad numeral} {#1}
+\else
+  \ifnum#1<\z@\space\xpg@warning{Illegal value (#1) for abjad numeral}%
+  \else
+    \ifnum#1<10\expandafter\abj@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\abj@num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\abj@num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\abj@num@iv\number#1%since #1<2000, we must have 1000
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+\fi
 }
-\XeTeXmathcode`٫="7 \fardig "066B%decimal point
-\XeTeXmathcode`۰="7 \fardig "06F0%
-\XeTeXmathcode`۱="7 \fardig "06F1%
-\XeTeXmathcode`۲="7 \fardig "06F2%
-\XeTeXmathcode`۳="7 \fardig "06F3%
-\XeTeXmathcode`۴="7 \fardig "06F4%
-\XeTeXmathcode`۵="7 \fardig "06F5%
-\XeTeXmathcode`۶="7 \fardig "06F6%
-\XeTeXmathcode`۷="7 \fardig "06F7%
-\XeTeXmathcode`۸="7 \fardig "06F8%
-\XeTeXmathcode`۹="7 \fardig "06F9%
-%to resolve a problem we encounter when using power
-%or index in math formula
-\makeatletter\def\arabtex@codes{}\makeatother
-\AtBeginDocument{\maths}
+\def\abjad@zero{}
+\def\abj@num@i#1{%
+  \ifcase#1\or ا\or ب\or ج\char"200D\or د% 
+           \or ه\or و\or ز\or ح\or ط\fi
+  \ifnum#1=\z@\abjad@zero\fi}
+\def\abj@num@ii#1{%
+  \ifcase#1\or ی\or ک\or ل\or م\or ن%
+           \or س\or ع\or ف\or ص\fi 
+  \ifnum#1=\z@\fi\abj@num@i}
+\def\abj@num@iii#1{%
+  \ifcase#1\or ق\or ر\or ش\or ت\or ث%
+            \or خ\or ذ\or ض\or ظ\fi
+  \ifnum#1=\z@\fi\abj@num@ii}
+\def\abj@num@iv#1{%
+  \ifcase#1\or غ\fi
+  \ifnum#1=\z@\fi\abj@num@iii}
+}
+
+\def\farsi@numbers{%
+   \let\@latinalph\@alph%
+   \let\@latinAlph\@Alph%
+   \let\@alph\abjad%
+   \let\@Alph\abjad%
+}
+
+
+\AtBeginDocument{\farsi@numbers}
 
 
 \endinput
-
-
-
-
-
-
-
-
-
-
-
-
