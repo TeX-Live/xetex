@@ -1,12 +1,11 @@
 -------------------------------
-The XePersian Package v0.16111
+The XePersian Package v0.161111
 
-Updates: removed the clash with bidi, redefined XePersian logo, added Persian 
-alphabetic page numbering, added Persian alphabetic appendix numbering and
-removed the inconsistent line endings‏ from xepersian.sty.
+Updates: HUGE IMPROVEMENTS=> making XePersian independent of arabxetex,
+introducing the new and useful english environment and etc.
 
 XePersian is a package written for XeLaTeX that allows users to typeset
-Persian/Arabic properly. The current version is 0.16111 and it will be
+Persian/Arabic properly. The current version is 0.161111 and it will be
 developed to meet the needs of Persian typesetting properly.
 
 In order to use XePersian without getting any problem, the users are
@@ -35,4 +34,4 @@ Please report any bugs to the author (vafa.khalighi@students.mq.edu.au).
 
 -------------------------------
 Vafa Khalighi
-2008/07/13
+2008/07/15
