@@ -2,11 +2,11 @@
 % polyglossia.dtx generated using mkpolyglossiadtx.pl
 % (derived from makedtx.pl version  (c) Nicola Talbot)
 % 
-% Created on 2008/7/11 16:39
+% Created on 2008/7/15 14:23
 %<*internal>
 \iffalse
 %</internal>
-%<*README.txt>
+%<*README>
 
    ¦----------------------------------------------¦
    ¦                                              ¦
@@ -54,7 +54,7 @@ and follow the instructions displayed.
    François Charette, July 2008
     <firmicus ατ gmx δοτ net>
   ------------------------------
-%</README.txt>
+%</README>
 %<*internal>
 \fi
 %</internal>
@@ -160,13 +160,12 @@ and follow the instructions displayed.
 %<*internal>
 \generate{\file{polyglossia.ins}{\from{polyglossia.dtx}{batchfile}}}
 \nopreamble\nopostamble
-\generate{\file{README.txt}{\from{polyglossia.dtx}{README.txt}}}
-\generate{\file{TODO.txt}{\from{polyglossia.dtx}{TODO.txt}}}
+\generate{\file{README}{\from{polyglossia.dtx}{README}}}
+\generate{\file{TODO}{\from{polyglossia.dtx}{TODO}}}
 \generate{\file{gloss-template.ldf}{\from{polyglossia.dtx}{gloss-template.ldf}}}
-\generate{\file{test.tex}{\from{polyglossia.dtx}{test.tex}}}
-\generate{\file{testarabic.tex}{\from{polyglossia.dtx}{testarabic.tex}}}
-\generate{\file{testsanskrit.tex}{\from{polyglossia.dtx}{testsanskrit.tex}}}
-\generate{\file{testthai.tex}{\from{polyglossia.dtx}{testthai.tex}}}
+\generate{\file{examples.tex}{\from{polyglossia.dtx}{examples.tex}}}
+\generate{\file{example-arabic.tex}{\from{polyglossia.dtx}{example-arabic.tex}}}
+\generate{\file{example-thai.tex}{\from{polyglossia.dtx}{example-thai.tex}}}
 \endgroup
 %</internal>
 %
@@ -275,7 +274,7 @@ and follow the instructions displayed.
 % 
 % \title{\textcolor{lightblue}{\huge
 % \fontspec[ExternalLocation="/mnt/data/fonts/greek/"]{GFSAmbrosia.otf}
-% Π$\;\,$ο$\;\,$λ$\;\,$υ$\;\,$γ$\;\,$λ$\;\,$ο$\;\,$σ$\;\,$σ$\;\,$ι$\;\,$α}\\[16pt]
+% Π$\;\,$ο$\;\,$λ$\;\,$υ$\;\,$γ$\;\,$λ$\;\,$ω$\;\,$σ$\;\,$σ$\;\,$ι$\;\,$α}\\[16pt]
 % \color{myblue}Polyglossia: A Babel Replacement for \XeLaTeX}
 % \author{\scshape\color{myblue}François Charette}
 % \date{\filedate \qquad \fileversion\\
@@ -416,23 +415,43 @@ and follow the instructions displayed.
 % For instance the following allows us to quote the beginning 
 % of Homer’s \textit{Iliad}:
 % 
-% \begin{verbatim}
+% \begin{Verbatim}[formatcom=\color{myblue}]
 % \begin{greek}[variant=ancient]
-% τὸν δ' ἠμείβετ' ἔπειτα θεά, γλαυκῶπις Ἀθήνη: “ὦ πάτερ ἡμέτερε Κρονίδη, ὕπατε
-% κρειόντων, καὶ λίην κεῖνός γε ἐοικότι κεῖται ὀλέθρῳ: ὡς ἀπόλοιτο καὶ ἄλλος,
-% ὅτις τοιαῦτά γε ῥέζοι: ἀλλά μοι ἀμφ' Ὀδυσῆι δαί̈φρονι δαίεται ἦτορ, δυσμόρῳ, ὃς
-% δὴ δηθὰ φίλων ἄπο πήματα πάσχει νήσῳ ἐν ἀμφιρύτῃ, ὅθι τ' ὀμφαλός ἐστι θαλάσσης …”
+% μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος οὐλομένην, ἣ μυρί' Ἀχαιοῖς ἄλγε'
+% ἔθηκε, πολλὰς δ' ἰφθίμους ψυχὰς Ἄϊδι προί̈αψεν ἡρώων, αὐτοὺς δὲ ἑλώρια
+% τεῦχε κύνεσσιν οἰωνοῖσί τε πᾶσι, Διὸς δ' ἐτελείετο βουλή, ἐξ οὗ δὴ τὰ
+% πρῶτα διαστήτην ἐρίσαντε Ἀτρεί̈δης τε ἄναξ ἀνδρῶν καὶ δῖος Ἀχιλλεύς.
 % \end{greek} 
-% \end{verbatim}
+% \end{Verbatim}
 % 
 % \begin{greek}[variant=ancient]
-% τὸν δ' ἠμείβετ' ἔπειτα θεά, γλαυκῶπις Ἀθήνη: “ὦ πάτερ ἡμέτερε Κρονίδη, ὕπατε
-% κρειόντων, καὶ λίην κεῖνός γε ἐοικότι κεῖται ὀλέθρῳ: ὡς ἀπόλοιτο καὶ ἄλλος,
-% ὅτις τοιαῦτά γε ῥέζοι: ἀλλά μοι ἀμφ' Ὀδυσῆι δαί̈φρονι δαίεται ἦτορ, δυσμόρῳ, ὃς
-% δὴ δηθὰ φίλων ἄπο πήματα πάσχει νήσῳ ἐν ἀμφιρύτῃ, ὅθι τ' ὀμφαλός ἐστι θαλάσσης …”
+% μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος οὐλομένην, ἣ μυρί' Ἀχαιοῖς ἄλγε' ἔθηκε,
+% πολλὰς δ' ἰφθίμους ψυχὰς Ἄϊδι προί̈αψεν ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν
+% οἰωνοῖσί τε πᾶσι, Διὸς δ' ἐτελείετο βουλή, ἐξ οὗ δὴ τὰ πρῶτα διαστήτην ἐρίσαντε
+% Ἀτρεί̈δης τε ἄναξ ἀνδρῶν καὶ δῖος Ἀχιλλεύς.
 % \end{greek} 
+% \bigskip
 % 
-%       
+% Note that for Arabic one cannot use the environment ¦arabic¦,
+% as \cmd\arabic\ is defined internally by \LaTeX. In this case
+% we need to use the environment ¦Arabic¦ instead\DescribeEnv{Arabic}.
+% This is the beginning of Ibn Khaldūn’s \textit{Muqaddima}:
+% 
+% \begin{Verbatim}[formatcom={\color{myblue}\addfontfeature{Script=Arabic}}]
+% \begin{Arabic}
+% اعلم أنّ فنّ التاريخ فنّ عزيز المذهب، جمّ الفوائد، شريف الغاية؛ إذ هو
+% يوقفنا على أحوال الماضين من الأمم في أخلاقهم، والأنبياء في سيرهم، والملوك
+% في دولهم وسياستهم؛ حتّى تتمّ فائدة الإقتداء في ذلك لمن يرومه في أحوال
+% الدين والدنيا.
+% \end{Arabic}
+% \end{Verbatim}
+% 
+% \begin{Arabic}
+% اعلم أنّ فنّ التاريخ فنّ عزيز المذهب، جمّ الفوائد، شريف الغاية؛ إذ هو يوقفنا على
+% أحوال الماضين من الأمم في أخلاقهم، والأنبياء في سيرهم، والملوك في دولهم 
+% وسياستهم؛ حتّى تتمّ فائدة الإقتداء في ذلك لمن يرومه في أحوال الدين والدنيا.
+% \end{Arabic}
+% 
 % \subsection{Other commands}
 % The following commands are probably of lesser interest to the end user, but 
 % ought to be mentioned here.
@@ -650,10 +669,10 @@ and follow the instructions displayed.
 % 	of the first visibility of the lunar crescent at the beginning of the lunar month,
 % 	so their can be differences between different localities, as well as between
 % 	civil and religious authorities.}
-% For instance if ¦\Hijritoday¦ yields the date “\Hijritoday” (which is the one 
-% for \today\ indicated on the front page of \href{http://www.aljazeera.net}{aljazeera.net}), 
-% ¦\Hijritoday[1]¦ would rather print “\Hijritoday[1]” (the date given on the site 
-% \href{http://www.gulfnews.com}{gulfnews.com}).
+% For instance if ¦\Hijritoday¦ yields the date “7 Rajab 1429” (which is the date that was 
+% displayed on the front page of \href{http://www.aljazeera.net}{aljazeera.net} on
+% 11th July 2008), ¦\Hijritoday[1]¦ would rather print “8 Rajab 1429” (the date
+% indicated the same day on the site \href{http://www.gulfnews.com}{gulfnews.com}).
 % 
 % \subsection{Farsi (jalālī) calendar (farsical.sty)}
 % Again this is taken almost verbatim from ¦Arabiftoday.sty¦ (in the \pkg{Arabi} package), 
@@ -672,11 +691,11 @@ and follow the instructions displayed.
 % by other people. I take this opportunity to thank the following individuals,
 % whose splendid work has made my task almost trivial in comparision: Johannes
 % Braams and the numerous contributors to the \Babel{} package (in particular
-% Boris Lavva and others for its Hebrew support), Alexej Kryukov (antomega), Will
+% Boris Lavva and others for its Hebrew support), Alexej Kryukov (\pkg{antomega}), Will
 % Robertson (\pkg{fontspec}), Apostolos Syropoulos (\pkg{xgreek}), Youssef Jabri
 % (\pkg{arabi}), and Vafa Khalighi (\pkg{xepersian}). I should also thank other
 % individuals for their assistance in supporting specific languages: Yves Codet
-% (Sanskrit), Zdenek Wagner (Hindi), and other members of the xetex user
+% (Sanskrit), Zdenek Wagner (Hindi), and other members of the \XeTeX\ user
 % community. And of course my gratitude also goes to Jonathan Kew, the formidable
 % author of \XeTeX! 
 % 
@@ -7193,7 +7212,7 @@ U+0039 <> U+0E59 ;
 % \Finale
 % 
 % \iffalse
-%<*README.txt>
+%<*README>
 
    ¦----------------------------------------------¦
    ¦                                              ¦
@@ -7241,8 +7260,8 @@ and follow the instructions displayed.
    François Charette, July 2008
     <firmicus ατ gmx δοτ net>
   ------------------------------
-%</README.txt>
-%<*TODO.txt>
+%</README>
+%<*TODO>
 === THIS IS THE TODO LIST FOR THE POLYGLOSSIA PACKAGE ===
 
 polyglossia.sty:
@@ -7354,7 +7373,7 @@ hijrical.sty
 
 ** UPDATE ldf for spanish using new ldf for Babel by J Bezos
           and add option for mexican (using mx package)
-%</TODO.txt>
+%</TODO>
 %<*gloss-template.ldf>
 \ProvidesFile{gloss-<lang>.ldf}[polyglossia: module for <lang>]
 \makeatletter
@@ -7447,7 +7466,7 @@ hijrical.sty
    }
 
 %</gloss-template.ldf>
-%<*test.tex>
+%<*examples.tex>
 \documentclass[a4paper]{article}
 \usepackage[no-math]{fontspec}
 % makes fontspec very quiet!
@@ -7606,8 +7625,8 @@ Quamquam sermone nativo fungi desinit, cumque nostris diebus perpauci Latine loq
 %ქართული ენა არის საქართველოს სახელმწიფო ენა (აფხაზეთის ავტონომიურ რესპ\-უბლიკაში მის პარალელურად სახელმწიფო ენად აღიარებულია აგრეთვე აფხაზური ენა). ქართულ ენაზე 7 მილიონზე მეტი ადამიანი ლაპარაკობს.
 %
 \end{document}
-%</test.tex>
-%<*testarabic.tex>
+%</examples.tex>
+%<*example-arabic.tex>
 \documentclass[a4paper]{book}%
 \usepackage[no-math]{fontspec}
 \usepackage{xltxtra,url,amsmath}
@@ -7716,36 +7735,8 @@ x^\text{مال مال}
 	\label{test}
 \end{equation}
 \end{document}
-%</testarabic.tex>
-%<*testsanskrit.tex>
-\documentclass[a4paper,12pt]{article}
-\usepackage{fontspec}
-\usepackage{polyglossia}
-\setdefaultlanguage{french}
-\setotherlanguage{sanskrit}
-\setmainfont{Charis SIL}
-\newfontfamily\sanskritfont[Script=Devanagari]{Arial Unicode MS}%{Mangal}
-
-\catcode"00A0=\active
-\def^^^^00a0{\char32\relax}
-
-\title{Mahābhārata 1.3.1-9}
-\author{}
-\date{}
-
-\begin{document}
-\maketitle
-
-Texte en français.
-
-\begin{sanskrit}
-जनमेजयः पारिक्षितः सह भ्रातृभिः कुरुक्षेत्रे दीर्घसत्रमुपास्ते । तस्य भ्रातरस्त्रयः श्रुतसेन उग्रसेनो भीमसेन इति । तेषु तत्सत्रमुपासीनेषु तत्र श्वाभ्यागच्छत्सारमेयः । स जनमेजयस्य भ्रातृभिरभिहतो रोरूयमाणो मातुः समीपमुपागच्छत् । तं माता रोरूयमाणमुवाच । किं रोदिषि । केनास्यभिहत इति । स एवमुक्तो मातरं प्रत्युवाच । जनमेजयस्य भ्रातृभिरभिहतोऽस्मीति । तं माता प्रत्युवाच । व्यक्तं त्वया तत्रापराद्धं येनास्यभिहत इति । स तां पुनरुवाच । नापराध्यामि किंचित् । नावेक्षे हवींषि नावलिह इति । तच्छ्रुत्वा तस्य माता सरमा पुत्रशोकार्ता तत्सत्रमुपागच्छद्यत्र स जनमेजयः सह भ्रातृभिर्दीर्घसत्रमुपास्ते । स तया क्रुद्धया तत्रोक्तः । अयं मे पुत्रो न किंचिदपराध्यति । किमर्थमभिहत इति । यस्माच्चायमभिहतोऽनपकारी तस्माददृष्टं त्वां भयमागमिष्यतीति । स जनमेजय एवमुक्तो देवशुन्या सरमया दृढं संभ्रान्तो विषण्णश्चासीत् ।
-\end{sanskrit}
-Texte en français.
-
-\end{document}
-%</testsanskrit.tex>
-%<*testthai.tex>
+%</example-arabic.tex>
+%<*example-thai.tex>
 \documentclass[a4paper]{article}
 \usepackage[no-math]{fontspec}
 \usepackage{xltxtra,url}
@@ -7806,7 +7797,7 @@ This is today: \today
 	\item C	
 \end{enumerate}
 \end{document}
-%</testthai.tex>
+%</example-thai.tex>
 % \fi
 % 
 % \typeout{*************************************************************}
