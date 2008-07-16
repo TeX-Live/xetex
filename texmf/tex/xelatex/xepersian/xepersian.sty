@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/15 v0.161111
+\ProvidesPackage{xepersian}[2008/07/16 v0.1611111
 	Typesetting Persian with XeTeX]
 \RequirePackage{graphicx}
 \RequirePackage{amssymb}
@@ -11,10 +11,12 @@
 \RequirePackage{xunicode}
 \RequirePackage{etoolbox}
 \RequirePackage{persianpoem,fmultico}
-\PackageWarning{xepersian}{\string\farsifont\ is not defined! XePersian will try to load Nazli}%
-\newfontfamily\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}
+\AtBeginDocument{\ifdefined\farsifont\relax\else%
+\PackageWarning{XePersian}{\string\farsifont\ is not defined! XePersian will try to load Nazli}%
+\newfontfamily\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}\fi
+}%
 
-
+\renewcommand{\thepage}{\RL{\the\c@page}}
 
 %to make the digits in math formula persian
 \font\tenrgm="Nazli" at 12pt
@@ -235,7 +237,7 @@
 دی\or بهمن\or 
 اسفند\fi}
 
-\let\normalfont=\farsifont
+\def\normalfont{\farsifont}
 \def\today{\ftoday}
 \let\@footnote=\footnote
 \def\footnote#1{\@footnote{\farsifont#1}}
@@ -255,10 +257,8 @@
 \def\leftmark{\beginR\farsifont\@uleftmark\endR}
 \let\@urightmark=\rightmark
 \def\rightmark{\beginR\farsifont\@urightmark\endR}
-\let\@utitle=\title
-\def\title#1{\@utitle{\farsifont#1}}
-\let\@uthor=\author
-\def\author#1{\@uthor{\farsifont#1}}
+
+
 
 
 \renewcommand{\thefootnote}{\arabic{footnote}}
@@ -358,7 +358,7 @@
 
 
 %We redefine arabic counter style
-\def\@@number#1{\ifmmode\else\beginL\fi{\farsifont #1}\ifmmode\else\endL\fi}
+\def\@@number#1{\ifmmode\else\beginL\fi{#1}\ifmmode\else\endL\fi}
 \def\@@latin#1{\@@number{{\@fromrl#1}}}
 \def\@number{\protect\@@number}
 \def\@latin{\protect\@@latin}
