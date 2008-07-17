@@ -1,10 +1,10 @@
 -------------------------------
-The XePersian Package v0.1611111
+The XePersian Package v0.16111111
 
-Updates: fixed some bugs.
+Updates: Changed \LR and \RL commands to \lr and \rl respectively.
 
 XePersian is a package written for XeLaTeX that allows users to typeset
-Persian/Arabic properly. The current version is 0.1611111 and it will be
+Persian/Arabic properly. The current version is 0.16111111 and it will be
 developed to meet the needs of Persian typesetting properly.
 
 In order to use XePersian without getting any problem, the users are
@@ -33,4 +33,4 @@ Please report any bugs to the author (vafa.khalighi@students.mq.edu.au).
 
 -------------------------------
 Vafa Khalighi
-2008/07/16
+2008/07/17
