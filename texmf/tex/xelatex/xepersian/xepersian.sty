@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2008/07/16 v0.1611111
+\ProvidesPackage{xepersian}[2008/07/17 v0.16111111
 	Typesetting Persian with XeTeX]
 \RequirePackage{graphicx}
 \RequirePackage{amssymb}
@@ -16,7 +16,7 @@
 \newfontfamily\farsifont[Script=Arabic,Scale=1.2,Mapping=farsidigits]{Nazli}\fi
 }%
 
-\renewcommand{\thepage}{\RL{\the\c@page}}
+\renewcommand{\thepage}{\rl{\the\c@page}}
 
 %to make the digits in math formula persian
 \font\tenrgm="Nazli" at 12pt
@@ -458,10 +458,8 @@
 
 
 \newenvironment{english}{\par\vspace{.5cm}\setLR\begin{rmfamily}}{\end{rmfamily}\par\vspace{.5cm}}
-\let\@uLR=\LR
-\def\LR#1{\@uLR{\rmfamily{#1}}}
-\let\@uRL=\RL
-\def\RL#1{\@uRL{\farsifont#1}}
+\def\lr#1{\LR{\rmfamily{#1}}}
+\def\rl#1{\RL{\farsifont#1}}
 
 
 %To fix tabular problem in bidi. Taken from farsitex
