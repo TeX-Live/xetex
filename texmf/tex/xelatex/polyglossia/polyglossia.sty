@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/07/11 v1.0 
+\ProvidesPackage{polyglossia}[2008/07/26 v1.0.1 
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY? but so convenient!
 \RequirePackage{fontspec} %which itself depends on xkeyval
@@ -13,7 +13,8 @@
    \xpg@warning{No hyphenation patterns were loaded for `#1'\MessageBreak
          I will use the patterns loaded for \string\language=0\MessageBreak instead}}
 \providecommand*{\xpg@nolang}[1]{%
-   \xpg@warning{Couldn't find file gloss-#1.ldf!}}%
+   \xpg@warning{File gloss-#1.ldf does not exist!^^J
+   I will nevertheless try to use hyphenation patterns for #1.}}%
       %TODO try at least to load the hyphenation patterns for #1.
 \def\xpg@ill@value#1#2{%
   \xpg@warning{Illegal value (#1) for #2}}
@@ -126,7 +127,7 @@
     \selectbackgroundlanguage{#2}}%
    }%
    %ELSE
-   {\xpg@nolang{#2}}}%
+   {\xpg@nolang{#2}\hyphenrules{#2}}}%
 
 \let\setmainlanguage=\setdefaultlanguage
 
@@ -191,7 +192,7 @@
      {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
    }%
    %ELSE  
-   {\xpg@nolang{#2}}%
+   {\xpg@nolang{#2}\hyphenrules{#2}}%
    %TODO ? \expandafter\ifx\csname l@#2\endcsname\@undefined
    %\xpg@nopatterns{#2}\expandafter\adddialect\csname l@#2\endcsname 0%
    %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
@@ -217,7 +218,7 @@
    {\let\foreignlanguage\@undefined}
 
 \newcommand{\foreignlanguage}[3][]{%
-   \ifcsundef{#2@loaded}{\xpg@nolang{#2}}{%
+   \ifcsundef{#2@loaded}{\xpg@nolang{#2}\hyphenrules{#2}}{%
      {\def\languagename{#2}%
       \setkeys{#2}{#1}%
       \xpg@csifdef@warn{#2@font}%
@@ -233,7 +234,7 @@
    {\let\selectlanguage\@undefined}
 
 \newcommand{\selectlanguage}[2][]{%
-   \ifcsundef{#2@loaded}{\xpg@nolang{#2}}{%
+   \ifcsundef{#2@loaded}{\xpg@nolang{#2}\hyphenrules{#2}}{%
       \def\xpg@pop@language{%
          \xpg@set@language{\languagename}%
          \let\emp@langname\@undefined}%
@@ -282,7 +283,15 @@
    }{}
 
 \newcommand{\setlocalhyphenmins}[3]{%
-   \providehyphenmins{#1}{#2#3}}
+   \expandafter\ifx\csname l@#1\endcsname\relax%
+     \xpg@warning{\string\setlocalhyphenmin useless for unknown language #1}%
+   \else
+      \expandafter\ifx\csname l@#1\endcsname\l@nohyphenation%
+        \xpg@warning{\string\setlocalhyphenmin useless for unhyphenated language #1}%
+      \else%
+      \providehyphenmins{#1}{#2#3}%
+      \fi%
+   \fi}
 
 \def\use@localhyphenmins#1{%
    \ifcsundef{#1hyphenmins}{}%

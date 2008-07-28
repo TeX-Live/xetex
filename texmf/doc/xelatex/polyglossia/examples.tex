@@ -1,17 +1,12 @@
 \documentclass[a4paper]{article}
 \usepackage[no-math]{fontspec}
-% makes fontspec very quiet!
-%\makeatletter
-%\renewcommand\zf@PackageWarning[1]{\relax}
-%\renewcommand\zf@PackageInfo[1]{\relax}%
-%\makeatother
 \usepackage{xltxtra,url}
-\usepackage[quiet]{polyglossia}
+\usepackage{polyglossia}
 \setdefaultlanguage{french}
 \setotherlanguage[variant=british,ordinalmonthday=false]{english}
 \setotherlanguage[variant=poly]{greek}
 \setotherlanguage[numerals=thai]{thai}
-\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew}
+\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew,amharic,tigriya}
 \setromanfont{Linux Libertine}
 \defaultfontfeatures{Scale=MatchLowercase,RawFeature={+locl}}
 \setmonofont{Inconsolata}
@@ -23,6 +18,7 @@
 \newfontfamily\sanskritfont[Script=Devanagari]{Sanskrit 2003}
 \newfontfamily\thaifont[ExternalLocation="/mnt/data/fonts/thai/",Script=Thai]{Norasi.ttf}%{Arial Unicode MS}
 \newfontfamily\thaanafont[Script=Thaana,WordSpace=2]{TITUS Cyberbit Basic}
+\newfontfamily\ethiopicfont[Script=Ethiopic]{Abyssinica SIL}
 \parskip 1.33\baselineskip
 \newcommand\showhyphmin{\fbox{\the\lefthyphenmin\ \the\righthyphenmin}}
 \begin{document}
@@ -36,7 +32,7 @@
 (\today)
 \end{english}
 
-\begin{german}
+\begin{german}[spelling=new,latesthyphen=true]
 \textbf{Die deutsche Sprache}\footnote{ From \url{http://de.wikipedia.org/wiki/Deutsche_Sprache}} (auch das Deutsche) gehört zum westlichen Zweig der germanischen Sprachen und ist eine der meistgesprochenen europäischen Sprachen weltweit, und gilt so als Weltsprache.\\
 (\today)
 \end{german}
@@ -132,4 +128,10 @@ Quamquam sermone nativo fungi desinit, cumque nostris diebus perpauci Latine loq
 %\fontspec[Script=Georgian]{DejaVu Serif}
 %ქართული ენა არის საქართველოს სახელმწიფო ენა (აფხაზეთის ავტონომიურ რესპ\-უბლიკაში მის პარალელურად სახელმწიფო ენად აღიარებულია აგრეთვე აფხაზური ენა). ქართულ ენაზე 7 მილიონზე მეტი ადამიანი ლაპარაკობს.
 %
+
+\begin{amharic}
+\textbf{አማርኛ} የኢትዮጵያ መደበኛ ቋንቋ ነው። ከሴማዊ ቋንቋዎች እንደ ዕብራይስጥ ወይም ዓረብኛ አንዱ ነው። እንዲያውም 27 ሚሊዮን ያህል ተናጋሪዎች እያሉት፣ አማርኛ ከአረብኛ ቀጥሎ ትልቁ ሴማዊ ቋንቋ ነው። የሚጻፈውም በግዕዝ ፊደል ነው። አማርኛ ክዓረብኛና ከዕብራይስጥ ያለው መሰረታዊ ልዩነት አንደላቲን ከግራ ወደ ቀኝ መጻፉ ነው። \\
+(\today)
+\end{amharic}
+
 \end{document}

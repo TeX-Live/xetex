@@ -16,27 +16,16 @@
       \expandafter\xdef\csname ver@#1.ldf\endcsname{#2}%
       \endgroup}
 \ProvidesFile{hyphen.cfg}
-   [2008/01/16 v0.2
-   Taken from Antomega and Babel
-   and modified for Polyglossia]
+   [2008/07/28 v1.0.1 %
+   Polyglossia language switching mechanism (adapted from antomega and babel)]
 \countdef\last@language=19
 \def\addlanguage{\alloc@9\language\chardef\@cclvi}
 \def\adddialect#1#2{%
    \global\chardef#1#2\relax
    \wlog{\string#1 = a dialect from \string\language#2}}
-\def\iflanguage#1{%
-   \expandafter\ifx\csname l@#1\endcsname\relax
-      \PackageWarning{polyglossia}{#1 is not a known language.}%
-   \else
-      \ifnum\csname l@#1\endcsname=\language
-         \expandafter\@firstoftwo
-      \else
-         \expandafter\@secondoftwo
-      \fi%
-   \fi}
 \def\hyphenrules#1{%
-   \expandafter\ifx\csname l@#1\endcsname\@undefined
-      \@nolanerr{#1}%
+   \expandafter\ifx\csname l@#1\endcsname\relax
+      \PackageWarning{polyglossia}{Sorry: #1 is not a known language: check your file language.dat and regenerate xelatex.fmt.}%
    \else
       \language=\csname l@#1\endcsname\relax
    \fi

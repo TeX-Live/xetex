@@ -1,4 +1,5 @@
 \ProvidesFile{gloss-thai.ldf}[polyglossia: module for thai]
+\makeatletter
 %% This is partly based on thai-latex for Babel:
 %%%% Copyright (C) 1999 - 2006
 %%%%           by Surapant Meknavin,
@@ -8,12 +9,6 @@
 %%%%              Thai Linux Working Group
 %%%%              http://linux.thai.net/
 %%%%
-\makeatletter
-
-\ifx\l@thai\@undefined%
-   \xpg@nopatterns{Thai}%
-   \adddialect\l@thai0%
-\fi
 
 \newif\if@thai@numerals
 \def\tmp@thai{thai}
@@ -84,10 +79,10 @@
 \def\thai@numbers{%
    \let\@latinalph\@alph%
    \let\@latinAlph\@Alph%
-   \if@thai@numerals
+   \if@thai@numerals%
      \let\@alph\@thaialph%
      \let\@Alph\@thaiAlph%
-   \fi
+   \fi%
    }
 \def\nothai@numbers{%
   \let\@alph\@latinalph%
@@ -125,9 +120,7 @@
    \let\ttfamily=\thai@font%
    \def\reset@font{\normalfont}}
 
-\def\thai@language{\protect\language=\l@thai}
-
-\setlocalhyphenmins{thai}{11}{11}%
+\def\thai@language{\protect\language=\l@nohyphenation}
 
 \def\blockextras@thai{%
    \renewcommand{\baselinestretch}{1.2}% FIXME restore default value in noextras?

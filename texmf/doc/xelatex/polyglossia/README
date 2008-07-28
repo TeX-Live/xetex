@@ -1,14 +1,14 @@
 
    ¦----------------------------------------------¦
    ¦                                              ¦
-   ¦       THE POLYGLOSSIA PACKAGE v1.0           ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0.1         ¦
    ¦                                              ¦
    ¦ Modern multilingual typesetting with XeLaTeX ¦
    ¦                                              ¦
    ¦----------------------------------------------¦
 
 This package for provides a complete Babel replacement for users of XeLaTeX.
-The initial version includes support for 54 different languages.
+This version includes support for 55 different languages.
 
 Polyglossia makes it possible to automate the following tasks:
 
@@ -40,6 +40,18 @@ which will generate all files and produce the pdf documentation all at once.
 Alternatively if you have the file polyglossia.ins run
 	xetex polyglossia.ins 
 and follow the instructions displayed.
+
+CHANGES
+
+1.0.1
+   * Added gloss-amharic.ldf (ported from ethiop.ldf in the package ethiop)
+   * Bugfix in gloss-syriac.ldf (spurious space after \textsyriac{...})
+   * Extended the scope of \syriacabjad
+   * Improved documentation (added sections on font setup and numeration mappings)
+
+1.0 
+   * Initial release on CTAN 
+
 
   ------------------------------
    François Charette, July 2008

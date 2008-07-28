@@ -2,24 +2,44 @@
 \makeatletter
 \def\german@font{\normalfontlatin}
 
-\ifx\l@german\@undefined
-   \xpg@nopatterns{german}
-   \adddialect\l@german0
-\fi
-
-
-\def\tmp@new{new}
 \def\tmp@old{old}
+\def\tmp@oldyr{1901}
+\newif\if@german@oldspelling
+\@german@oldspellingfalse
 \define@key{german}{spelling}[new]{%
    \def\@tmpa{#1}%
    \ifx\@tmpa\tmp@old%
-     \def\german@hyph{\l@german}%
+	\ifx\l@german\@undefined%
+	   \xpg@nopatterns{german}%
+	   \adddialect\l@german0%
+	\fi%
+        \@german@oldspellingtrue%
    \else%
-     \def\german@hyph{\l@ngerman}%
+     \ifx\@tmpa\tmp@oldyr%
+        \ifx\l@german\@undefined%
+	   \xpg@nopatterns{german}%
+	   \adddialect\l@german0%
+        \fi%
+        \@german@oldspellingtrue%
+     \else%
+	\ifx\l@ngerman\@undefined%
+	    \ifx\l@german\@undefined%
+	      \xpg@nopatterns{ngerman}%
+	      \adddialect\l@ngerman0%
+	    \else%
+	      \xpg@warning{You asked for `ngerman' but only `german' hyphenation is available!}%
+              \@german@oldspellingtrue%
+	    \fi%
+	\else%
+            \@german@oldspellingfalse
+	\fi%
+      \fi%
    \fi%
 }
 
-\setkeys{german}{spelling}
+\define@boolkey{german}[german@]{latesthyphen}[false]{}
+
+\setkeys{german}{spelling,latesthyphen}
 
 \def\captionsgerman{%
    \def\prefacename{\textgerman{Vorwort}}%
@@ -46,14 +66,15 @@
 }
 \def\dategerman{%   
    \def\today{\textgerman{\number\day.%
-      \space \ifcase\month%
+      \space \ifcase\month%TODO add option for Austrian forms (Jänner etc)
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
       Juli\or August\or September\or Oktober\or November\or%
       Dezember\fi%
       \space \number\year}}%
 }
 
-\def\german@language{\protect\language=\german@hyph}
+\def\german@language{\protect\language=%
+  \csname l@\if@german@oldspelling\else n\fi german\ifgerman@latesthyphen -x-latest\fi\endcsname}
 
 \setlocalhyphenmins{german}{2}{2}%
 

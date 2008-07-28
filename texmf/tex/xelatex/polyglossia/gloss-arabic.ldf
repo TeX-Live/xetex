@@ -155,7 +155,7 @@
 }
 
 \def\abjadmaghribi#1{%
-\ifnum#1>1999 \xpg@ill@value{#1}{abjad}%
+\ifnum#1>1999\xpg@ill@value{#1}{abjad}%
 \else
   \ifnum#1<\z@\space\xpg@ill@value{#1}{abjad}%
   \else

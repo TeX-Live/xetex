@@ -26,6 +26,7 @@
 \fi
 
 \def\tmp@us{us}
+\def\tmp@usmax{usmax}
 \def\tmp@uk{uk}
 \def\tmp@british{british}
 \def\tmp@american{american}
@@ -44,11 +45,13 @@
      \xpg@info{Option: english variant=british}
   \else\ifx\@tmpa\tmp@us\def\en@variant{american}\@ordinalmonthdayfalse
      \xpg@info{Option: english variant=american}
+  \else\ifx\@tmpa\tmp@usmax\def\en@variant{usenglishmax}\@ordinalmonthdayfalse
+     \xpg@info{Option: english variant=american (with additional patterns)}
   \else\ifx\@tmpa\tmp@australian\def\en@variant{british}\@ordinalmonthdayfalse
      \xpg@info{Option: english variant=australian}
   \else\ifx\@tmpa\tmp@newzealand\def\en@variant{british}\@ordinalmonthdayfalse
      \xpg@info{Option: english variant=newzealand}
-  \fi\fi\fi\fi\fi}
+  \fi\fi\fi\fi\fi\fi}
 
 \def\tmp@true{true}
 \define@key{english}{ordinalmonthday}[false]{%

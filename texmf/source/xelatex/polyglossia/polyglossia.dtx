@@ -2,7 +2,7 @@
 % polyglossia.dtx generated using mkpolyglossiadtx.pl
 % (derived from makedtx.pl version  (c) Nicola Talbot)
 % 
-% Created on 2008/7/15 14:23
+% Created on 2008/7/28 9:07
 %<*internal>
 \iffalse
 %</internal>
@@ -10,14 +10,14 @@
 
    ¦----------------------------------------------¦
    ¦                                              ¦
-   ¦       THE POLYGLOSSIA PACKAGE v1.0           ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0.1         ¦
    ¦                                              ¦
    ¦ Modern multilingual typesetting with XeLaTeX ¦
    ¦                                              ¦
    ¦----------------------------------------------¦
 
 This package for provides a complete Babel replacement for users of XeLaTeX.
-The initial version includes support for 54 different languages.
+This version includes support for 55 different languages.
 
 Polyglossia makes it possible to automate the following tasks:
 
@@ -99,6 +99,7 @@ and follow the instructions displayed.
 \generate{\file{hijrical.sty}{\from{polyglossia.dtx}{hijrical.sty}}}
 \generate{\file{cal-util.def}{\from{polyglossia.dtx}{cal-util.def}}}
 \generate{\file{gloss-albanian.ldf}{\from{polyglossia.dtx}{gloss-albanian.ldf}}}
+\generate{\file{gloss-amharic.ldf}{\from{polyglossia.dtx}{gloss-amharic.ldf}}}
 \generate{\file{gloss-arabic.ldf}{\from{polyglossia.dtx}{gloss-arabic.ldf}}}
 \generate{\file{gloss-bahasai.ldf}{\from{polyglossia.dtx}{gloss-bahasai.ldf}}}
 \generate{\file{gloss-bahasam.ldf}{\from{polyglossia.dtx}{gloss-bahasam.ldf}}}
@@ -368,7 +369,8 @@ and follow the instructions displayed.
 % \begin{table}[h]\centering
 % \label{tab:lang}
 % \begin{tabular}{lllll}\hline
-% albanian &   czech    &  \TR{german}   & \TR{magyar}&   slovak	\\
+% albanian &   croatian &  galician & \TR{lsorbian}  &\TR{serbian} \\ 		       
+% amharic\footnotemark  &   czech    &  \TR{german}   & \TR{magyar}&   slovak \\
 % \TR{arabic}& danish   &  \TR{greek}    &   norsk    &   slovenian\\
 % bahasai  &   divehi   &  \TR{hebrew}   &   nynorsk  &   spanish	\\
 % bahasam  &   dutch    &    hindi       &   polish   &   swedish	\\
@@ -378,11 +380,12 @@ and follow the instructions displayed.
 % bulgarian&\TR{farsi}  &    italian     &   samin    &   ukrainian \\
 % catalan  &   finnish  &    latin       &   sanskrit &\TR{usorbian} \\
 % coptic   &   french   &    latvian     &   scottish &   welsh	\\
-% croatian &   galician & \TR{lsorbian}  &\TR{serbian}&  		\\
 % \hline
 % \end{tabular}
 % \caption{Languages currently supported in \pkg{polyglossia}}
 % \end{table}
+% \footnotetext{ New in version 1.0.1. This should be considered an experimental attempt to
+% port the package \pkg{ethiop}. Feedbacks are welcome.}
 % 
 % Some options are convenient shortcuts for loading languages with 
 % specific options:
@@ -402,6 +405,9 @@ and follow the instructions displayed.
 % Another option (turned off by default) is ‘nolocalmarks’, which 
 % prevents the redefinition of the internal \LaTeX\ macros 
 % \cmd\markboth\ and \cmd\markright.
+% 
+% There is also the option ‘quiet’ which turns off most info messages and some of the warnings
+% issued by \LaTeX, \pkg{fontspec} and \pkg{polyglossia}.
 % 
 % \section{Language-switching commands}
 % 
@@ -483,10 +489,31 @@ and follow the instructions displayed.
 % 	to experiment with it, rename it into \file{hyphen.cfg}, copy it to
 % 	\texttt{…/tex/xelatex/polyglossia/} and rebuild the xelatex format.}
 % 
+% 
+% \section{Font setup}
+% 
+% With polyglossia it is possible to associate a specific font with any script or language
+% that occurs in the document. That font should always be defined as
+% \cmd\⟨script⟩font\ or \cmd\⟨language⟩font. 
+% For instance, if the default roman font defined by \cmd\setromanfont\
+% does not support Greek, then one can define the font used to display Greek with:\\
+% \centerline{ \cmd\newfontfamily\cmd{\greekfont[⟨options⟩]\{⟨font⟩\}}. }
+% See the \pkg{fontspec} documentation for more information.
+% 
+% Whenever a new language is activated, \pkg{polyglossia} will first check whether 
+% a font has been defined for that language or – for languages in non-Latin scripts –
+% for the script it uses. If it is not defined, it will use the currently active font 
+% and will attempt to turn on the appropriate OpenType tags for the script 
+% and language used, in case these are available in the font, by means of \pkg{fontspec}’s
+% \cmd\addfontfeature. If the current font does not appear to support the script
+% of that language, an error message is displayed.
+% 
 % \section{Language-specific options and commands}\label{specific}
 % 
 % This section gives a list of all languages for which options and end-user commands are defined.
 % The default value of each option is given in italic.
+% 
+% ^^A\subsection{amharic}
 % 
 % \subsection{arabic}
 % \textbf{Options}: 
@@ -596,8 +623,9 @@ and follow the instructions displayed.
 % \subsection{syriac}
 % \textbf{Options}: 
 % 	\begin{itemize}
-% 	\item \TB{numerals} = \textit{western} (i.e., 1234567890) or eastern 
-% 		(for which the Oriental Arabic numerals are used: \textarabic{١٢٣٤٥٦٧٨٩٠}).
+% 	\item \TB{numerals} = \textit{western} (i.e., 1234567890), eastern 
+% 		(for which the Oriental Arabic numerals are used: \textarabic{١٢٣٤٥٦٧٨٩٠}),
+% 		or abjad (new in version 1.0.1).
 % 	\end{itemize}
 % \textbf{Commands}:
 % 	\begin{itemize}
@@ -642,6 +670,16 @@ and follow the instructions displayed.
 % Support is also provided for Syriac abjad numerals, which can be generated 
 % with \Cmd\abjadsyriac. 
 % Example: ¦\abjadsyriac{463}¦ yields {\syriacfont\abjadsyriac{463}}.
+% 
+% \section{Mappings for Arabic, Farsi and Thai numerals}
+% 
+% Three fontmappings are provided with polyglossia to allow the automatic
+% conversion of the standard Western numerals (0123456789) in their Arabic, 
+% Farsi, or Thai forms. To activate them, one should use the fontspec option 
+% Mapping=arabicdigits (or farsidigits or thaidigits).
+% For instance if \cmd\syriacfont\ is defined with the option ¦Mapping=arabicdigits¦,
+% then by typing ¦\textsyriac{2008}¦ one obtains \textsyriac{٢٠٠٨}.
+% 
 % 
 % \section{Calendars}
 % 
@@ -712,7 +750,7 @@ and follow the instructions displayed.
 % \subsection{polyglossia.sty}
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/07/11 v1.0 
+\ProvidesPackage{polyglossia}[2008/07/26 v1.0.1 
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY? but so convenient!
 \RequirePackage{fontspec} %which itself depends on xkeyval
@@ -1844,6 +1882,246 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 %    \end{macrocode}
 % \iffalse
 %</gloss-albanian.ldf>
+%<*gloss-amharic.ldf>
+% \fi
+% \clearpage
+% 
+% \subsection{gloss-amharic.ldf}
+%    \begin{macrocode}
+%% RENAME TO gloss-amharic.ldf
+\ProvidesFile{gloss-amharic.ldf}[polyglossia: module for amharic]
+\makeatletter
+
+\ifx\l@amharic\@undefined%
+   \xpg@nopatterns{Amharic}%
+   \adddialect\l@amharic0%
+\fi
+
+\def\captionsamharic{%
+   \def\refname{\textamharic{የነሥ ጹሁፍ ምንጭ}}%
+   \def\abstractname{\textamharic{አኅጽተሮ ጽሁፍ}}%
+   \def\bibname{\textamharic{ቢዋ መጽሃፍት}}%
+   \def\prefacename{\textamharic{መቅድም}}%
+   \def\chaptername{\textamharic{ክፍል}}%
+   \def\appendixname{\textamharic{መድበል}}%
+   \def\contentsname{\textamharic{ይዘት}}%
+   \def\listfigurename{\textamharic{የሥዕችሎ ማውጫ}}%
+   \def\listtablename{\textamharic{የሰንጠዥረ ማውጫ}}%
+   \def\indexname{\textamharic{ምህጻር ቃል}}%
+   \def\figurename{\textamharic{ሥዕል}}%
+   \def\tablename{\textamharic{ሰንጠረዥ}}%
+   %\def\thepart{\textamharic{}}%
+   \def\partname{\textamharic{ንዑስ ክፍል}}%
+   \def\pagename{\textamharic{ገጽ}}%
+   \def\seename{\textamharic{ይመልከቱ}}%
+   \def\alsoname{\textamharic{ይህምን ይመልከቱ}}%
+   \def\enclname{\textamharic{አባሪዎች}}%
+   \def\ccname{\textamharic{ግልባጭ}}%
+   \def\headtoname{\textamharic{ለ}}%
+   \def\proofname{\textamharic{ማረጋገጫ}}%
+   %\def\glossaryname{\textamharic{<++>}}%
+   }
+
+\newcommand{\eth@monthname}[1]{\ifcase#1\or
+  መስከረም\or
+  ጥቅምት\or
+  ህዳር\or
+  ታህሳስ\or
+  ጥር\or
+  የካቲት\or
+  መጋቢት\or
+  ሚያዝያ\or
+  ግንቦት\or
+  ሰኔ\or
+  ሐምሌ\or
+  ነሐሴ\or
+  ጰጉሜን\fi
+}
+\newcount\ethcnt@temp
+\newcount\ethcnt@modtemp
+\newcount\ethcnt@leap
+\newcount\ethcnt@yminone
+\newcount\ethcnt@days
+\newcount\ethcnt@jdn
+\newcount\ethcnt@cycle
+\newcount\ethcnt@ethdays
+\newcount\ethcnt@ethyear
+\newcount\ethcnt@ethmonth
+\newcount\ethcnt@ethday
+\newcommand{\eth@modulo}[2]{%
+  \ethcnt@modtemp=#1%
+  \divide\ethcnt@modtemp by #2%
+  \multiply\ethcnt@modtemp by #2%
+  \advance#1 by -\ethcnt@modtemp
+}
+\def\dateamharic{%
+  \def\today{{%
+    \ethcnt@yminone=\year
+    \advance\ethcnt@yminone by -1
+    \ethcnt@leap=\year
+    \divide\ethcnt@leap by 4
+    \ethcnt@temp=\ethcnt@yminone
+    \divide\ethcnt@temp by 4
+    \advance\ethcnt@leap by -\ethcnt@temp
+    \ethcnt@temp=\year
+    \divide\ethcnt@temp by 100
+    \advance\ethcnt@leap by -\ethcnt@temp
+    \ethcnt@temp=\ethcnt@yminone
+    \divide\ethcnt@temp by 100
+    \advance\ethcnt@leap by \ethcnt@temp
+    \ethcnt@temp=\year
+    \divide\ethcnt@temp by 400
+    \advance\ethcnt@leap by \ethcnt@temp
+    \ethcnt@temp=\ethcnt@yminone
+    \divide\ethcnt@temp by 400
+    \advance\ethcnt@leap by -\ethcnt@temp
+    \ifnum\month<3
+      \ethcnt@days=\month
+      \advance\ethcnt@days by -1
+      \multiply\ethcnt@days by 31
+      \advance\ethcnt@days by \day
+      \advance\ethcnt@days by -1
+    \else
+      \ethcnt@days=\month
+      \advance\ethcnt@days by -1
+      \multiply\ethcnt@days by 30
+      \advance\ethcnt@days by \day
+      \advance\ethcnt@days by \ethcnt@leap
+      \advance\ethcnt@days by -3
+      \ethcnt@temp=\month
+      \multiply\ethcnt@temp by 3
+      \advance\ethcnt@temp by -2
+      \divide\ethcnt@temp by 5
+      \advance\ethcnt@days by \ethcnt@temp
+    \fi
+    \ethcnt@jdn=\ethcnt@days
+    \advance\ethcnt@jdn by 1721426
+    \ethcnt@temp=\ethcnt@yminone
+    \multiply\ethcnt@temp by 365
+    \advance\ethcnt@jdn by \ethcnt@temp
+    \ethcnt@temp=\ethcnt@yminone
+    \divide\ethcnt@temp by 4
+    \advance\ethcnt@jdn by \ethcnt@temp
+    \ethcnt@temp=\ethcnt@yminone
+    \divide\ethcnt@temp by 100
+    \advance\ethcnt@jdn by -\ethcnt@temp
+    \ethcnt@temp=\ethcnt@yminone
+    \divide\ethcnt@temp by 400
+    \advance\ethcnt@jdn by \ethcnt@temp
+    \ethcnt@cycle=\ethcnt@jdn
+    \advance\ethcnt@cycle by -1723856
+    \eth@modulo{\ethcnt@cycle}{1461}%
+    \ethcnt@ethdays=\ethcnt@cycle
+    \eth@modulo{\ethcnt@ethdays}{365}%
+    \ethcnt@temp=\ethcnt@cycle
+    \divide\ethcnt@temp by 1460
+    \multiply\ethcnt@temp by 365
+    \advance\ethcnt@ethdays by \ethcnt@temp
+    \ethcnt@ethyear=\ethcnt@jdn
+    \advance\ethcnt@ethyear by -1723856
+    \divide\ethcnt@ethyear by 1461
+    \multiply\ethcnt@ethyear by 4
+    \ethcnt@temp=\ethcnt@cycle
+    \divide\ethcnt@temp by 365
+    \advance\ethcnt@ethyear by \ethcnt@temp
+    \divide\ethcnt@cycle by 1460
+    \advance\ethcnt@ethyear by -\ethcnt@cycle
+    \ethcnt@ethmonth=\ethcnt@ethdays
+    \divide\ethcnt@ethmonth by 30
+    \advance\ethcnt@ethmonth by 1
+    \ethcnt@ethday=\ethcnt@ethdays
+    \eth@modulo{\ethcnt@ethday}{30}%
+    \advance\ethcnt@ethday by 1%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \textamharic{%
+    \eth@monthname{\ethcnt@ethmonth}\relax\space%
+      \number\ethcnt@ethday\relax\space%
+      \number\ethcnt@ethyear}%
+  }}%
+}
+
+\def\ethiop#1{\expandafter\@ethiop\csname c@#1\endcsname}
+\def\@ethiop#1{{%
+  \ifnum#1<1\relax\ethnum@err{#1}%
+  \else\ifnum#1<10\relax\expandafter\ethnum@one\number #1%
+  \else\ifnum#1<100\relax\expandafter\ethnum@two\number #1%
+  \else\ifnum#1<1000\relax\expandafter\ethnum@three\number #1%
+  \else\ifnum#1<10000\relax\expandafter\ethnum@four\number #1%
+  \else\ifnum#1<100000\relax\expandafter\ethnum@five\number #1%
+  \else\ifnum#1<1000000\relax\expandafter\ethnum@six\number #1%
+  \else%
+    \ethnum@err%
+    \number#1%
+  \fi\fi\fi\fi\fi\fi\fi%
+}}
+\let\ethnum\@ethiop
+\newcommand{\ethnum@tens}[1]{%
+  \ifcase#1\or ፲\or ፳\or ፴%
+           \or ፵\or ፶\or ፷%
+           \or ፸\or ፹\or ፺\fi%
+}%
+\newcommand{\ethnum@one}[1]{%
+  \ifcase#1\or ፩\or ፪\or ፫%
+           \or ፬\or ፭\or ፮%
+           \or ፯\or ፰\or ፱\fi%
+}%
+\newcommand{\ethnum@two}[1]{%
+  \ethnum@tens#1%
+  \ethnum@one%
+}
+\newcommand{\ethnum@three}[1]{%
+  \ifnum#1>1\relax\ethnum@one#1\fi%
+  \ifnum#1>0\relax ፻\fi%
+  \ethnum@two%
+}
+\newcommand{\ethnum@four}[1]{%
+  \ethnum@tens#1%
+  \ifnum#1>0\relax ፻\fi%
+  \ethnum@three%
+}
+\newcommand{\ethnum@five}[1]{%
+  \ifnum#1>1\relax\ethnum@one#1\fi%
+  \ifnum#1>0\relax ፼\fi%
+  \ethnum@four%
+}
+\newcommand{\ethnum@six}[1]{%
+  \ethnum@tens#1%
+  \ifnum#1>0\relax ፼\fi%
+  \ethnum@five%
+}
+
+\def\amharic@font{%
+\font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
+\@ifundefined{amharicfont}{%
+      \@ifundefined{ethiopicfont}{%
+        \zf@check@ot@script{ethi}%
+	\if@tempswa%
+	  \addfontfeature{Script=Ethiopic}%
+	\else%
+	  \PackageError{polyglossia}{^^J
+	  The current font does not contain the Ethiopic script!^^J
+	  Please define \string\ethiopicfont\space or \string\amharicfont\space with \string\newfontfamily}%
+	\fi%
+	\zf@check@ot@lang{AMH}%
+	\if@tempswa\addfontfeature{Language=Amharic}\fi%
+	}%
+      {\ethiopicfont%
+	\zf@check@ot@lang{AMH}%
+	\if@tempswa\addfontfeature{Language=Amharic}\fi%
+      }}% 
+     {\amharicfont}%
+}
+
+\def\selectnormalfontamharic{%
+   \let\normalfont=\amharic@font%
+   \def\reset@font{\normalfont}}
+
+\def\amharic@language{\protect\language=\l@amharic}
+
+
+%    \end{macrocode}
+% \iffalse
+%</gloss-amharic.ldf>
 %<*gloss-arabic.ldf>
 % \fi
 % \clearpage
@@ -2007,7 +2285,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 }
 
 \def\abjadmaghribi#1{%
-\ifnum#1>1999 \xpg@ill@value{#1}{abjad}%
+\ifnum#1>1999\xpg@ill@value{#1}{abjad}%
 \else
   \ifnum#1<\z@\space\xpg@ill@value{#1}{abjad}%
   \else
@@ -6492,7 +6770,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 % \subsection{gloss-syriac.ldf}
 %    \begin{macrocode}
 \ProvidesFile{gloss-syriac.ldf}[polyglossia: module for syriac]
-\RequirePackage{bidi}
+\RequirePackage{bidi}[0.3]
 \makeatletter
 
 \ifx\l@syriac\@undefined
@@ -6502,16 +6780,22 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 \def\syriac@RL{\relax}
 
+\def\syriacnumber#1{\@syriacnumber{#1}}%
 
 \newif\if@eastern@numerals
 \def\tmp@eastern{eastern}
+\def\tmp@abjad{abjad}
 \define@key{syriac}{numerals}[western]{%
 	\def\@tmpa{#1}%
-	\ifx\@tmpa\tmp@eastern%
-	  \@eastern@numeralstrue%
+	\ifx\@tmpa\tmp@abjad%
+	  \let\syriacnumber\abjadsyriac%
 	\else%
-          \@eastern@numeralsfalse%
-	\fi}
+	  \ifx\@tmpa\tmp@eastern%
+            \@eastern@numeralstrue%
+	  \else%
+            \@eastern@numeralsfalse%
+ 	  \fi%
+        \fi}
 
 \setkeys{syriac}{numerals}
 	
@@ -6549,21 +6833,20 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 %\def\chaptername{\@ensure@RL{}}%
 %\def\appendixname{\@ensure@RL{}}%
 %\def\contentsname{\@ensure@RL{}}
-%%\def\contentsname{\@ensure@RL{}}%
 %\def\listfigurename{\@ensure@RL{}}%
 %\def\listtablename{\@ensure@RL{}}%
 %\def\indexname{\@ensure@RL{}}%
 %\def\figurename{\@ensure@RL{}}%
 %\def\tablename{\@ensure@RL{}}%
 %\def\partname{\@ensure@RL{}}%
-%\def\enclname{\@ensure@RL{}}%<-- Needs translation
-%\def\ccname{\@ensure@RL{}}% <<
-%\def\headtoname{\@ensure@RL{}}%<-- Needs translation
+%\def\enclname{\@ensure@RL{}}%
+%\def\ccname{\@ensure@RL{}}%
+%\def\headtoname{\@ensure@RL{}}%
 %\def\pagename{\@ensure@RL{}}%
-%\def\seename{\@ensure@RL{}}%\alefhamza\nun\za\ra
-%\def\alsoname{\@ensure@RL{}}%<<\alefhamza\nun\za\ra
+%\def\seename{\@ensure@RL{}}%
+%\def\alsoname{\@ensure@RL{}}%
 %\def\proofname{\@ensure@RL{}}%
-%\def\glossaryname{\@ensure@RL{}}%<<
+%\def\glossaryname{\@ensure@RL{}}%
 %}
 
 \def\datesyriac{%
@@ -6571,40 +6854,52 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
   \or ܟܢܘܢ ܐܚܪܝ\or ܫܒܛ\or ܐܕܪ\or ܢܝܣܢ\or ܐܝܪ\or ܚܙܝܪܢ\or ܬܡܘܙ\or ܐܒ\or ܐܝܠܘܠ% ܐܠܘܠ
    \or ܬܫܪܝܢ ܩܕܡ% ܬܫܪܝܢ ܩܕܝܡ
    \or ܬܫܪܝܢ ܐܚܪܝ\or ܟܢܘܢ ܩܕܡ% ܟܢܘܢ ܩܕܝܡ
-   \fi}
-   \def\today{\@ensure@RL{\syriacnumber\day\space\syriac@month{\month}\space\syriacnumber\year}}
+   \fi}%
+   \def\today{\@ensure@RL{\syriacnumber\day{\space}%
+    \syriac@month{\month}{\space}\syriacnumber\year}}%
 }
 
 \def\syriac@zero{}
 
 \def\abjadsyriac#1{%
-\ifnum#1>499 \PackageWarning{polyglossia}{Illegal value (#1) for Syriac abjad numeral} {#1}
-\else
-  \ifnum#1<\z@\space\PackageWarning{polyglossia}{Illegal value (#1) for Syriac abjad numeral}%
-  \else
+\ifnum#1>9999\xpg@ill@value{#1}{abjadsyriac}%
+\else%
+  \ifnum#1<\z@\space\xpg@ill@value{#1}{abjadsyriac}%
+  \else%
     \ifnum#1<10\expandafter\abj@syr@num@i\number#1%
-    \else
+    \else%
       \ifnum#1<100\expandafter\abj@syr@num@ii\number#1%
-      \else
-        \expandafter\abj@syr@num@iii\number#1%
-      \fi
-    \fi
-  \fi
-\fi
+      \else%
+        \ifnum#1<1000\expandafter\abj@syr@num@iii\number#1%
+	\else%
+          \expandafter\abj@syr@num@iv\number#1%
+	\fi%
+      \fi%
+    \fi%
+  \fi%
+\fi%
 }
 \def\abj@syr@num@i#1{%
-  \ifcase#1\or\char"0710 \or\char"0712 \or\char"0713 \or\char"0715 %
-  \or\char"0717 \or\char"0718 \or\char"0719 \or\char"071A \or\char"071B\fi
+  \ifcase#1\or\char"0710\or\char"0712\or\char"0713\or\char"0715%
+ \or\char"0717\or\char"0718\or\char"0719\or\char"071A\or\char"071B\fi%
   \ifnum#1=\z@\syriac@zero\fi}
 \def\abj@syr@num@ii#1{%
-  \ifcase#1\or\char"071D \or\char"071F \or\char"0720 \or\char"0721 \or\char"0722 %
-           \or\char"0723 \or\char"0725 \or\char"0726 \or\char"0728 \fi 
+  \ifcase#1\or\char"071D\or\char"071F\or\char"0720\or\char"0721\or\char"0722%
+          \or\char"0723\or\char"0725\or\char"0726\or\char"0728\fi%
   \ifnum#1=\z@\fi\abj@syr@num@i}
 \def\abj@syr@num@iii#1{%
-  \ifcase#1\or\char"0729 \or\char"072A \or\char"072B \or\char"072C \fi
+  \ifcase#1\or\char"0729\or\char"072A\or\char"072B\or\char"072C%
+  \or\char"0722\char"0307\or\char"0723\char"0307\or\char"0725\char"0307%
+  \or\char"0726\char"0307\or\char"0728\char"0307\fi%
   \ifnum#1=\z@\fi\abj@syr@num@ii}
+\def\abj@syr@num@iv#1{%
+  \ifcase#1\or\char"0710\char"0748\or\char"0712\char"0748%
+  \or\char"0713\char"0748\or\char"0715\char"0748%
+  \or\char"0717\char"0748\or\char"0718\char"0748%
+  \or\char"0719\char"0748\or\char"071A\char"0748\or\char"071B\char"0748\fi%
+  \ifnum#1=\z@\fi\abj@syr@num@iii}
 
-\def\syriacnumber#1{%
+\def\@syriacnumber#1{%
    \if@eastern@numerals{%
      \ifnum\XeTeXcharglyph"0661 > 0%
       %%% we test for the presence of one of ١٢٣٤٥٦٧٨٩٠ in the Syriac font, 
@@ -6617,8 +6912,8 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
            \number#1}%
          \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: I am using \string\arabicfont instead}}%
 	 {\RL{\reset@font\number#1}%
-	 \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: since \string\arabicfont is not defined, we'll use Western numerals instead}}
-     \fi
+	 \xpg@warning{You have specified the option numerals=eastern for Syriac, but the Syriac font does not contain the appropriate glyphs: since \string\arabicfont is not defined, we'll use Western numerals instead}}%
+     \fi%
    \else%
      \RL{\reset@font\number#1}%
    \fi}
@@ -6628,7 +6923,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    \let\@arabic\syriacnumber%
    \renewcommand\thefootnote{\protect\syriacnumber{\c@footnote}}%
    }
-\def\nosyriac@globalnumbers{
+\def\nosyriac@globalnumbers{%
    \let\@arabic\@latinarabic%
    }
 \def\syriac@numbers{%
@@ -7216,14 +7511,14 @@ U+0039 <> U+0E59 ;
 
    ¦----------------------------------------------¦
    ¦                                              ¦
-   ¦       THE POLYGLOSSIA PACKAGE v1.0           ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0.1         ¦
    ¦                                              ¦
    ¦ Modern multilingual typesetting with XeLaTeX ¦
    ¦                                              ¦
    ¦----------------------------------------------¦
 
 This package for provides a complete Babel replacement for users of XeLaTeX.
-The initial version includes support for 54 different languages.
+This version includes support for 55 different languages.
 
 Polyglossia makes it possible to automate the following tasks:
 
@@ -7480,7 +7775,7 @@ hijrical.sty
 \setotherlanguage[variant=british,ordinalmonthday=false]{english}
 \setotherlanguage[variant=poly]{greek}
 \setotherlanguage[numerals=thai]{thai}
-\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew}
+\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew,amharic}
 \setromanfont{Linux Libertine}
 \defaultfontfeatures{Scale=MatchLowercase,RawFeature={+locl}}
 \setmonofont{Inconsolata}
@@ -7492,6 +7787,7 @@ hijrical.sty
 \newfontfamily\sanskritfont[Script=Devanagari]{Sanskrit 2003}
 \newfontfamily\thaifont[ExternalLocation="/mnt/data/fonts/thai/",Script=Thai]{Norasi.ttf}%{Arial Unicode MS}
 \newfontfamily\thaanafont[Script=Thaana,WordSpace=2]{TITUS Cyberbit Basic}
+\newfontfamily\ethiopicfont[Script=Ethiopic]{Abyssinica SIL}
 \parskip 1.33\baselineskip
 \newcommand\showhyphmin{\fbox{\the\lefthyphenmin\ \the\righthyphenmin}}
 \begin{document}
@@ -7529,29 +7825,6 @@ Quamquam sermone nativo fungi desinit, cumque nostris diebus perpauci Latine loq
 (\today) 
 \end{greek}
 
-\begin{quote}
-\begin{greek}[variant=ancient]
-τὸν δ' ἠμείβετ' ἔπειτα θεά, γλαυκῶπις Ἀθήνη:
-“ὦ πάτερ ἡμέτερε Κρονίδη, ὕπατε κρειόντων,
-καὶ λίην κεῖνός γε ἐοικότι κεῖται ὀλέθρῳ:
-ὡς ἀπόλοιτο καὶ ἄλλος, ὅτις τοιαῦτά γε ῥέζοι:
-ἀλλά μοι ἀμφ' Ὀδυσῆι δαί̈φρονι δαίεται ἦτορ,
-δυσμόρῳ, ὃς δὴ δηθὰ φίλων ἄπο πήματα πάσχει
-νήσῳ ἐν ἀμφιρύτῃ, ὅθι τ' ὀμφαλός ἐστι θαλάσσης.
-νῆσος δενδρήεσσα, θεὰ δ' ἐν δώματα ναίει,
-Ἄτλαντος θυγάτηρ ὀλοόφρονος, ὅς τε θαλάσσης
-πάσης βένθεα οἶδεν, ἔχει δέ τε κίονας αὐτὸς
-μακράς, αἳ γαῖάν τε καὶ οὐρανὸν ἀμφὶς ἔχουσιν.
-τοῦ θυγάτηρ δύστηνον ὀδυρόμενον κατερύκει,
-αἰεὶ δὲ μαλακοῖσι καὶ αἱμυλίοισι λόγοισιν
-θέλγει, ὅπως Ἰθάκης ἐπιλήσεται: αὐτὰρ Ὀδυσσεύς,
-ἱέμενος καὶ καπνὸν ἀποθρῴσκοντα νοῆσαι
-ἧς γαίης, θανέειν ἱμείρεται. οὐδέ νυ σοί περ
-ἐντρέπεται φίλον ἦτορ, Ὀλύμπιε. οὔ νύ τ' Ὀδυσσεὺς
-Ἀργείων παρὰ νηυσὶ χαρίζετο ἱερὰ ῥέζων
-Τροίῃ ἐν εὐρείῃ; τί νύ οἱ τόσον ὠδύσαο, Ζεῦ;”
-\end{greek}
-\end{quote}
 
 \begin{hebrew}[numerals=hebrew]
 \textbf{עברית} היא שפה ממשפחת השפות השמיות, הידועה כשפתו של העם היהודי, ואשר ניב מודרני שלה משמש כשפה הרשמית והעיקרית של מדינת ישראל. \\
@@ -7624,6 +7897,12 @@ Quamquam sermone nativo fungi desinit, cumque nostris diebus perpauci Latine loq
 %\fontspec[Script=Georgian]{DejaVu Serif}
 %ქართული ენა არის საქართველოს სახელმწიფო ენა (აფხაზეთის ავტონომიურ რესპ\-უბლიკაში მის პარალელურად სახელმწიფო ენად აღიარებულია აგრეთვე აფხაზური ენა). ქართულ ენაზე 7 მილიონზე მეტი ადამიანი ლაპარაკობს.
 %
+
+\begin{amharic}
+\textbf{አማርኛ} የኢትዮጵያ መደበኛ ቋንቋ ነው። ከሴማዊ ቋንቋዎች እንደ ዕብራይስጥ ወይም ዓረብኛ አንዱ ነው። እንዲያውም 27 ሚሊዮን ያህል ተናጋሪዎች እያሉት፣ አማርኛ ከአረብኛ ቀጥሎ ትልቁ ሴማዊ ቋንቋ ነው። የሚጻፈውም በግዕዝ ፊደል ነው። አማርኛ ክዓረብኛና ከዕብራይስጥ ያለው መሰረታዊ ልዩነት አንደላቲን ከግራ ወደ ቀኝ መጻፉ ነው። \\
+(\today)
+\end{amharic}
+
 \end{document}
 %</examples.tex>
 %<*example-arabic.tex>
