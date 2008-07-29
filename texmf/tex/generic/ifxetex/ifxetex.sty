@@ -8,7 +8,7 @@
 % by Will Robertson.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% The ifxetex package, version 0.2
+%% The ifxetex package, version 0.3
 %%
 %% Usage:     LaTeX - \usepackage{ifxetex}
 %%            Plain - \input ifxetex.sty
@@ -21,19 +21,29 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Ensure loading a single time only
+\csname ifxetexloaded\endcsname
+\let\ifxetexloaded\endinput
+
+% Declare ourselves to LaTeX
 \expandafter\ifx\csname ProvidesPackage\endcsname\relax\else
   \ProvidesPackage{ifxetex}
-    [2006/08/12 v0.2 Provides ifxetex conditional]
+    [2006/08/21 v0.3 Provides ifxetex conditional]
 \fi
 
+% Create, if necessary, the \ifxetex conditional
 \expandafter\ifx\csname ifxetex\endcsname\relax
   \newif\ifxetex
 \fi
 
-\expandafter\ifx\csname XeTeXrevision\endcsname\relax\else
+% Set \ifxetex accordingly
+\expandafter\ifx\csname XeTeXrevision\endcsname\relax
+  \xetexfalse
+\else
   \xetextrue
 \fi
 
+% For XeTeX-exclusive packages
 \def\RequireXeTeX{%
   \ifxetex\else
     \begingroup
