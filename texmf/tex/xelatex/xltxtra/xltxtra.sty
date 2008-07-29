@@ -8,20 +8,22 @@
 %% 
 %%   ____________________________
 %%   The xltxtra package
-%%   (C) 2006/2007  Will Robertson
+%%   (C) 2006-2008  Will Robertson
 %%   License information appended
 %% 
 %% 
 \ProvidesPackage{xltxtra}
-  [2008/03/11 v0.3c Improvements for the "XeLaTeX" format]
+  [2008/07/29 v0.4 Improvements for the "XeLaTeX" format]
 \newif\if@xxt@nosscript@
 \newif\if@xxt@nologos@
 \newif\if@xxt@nohyphen@
 \newif\if@xxt@noemph@
+\newif\if@xxt@noverb@
 \DeclareOption{no-sscript}{\@xxt@nosscript@true}
 \DeclareOption{no-logos}{\@xxt@nologos@true}
 \DeclareOption{no-hyphen}{\@xxt@nohyphen@true}
 \DeclareOption{no-emph}{\@xxt@noemph@true}
+\DeclareOption{no-verb}{\@xxt@noverb@true}
 \ProcessOptions*
 \RequirePackage{ifxetex}
 \RequireXeTeX
@@ -254,8 +256,56 @@
        \unhbox\xxt@tempbox}%
      \expandafter\xxt@sh@cat
    \fi}
+\unless\if@xxt@noverb@
+\def\xxt@visiblespace{%
+  \iffontchar\font"2423
+    \expandafter\textvisiblespace
+  \else
+    \expandafter\xxt@visiblespace@fallback
+  \fi}
+\def\xxt@visiblespace@fallback{{%
+  \usefont{EU1}{lmtt}{\f@series}{\f@shape}%
+  \textvisiblespace}}
+\begingroup
+  \catcode`\ =\active%
+  \gdef\xxt@vprintspaces{\catcode`\ \active\let \xxt@visiblespace}%
+\endgroup
+\def\verb{\relax\ifmmode\hbox\else\leavevmode\null\fi
+  \bgroup
+    \verb@eol@error \let\do\@makeother \dospecials
+    \verbatim@font\@noligs
+    \@ifstar\@@sverb\@verb}
+\def\@@sverb{\xxt@vprintspaces\@sverb}
+\AtBeginDocument{%
+  \xxt@patch@verbatim
+  \xxt@patch@moreverb
+  \xxt@patch@fancyvrb
+  \xxt@patch@listings}
+\def\xxt@patch@verbatim{%
+  \@ifpackageloaded{verbatim}{%
+    \@namedef{verbatim*}{\begingroup\@verbatim\xxt@vprintspaces\verbatim@start}%
+  }{%
+    \@namedef{verbatim*}{\@verbatim\xxt@vprintspaces\@sxverbatim}%
+  }}
+\def\xxt@patch@moreverb{%
+  \@ifpackageloaded{moreverb}{%
+    \@namedef{listingcont*}{%
+      \def\verbatim@processline{%
+        \thelisting@line \global\advance\listing@line1
+        \the\verbatim@line\par}%
+      \@verbatim\xxt@vprintspaces\verbatim@start}%
+  }{}}
+\def\xxt@patch@fancyvrb{%
+  \@ifpackageloaded{fancyvrb}{%
+    \let\FancyVerbSpace\xxt@visiblespace
+  }{}}
+\def\xxt@patch@listings{%
+  \@ifpackageloaded{listings}{%
+    \let\lst@visiblespace\xxt@visiblespace
+  }{}}
+\fi
 %% 
-%% Copyright (C) 2006/2007 by Will Robertson <wspr81@gmail.com>
+%% Copyright (C) 2006-2008 by Will Robertson <wspr81@gmail.com>
 %% 
 %% Distributable under the LaTeX Project Public License,
 %% version 1.3c or higher (your choice). The latest version of

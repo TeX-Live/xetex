@@ -4,21 +4,27 @@
 %</internal>
 %<*readme>
 -------------------------
-THE XLTXTRA PACKAGE v0.3c
+THE XLTXTRA PACKAGE v0.4
 
-This package provides a few small features that 
-are useful for XeLaTeX.
+This package provides an ever increasing number of
+small features that are useful for XeLaTeX.
 
 It loads the fixltx2e and etex packages and
 patches a couple of other LaTeX commands: 
- \-: for discretionary hyphenation with variable
+  \-: for discretionary hyphenation with variable
      hyphenation characters, and 
- \textsuperscript & \textsubscript:
+  \textsuperscript & \textsubscript:
      now use fontspec to access
      real superior/inferior characters,
- \emph: uses NFSS information to determine
+  \emph: uses NFSS information to determine
      when to enter \eminnershape,
- \showhyphens: now works.
+  \showhyphens: now works,
+  \verb*: now displays visible spaces correctly
+  \begin{verbatim*}: ditto
+
+The following packages are patched to correctly 
+display visible space within various verbatims:
+  verbatim, moreverb, fancyvrb, listings
 
 Defines logos \XeTeX and \XeLaTeX.
 
@@ -30,7 +36,7 @@ For more info see the documentation xltxtra.pdf.
 
 --------------
 Will Robertson
-2006/2007
+2006-2008
 Distributed under the LaTeX Project Public License
 %</readme>
 %<*internal>
@@ -47,14 +53,14 @@ Distributed under the LaTeX Project Public License
 
   ____________________________
   The xltxtra package         
-  (C) 2006/2007  Will Robertson    
+  (C) 2006-2008  Will Robertson    
   License information appended
 
 
 \endpreamble
 \postamble
 
-Copyright (C) 2006/2007 by Will Robertson <wspr81@gmail.com>
+Copyright (C) 2006-2008 by Will Robertson <wspr81@gmail.com>
 
 Distributable under the LaTeX Project Public License,
 version 1.3c or higher (your choice). The latest version of
@@ -124,6 +130,7 @@ This work consists of the file  xltxtra.dtx
 % \item[no-emph] Disables the redefinition of \cmd\emph\ and \cmd\em\ described in \secref{emph}.
 % \item[no-logos] Disables the redefinition of \cmd\TeX, etc. described in \secref{logos}, but \emph{does} still define the \cmd\XeTeX\ and \cmd\XeLaTeX\ logo commands.
 % \item[no-hyphen] Disables the redefinition of \cmd\-\ (probably harmless anyway) described in \secref{hyphen}.
+% \item[no-verb] Disables the redefinition of \cmd{\verb*} and |\begin{verbatim*}|, and the patching of various verbatim packages, as described in \secref{verb}.
 % \end{description}
 %
 % \section{Features}
@@ -189,6 +196,18 @@ This work consists of the file  xltxtra.dtx
 % This problem has been solved by loading the 
 % \pkg{fixltx2e} and \pkg{xunicode} packages in \pkg{xltxtra}.
 %
+% \subsection{Verbatim}
+% \seclabel{verb}
+%
+% Many verbatim mechanisms assume the existence of a `visible space' character that exists in the \textsc{ascii} space slot of the typewriter font. This character is known in unicode as \unichar{2434}{box open}, which looks like this: `\verb*| |'.
+%
+% When a unicode typewriter font is used, \LaTeX\ no longer prints visible spaces for the |verbatim*| environment and |\verb*| command. \pkg{xltxtra} fixes this problem by using the correct unicode glyph, and patches the following packages to do the same:
+%  \pkg{listings}, \pkg{fancyvrb}, \pkg{moreverb}, and \pkg{verbatim}.
+%
+% In the case that the typewriter font does not contain `\verb*| |', the Latin Modern Mono font is used as a fallback. 
+%
+%
+%
 % \subsection{Logos}
 % \seclabel{logos}
 %
@@ -241,6 +260,7 @@ This work consists of the file  xltxtra.dtx
 % A new version, written by Jonathan Kew, is included in this package that \emph{does} work. Minor differences with the original: the showing of hyphens in the console output will be marked with explanatory text. Also, multiple words, separated by commas, will end up in separate instances of `showing hyphens'.
 % \showhyphens{discomedusoid, discommodiousness}
 %
+% \newpage
 % \part{The \textsf{xltxtra} package}
 %\iffalse
 %<*package>
@@ -249,11 +269,12 @@ This work consists of the file  xltxtra.dtx
 %
 %    \begin{macrocode}
 \ProvidesPackage{xltxtra}
-  [2008/03/11 v0.3c Improvements for the "XeLaTeX" format]  
+  [2008/07/29 v0.4 Improvements for the "XeLaTeX" format]  
 %    \end{macrocode}
 %
 % \changes{v0.3}{2007/05/29}{Added proper documentation.}
 % \changes{v0.3}{2007/05/29}{Added \texttt{no-} package options to restrict functionality.}
+% \changes{v0.4}{2008/07/29}{Added support for verbatim \& visible spaces.}
 % \PrintChanges
 %
 % \paragraph{Option processing}
@@ -262,10 +283,12 @@ This work consists of the file  xltxtra.dtx
 \newif\if@xxt@nologos@
 \newif\if@xxt@nohyphen@
 \newif\if@xxt@noemph@
+\newif\if@xxt@noverb@
 \DeclareOption{no-sscript}{\@xxt@nosscript@true}
 \DeclareOption{no-logos}{\@xxt@nologos@true}
 \DeclareOption{no-hyphen}{\@xxt@nohyphen@true}
 \DeclareOption{no-emph}{\@xxt@noemph@true}
+\DeclareOption{no-verb}{\@xxt@noverb@true}
 \ProcessOptions*
 %    \end{macrocode}
 %
@@ -690,6 +713,112 @@ This work consists of the file  xltxtra.dtx
 % \changes{v0.3}{2007/05/30}{Implemented.}
 % \end{macro}
 %
+% \subsection{Verbatims}
+%
+% Many thanks to Apostolos Syropolous for discovering this problem and writing the  redefinion of \LaTeX's |verbatim| environment and \cs{verb*} command.
+% 
+%    \begin{macrocode}
+\unless\if@xxt@noverb@
+%    \end{macrocode}
+%
+% \begin{macro}{\xxt@visiblespace}
+% Print \unichar{2434}{Open box}, which is used to visibly display a space character.
+%    \begin{macrocode}
+\def\xxt@visiblespace{%
+  \iffontchar\font"2423
+    \expandafter\textvisiblespace
+  \else
+    \expandafter\xxt@visiblespace@fallback
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\xxt@visiblespace@fallback}
+% If the current font doesn't have u2434, use Latin Modern Mono instead.
+%    \begin{macrocode}
+\def\xxt@visiblespace@fallback{{%
+  \usefont{EU1}{lmtt}{\f@series}{\f@shape}%
+  \textvisiblespace}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\xxt@vprintspaces}
+% Helper macro to turn spaces active and print visible space instead.
+%    \begin{macrocode}
+\begingroup
+  \catcode`\ =\active%
+  \gdef\xxt@vprintspaces{\catcode`\ \active\let \xxt@visiblespace}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\verb}
+% \begin{macro}{\verb*}
+% Redefine \cmd\verb\ to use \cmd\xxt@vprintspaces.
+%    \begin{macrocode}
+\def\verb{\relax\ifmmode\hbox\else\leavevmode\null\fi
+  \bgroup
+    \verb@eol@error \let\do\@makeother \dospecials
+    \verbatim@font\@noligs
+    \@ifstar\@@sverb\@verb}
+\def\@@sverb{\xxt@vprintspaces\@sverb}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% 
+% It's better to put small things into \cmd\AtBeginDocument, so here we go:
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \xxt@patch@verbatim
+  \xxt@patch@moreverb
+  \xxt@patch@fancyvrb
+  \xxt@patch@listings}
+%    \end{macrocode}
+%
+% \begin{environment}{verbatim*}
+%    \begin{macrocode}
+\def\xxt@patch@verbatim{%
+  \@ifpackageloaded{verbatim}{%
+    \@namedef{verbatim*}{\begingroup\@verbatim\xxt@vprintspaces\verbatim@start}%
+  }{%
+%    \end{macrocode}
+% This is for vanilla LaTeX.
+%    \begin{macrocode}
+    \@namedef{verbatim*}{\@verbatim\xxt@vprintspaces\@sxverbatim}%
+  }}
+%    \end{macrocode}
+% \end{environment}
+% 
+% This is for moreverb.
+%    \begin{macrocode}
+\def\xxt@patch@moreverb{%
+  \@ifpackageloaded{moreverb}{%
+    \@namedef{listingcont*}{%
+      \def\verbatim@processline{%
+        \thelisting@line \global\advance\listing@line1
+        \the\verbatim@line\par}%
+      \@verbatim\xxt@vprintspaces\verbatim@start}%
+  }{}}
+%    \end{macrocode}
+% 
+%    \begin{macrocode}
+\def\xxt@patch@fancyvrb{%
+  \@ifpackageloaded{fancyvrb}{%
+    \let\FancyVerbSpace\xxt@visiblespace
+  }{}}
+%    \end{macrocode}
+% 
+%    \begin{macrocode}
+\def\xxt@patch@listings{%
+  \@ifpackageloaded{listings}{%
+    \let\lst@visiblespace\xxt@visiblespace
+  }{}}
+%    \end{macrocode}
+% Finish verbatim features:
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
 %\iffalse
 %</package>
 %\fi
@@ -800,6 +929,9 @@ This work consists of the file  xltxtra.dtx
 \newcommand*\doarg[1]{%
   \stepcounter{argument}%
   \noindent{\ttfamily\makebox[0pt][r]{[}\#\theargument]}:~#1\par\nobreak}
+
+\newcommand\unichar[2]{\textsc{\MakeLowercase{u+#1: #2}}}
+
 %    \end{macrocode}
 %</dtx-style>
 %\fi
