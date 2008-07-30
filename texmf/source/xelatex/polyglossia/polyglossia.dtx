@@ -2,7 +2,7 @@
 % polyglossia.dtx generated using mkpolyglossiadtx.pl
 % (derived from makedtx.pl version  (c) Nicola Talbot)
 % 
-% Created on 2008/7/28 9:07
+% Created on 2008/7/30 9:48
 %<*internal>
 \iffalse
 %</internal>
@@ -32,7 +32,7 @@ Polyglossia makes it possible to automate the following tasks:
 * Adapting the formatting of dates (for non-gregorian calendars via external
   packages bundled with polyglossia: currently the hebrew, islamic and farsi
   calendars are supported).
-* For languages that have their own numeration system, modifyinf the formatting 
+* For languages that have their own numeration system, modifying the formatting 
   of numbers appropriately.
 * Ensuring the proper directionality if the document contains languages 
   written from right to left (via the package bidi, available separately).
@@ -49,6 +49,19 @@ which will generate all files and produce the pdf documentation all at once.
 Alternatively if you have the file polyglossia.ins run
 	xetex polyglossia.ins 
 and follow the instructions displayed.
+
+CHANGES
+
+1.0.1
+   * Improved documentation (added sections on font setup and numeration mappings)
+   * Improvements and bugfixes for English and German
+   * Bugfix in gloss-syriac.ldf (spurious space after \textsyriac{...})
+   * Extended the scope of \syriacabjad
+   * Added gloss-amharic.ldf (ported from ethiop.ldf in the package ethiop)
+
+1.0 
+   * Initial release on CTAN 
+
 
   ------------------------------
    François Charette, July 2008
@@ -537,7 +550,7 @@ and follow the instructions displayed.
 % \subsection{english}
 % \textbf{Options}: 
 % 	\begin{itemize}
-% 	\item \TB{variant} = \textit{american} (= us), british (= uk), australian or newzealand
+% 	\item \TB{variant} = \textit{american} (= us), usmax (same as ‘american’ but with additional hyphenation patterns), british (= uk), australian or newzealand
 % 	\item \TB{ordinalmonthday} = true/\textit{false} (true by default only when variant = british)	
 % 	\end{itemize}
 % 
@@ -562,7 +575,13 @@ and follow the instructions displayed.
 % \subsection{german}
 % \textbf{Options}: 
 % 	\begin{itemize}
-% 	\item \TB{spelling} = \textit{new} or old
+% 	\item \TB{spelling} = \textit{new} (= 1996) or old (= 1901): 
+% 		indicates whether hyphenation patterns for traditional (1901) or reformed 
+% 		(1996) orthography should be used. The latter is the default.
+% 	\item \TB{latesthyphen} = \textit{false} or true: if this option is set to true, 
+% 		the latest (experimental) hyphenation patterns ‘(n)german-x-latest’ 
+% 		will be loaded instead of ‘german’ or ‘ngerman’. NB: This is based on
+% 		the file \texttt{language.dat} that comes with \TeX Live 2008.
 % 	\end{itemize}
 % 
 % \subsection{greek}
@@ -764,7 +783,8 @@ and follow the instructions displayed.
    \xpg@warning{No hyphenation patterns were loaded for `#1'\MessageBreak
          I will use the patterns loaded for \string\language=0\MessageBreak instead}}
 \providecommand*{\xpg@nolang}[1]{%
-   \xpg@warning{Couldn't find file gloss-#1.ldf!}}%
+   \xpg@warning{File gloss-#1.ldf does not exist!^^J
+   I will nevertheless try to use hyphenation patterns for #1.}}%
       %TODO try at least to load the hyphenation patterns for #1.
 \def\xpg@ill@value#1#2{%
   \xpg@warning{Illegal value (#1) for #2}}
@@ -877,7 +897,7 @@ and follow the instructions displayed.
     \selectbackgroundlanguage{#2}}%
    }%
    %ELSE
-   {\xpg@nolang{#2}}}%
+   {\xpg@nolang{#2}\hyphenrules{#2}}}%
 
 \let\setmainlanguage=\setdefaultlanguage
 
@@ -942,7 +962,7 @@ and follow the instructions displayed.
      {\PackageWarning{polyglossia}{gloss-#2.ldf is already loaded!}}%
    }%
    %ELSE  
-   {\xpg@nolang{#2}}%
+   {\xpg@nolang{#2}\hyphenrules{#2}}%
    %TODO ? \expandafter\ifx\csname l@#2\endcsname\@undefined
    %\xpg@nopatterns{#2}\expandafter\adddialect\csname l@#2\endcsname 0%
    %\else\expandafter\expandafter\protect\language=\csname l@#2\endcsname\fi%
@@ -968,7 +988,7 @@ and follow the instructions displayed.
    {\let\foreignlanguage\@undefined}
 
 \newcommand{\foreignlanguage}[3][]{%
-   \ifcsundef{#2@loaded}{\xpg@nolang{#2}}{%
+   \ifcsundef{#2@loaded}{\xpg@nolang{#2}\hyphenrules{#2}}{%
      {\def\languagename{#2}%
       \setkeys{#2}{#1}%
       \xpg@csifdef@warn{#2@font}%
@@ -984,7 +1004,7 @@ and follow the instructions displayed.
    {\let\selectlanguage\@undefined}
 
 \newcommand{\selectlanguage}[2][]{%
-   \ifcsundef{#2@loaded}{\xpg@nolang{#2}}{%
+   \ifcsundef{#2@loaded}{\xpg@nolang{#2}\hyphenrules{#2}}{%
       \def\xpg@pop@language{%
          \xpg@set@language{\languagename}%
          \let\emp@langname\@undefined}%
@@ -1033,7 +1053,15 @@ and follow the instructions displayed.
    }{}
 
 \newcommand{\setlocalhyphenmins}[3]{%
-   \providehyphenmins{#1}{#2#3}}
+   \expandafter\ifx\csname l@#1\endcsname\relax%
+     \xpg@warning{\string\setlocalhyphenmin useless for unknown language #1}%
+   \else
+      \expandafter\ifx\csname l@#1\endcsname\l@nohyphenation%
+        \xpg@warning{\string\setlocalhyphenmin useless for unhyphenated language #1}%
+      \else%
+      \providehyphenmins{#1}{#2#3}%
+      \fi%
+   \fi}
 
 \def\use@localhyphenmins#1{%
    \ifcsundef{#1hyphenmins}{}%
@@ -3364,6 +3392,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\tmp@us{us}
+\def\tmp@usmax{usmax}
 \def\tmp@uk{uk}
 \def\tmp@british{british}
 \def\tmp@american{american}
@@ -3382,11 +3411,13 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
      \xpg@info{Option: english variant=british}
   \else\ifx\@tmpa\tmp@us\def\en@variant{american}\@ordinalmonthdayfalse
      \xpg@info{Option: english variant=american}
+  \else\ifx\@tmpa\tmp@usmax\def\en@variant{usenglishmax}\@ordinalmonthdayfalse
+     \xpg@info{Option: english variant=american (with additional patterns)}
   \else\ifx\@tmpa\tmp@australian\def\en@variant{british}\@ordinalmonthdayfalse
      \xpg@info{Option: english variant=australian}
   \else\ifx\@tmpa\tmp@newzealand\def\en@variant{british}\@ordinalmonthdayfalse
      \xpg@info{Option: english variant=newzealand}
-  \fi\fi\fi\fi\fi}
+  \fi\fi\fi\fi\fi\fi}
 
 \def\tmp@true{true}
 \define@key{english}{ordinalmonthday}[false]{%
@@ -4058,24 +4089,44 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \makeatletter
 \def\german@font{\normalfontlatin}
 
-\ifx\l@german\@undefined
-   \xpg@nopatterns{german}
-   \adddialect\l@german0
-\fi
-
-
-\def\tmp@new{new}
 \def\tmp@old{old}
+\def\tmp@oldyr{1901}
+\newif\if@german@oldspelling
+\@german@oldspellingfalse
 \define@key{german}{spelling}[new]{%
    \def\@tmpa{#1}%
    \ifx\@tmpa\tmp@old%
-     \def\german@hyph{\l@german}%
+	\ifx\l@german\@undefined%
+	   \xpg@nopatterns{german}%
+	   \adddialect\l@german0%
+	\fi%
+        \@german@oldspellingtrue%
    \else%
-     \def\german@hyph{\l@ngerman}%
+     \ifx\@tmpa\tmp@oldyr%
+        \ifx\l@german\@undefined%
+	   \xpg@nopatterns{german}%
+	   \adddialect\l@german0%
+        \fi%
+        \@german@oldspellingtrue%
+     \else%
+	\ifx\l@ngerman\@undefined%
+	    \ifx\l@german\@undefined%
+	      \xpg@nopatterns{ngerman}%
+	      \adddialect\l@ngerman0%
+	    \else%
+	      \xpg@warning{You asked for `ngerman' but only `german' hyphenation is available!}%
+              \@german@oldspellingtrue%
+	    \fi%
+	\else%
+            \@german@oldspellingfalse
+	\fi%
+      \fi%
    \fi%
 }
 
-\setkeys{german}{spelling}
+\define@boolkey{german}[german@]{latesthyphen}[false]{}
+
+\setkeys{german}{spelling,latesthyphen}
 
 \def\captionsgerman{%
    \def\prefacename{\textgerman{Vorwort}}%
@@ -4102,14 +4153,15 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 }
 \def\dategerman{%   
    \def\today{\textgerman{\number\day.%
-      \space \ifcase\month%
+      \space \ifcase\month%TODO add option for Austrian forms (Jänner etc)
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
       Juli\or August\or September\or Oktober\or November\or%
       Dezember\fi%
       \space \number\year}}%
 }
 
-\def\german@language{\protect\language=\german@hyph}
+\def\german@language{\protect\language=%
+  \csname l@\if@german@oldspelling\else n\fi german\ifgerman@latesthyphen -x-latest\fi\endcsname}
 
 \setlocalhyphenmins{german}{2}{2}%
 
@@ -6957,6 +7009,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 % \subsection{gloss-thai.ldf}
 %    \begin{macrocode}
 \ProvidesFile{gloss-thai.ldf}[polyglossia: module for thai]
+\makeatletter
 %% This is partly based on thai-latex for Babel:
 %%%% Copyright (C) 1999 - 2006
 %%%%           by Surapant Meknavin,
@@ -6966,12 +7019,6 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 %%%%              Thai Linux Working Group
 %%%%              http://linux.thai.net/
 %%%%
-\makeatletter
-
-\ifx\l@thai\@undefined%
-   \xpg@nopatterns{Thai}%
-   \adddialect\l@thai0%
-\fi
 
 \newif\if@thai@numerals
 \def\tmp@thai{thai}
@@ -7042,10 +7089,10 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \def\thai@numbers{%
    \let\@latinalph\@alph%
    \let\@latinAlph\@Alph%
-   \if@thai@numerals
+   \if@thai@numerals%
      \let\@alph\@thaialph%
      \let\@Alph\@thaiAlph%
-   \fi
+   \fi%
    }
 \def\nothai@numbers{%
   \let\@alph\@latinalph%
@@ -7083,9 +7130,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    \let\ttfamily=\thai@font%
    \def\reset@font{\normalfont}}
 
-\def\thai@language{\protect\language=\l@thai}
-
-\setlocalhyphenmins{thai}{11}{11}%
+\def\thai@language{\protect\language=\l@nohyphenation}
 
 \def\blockextras@thai{%
    \renewcommand{\baselinestretch}{1.2}% FIXME restore default value in noextras?
@@ -7533,7 +7578,7 @@ Polyglossia makes it possible to automate the following tasks:
 * Adapting the formatting of dates (for non-gregorian calendars via external
   packages bundled with polyglossia: currently the hebrew, islamic and farsi
   calendars are supported).
-* For languages that have their own numeration system, modifyinf the formatting 
+* For languages that have their own numeration system, modifying the formatting 
   of numbers appropriately.
 * Ensuring the proper directionality if the document contains languages 
   written from right to left (via the package bidi, available separately).
@@ -7551,6 +7596,19 @@ Alternatively if you have the file polyglossia.ins run
 	xetex polyglossia.ins 
 and follow the instructions displayed.
 
+CHANGES
+
+1.0.1
+   * Improved documentation (added sections on font setup and numeration mappings)
+   * Improvements and bugfixes for English and German
+   * Bugfix in gloss-syriac.ldf (spurious space after \textsyriac{...})
+   * Extended the scope of \syriacabjad
+   * Added gloss-amharic.ldf (ported from ethiop.ldf in the package ethiop)
+
+1.0 
+   * Initial release on CTAN 
+
+
   ------------------------------
    François Charette, July 2008
     <firmicus ατ gmx δοτ net>
@@ -7561,7 +7619,8 @@ and follow the instructions displayed.
 
 polyglossia.sty:
 	* for languages with hyphenation patterns but without
-	  a gloss-* module, allow to load it with only a warning message
+	  a gloss-* module, allow to load it with only a warning message ?
+	  => perhaps better use hyphenrules: DONE
 	* MAKE polyglossia cooperate with Babel-aware packages and classes, for
 	  example scrlttr2! Lines 1347 to 1708 of scrlttr2.cls are a sort of 
 	  patch for Babel, which is not compatible with polyglossia right now...
@@ -7633,29 +7692,29 @@ Example (at the end of a gloss file):
 
 gloss-arabic.ldf:
 	* check locales: if morocco or algeria : use western numerals but don't 
-	  override the numbers key
+	  override the numbers key: DONE
 	* define a defaultLRlanguage … \def\LRtoday{\localdefaultLRlanguage{\today}} ???
 
 gloss-english.ldf: 
-	* change format to Day Month Year when dialect is british
+	* change format to Day Month Year when dialect is british: DONE
 
 gloss-farsi.ldf:
 	* add option for months 
-	* implement ftoday.sty?
+	* implement ftoday.sty? DONE
 
 gloss-finnish.ldf:
 	* hyphenpenalty as in Babel?
 
 gloss-french.ldf:
-	* \define@key{french}{guillemets}[normal]{
-	* \addfontfeature{Mapping=sansaccents}% <<< TODO!
+	* \define@key{french}{guillemets}[normal]{…}
+	* \addfontfeature{Mapping=sansaccents}%
 
 gloss-hebrew.ldf
 	* insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
 	* insert geresh (\char"05F3) after letter if it is alone
 
 gloss-italian.ldf
-	* \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000
+	* \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000 ?
 	
 gloss-{l,u}sorbian.ldf
 	* implement option date=old
@@ -7764,18 +7823,13 @@ hijrical.sty
 %<*examples.tex>
 \documentclass[a4paper]{article}
 \usepackage[no-math]{fontspec}
-% makes fontspec very quiet!
-%\makeatletter
-%\renewcommand\zf@PackageWarning[1]{\relax}
-%\renewcommand\zf@PackageInfo[1]{\relax}%
-%\makeatother
 \usepackage{xltxtra,url}
-\usepackage[quiet]{polyglossia}
+\usepackage{polyglossia}
 \setdefaultlanguage{french}
 \setotherlanguage[variant=british,ordinalmonthday=false]{english}
 \setotherlanguage[variant=poly]{greek}
 \setotherlanguage[numerals=thai]{thai}
-\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew,amharic}
+\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew,amharic,tigriya}
 \setromanfont{Linux Libertine}
 \defaultfontfeatures{Scale=MatchLowercase,RawFeature={+locl}}
 \setmonofont{Inconsolata}
@@ -7801,7 +7855,7 @@ hijrical.sty
 (\today)
 \end{english}
 
-\begin{german}
+\begin{german}[spelling=new,latesthyphen=true]
 \textbf{Die deutsche Sprache}\footnote{ From \url{http://de.wikipedia.org/wiki/Deutsche_Sprache}} (auch das Deutsche) gehört zum westlichen Zweig der germanischen Sprachen und ist eine der meistgesprochenen europäischen Sprachen weltweit, und gilt so als Weltsprache.\\
 (\today)
 \end{german}

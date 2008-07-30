@@ -23,7 +23,7 @@ Polyglossia makes it possible to automate the following tasks:
 * Adapting the formatting of dates (for non-gregorian calendars via external
   packages bundled with polyglossia: currently the hebrew, islamic and farsi
   calendars are supported).
-* For languages that have their own numeration system, modifyinf the formatting 
+* For languages that have their own numeration system, modifying the formatting 
   of numbers appropriately.
 * Ensuring the proper directionality if the document contains languages 
   written from right to left (via the package bidi, available separately).
@@ -44,10 +44,11 @@ and follow the instructions displayed.
 CHANGES
 
 1.0.1
-   * Added gloss-amharic.ldf (ported from ethiop.ldf in the package ethiop)
+   * Improved documentation (added sections on font setup and numeration mappings)
+   * Improvements and bugfixes for English and German
    * Bugfix in gloss-syriac.ldf (spurious space after \textsyriac{...})
    * Extended the scope of \syriacabjad
-   * Improved documentation (added sections on font setup and numeration mappings)
+   * Added gloss-amharic.ldf (ported from ethiop.ldf in the package ethiop)
 
 1.0 
    * Initial release on CTAN 
