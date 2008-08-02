@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage[no-math]{fontspec}
+\usepackage{bidi}
+\newfontfamily\arab[Script=Arabic, Scale=1.5]{Scheherazade}
+\begin{document}
+
+This is some text in English with Arabic insertion (\RL{\arab بعض الكلمات العربية}).\footnote{ 1 2 3}
+
+\setRL\arab
+وهذه فقرةٌ بالعربي مع كلمات انكليزية (\LR{\rmfamily Some English words}).\footnote{ 1 2 3}
+\setLR\rmfamily
+
+Back to left-to-right mode…\footnote{ 1 2 3}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+1 & 2\\
+3 & 4
+\end{tabular}
+\caption{This is a caption}
+\end{table}
+
+\begin{equation}
+x^2 + y^2 = z^2
+\end{equation}
+
+\setRL
+\begin{table}[h]
+\centering
+\begin{tabular}{cc}
+1 & 2\\
+3 & 4
+\end{tabular}
+\caption{This is a caption}
+\end{table}
+
+\begin{equation}
+x^2 + y^2 = z^2
+\end{equation}
+\end{document}
