@@ -1,8 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/07/26 v1.0.1 
+\ProvidesPackage{polyglossia}[2008/08/01 v1.0.2 
 	Babel replacement for XeLaTeX]
 \RequirePackage{etoolbox} % TEMPORARY? but so convenient!
 \RequirePackage{fontspec} %which itself depends on xkeyval
+\cslet{ver@babel.sty}{\@empty} % this "fakes" babel: useful for csquotes and other pkgs
+
 \providecommand*{\xpg@warning}[1]{%
    \PackageWarning{polyglossia}%
    {#1}}      
@@ -59,10 +61,10 @@
             \def\@markright####1####2####3{\@temptokena{\protect\@@ensure@maindir{####1}}%
                \unrestored@protected@xdef\@themark{{\the\@temptokena}%
                {{\protect\@@ensure@maindir{####3}}}}}}
-   \else\ifx\@tmpa\opt@disabled
-      \def\local@marks#1{}
+   \else%\ifx\@tmpa\opt@disabled
+      \def\local@marks##1{}
       \xpg@info{Option: localmarks=off}
-      \fi%
+      %\fi%
    \fi%
 }
 \setkeys{polyglossia}{localmarks=on}
@@ -365,5 +367,7 @@
 \ProcessOptions*
 %This is for compatibility with biblatex and perhaps other pkgs: 
 \def\languageshorthands#1{\relax}
+\let\bbl@set@language\xpg@set@language
+\let\bbl@main@language\xpg@main@language
 \endinput
 
