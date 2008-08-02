@@ -1,10 +1,16 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{polyglossia}[2008/08/01 v1.0.2 
 	Babel replacement for XeLaTeX]
-\RequirePackage{etoolbox} % TEMPORARY? but so convenient!
+\RequirePackage{etoolbox}
 \RequirePackage{fontspec} %which itself depends on xkeyval
-\cslet{ver@babel.sty}{\@empty} % this "fakes" babel: useful for csquotes and other pkgs
 
+%% This is for compatibility with Babel-aware package:
+\cslet{ver@babel.sty}{\@empty} % this "fakes" babel
+\def\languageshorthands#1{\relax} %this is for scrlttr2 class
+\AtEndPreamble{\let\bbl@set@language\xpg@set@language} %for biblatex
+\AtEndPreamble{\let\bbl@main@language\xpg@main@language} %for biblatex
+
+%% custom message macros
 \providecommand*{\xpg@warning}[1]{%
    \PackageWarning{polyglossia}%
    {#1}}      
@@ -20,17 +26,19 @@
       %TODO try at least to load the hyphenation patterns for #1.
 \def\xpg@ill@value#1#2{%
   \xpg@warning{Illegal value (#1) for #2}}
-  
+
+%% use macro if defined, else warn that it is not
 \def\xpg@csifdef@warn#1{%
    \ifcsundef{#1}{\PackageWarning{polyglossia}{ #1 is not defined}}%
    {\expandafter\protect\csname #1\endcsname}}
-
+%% same without warning
 \def\xpg@csifdef#1{\ifcsundef{#1}{\relax}{\expandafter\protect\csname #1\endcsname}}
 
-
+%% ensure directionality if bidi is loaded, else ignore
 \def\@@ensure@dir#1{\ifcsundef{@ensure@dir}{#1}{\@ensure@dir{#1}}}
 \def\@@ensure@maindir#1{\ifcsundef{@ensure@maindir}{#1}{\@ensure@maindir{#1}}}
 
+%% ensure localization of \markright and \markboth commands
 \def\opt@enabled{on}
 \def\opt@disabled{off}
 \define@key{polyglossia}{localmarks}[on]{%
@@ -69,23 +77,9 @@
 }
 \setkeys{polyglossia}{localmarks=on}
 
-%%TODO Use the etoolbox macros instead!
-%\def\oaddto#1#2{%
-%   \ifx#1\@undefined
-%      \def#1{#2}%
-%   \else
-%      \ifx#1\relax
-%         \def#1{#2}%
-%      \else
-%         {\toks@\expandafter{#1#2}%
-%           \xdef#1{\the\toks@}}%
-%      \fi
-%   \fi
-%}
-
 \newcommand{\setdefaultlanguage}[2][]{%
    \IfFileExists{gloss-#2.ldf}%
-   {\ifcsundef{#2@loaded}% from etoolbox.sty
+   {\ifcsundef{#2@loaded}%
      {\input{gloss-#2.ldf}%
      \xpg@info{Default language is #2.}
      \def\languagename{#2}%
@@ -202,7 +196,7 @@
 
 \newcommand\setotherlanguages[1]{%
    \def\do##1{\setotherlanguage{##1}}%
-   \docsvlist{#1}}% from etoolbox.sty
+   \docsvlist{#1}}%
 
 \def\common@language{%
    \protect\language=0%
@@ -365,9 +359,5 @@
 {\edef\@temp{\noexpand\setotherlanguage{\CurrentOption}}}%
    \AtEndOfPackage{\@temp}}
 \ProcessOptions*
-%This is for compatibility with biblatex and perhaps other pkgs: 
-\def\languageshorthands#1{\relax}
-\let\bbl@set@language\xpg@set@language
-\let\bbl@main@language\xpg@main@language
 \endinput
 
