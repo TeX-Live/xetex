@@ -8,13 +8,12 @@
 %% 
 %%   ________________________________
 %%   The fontspec package for XeLaTeX
-%%   (C) 2004--2007    Will Robertson
+%%   (C) 2004--2008    Will Robertson
 %% 
 %%   License information appended.
 %% 
-%% 
 \ProvidesPackage{fontspec}
-  [2007/09/01 v1.16 Advanced font selection for XeLaTeX]
+  [2008/08/09 v1.18 Advanced font selection for XeLaTeX]
 \RequirePackage{ifxetex}
 \RequireXeTeX
 \newif\ifzf@firsttime
@@ -28,7 +27,6 @@
 \newif\ifzf@math@euler
 \newif\ifzf@math@lucida
 \newif\ifzf@package@euler@loaded
-\newif\ifzf@package@babel@loaded
 \newif\if@zf@configfile
 \newif\if@zf@euenc
 \newif\if@zf@math
@@ -37,7 +35,8 @@
 \newcount\c@zf@script
 \newcount\c@zf@language
 \def\zf@nl{^^J\space\space\space\space}
-\newcommand\zf@PackageError[2]{\PackageError{fontspec}{{\zf@nl #1}^^J}{#2}}
+\newcommand\zf@PackageError[2]{%
+  \PackageError{fontspec}{{\zf@nl #1}^^J}{#2}}
 \newcommand\zf@PackageWarning[1]{%
   \PackageWarning{fontspec}{\zf@nl #1^^JThis warning occured}}
 \newcommand\zf@PackageInfo[1]{\PackageInfo{fontspec}{#1}}
@@ -52,7 +51,12 @@
 \DeclareOption{config}{\@zf@configfiletrue}
 \DeclareOption{no-config}{\@zf@configfilefalse}
 \DeclareOption{noconfig}{\@zf@configfilefalse}
-\DeclareOption{quiet}{\let\zf@PackageWarning\zf@PackageInfo}
+\DeclareOption{quiet}{%
+  \let\zf@PackageWarning\zf@PackageInfo
+  \let\zf@PackageInfo\@gobble}
+\DeclareOption{silent}{%
+  \let\zf@PackageWarning\@gobble
+  \let\zf@PackageInfo\@gobble}
 \ExecuteOptions{config,lm-default,math}
 \ProcessOptions*
 \RequirePackage{ifxetex}
@@ -168,7 +172,8 @@
     \zf@PackageWarning{Option '#2' of font feature '#1' overwritten.}}%
   \zf@define@feature@option{#1}{#2}{}{}{#3}}
 \newcommand*\aliasfontfeature[2]{\multi@alias@key{#1}{#2}}
-\newcommand*\aliasfontfeatureoption[3]{\keyval@alias@key[zf@feat]{#1}{#2}{#3}}
+\newcommand*\aliasfontfeatureoption[3]{%
+  \keyval@alias@key[zf@feat]{#1}{#2}{#3}}
 \newcommand*\newfontscript[2]{%
   \define@key[zf@feat]{Script}{#1}[]{%
     \zf@check@ot@script{#2}%
@@ -178,7 +183,7 @@
       \xdef\zf@family@long{\zf@family@long+script=#1}%
       \xdef\zf@pre@ff{script=#2,\zf@pre@ff}%
     \else
-      \zf@PackageWarning{Font \fontname\zf@basefont does not contain script '#1'}%
+      \zf@PackageWarning{Font \fontname\zf@basefont\space does not contain script '#1'}%
     \fi}}
 \newcommand*\newfontlanguage[2]{%
   \define@key[zf@feat]{Lang}{#1}[]{%
@@ -190,7 +195,7 @@
       \xdef\zf@pre@ff{\zf@pre@ff language=#2,}%
     \else
       \zf@PackageWarning{%
-        Font \fontname\zf@basefont does not contain
+        Font \fontname\zf@basefont\space does not contain
         language '#1' for script '\zf@script@name'}%
     \fi}}
 \newcommand*\zf@fontspec[2]{%
@@ -199,7 +204,9 @@
   \edef\zf@fontname{#2}%
   \let\zf@family@long\zf@fontname
   \setkeys*[zf]{prepreparse}{#1}%
+  \let\zf@up\zf@fontname
   \edef\@tempa{\noexpand\setkeys*[zf]{preparse}{\XKV@rm}}\@tempa
+  \let\zf@fontname\zf@up
   \let\zf@font@feat\XKV@rm
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \unless\ifzf@icu
@@ -219,13 +226,15 @@
     \zf@get@feature@requests{\zf@font@feat}%
   \zf@firsttimefalse
   \unless\ifcsname zf@UID@\zf@family@long\endcsname
-    \ifcsname c@zf@famc@#2\endcsname
+    \edef\@tempa{#2}%
+    \ifcsname c@zf@famc@\@tempa\endcsname
       \expandafter\stepcounter\else
       \expandafter\newcounter\fi
-        {zf@famc@#2}%
+        {zf@famc@\@tempa}%
     \gdef@cx{zf@UID@\zf@family@long}{%
-      \zap@space#2 \@empty
-      (\expandafter\the\csname c@zf@famc@#2\endcsname)}%
+      \expandafter\expandafter\expandafter
+        \zap@space\expandafter\@tempa\space\@empty
+      (\expandafter\the\csname c@zf@famc@\@tempa\endcsname)}%
   \fi
   \xdef\zf@family{\@nameuse{zf@UID@\zf@family@long}}%
   \unless\ifcsname zf@family@fontname\zf@family\endcsname
@@ -350,8 +359,8 @@
   \edef\@tempb{\itdefault}%
   \ifx\@tempa\@tempb
     \edef\@tempa{\noexpand
-      \DeclareFontShape{\zf@enc}{\zf@family}{#1}{\sldefault}
-        {<->sub*\zf@family/#2/\itdefault}{\zf@adjust}}%
+      \DeclareFontShape{\zf@enc}{\zf@family}{#2}{\sldefault}
+        {<->ssub*\zf@family/#2/\itdefault}{\zf@adjust}}%
     \@tempa
   \fi}
 \newcommand*{\zf@update@family}[1]{%
@@ -526,7 +535,8 @@
   \zf@v@strnum{#1}%
   \c@zf@index\z@ \@tempswafalse
   \loop\ifnum\c@zf@index<\@tempcntb
-    \ifnum\XeTeXOTfeaturetag\zf@basefont\c@zf@script\c@zf@language\c@zf@index=\@tempcnta
+    \ifnum\XeTeXOTfeaturetag\zf@basefont\c@zf@script\c@zf@language
+          \c@zf@index=\@tempcnta
       \@tempswatrue
       \c@zf@index\@tempcntb
     \else
@@ -553,6 +563,10 @@
   \font\zf@basefont="\zf@font@wrap\zf@fontname\zf@suffix" at \f@size pt
   \edef\zf@family@long{\zf@family@long +language:#1}%
   {\setkeys[zf@feat]{Lang}{#1}}}
+\define@key[zf]{preparse}{UprightFont}{%
+  \edef\@tempa{#1}%
+  \zf@partial@fontname#1\@nil=\zf@up
+  \edef\zf@family@long{\zf@family@long up:#1}}
 \define@key[zf]{preparse}{BoldFont}{%
   \edef\@tempa{#1}%
   \ifx\@tempa\@empty
@@ -672,13 +686,15 @@
   \else
     \zf@check@one@char#1\zf@@
     \ifx\@tempb\@empty
-      {\zf@basefont\expandafter\ifnum\expandafter\XeTeXcharglyph\expandafter`#1 > 0
+      {\zf@basefont\expandafter\ifnum\expandafter\XeTeXcharglyph
+            \expandafter`#1 > 0
          \g@addto@macro\zf@adjust{%
            {\expandafter\hyphenchar\expandafter
             \font\expandafter`#1}}%
       \else
         \zf@PackageError
-          {\fontname\zf@basefont\space doesn't appear to have the glyph corresponding to #1.}
+          {\fontname\zf@basefont\space doesn't appear to have the glyph
+            corresponding to #1.}
           {You can't hyphenate with a character that's not available!}
       \fi}%
     \else
@@ -686,7 +702,8 @@
         \g@addto@macro\zf@adjust{\hyphenchar\font#1\relax}%
       \else
         \zf@PackageError
-          {\fontname\zf@basefont\space doesn't appear to have the glyph corresponding to #1.}
+          {\fontname\zf@basefont\space doesn't appear to have the glyph
+            corresponding to #1.}
           {You can't hyphenate with a character that's not available!}%
       \fi}%
     \fi
@@ -718,10 +735,20 @@
     \ifzf@mm\else
       \ifzf@firsttime
         \zf@PackageWarning
-          {\fontname\zf@basefont\space doesn't appear to have an Optical Size axis}%
+          {\fontname\zf@basefont\space doesn't appear
+            to have an Optical Size axis}%
       \fi
     \fi
   \fi}
+\define@key[zf]{options}{FakeSlant}{%
+  \zf@update@family{+slant:#1}%
+  \zf@update@ff{slant=#1}}
+\define@key[zf]{options}{FakeStretch}{%
+  \zf@update@family{+extend:#1}%
+  \zf@update@ff{extend=#1}}
+\define@key[zf]{options}{FakeBold}{%
+  \zf@update@family{+embolden:#1}%
+  \zf@update@ff{embolden=#1}}
 \zf@define@font@feature{Ligatures}
 \zf@define@feature@option{Ligatures}{Required}       {1}{0}{+rlig}
 \zf@define@feature@option{Ligatures}{NoRequired}     {1}{1}{-rlig}
@@ -769,6 +796,8 @@
 \zf@define@font@feature  {Contextuals}
 \zf@define@feature@option{Contextuals}{Swash}        {} {} {+cswh}
 \zf@define@feature@option{Contextuals}{NoSwash}      {} {} {-cswh}
+\zf@define@feature@option{Contextuals}{Alternate}    {} {} {+calt}
+\zf@define@feature@option{Contextuals}{NoAlternate}  {} {} {-calt}
 \zf@define@feature@option{Contextuals}{WordInitial}  {8}{0}{+init}
 \zf@define@feature@option{Contextuals}{NoWordInitial}{8}{1}{-init}
 \zf@define@feature@option{Contextuals}{WordFinal}    {8}{2}{+fina}
@@ -800,11 +829,11 @@
 \zf@define@feature@option{Fractions}{Off}      {11}{0}{-frac}
 \zf@define@feature@option{Fractions}{Diagonal} {11}{2}{}
 \zf@define@feature@option{Fractions}{Alternate}{}  {} {+afrc}
-\define@key[zf]{options}{Alternate}{%
+\define@key[zf]{options}{Alternate}[0]{%
   \setkeys*[zf@feat]{Alternate}{#1}%
   \unless\ifx\XKV@rm\@empty
     \def\XKV@tfam{Alternate}%
-    \zf@make@feature{17}{#1}{}%
+    \zf@make@feature{17}{#1}{+salt=#1}%
   \fi}
 \define@key[zf]{options}{Variant}{%
   \setkeys*[zf@feat]{Variant}{#1}%
@@ -869,7 +898,7 @@
 \newfontscript{Balinese}{bali}          \newfontscript{Bengali}{beng}
 \newfontscript{Bopomofo}{bopo}          \newfontscript{Braille}{brai}
 \newfontscript{Buginese}{bugi}          \newfontscript{Buhid}{buhd}
-\newfontscript{Byzantine Music}{byzm}   \newfontscript{Canadian Syllabics}{cans}
+\newfontscript{Byzantine Music}{byzm} \newfontscript{Canadian Syllabics}{cans}
 \newfontscript{Cherokee}{cher}
 \newfontscript{CJK Ideographic}{hani}   \newfontscript{Coptic}{copt}
 \newfontscript{Cypriot Syllabary}{cprt} \newfontscript{Cyrillic}{cyrl}
@@ -889,11 +918,13 @@
 \newfontscript{Mongolian}{mong}
 \newfontscript{Musical Symbols}{musc}   \newfontscript{Myanmar}{mymr}
 \newfontscript{N'ko}{nko }              \newfontscript{Ogham}{ogam}
-\newfontscript{Old Italic}{ital}        \newfontscript{Old Persian Cuneiform}{xpeo}
+\newfontscript{Old Italic}{ital}
+\newfontscript{Old Persian Cuneiform}{xpeo}
 \newfontscript{Oriya}{orya}             \newfontscript{Osmanya}{osma}
 \newfontscript{Phags-pa}{phag}          \newfontscript{Phoenician}{phnx}
 \newfontscript{Runic}{runr}             \newfontscript{Shavian}{shaw}
-\newfontscript{Sinhala}{sinh}           \newfontscript{Sumero-Akkadian Cuneiform}{xsux}
+\newfontscript{Sinhala}{sinh}
+\newfontscript{Sumero-Akkadian Cuneiform}{xsux}
 \newfontscript{Syloti Nagri}{sylo}      \newfontscript{Syriac}{syrc}
 \newfontscript{Tagalog}{tglg}           \newfontscript{Tagbanwa}{tagb}
 \newfontscript{Tai Le}{tale}            \newfontscript{Tai Lu}{talu}
@@ -901,134 +932,197 @@
 \newfontscript{Thaana}{thaa}            \newfontscript{Thai}{thai}
 \newfontscript{Tibetan}{tibt}           \newfontscript{Tifinagh}{tfng}
 \newfontscript{Ugaritic Cuneiform}{ugar}\newfontscript{Yi}{yi  }
-\newfontlanguage{Abaza}{ABA}\newfontlanguage{Abkhazian}{ABK}\newfontlanguage{Adyghe}{ADY}
-\newfontlanguage{Afrikaans}{AFK}\newfontlanguage{Afar}{AFR}\newfontlanguage{Agaw}{AGW}
-\newfontlanguage{Altai}{ALT}\newfontlanguage{Amharic}{AMH}\newfontlanguage{Arabic}{ARA}
-\newfontlanguage{Aari}{ARI}\newfontlanguage{Arakanese}{ARK}\newfontlanguage{Assamese}{ASM}
-\newfontlanguage{Athapaskan}{ATH}\newfontlanguage{Avar}{AVR}\newfontlanguage{Awadhi}{AWA}
-\newfontlanguage{Aymara}{AYM}\newfontlanguage{Azeri}{AZE}\newfontlanguage{Badaga}{BAD}
-\newfontlanguage{Baghelkhandi}{BAG}\newfontlanguage{Balkar}{BAL}\newfontlanguage{Baule}{BAU}
-\newfontlanguage{Berber}{BBR}\newfontlanguage{Bench}{BCH}\newfontlanguage{Bible Cree}{BCR}
-\newfontlanguage{Belarussian}{BEL}\newfontlanguage{Bemba}{BEM}\newfontlanguage{Bengali}{BEN}
-\newfontlanguage{Bulgarian}{BGR}\newfontlanguage{Bhili}{BHI}\newfontlanguage{Bhojpuri}{BHO}
-\newfontlanguage{Bikol}{BIK}\newfontlanguage{Bilen}{BIL}\newfontlanguage{Blackfoot}{BKF}
-\newfontlanguage{Balochi}{BLI}\newfontlanguage{Balante}{BLN}\newfontlanguage{Balti}{BLT}
-\newfontlanguage{Bambara}{BMB}\newfontlanguage{Bamileke}{BML}\newfontlanguage{Breton}{BRE}
-\newfontlanguage{Brahui}{BRH}\newfontlanguage{Braj Bhasha}{BRI}\newfontlanguage{Burmese}{BRM}
-\newfontlanguage{Bashkir}{BSH}\newfontlanguage{Beti}{BTI}\newfontlanguage{Catalan}{CAT}
-\newfontlanguage{Cebuano}{CEB}\newfontlanguage{Chechen}{CHE}\newfontlanguage{Chaha Gurage}{CHG}
-\newfontlanguage{Chattisgarhi}{CHH}\newfontlanguage{Chichewa}{CHI}\newfontlanguage{Chukchi}{CHK}
-\newfontlanguage{Chipewyan}{CHP}\newfontlanguage{Cherokee}{CHR}\newfontlanguage{Chuvash}{CHU}
-\newfontlanguage{Comorian}{CMR}\newfontlanguage{Coptic}{COP}\newfontlanguage{Cree}{CRE}
-\newfontlanguage{Carrier}{CRR}\newfontlanguage{Crimean Tatar}{CRT}\newfontlanguage{Church Slavonic}{CSL}
-\newfontlanguage{Czech}{CSY}\newfontlanguage{Danish}{DAN}\newfontlanguage{Dargwa}{DAR}
-\newfontlanguage{Woods Cree}{DCR}\newfontlanguage{German}{DEU}\newfontlanguage{Default}{DFLT}
-\newfontlanguage{Dogri}{DGR}\newfontlanguage{Divehi}{DIV}\newfontlanguage{Djerma}{DJR}
-\newfontlanguage{Dangme}{DNG}\newfontlanguage{Dinka}{DNK}\newfontlanguage{Dungan}{DUN}
-\newfontlanguage{Dzongkha}{DZN}\newfontlanguage{Ebira}{EBI}\newfontlanguage{Eastern Cree}{ECR}
-\newfontlanguage{Edo}{EDO}\newfontlanguage{Efik}{EFI}\newfontlanguage{Greek}{ELL}
-\newfontlanguage{English}{ENG}\newfontlanguage{Erzya}{ERZ}\newfontlanguage{Spanish}{ESP}
-\newfontlanguage{Estonian}{ETI}\newfontlanguage{Basque}{EUQ}\newfontlanguage{Evenki}{EVK}
-\newfontlanguage{Even}{EVN}\newfontlanguage{Ewe}{EWE}\newfontlanguage{French Antillean}{FAN}
-\newfontlanguage{Farsi}{FAR}\newfontlanguage{Finnish}{FIN}\newfontlanguage{Fijian}{FJI}
-\newfontlanguage{Flemish}{FLE}\newfontlanguage{Forest Nenets}{FNE}\newfontlanguage{Fon}{FON}
-\newfontlanguage{Faroese}{FOS}\newfontlanguage{French}{FRA}\newfontlanguage{Frisian}{FRI}
-\newfontlanguage{Friulian}{FRL}\newfontlanguage{Futa}{FTA}\newfontlanguage{Fulani}{FUL}
-\newfontlanguage{Ga}{GAD}\newfontlanguage{Gaelic}{GAE}\newfontlanguage{Gagauz}{GAG}
-\newfontlanguage{Galician}{GAL}\newfontlanguage{Garshuni}{GAR}\newfontlanguage{Garhwali}{GAW}
-\newfontlanguage{Ge'ez}{GEZ}\newfontlanguage{Gilyak}{GIL}\newfontlanguage{Gumuz}{GMZ}
-\newfontlanguage{Gondi}{GON}\newfontlanguage{Greenlandic}{GRN}\newfontlanguage{Garo}{GRO}
-\newfontlanguage{Guarani}{GUA}\newfontlanguage{Gujarati}{GUJ}\newfontlanguage{Haitian}{HAI}
-\newfontlanguage{Halam}{HAL}\newfontlanguage{Harauti}{HAR}\newfontlanguage{Hausa}{HAU}
-\newfontlanguage{Hawaiin}{HAW}\newfontlanguage{Hammer-Banna}{HBN}\newfontlanguage{Hiligaynon}{HIL}
-\newfontlanguage{Hindi}{HIN}\newfontlanguage{High Mari}{HMA}\newfontlanguage{Hindko}{HND}
-\newfontlanguage{Ho}{HO}\newfontlanguage{Harari}{HRI}\newfontlanguage{Croatian}{HRV}
-\newfontlanguage{Hungarian}{HUN}\newfontlanguage{Armenian}{HYE}\newfontlanguage{Igbo}{IBO}
-\newfontlanguage{Ijo}{IJO}\newfontlanguage{Ilokano}{ILO}\newfontlanguage{Indonesian}{IND}
-\newfontlanguage{Ingush}{ING}\newfontlanguage{Inuktitut}{INU}\newfontlanguage{Irish}{IRI}
-\newfontlanguage{Irish Traditional}{IRT}\newfontlanguage{Icelandic}{ISL}\newfontlanguage{Inari Sami}{ISM}
-\newfontlanguage{Italian}{ITA}\newfontlanguage{Hebrew}{IWR}\newfontlanguage{Javanese}{JAV}
-\newfontlanguage{Yiddish}{JII}\newfontlanguage{Japanese}{JAN}\newfontlanguage{Judezmo}{JUD}
-\newfontlanguage{Jula}{JUL}\newfontlanguage{Kabardian}{KAB}\newfontlanguage{Kachchi}{KAC}
-\newfontlanguage{Kalenjin}{KAL}\newfontlanguage{Kannada}{KAN}\newfontlanguage{Karachay}{KAR}
-\newfontlanguage{Georgian}{KAT}\newfontlanguage{Kazakh}{KAZ}\newfontlanguage{Kebena}{KEB}
-\newfontlanguage{Khutsuri Georgian}{KGE}\newfontlanguage{Khakass}{KHA}\newfontlanguage{Khanty-Kazim}{KHK}
-\newfontlanguage{Khmer}{KHM}\newfontlanguage{Khanty-Shurishkar}{KHS}\newfontlanguage{Khanty-Vakhi}{KHV}
-\newfontlanguage{Khowar}{KHW}\newfontlanguage{Kikuyu}{KIK}\newfontlanguage{Kirghiz}{KIR}
-\newfontlanguage{Kisii}{KIS}\newfontlanguage{Kokni}{KKN}\newfontlanguage{Kalmyk}{KLM}
-\newfontlanguage{Kamba}{KMB}\newfontlanguage{Kumaoni}{KMN}\newfontlanguage{Komo}{KMO}
-\newfontlanguage{Komso}{KMS}\newfontlanguage{Kanuri}{KNR}\newfontlanguage{Kodagu}{KOD}
-\newfontlanguage{Korean Old Hangul}{KOH}\newfontlanguage{Konkani}{KOK}\newfontlanguage{Kikongo}{KON}
-\newfontlanguage{Komi-Permyak}{KOP}\newfontlanguage{Korean}{KOR}\newfontlanguage{Komi-Zyrian}{KOZ}
-\newfontlanguage{Kpelle}{KPL}\newfontlanguage{Krio}{KRI}\newfontlanguage{Karakalpak}{KRK}
-\newfontlanguage{Karelian}{KRL}\newfontlanguage{Karaim}{KRM}\newfontlanguage{Karen}{KRN}
-\newfontlanguage{Koorete}{KRT}\newfontlanguage{Kashmiri}{KSH}\newfontlanguage{Khasi}{KSI}
-\newfontlanguage{Kildin Sami}{KSM}\newfontlanguage{Kui}{KUI}\newfontlanguage{Kulvi}{KUL}
-\newfontlanguage{Kumyk}{KUM}\newfontlanguage{Kurdish}{KUR}\newfontlanguage{Kurukh}{KUU}
-\newfontlanguage{Kuy}{KUY}\newfontlanguage{Koryak}{KYK}\newfontlanguage{Ladin}{LAD}
-\newfontlanguage{Lahuli}{LAH}\newfontlanguage{Lak}{LAK}\newfontlanguage{Lambani}{LAM}
-\newfontlanguage{Lao}{LAO}\newfontlanguage{Latin}{LAT}\newfontlanguage{Laz}{LAZ}
-\newfontlanguage{L-Cree}{LCR}\newfontlanguage{Ladakhi}{LDK}\newfontlanguage{Lezgi}{LEZ}
-\newfontlanguage{Lingala}{LIN}\newfontlanguage{Low Mari}{LMA}\newfontlanguage{Limbu}{LMB}
-\newfontlanguage{Lomwe}{LMW}\newfontlanguage{Lower Sorbian}{LSB}\newfontlanguage{Lule Sami}{LSM}
-\newfontlanguage{Lithuanian}{LTH}\newfontlanguage{Luba}{LUB}\newfontlanguage{Luganda}{LUG}
-\newfontlanguage{Luhya}{LUH}\newfontlanguage{Luo}{LUO}\newfontlanguage{Latvian}{LVI}
-\newfontlanguage{Majang}{MAJ}\newfontlanguage{Makua}{MAK}\newfontlanguage{Malayalam Traditional}{MAL}
-\newfontlanguage{Mansi}{MAN}\newfontlanguage{Marathi}{MAR}\newfontlanguage{Marwari}{MAW}
-\newfontlanguage{Mbundu}{MBN}\newfontlanguage{Manchu}{MCH}\newfontlanguage{Moose Cree}{MCR}
-\newfontlanguage{Mende}{MDE}\newfontlanguage{Me'en}{MEN}\newfontlanguage{Mizo}{MIZ}
-\newfontlanguage{Macedonian}{MKD}\newfontlanguage{Male}{MLE}\newfontlanguage{Malagasy}{MLG}
-\newfontlanguage{Malinke}{MLN}\newfontlanguage{Malayalam Reformed}{MLR}\newfontlanguage{Malay}{MLY}
-\newfontlanguage{Mandinka}{MND}\newfontlanguage{Mongolian}{MNG}\newfontlanguage{Manipuri}{MNI}
-\newfontlanguage{Maninka}{MNK}\newfontlanguage{Manx Gaelic}{MNX}\newfontlanguage{Moksha}{MOK}
-\newfontlanguage{Moldavian}{MOL}\newfontlanguage{Mon}{MON}\newfontlanguage{Moroccan}{MOR}
-\newfontlanguage{Maori}{MRI} \newfontlanguage{Maithili}{MTH} \newfontlanguage{Maltese}{MTS}
-\newfontlanguage{Mundari}{MUN} \newfontlanguage{Naga-Assamese}{NAG} \newfontlanguage{Nanai}{NAN}
-\newfontlanguage{Naskapi}{NAS} \newfontlanguage{N-Cree}{NCR} \newfontlanguage{Ndebele}{NDB}
-\newfontlanguage{Ndonga}{NDG} \newfontlanguage{Nepali}{NEP} \newfontlanguage{Newari}{NEW}
-\newfontlanguage{Nagari}{NGR} \newfontlanguage{Norway House Cree}{NHC} \newfontlanguage{Nisi}{NIS}
-\newfontlanguage{Niuean}{NIU} \newfontlanguage{Nkole}{NKL} \newfontlanguage{N'ko}{NKO}
-\newfontlanguage{Dutch}{NLD} \newfontlanguage{Nogai}{NOG} \newfontlanguage{Norwegian}{NOR}
-\newfontlanguage{Northern Sami}{NSM} \newfontlanguage{Northern Tai}{NTA} \newfontlanguage{Esperanto}{NTO}
-\newfontlanguage{Nynorsk}{NYN} \newfontlanguage{Oji-Cree}{OCR} \newfontlanguage{Ojibway}{OJB}
-\newfontlanguage{Oriya}{ORI} \newfontlanguage{Oromo}{ORO} \newfontlanguage{Ossetian}{OSS}
-\newfontlanguage{Palestinian Aramaic}{PAA} \newfontlanguage{Pali}{PAL} \newfontlanguage{Punjabi}{PAN}
-\newfontlanguage{Palpa}{PAP} \newfontlanguage{Pashto}{PAS} \newfontlanguage{Polytonic Greek}{PGR}
-\newfontlanguage{Pilipino}{PIL} \newfontlanguage{Palaung}{PLG} \newfontlanguage{Polish}{PLK}
-\newfontlanguage{Provencal}{PRO} \newfontlanguage{Portuguese}{PTG} \newfontlanguage{Chin}{QIN}
-\newfontlanguage{Rajasthani}{RAJ} \newfontlanguage{R-Cree}{RCR} \newfontlanguage{Russian Buriat}{RBU}
-\newfontlanguage{Riang}{RIA} \newfontlanguage{Rhaeto-Romanic}{RMS} \newfontlanguage{Romanian}{ROM}
-\newfontlanguage{Romany}{ROY} \newfontlanguage{Rusyn}{RSY} \newfontlanguage{Ruanda}{RUA}
-\newfontlanguage{Russian}{RUS} \newfontlanguage{Sadri}{SAD} \newfontlanguage{Sanskrit}{SAN}
-\newfontlanguage{Santali}{SAT} \newfontlanguage{Sayisi}{SAY} \newfontlanguage{Sekota}{SEK}
-\newfontlanguage{Selkup}{SEL} \newfontlanguage{Sango}{SGO} \newfontlanguage{Shan}{SHN}
-\newfontlanguage{Sibe}{SIB} \newfontlanguage{Sidamo}{SID} \newfontlanguage{Silte Gurage}{SIG}
-\newfontlanguage{Skolt Sami}{SKS} \newfontlanguage{Slovak}{SKY} \newfontlanguage{Slavey}{SLA}
-\newfontlanguage{Slovenian}{SLV} \newfontlanguage{Somali}{SML} \newfontlanguage{Samoan}{SMO}
-\newfontlanguage{Sena}{SNA} \newfontlanguage{Sindhi}{SND} \newfontlanguage{Sinhalese}{SNH}
-\newfontlanguage{Soninke}{SNK} \newfontlanguage{Sodo Gurage}{SOG} \newfontlanguage{Sotho}{SOT}
-\newfontlanguage{Albanian}{SQI} \newfontlanguage{Serbian}{SRB} \newfontlanguage{Saraiki}{SRK}
-\newfontlanguage{Serer}{SRR} \newfontlanguage{South Slavey}{SSL} \newfontlanguage{Southern Sami}{SSM}
-\newfontlanguage{Suri}{SUR} \newfontlanguage{Svan}{SVA} \newfontlanguage{Swedish}{SVE}
-\newfontlanguage{Swadaya Aramaic}{SWA} \newfontlanguage{Swahili}{SWK} \newfontlanguage{Swazi}{SWZ}
-\newfontlanguage{Sutu}{SXT} \newfontlanguage{Syriac}{SYR} \newfontlanguage{Tabasaran}{TAB}
-\newfontlanguage{Tajiki}{TAJ} \newfontlanguage{Tamil}{TAM} \newfontlanguage{Tatar}{TAT}
-\newfontlanguage{TH-Cree}{TCR} \newfontlanguage{Telugu}{TEL} \newfontlanguage{Tongan}{TGN}
-\newfontlanguage{Tigre}{TGR} \newfontlanguage{Tigrinya}{TGY} \newfontlanguage{Thai}{THA}
-\newfontlanguage{Tahitian}{THT} \newfontlanguage{Tibetan}{TIB} \newfontlanguage{Turkmen}{TKM}
-\newfontlanguage{Temne}{TMN} \newfontlanguage{Tswana}{TNA} \newfontlanguage{Tundra Nenets}{TNE}
-\newfontlanguage{Tonga}{TNG} \newfontlanguage{Todo}{TOD}
-\newfontlanguage{Tsonga}{TSG} \newfontlanguage{Turoyo Aramaic}{TUA} \newfontlanguage{Tulu}{TUL}
-\newfontlanguage{Tuvin}{TUV} \newfontlanguage{Twi}{TWI} \newfontlanguage{Udmurt}{UDM}
-\newfontlanguage{Ukrainian}{UKR} \newfontlanguage{Urdu}{URD} \newfontlanguage{Upper Sorbian}{USB}
-\newfontlanguage{Uyghur}{UYG} \newfontlanguage{Uzbek}{UZB} \newfontlanguage{Venda}{VEN}
-\newfontlanguage{Vietnamese}{VIT} \newfontlanguage{Wa}{WA} \newfontlanguage{Wagdi}{WAG}
-\newfontlanguage{West-Cree}{WCR} \newfontlanguage{Welsh}{WEL} \newfontlanguage{Wolof}{WLF}
-\newfontlanguage{Tai Lue}{XBD} \newfontlanguage{Xhosa}{XHS} \newfontlanguage{Yakut}{YAK}
-\newfontlanguage{Yoruba}{YBA} \newfontlanguage{Y-Cree}{YCR} \newfontlanguage{Yi Classic}{YIC}
-\newfontlanguage{Yi Modern}{YIM} \newfontlanguage{Chinese Hong Kong}{ZHH}
-\newfontlanguage{Chinese Phonetic}{ZHP} \newfontlanguage{Chinese Simplified}{ZHS}
-\newfontlanguage{Chinese Traditional}{ZHT} \newfontlanguage{Zande}{ZND} \newfontlanguage{Zulu}{ZUL}
+\newfontlanguage{Abaza}{ABA}\newfontlanguage{Abkhazian}{ABK}
+\newfontlanguage{Adyghe}{ADY}\newfontlanguage{Afrikaans}{AFK}
+\newfontlanguage{Afar}{AFR}\newfontlanguage{Agaw}{AGW}
+\newfontlanguage{Altai}{ALT}\newfontlanguage{Amharic}{AMH}
+\newfontlanguage{Arabic}{ARA}\newfontlanguage{Aari}{ARI}
+\newfontlanguage{Arakanese}{ARK}\newfontlanguage{Assamese}{ASM}
+\newfontlanguage{Athapaskan}{ATH}\newfontlanguage{Avar}{AVR}
+\newfontlanguage{Awadhi}{AWA}\newfontlanguage{Aymara}{AYM}
+\newfontlanguage{Azeri}{AZE}\newfontlanguage{Badaga}{BAD}
+\newfontlanguage{Baghelkhandi}{BAG}\newfontlanguage{Balkar}{BAL}
+\newfontlanguage{Baule}{BAU}\newfontlanguage{Berber}{BBR}
+\newfontlanguage{Bench}{BCH}\newfontlanguage{Bible Cree}{BCR}
+\newfontlanguage{Belarussian}{BEL}\newfontlanguage{Bemba}{BEM}
+\newfontlanguage{Bengali}{BEN}\newfontlanguage{Bulgarian}{BGR}
+\newfontlanguage{Bhili}{BHI}\newfontlanguage{Bhojpuri}{BHO}
+\newfontlanguage{Bikol}{BIK}\newfontlanguage{Bilen}{BIL}
+\newfontlanguage{Blackfoot}{BKF}\newfontlanguage{Balochi}{BLI}
+\newfontlanguage{Balante}{BLN}\newfontlanguage{Balti}{BLT}
+\newfontlanguage{Bambara}{BMB}\newfontlanguage{Bamileke}{BML}
+\newfontlanguage{Breton}{BRE}\newfontlanguage{Brahui}{BRH}
+\newfontlanguage{Braj Bhasha}{BRI}\newfontlanguage{Burmese}{BRM}
+\newfontlanguage{Bashkir}{BSH}\newfontlanguage{Beti}{BTI}
+\newfontlanguage{Catalan}{CAT}\newfontlanguage{Cebuano}{CEB}
+\newfontlanguage{Chechen}{CHE}\newfontlanguage{Chaha Gurage}{CHG}
+\newfontlanguage{Chattisgarhi}{CHH}\newfontlanguage{Chichewa}{CHI}
+\newfontlanguage{Chukchi}{CHK}\newfontlanguage{Chipewyan}{CHP}
+\newfontlanguage{Cherokee}{CHR}\newfontlanguage{Chuvash}{CHU}
+\newfontlanguage{Comorian}{CMR}\newfontlanguage{Coptic}{COP}
+\newfontlanguage{Cree}{CRE}\newfontlanguage{Carrier}{CRR}
+\newfontlanguage{Crimean Tatar}{CRT}\newfontlanguage{Church Slavonic}{CSL}
+\newfontlanguage{Czech}{CSY}\newfontlanguage{Danish}{DAN}
+\newfontlanguage{Dargwa}{DAR}\newfontlanguage{Woods Cree}{DCR}
+\newfontlanguage{German}{DEU}\newfontlanguage{Default}{DFLT}
+\newfontlanguage{Dogri}{DGR}\newfontlanguage{Divehi}{DIV}
+\newfontlanguage{Djerma}{DJR}\newfontlanguage{Dangme}{DNG}
+\newfontlanguage{Dinka}{DNK}\newfontlanguage{Dungan}{DUN}
+\newfontlanguage{Dzongkha}{DZN}\newfontlanguage{Ebira}{EBI}
+\newfontlanguage{Eastern Cree}{ECR}\newfontlanguage{Edo}{EDO}
+\newfontlanguage{Efik}{EFI}\newfontlanguage{Greek}{ELL}
+\newfontlanguage{English}{ENG}\newfontlanguage{Erzya}{ERZ}
+\newfontlanguage{Spanish}{ESP}\newfontlanguage{Estonian}{ETI}
+\newfontlanguage{Basque}{EUQ}\newfontlanguage{Evenki}{EVK}
+\newfontlanguage{Even}{EVN}\newfontlanguage{Ewe}{EWE}
+\newfontlanguage{French Antillean}{FAN}\newfontlanguage{Farsi}{FAR}
+\newfontlanguage{Finnish}{FIN}\newfontlanguage{Fijian}{FJI}
+\newfontlanguage{Flemish}{FLE}\newfontlanguage{Forest Nenets}{FNE}
+\newfontlanguage{Fon}{FON}\newfontlanguage{Faroese}{FOS}
+\newfontlanguage{French}{FRA}\newfontlanguage{Frisian}{FRI}
+\newfontlanguage{Friulian}{FRL}\newfontlanguage{Futa}{FTA}
+\newfontlanguage{Fulani}{FUL}\newfontlanguage{Ga}{GAD}
+\newfontlanguage{Gaelic}{GAE}\newfontlanguage{Gagauz}{GAG}
+\newfontlanguage{Galician}{GAL}\newfontlanguage{Garshuni}{GAR}
+\newfontlanguage{Garhwali}{GAW}\newfontlanguage{Ge'ez}{GEZ}
+\newfontlanguage{Gilyak}{GIL}\newfontlanguage{Gumuz}{GMZ}
+\newfontlanguage{Gondi}{GON}\newfontlanguage{Greenlandic}{GRN}
+\newfontlanguage{Garo}{GRO}\newfontlanguage{Guarani}{GUA}
+\newfontlanguage{Gujarati}{GUJ}\newfontlanguage{Haitian}{HAI}
+\newfontlanguage{Halam}{HAL}\newfontlanguage{Harauti}{HAR}
+\newfontlanguage{Hausa}{HAU}\newfontlanguage{Hawaiin}{HAW}
+\newfontlanguage{Hammer-Banna}{HBN}\newfontlanguage{Hiligaynon}{HIL}
+\newfontlanguage{Hindi}{HIN}\newfontlanguage{High Mari}{HMA}
+\newfontlanguage{Hindko}{HND}\newfontlanguage{Ho}{HO}
+\newfontlanguage{Harari}{HRI}\newfontlanguage{Croatian}{HRV}
+\newfontlanguage{Hungarian}{HUN}\newfontlanguage{Armenian}{HYE}
+\newfontlanguage{Igbo}{IBO}\newfontlanguage{Ijo}{IJO}
+\newfontlanguage{Ilokano}{ILO}\newfontlanguage{Indonesian}{IND}
+\newfontlanguage{Ingush}{ING}\newfontlanguage{Inuktitut}{INU}
+\newfontlanguage{Irish}{IRI}\newfontlanguage{Irish Traditional}{IRT}
+\newfontlanguage{Icelandic}{ISL}\newfontlanguage{Inari Sami}{ISM}
+\newfontlanguage{Italian}{ITA}\newfontlanguage{Hebrew}{IWR}
+\newfontlanguage{Javanese}{JAV}\newfontlanguage{Yiddish}{JII}
+\newfontlanguage{Japanese}{JAN}\newfontlanguage{Judezmo}{JUD}
+\newfontlanguage{Jula}{JUL}\newfontlanguage{Kabardian}{KAB}
+\newfontlanguage{Kachchi}{KAC}\newfontlanguage{Kalenjin}{KAL}
+\newfontlanguage{Kannada}{KAN}\newfontlanguage{Karachay}{KAR}
+\newfontlanguage{Georgian}{KAT}\newfontlanguage{Kazakh}{KAZ}
+\newfontlanguage{Kebena}{KEB}\newfontlanguage{Khutsuri Georgian}{KGE}
+\newfontlanguage{Khakass}{KHA}\newfontlanguage{Khanty-Kazim}{KHK}
+\newfontlanguage{Khmer}{KHM}\newfontlanguage{Khanty-Shurishkar}{KHS}
+\newfontlanguage{Khanty-Vakhi}{KHV}\newfontlanguage{Khowar}{KHW}
+\newfontlanguage{Kikuyu}{KIK}\newfontlanguage{Kirghiz}{KIR}
+\newfontlanguage{Kisii}{KIS}\newfontlanguage{Kokni}{KKN}
+\newfontlanguage{Kalmyk}{KLM}\newfontlanguage{Kamba}{KMB}
+\newfontlanguage{Kumaoni}{KMN}\newfontlanguage{Komo}{KMO}
+\newfontlanguage{Komso}{KMS}\newfontlanguage{Kanuri}{KNR}
+\newfontlanguage{Kodagu}{KOD}\newfontlanguage{Korean Old Hangul}{KOH}
+\newfontlanguage{Konkani}{KOK}\newfontlanguage{Kikongo}{KON}
+\newfontlanguage{Komi-Permyak}{KOP}\newfontlanguage{Korean}{KOR}
+\newfontlanguage{Komi-Zyrian}{KOZ}\newfontlanguage{Kpelle}{KPL}
+\newfontlanguage{Krio}{KRI}\newfontlanguage{Karakalpak}{KRK}
+\newfontlanguage{Karelian}{KRL}\newfontlanguage{Karaim}{KRM}
+\newfontlanguage{Karen}{KRN}\newfontlanguage{Koorete}{KRT}
+\newfontlanguage{Kashmiri}{KSH}\newfontlanguage{Khasi}{KSI}
+\newfontlanguage{Kildin Sami}{KSM}\newfontlanguage{Kui}{KUI}
+\newfontlanguage{Kulvi}{KUL}\newfontlanguage{Kumyk}{KUM}
+\newfontlanguage{Kurdish}{KUR}\newfontlanguage{Kurukh}{KUU}
+\newfontlanguage{Kuy}{KUY}\newfontlanguage{Koryak}{KYK}
+\newfontlanguage{Ladin}{LAD}\newfontlanguage{Lahuli}{LAH}
+\newfontlanguage{Lak}{LAK}\newfontlanguage{Lambani}{LAM}
+\newfontlanguage{Lao}{LAO}\newfontlanguage{Latin}{LAT}
+\newfontlanguage{Laz}{LAZ}\newfontlanguage{L-Cree}{LCR}
+\newfontlanguage{Ladakhi}{LDK}\newfontlanguage{Lezgi}{LEZ}
+\newfontlanguage{Lingala}{LIN}\newfontlanguage{Low Mari}{LMA}
+\newfontlanguage{Limbu}{LMB}\newfontlanguage{Lomwe}{LMW}
+\newfontlanguage{Lower Sorbian}{LSB}\newfontlanguage{Lule Sami}{LSM}
+\newfontlanguage{Lithuanian}{LTH}\newfontlanguage{Luba}{LUB}
+\newfontlanguage{Luganda}{LUG}\newfontlanguage{Luhya}{LUH}
+\newfontlanguage{Luo}{LUO}\newfontlanguage{Latvian}{LVI}
+\newfontlanguage{Majang}{MAJ}\newfontlanguage{Makua}{MAK}
+\newfontlanguage{Malayalam Traditional}{MAL}\newfontlanguage{Mansi}{MAN}
+\newfontlanguage{Marathi}{MAR}\newfontlanguage{Marwari}{MAW}
+\newfontlanguage{Mbundu}{MBN}\newfontlanguage{Manchu}{MCH}
+\newfontlanguage{Moose Cree}{MCR}\newfontlanguage{Mende}{MDE}
+\newfontlanguage{Me'en}{MEN}\newfontlanguage{Mizo}{MIZ}
+\newfontlanguage{Macedonian}{MKD}\newfontlanguage{Male}{MLE}
+\newfontlanguage{Malagasy}{MLG}\newfontlanguage{Malinke}{MLN}
+\newfontlanguage{Malayalam Reformed}{MLR}\newfontlanguage{Malay}{MLY}
+\newfontlanguage{Mandinka}{MND}\newfontlanguage{Mongolian}{MNG}
+\newfontlanguage{Manipuri}{MNI}\newfontlanguage{Maninka}{MNK}
+\newfontlanguage{Manx Gaelic}{MNX}\newfontlanguage{Moksha}{MOK}
+\newfontlanguage{Moldavian}{MOL}\newfontlanguage{Mon}{MON}
+\newfontlanguage{Moroccan}{MOR}\newfontlanguage{Maori}{MRI}
+\newfontlanguage{Maithili}{MTH}\newfontlanguage{Maltese}{MTS}
+\newfontlanguage{Mundari}{MUN}\newfontlanguage{Naga-Assamese}{NAG}
+\newfontlanguage{Nanai}{NAN}\newfontlanguage{Naskapi}{NAS}
+\newfontlanguage{N-Cree}{NCR}\newfontlanguage{Ndebele}{NDB}
+\newfontlanguage{Ndonga}{NDG}\newfontlanguage{Nepali}{NEP}
+\newfontlanguage{Newari}{NEW}\newfontlanguage{Nagari}{NGR}
+\newfontlanguage{Norway House Cree}{NHC}\newfontlanguage{Nisi}{NIS}
+\newfontlanguage{Niuean}{NIU}\newfontlanguage{Nkole}{NKL}
+\newfontlanguage{N'ko}{NKO}\newfontlanguage{Dutch}{NLD}
+\newfontlanguage{Nogai}{NOG}\newfontlanguage{Norwegian}{NOR}
+\newfontlanguage{Northern Sami}{NSM}\newfontlanguage{Northern Tai}{NTA}
+\newfontlanguage{Esperanto}{NTO}\newfontlanguage{Nynorsk}{NYN}
+\newfontlanguage{Oji-Cree}{OCR}\newfontlanguage{Ojibway}{OJB}
+\newfontlanguage{Oriya}{ORI}\newfontlanguage{Oromo}{ORO}
+\newfontlanguage{Ossetian}{OSS}\newfontlanguage{Palestinian Aramaic}{PAA}
+\newfontlanguage{Pali}{PAL}\newfontlanguage{Punjabi}{PAN}
+\newfontlanguage{Palpa}{PAP}\newfontlanguage{Pashto}{PAS}
+\newfontlanguage{Polytonic Greek}{PGR}\newfontlanguage{Pilipino}{PIL}
+\newfontlanguage{Palaung}{PLG}\newfontlanguage{Polish}{PLK}
+\newfontlanguage{Provencal}{PRO}\newfontlanguage{Portuguese}{PTG}
+\newfontlanguage{Chin}{QIN}\newfontlanguage{Rajasthani}{RAJ}
+\newfontlanguage{R-Cree}{RCR}\newfontlanguage{Russian Buriat}{RBU}
+\newfontlanguage{Riang}{RIA}\newfontlanguage{Rhaeto-Romanic}{RMS}
+\newfontlanguage{Romanian}{ROM}\newfontlanguage{Romany}{ROY}
+\newfontlanguage{Rusyn}{RSY}\newfontlanguage{Ruanda}{RUA}
+\newfontlanguage{Russian}{RUS}\newfontlanguage{Sadri}{SAD}
+\newfontlanguage{Sanskrit}{SAN}\newfontlanguage{Santali}{SAT}
+\newfontlanguage{Sayisi}{SAY}\newfontlanguage{Sekota}{SEK}
+\newfontlanguage{Selkup}{SEL}\newfontlanguage{Sango}{SGO}
+\newfontlanguage{Shan}{SHN}\newfontlanguage{Sibe}{SIB}
+\newfontlanguage{Sidamo}{SID}\newfontlanguage{Silte Gurage}{SIG}
+\newfontlanguage{Skolt Sami}{SKS}\newfontlanguage{Slovak}{SKY}
+\newfontlanguage{Slavey}{SLA}\newfontlanguage{Slovenian}{SLV}
+\newfontlanguage{Somali}{SML}\newfontlanguage{Samoan}{SMO}
+\newfontlanguage{Sena}{SNA}\newfontlanguage{Sindhi}{SND}
+\newfontlanguage{Sinhalese}{SNH}\newfontlanguage{Soninke}{SNK}
+\newfontlanguage{Sodo Gurage}{SOG}\newfontlanguage{Sotho}{SOT}
+\newfontlanguage{Albanian}{SQI}\newfontlanguage{Serbian}{SRB}
+\newfontlanguage{Saraiki}{SRK}\newfontlanguage{Serer}{SRR}
+\newfontlanguage{South Slavey}{SSL}\newfontlanguage{Southern Sami}{SSM}
+\newfontlanguage{Suri}{SUR}\newfontlanguage{Svan}{SVA}
+\newfontlanguage{Swedish}{SVE}\newfontlanguage{Swadaya Aramaic}{SWA}
+\newfontlanguage{Swahili}{SWK}\newfontlanguage{Swazi}{SWZ}
+\newfontlanguage{Sutu}{SXT}\newfontlanguage{Syriac}{SYR}
+\newfontlanguage{Tabasaran}{TAB}\newfontlanguage{Tajiki}{TAJ}
+\newfontlanguage{Tamil}{TAM}\newfontlanguage{Tatar}{TAT}
+\newfontlanguage{TH-Cree}{TCR}\newfontlanguage{Telugu}{TEL}
+\newfontlanguage{Tongan}{TGN}\newfontlanguage{Tigre}{TGR}
+\newfontlanguage{Tigrinya}{TGY}\newfontlanguage{Thai}{THA}
+\newfontlanguage{Tahitian}{THT}\newfontlanguage{Tibetan}{TIB}
+\newfontlanguage{Turkmen}{TKM}\newfontlanguage{Temne}{TMN}
+\newfontlanguage{Tswana}{TNA}\newfontlanguage{Tundra Nenets}{TNE}
+\newfontlanguage{Tonga}{TNG}\newfontlanguage{Todo}{TOD}
+\newfontlanguage{Tsonga}{TSG}\newfontlanguage{Turoyo Aramaic}{TUA}
+\newfontlanguage{Tulu}{TUL}\newfontlanguage{Tuvin}{TUV}
+\newfontlanguage{Twi}{TWI}\newfontlanguage{Udmurt}{UDM}
+\newfontlanguage{Ukrainian}{UKR}\newfontlanguage{Urdu}{URD}
+\newfontlanguage{Upper Sorbian}{USB}\newfontlanguage{Uyghur}{UYG}
+\newfontlanguage{Uzbek}{UZB}\newfontlanguage{Venda}{VEN}
+\newfontlanguage{Vietnamese}{VIT}\newfontlanguage{Wa}{WA}
+\newfontlanguage{Wagdi}{WAG}\newfontlanguage{West-Cree}{WCR}
+\newfontlanguage{Welsh}{WEL}\newfontlanguage{Wolof}{WLF}
+\newfontlanguage{Tai Lue}{XBD}\newfontlanguage{Xhosa}{XHS}
+\newfontlanguage{Yakut}{YAK}\newfontlanguage{Yoruba}{YBA}
+\newfontlanguage{Y-Cree}{YCR}\newfontlanguage{Yi Classic}{YIC}
+\newfontlanguage{Yi Modern}{YIM}\newfontlanguage{Chinese Hong Kong}{ZHH}
+\newfontlanguage{Chinese Phonetic}{ZHP}\newfontlanguage{Chinese Simplified}{ZHS}
+\newfontlanguage{Chinese Traditional}{ZHT}\newfontlanguage{Zande}{ZND}
+\newfontlanguage{Zulu}{ZUL}
 \define@key[zf@feat]{Lang}{Turkish}[]{%
   \zf@check@ot@lang{TRK}%
   \if@tempswa
@@ -1172,7 +1266,8 @@
   \SetMathAlphabet\mathtt{bold}\zf@enc\zf@ttmaths\bfdefault\updefault
   \let\font@warning\zf@font@warning}
 \def\zf@math@maybe{%
-  \@ifpackageloaded{anttor}{\ifx\define@antt@mathversions a\@zf@mathfalse\fi}{}
+  \@ifpackageloaded{anttor}{%
+    \ifx\define@antt@mathversions a\@zf@mathfalse\fi}{}
   \@ifpackageloaded{arev}{\@zf@mathfalse}{}
   \@ifpackageloaded{eulervm}{\@zf@mathfalse}{}
   \@ifpackageloaded{mathdesign}{\@zf@mathfalse}{}
@@ -1181,10 +1276,12 @@
   \@ifpackageloaded{mathesf}{\@zf@mathfalse}{}
   \@ifpackageloaded{gfsartemisia}{\@zf@mathfalse}{}
   \@ifpackageloaded{gfsneohellenic}{\@zf@mathfalse}{}
-  \@ifpackageloaded{iwona}{\ifx\define@iwona@mathversions a\@zf@mathfalse\fi}{}
+  \@ifpackageloaded{iwona}{%
+    \ifx\define@iwona@mathversions a\@zf@mathfalse\fi}{}
   \@ifpackageloaded{kpfonts}{\@zf@mathfalse}{}
   \@ifpackageloaded{kmath}{\@zf@mathfalse}{}
-  \@ifpackageloaded{kurier}{\ifx\define@kurier@mathversions a\@zf@mathfalse\fi}{}
+  \@ifpackageloaded{kurier}{%
+    \ifx\define@kurier@mathversions a\@zf@mathfalse\fi}{}
   \@ifpackageloaded{fouriernc}{\@zf@mathfalse}{}
   \@ifpackageloaded{fourier}{\@zf@mathfalse}{}
   \@ifpackageloaded{mathpazo}{\@zf@mathfalse}{}
@@ -1192,7 +1289,8 @@
   \@ifpackageloaded{MinionPro}{\@zf@mathfalse}{}
   \@ifpackageloaded{unicode-math}{\@zf@mathfalse}{}
   \if@zf@math
-    \zf@PackageInfo{Adjusting the maths setup (use [no-math] to avoid this).}
+    \zf@PackageInfo{%
+      Adjusting the maths setup (use [no-math] to avoid this).}
     \zf@math
   \fi}
 \AtBeginDocument{\zf@math@maybe}
@@ -1202,7 +1300,7 @@
     {\typeout{No fontspec.cfg file found; no configuration loaded.}}
 \fi
 %% 
-%% Copyright 2004--2007 by Will Robertson <wspr81@gmail.com>
+%% Copyright 2004--2008 by Will Robertson <wspr81@gmail.com>
 %% 
 %% Distributable under the LaTeX Project Public License,
 %% version 1.3c or higher (your choice). The latest version of

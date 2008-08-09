@@ -1,5 +1,5 @@
 --------------------------
-THE FONTSPEC PACKAGE v1.16
+THE FONTSPEC PACKAGE v1.18
 
 The fontspec package only works with XeTeX,
 a unicode capable TeX-variant. It provides
@@ -58,4 +58,4 @@ Features can be renamed and feature options can be renamed with
 
 --------------
 Will Robertson
-2004--2007
+2004--2008
