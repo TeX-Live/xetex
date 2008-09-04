@@ -1,8 +1,3 @@
-% This file belongs to the Latin Modern package. The work is released under
-% the GUST Font License. See the MANIFEST.txt and README.eng files
-% for the details. For the most recent version of this license see
-% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
-% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
 
 \ProvidesFile{eu1lmss.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
 \DeclareFontFamily{EU1}{lmss}{}
@@ -18,17 +13,14 @@
       <8.5-9.5> "[lmsans9-oblique]:mapping=tex-text"      <9.5-11>  "[lmsans10-oblique]:mapping=tex-text"
       <11-15.5> "[lmsans12-oblique]:mapping=tex-text"     <15.5-> "[lmsans17-oblique]:mapping=tex-text"
       }{}
-%%%%%%% Font/shape undefined, therefore substituted
 \DeclareFontShape{EU1}{lmss}{m}{sc}
        {<->sub*lmr/m/sc}{}
-%%%%%%%% semibold condensed series
 \DeclareFontShape{EU1}{lmss}{sbc}{n}
-{<-> "[lmsans10-demicondensed]:mapping=tex-text"}{}
+{<-> "[lmsansdemicond10-regular]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmss}{sbc}{sl}
-{<-> "[lmsans10-demicondensedoblique]:mapping=tex-text"}{}
+{<-> "[lmsansdemicond10-oblique]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmss}{sbc}{it}
 {<->ssub*lmss/sbc/sl}{}
-%%%%%%%%% bold extended series
 \DeclareFontShape{EU1}{lmss}{bx}{n}
 {<-> "[lmsans10-bold]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmss}{bx}{sl}
@@ -36,5 +28,3 @@
 \DeclareFontShape{EU1}{lmss}{bx}{it}
 {<->ssub*lmss/bx/sl}{}
 \endinput
-%%
-%% End of file `eu1lmss.fd'.

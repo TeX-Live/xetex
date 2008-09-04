@@ -1,28 +1,22 @@
-% This file belongs to the Latin Modern package. The work is released under
-% the GUST Font License. See the MANIFEST.txt and README.eng files
-% for the details. For the most recent version of this license see
-% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
-% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
 
 \ProvidesFile{eu1lmvtt.fd}[2007/01/14 v1.3 Font defs for Latin Modern]
-\DeclareFontFamily{EU1}{lmvtt}{\hyphenchar \font\m@ne}
+\DeclareFontFamily{EU1}{lmvtt}{}
 \DeclareFontShape{EU1}{lmvtt}{m}{n}
-     {<-> "[lmtypewritervarwd10-regular]:mapping=tex-text"}{}
+     {<-> "[lmmonoprop10-regular]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmvtt}{m}{sl}
-     {<-> "[lmtypewritervarwd10-oblique]:mapping=tex-text"}{}
+     {<-> "[lmmonoprop10-oblique]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmvtt}{m}{it}
      {<->sub*lmvtt/m/sl}{}
-%%%%%%%% light (l) and dark (b) variants:
 \DeclareFontShape{EU1}{lmvtt}{l}{n}
-     {<-> "[lmtypewritervarwd10-light]:mapping=tex-text"}{}
+     {<-> "[lmmonoproplt10-regular]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmvtt}{l}{sl}
-     {<-> "[lmtypewritervarwd10-lightoblique]:mapping=tex-text"}{}
+     {<-> "[lmmonoproplt10-oblique]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmvtt}{l}{it}
      {<->sub*lmvtt/l/sl}{}
 \DeclareFontShape{EU1}{lmvtt}{b}{n}
-     {<-> "[lmtypewritervarwd10-dark]:mapping=tex-text"}{}
+     {<-> "[lmmonoproplt10-bold]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmvtt}{b}{sl}
-     {<-> "[lmtypewritervarwd10-darkoblique]:mapping=tex-text"}{}
+     {<-> "[lmmonoproplt10-boldoblique]:mapping=tex-text"}{}
 \DeclareFontShape{EU1}{lmvtt}{b}{it}
      {<->sub*lmvtt/b/sl}{}
 \DeclareFontShape{EU1}{lmvtt}{bx}{n}
@@ -32,5 +26,3 @@
 \DeclareFontShape{EU1}{lmvtt}{bx}{it}
      {<->sub*lmvtt/b/sl}{}
 \endinput
-%%
-%% End of file `eu1lmvtt.fd'.
