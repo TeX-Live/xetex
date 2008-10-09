@@ -36,27 +36,27 @@
 
 \def\captionshebrew{%
   \def\prefacename{מבוא}%
-  \def\refname{רשימט מקורוט}%
-  \def\abstractname{טקציר}%
-  \def\bibname{ביבליו גרפיח}%
+  \def\refname{מקורות}%
+  \def\abstractname{תקציר}%
+  \def\bibname{ביבליוגרפיה}%
   \def\chaptername{פרק}%
-  \def\appendixname{נספה}%
-  \def\contentsname{טוכן עניינים}%
-  \def\listfigurename{רשימט איורים}%
-  \def\listtablename{רשימט תבלאוט}%
-  \def\indexname{מפטה}%
+  \def\appendixname{נספח}%
+  \def\contentsname{תוכן העניינים}%
+  \def\listfigurename{רשימת האיורים}%
+  \def\listtablename{רשימת הטבלאות}%
+  \def\indexname{מפתח}%
   \def\figurename{איור}%
-  \def\tablename{תבלח}%
-  \def\partname{הלק}%
+  \def\tablename{טבלה}%
+  \def\partname{חלק}%
   \def\enclname{רצ"ב}%
-  \def\ccname{חעטקי ם}%
+  \def\ccname{העטקים}%
   \def\headtoname{אל}%
   \def\pagename{עמוד}%
   \def\psname{נ.ב.}%
-  \def\seename{ראח}%
-  \def\alsoname{ראח ג ם}% check
-  \def\proofname{חוכהח}
-  \def\glossaryname{אגרון מונחים}% check 
+  \def\seename{ראה}%
+  \def\alsoname{ראה גם}% check
+  \def\proofname{הוכחה}
+  \def\glossaryname{מילון מונחים}% check
 }
 \def\datehebrew{%
   \def\today{%
