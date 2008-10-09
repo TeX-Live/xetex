@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsestonian{%
-   \def\refname{\textestonian{Viited}}%
-   \def\abstractname{\textestonian{Kokkuvõte}}%
-   \def\bibname{\textestonian{Kirjandus}}%
-   \def\prefacename{\textestonian{Sissejuhatus}}%
-   \def\chaptername{\textestonian{Peatükk}}%
-   \def\appendixname{\textestonian{Lisa}}%
-   \def\contentsname{\textestonian{Sisukord}}%
-   \def\listfigurename{\textestonian{Joonised}}%
-   \def\listtablename{\textestonian{Tabelid}}%
-   \def\indexname{\textestonian{Indeks}}%
-   \def\figurename{\textestonian{Joonis}}%
-   \def\tablename{\textestonian{Tabel}}%
-   %\def\thepart{\textestonian{}}%
-   \def\partname{\textestonian{Osa}}%
-   \def\pagename{\textestonian{Lk.}}%
-   \def\seename{\textestonian{vt.}}%
-   \def\alsoname{\textestonian{vt. ka}}%
-   \def\enclname{\textestonian{Lisa(d)}}%
-   \def\ccname{\textestonian{Koopia(d)}}%
-   %\def\headtoname{\textestonian{}}%
-   \def\proofname{\textestonian{Korrektuur}}%
-   \def\glossaryname{\textestonian{Glossary}}% <-- need translation
+   \def\refname{Viited}%
+   \def\abstractname{Kokkuvõte}%
+   \def\bibname{Kirjandus}%
+   \def\prefacename{Sissejuhatus}%
+   \def\chaptername{Peatükk}%
+   \def\appendixname{Lisa}%
+   \def\contentsname{Sisukord}%
+   \def\listfigurename{Joonised}%
+   \def\listtablename{Tabelid}%
+   \def\indexname{Indeks}%
+   \def\figurename{Joonis}%
+   \def\tablename{Tabel}%
+   %\def\thepart{}%
+   \def\partname{Osa}%
+   \def\pagename{Lk.}%
+   \def\seename{vt.}%
+   \def\alsoname{vt. ka}%
+   \def\enclname{Lisa(d)}%
+   \def\ccname{Koopia(d)}%
+   %\def\headtoname{}%
+   \def\proofname{Korrektuur}%
+   \def\glossaryname{Glossary}% <-- need translation
    }
 \def\dateestonian{%
    \def\today{\textestonian{\number\day.\space\ifcase\month\or

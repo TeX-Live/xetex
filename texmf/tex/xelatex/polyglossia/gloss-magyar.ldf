@@ -15,28 +15,28 @@
 \fi
 
 \def\captionsmagyar{%
-   \def\refname{\textmagyar{Hivatkozások}}%
-   \def\abstractname{\textmagyar{Kivonat}}%
-   \def\bibname{\textmagyar{Irodalomjegyzék}}%
-   \def\prefacename{\textmagyar{Előszó}}%
-   \def\chaptername{\textmagyar{fejezet}}%
-   \def\appendixname{\textmagyar{Függelék}}%
-   \def\contentsname{\textmagyar{Tartalomjegyzék}}%
-   \def\listfigurename{\textmagyar{Ábrák jegyzéke}}%
-   \def\listtablename{\textmagyar{Táblázatok jegyzéke}}%
-   \def\indexname{\textmagyar{Tárgymutató}}%
-   \def\figurename{\textmagyar{ábra}}%
-   \def\tablename{\textmagyar{táblázat}}%
-   %\def\thepart{\textmagyar{}}%
-   \def\partname{\textmagyar{rész}}%
-   \def\pagename{\textmagyar{oldal}}%
-   \def\seename{\textmagyar{lásd}}%
-   \def\alsoname{\textmagyar{lásd még}}%
-   \def\enclname{\textmagyar{Melléklet}}%
-   \def\ccname{\textmagyar{Körlevél–címzettek}}%
-   \def\headtoname{\textmagyar{Címzett}}%
-   \def\proofname{\textmagyar{Bizonyítás}}%
-   \def\glossaryname{\textmagyar{Szójegyzék}}%
+   \def\refname{Hivatkozások}%
+   \def\abstractname{Kivonat}%
+   \def\bibname{Irodalomjegyzék}%
+   \def\prefacename{Előszó}%
+   \def\chaptername{fejezet}%
+   \def\appendixname{Függelék}%
+   \def\contentsname{Tartalomjegyzék}%
+   \def\listfigurename{Ábrák jegyzéke}%
+   \def\listtablename{Táblázatok jegyzéke}%
+   \def\indexname{Tárgymutató}%
+   \def\figurename{ábra}%
+   \def\tablename{táblázat}%
+   %\def\thepart{}%
+   \def\partname{rész}%
+   \def\pagename{oldal}%
+   \def\seename{lásd}%
+   \def\alsoname{lásd még}%
+   \def\enclname{Melléklet}%
+   \def\ccname{Körlevél–címzettek}%
+   \def\headtoname{Címzett}%
+   \def\proofname{Bizonyítás}%
+   \def\glossaryname{Szójegyzék}%
    }
 \def\datemagyar{%   
    \def\today{\textmagyar{%

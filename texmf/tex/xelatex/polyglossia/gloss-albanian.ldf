@@ -7,28 +7,28 @@
     \adddialect\l@albanian0\fi
 
 \def\captionsalbanian{%
-   \def\refname{\textalbanian{Referencat}}%
-   \def\abstractname{\textalbanian{Përmbledhja}}%
-   \def\bibname{\textalbanian{Bibliografia}}%
-   \def\prefacename{\textalbanian{Parathenia}}%
-   \def\chaptername{\textalbanian{Kapitulli}}%
-   \def\appendixname{\textalbanian{Shtesa}}%
-   \def\contentsname{\textalbanian{Përmbajta}}%
-   \def\listfigurename{\textalbanian{Figurat}}%
-   \def\listtablename{\textalbanian{Tabelat}}%
-   \def\indexname{\textalbanian{Indeksi}}%
-   \def\figurename{\textalbanian{Figura}}%
-   \def\tablename{\textalbanian{Tabela}}%
-   %\def\thepart{\textalbanian{}}%
-   \def\partname{\textalbanian{Pjesa}}%
-   \def\pagename{\textalbanian{Faqe}}%
-   \def\seename{\textalbanian{shiko}}%
-   \def\alsoname{\textalbanian{shiko dhe}}%
-   %\def\enclname{\textalbanian{}}%
-   %\def\ccname{\textalbanian{}}%
-   %\def\headtoname{\textalbanian{}}%
-   \def\proofname{\textalbanian{Vërtetim}}%
-   \def\glossaryname{\textalbanian{Përhasja e Fjalëve}}%
+   \def\refname{Referencat}%
+   \def\abstractname{Përmbledhja}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Parathenia}%
+   \def\chaptername{Kapitulli}%
+   \def\appendixname{Shtesa}%
+   \def\contentsname{Përmbajta}%
+   \def\listfigurename{Figurat}%
+   \def\listtablename{Tabelat}%
+   \def\indexname{Indeksi}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Pjesa}%
+   \def\pagename{Faqe}%
+   \def\seename{shiko}%
+   \def\alsoname{shiko dhe}%
+   %\def\enclname{}%
+   %\def\ccname{}%
+   %\def\headtoname{}%
+   \def\proofname{Vërtetim}%
+   \def\glossaryname{Përhasja e Fjalëve}%
    }
 \def\datealbanian{%
    \def\today{\textalbanian{{\number\day~\ifcase\month\or

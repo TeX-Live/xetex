@@ -8,28 +8,28 @@
 \fi
 
 \def\captionscatalan{%
-   \def\refname{\textcatalan{Referències}}%
-   \def\abstractname{\textcatalan{Resum}}%
-   \def\bibname{\textcatalan{Bibliografia}}%
-   \def\prefacename{\textcatalan{Pròleg}}%
-   \def\chaptername{\textcatalan{Capítol}}%
-   \def\appendixname{\textcatalan{Apèndix}}%
-   \def\contentsname{\textcatalan{Índex}}%
-   \def\listfigurename{\textcatalan{Índex de figures}}%
-   \def\listtablename{\textcatalan{Índex de taules}}%
-   \def\indexname{\textcatalan{Índex alfabètic}}%
-   \def\figurename{\textcatalan{Figura}}%
-   \def\tablename{\textcatalan{Taula}}%
-   %\def\thepart{\textcatalan{}}%
-   \def\partname{\textcatalan{Part}}%
-   \def\pagename{\textcatalan{Pàgina}}%
-   \def\seename{\textcatalan{Vegeu}}%
-   \def\alsoname{\textcatalan{Vegeu també}}%
-   \def\enclname{\textcatalan{Adjunt}}%
-   \def\ccname{\textcatalan{Còpies a}}%
-   \def\headtoname{\textcatalan{A}}%
-   \def\proofname{\textcatalan{Demostració}}%
-   \def\glossaryname{\textcatalan{Glossari}}%
+   \def\refname{Referències}%
+   \def\abstractname{Resum}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Pròleg}%
+   \def\chaptername{Capítol}%
+   \def\appendixname{Apèndix}%
+   \def\contentsname{Índex}%
+   \def\listfigurename{Índex de figures}%
+   \def\listtablename{Índex de taules}%
+   \def\indexname{Índex alfabètic}%
+   \def\figurename{Figura}%
+   \def\tablename{Taula}%
+   %\def\thepart{}%
+   \def\partname{Part}%
+   \def\pagename{Pàgina}%
+   \def\seename{Vegeu}%
+   \def\alsoname{Vegeu també}%
+   \def\enclname{Adjunt}%
+   \def\ccname{Còpies a}%
+   \def\headtoname{A}%
+   \def\proofname{Demostració}%
+   \def\glossaryname{Glossari}%
    }
 \datecatalan{%   
    \def\today{\textcatalan{\number\day~\ifcase\month\or

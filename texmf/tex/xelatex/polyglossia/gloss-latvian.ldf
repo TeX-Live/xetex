@@ -8,26 +8,26 @@
 \fi
 
 \def\captionslatvian{%
-   \def\prefacename{\textlatvian{Priekšvārds}}%
-   \def\refname{\textlatvian{Literatūras saraksts}}%
-   \def\abstractname{\textlatvian{Anotācija}}%
-   \def\bibname{\textlatvian{Literatūra}}%
-   \def\chaptername{\textlatvian{Nodaļa}}%
-   \def\appendixname{\textlatvian{Pielikums}}%
-   \def\contentsname{\textlatvian{Saturs}}%
-   \def\listfigurename{\textlatvian{Attēlu saraksts}}%
-   \def\listtablename{\textlatvian{Tabulu saraksts}}%
-   \def\indexname{\textlatvian{Index}}%
-   \def\figurename{\textlatvian{Att.}}%
-   \def\tablename{\textlatvian{Tabula}}%
-   \def\partname{\textlatvian{Daļa}}%
-   \def\enclname{\textlatvian{encl}}%
-   \def\ccname{\textlatvian{cc}}%
-   \def\headtoname{\textlatvian{To}}%
-   \def\pagename{\textlatvian{lpp.}}%
-   \def\seename{\textlatvian{sk.}}%
-   \def\alsoname{\textlatvian{sk. arī}}%
-   \def\proofname{\textlatvian{Pierādījums}}%
+   \def\prefacename{Priekšvārds}%
+   \def\refname{Literatūras saraksts}%
+   \def\abstractname{Anotācija}%
+   \def\bibname{Literatūra}%
+   \def\chaptername{Nodaļa}%
+   \def\appendixname{Pielikums}%
+   \def\contentsname{Saturs}%
+   \def\listfigurename{Attēlu saraksts}%
+   \def\listtablename{Tabulu saraksts}%
+   \def\indexname{Index}%
+   \def\figurename{Att.}%
+   \def\tablename{Tabula}%
+   \def\partname{Daļa}%
+   \def\enclname{encl}%
+   \def\ccname{cc}%
+   \def\headtoname{To}%
+   \def\pagename{lpp.}%
+   \def\seename{sk.}%
+   \def\alsoname{sk. arī}%
+   \def\proofname{Pierādījums}%
    }
 \def\datelatvian{%
    \def\today{\textlatvian{%

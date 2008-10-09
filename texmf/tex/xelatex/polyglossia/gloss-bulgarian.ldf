@@ -35,28 +35,28 @@
 }
 
 \def\captionsbulgarian{%
-   \def\refname{\textbulgarian{Литература}}%
-   \def\abstractname{\textbulgarian{Абстракт}}%
-   \def\bibname{\textbulgarian{Библиография}}%
-   \def\prefacename{\textbulgarian{Предговор}}%
-   \def\chaptername{\textbulgarian{Глава}}%
-   \def\appendixname{\textbulgarian{Приложение}}%
-   \def\contentsname{\textbulgarian{Съдържание}}%
-   \def\listfigurename{\textbulgarian{Списхrdsnк на фигурите}}%
-   \def\listtablename{\textbulgarian{Списхrdsnк на таблиците}}%
-   \def\indexname{\textbulgarian{Азбуцhен указател}}%
-   \def\figurename{\textbulgarian{Фигура}}%
-   \def\tablename{\textbulgarian{Таблица}}%
-   %\def\thepart{\textbulgarian{}}%
-   %\def\partname{\textbulgarian{}}%
-   \def\pagename{\textbulgarian{Стр.}}%
-   \def\seename{\textbulgarian{вж.}}%
-   \def\alsoname{\textbulgarian{вж.\ също и}}%
-   \def\enclname{\textbulgarian{Приложения}}%
-   \def\ccname{\textbulgarian{копия}}%
-   %\def\headtoname{\textbulgarian{}}%
-   \def\proofname{\textbulgarian{Proof}}%
-   \def\glossaryname{\textbulgarian{Glossary}}%
+   \def\refname{Литература}%
+   \def\abstractname{Абстракт}%
+   \def\bibname{Библиография}%
+   \def\prefacename{Предговор}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Приложение}%
+   \def\contentsname{Съдържание}%
+   \def\listfigurename{Списхrdsnк на фигурите}%
+   \def\listtablename{Списхrdsnк на таблиците}%
+   \def\indexname{Азбуцhен указател}%
+   \def\figurename{Фигура}%
+   \def\tablename{Таблица}%
+   %\def\thepart{}%
+   %\def\partname{}%
+   \def\pagename{Стр.}%
+   \def\seename{вж.}%
+   \def\alsoname{вж.\ също и}%
+   \def\enclname{Приложения}%
+   \def\ccname{копия}%
+   %\def\headtoname{}%
+   \def\proofname{Proof}%
+   \def\glossaryname{Glossary}%
    }
 \def\datebulgarian{%
    \def\today{\textbulgarian{\number\day~\ifcase\month\or

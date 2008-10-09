@@ -26,27 +26,27 @@
    }
 
 \def\captionsserbian@lat{%
-   \def\refname{\textserbian{Literatura}}%
-   \def\abstractname{\textserbian{Sažetak}}%
-   \def\bibname{\textserbian{Bibliografija}}%
-   \def\prefacename{\textserbian{Predgovor}}%
-   \def\chaptername{\textserbian{Glava}}%
-   \def\appendixname{\textserbian{Dodatak}}%
-   \def\contentsname{\textserbian{Sadržaj}}%
-   \def\listfigurename{\textserbian{Slike}}%
-   \def\listtablename{\textserbian{Tabele}}%
-   \def\indexname{\textserbian{Indeks}}%
-   \def\figurename{\textserbian{Slika}}%
-   \def\tablename{\textserbian{Tabela}}%
-   \def\partname{\textserbian{Deo}}%
-   \def\pagename{\textserbian{Strana}}%
-   \def\seename{\textserbian{Vidi}}%
-   \def\alsoname{\textserbian{Vidi takođe}}%
-   \def\enclname{\textserbian{Prilozi}}%
-   \def\ccname{\textserbian{Kopije}}%
-   \def\headtoname{\textserbian{Prima}}%
-   \def\proofname{\textserbian{Dokaz}}%
-   \def\glossaryname{\textserbian{Glosar}}% <-- CHECK
+   \def\refname{Literatura}%
+   \def\abstractname{Sažetak}%
+   \def\bibname{Bibliografija}%
+   \def\prefacename{Predgovor}%
+   \def\chaptername{Glava}%
+   \def\appendixname{Dodatak}%
+   \def\contentsname{Sadržaj}%
+   \def\listfigurename{Slike}%
+   \def\listtablename{Tabele}%
+   \def\indexname{Indeks}%
+   \def\figurename{Slika}%
+   \def\tablename{Tabela}%
+   \def\partname{Deo}%
+   \def\pagename{Strana}%
+   \def\seename{Vidi}%
+   \def\alsoname{Vidi takođe}%
+   \def\enclname{Prilozi}%
+   \def\ccname{Kopije}%
+   \def\headtoname{Prima}%
+   \def\proofname{Dokaz}%
+   \def\glossaryname{Glosar}% <-- CHECK
    }
 \def\dateserbian@lat{%   
    \def\today{\textserbian{\number\day .~\ifcase\month\or
@@ -57,28 +57,28 @@
 
 %%%TODO ASK SOMEONE TO CHECK THESE!
 \def\captionsserbian@cyr{%
-   \def\refname{\textserbian{Литература}}%
-   \def\abstractname{\textserbian{Сажетак}}%
-   \def\bibname{\textserbian{Библиографија}}%
-   \def\prefacename{\textserbian{Предговор}}%
-   \def\chaptername{\textserbian{Глава}}%
-   \def\appendixname{\textserbian{Додатак}}%
-   \def\contentsname{\textserbian{Садржај}}%
-   \def\listfigurename{\textserbian{Слике}}%
-   \def\listtablename{\textserbian{Табеле}}%
-   \def\indexname{\textserbian{Индекс}}%
-   \def\figurename{\textserbian{Слика}}%
-   \def\tablename{\textserbian{Табела}}%
-   %\def\thepart{\textserbian{}}%
-   \def\partname{\textserbian{Део}}%
-   \def\pagename{\textserbian{Страна}}%
-   \def\seename{\textserbian{Види}}%
-   \def\alsoname{\textserbian{Види такође}}%
-   \def\enclname{\textserbian{Прилоzи}}%
-   \def\ccname{\textserbian{Копије}}%
-   \def\headtoname{\textserbian{Прима}}%
-   \def\proofname{\textserbian{Докаz}}%
-   \def\glossaryname{\textserbian{Глосар}}% <-- CHECK
+   \def\refname{Литература}%
+   \def\abstractname{Сажетак}%
+   \def\bibname{Библиографија}%
+   \def\prefacename{Предговор}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Додатак}%
+   \def\contentsname{Садржај}%
+   \def\listfigurename{Слике}%
+   \def\listtablename{Табеле}%
+   \def\indexname{Индекс}%
+   \def\figurename{Слика}%
+   \def\tablename{Табела}%
+   %\def\thepart{}%
+   \def\partname{Део}%
+   \def\pagename{Страна}%
+   \def\seename{Види}%
+   \def\alsoname{Види такође}%
+   \def\enclname{Прилоzи}%
+   \def\ccname{Копије}%
+   \def\headtoname{Прима}%
+   \def\proofname{Докаz}%
+   \def\glossaryname{Глосар}% <-- CHECK
    }
 \def\dateserbian@cyr{%
    \def\today{\textserbian{\number\day .~\ifcase\month\or

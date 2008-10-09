@@ -33,29 +33,29 @@
 }%
 
 \def\captionsukrainian{%
-   \def\refname{\textukrainian{Література}}%
-   \def\abstractname{\textukrainian{Анотація}}%
-   \def\bibname{\textukrainian{Бібліоґрафія}}%
-   \def\prefacename{\textukrainian{Вступ}}%
-   \def\chaptername{\textukrainian{Розділ}}%
-   \def\appendixname{\textukrainian{Додаток}}%
-   \def\contentsname{\textukrainian{Зміст}}%
-   \def\listfigurename{\textukrainian{Перелік ілюстрацій}}%
-   \def\listtablename{\textukrainian{Перелік таблиць}}%
-   \def\indexname{\textukrainian{Покажчик}}%
-   \def\authorname{\textukrainian{Іменний покажчик}}% babel has "Їменний покажчик"
-   \def\figurename{\textukrainian{Рис.}}%
-   \def\tablename{\textukrainian{Табл.}}%
-   %\def\thepart{\textukrainian{}}%
-   \def\partname{\textukrainian{Частина}}%
-   \def\pagename{\textukrainian{с.}}%
-   \def\seename{\textukrainian{див.}}%
-   \def\alsoname{\textukrainian{див.\ також}}%
-   \def\enclname{\textukrainian{вкладка}}%
-   \def\ccname{\textukrainian{копія}}%
-   \def\headtoname{\textukrainian{До}}%
-   \def\proofname{\textukrainian{Доведення}}%
-   \def\glossaryname{\textukrainian{Словник термінів}}%
+   \def\refname{Література}%
+   \def\abstractname{Анотація}%
+   \def\bibname{Бібліоґрафія}%
+   \def\prefacename{Вступ}%
+   \def\chaptername{Розділ}%
+   \def\appendixname{Додаток}%
+   \def\contentsname{Зміст}%
+   \def\listfigurename{Перелік ілюстрацій}%
+   \def\listtablename{Перелік таблиць}%
+   \def\indexname{Покажчик}%
+   \def\authorname{Іменний покажчик}% babel has "Їменний покажчик"
+   \def\figurename{Рис.}%
+   \def\tablename{Табл.}%
+   %\def\thepart{}%
+   \def\partname{Частина}%
+   \def\pagename{с.}%
+   \def\seename{див.}%
+   \def\alsoname{див.\ також}%
+   \def\enclname{вкладка}%
+   \def\ccname{копія}%
+   \def\headtoname{До}%
+   \def\proofname{Доведення}%
+   \def\glossaryname{Словник термінів}%
    }
 \def\dateukrainian{%
    \def\today{\textukrainian{\number\day~\ifcase\month\or

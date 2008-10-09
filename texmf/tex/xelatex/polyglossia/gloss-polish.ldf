@@ -8,27 +8,27 @@
 \fi
 
 \def\captionspolish{%
-  \def\prefacename{\textpolish{Przedmowa}}%
-  \def\refname{\textpolish{Literatura}}%
-  \def\abstractname{\textpolish{Streszczenie}}%
-  \def\bibname{\textpolish{Bibliografia}}%
-  \def\chaptername{\textpolish{Rozdział}}%
-  \def\appendixname{\textpolish{Dodatek}}%
-  \def\contentsname{\textpolish{Spis treści}}%
-  \def\listfigurename{\textpolish{Spis rysunków}}%
-  \def\listtablename{\textpolish{Spis tablic}}%
-  \def\indexname{\textpolish{Indeks}}%
-  \def\figurename{\textpolish{Rysunek}}%
-  \def\tablename{\textpolish{Tablica}}%
-  \def\partname{\textpolish{Część}}%
-  \def\enclname{\textpolish{Załącznik}}%
-  \def\ccname{\textpolish{Kopie:}}%
-  \def\headtoname{\textpolish{Do}}%
-  \def\pagename{\textpolish{Strona}}%
-  \def\seename{\textpolish{Porównaj}}%
-  \def\alsoname{\textpolish{Porównaj także}}%
-  \def\proofname{\textpolish{Dowód}}%
-  \def\glossaryname{\textpolish{Glossary}}% <-- Needs translation
+  \def\prefacename{Przedmowa}%
+  \def\refname{Literatura}%
+  \def\abstractname{Streszczenie}%
+  \def\bibname{Bibliografia}%
+  \def\chaptername{Rozdział}%
+  \def\appendixname{Dodatek}%
+  \def\contentsname{Spis treści}%
+  \def\listfigurename{Spis rysunków}%
+  \def\listtablename{Spis tablic}%
+  \def\indexname{Indeks}%
+  \def\figurename{Rysunek}%
+  \def\tablename{Tablica}%
+  \def\partname{Część}%
+  \def\enclname{Załącznik}%
+  \def\ccname{Kopie:}%
+  \def\headtoname{Do}%
+  \def\pagename{Strona}%
+  \def\seename{Porównaj}%
+  \def\alsoname{Porównaj także}%
+  \def\proofname{Dowód}%
+  \def\glossaryname{Glossary}% <-- Needs translation
    }
 \def\datepolish{%
    \def\today{\textpolish{\ifcase\month\or%

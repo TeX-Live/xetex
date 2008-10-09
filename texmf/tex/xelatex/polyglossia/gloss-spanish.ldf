@@ -8,27 +8,27 @@
 \fi
 
 \def\captionsspanish{%
-   \def\prefacename{\textspanish{Prefacio}}%
-   \def\refname{\textspanish{Referencias}}%
-   \def\abstractname{\textspanish{Resumen}}%
-   \def\bibname{\textgerman{Bibliografía}}%
-   \def\chaptername{\textspanish{Capítulo}}%
-   \def\appendixname{\textspanish{Apéndice}}%
-   \def\contentsname{\textspanish{Índice general}}%
-   \def\listfigurename{\textspanish{Índice de figuras}}%
-   \def\listtablename{\textspanish{Índice de cuadros}}%
-   \def\indexname{\textspanish{Índice alfabético}}%
-   \def\figurename{\textspanish{Figura}}%
-   \def\tablename{\textspanish{Cuadro}}%
-   \def\partname{\textspanish{Parte}}%
-   \def\enclname{\textspanish{Adjunto(s)}}%
-   \def\ccname{\textspanish{Copia a}}%
-   \def\headtoname{\textspanish{A}}%
-   \def\pagename{\textspanish{Página}}%
-   \def\seename{\textspanish{véase}}%
-   \def\alsoname{\textspanish{véase también}}%
-   \def\proofname{\textspanish{Prueba}}%
-   \def\glossaryname{\textspanish{Glosario}}%
+   \def\prefacename{Prefacio}%
+   \def\refname{Referencias}%
+   \def\abstractname{Resumen}%
+   \def\bibname{Bibliografía}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apéndice}%
+   \def\contentsname{Índice general}%
+   \def\listfigurename{Índice de figuras}%
+   \def\listtablename{Índice de cuadros}%
+   \def\indexname{Índice alfabético}%
+   \def\figurename{Figura}%
+   \def\tablename{Cuadro}%
+   \def\partname{Parte}%
+   \def\enclname{Adjunto(s)}%
+   \def\ccname{Copia a}%
+   \def\headtoname{A}%
+   \def\pagename{Página}%
+   \def\seename{véase}%
+   \def\alsoname{véase también}%
+   \def\proofname{Prueba}%
+   \def\glossaryname{Glosario}%
    }
 \def\datespanish{%   
    \def\today{\textspanish{\number\day\NonBreakingSpace de%

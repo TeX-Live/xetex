@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsczech{%
-   \def\refname{\textczech{Reference}}%
-   \def\abstractname{\textczech{Abstrakt}}%
-   \def\bibname{\textczech{Literatura}}%
-   \def\prefacename{\textczech{Předmluva}}%
-   \def\chaptername{\textczech{Kapitola}}%
-   \def\appendixname{\textczech{Dodatek}}%
-   \def\contentsname{\textczech{Obsah}}%
-   \def\listfigurename{\textczech{Seznam obrázků}}%
-   \def\listtablename{\textczech{Seznam tabulek}}%
-   \def\indexname{\textczech{Index}}%
-   \def\figurename{\textczech{Obrázek}}%
-   \def\tablename{\textczech{Tabulka}}%
-   %\def\thepart{\textczech{}}%
-   \def\partname{\textczech{Část}}%
-   \def\pagename{\textczech{Strana}}%
-   \def\seename{\textczech{viz}}%
-   \def\alsoname{\textczech{viz}}%
-   \def\enclname{\textczech{Příloha}}%
-   \def\ccname{\textczech{Na vědomí:}}%
-   \def\headtoname{\textczech{Komu}}%
-   \def\proofname{\textczech{Důkaz}}%
-   \def\glossaryname{\textczech{Slovník}}%was Glosář
+   \def\refname{Reference}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Předmluva}%
+   \def\chaptername{Kapitola}%
+   \def\appendixname{Dodatek}%
+   \def\contentsname{Obsah}%
+   \def\listfigurename{Seznam obrázků}%
+   \def\listtablename{Seznam tabulek}%
+   \def\indexname{Index}%
+   \def\figurename{Obrázek}%
+   \def\tablename{Tabulka}%
+   %\def\thepart{}%
+   \def\partname{Část}%
+   \def\pagename{Strana}%
+   \def\seename{viz}%
+   \def\alsoname{viz}%
+   \def\enclname{Příloha}%
+   \def\ccname{Na vědomí:}%
+   \def\headtoname{Komu}%
+   \def\proofname{Důkaz}%
+   \def\glossaryname{Slovník}%was Glosář
    }
 \def\dateczech{%
    \def\today{\textczech{\number\day.~\ifcase\month\or

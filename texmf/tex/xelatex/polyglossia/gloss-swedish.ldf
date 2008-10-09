@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsswedish{%
-   \def\refname{\textswedish{Referenser}}%
-   \def\abstractname{\textswedish{Sammanfattning}}%
-   \def\bibname{\textswedish{Litteraturförteckning}}%
-   \def\prefacename{\textswedish{Förord}}%
-   \def\chaptername{\textswedish{Kapitel}}%
-   \def\appendixname{\textswedish{Bilaga}}%
-   \def\contentsname{\textswedish{Innehåll}}%
-   \def\listfigurename{\textswedish{Figurer}}%
-   \def\listtablename{\textswedish{Tabeller}}%
-   \def\indexname{\textswedish{Sakregister}}%
-   \def\figurename{\textswedish{Figur}}%
-   \def\tablename{\textswedish{Tabell}}%
-   %\def\thepart{\textswedish{}}%
-   \def\partname{\textswedish{Del}}%
-   \def\pagename{\textswedish{Sida}}%
-   \def\seename{\textswedish{se}}%
-   \def\alsoname{\textswedish{se även}}%
-   \def\enclname{\textswedish{Bil.}}%
-   \def\ccname{\textswedish{Kopia för kännedom}}%
-   \def\headtoname{\textswedish{Till}}%
-   \def\proofname{\textswedish{Bevis}}%
-   \def\glossaryname{\textswedish{Ordlista}}%
+   \def\refname{Referenser}%
+   \def\abstractname{Sammanfattning}%
+   \def\bibname{Litteraturförteckning}%
+   \def\prefacename{Förord}%
+   \def\chaptername{Kapitel}%
+   \def\appendixname{Bilaga}%
+   \def\contentsname{Innehåll}%
+   \def\listfigurename{Figurer}%
+   \def\listtablename{Tabeller}%
+   \def\indexname{Sakregister}%
+   \def\figurename{Figur}%
+   \def\tablename{Tabell}%
+   %\def\thepart{}%
+   \def\partname{Del}%
+   \def\pagename{Sida}%
+   \def\seename{se}%
+   \def\alsoname{se även}%
+   \def\enclname{Bil.}%
+   \def\ccname{Kopia för kännedom}%
+   \def\headtoname{Till}%
+   \def\proofname{Bevis}%
+   \def\glossaryname{Ordlista}%
    }
 \def\dateswedish{%   
    \def\today{\textswedish{%

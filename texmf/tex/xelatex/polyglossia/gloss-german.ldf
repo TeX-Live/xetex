@@ -42,27 +42,27 @@
 \setkeys{german}{spelling,latesthyphen}
 
 \def\captionsgerman{%
-   \def\prefacename{\textgerman{Vorwort}}%
-   \def\refname{\textgerman{Literatur}}%
-   \def\abstractname{\textgerman{Zusammenfassung}}%
-   \def\bibname{\textgerman{Literaturverzeichnis}}%
-   \def\chaptername{\textgerman{Kapitel}}%
-   \def\appendixname{\textgerman{Anhang}}%
-   \def\contentsname{\textgerman{Inhaltsverzeichnis}}%
-   \def\listfigurename{\textgerman{Abbildungsverzeichnis}}%
-   \def\listtablename{\textgerman{Tabellenverzeichnis}}%
-   \def\indexname{\textgerman{Index}}%
-   \def\figurename{\textgerman{Abbildung}}%
-   \def\tablename{\textgerman{Tabelle}}%
-   \def\partname{\textgerman{Teil}}%
-   \def\enclname{\textgerman{Anlage(n)}}%
-   \def\ccname{\textgerman{Verteiler}}%
+   \def\prefacename{Vorwort}%
+   \def\refname{Literatur}%
+   \def\abstractname{Zusammenfassung}%
+   \def\bibname{Literaturverzeichnis}%
+   \def\chaptername{Kapitel}%
+   \def\appendixname{Anhang}%
+   \def\contentsname{Inhaltsverzeichnis}%
+   \def\listfigurename{Abbildungsverzeichnis}%
+   \def\listtablename{Tabellenverzeichnis}%
+   \def\indexname{Index}%
+   \def\figurename{Abbildung}%
+   \def\tablename{Tabelle}%
+   \def\partname{Teil}%
+   \def\enclname{Anlage(n)}%
+   \def\ccname{Verteiler}%
    \def\headtoname{An}%
-   \def\pagename{\textgerman{Seite}}%
-   \def\seename{\textgerman{siehe}}%
-   \def\alsoname{\textgerman{siehe auch}}%
-   \def\proofname{\textgerman{Beweis}}%
-   \def\glossaryname{\textgerman{Glossar}}%
+   \def\pagename{Seite}%
+   \def\seename{siehe}%
+   \def\alsoname{siehe auch}%
+   \def\proofname{Beweis}%
+   \def\glossaryname{Glossar}%
 }
 \def\dategerman{%   
    \def\today{\textgerman{\number\day.%

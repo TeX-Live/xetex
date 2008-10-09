@@ -32,28 +32,28 @@
 \fi
 
 \def\captionsbahasam{%
-   \def\refname{\textbahasam{Pustaka}}%
-   \def\abstractname{\textbahasam{Ringkasan}}%
-   \def\bibname{\textbahasam{Bibliografi}}%
-   \def\prefacename{\textbahasam{Pendahuluan}}%
-   \def\chaptername{\textbahasam{Bab}}%
-   \def\appendixname{\textbahasam{Lampiran}}%
-   \def\contentsname{\textbahasam{Kandungan}}%
-   \def\listfigurename{\textbahasam{Senarai Gambar}}%
-   \def\listtablename{\textbahasam{Senarai Jadual}}%
-   \def\indexname{\textbahasam{Indeks}}%
-   \def\figurename{\textbahasam{Gambar}}%
-   \def\tablename{\textbahasam{Jadual}}%
+   \def\refname{Pustaka}%
+   \def\abstractname{Ringkasan}%
+   \def\bibname{Bibliografi}%
+   \def\prefacename{Pendahuluan}%
+   \def\chaptername{Bab}%
+   \def\appendixname{Lampiran}%
+   \def\contentsname{Kandungan}%
+   \def\listfigurename{Senarai Gambar}%
+   \def\listtablename{Senarai Jadual}%
+   \def\indexname{Indeks}%
+   \def\figurename{Gambar}%
+   \def\tablename{Jadual}%
    \def\thepart{}\textbahasam{}%
-   \def\partname{\textbahasam{Bahagian}}%
-   \def\pagename{\textbahasam{Halaman}}%
-   \def\seename{\textbahasam{lihat}}%
-   \def\alsoname{\textbahasam{lihat juga}}%
-   \def\enclname{\textbahasam{Lampiran}}%
-   \def\ccname{\textbahasam{cc}}%
-   \def\headtoname{\textbahasam{Kepada}}%
-   \def\proofname{\textbahasam{Bukti}}%
-   \def\glossaryname{\textbahasam{Istilah}}%
+   \def\partname{Bahagian}%
+   \def\pagename{Halaman}%
+   \def\seename{lihat}%
+   \def\alsoname{lihat juga}%
+   \def\enclname{Lampiran}%
+   \def\ccname{cc}%
+   \def\headtoname{Kepada}%
+   \def\proofname{Bukti}%
+   \def\glossaryname{Istilah}%
    }
 \def\datebahasam{%
    \def\today{\textbahasam{\number\day~\ifcase\month\or

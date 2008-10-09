@@ -396,26 +396,26 @@
 \setkeys{greek}{numerals,attic=false}
 
 \def\monogreekcaptions{%
-   \def\refname{\textgreek{Αναφορές}}%
-   \def\abstractname{\textgreek{Περίληψη}}%
-   \def\bibname{\textgreek{Βιβλιογραφία}}%
-   \def\prefacename{\textgreek{Πρόλογος}}%
-   \def\chaptername{\textgreek{Κεφάλαιο}}%
-   \def\appendixname{\textgreek{Παράρτημα}}%
-   \def\contentsname{\textgreek{Περιεχόμενα}}%
-   \def\listfigurename{\textgreek{Κατάλογος σχημάτων}}%
-   \def\listtablename{\textgreek{Κατάλογος πινάκων}}%
-   \def\indexname{\textgreek{Ευρετήριο}}%
-   \def\figurename{\textgreek{Σχήμα}}%
-   \def\tablename{\textgreek{Πίνακας}}%
-   \def\partname{\textgreek{Μέρος}}%
-   \def\pagename{\textgreek{Σελίδα}}%
-   \def\seename{\textgreek{βλέπε}}%
-   \def\alsoname{\textgreek{βλέπε επίσης}}%
-   \def\enclname{\textgreek{Συνημμένα}}%
-   \def\ccname{\textgreek{Κοινοποίηση}}%
-   \def\headtoname{\textgreek{Προς}}%
-   \def\proofname{\textgreek{Απόδειξη}}%
+   \def\refname{Αναφορές}%
+   \def\abstractname{Περίληψη}%
+   \def\bibname{Βιβλιογραφία}%
+   \def\prefacename{Πρόλογος}%
+   \def\chaptername{Κεφάλαιο}%
+   \def\appendixname{Παράρτημα}%
+   \def\contentsname{Περιεχόμενα}%
+   \def\listfigurename{Κατάλογος σχημάτων}%
+   \def\listtablename{Κατάλογος πινάκων}%
+   \def\indexname{Ευρετήριο}%
+   \def\figurename{Σχήμα}%
+   \def\tablename{Πίνακας}%
+   \def\partname{Μέρος}%
+   \def\pagename{Σελίδα}%
+   \def\seename{βλέπε}%
+   \def\alsoname{βλέπε επίσης}%
+   \def\enclname{Συνημμένα}%
+   \def\ccname{Κοινοποίηση}%
+   \def\headtoname{Προς}%
+   \def\proofname{Απόδειξη}%
    \def\glossaryname{Γλωσσάρι}}%
 \def\datemonogreek{%   
    \def\today{\textgreek{\number\day\space%
@@ -441,26 +441,26 @@
       Νοεμβρίου\or
       Δεκεμβρίου\fi}}%
 \def\polygreekcaptions{%
-   \def\refname{\textgreek{Ἀναφορές}}%
-   \def\abstractname{\textgreek{Περίληψη}}%
-   \def\bibname{\textgreek{Βιβλιογραφία}}%
-   \def\prefacename{\textgreek{Πρόλογος}}%
-   \def\chaptername{\textgreek{Κεφάλαιο}}%
-   \def\appendixname{\textgreek{Παράρτημα}}%
-   \def\contentsname{\textgreek{Περιεχόμενα}}%
-   \def\listfigurename{\textgreek{Κατάλογος σχημάτων}}%
-   \def\listtablename{\textgreek{Κατάλογος πινάκων}}%
-   \def\indexname{\textgreek{Εὑρετήριο}}%
-   \def\figurename{\textgreek{Σχῆμα}}%
-   \def\tablename{\textgreek{Πίνακας}}%
-   \def\partname{\textgreek{Μέρος}}%
-   \def\pagename{\textgreek{Σελίδα}}%
-   \def\seename{\textgreek{βλέπε}}%
-   \def\alsoname{\textgreek{βλέπε ἐπίσης}}%
-   \def\enclname{\textgreek{Συνημμένα}}%
-   \def\ccname{\textgreek{Κοινοποίηση}}%
-   \def\headtoname{\textgreek{Πρὸς}}%
-   \def\proofname{\textgreek{Ἀπόδειξη}}}%
+   \def\refname{Ἀναφορές}%
+   \def\abstractname{Περίληψη}%
+   \def\bibname{Βιβλιογραφία}%
+   \def\prefacename{Πρόλογος}%
+   \def\chaptername{Κεφάλαιο}%
+   \def\appendixname{Παράρτημα}%
+   \def\contentsname{Περιεχόμενα}%
+   \def\listfigurename{Κατάλογος σχημάτων}%
+   \def\listtablename{Κατάλογος πινάκων}%
+   \def\indexname{Εὑρετήριο}%
+   \def\figurename{Σχῆμα}%
+   \def\tablename{Πίνακας}%
+   \def\partname{Μέρος}%
+   \def\pagename{Σελίδα}%
+   \def\seename{βλέπε}%
+   \def\alsoname{βλέπε ἐπίσης}%
+   \def\enclname{Συνημμένα}%
+   \def\ccname{Κοινοποίηση}%
+   \def\headtoname{Πρὸς}%
+   \def\proofname{Ἀπόδειξη}}%
 \def\datepolygreek{%   
    \def\today{\textgreek{\number\day\space%
       \greek@month%

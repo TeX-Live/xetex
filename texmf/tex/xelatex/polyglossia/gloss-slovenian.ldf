@@ -9,28 +9,28 @@
 \fi\fi
 
 \def\captionsslovenian{%
-   \def\refname{\textslovenian{Literatura}}%
-   \def\abstractname{\textslovenian{Povzetek}}%
-   \def\bibname{\textslovenian{Literatura}}%
-   \def\prefacename{\textslovenian{Predgovor}}%
-   \def\chaptername{\textslovenian{Poglavje}}%
-   \def\appendixname{\textslovenian{Dodatek}}%
-   \def\contentsname{\textslovenian{Kazalo}}%
-   \def\listfigurename{\textslovenian{Slike}}%
-   \def\listtablename{\textslovenian{Tabele}}%
-   \def\indexname{\textslovenian{Stvarno kazalo}}%
-   \def\figurename{\textslovenian{Slika}}%
-   \def\tablename{\textslovenian{Tabela}}%
-   %\def\thepart{\textslovenian{}}%
-   \def\partname{\textslovenian{Del}}%
-   \def\pagename{\textslovenian{Stran}}%
-   \def\seename{\textslovenian{glej}}%
-   \def\alsoname{\textslovenian{glej tudi}}%
-   \def\enclname{\textslovenian{Priloge}}%
-   \def\ccname{\textslovenian{Kopije}}%
-   \def\headtoname{\textslovenian{Prejme}}%
-   \def\proofname{\textslovenian{Dokaz}}%
-   \def\glossaryname{\textslovenian{Glosar}}% <-- CHECK!
+   \def\refname{Literatura}%
+   \def\abstractname{Povzetek}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Predgovor}%
+   \def\chaptername{Poglavje}%
+   \def\appendixname{Dodatek}%
+   \def\contentsname{Kazalo}%
+   \def\listfigurename{Slike}%
+   \def\listtablename{Tabele}%
+   \def\indexname{Stvarno kazalo}%
+   \def\figurename{Slika}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Del}%
+   \def\pagename{Stran}%
+   \def\seename{glej}%
+   \def\alsoname{glej tudi}%
+   \def\enclname{Priloge}%
+   \def\ccname{Kopije}%
+   \def\headtoname{Prejme}%
+   \def\proofname{Dokaz}%
+   \def\glossaryname{Glosar}% <-- CHECK!
    }
 \def\dateslovenian{%   
    \def\today{\textslovenian{\number\day.~\ifcase\month\or

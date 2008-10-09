@@ -8,27 +8,27 @@
 \fi
 
 \def\captionslatin{%
-   \def\prefacename{\textlatin{Praefatio}}%
-   \def\refname{\textlatin{Conspectus librorum}}%
-   \def\abstractname{\textlatin{Summarium}}%
-   \def\bibname{\textlatin{Conspectus librorum}}%
-   \def\chaptername{\textlatin{Caput}}%
-   \def\appendixname{\textlatin{Additamentum}}%
-   \def\contentsname{\textlatin{Index}}%
-   \def\listfigurename{\textlatin{Conspectus descriptionum}}%
-   \def\listtablename{\textlatin{Conspectus tabularum}}%
-   \def\indexname{\textlatin{Index rerum notabilium}}%
-   \def\figurename{\textlatin{Descriptio}}%
-   \def\tablename{\textlatin{Tabula}}%
-   \def\partname{\textlatin{Pars}}%
-   \def\enclname{\textlatin{Additur}}%
-   \def\ccname{\textlatin{Exemplar}}%
+   \def\prefacename{Praefatio}%
+   \def\refname{Conspectus librorum}%
+   \def\abstractname{Summarium}%
+   \def\bibname{Conspectus librorum}%
+   \def\chaptername{Caput}%
+   \def\appendixname{Additamentum}%
+   \def\contentsname{Index}%
+   \def\listfigurename{Conspectus descriptionum}%
+   \def\listtablename{Conspectus tabularum}%
+   \def\indexname{Index rerum notabilium}%
+   \def\figurename{Descriptio}%
+   \def\tablename{Tabula}%
+   \def\partname{Pars}%
+   \def\enclname{Additur}%
+   \def\ccname{Exemplar}%
    \def\headtoname{\ignorespaces}%
-   \def\pagename{\textlatin{pagina}}%
-   \def\seename{\textlatin{cfr.}}%
-   \def\alsoname{\textlatin{cfr.}}%
-   \def\proofname{\textlatin{Demonstratio}}%
-   \def\glossaryname{\textlatin{Glossarium}}%
+   \def\pagename{pagina}%
+   \def\seename{cfr.}%
+   \def\alsoname{cfr.}%
+   \def\proofname{Demonstratio}%
+   \def\glossaryname{Glossarium}%
    }
 \def\datelatin{%   
    \def\today{\textlatin{\uppercase\expandafter{\romannumeral\day}%

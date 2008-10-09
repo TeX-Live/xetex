@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsicelandic{%
-   \def\refname{\texticelandic{Heimildir}}%
-   \def\abstractname{\texticelandic{Útdráttur}}%
-   \def\bibname{\texticelandic{Heimildir}}%
-   \def\prefacename{\texticelandic{Formáli}}%
-   \def\chaptername{\texticelandic{Kafli}}%
-   \def\appendixname{\texticelandic{Viðauki}}%
-   \def\contentsname{\texticelandic{Efnisyfirlit}}%
-   \def\listfigurename{\texticelandic{Myndaskrá}}%
-   \def\listtablename{\texticelandic{Töfluskrá}}%
-   \def\indexname{\texticelandic{Atriðisorðaskrá}}%
-   \def\figurename{\texticelandic{Mynd}}%
-   \def\tablename{\texticelandic{Tafla}}%
-   %\def\thepart{\texticelandic{}}%
-   \def\partname{\texticelandic{Hluti}}%
-   \def\pagename{\texticelandic{Blaðsíða}}%
-   \def\seename{\texticelandic{Sjá}}%
-   \def\alsoname{\texticelandic{Sjá einnig}}%
-   \def\enclname{\texticelandic{Hjálagt}}%
-   \def\ccname{\texticelandic{Samrit}}%
-   \def\headtoname{\texticelandic{Til:}}%
-   \def\proofname{\texticelandic{Sönnun}}%
-   \def\glossaryname{\texticelandic{Orðalisti}}%
+   \def\refname{Heimildir}%
+   \def\abstractname{Útdráttur}%
+   \def\bibname{Heimildir}%
+   \def\prefacename{Formáli}%
+   \def\chaptername{Kafli}%
+   \def\appendixname{Viðauki}%
+   \def\contentsname{Efnisyfirlit}%
+   \def\listfigurename{Myndaskrá}%
+   \def\listtablename{Töfluskrá}%
+   \def\indexname{Atriðisorðaskrá}%
+   \def\figurename{Mynd}%
+   \def\tablename{Tafla}%
+   %\def\thepart{}%
+   \def\partname{Hluti}%
+   \def\pagename{Blaðsíða}%
+   \def\seename{Sjá}%
+   \def\alsoname{Sjá einnig}%
+   \def\enclname{Hjálagt}%
+   \def\ccname{Samrit}%
+   \def\headtoname{Til:}%
+   \def\proofname{Sönnun}%
+   \def\glossaryname{Orðalisti}%
    }
 \def\dateicelandic{%
    \def\today{\texticelandic{\number\day.~\ifcase\month\or

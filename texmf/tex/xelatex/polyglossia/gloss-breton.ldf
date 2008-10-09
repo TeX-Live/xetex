@@ -25,28 +25,28 @@
 
 
 \def\captionsbreton{%
-   \def\refname{\textbreton{Daveennoù}}%
-   \def\abstractname{\textbreton{Dvierrañ}}%
-   \def\bibname{\textbreton{Lennadurezh}}%
-   \def\prefacename{\textbreton{Rakskrid}}%
-   \def\chaptername{\textbreton{Pennad}}%
-   \def\appendixname{\textbreton{Stagadenn}}%
-   \def\contentsname{\textbreton{Taolenn}}%
-   \def\listfigurename{\textbreton{Listenn ar Figurennoù}}%
-   \def\listtablename{\textbreton{Listenn an taolennoù}}%
-   \def\indexname{\textbreton{Meneger}}%
-   \def\figurename{\textbreton{Figurenn}}%
-   \def\tablename{\textbreton{Taolenn}}%
-   \def\thepart{\textbreton{}}%
-   \def\partname{\textbreton{Lodenn}}%
-   \def\pagename{\textbreton{Pajenn}}%
-   \def\seename{\textbreton{Gwelout}}%
-   \def\alsoname{\textbreton{Gwelout ivez}}%
-   \def\enclname{\textbreton{Dielloù kevret}}%
-   \def\ccname{\textbreton{Eilskrid da}}%
-   \def\headtoname{\textbreton{evit}}%
-   \def\proofname{\textbreton{Proof}}%
-   \def\glossaryname{\textbreton{Glossary}}%
+   \def\refname{Daveennoù}%
+   \def\abstractname{Dvierrañ}%
+   \def\bibname{Lennadurezh}%
+   \def\prefacename{Rakskrid}%
+   \def\chaptername{Pennad}%
+   \def\appendixname{Stagadenn}%
+   \def\contentsname{Taolenn}%
+   \def\listfigurename{Listenn ar Figurennoù}%
+   \def\listtablename{Listenn an taolennoù}%
+   \def\indexname{Meneger}%
+   \def\figurename{Figurenn}%
+   \def\tablename{Taolenn}%
+   \def\thepart{}%
+   \def\partname{Lodenn}%
+   \def\pagename{Pajenn}%
+   \def\seename{Gwelout}%
+   \def\alsoname{Gwelout ivez}%
+   \def\enclname{Dielloù kevret}%
+   \def\ccname{Eilskrid da}%
+   \def\headtoname{evit}%
+   \def\proofname{Proof}%
+   \def\glossaryname{Glossary}%
    }
 \def\datebreton{%
    \def\today{\textbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else

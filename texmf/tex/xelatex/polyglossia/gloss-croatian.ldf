@@ -8,27 +8,27 @@
 \fi
 
 \def\captionscroatian{%
-   \def\refname{\textcroatian{Literatura}}%
-   \def\abstractname{\textcroatian{Sažetak}}%
-   \def\bibname{\textcroatian{Bibliografija}}%
-   \def\prefacename{\textcroatian{Predgovor}}%
-   \def\chaptername{\textcroatian{Poglavlje}}%
-   \def\appendixname{\textcroatian{Dodatak}}%
-   \def\contentsname{\textcroatian{Sadržaj}}%
-   \def\listfigurename{\textcroatian{Popis slika}}%
-   \def\listtablename{\textcroatian{Popis tablica}}%
-   \def\indexname{\textcroatian{Indeks}}%
-   \def\figurename{\textcroatian{Slika}}%
-   \def\tablename{\textcroatian{Tablica}}%
-   \def\partname{\textcroatian{Deo}}% <<< CHECK (taken from Serbian)
-   \def\pagename{\textcroatian{Stranica}}%
-   \def\seename{\textcroatian{Vidjeti}}%
-   \def\alsoname{\textcroatian{Vidjeti i}}%
-   \def\enclname{\textcroatian{Prilozi}}%
-   \def\ccname{\textcroatian{Kopije}}%
-   \def\headtoname{\textcroatian{Prima}}%
-   \def\proofname{\textcroatian{Dokaz}}%
-   \def\glossaryname{\textcroatian{Kazalo}}%
+   \def\refname{Literatura}%
+   \def\abstractname{Sažetak}%
+   \def\bibname{Bibliografija}%
+   \def\prefacename{Predgovor}%
+   \def\chaptername{Poglavlje}%
+   \def\appendixname{Dodatak}%
+   \def\contentsname{Sadržaj}%
+   \def\listfigurename{Popis slika}%
+   \def\listtablename{Popis tablica}%
+   \def\indexname{Indeks}%
+   \def\figurename{Slika}%
+   \def\tablename{Tablica}%
+   \def\partname{Deo}% <<< CHECK (taken from Serbian)
+   \def\pagename{Stranica}%
+   \def\seename{Vidjeti}%
+   \def\alsoname{Vidjeti i}%
+   \def\enclname{Prilozi}%
+   \def\ccname{Kopije}%
+   \def\headtoname{Prima}%
+   \def\proofname{Dokaz}%
+   \def\glossaryname{Kazalo}%
    }
 \def\datecroatian{%
    \def\today{\textcroatian{\number\day.~\ifcase\month\or

@@ -42,27 +42,27 @@
 \setkeys{russian}{spelling}
 
 \def\captionsrussian@modern{%
-   \def\prefacename{\textrussian{Предисловие}}%
-   \def\refname{\textrussian{Примечания}}%
-   \def\abstractname{\textrussian{Аннотация}}%
-   \def\bibname{\textrussian{Библиография}}%
-   \def\chaptername{\textrussian{Глава}}%
-   \def\appendixname{\textrussian{Приложение}}%
-   \def\contentsname{\textrussian{Оглавление}}%
-   \def\listfigurename{\textrussian{Список иллюстраций}}%
-   \def\listtablename{\textrussian{Список таблиц}}%
-   \def\indexname{\textrussian{Предметный указатель}}%
-   \def\authorname{\textrussian{Именной указатель}}%
-   \def\figurename{\textrussian{Рис.}}%
-   \def\tablename{\textrussian{Таблица}}%
-   \def\partname{\textrussian{Часть}}%
-   \def\enclname{\textrussian{вкл.}}%
-   \def\ccname{\textrussian{исх.}}%
-   \def\headtoname{\textrussian{вх.}}%
-   \def\pagename{\textrussian{с.}}%
-   \def\seename{\textrussian{см.}}%
-   \def\alsoname{\textrussian{см.~также}}%
-   \def\proofname{\textrussian{Доказательство}}%
+   \def\prefacename{Предисловие}%
+   \def\refname{Примечания}%
+   \def\abstractname{Аннотация}%
+   \def\bibname{Библиография}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Приложение}%
+   \def\contentsname{Оглавление}%
+   \def\listfigurename{Список иллюстраций}%
+   \def\listtablename{Список таблиц}%
+   \def\indexname{Предметный указатель}%
+   \def\authorname{Именной указатель}%
+   \def\figurename{Рис.}%
+   \def\tablename{Таблица}%
+   \def\partname{Часть}%
+   \def\enclname{вкл.}%
+   \def\ccname{исх.}%
+   \def\headtoname{вх.}%
+   \def\pagename{с.}%
+   \def\seename{см.}%
+   \def\alsoname{см.~также}%
+   \def\proofname{Доказательство}%
 }
 \def\daterussian@modern{%
       \def\today{\textrussian{\number\day%
@@ -82,27 +82,27 @@
       \space \number\year\space г.}}}
      
 \def\captionsrussian@old{%
-   \def\prefacename{\textrussian{Предисловіе}}%
-   \def\refname{\textrussian{Примѣчанія}}%
-   \def\abstractname{\textrussian{Аннотація}}%
-   \def\bibname{\textrussian{Библіографія}}%
-   \def\chaptername{\textrussian{Глава}}%
-   \def\appendixname{\textrussian{Приложеніе}}%
-   \def\contentsname{\textrussian{Оглавленіе}}%
-   \def\listfigurename{\textrussian{Списокъ иллюстрацій}}%
-   \def\listtablename{\textrussian{Списокъ таблицъ}}%
-   \def\indexname{\textrussian{Предмѣтный указатель}}%
-   \def\authorname{\textrussian{Именной указатель}}%
-   \def\figurename{\textrussian{Рис.}}%
-   \def\tablename{\textrussian{Таблица}}%
-   \def\partname{\textrussian{Часть}}%
-   \def\enclname{\textrussian{вкл.}}%
-   \def\ccname{\textrussian{исх.}}%
-   \def\headtoname{\textrussian{вх.}}%
-   \def\pagename{\textrussian{с.}}%
-   \def\seename{\textrussian{см.}}%
-   \def\alsoname{\textrussian{см.~также}}%
-   \def\proofname{\textrussian{Доказательство}}%
+   \def\prefacename{Предисловіе}%
+   \def\refname{Примѣчанія}%
+   \def\abstractname{Аннотація}%
+   \def\bibname{Библіографія}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Приложеніе}%
+   \def\contentsname{Оглавленіе}%
+   \def\listfigurename{Списокъ иллюстрацій}%
+   \def\listtablename{Списокъ таблицъ}%
+   \def\indexname{Предмѣтный указатель}%
+   \def\authorname{Именной указатель}%
+   \def\figurename{Рис.}%
+   \def\tablename{Таблица}%
+   \def\partname{Часть}%
+   \def\enclname{вкл.}%
+   \def\ccname{исх.}%
+   \def\headtoname{вх.}%
+   \def\pagename{с.}%
+   \def\seename{см.}%
+   \def\alsoname{см.~также}%
+   \def\proofname{Доказательство}%
 }  
 \def\daterussian@old{
       \def\today{\textrussian{\number\day%

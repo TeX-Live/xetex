@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsamharic{%
-   \def\refname{\textamharic{የነሥ ጹሁፍ ምንጭ}}%
-   \def\abstractname{\textamharic{አኅጽተሮ ጽሁፍ}}%
-   \def\bibname{\textamharic{ቢዋ መጽሃፍት}}%
-   \def\prefacename{\textamharic{መቅድም}}%
-   \def\chaptername{\textamharic{ክፍል}}%
-   \def\appendixname{\textamharic{መድበል}}%
-   \def\contentsname{\textamharic{ይዘት}}%
-   \def\listfigurename{\textamharic{የሥዕችሎ ማውጫ}}%
-   \def\listtablename{\textamharic{የሰንጠዥረ ማውጫ}}%
-   \def\indexname{\textamharic{ምህጻር ቃል}}%
-   \def\figurename{\textamharic{ሥዕል}}%
-   \def\tablename{\textamharic{ሰንጠረዥ}}%
-   %\def\thepart{\textamharic{}}%
-   \def\partname{\textamharic{ንዑስ ክፍል}}%
-   \def\pagename{\textamharic{ገጽ}}%
-   \def\seename{\textamharic{ይመልከቱ}}%
-   \def\alsoname{\textamharic{ይህምን ይመልከቱ}}%
-   \def\enclname{\textamharic{አባሪዎች}}%
-   \def\ccname{\textamharic{ግልባጭ}}%
-   \def\headtoname{\textamharic{ለ}}%
-   \def\proofname{\textamharic{ማረጋገጫ}}%
-   %\def\glossaryname{\textamharic{<++>}}%
+   \def\refname{የነሥ ጹሁፍ ምንጭ}%
+   \def\abstractname{አኅጽተሮ ጽሁፍ}%
+   \def\bibname{ቢዋ መጽሃፍት}%
+   \def\prefacename{መቅድም}%
+   \def\chaptername{ክፍል}%
+   \def\appendixname{መድበል}%
+   \def\contentsname{ይዘት}%
+   \def\listfigurename{የሥዕችሎ ማውጫ}%
+   \def\listtablename{የሰንጠዥረ ማውጫ}%
+   \def\indexname{ምህጻር ቃል}%
+   \def\figurename{ሥዕል}%
+   \def\tablename{ሰንጠረዥ}%
+   %\def\thepart{}%
+   \def\partname{ንዑስ ክፍል}%
+   \def\pagename{ገጽ}%
+   \def\seename{ይመልከቱ}%
+   \def\alsoname{ይህምን ይመልከቱ}%
+   \def\enclname{አባሪዎች}%
+   \def\ccname{ግልባጭ}%
+   \def\headtoname{ለ}%
+   \def\proofname{ማረጋገጫ}%
+   %\def\glossaryname{<++>}%
    }
 
 \newcommand{\eth@monthname}[1]{\ifcase#1\or

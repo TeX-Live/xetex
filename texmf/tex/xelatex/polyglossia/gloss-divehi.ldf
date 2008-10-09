@@ -10,30 +10,30 @@
 \def\divehi@RL{\relax}
 
 %\def\captionsdivehi{%
-%   \def\refname{\textdivehi{<++>}}%
-%   \def\abstractname{\textdivehi{<++>}}%
-%   \def\bibname{\textdivehi{<++>}}%
-%   \def\prefacename{\textdivehi{<++>}}%
-%   \def\chaptername{\textdivehi{<++>}}%
-%   \def\appendixname{\textdivehi{<++>}}%
-%   \def\contentsname{\textdivehi{<++>}}%
-%   \def\listfigurename{\textdivehi{<++>}}%
-%   \def\listtablename{\textdivehi{<++>}}%
-%   \def\indexname{\textdivehi{<++>}}%
-%   \def\figurename{\textdivehi{<++>}}%
-%   \def\tablename{\textdivehi{<++>}}%
-%   \def\thepart{\textdivehi{}}%
-%   \def\partname{\textdivehi{<++>}}%
-%   \def\pagename{\textdivehi{<++>}}%
-%   \def\seename{\textdivehi{<++>}}%
-%   \def\alsoname{\textdivehi{<++>}}%
-%   \def\enclname{\textdivehi{<++>}}%
-%   \def\ccname{\textdivehi{<++>}}%
-%   \def\headtoname{\textdivehi{<++>}}%
-%   \def\proofname{\textdivehi{<++>}}%
-%   \def\glossaryname{\textdivehi{<++>}}%
+%   \def\refname{<++>}%
+%   \def\abstractname{<++>}%
+%   \def\bibname{<++>}%
+%   \def\prefacename{<++>}%
+%   \def\chaptername{<++>}%
+%   \def\appendixname{<++>}%
+%   \def\contentsname{<++>}%
+%   \def\listfigurename{<++>}%
+%   \def\listtablename{<++>}%
+%   \def\indexname{<++>}%
+%   \def\figurename{<++>}%
+%   \def\tablename{<++>}%
+%   \def\thepart{}%
+%   \def\partname{<++>}%
+%   \def\pagename{<++>}%
+%   \def\seename{<++>}%
+%   \def\alsoname{<++>}%
+%   \def\enclname{<++>}%
+%   \def\ccname{<++>}%
+%   \def\headtoname{<++>}%
+%   \def\proofname{<++>}%
+%   \def\glossaryname{<++>}%
 %   }
-%\def\datedivehi{\def\today{\textdivehi{<++>}}}
+%\def\datedivehi{\def\today{<++>}}
 
 \def\divehi@language{\protect\language=\l@divehi}
 

@@ -8,28 +8,28 @@
 \fi
 
 \def\captionswelsh{%
-   \def\refname{\textwelsh{Cyfeiriadau}}%
-   \def\abstractname{\textwelsh{Crynodeb}}%
-   \def\bibname{\textwelsh{Llyfryddiaeth}}%
-   \def\prefacename{\textwelsh{Rhagair}}%
-   \def\chaptername{\textwelsh{Pennod}}%
-   \def\appendixname{\textwelsh{Atodiad}}%
-   \def\contentsname{\textwelsh{Cynnwys}}%
-   \def\listfigurename{\textwelsh{Rhestr Ddarluniau}}%
-   \def\listtablename{\textwelsh{Rhestr Dablau}}%
-   \def\indexname{\textwelsh{Mynegai}}%
-   \def\figurename{\textwelsh{Darlun}}%
-   \def\tablename{\textwelsh{Taflen}}%
-   %\def\thepart{\textwelsh{}}%
-   \def\partname{\textwelsh{Rhan}}%
-   \def\pagename{\textwelsh{tudalen}}%
-   \def\seename{\textwelsh{gweler}}%
-   \def\alsoname{\textwelsh{gweler hefyd}}%
-   \def\enclname{\textwelsh{amgaeëdig}}%
-   \def\ccname{\textwelsh{copïau}}%
-   \def\headtoname{\textwelsh{At}}%
-   \def\proofname{\textwelsh{Prawf}}%
-   \def\glossaryname{\textwelsh{Rhestr termau}}%
+   \def\refname{Cyfeiriadau}%
+   \def\abstractname{Crynodeb}%
+   \def\bibname{Llyfryddiaeth}%
+   \def\prefacename{Rhagair}%
+   \def\chaptername{Pennod}%
+   \def\appendixname{Atodiad}%
+   \def\contentsname{Cynnwys}%
+   \def\listfigurename{Rhestr Ddarluniau}%
+   \def\listtablename{Rhestr Dablau}%
+   \def\indexname{Mynegai}%
+   \def\figurename{Darlun}%
+   \def\tablename{Taflen}%
+   %\def\thepart{}%
+   \def\partname{Rhan}%
+   \def\pagename{tudalen}%
+   \def\seename{gweler}%
+   \def\alsoname{gweler hefyd}%
+   \def\enclname{amgaeëdig}%
+   \def\ccname{copïau}%
+   \def\headtoname{At}%
+   \def\proofname{Prawf}%
+   \def\glossaryname{Rhestr termau}%
    }
 \def\datewelsh{%   
    \def\today{\textwelsh{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else%

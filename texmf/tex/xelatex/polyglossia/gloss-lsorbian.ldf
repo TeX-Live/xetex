@@ -15,28 +15,28 @@
 \fi
 
 \def\captionslsorbian{%
-   \def\refname{\textlsorbian{Referency}}%
-   \def\abstractname{\textlsorbian{Abstrakt}}%
-   \def\bibname{\textlsorbian{Literatura}}%
-   \def\prefacename{\textlsorbian{Zawod}}%
-   \def\chaptername{\textlsorbian{Kapitl}}%
-   \def\appendixname{\textlsorbian{Dodawki}}%
-   \def\contentsname{\textlsorbian{Wopśimjeśe}}%
-   \def\listfigurename{\textlsorbian{Zapis wobrazow}}%
-   \def\listtablename{\textlsorbian{Zapis tabulkow}}%
-   \def\indexname{\textlsorbian{Indeks}}%
-   \def\figurename{\textlsorbian{Wobraz}}%
-   \def\tablename{\textlsorbian{Tabulka}}%
-   %\def\thepart{\textlsorbian{}}%
-   \def\partname{\textlsorbian{Źěl}}%
-   \def\pagename{\textlsorbian{Strona}}%
-   \def\seename{\textlsorbian{gl.}}%
-   \def\alsoname{\textlsorbian{gl.~teke}}%
-   \def\enclname{\textlsorbian{Pśiłoga}}%
-   \def\ccname{\textlsorbian{CC}}%
-   \def\headtoname{\textlsorbian{Komu}}%
-   \def\proofname{\textlsorbian{Proof}}%
-   \def\glossaryname{\textlsorbian{Glossary}}%
+   \def\refname{Referency}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Zawod}%
+   \def\chaptername{Kapitl}%
+   \def\appendixname{Dodawki}%
+   \def\contentsname{Wopśimjeśe}%
+   \def\listfigurename{Zapis wobrazow}%
+   \def\listtablename{Zapis tabulkow}%
+   \def\indexname{Indeks}%
+   \def\figurename{Wobraz}%
+   \def\tablename{Tabulka}%
+   %\def\thepart{}%
+   \def\partname{Źěl}%
+   \def\pagename{Strona}%
+   \def\seename{gl.}%
+   \def\alsoname{gl.~teke}%
+   \def\enclname{Pśiłoga}%
+   \def\ccname{CC}%
+   \def\headtoname{Komu}%
+   \def\proofname{Proof}%
+   \def\glossaryname{Glossary}%
    }
 \def\datelsorbian{%
     \def\today{\textlsorbian{\number\day.~\ifcase\month\or

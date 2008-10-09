@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsslovak{%
-   \def\refname{\textslovak{Referencie}}%
-   \def\abstractname{\textslovak{Abstrakt}}%
-   \def\bibname{\textslovak{Literatúra}}%
-   \def\prefacename{\textslovak{Úvod}}%
-   \def\chaptername{\textslovak{Kapitola}}%
-   \def\appendixname{\textslovak{Dodatok}}%
-   \def\contentsname{\textslovak{Obsah}}%
-   \def\listfigurename{\textslovak{Zoznam obrázkov}}%
-   \def\listtablename{\textslovak{Zoznam tabuliek}}%
-   \def\indexname{\textslovak{Index}}%
-   \def\figurename{\textslovak{Obrázok}}%
-   \def\tablename{\textslovak{Tabuľka}}%
-   %\def\thepart{\textslovak{}}%
-   \def\partname{\textslovak{Časť}}%
-   \def\pagename{\textslovak{Strana}}%
-   \def\seename{\textslovak{viď}}%
-   \def\alsoname{\textslovak{viď tiež}}%
-   \def\enclname{\textslovak{Prílohy}}%
-   \def\ccname{\textslovak{cc.}}%
-   \def\headtoname{\textslovak{Pre}}% was komu
-   \def\proofname{\textslovak{Dôkaz}}%
-   \def\glossaryname{\textslovak{Slovník}}%
+   \def\refname{Referencie}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatúra}%
+   \def\prefacename{Úvod}%
+   \def\chaptername{Kapitola}%
+   \def\appendixname{Dodatok}%
+   \def\contentsname{Obsah}%
+   \def\listfigurename{Zoznam obrázkov}%
+   \def\listtablename{Zoznam tabuliek}%
+   \def\indexname{Index}%
+   \def\figurename{Obrázok}%
+   \def\tablename{Tabuľka}%
+   %\def\thepart{}%
+   \def\partname{Časť}%
+   \def\pagename{Strana}%
+   \def\seename{viď}%
+   \def\alsoname{viď tiež}%
+   \def\enclname{Prílohy}%
+   \def\ccname{cc.}%
+   \def\headtoname{Pre}% was komu
+   \def\proofname{Dôkaz}%
+   \def\glossaryname{Slovník}%
    }
 \def\dateslovak{%   
    \def\today{\textslovak{\number\day.~\ifcase\month\or

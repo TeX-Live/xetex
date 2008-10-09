@@ -7,28 +7,28 @@
 \fi
 
 \def\captionsinterlingua{%
-   \def\refname{\textinterlingua{Referentias}}%
-   \def\abstractname{\textinterlingua{Summario}}%
-   \def\bibname{\textinterlingua{Bibliographia}}%
-   \def\prefacename{\textinterlingua{Prefacio}}%
-   \def\chaptername{\textinterlingua{Capitulo}}%
-   \def\appendixname{\textinterlingua{Appendice}}%
-   \def\contentsname{\textinterlingua{Contento}}%
-   \def\listfigurename{\textinterlingua{Lista de figuras}}%
-   \def\listtablename{\textinterlingua{Lista de tabellas}}%
-   \def\indexname{\textinterlingua{Indice}}%
-   \def\figurename{\textinterlingua{Figura}}%
-   \def\tablename{\textinterlingua{Tabella}}%
-   \def\partname{\textinterlingua{Parte}}%
-   %\def\thepart{\textinterlingua{}}%
-   \def\pagename{\textinterlingua{Pagina}}%
-   \def\seename{\textinterlingua{vide}}%
-   \def\alsoname{\textinterlingua{vide etiam}}%
-   \def\enclname{\textinterlingua{Incluso}}%
-   \def\ccname{\textinterlingua{Copia}}%
-   \def\headtoname{\textinterlingua{A}}%
-   \def\proofname{\textinterlingua{Prova}}%
-   \def\glossaryname{\textinterlingua{Glossario}}%
+   \def\refname{Referentias}%
+   \def\abstractname{Summario}%
+   \def\bibname{Bibliographia}%
+   \def\prefacename{Prefacio}%
+   \def\chaptername{Capitulo}%
+   \def\appendixname{Appendice}%
+   \def\contentsname{Contento}%
+   \def\listfigurename{Lista de figuras}%
+   \def\listtablename{Lista de tabellas}%
+   \def\indexname{Indice}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabella}%
+   \def\partname{Parte}%
+   %\def\thepart{}%
+   \def\pagename{Pagina}%
+   \def\seename{vide}%
+   \def\alsoname{vide etiam}%
+   \def\enclname{Incluso}%
+   \def\ccname{Copia}%
+   \def\headtoname{A}%
+   \def\proofname{Prova}%
+   \def\glossaryname{Glossario}%
    }
 \def\dateinterlingua{%
    \def\today{\textinterlingua{le~\number\day\space de \ifcase\month\or

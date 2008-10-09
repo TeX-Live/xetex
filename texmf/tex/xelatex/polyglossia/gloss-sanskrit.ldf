@@ -33,29 +33,29 @@
 }
 
 %\def\captionssanskrit{%
-%   \def\refname{\textsanskrit{<++>}}%
-%   \def\abstractname{\textsanskrit{<++>}}%
-%   \def\bibname{\textsanskrit{<++>}}%
-%   \def\prefacename{\textsanskrit{<++>}}%
-%   \def\chaptername{\textsanskrit{<++>}}%
-%   \def\appendixname{\textsanskrit{<++>}}%
-%   \def\contentsname{\textsanskrit{<++>}}%
-%   \def\listfigurename{\textsanskrit{<++>}}%
-%   \def\listtablename{\textsanskrit{<++>}}%
-%   \def\indexname{\textsanskrit{<++>}}%
-%   \def\figurename{\textsanskrit{<++>}}%
-%   \def\tablename{\textsanskrit{<++>}}%
-%   \def\thepart{\textsanskrit{}}%
-%   \def\partname{\textsanskrit{<++>}}%
-%   \def\pagename{\textsanskrit{<++>}}%
-%   \def\seename{\textsanskrit{<++>}}%
-%   \def\alsoname{\textsanskrit{<++>}}%
-%   \def\enclname{\textsanskrit{<++>}}%
-%   \def\ccname{\textsanskrit{<++>}}%
-%   \def\headtoname{\textsanskrit{<++>}}%
-%   \def\proofname{\textsanskrit{<++>}}%
-%   \def\glossaryname{\textsanskrit{<++>}}%
-%   \def\today{\textsanskrit{<++>}}}
+%   \def\refname{<++>}%
+%   \def\abstractname{<++>}%
+%   \def\bibname{<++>}%
+%   \def\prefacename{<++>}%
+%   \def\chaptername{<++>}%
+%   \def\appendixname{<++>}%
+%   \def\contentsname{<++>}%
+%   \def\listfigurename{<++>}%
+%   \def\listtablename{<++>}%
+%   \def\indexname{<++>}%
+%   \def\figurename{<++>}%
+%   \def\tablename{<++>}%
+%   \def\thepart{}%
+%   \def\partname{<++>}%
+%   \def\pagename{<++>}%
+%   \def\seename{<++>}%
+%   \def\alsoname{<++>}%
+%   \def\enclname{<++>}%
+%   \def\ccname{<++>}%
+%   \def\headtoname{<++>}%
+%   \def\proofname{<++>}%
+%   \def\glossaryname{<++>}%
+%   \def\today{<++>}}
 
 \def\sanskrit@font{%
 \@ifundefined{sanskritfont}{%

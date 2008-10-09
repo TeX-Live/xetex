@@ -8,29 +8,29 @@
 \fi
 
 \def\captionsirish{%
-   \def\refname{\textirish{Tagairtí}}%
-   \def\abstractname{\textirish{Achoimre}}%
-   \def\bibname{\textirish{Leabharliosta}}%
-   \def\prefacename{\textirish{Réamhrá}}%    <-- also "Brollach"
-   \def\refname{\textirish{Tagairtí}}%
-   \def\chaptername{\textirish{Tagairtí}}%
-   \def\appendixname{\textirish{Aguisín}}%
-   \def\contentsname{\textirish{Clár Ábhair}}%
-   \def\listfigurename{\textirish{Léaráidí}}%
-   \def\listtablename{\textirish{Táblaí}}%
-   \def\indexname{\textirish{Innéacs}}%
-   \def\figurename{\textirish{Léaráid}}%
-   \def\tablename{\textirish{Tábla}}%
-   %\def\thepart{\textirish{}}%
-   \def\partname{\textirish{Cuid}}%
-   \def\pagename{\textirish{Leathanach}}%
-   \def\seename{\textirish{féach}}%
-   \def\alsoname{\textirish{féach freisin}}%
-   \def\enclname{\textirish{faoi iamh}}%
-   \def\ccname{\textirish{cc}}%
-   \def\headtoname{\textirish{Go}}%
-   \def\proofname{\textirish{Cruthúnas}}%
-   \def\glossaryname{\textirish{Glossary}}%
+   \def\refname{Tagairtí}%
+   \def\abstractname{Achoimre}%
+   \def\bibname{Leabharliosta}%
+   \def\prefacename{Réamhrá}%    <-- also "Brollach"
+   \def\refname{Tagairtí}%
+   \def\chaptername{Tagairtí}%
+   \def\appendixname{Aguisín}%
+   \def\contentsname{Clár Ábhair}%
+   \def\listfigurename{Léaráidí}%
+   \def\listtablename{Táblaí}%
+   \def\indexname{Innéacs}%
+   \def\figurename{Léaráid}%
+   \def\tablename{Tábla}%
+   %\def\thepart{}%
+   \def\partname{Cuid}%
+   \def\pagename{Leathanach}%
+   \def\seename{féach}%
+   \def\alsoname{féach freisin}%
+   \def\enclname{faoi iamh}%
+   \def\ccname{cc}%
+   \def\headtoname{Go}%
+   \def\proofname{Cruthúnas}%
+   \def\glossaryname{Glossary}%
    }
 \def\dateirish{%
    \def\today{\textirish{%

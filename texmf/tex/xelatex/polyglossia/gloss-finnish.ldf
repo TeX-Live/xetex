@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsfinnish{%
-   \def\refname{\textfinnish{Viitteet}}%
-   \def\abstractname{\textfinnish{Tiivistelmä}}%
-   \def\bibname{\textfinnish{Kirjallisuutta}}%
-   \def\prefacename{\textfinnish{Esipuhe}}%
-   \def\chaptername{\textfinnish{Luku}}%
-   \def\appendixname{\textfinnish{Liite}}%
-   \def\contentsname{\textfinnish{Sisältö}}%
-   \def\listfigurename{\textfinnish{Kuvat}}%
-   \def\listtablename{\textfinnish{Taulukot}}%
-   \def\indexname{\textfinnish{Hakemisto}}%
-   \def\figurename{\textfinnish{Kuva}}%
-   \def\tablename{\textfinnish{Taulukko}}%
-   %\def\thepart{\textfinnish{}}%
-   \def\partname{\textfinnish{Osa}}%
-   \def\pagename{\textfinnish{Sivu}}%
-   \def\seename{\textfinnish{katso}}%
-   \def\alsoname{\textfinnish{katso myös}}%
-   \def\enclname{\textfinnish{Liitteet}}%
-   \def\ccname{\textfinnish{Jakelu}}%
-   \def\headtoname{\textfinnish{Vastaanottaja}}%
-   \def\proofname{\textfinnish{Todistus}}%
-   \def\glossaryname{\textfinnish{Sanasto}}%
+   \def\refname{Viitteet}%
+   \def\abstractname{Tiivistelmä}%
+   \def\bibname{Kirjallisuutta}%
+   \def\prefacename{Esipuhe}%
+   \def\chaptername{Luku}%
+   \def\appendixname{Liite}%
+   \def\contentsname{Sisältö}%
+   \def\listfigurename{Kuvat}%
+   \def\listtablename{Taulukot}%
+   \def\indexname{Hakemisto}%
+   \def\figurename{Kuva}%
+   \def\tablename{Taulukko}%
+   %\def\thepart{}%
+   \def\partname{Osa}%
+   \def\pagename{Sivu}%
+   \def\seename{katso}%
+   \def\alsoname{katso myös}%
+   \def\enclname{Liitteet}%
+   \def\ccname{Jakelu}%
+   \def\headtoname{Vastaanottaja}%
+   \def\proofname{Todistus}%
+   \def\glossaryname{Sanasto}%
    }
 \def\datefinnish{%
    \def\today{\textfinnish{\number\day.~\ifcase\month\or

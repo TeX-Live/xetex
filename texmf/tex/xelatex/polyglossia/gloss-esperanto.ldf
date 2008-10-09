@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsesperanto{%
-   \def\refname{\textesperanto{Citaĵoj}}%
-   \def\abstractname{\textesperanto{Resumo}}%
-   \def\bibname{\textesperanto{Bibliografio}}%
-   \def\prefacename{\textesperanto{Antaŭparolo}}%
-   \def\chaptername{\textesperanto{Ĉapitro}}%
-   \def\appendixname{\textesperanto{Apendico}}%
-   \def\contentsname{\textesperanto{Enhavo}}%
-   \def\listfigurename{\textesperanto{Listo de figuroj}}%
-   \def\listtablename{\textesperanto{Listo de tabeloj}}%
-   \def\indexname{\textesperanto{Indekso}}%
-   \def\figurename{\textesperanto{Figuro}}%
-   \def\tablename{\textesperanto{Tabelo}}%
-   %\def\thepart{\textesperanto{}}%
-   %\def\partname{\textesperanto{}}%
-   \def\pagename{\textesperanto{Paĝo}}%
-   \def\seename{\textesperanto{vidu}}%
-   \def\alsoname{\textesperanto{Parto}}%
-   \def\enclname{\textesperanto{Aldono(j)}}%
-   \def\ccname{\textesperanto{Kopie al}}%
-   \def\headtoname{\textesperanto{Al}}%
-   \def\proofname{\textesperanto{Pruvo}}%
-   \def\glossaryname{\textesperanto{Glosaro}}%
+   \def\refname{Citaĵoj}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Bibliografio}%
+   \def\prefacename{Antaŭparolo}%
+   \def\chaptername{Ĉapitro}%
+   \def\appendixname{Apendico}%
+   \def\contentsname{Enhavo}%
+   \def\listfigurename{Listo de figuroj}%
+   \def\listtablename{Listo de tabeloj}%
+   \def\indexname{Indekso}%
+   \def\figurename{Figuro}%
+   \def\tablename{Tabelo}%
+   %\def\thepart{}%
+   %\def\partname{}%
+   \def\pagename{Paĝo}%
+   \def\seename{vidu}%
+   \def\alsoname{Parto}%
+   \def\enclname{Aldono(j)}%
+   \def\ccname{Kopie al}%
+   \def\headtoname{Al}%
+   \def\proofname{Pruvo}%
+   \def\glossaryname{Glosaro}%
    }
 \def\dateesperanto{%   
    \def\today{\textesperanto{\number\day{–a}~de~\ifcase\month\or

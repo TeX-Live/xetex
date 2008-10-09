@@ -7,31 +7,31 @@
 \fi
 
 %\def\captionscoptic{%
-%   \def\refname{\textcoptic{<++>}}%
-%   \def\abstractname{\textcoptic{<++>}}%
-%   \def\bibname{\textcoptic{<++>}}%
-%   \def\prefacename{\textcoptic{<++>}}%
-%   \def\chaptername{\textcoptic{<++>}}%
-%   \def\appendixname{\textcoptic{<++>}}%
-%   \def\contentsname{\textcoptic{<++>}}%
-%   \def\listfigurename{\textcoptic{<++>}}%
-%   \def\listtablename{\textcoptic{<++>}}%
-%   \def\indexname{\textcoptic{<++>}}%
-%   \def\figurename{\textcoptic{<++>}}%
-%   \def\tablename{\textcoptic{<++>}}%
-%   \def\thepart{\textcoptic{}}%
-%   \def\partname{\textcoptic{<++>}}%
-%   \def\pagename{\textcoptic{<++>}}%
-%   \def\seename{\textcoptic{<++>}}%
-%   \def\alsoname{\textcoptic{<++>}}%
-%   \def\enclname{\textcoptic{<++>}}%
-%   \def\ccname{\textcoptic{<++>}}%
-%   \def\headtoname{\textcoptic{<++>}}%
-%   \def\proofname{\textcoptic{<++>}}%
-%   \def\glossaryname{\textcoptic{<++>}}%
+%   \def\refname{<++>}%
+%   \def\abstractname{<++>}%
+%   \def\bibname{<++>}%
+%   \def\prefacename{<++>}%
+%   \def\chaptername{<++>}%
+%   \def\appendixname{<++>}%
+%   \def\contentsname{<++>}%
+%   \def\listfigurename{<++>}%
+%   \def\listtablename{<++>}%
+%   \def\indexname{<++>}%
+%   \def\figurename{<++>}%
+%   \def\tablename{<++>}%
+%   \def\thepart{}%
+%   \def\partname{<++>}%
+%   \def\pagename{<++>}%
+%   \def\seename{<++>}%
+%   \def\alsoname{<++>}%
+%   \def\enclname{<++>}%
+%   \def\ccname{<++>}%
+%   \def\headtoname{<++>}%
+%   \def\proofname{<++>}%
+%   \def\glossaryname{<++>}%
 %   }
 %\def\datecoptic{%
-%   \def\today{\textcoptic{<++>}}%
+%   \def\today{<++>}%
 %   }
 
 \def\coptic@language{\protect\language=\l@coptic}

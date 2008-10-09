@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsnorsk{%
-   \def\refname{\textnorsk{Referanser}}%
-   \def\abstractname{\textnorsk{Sammendrag}}%
-   \def\bibname{\textnorsk{Bibliografi}}%
-   \def\prefacename{\textnorsk{Forord}}%
-   \def\chaptername{\textnorsk{Kapittel}}%
-   \def\appendixname{\textnorsk{Tillegg}}%
-   \def\contentsname{\textnorsk{Innhold}}%
-   \def\listfigurename{\textnorsk{Figurer}}%
-   \def\listtablename{\textnorsk{Tabeller}}%
-   \def\indexname{\textnorsk{Register}}%
-   \def\figurename{\textnorsk{Figur}}%
-   \def\tablename{\textnorsk{Tabell}}%
-   %\def\thepart{\textnorsk{}}% <<<
-   \def\partname{\textnorsk{Del}}%
-   \def\pagename{\textnorsk{Side}}%
-   \def\seename{\textnorsk{Se}}%
-   \def\alsoname{\textnorsk{Se også}}%
-   \def\enclname{\textnorsk{Vedlegg}}%
-   \def\ccname{\textnorsk{Kopi sendt}}%
-   \def\headtoname{\textnorsk{Til}}%
-   \def\proofname{\textnorsk{Bevis}}%
-   \def\glossaryname{\textnorsk{Ordliste}}%
+   \def\refname{Referanser}%
+   \def\abstractname{Sammendrag}%
+   \def\bibname{Bibliografi}%
+   \def\prefacename{Forord}%
+   \def\chaptername{Kapittel}%
+   \def\appendixname{Tillegg}%
+   \def\contentsname{Innhold}%
+   \def\listfigurename{Figurer}%
+   \def\listtablename{Tabeller}%
+   \def\indexname{Register}%
+   \def\figurename{Figur}%
+   \def\tablename{Tabell}%
+   %\def\thepart{}% <<<
+   \def\partname{Del}%
+   \def\pagename{Side}%
+   \def\seename{Se}%
+   \def\alsoname{Se også}%
+   \def\enclname{Vedlegg}%
+   \def\ccname{Kopi sendt}%
+   \def\headtoname{Til}%
+   \def\proofname{Bevis}%
+   \def\glossaryname{Ordliste}%
    }
 \def\datenorsk{%   
    \def\today{\textnorsk{\number\day.~\ifcase\month\or

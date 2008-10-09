@@ -13,28 +13,28 @@
 \fi
 
 \def\captionsbrazil{%
-   \def\refname{\textbrazil{Referências}}%
-   \def\abstractname{\textbrazil{Resumo}}%
-   \def\bibname{\textbrazil{Referências Bibliográficas}}%
-   \def\prefacename{\textbrazil{Prefácio}}%
-   \def\chaptername{\textbrazil{Capítulo}}%
-   \def\appendixname{\textbrazil{Apêndice}}%
-   \def\contentsname{\textbrazil{Sumário}}%
-   \def\listfigurename{\textbrazil{Lista de Figuras}}%
-   \def\listtablename{\textbrazil{Lista de Tabelas}}%
-   \def\indexname{\textbrazil{Índice Remissivo}}%
-   \def\figurename{\textbrazil{Figura}}%
-   \def\tablename{\textbrazil{Tabela}}%
-   %\def\thepart{\textbrazil{}}%
-   \def\partname{\textbrazil{Parte}}%
-   \def\pagename{\textbrazil{Página}}%
-   \def\seename{\textbrazil{veja}}%
-   \def\alsoname{\textbrazil{veja também}}%
-   \def\enclname{\textbrazil{Anexo}}%
-   \def\ccname{\textbrazil{Cópia para}}%
-   \def\headtoname{\textbrazil{Para}}%
-   \def\proofname{\textbrazil{Demonstração}}%
-   \def\glossaryname{\textbrazil{Glossary}}%
+   \def\refname{Referências}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Referências Bibliográficas}%
+   \def\prefacename{Prefácio}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apêndice}%
+   \def\contentsname{Sumário}%
+   \def\listfigurename{Lista de Figuras}%
+   \def\listtablename{Lista de Tabelas}%
+   \def\indexname{Índice Remissivo}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Parte}%
+   \def\pagename{Página}%
+   \def\seename{veja}%
+   \def\alsoname{veja também}%
+   \def\enclname{Anexo}%
+   \def\ccname{Cópia para}%
+   \def\headtoname{Para}%
+   \def\proofname{Demonstração}%
+   \def\glossaryname{Glossary}%
    }
 \def\datebrazil{%   
    \def\today{\textbrazil{\number\day\space de\space\ifcase\month\or

@@ -12,28 +12,28 @@
 \fi
 
 \def\captionsportuges{%
-   \def\refname{\textportuges{Referências}}%
-   \def\abstractname{\textportuges{Resumo}}%
-   \def\bibname{\textportuges{Bibliografia}}%
-   \def\prefacename{\textportuges{Prefácio}}%
-   \def\chaptername{\textportuges{Capítulo}}%
-   \def\appendixname{\textportuges{Apêndice}}%
-   \def\contentsname{\textportuges{Conteúdo}}%
-   \def\listfigurename{\textportuges{Lista de Figuras}}%
-   \def\listtablename{\textportuges{Lista de Tabelas}}%
-   \def\indexname{\textportuges{Índice}}%
-   \def\figurename{\textportuges{Figura}}%
-   \def\tablename{\textportuges{Tabela}}%
-   %\def\thepart{\textportuges{}}%
-   \def\partname{\textportuges{Parte}}%
-   \def\pagename{\textportuges{Página}}%
-   \def\seename{\textportuges{ver}}%
-   \def\alsoname{\textportuges{ver também}}%
-   \def\enclname{\textportuges{Anexo}}%
-   \def\ccname{\textportuges{Com cópia a}}%
-   \def\headtoname{\textportuges{Para}}%
-   \def\proofname{\textportuges{Demonstração}}%
-   \def\glossaryname{\textportuges{Glossário}}%
+   \def\refname{Referências}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Prefácio}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apêndice}%
+   \def\contentsname{Conteúdo}%
+   \def\listfigurename{Lista de Figuras}%
+   \def\listtablename{Lista de Tabelas}%
+   \def\indexname{Índice}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Parte}%
+   \def\pagename{Página}%
+   \def\seename{ver}%
+   \def\alsoname{ver também}%
+   \def\enclname{Anexo}%
+   \def\ccname{Com cópia a}%
+   \def\headtoname{Para}%
+   \def\proofname{Demonstração}%
+   \def\glossaryname{Glossário}%
    }
 \def\dateportuges{%   
    \def\today{\textportuges{\number\day\space de\space\ifcase\month\or

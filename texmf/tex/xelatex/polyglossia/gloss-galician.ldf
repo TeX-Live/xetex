@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsgalician{%
-   \def\refname{\textgalician{Referencias}}%
-   \def\abstractname{\textgalician{Resumo}}%
-   \def\bibname{\textgalician{Bibliografía}}%
-   \def\prefacename{\textgalician{Prefacio}}%
-   \def\chaptername{\textgalician{Capítulo}}%
-   \def\appendixname{\textgalician{Apéndice}}%
-   \def\contentsname{\textgalician{Índice Xeral}}%
-   \def\listfigurename{\textgalician{Índice de Figuras}}%
-   \def\listtablename{\textgalician{Índice de Táboas}}%
-   \def\indexname{\textgalician{Índice de Materias}}%
-   \def\figurename{\textgalician{Figura}}%
-   \def\tablename{\textgalician{Táboa}}%
-   %\def\thepart{\textgalician{}}%
-   \def\partname{\textgalician{Parte}}%
-   \def\pagename{\textgalician{Páxina}}%
-   \def\seename{\textgalician{véxase}}%
-   \def\alsoname{\textgalician{véxase tamén}}%
-   \def\enclname{\textgalician{Adxunto}}%
-   \def\ccname{\textgalician{Copia a}}%
-   \def\headtoname{\textgalician{A}}%
-   \def\proofname{\textgalician{Demostración}}%
-   \def\glossaryname{\textgalician{Glosario}}%
+   \def\refname{Referencias}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Bibliografía}%
+   \def\prefacename{Prefacio}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apéndice}%
+   \def\contentsname{Índice Xeral}%
+   \def\listfigurename{Índice de Figuras}%
+   \def\listtablename{Índice de Táboas}%
+   \def\indexname{Índice de Materias}%
+   \def\figurename{Figura}%
+   \def\tablename{Táboa}%
+   %\def\thepart{}%
+   \def\partname{Parte}%
+   \def\pagename{Páxina}%
+   \def\seename{véxase}%
+   \def\alsoname{véxase tamén}%
+   \def\enclname{Adxunto}%
+   \def\ccname{Copia a}%
+   \def\headtoname{A}%
+   \def\proofname{Demostración}%
+   \def\glossaryname{Glosario}%
    }
 \def\dategalician{%
    \def\today{\textgalician{\number\day~de\space\ifcase\month\or

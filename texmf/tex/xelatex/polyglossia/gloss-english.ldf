@@ -61,26 +61,26 @@
   \fi}
 
 \def\captionsenglish{%
-   \def\prefacename{\textenglish{Preface}}%
-   \def\refname{\textenglish{References}}%
-   \def\abstractname{\textenglish{Abstract}}%
-   \def\bibname{\textenglish{Bibliography}}%
-   \def\chaptername{\textenglish{Chapter}}%
-   \def\appendixname{\textenglish{Appendix}}%
-   \def\contentsname{\textenglish{Contents}}%
-   \def\listfigurename{\textenglish{List of Figures}}%
-   \def\listtablename{\textenglish{List of Tables}}%
-   \def\indexname{\textenglish{Index}}%
-   \def\figurename{\textenglish{Figure}}%
-   \def\tablename{\textenglish{Table}}%
-   \def\partname{\textenglish{Part}}%
-   \def\enclname{\textenglish{encl}}%
-   \def\ccname{\textenglish{cc}}%
-   \def\headtoname{\textenglish{To}}%
-   \def\pagename{\textenglish{Page}}%
-   \def\seename{\textenglish{see}}%
-   \def\alsoname{\textenglish{see also}}%
-   \def\proofname{\textenglish{Proof}}%
+   \def\prefacename{Preface}%
+   \def\refname{References}%
+   \def\abstractname{Abstract}%
+   \def\bibname{Bibliography}%
+   \def\chaptername{Chapter}%
+   \def\appendixname{Appendix}%
+   \def\contentsname{Contents}%
+   \def\listfigurename{List of Figures}%
+   \def\listtablename{List of Tables}%
+   \def\indexname{Index}%
+   \def\figurename{Figure}%
+   \def\tablename{Table}%
+   \def\partname{Part}%
+   \def\enclname{encl}%
+   \def\ccname{cc}%
+   \def\headtoname{To}%
+   \def\pagename{Page}%
+   \def\seename{see}%
+   \def\alsoname{see also}%
+   \def\proofname{Proof}%
   } 
 \def\dateenglish{%
    \def\english@day{%

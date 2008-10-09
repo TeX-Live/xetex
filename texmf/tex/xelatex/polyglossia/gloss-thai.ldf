@@ -21,28 +21,28 @@
 \setkeys{thai}{numerals}
 
 \def\captionsthai{%
-   \def\refname{\textthai{หนังสืออ้างอิง}}%
-   \def\abstractname{\textthai{บทคัดย่อ}}%
-   \def\bibname{\textthai{บรรณานุกรม}}%
-   \def\prefacename{\textthai{คำนำ}}%
-   \def\chaptername{\textthai{บทที่}}%
-   \def\appendixname{\textthai{ภาคผนวก}}%
-   \def\contentsname{\textthai{สารบัญ}}%
-   \def\listfigurename{\textthai{สารบัญรูป}}%
-   \def\listtablename{\textthai{สารบัญตาราง}}%
-   \def\indexname{\textthai{ดรรชนี}}%
-   \def\figurename{\textthai{รูปที่}}%
-   \def\tablename{\textthai{ตารางที่}}%
-   %\def\thepart{\textthai{}}%
-   \def\partname{\textthai{ภาค}}%
-   \def\pagename{\textthai{หน้า}}%
-   \def\seename{\textthai{ดู}}%
-   \def\alsoname{\textthai{ดูเพิ่มเติม}}%
-   \def\enclname{\textthai{สิ่งที่แนบมาด้วย}}%
-   \def\ccname{\textthai{สำเนาถึง}}%
-   \def\headtoname{\textthai{เรียน}}%
-   \def\proofname{\textthai{พิสูจน์}}%
-   %\def\glossaryname{\textthai{}}%
+   \def\refname{หนังสืออ้างอิง}%
+   \def\abstractname{บทคัดย่อ}%
+   \def\bibname{บรรณานุกรม}%
+   \def\prefacename{คำนำ}%
+   \def\chaptername{บทที่}%
+   \def\appendixname{ภาคผนวก}%
+   \def\contentsname{สารบัญ}%
+   \def\listfigurename{สารบัญรูป}%
+   \def\listtablename{สารบัญตาราง}%
+   \def\indexname{ดรรชนี}%
+   \def\figurename{รูปที่}%
+   \def\tablename{ตารางที่}%
+   %\def\thepart{}%
+   \def\partname{ภาค}%
+   \def\pagename{หน้า}%
+   \def\seename{ดู}%
+   \def\alsoname{ดูเพิ่มเติม}%
+   \def\enclname{สิ่งที่แนบมาด้วย}%
+   \def\ccname{สำเนาถึง}%
+   \def\headtoname{เรียน}%
+   \def\proofname{พิสูจน์}%
+   %\def\glossaryname{}%
    }
 \def\datethai{%   
    \def\thai@month{%
@@ -53,7 +53,7 @@
    \newcount\thai@year%
    \thai@year=\year%
    \advance\thai@year by 543%
-   \def\today{\textthai{\thainumber\day \space \thai@month\space พ.ศ.~\thainumber\thai@year}}%
+   \def\today{\thainumber\day \space \thai@month\space พ.ศ.~\thainumber\thai@year}%
    }
 
 %NB: thai-latex had "plus 0.6pt", but .4em appears to give better results

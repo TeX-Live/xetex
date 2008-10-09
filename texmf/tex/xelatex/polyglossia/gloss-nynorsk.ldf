@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsnynorsk{%
-   \def\refname{\textnynorsk{Referansar}}%
-   \def\abstractname{\textnynorsk{Sammendrag}}%
-   \def\bibname{\textnynorsk{Litteratur}}%
-   \def\prefacename{\textnynorsk{Forord}}%
-   \def\chaptername{\textnynorsk{Kapittel}}%
-   \def\appendixname{\textnynorsk{Tillegg}}%
-   \def\contentsname{\textnynorsk{Innhald}}%
-   \def\listfigurename{\textnynorsk{Figurar}}%
-   \def\listtablename{\textnynorsk{Tabellar}}%
-   \def\indexname{\textnynorsk{Register}}%
-   \def\figurename{\textnynorsk{Figur}}%
-   \def\tablename{\textnynorsk{Tabell}}%
-   %\def\thepart{\textnynorsk{}}% <<<
-   \def\partname{\textnynorsk{Del}}%
-   \def\pagename{\textnynorsk{Side}}%
-   \def\seename{\textnynorsk{Sjå}}%
-   \def\alsoname{\textnynorsk{Sjå òg}}%
-   \def\enclname{\textnynorsk{Vedlegg}}%
-   \def\ccname{\textnynorsk{Kopi til}}%
-   \def\headtoname{\textnynorsk{Til}}%
-   \def\proofname{\textnynorsk{Bevis}}%
-   \def\glossaryname{\textnynorsk{Ordliste}}%
+   \def\refname{Referansar}%
+   \def\abstractname{Sammendrag}%
+   \def\bibname{Litteratur}%
+   \def\prefacename{Forord}%
+   \def\chaptername{Kapittel}%
+   \def\appendixname{Tillegg}%
+   \def\contentsname{Innhald}%
+   \def\listfigurename{Figurar}%
+   \def\listtablename{Tabellar}%
+   \def\indexname{Register}%
+   \def\figurename{Figur}%
+   \def\tablename{Tabell}%
+   %\def\thepart{}% <<<
+   \def\partname{Del}%
+   \def\pagename{Side}%
+   \def\seename{Sjå}%
+   \def\alsoname{Sjå òg}%
+   \def\enclname{Vedlegg}%
+   \def\ccname{Kopi til}%
+   \def\headtoname{Til}%
+   \def\proofname{Bevis}%
+   \def\glossaryname{Ordliste}%
    }
 \def\datenynorsk{%   
    \def\today{\textnynorsk{\number\day.~\ifcase\month\or

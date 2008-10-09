@@ -15,28 +15,28 @@
 \fi
 
 \def\captionsusorbian{%
-   \def\refname{\textusorbian{Referency}}%
-   \def\abstractname{\textusorbian{Abstrakt}}%
-   \def\bibname{\textusorbian{Literatura}}%
-   \def\prefacename{\textusorbian{Zawod}}%
-   \def\chaptername{\textusorbian{Kapitl}}%
-   \def\appendixname{\textusorbian{Dodawki}}%
-   \def\contentsname{\textusorbian{Wobsah}}%
-   \def\listfigurename{\textusorbian{Zapis wobrazow}}%
-   \def\listtablename{\textusorbian{Zapis tabulkow}}%
-   \def\indexname{\textusorbian{Indeks}}%
-   \def\figurename{\textusorbian{Wobraz}}%
-   \def\tablename{\textusorbian{Tabulka}}%
-   %\def\thepart{\textusorbian{}}%
-   \def\partname{\textusorbian{Dźěl}}%
-   \def\pagename{\textusorbian{Strona}}%
-   \def\seename{\textusorbian{hl.}}%
-   \def\alsoname{\textusorbian{hl.~tež}}%
-   \def\enclname{\textusorbian{Přłoha}}%
-   \def\ccname{\textusorbian{CC}}%
-   \def\headtoname{\textusorbian{Komu}}%
-   \def\proofname{\textusorbian{Proof}}% <-- needs translation
-   \def\glossaryname{\textusorbian{Glossary}}% <-- needs translation
+   \def\refname{Referency}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Zawod}%
+   \def\chaptername{Kapitl}%
+   \def\appendixname{Dodawki}%
+   \def\contentsname{Wobsah}%
+   \def\listfigurename{Zapis wobrazow}%
+   \def\listtablename{Zapis tabulkow}%
+   \def\indexname{Indeks}%
+   \def\figurename{Wobraz}%
+   \def\tablename{Tabulka}%
+   %\def\thepart{}%
+   \def\partname{Dźěl}%
+   \def\pagename{Strona}%
+   \def\seename{hl.}%
+   \def\alsoname{hl.~tež}%
+   \def\enclname{Přłoha}%
+   \def\ccname{CC}%
+   \def\headtoname{Komu}%
+   \def\proofname{Proof}% <-- needs translation
+   \def\glossaryname{Glossary}% <-- needs translation
    }%
 \def\dateusorbian{%   
    \def\today{\textusorbian{\number\day.~\ifcase\month\or

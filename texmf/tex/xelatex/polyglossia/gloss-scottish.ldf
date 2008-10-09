@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsscottish{%
-   \def\refname{\textscottish{Iomraidh}}%
-   \def\abstractname{\textscottish{Brìgh}}%
-   \def\bibname{\textscottish{Leabhraichean}}%
-   \def\prefacename{\textscottish{Preface}}%    <-- needs translation
-   \def\chaptername{\textscottish{Caibideil}}%
-   \def\appendixname{\textscottish{Ath-sgr`ıobhadh}}%
-   \def\contentsname{\textscottish{Clàr-obrach}}%
-   \def\listfigurename{\textscottish{Liosta Dhealbh}}%
-   \def\listtablename{\textscottish{Liosta Chlàr}}%
-   \def\indexname{\textscottish{Clàr-innse}}%
-   \def\figurename{\textscottish{Dealbh}}%
-   \def\tablename{\textscottish{Clàr}}%
-   %\def\thepart{\textscottish{}}%
-   \def\partname{\textscottish{Cuid}}%
-   \def\pagename{\textscottish{t.d.}}%
-   \def\seename{\textscottish{see}}%    <-- needs translation
-   \def\alsoname{\textscottish{see also}}%    <-- needs translation
-   \def\enclname{\textscottish{a-staigh}}%
-   \def\ccname{\textscottish{lethbhreac gu}}%
-   \def\headtoname{\textscottish{gu}}%
-   \def\proofname{\textscottish{Proof}}%    <-- needs translation 
-   \def\glossaryname{\textscottish{Glossary}}%    <-- needs translation
+   \def\refname{Iomraidh}%
+   \def\abstractname{Brìgh}%
+   \def\bibname{Leabhraichean}%
+   \def\prefacename{Preface}%    <-- needs translation
+   \def\chaptername{Caibideil}%
+   \def\appendixname{Ath-sgr`ıobhadh}%
+   \def\contentsname{Clàr-obrach}%
+   \def\listfigurename{Liosta Dhealbh}%
+   \def\listtablename{Liosta Chlàr}%
+   \def\indexname{Clàr-innse}%
+   \def\figurename{Dealbh}%
+   \def\tablename{Clàr}%
+   %\def\thepart{}%
+   \def\partname{Cuid}%
+   \def\pagename{t.d.}%
+   \def\seename{see}%    <-- needs translation
+   \def\alsoname{see also}%    <-- needs translation
+   \def\enclname{a-staigh}%
+   \def\ccname{lethbhreac gu}%
+   \def\headtoname{gu}%
+   \def\proofname{Proof}%    <-- needs translation 
+   \def\glossaryname{Glossary}%    <-- needs translation
    }
 \def\datescottish{%
    \def\today{\textscottish{%

@@ -8,28 +8,28 @@
 \fi
 
 \def\captionsbasque{%
-   \def\refname{\textbasque{Erreferentziak}}%
-   \def\abstractname{\textbasque{Laburpena}}%
-   \def\bibname{\textbasque{Bibliografia}}%
-   \def\prefacename{\textbasque{Hitzaurrea}}%
-   \def\chaptername{\textbasque{Kapitulua}}%
-   \def\appendixname{\textbasque{Eranskina}}%
-   \def\contentsname{\textbasque{Gaien Aurkibidea}}%
-   \def\listfigurename{\textbasque{Irudien Zerrenda}}%
-   \def\listtablename{\textbasque{Taulen Zerrenda}}%
-   \def\indexname{\textbasque{Kontzeptuen Aurkibidea}}%
-   \def\figurename{\textbasque{Irudia}}%
-   \def\tablename{\textbasque{Taula}}%
-   \def\thepart{\textbasque{}}%
-   \def\partname{\textbasque{Atala}}%
-   \def\pagename{\textbasque{Orria}}%
-   \def\seename{\textbasque{Ikusi}}%
-   \def\alsoname{\textbasque{Ikusi, halaber}}%
-   \def\enclname{\textbasque{Erantsia}}%
-   \def\ccname{\textbasque{Kopia}}%
-   \def\headtoname{\textbasque{Nori}}%
-   \def\proofname{\textbasque{Frogapena}}%
-   \def\glossaryname{\textbasque{Glosarioa}}%
+   \def\refname{Erreferentziak}%
+   \def\abstractname{Laburpena}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Hitzaurrea}%
+   \def\chaptername{Kapitulua}%
+   \def\appendixname{Eranskina}%
+   \def\contentsname{Gaien Aurkibidea}%
+   \def\listfigurename{Irudien Zerrenda}%
+   \def\listtablename{Taulen Zerrenda}%
+   \def\indexname{Kontzeptuen Aurkibidea}%
+   \def\figurename{Irudia}%
+   \def\tablename{Taula}%
+   \def\thepart{}%
+   \def\partname{Atala}%
+   \def\pagename{Orria}%
+   \def\seename{Ikusi}%
+   \def\alsoname{Ikusi, halaber}%
+   \def\enclname{Erantsia}%
+   \def\ccname{Kopia}%
+   \def\headtoname{Nori}%
+   \def\proofname{Frogapena}%
+   \def\glossaryname{Glosarioa}%
    }
 \def\datebasque{%
    \def\today{\textbasque{\number\year.eko\space\ifcase\month\or
