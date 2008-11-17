@@ -13,6 +13,7 @@ Description:
 -------------------------------------------------------------------------*/
 
 /*
+	2008-11-17	jk			include <cstdio> (Debian bug 505693)
 	2006-06-19	jk			added new APIs to look up Unicode names
 	2006-01-12	jk			removed multi-char constants, use FOUR_CHAR_CODE to define UInt32 values instead
 							(no functional change, just to avoid compiler warnings)
@@ -29,6 +30,7 @@ Description:
 
 #include "Compiler.h"
 
+#include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -261,13 +263,13 @@ TECkit_GetUnicodeValue(char* name)
 	return -1;
 }
 
-static inline UInt8
+inline UInt8
 READ(const UInt8 p)
 {
 	return p;
 }
 
-static inline UInt16
+inline UInt16
 READ(const UInt16 p)
 {
 #ifdef WORDS_BIGENDIAN
@@ -277,7 +279,7 @@ READ(const UInt16 p)
 #endif
 }
 
-static inline UInt32
+inline UInt32
 READ(const UInt32 p)
 {
 #ifdef WORDS_BIGENDIAN
@@ -288,7 +290,7 @@ READ(const UInt32 p)
 }
 
 template<class T>
-inline static void
+inline void
 WRITE(T& t, UInt32 v)
 {
 	t = READ(T(v));
