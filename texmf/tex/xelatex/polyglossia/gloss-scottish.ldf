@@ -32,13 +32,13 @@
    \def\glossaryname{Glossary}%    <-- needs translation
    }
 \def\datescottish{%
-   \def\today{\textscottish{%
+   \def\today{%
     \number\day\space \ifcase\month\or
     am Faoilteach\or an Gearran\or am Màrt\or an Giblean\or
     an Cèitean\or an t-Òg mhios\or an t-Iuchar\or
     Lùnasdal\or an Sultuine\or an Dàmhar\or
     an t-Samhainn\or an Dubhlachd\fi
-    \space \number\year}}%
+    \space \number\year}%
     }
 
 \def\scottish@language{\protect\language=\l@scottish}

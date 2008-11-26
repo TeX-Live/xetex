@@ -31,10 +31,10 @@
    \def\glossaryname{Përhasja e Fjalëve}%
    }
 \def\datealbanian{%
-   \def\today{\textalbanian{{\number\day~\ifcase\month\or
+   \def\today{{\number\day~\ifcase\month\or
     Janar\or Shkurt\or Mars\or Prill\or Maj\or
     Qershor\or Korrik\or Gusht\or Shtator\or Tetor\or Nëntor\or
-    Dhjetor\fi \space \number\year}}}}
+    Dhjetor\fi \space \number\year}}}
 
 \def\albanian@language{\protect\language=\l@albanian}
 

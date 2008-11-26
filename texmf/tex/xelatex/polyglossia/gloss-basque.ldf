@@ -32,11 +32,11 @@
    \def\glossaryname{Glosarioa}%
    }
 \def\datebasque{%
-   \def\today{\textbasque{\number\year.eko\space\ifcase\month\or
+   \def\today{\number\year.eko\space\ifcase\month\or
     urtarrilaren\or otsailaren\or martxoaren\or apirilaren\or
     maiatzaren\or ekainaren\or uztailaren\or abuztuaren\or
     irailaren\or urriaren\or azaroaren\or
-    abenduaren\fi~\number\day}}}
+    abenduaren\fi~\number\day}}
 
 \def\basque@language{\protect\language=\l@basque}
 

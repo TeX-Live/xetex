@@ -31,12 +31,12 @@
    \def\glossaryname{Glossarium}%
    }
 \def\datelatin{%   
-   \def\today{\textlatin{\uppercase\expandafter{\romannumeral\day}%
+   \def\today{\uppercase\expandafter{\romannumeral\day}%
       \space \ifcase\month%
       \or Januarii\or Februarii\or Martii\or Aprilis\or Maji\or Junii\or%
       Julii\or Augusti\or Septembris\or Octobris\or Novembris\or%
       Decembris\fi%
-      \space \uppercase\expandafter{\romannumeral\year}}}}
+      \space \uppercase\expandafter{\romannumeral\year}}}
 
 \def\latin@language{\protect\language=\l@latin}
 

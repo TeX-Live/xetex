@@ -44,7 +44,7 @@
    \def\indexname{Indeks}%
    \def\figurename{Gambar}%
    \def\tablename{Jadual}%
-   \def\thepart{}\textbahasam{}%
+   \def\thepart{}%
    \def\partname{Bahagian}%
    \def\pagename{Halaman}%
    \def\seename{lihat}%
@@ -56,10 +56,10 @@
    \def\glossaryname{Istilah}%
    }
 \def\datebahasam{%
-   \def\today{\textbahasam{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Mac\or April\or Mei\or Jun\or
     Julai\or Ogos\or September\or Oktober\or November\or Disember\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\bahasam@language{\protect\language=\l@bahasam}
 

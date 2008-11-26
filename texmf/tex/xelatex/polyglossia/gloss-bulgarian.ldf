@@ -59,7 +59,7 @@
    \def\glossaryname{Glossary}%
    }
 \def\datebulgarian{%
-   \def\today{\textbulgarian{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
        януари\or
        февруари\or
        март\or
@@ -72,7 +72,7 @@
        октомври\or
        ноември\or
        декември\fi%
-       \number\year~г.}}%
+       \number\year~г.}%
     \def\month@Roman{\expandafter\@Roman\month}%
     \def\todayRoman{\number\day.\,\month@Roman.\,\number\year~г.}%
     }

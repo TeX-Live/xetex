@@ -48,7 +48,7 @@
    \def\glossaryname{Sátnelistu}%
    }
 \def\datesamin{%   
-   \def\today{\textsamin{\ifcase\month\or
+   \def\today{\ifcase\month\or
     ođđajagemánu\or
     guovvamánu\or
     njukčamánu\or
@@ -61,7 +61,7 @@
     golggotmánu\or
     skábmamánu\or
     juovlamánu\fi
-    \space\number\day.~b.\space\number\year}}%
+    \space\number\day.~b.\space\number\year}%
     }
 
 \def\samin@language{\protect\language=\l@samin}

@@ -1,6 +1,7 @@
 \ProvidesFile{gloss-french.ldf}[polyglossia: module for french]
 \makeatletter
 \def\french@font{\normalfontlatin}
+\lccode"2019="2019
 
 \ifx\l@french\@undefined%
    \xpg@nopatterns{French}%
@@ -94,14 +95,14 @@
    \def\proofname{Démonstration}%
    }
 \def\datefrench{%
-   \def\today{\textfrench{\ifx\ier\undefined\def\ier{er}\fi%
+   \def\today{\ifx\ier\undefined\def\ier{er}\fi%
       \ifnum\day=1\relax 1\ier%
       \else \number\day\fi%
       \space \ifcase\month%
       \or janvier\or février\or mars\or avril\or mai\or juin\or%
       juillet\or août\or septembre\or octobre\or novembre\or%
       décembre\fi%
-      \space \number\year}}}
+      \space \number\year}}
 
 \def\french@language{\protect\language=\l@french}
 

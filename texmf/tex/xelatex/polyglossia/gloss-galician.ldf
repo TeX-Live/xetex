@@ -32,10 +32,10 @@
    \def\glossaryname{Glosario}%
    }
 \def\dategalician{%
-   \def\today{\textgalician{\number\day~de\space\ifcase\month\or
+   \def\today{\number\day~de\space\ifcase\month\or
     xaneiro\or febreiro\or marzo\or abril\or maio\or xuño\or
     xullo\or agosto\or setembro\or outubro\or novembro\or decembro\fi
-    \space de~\number\year}}}
+    \space de~\number\year}}
 
 \def\galician@language{\protect\language=\l@galician}
 

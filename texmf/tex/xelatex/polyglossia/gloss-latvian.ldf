@@ -30,14 +30,14 @@
    \def\proofname{Pierādījums}%
    }
 \def\datelatvian{%
-   \def\today{\textlatvian{%
+   \def\today{%
       \number\year.\thinspace gada%
       \space\number\day.\thinspace%
       \ifcase\month\or%
       janvārī\or februārī\or martā\or%
       aprīlī\or maijā\or jūnijā\or%
       jūlijā\or augustā\or septembrī\or%
-      oktobrī\or novembrī\or decembrī\fi}}}
+      oktobrī\or novembrī\or decembrī\fi}}
 
 \def\latvian@language{\protect\language=\l@latvian}
 

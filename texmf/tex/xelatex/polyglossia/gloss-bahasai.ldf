@@ -56,10 +56,10 @@
    \def\glossaryname{Daftar Istilah}%
    }
 \def\datebahasai{%
-   \def\today{\textbahasai{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Maret\or April\or Mei\or Juni\or
     Juli\or Agustus\or September\or Oktober\or Nopember\or Desember\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\bahasai@language{\protect\language=\l@bahasai}
 

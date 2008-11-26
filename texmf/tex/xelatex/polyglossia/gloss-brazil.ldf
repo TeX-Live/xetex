@@ -37,10 +37,10 @@
    \def\glossaryname{Glossary}%
    }
 \def\datebrazil{%   
-   \def\today{\textbrazil{\number\day\space de\space\ifcase\month\or
+   \def\today{\number\day\space de\space\ifcase\month\or
       janeiro\or fevereiro\or março\or abril\or maio\or junho\or
       julho\or agosto\or setembro\or outubro\or novembro\or dezembro%
-      \fi\space de\space\number\year}}%
+      \fi\space de\space\number\year}%
       }
      
 \def\brazil@language{\protect\language=\l@portuges}

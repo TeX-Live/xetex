@@ -31,12 +31,12 @@
    \def\glossaryname{Glosario}%
    }
 \def\datespanish{%   
-   \def\today{\textspanish{\number\day\NonBreakingSpace de%
+   \def\today{\number\day\NonBreakingSpace de%
       \space \ifcase\month%
       \or enero\or febrero\or marzo\or abril\or mayo\or junio\or%
       julio\or agosto\or septiembre\or octubre\or noviembre\or%
       diciembre\fi%
-      \space de~\number\year}}%
+      \space de~\number\year}%
       }
 
 \def\spanish@language{\protect\language=\l@spanish}

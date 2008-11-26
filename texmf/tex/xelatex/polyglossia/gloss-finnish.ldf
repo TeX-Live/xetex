@@ -32,11 +32,11 @@
    \def\glossaryname{Sanasto}%
    }
 \def\datefinnish{%
-   \def\today{\textfinnish{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
     toukokuuta\or kesäkuuta\or heinäkuuta\or elokuuta\or
     syyskuuta\or lokakuuta\or marraskuuta\or joulukuuta\fi
-    \space\number\year}}}
+    \space\number\year}}
 
 \def\finnish@language{\protect\language=\l@finnish}
 

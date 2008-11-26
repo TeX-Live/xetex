@@ -3,10 +3,10 @@
 \RequirePackage{farsical}
 \makeatletter
 
-\ifx\l@farsi\@undefined
-  \xpg@nopatterns{Farsi}%
-  \adddialect\l@farsi0
-\fi
+%\ifx\l@farsi\@undefined
+%  \xpg@nopatterns{Farsi}%
+\adddialect\l@farsi0
+%\fi
 
 \def\farsi@RL{\relax}
 

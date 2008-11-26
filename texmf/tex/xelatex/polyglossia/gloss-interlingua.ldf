@@ -31,11 +31,11 @@
    \def\glossaryname{Glossario}%
    }
 \def\dateinterlingua{%
-   \def\today{\textinterlingua{le~\number\day\space de \ifcase\month\or
+   \def\today{le~\number\day\space de \ifcase\month\or
     januario\or februario\or martio\or april\or maio\or junio\or
     julio\or augusto\or septembre\or octobre\or novembre\or
     decembre\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\interlingua@language{\protect\language=\l@interlingua}
 

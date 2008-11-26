@@ -143,10 +143,9 @@
     \eth@modulo{\ethcnt@ethday}{30}%
     \advance\ethcnt@ethday by 1%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \textamharic{%
     \eth@monthname{\ethcnt@ethmonth}\relax\space%
       \number\ethcnt@ethday\relax\space%
-      \number\ethcnt@ethyear}%
+      \number\ethcnt@ethyear%
   }}%
 }
 

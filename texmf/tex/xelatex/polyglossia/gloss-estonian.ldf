@@ -32,10 +32,10 @@
    \def\glossaryname{Glossary}% <-- need translation
    }
 \def\dateestonian{%
-   \def\today{\textestonian{\number\day.\space\ifcase\month\or
+   \def\today{\number\day.\space\ifcase\month\or
     jaanuar\or veebruar\or märts\or aprill\or mai\or juuni\or
     juuli\or august\or september\or oktoober\or november\or
-    detsember\fi\space\number\year.\space a.}}}
+    detsember\fi\space\number\year.\space a.}}
 
 \def\estonian@language{\protect\language=\l@estonian}
 

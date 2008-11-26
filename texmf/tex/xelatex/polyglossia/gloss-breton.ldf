@@ -49,11 +49,11 @@
    \def\glossaryname{Glossary}%
    }
 \def\datebreton{%
-   \def\today{\textbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
+   \def\today{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
     \number\day\fi \space a\space viz\space\ifcase\month\or
     Genver\or C'hwevrer\or Meurzh\or Ebrel\or Mae\or Mezheven\or
     Gouere\or Eost\or Gwengolo\or Here\or Du\or Kerzu\fi
-    \space\number\year}}}
+    \space\number\year}}
 
 \def\breton@language{\protect\language=\l@breton}
 

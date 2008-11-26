@@ -39,11 +39,11 @@
    \def\glossaryname{Glossary}% <-- needs translation
    }%
 \def\dateusorbian{%   
-   \def\today{\textusorbian{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or meje\or junija\or
     julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
-    \space \number\year}}%
+    \space \number\year}%
 %TODO implement option olddate:
     \def\oldtoday{\number\day.~\ifcase\month\or
     wulkeho róžka\or małeho róžka\or nalětnika\or

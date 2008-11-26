@@ -32,10 +32,10 @@
    \def\glossaryname{Ordliste}%
    }
 \def\datenorsk{%   
-   \def\today{\textnorsk{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or mars\or april\or mai\or juni\or
     juli\or august\or september\or oktober\or november\or desember
-    \fi\space\number\year}}%
+    \fi\space\number\year}%
     }
 
 \def\norsk@language{\protect\language=\l@norsk}

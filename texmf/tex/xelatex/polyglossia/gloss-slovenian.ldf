@@ -33,10 +33,10 @@
    \def\glossaryname{Glosar}% <-- CHECK!
    }
 \def\dateslovenian{%   
-   \def\today{\textslovenian{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or marec\or april\or maj\or junij\or
     julij\or avgust\or september\or oktober\or november\or december\fi
-    \space \number\year}}%
+    \space \number\year}%
     }
 
 \def\slovenian@language{\protect\language=\l@slovenian}

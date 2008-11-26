@@ -31,10 +31,10 @@
    \def\glossaryname{Kazalo}%
    }
 \def\datecroatian{%
-   \def\today{\textcroatian{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     siječnja\or veljače\or ožujka\or travnja\or svibnja\or
     lipnja\or srpnja\or kolovoza\or rujna\or listopada\or studenog\or
-    prosinca\fi \space \number\year.}}}
+    prosinca\fi \space \number\year.}}
 
 \def\croatian@language{\protect\language=\l@croatian}
 

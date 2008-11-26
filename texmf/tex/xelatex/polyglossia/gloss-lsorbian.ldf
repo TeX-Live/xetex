@@ -39,11 +39,11 @@
    \def\glossaryname{Glossary}%
    }
 \def\datelsorbian{%
-    \def\today{\textlsorbian{\number\day.~\ifcase\month\or
+    \def\today{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or maja\or
     junija\or julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
-    \space \number\year}}%
+    \space \number\year}%
     \def\oldtoday{\textlsorbian{\number\day.~\ifcase\month\or
     wjelikego rožka\or małego rožka\or nalětnika\or
     jatšownika\or rožownika\or smažnika\or pražnika\or

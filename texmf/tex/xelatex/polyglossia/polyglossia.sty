@@ -38,6 +38,9 @@
 \def\@@ensure@dir#1{\ifcsundef{@ensure@dir}{#1}{\@ensure@dir{#1}}}
 \def\@@ensure@maindir#1{\ifcsundef{@ensure@maindir}{#1}{\@ensure@maindir{#1}}}
 
+%% compatibility with babel
+\let\addto\gappto% gappto is defined in etoolbox
+%%
 %% ensure localization of \markright and \markboth commands
 \def\opt@enabled{on}
 \def\opt@disabled{off}

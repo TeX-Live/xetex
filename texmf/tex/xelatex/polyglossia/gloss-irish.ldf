@@ -33,13 +33,13 @@
    \def\glossaryname{Glossary}%
    }
 \def\dateirish{%
-   \def\today{\textirish{%
+   \def\today{%
     \number\day\space \ifcase\month\or
     Eanáir\or Feabhra\or Márta\or Aibreán\or
     Bealtaine\or Meitheamh\or Iúil\or Lúnasa\or
     Meán Fómhair\or Deireadh Fómhair\or
     Mí na Samhna\or Mí na Nollag\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\irish@language{\protect\language=\l@irish}
 

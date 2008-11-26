@@ -58,7 +58,7 @@
    \def\glossaryname{Словник термінів}%
    }
 \def\dateukrainian{%
-   \def\today{\textukrainian{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     січня\or
     лютого\or
     березня\or
@@ -71,7 +71,7 @@
     жовтня\or
     листопада\or
     грудня\fi%
-    \space\number\year~р.}}}
+    \space\number\year~р.}}
 
 \def\ukrainian@Alph#1{\ifcase#1\or
    А\or Б\or В\or г\or д\or Е\or Є\or Ж\or

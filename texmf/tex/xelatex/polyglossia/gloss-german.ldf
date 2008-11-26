@@ -65,12 +65,12 @@
    \def\glossaryname{Glossar}%
 }
 \def\dategerman{%   
-   \def\today{\textgerman{\number\day.%
+   \def\today{\number\day.%
       \space \ifcase\month%TODO add option for Austrian forms (Jänner etc)
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
       Juli\or August\or September\or Oktober\or November\or%
       Dezember\fi%
-      \space \number\year}}%
+      \space \number\year}%
 }
 
 \def\german@language{\protect\language=%

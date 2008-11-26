@@ -29,10 +29,10 @@
   \def\alsoname{Se også}}%
   \def\proofname{Bevis}%
   \def\glossaryname{Gloseliste}%
-  \def\today{\textdanish{\number\day.~\ifcase\month\or
+  \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or marts\or april\or maj\or juni\or
     juli\or august\or september\or oktober\or november\or december\fi
-    \space\number\year}}
+    \space\number\year}
 
 \def\danish@language{%
    \protect\language=\l@danish}

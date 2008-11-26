@@ -36,10 +36,10 @@
    \def\glossaryname{Glossário}%
    }
 \def\dateportuges{%   
-   \def\today{\textportuges{\number\day\space de\space\ifcase\month\or
+   \def\today{\number\day\space de\space\ifcase\month\or
       Janeiro\or Fevereiro\or Março\or Abril\or Maio\or Junho\or
       Julho\or Agosto\or Setembro\or Outubro\or Novembro\or Dezembro%
-      \fi\space de\space\number\year}}%
+      \fi\space de\space\number\year}%
       }
      
 \def\portuges@language{\protect\language=\l@portuges}

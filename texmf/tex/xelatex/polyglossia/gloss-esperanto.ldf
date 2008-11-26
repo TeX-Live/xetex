@@ -32,10 +32,10 @@
    \def\glossaryname{Glosaro}%
    }
 \def\dateesperanto{%   
-   \def\today{\textesperanto{\number\day{–a}~de~\ifcase\month\or
+   \def\today{\number\day{–a}~de~\ifcase\month\or
     januaro\or februaro\or marto\or aprilo\or majo\or junio\or
     julio\or aŭgusto\or septembro\or oktobro\or novembro\or
-    decembro\fi,\space \number\year}}%
+    decembro\fi,\space \number\year}%
    \def\hodiau{la \today}%
    \def\hodiaun{la \number\day{–an}~de~\ifcase\month\or
       januaro\or februaro\or marto\or aprilo\or majo\or junio\or

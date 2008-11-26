@@ -40,7 +40,7 @@
      \def\alsoseename{और देखिए}%
 }
 \def\datehindi{%
-   \def\today{\texthindi{\number\day\space\ifcase\month\or
+   \def\today{\number\day\space\ifcase\month\or
      जनवरी\or
      फ़रवरी\or
      मार्च\or
@@ -53,7 +53,7 @@
      अक्तूबर\or
      नवम्बर\or
      दिसम्बर\fi
-     \space\number\year}}%
+     \space\number\year}%
 }
 
 \def\hindi@language{\protect\language=\l@hindi}

@@ -39,13 +39,13 @@
    \def\glossaryname{Szójegyzék}%
    }
 \def\datemagyar{%   
-   \def\today{\textmagyar{%
+   \def\today{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or
     április\or május\or június\or
     július\or augusztus\or szeptember\or
     október\or november\or december\fi
-    \space\number\day.}}%
+    \space\number\day.}%
    \def\ondatemagyar{\textmagyar{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or

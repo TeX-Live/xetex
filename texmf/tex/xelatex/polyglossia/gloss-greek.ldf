@@ -5,7 +5,7 @@
 %% module for greek. Currently large parts of it derive from the 
 %% package xgreek.sty (c) Apostolos Syropoulos 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% these fixes are taken verbatim from xgreek.sty:
+% the following fixes are taken verbatim from xgreek.sty:
 \global\lccode"0386="03AC \global\uccode"0386="0391
 \global\lccode"0388="03AD \global\uccode"0388="0395
 \global\lccode"0389="03AC \global\uccode"0389="0397
@@ -418,15 +418,15 @@
    \def\proofname{Απόδειξη}%
    \def\glossaryname{Γλωσσάρι}}%
 \def\datemonogreek{%   
-   \def\today{\textgreek{\number\day\space%
+   \def\today{\number\day\space%
       \greek@month%
-      \space\number\year}}%
-   \def\greektoday{\textgreek{\greeknumber\day\space%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
       \greek@month%
-      \space\greeknumber\year}}%
-   \def\Greektoday{\textgreek{\Greeknumber\day\space%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
       \greek@month%
-      \space\Greeknumber\year}}%
+      \space\Greeknumber\year}%
    \def\greek@month{\ifcase\month\or%
       Ιανουαρίου\or
       Φεβρουαρίου\or
@@ -462,15 +462,15 @@
    \def\headtoname{Πρὸς}%
    \def\proofname{Ἀπόδειξη}}%
 \def\datepolygreek{%   
-   \def\today{\textgreek{\number\day\space%
+   \def\today{\number\day\space%
       \greek@month%
-      \space\number\year}}%
-   \def\greektoday{\textgreek{\greeknumber\day\space%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
       \greek@month%
-      \space\greeknumber\year}}%
-   \def\Greektoday{\textgreek{\Greeknumber\day\space%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
       \greek@month%
-      \space\Greeknumber\year}}%
+      \space\Greeknumber\year}%
    \def\greek@month{\ifcase\month\or%
       Ἰανουαρίου\or
       Φεβρουαρίου\or
@@ -512,15 +512,15 @@
   \def\figurename{Σχῆμα}%
   \def\headtoname{Πρὸς}}%
 \def\dateancientgreek{%
-  \def\today{\textgreek{\number\day\space%
+  \def\today{\number\day\space%
       \greek@month%
-      \space\number\year}}%
-   \def\greektoday{\textgreek{\greeknumber\day\space%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
       \greek@month%
-      \space\greeknumber\year}}%
-   \def\Greektoday{\textgreek{\Greeknumber\day\space%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
       \greek@month%
-      \space\Greeknumber\year}}%
+      \space\Greeknumber\year}%
    \def\greek@month{\ifcase\month\or%
       Ἰανουαρίου\or
       Φεβρουαρίου\or
