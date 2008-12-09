@@ -60,7 +60,6 @@
 }
 \RequirePackage[absolute]{textpos} % absoulte positioning
 \RequirePackage{hyphenat} % when hyphenate
-\RequirePackage{wrapfig}
 \RequirePackage{lastpage} % to know the last page number
 \RequirePackage{setspace} % set space between lines
 \RequirePackage{ragged2e}
@@ -128,7 +127,7 @@
 {\indexEntryFormat\noindent\ignorespaces{\par\setRL#1}}%
 \end{minipage}}
 \newcommand{\indexEntrySeparator}{\rule{\xepersian@indexwidth}{.1pt}}
-\newcommand{\indexEntryPageTxt}{p.}
+\newcommand{\indexEntryPageTxt}{صفحهٔ}
 \newcommand{\indexEntryPageFormat}{\footnotesize}
 \newcommand{\xepersian@indexEntryPage}[1]{%
 {\indexEntryPageFormat\indexEntryPageTxt{}~#1}%
@@ -146,7 +145,7 @@
 \newcommand{\weatherUnits}{\textdegree{}C}
 \newcommand{\xepersian@section}[0]{FRONT PAGE}
 \newcommand{\xepersian@headleft}{%
-{\Huge\bfseries \@custommagazinename}، \date
+{\small\bfseries \@custommagazinename}، \date
 }
 \newcommand{\xepersian@headcenter}{%
 \xepersian@section{}
@@ -386,13 +385,13 @@ keepaspectratio ]{#1}}}
 
 \vspace*{-3pt}
 
-{\Huge\bfseries \@customlogo}
+{\Large\bfseries \@customlogo}
 \hrulefill
 \hspace{10pt}\xepersian@headDateTime
 
 }
 \newcommand{\minilogo}[0]{
-{\Huge\bfseries \@customminilogo}
+{\large\bfseries \@customminilogo}
 
 \vspace*{5pt}
 }
@@ -652,7 +651,7 @@ indexblock may only appear inside frontpage environment.
 \newcommand{\indexitem}[2]
 {
 \ifthenelse{\boolean{xepersian@insideindex}}{
-\xepersian@indexEntry{#1~\xepersian@indexEntryPage{\pageref{#2}}}
+\xepersian@indexEntry{#1، \xepersian@indexEntryPage{\pageref{#2}}}
 
 \vspace{0.5cm}
 
