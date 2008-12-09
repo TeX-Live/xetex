@@ -106,7 +106,7 @@
 \renewcommand{\huge}{\@setfontsize{\huge}{20pt}{25pt}}
 \renewcommand{\Huge}{\@setfontsize{\Huge}{25pt}{30pt}}
 }{}
-\def\customwwwTxt#1{\gdef\@customwwwTxt{#1}}
+\def\customwwwTxt#1{\gdef\@customwwwTxt{\lr{#1}}}
 \newcommand{\xepersian@wwwFormat}{\sffamily}
 \newcommand{\xepersian@www}{%
 \raisebox{-3pt}{{\xepersian@wwwFormat\@customwwwTxt}}
@@ -161,7 +161,7 @@
 \renewcommand{\xepersian@headright}{\RL{#3}}%
 }
 \newcommand{\xepersian@footright}{%
-{\footnotesize\copyright\ \@customwwwTxt{} - تهیه‌شده توسط \lr{\XePersian}}%
+{\footnotesize\lr{\copyright\ \@customwwwTxt{}}---تهیه‌شده توسط \lr{\XePersian}}%
 }
 \newcommand{\xepersian@footcenter}{%
 }
@@ -554,7 +554,7 @@ keepaspectratio ]{#1}}}
 \begin{minipage}{50pt}
 \weatherTempFormat
 #2\\
-#3 $\|$ #4 \weatherUnits{}\\
+\LR{#3 $\|$ #4 \lr{\weatherUnits{}}}\\
 #5
 \end{minipage}
 }{%else
