@@ -409,7 +409,7 @@
 \def\text#1{\@@text{\@ensure@RL{#1}}}
 
 \def\tagform@#1{\maketag@@@{)\ignorespaces\text{#1}\unskip\@@italiccorr(}}
-\renewcommand{\eqref}[1]{(\ref{#1})}
+\renewcommand{\eqref}[1]{\LR{\textup{\tagform@{\ref{#1}}}}}
 
 
 \@ifclassloaded{article}{%

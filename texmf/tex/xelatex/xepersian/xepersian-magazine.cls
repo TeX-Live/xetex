@@ -51,8 +51,6 @@
 \RequirePackage{fmultico}
 \RequirePackage{fancyhdr}
 \RequirePackage{fancybox}
-\RequirePackage{hyperref}
-\NoHyper
 \ifthenelse{\boolean{xepersian@a3paper}}{%
 \RequirePackage[a3paper,headsep=0.5cm,vmargin={2cm,2cm},hmargin={1.5cm,1.5cm}]{geometry}
 }{
@@ -785,8 +783,6 @@ indexblock environment may only appear inside frontpage environment.
 \xepersian@innerTitle{#2}%
 \xepersian@innerSubtitle{#3}%
 ][4cm]%
-\phantomsection
-%\pdfbookmark[1]{#2}{\thepage}
 \label{#5}
 \ifnum #1 > \minraggedcols
 \raggedFormat
@@ -833,8 +829,6 @@ indexblock environment may only appear inside frontpage environment.
 \begin{multicols}{#1}[%
 \xepersian@editorialTit{#2}{#3}%
 ][4cm]
-\phantomsection
-%\pdfbookmark[1]{#2}{\thepage}
 \label{#4}
 \ifnum #1 > \minraggedcols
 \raggedFormat
@@ -859,8 +853,6 @@ indexblock environment may only appear inside frontpage environment.
 {
 \xepersian@say{Adding a short article block}
 \begin{multicols}{#1}[\xepersian@shortarticleTit{#2}{#3}][4cm] %
-\phantomsection
-%\pdfbookmark[1]{#2}{\thepage}
     \label{#4}
 \par %
 \ifnum #1 > \minraggedcols
