@@ -107,10 +107,10 @@
 \renewcommand{\huge}{\@setfontsize{\huge}{20pt}{25pt}}
 \renewcommand{\Huge}{\@setfontsize{\Huge}{25pt}{30pt}}
 }{}
-\newcommand{\xepersian@wwwTxt}{http://parsilatex.org}
+\def\customwwwTxt#1{\gdef\@customwwwTxt{#1}}
 \newcommand{\xepersian@wwwFormat}{\sffamily}
 \newcommand{\xepersian@www}{%
-\raisebox{-3pt}{{\xepersian@wwwFormat\xepersian@wwwTxt}}
+\raisebox{-3pt}{{\xepersian@wwwFormat\@customwwwTxt}}
 }
 \newcommand{\xepersian@edition}{ویرایش من}
 \newcommand{\editionFormat}{\large\bfseries\texttt}
@@ -146,7 +146,7 @@
 \newcommand{\weatherUnits}{\textdegree{}C}
 \newcommand{\xepersian@section}[0]{FRONT PAGE}
 \newcommand{\xepersian@headleft}{%
-{\Huge\bfseries زی‌پرشین}، \date
+{\Huge\bfseries \@custommagazinename}، \date
 }
 \newcommand{\xepersian@headcenter}{%
 \xepersian@section{}
@@ -162,7 +162,7 @@
 \renewcommand{\xepersian@headright}{\RL{#3}}%
 }
 \newcommand{\xepersian@footright}{%
-{\footnotesize\copyright\ \xepersian@wwwTxt{} - تهیه‌شده توسط \lr{\XePersian}}%
+{\footnotesize\copyright\ \@customwwwTxt{} - تهیه‌شده توسط \lr{\XePersian}}%
 }
 \newcommand{\xepersian@footcenter}{%
 }
@@ -376,24 +376,28 @@ keepaspectratio ]{#1}}}
 \setlength{\fboxrule}{0.1 pt}
 
 }
+
+\def\customlogo#1{\gdef\@customlogo{\RL{#1}}}
+\def\customminilogo#1{\gdef\@customminilogo{\RL{#1}}}
+\def\custommagazinename#1{\gdef\@custommagazinename{\RL{#1}}}
 \newcommand{\logo}[0]{
 %% Heading %%
 \noindent\hrulefill\hspace{10pt}\xepersian@editionLogo\hspace{5pt}\xepersian@www
 
 \vspace*{-3pt}
 
-{\Huge\bfseries زی‌پرشین}
+{\Huge\bfseries \@customlogo}
 \hrulefill
 \hspace{10pt}\xepersian@headDateTime
 
 }
 \newcommand{\minilogo}[0]{
-{\Huge\bfseries زی‌پرشین}
+{\Huge\bfseries \@customminilogo}
 
 \vspace*{5pt}
 }
 \newcommand{\mylogo}[1]{
-{#1}
+{\RL{#1}}
 
 \noindent
 \xepersian@editionLogo\hspace{5pt}
