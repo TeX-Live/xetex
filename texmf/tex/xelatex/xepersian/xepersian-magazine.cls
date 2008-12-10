@@ -120,15 +120,15 @@
 \newcommand{\xepersian@indexFrameTitle}[1]
 {\begin{flushright}{{\indexFormat #1}}\end{flushright}}
 
-\newcommand{\indexEntryFormat}{\large}
+\newcommand{\indexEntryFormat}{\normalsize}
 \newcommand{\xepersian@indexEntry}[1]{\begin{minipage}{13\TPHorizModule}%
-{\indexEntryFormat\noindent\ignorespaces{\par\setRL#1}}%
+{\indexEntryFormat\noindent\ignorespaces{#1}}%
 \end{minipage}}
 \newcommand{\indexEntrySeparator}{\rule{\xepersian@indexwidth}{.1pt}}
 \newcommand{\indexEntryPageTxt}{صفحهٔ}
 \newcommand{\indexEntryPageFormat}{\footnotesize}
 \newcommand{\xepersian@indexEntryPage}[1]{%
-{\indexEntryPageFormat\indexEntryPageTxt{}~#1}%
+{\indexEntryPageFormat{\indexEntryPageTxt{}~#1}}%
 }
 \newcommand{\headDateTimeFormat}{}
 \newcommand{\xepersian@headDateTime}{%
@@ -226,7 +226,7 @@
 }
 \newcommand{\pagesFormat}{\bfseries\footnotesize}
 \newcommand{\xepersian@pages}[1]%
-{\noindent\pagesFormat\MakeUppercase{#1}}
+{\noindent{\pagesFormat\MakeUppercase{#1}}}
 \newcommand{\innerTitleFormat}{\Huge}
 \newcommand{\xepersian@innerTitle}[1]{%
 \begin{flushright}{%
