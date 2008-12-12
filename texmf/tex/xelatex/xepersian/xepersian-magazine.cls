@@ -141,7 +141,7 @@
 }
 \newcommand{\weatherTempFormat}{\small}
 \newcommand{\weatherUnits}{\textdegree{}C}
-\newcommand{\xepersian@section}[0]{FRONT PAGE}
+\newcommand{\xepersian@section}[0]{صفحهٔ جلو}
 \newcommand{\xepersian@headleft}{%
 {\small\bfseries \@custommagazinename}، \date
 }

@@ -1262,13 +1262,7 @@ $\@@@underline{\hbox{#1}}\m@th$\relax\fi\fi}
     \let\footnote\FnppOrigFootnote
     }
 
-\let\fnpp_orig_maketitle=\maketitle
-\def\maketitle{%
-    \begingroup
-    	\let\footnotemark\FnppOrigFootnotemark
-	\fnpp_orig_maketitle
-    \endgroup
-    }
+
 
 \catcode`\_=\CatUsCode
 
