@@ -1,0 +1,53 @@
+\documentclass[12pt]{xepersian-presentation}
+\usepackage{eso-pic}
+\usepackage{xepersian}
+\settextfont[Scale=1]{XB Zar}
+\setromantextfont[Scale=1]{Linux Libertine}
+\setdigitfont[Scale=1]{XB Zar}
+\pagestyle{pres}
+\AddToShipoutPicture{
+\includegraphics{gradient2.png}
+}
+
+\begin{document}
+\begin{titlepage}
+\distance{1}
+\centering \LARGE
+ \bfseries عنوان اسلاید
+
+\distance{1}
+\large
+وفا خلیقی\\[1ex]نام دانشگاه
+\distance{2}
+\end{titlepage}
+
+\begin{plainslide}[این عنوان یک صفحه است.]
+این اولین صفحه اسلاید ما است که من در حال نوشتن آن هستم و کمی بیشتر می‌نویسم تا به خط بعدی بروم
+\footnote{این یک زیرنویس فارسی است.}\Footnote{This is an English footnote.}
+\begin{equation}
+(a+b)^2=a^2+2ab+b^2
+\end{equation}
+\begin{itemize}
+  \item یک
+  \item دو
+\end{itemize}
+
+\begin{enumerate}
+  \item یک
+  \item دو
+\end{enumerate}
+
+\begin{description}
+  \item [یک:] اولین عدد
+  \item [دو:] دومین عدد
+\end{description}
+
+\end{plainslide}
+\begin{rawslide}
+دومین صفحه
+
+\end{rawslide}
+
+\end{document}
+
+
