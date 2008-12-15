@@ -1,11 +1,11 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{xepersian-thesis}
               [2009/03/01 v0.1
- Persian thesis document class for XeLaTeX]
+ Persian thesis document class in XeLaTeX]
 
 \begingroup
  \def\notXeLaTeXformat{%
-  \@latex@error{*** this package currently works only with XeLaTeX ***^^J
+  \@latex@error{*** this class currently works only with XeLaTeX ***^^J
    You are not using XeLaTeX, so we are exiting cleanly!^^J
    Continuing may lead to 'unavailable font metrics' errors!^^J}\@ehc
   \endgroup\endinput}
