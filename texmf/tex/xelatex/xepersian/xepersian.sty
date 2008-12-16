@@ -959,6 +959,21 @@
 \def\familydefault{\rmdefault}
 \def\mathfamilydefault{\rmdefault}
 \raggedleft
+\def\LTR{\bgroup\par\raggedright\@rlfalse}
+\def\endLTR{\par\egroup}
+\def\RTL{\bgroup\par\raggedleft\@rltrue}
+\def\endRTL{\par\egroup}
+\def\english{\bgroup\par\raggedright\@rlfalse\rmfamily}
+\def\endenglish{\par\egroup}
+\def\farsi{\bgroup\par\raggedleft\@rltrue\farsifont}
+\def\endfarsi{\par\egroup}
+\long\def\beamer@@frametitle[#1]#2{%
+  \beamer@ifempty{#2}{}{%
+    \gdef\insertframetitle{\raggedleft\rightskip=2em{#2\ifnum\beamer@autobreakcount>0\relax{}\space\usebeamertemplate*{frametitle continuation}\fi}}%
+  \gdef\beamer@frametitle{#2}%
+  \gdef\beamer@shortframetitle{#1}%
+}%
+}
 }{}
 
 
