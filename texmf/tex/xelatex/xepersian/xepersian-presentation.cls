@@ -28,7 +28,7 @@
 
 \fancypagestyle{pres}{%
 \fancyhf{}%
-\fancyfoot[RO]{\footnotesize \thepage}%
+\fancyfoot[RO,LE]{\footnotesize \thepage}%
 }
 
 \pagestyle{pres}
