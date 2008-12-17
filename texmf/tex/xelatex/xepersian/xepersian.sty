@@ -1223,6 +1223,27 @@
     \def\insertinstitute{\def\inst{\beamer@instinst}\def\and{\beamer@andinst}\RL{#2}}%
   \fi
  \def\beamer@shortinstitute{\RL{#1}}}
+\renewenvironment{thebibliography}[1]
+{%\leavevmode\unskip%
+  \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\beamer@biblabeltemplate{\@biblabel{#1}}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \itemsep=0pt%
+            \partopsep=0pt%
+            \topsep=0pt%
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}
+            \let\makelabel\beamer@biblabeltemplate}%
+      \sloppy\raggedleft
+      \clubpenalty10000
+      \@clubpenalty \clubpenalty
+      \widowpenalty10000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \ifhmode\unskip\fi\endlist}
 }{}
 
 
