@@ -969,9 +969,9 @@
 \def\endfarsi{\par\egroup}
 \long\def\beamer@@frametitle[#1]#2{%
   \beamer@ifempty{#2}{}{%
-    \gdef\insertframetitle{\raggedleft\rightskip=2em{#2\ifnum\beamer@autobreakcount>0\relax{}\space\usebeamertemplate*{frametitle continuation}\fi}}%
-  \gdef\beamer@frametitle{#2}%
-  \gdef\beamer@shortframetitle{#1}%
+    \gdef\insertframetitle{\raggedleft\rightskip=2em{\RL{#2}\ifnum\beamer@autobreakcount>0\relax{}\space\usebeamertemplate*{frametitle continuation}\fi}}%
+  \gdef\beamer@frametitle{\RL{#2}}%
+  \gdef\beamer@shortframetitle{\RL{#1}}%
 }%
 }
 \def\@thm#1#2#3{%
@@ -992,7 +992,7 @@
     \expandafter\def\expandafter\inserttheoremnumber\expandafter{ \csname the#2\endcsname}
   \fi
   \beamer@begintheorem%
-\raggedleft
+\raggedleft\@rltrue
 }
  \ifbeamer@countsect
       \newtheorem{قضیه}{\raggedleft قضیه}[section]
@@ -1014,13 +1014,13 @@
   \par
   \def\insertproofname{#1\@addpunct{}}%
   \pushQED{\qed}
-  \usebeamertemplate{proof begin}#2}
+  \usebeamertemplate{proof begin}\@rltrue#2}
 {\popQED\usebeamertemplate{proof end}}
  \newenvironment<>{بلوک}[1]{%
     \begin{actionenv}#2%
       \def\insertblocktitle{\raggedleft#1}%
       \par%
-      \usebeamertemplate{block begin}\raggedleft}
+      \usebeamertemplate{block begin}\raggedleft\@rltrue}
     {\par%
       \usebeamertemplate{block end}%
     \end{actionenv}}
@@ -1030,7 +1030,7 @@
       \par%
       \mode<presentation>{%\usebeamerfont{block}%
         \setbeamercolor{local structure}{parent=alerted text}}%
-      \usebeamertemplate{block alerted begin}\raggedleft}
+      \usebeamertemplate{block alerted begin}\raggedleft\@rltrue}
     {\par%
       \usebeamertemplate{block alerted end}%
     \end{actionenv}}
@@ -1040,7 +1040,7 @@
       \par%
       \mode<presentation>{%\usebeamerfont{block}%
         \setbeamercolor{local structure}{parent=example text}}%
-      \usebeamertemplate{block example begin}\raggedleft}
+      \usebeamertemplate{block example begin}\raggedleft\@rltrue}
     {\par%
       \usebeamertemplate{block example end}%
     \end{actionenv}}
@@ -1092,6 +1092,108 @@
   \raggedleft
   \beamer@firstlineitemizeunskip%
 }
+\AtBeginDocument{\@rlfalse}
+\renewenvironment{beamer@frameslide}{%
+  \ifbeamer@autobreak\else%
+    \ifx\beamer@againname\@empty%
+      {\let\@elt\beamer@restorecounter\beamer@overlaycounterresets}%
+    \else%
+      {\let\@elt\beamer@labelrestorecounter\beamer@overlaycounterresets}%      
+    \fi%
+  \fi%
+  \global\c@beamerpauses=1\relax%
+  \expandafter\beamer@ifempty\expandafter{\beamer@framestartpage}{%
+    \refstepcounter{subsectionslide}%
+    \xdef\beamer@framestartpage{\the\c@page}% only first time
+  }{\clearpage\beamer@notesactions}% cleanup from previous slide
+  \hypersetup{pdfpagetransition=R}%
+  \hypersetup{pdfpageduration=}%
+  \xdef\beamer@frameendpage{\the\c@page}% every time
+  \beamer@setuplinks%
+  \beamer@displaybreak%
+  \global\setbox\beamer@zoombox=\box\voidb@x%
+  \def\beamer@zoomer{}%
+  \beamer@slidehaszoomfalse%
+  \gdef\insertframetitle{}%
+  \gdef\insertframesubtitle{}%
+  \gdef\beamer@frametitle{}%
+  \gdef\beamer@shortframetitle{}%
+  \gdef\beamer@framesubtitle{}%
+  \let\beamer@startcomment=\beamer@startcommentinframe%
+  % Start slide:
+  \beamer@framenotesbegin\@rltrue%
+    \global\setbox\beamer@framebox=\vbox\bgroup%
+    \beamer@inframetrue%
+    \let\frame=\framelatex% inside frames, use LaTeX's \frame command
+    \begin{beamer@framepauses}%
+      \ifbeamer@shrink%
+        \hsize=\beamer@shrinkfactorinv\hsize%
+        \textwidth=\beamer@shrinkfactorinv\textwidth%
+        \linewidth=\beamer@shrinkfactorinv\linewidth%
+      \fi%
+      % Insert labels if necessary:
+      \ifx\beamer@againname\@empty\else%
+        \nointerlineskip\vbox to0pt{\vss%
+        \label<\the\beamer@slideinframe>{\beamer@againname<\the\beamer@slideinframe>}%
+        \ifnum\beamer@slideinframe=1\relax%
+          \label<1>{\beamer@againname}%
+        \fi%
+        }\nointerlineskip%
+      \fi%
+      \ifx\beamer@framehypertargets\@empty\else%
+        \nointerlineskip\vbox to0pt{\vss%
+          \beamer@framehypertargets%
+          \global\let\beamer@framehypertargets\@empty%
+        }\nointerlineskip%
+      \fi%
+      \vskip-\parskip\vbox{}%
+      \beamer@initfirstlineunskip%
+      \ifbeamer@plainframe\nointerlineskip\fi%
+    \beamer@checkframetitle}%
+    {\end{beamer@framepauses}%
+  \egroup%
+  \ifx\beamer@frametitle\@empty%
+    \setbox\beamer@frametitlebox=\box\voidb@x%
+  \else%
+    \setbox\beamer@frametitlebox=\vbox{%
+      \vbox{}%
+      {\parskip0pt\usebeamertemplate***{frametitle}\vskip0.25em}%
+    }%
+  \fi%
+  \ifbeamer@plainframe%
+    \beamer@frametextheight=\paperheight%
+  \else%
+    \beamer@frametextheight=\textheight%
+  \fi%
+  \advance\beamer@frametextheight by-\ht\beamer@frametitlebox%
+  \advance\beamer@frametextheight by-\dp\beamer@frametitlebox%
+  \advance\beamer@frametextheight by-\beamer@frametopskip%
+  \ifbeamer@shrink%
+    \beamer@shrinkframebox%
+  \fi%
+  \ifx\beamer@zoomer\@empty  
+    \setbox\beamer@framebox=\vbox{%
+      \nobreak\vbox{}\nobreak\par\nobreak\beamer@entrycode\nobreak%
+      \nointerlineskip\unvbox\beamer@frametitlebox%
+      \nobreak%
+      \ifbeamer@autobreak%
+        \vskip\beamer@frametopskipautobreak%
+      \else%
+        \vskip\beamer@frametopskip%
+      \fi%
+      \nobreak%
+      \nointerlineskip\box\beamer@zoombox\nointerlineskip%
+      \nobreak%
+      \ifbeamer@slidehaszoom\box\beamer@framebox\else\unvbox\beamer@framebox\fi%
+      % bottom skip is added in autobreakframebox
+    }%
+    \beamer@autobreakframebox%
+  \else%
+    \beamer@zoomer%
+  \fi%
+  \beamer@undolabels%
+  \beamer@framenotesend%
+  \box\beamer@framebox}
 }{}
 
 
