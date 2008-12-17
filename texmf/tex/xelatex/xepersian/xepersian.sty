@@ -1194,6 +1194,35 @@
   \beamer@undolabels%
   \beamer@framenotesend%
   \box\beamer@framebox}
+\long\def\beamer@title[#1]#2{%
+  \def\inserttitle{\RL{#2}}%
+  \def\beamer@shorttitle{\RL{#1}}%
+  }
+\long\def\beamer@subtitle[#1]#2{%
+  \def\insertsubtitle{\RL{#2}}%
+  \def\beamer@shortsubtitle{\RL{#1}}%
+  }
+\long\def\beamer@date[#1]#2{%
+  \def\insertdate{\RL{#2}}%
+  \def\beamer@shortdate{\RL{#1}}%
+  }
+\long\def\beamer@author[#1]#2{%
+  \def\insertauthor{\def\inst{\beamer@insttitle}\def\and{\beamer@andtitle}\RL{#2}}%
+  \def\beamer@shortauthor{\RL{#1}}%
+  \ifbeamer@autopdfinfo%
+    \def\beamer@andstripped{}%
+    \beamer@stripands#2 \and\relax
+    {\let\inst=\@gobble\let\thanks=\@gobble\def\and{, }\hypersetup{pdfauthor={\beamer@andstripped}}}
+  \fi%
+}
+\long\def\beamer@institute[#1]#2{%
+  \def\beamer@temp{\RL{#2}}%
+  \ifx\beamer@temp\@empty
+    \def\insertinstitute{}
+  \else
+    \def\insertinstitute{\def\inst{\beamer@instinst}\def\and{\beamer@andinst}\RL{#2}}%
+  \fi
+ \def\beamer@shortinstitute{\RL{#1}}}
 }{}
 
 
