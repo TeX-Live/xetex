@@ -974,6 +974,48 @@
   \gdef\beamer@shortframetitle{#1}%
 }%
 }
+\def\@thm#1#2#3{%
+  \ifhmode\unskip\unskip\par\fi
+  \normalfont
+  \let\thmheadnl\relax
+  \let\thm@swap\@gobble
+  \thm@headpunct{.}% add period after heading
+  \thm@space@setup
+  #1% style overrides
+  \def\inserttheoremname{#3}
+  \def\inserttheorempunctuation{\the\thm@headpunct}
+  \def\@tempa{#2}%
+  \ifx\@empty\@tempa
+    \def\inserttheoremnumber{}
+  \else
+    \refstepcounter{#2}%
+    \expandafter\def\expandafter\inserttheoremnumber\expandafter{ \csname the#2\endcsname}
+  \fi
+  \beamer@begintheorem%
+\raggedleft
+}
+ \ifbeamer@countsect
+      \newtheorem{قضیه}{\raggedleft قضیه}[section]
+    \else
+      \newtheorem{قضیه}{\raggedleft قضیه}
+    \fi
+    \newtheorem{نتیجه}[theorem]{\raggedleft نتیجه}
+    \newtheorem{حقیقت}[theorem]{\raggedleft حقیقت}
+    \newtheorem{لما}[theorem]{\raggedleft لما}
+    \newtheorem{مسئله}[theorem]{\raggedleft مسئله}
+    \newtheorem{پاسخ}[theorem]{\raggedleft پاسخ}
+\theoremstyle{definition}
+    \newtheorem{تعریف}[theorem]{\raggedleft تعریف}
+    \newtheorem{تعریفها}[theorem]{\raggedleft تعریف‌ها}
+\theoremstyle{example}
+    \newtheorem{مثال}[theorem]{\raggedleft مثال}
+    \newtheorem{مثالها}[theorem]{\raggedleft مثال‌ها}
+\newenvironment<>{اثبات}[1][\raggedleft اثبات]{%
+  \par
+  \def\insertproofname{#1\@addpunct{}}%
+  \pushQED{\qed}
+  \usebeamertemplate{proof begin}#2}
+{\popQED\usebeamertemplate{proof end}}
 }{}
 
 
