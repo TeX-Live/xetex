@@ -1016,6 +1016,82 @@
   \pushQED{\qed}
   \usebeamertemplate{proof begin}#2}
 {\popQED\usebeamertemplate{proof end}}
+ \newenvironment<>{بلوک}[1]{%
+    \begin{actionenv}#2%
+      \def\insertblocktitle{\raggedleft#1}%
+      \par%
+      \usebeamertemplate{block begin}\raggedleft}
+    {\par%
+      \usebeamertemplate{block end}%
+    \end{actionenv}}
+  \newenvironment<>{بلوک‌هشدار}[1]{%
+    \begin{actionenv}#2%
+      \def\insertblocktitle{\raggedleft#1}%
+      \par%
+      \mode<presentation>{%\usebeamerfont{block}%
+        \setbeamercolor{local structure}{parent=alerted text}}%
+      \usebeamertemplate{block alerted begin}\raggedleft}
+    {\par%
+      \usebeamertemplate{block alerted end}%
+    \end{actionenv}}
+  \newenvironment<>{بلوک‌مثال}[1]{%
+    \begin{actionenv}#2%
+      \def\insertblocktitle{\raggedleft#1}%
+      \par%
+      \mode<presentation>{%\usebeamerfont{block}%
+        \setbeamercolor{local structure}{parent=example text}}%
+      \usebeamertemplate{block example begin}\raggedleft}
+    {\par%
+      \usebeamertemplate{block example end}%
+    \end{actionenv}}
+\def\beamer@enum@{%
+  \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+  \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+  \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+  \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+  \expandafter
+    \list
+      {\usebeamertemplate{\beamer@enumtempl}}
+      {\usecounter\@enumctr%
+        \def\makelabel##1{{\hss\llap{{%
+                \usebeamerfont*{enumerate \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{enumerate \beameritemnestingprefix item}##1}}}}}%
+  \beamer@cramped%
+  \raggedleft%
+  \beamer@firstlineitemizeunskip%
+}
+\renewcommand{\itemize}[1][]{%
+  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+  \ifnum \@itemdepth >2\relax\@toodeep\else
+    \advance\@itemdepth\@ne
+    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+    \list
+      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
+      {\def\makelabel##1{%
+          {%
+            \hss\llap{{%
+                \usebeamerfont*{itemize \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+          }%
+        }%
+      }
+  \fi%
+  \beamer@cramped%
+  \raggedleft%
+  \beamer@firstlineitemizeunskip%
+}
+\def\@@description{%
+  \advance\beamer@descdefault by \labelsep%
+  \list
+  {}
+  {\labelwidth\beamer@descdefault\leftmargin\beamer@descdefault\let\makelabel\beamer@descriptionitem}%
+  \beamer@cramped%
+  \raggedleft
+  \beamer@firstlineitemizeunskip%
+}
 }{}
 
 
