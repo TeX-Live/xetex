@@ -1,16 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{xepersian-presentation}[2009/03/01 class for plain Persian electronic presentations in XeLaTeX]
-
-\begingroup
- \def\notXeLaTeXformat{%
-  \@latex@error{*** this class currently works only with XeLaTeX ***^^J
-   You are not using XeLaTeX, so we are exiting cleanly!^^J
-   Continuing may lead to 'unavailable font metrics' errors!^^J}\@ehc
-  \endgroup\endinput}
-\expandafter\ifx\csname XeTeXpicfile\endcsname\relax\expandafter\notXeLaTeXformat\fi
-\endgroup
-
-
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 \LoadClass{article}

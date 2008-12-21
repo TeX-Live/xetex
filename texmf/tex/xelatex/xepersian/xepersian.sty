@@ -1,25 +1,15 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{xepersian}[2009/03/01 v0.163
 	Persian typesetting in XeLaTeX]
-
-\begingroup
- \def\notXeLaTeXformat{%
-  \@latex@error{*** this package currently works only with XeLaTeX ***^^J
-   You are not using XeLaTeX, so we are exiting cleanly!^^J
-   Continuing may lead to 'unavailable font metrics' errors!^^J}\@ehc
-  \endgroup\endinput}
-\expandafter\ifx\csname XeTeXpicfile\endcsname\relax\expandafter\notXeLaTeXformat\fi
-\endgroup
-
 \AtBeginDocument{\special{pdf: docinfo <<
 	/Creator (XePersian v0.163)
          >>}}
-
 \RequirePackage{graphicx}
 \RequirePackage{amssymb}
 \RequirePackage{amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{fontspec}
+\RequirePackage{xltxtra}
 \RequirePackage{bidi}
 \RequirePackage{etoolbox}
 \RequirePackage{xepersian-mathsdigitspec}
@@ -55,17 +45,17 @@
 }{}
 
 \def\lr#1{\LR{\rmfamily#1}}
-\def\rl#1{\RL{\farsifont#1}}
+\def\rl#1{\RL{\persianfont#1}}
 \def\LTR{\bgroup\par\@rlfalse}
 \def\endLTR{\par\egroup}
 \def\RTL{\bgroup\par\@rltrue}
 \def\endRTL{\par\egroup}
 \def\english{\bgroup\par\@rlfalse\rmfamily}
 \def\endenglish{\par\egroup}
-\def\farsi{\bgroup\par\@rltrue\farsifont}
-\def\endfarsi{\par\egroup}
+\def\persian{\bgroup\par\@rltrue\persianfont}
+\def\endpersian{\par\egroup}
 \def\English{\if@rl\par\@rlfalse\rmfamily\fi}
-\def\Farsi{\if@rl\relax\else\par\@rltrue\farsifont\fi}
+\def\Persian{\if@rl\relax\else\par\@rltrue\persianfont\fi}
 
 \def\centerline#1{%
 \if@rl\@@line{\hss\beginR #1 \endR\hss}
@@ -80,7 +70,7 @@
 \else\@@line{\hss#1}\fi}
 
 \newcommand*\settextfont[2][]{%
-\newfontfamily\farsifont[Script=Arabic,Mapping=parsidigits,#1]{#2}
+\newfontfamily\persianfont[Script=Arabic,Mapping=parsidigits,#1]{#2}
 \let\rmdefault\zf@family
   \normalfont
 }
@@ -124,19 +114,19 @@
 
 \newif\ifFT@leap \newif\ifFT@kabiseh
 \newcount\FT@i  \newcount\FT@y  \newcount\FT@m  \newcount\FT@d
-\newcount\FT@latini    \newcount\FT@farsii
-\newcount\FT@latinii   \newcount\FT@farsiii
-\newcount\FT@latiniii  \newcount\FT@farsiiii
-\newcount\FT@latiniv   \newcount\FT@farsiiv
-\newcount\FT@latinv    \newcount\FT@farsiv
-\newcount\FT@latinvi   \newcount\FT@farsivi
-\newcount\FT@latinvii  \newcount\FT@farsivii
-\newcount\FT@latinviii \newcount\FT@farsiviii
-\newcount\FT@latinix   \newcount\FT@farsiix
-\newcount\FT@latinx    \newcount\FT@farsix
-\newcount\FT@latinxi   \newcount\FT@farsixi
-\newcount\FT@latinxii  \newcount\FT@farsixii
-                       \newcount\FT@farsixiii
+\newcount\FT@latini    \newcount\FT@persiani
+\newcount\FT@latinii   \newcount\FT@persianii
+\newcount\FT@latiniii  \newcount\FT@persianiii
+\newcount\FT@latiniv   \newcount\FT@persianiv
+\newcount\FT@latinv    \newcount\FT@persianv
+\newcount\FT@latinvi   \newcount\FT@persianvi
+\newcount\FT@latinvii  \newcount\FT@persianvii
+\newcount\FT@latinviii \newcount\FT@persianviii
+\newcount\FT@latinix   \newcount\FT@persianix
+\newcount\FT@latinx    \newcount\FT@persianx
+\newcount\FT@latinxi   \newcount\FT@persianxi
+\newcount\FT@latinxii  \newcount\FT@persianxii
+                       \newcount\FT@persianxiii
 
 \newcount\FT@temp
 \newcount\FT@temptwo
@@ -208,7 +198,7 @@
 \fi
 %
 % --BE
-% In fact farsii is equal to the Leap years from a fixed year to the last
+% In fact persiani is equal to the Leap years from a fixed year to the last
 % year minus the Kabise years from a fixed year to the last year plus a const.
 %
 \FT@tempthree=\FT@y                 % Number of Leap years
@@ -234,25 +224,25 @@
 \divide\FT@tempthree by 4\relax     % T := T - ((SY+10) mod 33) div 4
 \advance\FT@temp by -\FT@tempthree
 \advance\FT@temp by -137            % T := T - 137  Adjust the value
-\FT@farsii=31
-\advance\FT@farsii by -\FT@temp                 % now 31 - T is the farsii
+\FT@persiani=31
+\advance\FT@persiani by -\FT@temp                 % now 31 - T is the persiani
 %
-\FT@farsiii = 30\relax
+\FT@persianii = 30\relax
 \ifFT@kabiseh
-  \FT@farsiiii = 30\relax
+  \FT@persianiii = 30\relax
 \else
-  \FT@farsiiii = 29\relax
+  \FT@persianiii = 29\relax
 \fi
-\FT@farsiiv  = 31\relax
-\FT@farsiv   = 31\relax
-\FT@farsivi  = 31\relax
-\FT@farsivii = 31\relax
-\FT@farsiviii= 31\relax
-\FT@farsiix  = 31\relax
-\FT@farsix   = 30\relax
-\FT@farsixi  = 30\relax
-\FT@farsixii = 30\relax
-\FT@farsixiii= 30\relax
+\FT@persianiv  = 31\relax
+\FT@persianv   = 31\relax
+\FT@persianvi  = 31\relax
+\FT@persianvii = 31\relax
+\FT@persianviii= 31\relax
+\FT@persianix  = 31\relax
+\FT@persianx   = 30\relax
+\FT@persianxi  = 30\relax
+\FT@persianxii = 30\relax
+\FT@persianxiii= 30\relax
 %
 \FT@dn= 0\relax
 \FT@sn= 0\relax
@@ -269,11 +259,11 @@
 \advance \FT@dn by \FT@d
 %
 \FT@i=1\relax
-\FT@sn = \FT@farsii
+\FT@sn = \FT@persiani
 \ifnum \FT@sn<\FT@dn
 \loop
 \advance \FT@i by 1\relax
-\advance\FT@sn by \csname FT@farsi\romannumeral\the\FT@i\endcsname
+\advance\FT@sn by \csname FT@persian\romannumeral\the\FT@i\endcsname
 \ifnum \FT@sn<\FT@dn \repeat
 \fi
 \ifnum \FT@i < 4
@@ -283,19 +273,19 @@
    \FT@m = \FT@i \advance \FT@m by -3\relax
    \advance \FT@y by -621\relax
 \fi
-\advance\FT@sn by -\csname FT@farsi\romannumeral\the\FT@i%
+\advance\FT@sn by -\csname FT@persian\romannumeral\the\FT@i%
 \endcsname
 \ifnum\FT@i = 1
-  \FT@d = \FT@dn \advance \FT@d by 30 \advance\FT@d by -\FT@farsii
+  \FT@d = \FT@dn \advance \FT@d by 30 \advance\FT@d by -\FT@persiani
 \else
   \FT@d = \FT@dn \advance \FT@d by -\FT@sn
 \fi
 \beginL\number\FT@d\endL\space%
 %Changedc from here YJ
-\farsimonth{\FT@m}\space\beginL\number\FT@y\endL%
+\persianmonth{\FT@m}\space\beginL\number\FT@y\endL%
 }
-% added \farsimonth YJ
-\def\farsimonth#1{\ifcase#1\or فروردین\or 
+% added \persianmonth YJ
+\def\persianmonth#1{\ifcase#1\or فروردین\or 
 اردیبهشت\or 
 خرداد\or تیر\or 
 مرداد\or 
@@ -370,13 +360,13 @@
 
 
 \newif\if@RomanBibNum
-\def\@@number#1{\ifmmode\else\beginL\fi{\if@RomanBibNum#1\else\farsifont#1\fi}\ifmmode\else\endL\fi}
+\def\@@number#1{\ifmmode\else\beginL\fi{\if@RomanBibNum#1\else\persianfont#1\fi}\ifmmode\else\endL\fi}
 \def\RomanBibNum{\@RomanBibNumtrue}
-\def\FarsiBibNum{\@RomanBibNumfalse}
+\def\PersianBibNum{\@RomanBibNumfalse}
 \@RomanBibNumtrue
-\DeclareOption{FarsiBibNum}{\@RomanBibNumfalse}
+\DeclareOption{PersianBibNum}{\@RomanBibNumfalse}
 \def\@number{\protect\@@number}
-\let\@farsi=\@arabic
+\let\@persian=\@arabic
 \let\@@arabic=\@arabic
 \let\@@alph=\@alph
 \let\@@Alph=\@Alph
@@ -609,7 +599,7 @@
     }
 \pagestyle{plain}
 \renewcommand \thepart {\@tartibi\c@part}
-%to make appendix numbering farsi
+%to make appendix numbering Persian
 \renewcommand\appendix{\par
   \setcounter{chapter}{0}%
   \setcounter{section}{0}%
@@ -700,7 +690,7 @@
     }
 \pagestyle{plain}
 \renewcommand \thepart {\@tartibi\c@part}
-%to make appendix numbering farsi
+%to make appendix numbering persian
 \renewcommand\appendix{\par
   \setcounter{chapter}{0}%
   \setcounter{section}{0}%
@@ -728,7 +718,7 @@
 }
 \def\frontmatter{\cleardoublepage\pagenumbering{harfi}}
 \renewcommand \thepart {\@tartibi\c@part}
-%to make appendix numbering farsi
+%to make appendix numbering persian
 \renewcommand\appendix{\par
   \setcounter{chapter}{0}%
   \setcounter{section}{0}%
@@ -818,7 +808,7 @@
 }
 \NoHyper
 \renewcommand \thepart {\@tartibi\c@part}
-%to make appendix numbering farsi
+%to make appendix numbering persian
 \renewcommand\appendix{\par
   \setcounter{chapter}{0}%
   \setcounter{section}{0}%
@@ -877,7 +867,7 @@
 \renewcommand\mainmatter{%
     \cleardoublepage
   \@mainmattertrue
-  \pagenumbering{farsi}}
+  \pagenumbering{persian}}
 \renewcommand\backmatter{%
   \if@openright
     \cleardoublepage
@@ -932,7 +922,7 @@
 
 
 \renewcommand \thepart {\@tartibi\c@part}
-%to make appendix numbering farsi
+%to make appendix numbering Persian
 \renewcommand\appendix{\par
   \setcounter{chapter}{0}%
   \setcounter{section}{0}%
@@ -945,7 +935,7 @@
 
 \@ifclassloaded{refrep}{%
 \renewcommand \thepart {\@tartibi\c@part}
-%to make appendix numbering farsi
+%to make appendix numbering Persian
 \renewcommand\appendix{\par
   \setcounter{chapter}{0}%
   \setcounter{section}{0}%
@@ -957,7 +947,6 @@
 
 \@ifclassloaded{beamer}{%
 \def\familydefault{\rmdefault}
-\def\mathfamilydefault{\rmdefault}
 \raggedleft
 \def\LTR{\bgroup\par\raggedright\@rlfalse}
 \def\endLTR{\par\egroup}
@@ -965,8 +954,8 @@
 \def\endRTL{\par\egroup}
 \def\english{\bgroup\par\raggedright\@rlfalse\rmfamily}
 \def\endenglish{\par\egroup}
-\def\farsi{\bgroup\par\raggedleft\@rltrue\farsifont}
-\def\endfarsi{\par\egroup}
+\def\persian{\bgroup\par\raggedleft\@rltrue\persianfont}
+\def\endpersian{\par\egroup}
 \long\def\beamer@@frametitle[#1]#2{%
   \beamer@ifempty{#2}{}{%
     \gdef\insertframetitle{\raggedleft\rightskip=2em{\RL{#2}\ifnum\beamer@autobreakcount>0\relax{}\space\usebeamertemplate*{frametitle continuation}\fi}}%
@@ -1597,7 +1586,7 @@ $\@@@underline{\hbox{#1}}\m@th$\relax\fi\fi}
 \egroup
 }
 \@RomanFootNumfalse
-\def\FarsiFootNum{\@RomanFootNumfalse}
+\def\PersianFootNum{\@RomanFootNumfalse}
 \def\RomanFootNum{\@RomanFootNumtrue}
 \DeclareOption{RomanFootNum}{\@RomanFootNumtrue}
 \ProcessOptions
