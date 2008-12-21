@@ -50,11 +50,11 @@
 \def\endLTR{\par\egroup}
 \def\RTL{\bgroup\par\@rltrue}
 \def\endRTL{\par\egroup}
-\def\english{\bgroup\par\@rlfalse\rmfamily}
-\def\endenglish{\par\egroup}
+\def\roman{\bgroup\par\@rlfalse\rmfamily}
+\def\endroman{\par\egroup}
 \def\persian{\bgroup\par\@rltrue\persianfont}
 \def\endpersian{\par\egroup}
-\def\English{\if@rl\par\@rlfalse\rmfamily\fi}
+\def\Roman{\if@rl\par\@rlfalse\rmfamily\fi}
 \def\Persian{\if@rl\relax\else\par\@rltrue\persianfont\fi}
 
 \def\centerline#1{%
@@ -79,9 +79,9 @@
 }
 
 
-\newcommand*\defparsifont[1]{%
-  \@ifnextchar[{\defparsifont@i#1}{\defparsifont@i#1[]}}
-\def\defparsifont@i#1[#2]#3{%
+\newcommand*\defpersianfont[1]{%
+  \@ifnextchar[{\defpersianfont@i#1}{\defpersianfont@i#1[]}}
+\def\defpersianfont@i#1[#2]#3{%
   \zf@fontspec{Script=Arabic,Mapping=parsidigits,#2}{#3}%
   \edef\@tempa{%
     \noexpand\DeclareRobustCommand\noexpand#1
@@ -952,8 +952,8 @@
 \def\endLTR{\par\egroup}
 \def\RTL{\bgroup\par\raggedleft\@rltrue}
 \def\endRTL{\par\egroup}
-\def\english{\bgroup\par\raggedright\@rlfalse\rmfamily}
-\def\endenglish{\par\egroup}
+\def\roman{\bgroup\par\raggedright\@rlfalse\rmfamily}
+\def\endroman{\par\egroup}
 \def\persian{\bgroup\par\raggedleft\@rltrue\persianfont}
 \def\endpersian{\par\egroup}
 \long\def\beamer@@frametitle[#1]#2{%
