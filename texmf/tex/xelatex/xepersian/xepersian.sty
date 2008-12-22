@@ -297,7 +297,7 @@
 
 \let\oldtoday=\today
 \def\today{\lr{\oldtoday}}
-\let\englishtoday\today
+\let\romantoday\today
 \def\today{\rl{\ftoday}}
 \def\leftmark{\RL{\expandafter\@leftmark\botmark\@empty\@empty}}
 \def\rightmark{\RL{\expandafter\@rightmark\firstmark\@empty\@empty}}
@@ -1462,7 +1462,6 @@ $\@@@underline{\hbox{#1}}\m@th$\relax\fi\fi}
 
 
 
-
                                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                     %                                                                                     %
                                     %                               footnote setup                                        %
@@ -1601,10 +1600,15 @@ $\@@@underline{\hbox{#1}}\m@th$\relax\fi\fi}
     \let\footnote\FnppOrigFootnote
     }
 
-
+\let\fnpp_orig_maketitle=\maketitle
+\def\maketitle{%
+    \begingroup
+    	\let\footnotemark\FnppOrigFootnotemark
+	\fnpp_orig_maketitle
+    \endgroup
+    }
 
 \catcode`\_=\CatUsCode
-
 
                                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                                     %                                                                                     %
