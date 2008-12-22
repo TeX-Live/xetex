@@ -703,14 +703,14 @@
 \def\supervisor#1{\gdef\@supervisor{#1}}
 \def\city#1{\gdef\@city{#1}}
 
-\def\englishtitle#1{\gdef\@englishtitle{#1}}
-\def\englishauthor#1{\gdef\@englishauthor{#1}}
-\def\englishdegree#1{\gdef\@englishdegree{#1}}
-\def\englishdepartment#1{\gdef\@englishdepartment{#1}}
-\def\englishthesisdate#1{\gdef\@englishthesisdate{#1}}
-\def\englishsupervisor#1{\gdef\@englishsupervisor{#1}}
-\def\englishcity#1{\gdef\@englishcity{#1}}
-\def\englishuniversity#1{\gdef\@englishuniversity{#1}}
+\def\romantitle#1{\gdef\@romantitle{#1}}
+\def\romanauthor#1{\gdef\@romanauthor{#1}}
+\def\romandegree#1{\gdef\@romandegree{#1}}
+\def\romandepartment#1{\gdef\@romandepartment{#1}}
+\def\romanthesisdate#1{\gdef\@romanthesisdate{#1}}
+\def\romansupervisor#1{\gdef\@romansupervisor{#1}}
+\def\romancity#1{\gdef\@romancity{#1}}
+\def\romanuniversity#1{\gdef\@romanuniversity{#1}}
 
 \def\maketitle{\begin{titlepage}
 {\includegraphics{logo}}
@@ -752,15 +752,15 @@
 \newpage
 }
 
-\def\englishabstract{\newpage
+\def\romanabstract{\newpage
 \thispagestyle{empty}
 \vskip 15mm
-\begin{center}{\Large\bf \@englishtitle \\[5mm]}
+\begin{center}{\Large\bf \@romantitle \\[5mm]}
 {\bf Abstract}
 \end{center}
 \vspace{5mm}}
 
-\def\endenglishabstract{\newpage}
+\def\endromanabstract{\newpage}
 
 \def\acknowledgementpage{\newpage
 \thispagestyle{empty}
@@ -794,36 +794,36 @@
 \def\keywords#1{\par \vspace{5mm}
 {\textbf{واژه‌های کلیدی:}} {\textit{ #1}}}
 
-\def\englishkeywords#1{\par \vspace{5mm}
+\def\romankeywords#1{\par \vspace{5mm}
 \noindent {\textbf{Keywords:}} {\textit{ #1}}}
 
 \font\titlefont=cmssbx10 scaled 2074
 \font\supervisorfont=cmbxti10
-\def\makeenglishtitle{\begin{titlepage}
+\def\makeromantitle{\begin{titlepage}
 {\includegraphics{logo}}
 \vskip 1.5cm
 \addtolength{\baselineskip}{5mm}
-{\titlefont \@englishtitle} \par
+{\titlefont \@romantitle} \par
 \addtolength{\baselineskip}{-5mm}
 \vskip 1cm
-{\bf\englishby}\par
-{\Large\bf \@englishauthor}\par
+{\bf\romanby}\par
+{\Large\bf \@romanauthor}\par
 \vskip 5mm
-{\englishwrittenfor\par
-\large\@englishdegree}
+{\romanwrittenfor\par
+\large\@romandegree}
 \par
 \vskip 1cm
 Under supervision of \\
-{\supervisorfont\@englishsupervisor}
+{\supervisorfont\@romansupervisor}
 \par
 \vskip 1cm
-{\@englishthesisdate}
+{\@romanthesisdate}
 \par
 \vskip 1cm
 \large\bf
-\@englishdepartment\space Department
+\@romandepartment\space Department
 \par
-\@englishuniversity \par\@englishcity
+\@romanuniversity \par\@romancity
 \vfill
 \end{titlepage}%
 }
@@ -835,7 +835,7 @@ Under supervision of \\
 \def\undersupervision{زیر نظر}
 \def\departmentof{دانشکدهٔ}
 \def\universityof{دانشگاه}
-\def\englishby{by}
-\def\englishwrittenfor{Submitted in Partial Fulfillment\\ of the Requirements\\ for the Degree of}
-\def\englishundersupervision{Under supervision of}
+\def\romanby{by}
+\def\romanwrittenfor{Submitted in Partial Fulfillment\\ of the Requirements\\ for the Degree of}
+\def\romanundersupervision{Under supervision of}
 \endinput
