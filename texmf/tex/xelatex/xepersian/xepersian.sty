@@ -1046,7 +1046,7 @@
                 \usebeamerfont*{enumerate \beameritemnestingprefix item}%
                 \usebeamercolor[fg]{enumerate \beameritemnestingprefix item}##1}}}}}%
   \beamer@cramped%
-  \raggedleft%
+  \raggedleft\rightskip=2em%
   \beamer@firstlineitemizeunskip%
 }
 \renewcommand{\itemize}[1][]{%
@@ -1069,7 +1069,7 @@
       }
   \fi%
   \beamer@cramped%
-  \raggedleft%
+  \raggedleft\rightskip=2em%
   \beamer@firstlineitemizeunskip%
 }
 \def\@@description{%
@@ -1078,7 +1078,7 @@
   {}
   {\labelwidth\beamer@descdefault\leftmargin\beamer@descdefault\let\makelabel\beamer@descriptionitem}%
   \beamer@cramped%
-  \raggedleft
+  \raggedleft\rightskip=6em
   \beamer@firstlineitemizeunskip%
 }
 \AtBeginDocument{\@rlfalse}
