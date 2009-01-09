@@ -1,0 +1,56 @@
+\begingroup
+\evensidemargin \paperwidth\relax
+\advance\evensidemargin -2in
+\advance\evensidemargin -\textwidth
+\divide\evensidemargin 2
+\oddsidemargin\evensidemargin
+
+\begin{titlepage}
+
+\let\footnotesize\small
+\let\footnoterule\relax
+\setcounter{page}{0}
+
+\null
+\vfil
+\vskip 25pt
+\begin{center}
+  {\LARGE\textbf{\XePersian}}\\[5pt]
+  {\large\textbf{\XeLaTeX\ macros for typesetting Persian in \XeTeX}.}\\
+\end{center}
+
+\bigskip\bigskip
+\hbox to \hsize{%
+  \hss
+\includegraphics[width=9cm,height=9cm]{iran.jpg}
+   \hss}
+\bigskip
+\bigskip
+
+\begin{center}
+{\LARGE\textbf{User's Guide}}\par
+\vskip 3em
+{\large \lineskip .75em Vafa Khalighi}\par
+\vskip 1.5em
+{\large \thefiledate\\[2pt]
+ Version \Version%
+ \footnote{Documentation edited and repacked at \thefiledate\ by 
+           Vafa Khalighi \url{vafa.khalighi@students.mq.edu.au}.}}\par
+
+\end{center}
+\vfil
+\small
+Author's address:\\
+  4/34 Sorrell Street\\
+  Parramatta\\
+  NSW 2150\\
+ Australia\\[3mm]
+  Internet: \Verb[codes={\catcode`\<=12}]+<vafa.khalighi@students.mq.edu.au>+
+\end{titlepage}
+
+\endgroup
+
+\setcounter{footnote}{0}
+\tableofcontents
+\pagenumbering{arabic}
+\endinput

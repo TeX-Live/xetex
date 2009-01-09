@@ -1,0 +1,200 @@
+\part{Producing Presentations}
+At the moment, there are two classes that you can prepare your presentations with. These classes are:
+\section{xepersian-presentations class}
+\textsf{xepersian-presentation} is a simple class for presentations to be shown on screen or beamer. It is derived from \LaTeX 's
+article class.The “virtual paper size” of documents produced by this class: width=128mm,
+height=96mm. \textsf{xepersian-presentation} requires that the \textsf{fancyhdr} and \textsf{geometry} packages are available on the system.
+Enhancements to the \textsf{xepersian-presentation} class are easily made available by other packages, these include  slides with a background from a bitmap (\textsf{eso-pic}
+package).
+
+\subsection{Usage}
+The class is used with
+\begingroup
+\catcode`\<=12
+  \Mac \documentclass`[<options>]'{xepersian-presentation}
+\endgroup
+
+\File{OPTION!}
+Options of the \textsf{article} class are also available to \textsf{xepersian-presentation}, e. g. "10pt", "11pt", "12pt" for selection of
+font size. However, not all options
+of the \textsf{article} class will be appropriate for a presentation class, e. g. "twocolumn".
+
+\File{EXAMPLE}
+A simple example document:
+\begin{LVerb}
+  \documentclass[12pt]{xepersian-presentation}
+  \usepackage{eso-pic}
+  \usepackage{xepersian}
+  \settextfont[Scale=1]{XB Zar}
+  \setromantextfont[Scale=1]{Linux Libertine}
+  \setdigitfont[Scale=1]{XB Zar}
+  \pagestyle{pres}
+  \AddToShipoutPicture{
+  \includegraphics{gradient2.png}
+  }
+  \begin{document}
+  \begin{titlepage}
+  \centering
+  \distance{1}
+  {
+  \Huge \bfseries Title of the presentation \par
+  }
+  \vspace{1.3ex} \large
+  Author\\[2ex]Institution
+  \distance{2}
+  \end{titlepage}
+  \begin{plainslide}[Title of Page]
+  The first page
+  \end{plainslide}
+  \begin{rawslide}
+  The second page
+  \end{rawslide}
+  \end{document}
+  \end{LVerb}
+
+The title page can be created within the "titlepage" environment, the "\maketitle" command is not
+available. Slides may be created with the "plainslide" environment, you may add the title of the slide with the
+optional parameter. The contents of the slide are centered vertically.
+Another environment generating a slide is "rawslide": slides are written without title, contents are not vertically
+centered.
+
+The \n\distance"{number}" command allows to introduce vertical space into slides constructed with the
+"rawslide" and "titlepage" environments. You should use pairs of "\distance{}" commands with numbers
+indicating the relative height of empty space, see the "titlepage" in the example above.
+
+Pictures can be included with the "includegraphics"-command of the "graphicx"-package. Please be
+aware that the dimensions of the pages are 128mm $\times$ 96mm and therefore included graphics are scaled
+appropriately.
+\subsection{Enhancements to xepersian-presentation}
+\subsubsection{Fill background of a presentation with bitmaps}
+\textsf{eso-pic} package  allows you to paint the background with a picture:
+\begin{Ex}
+"\usepackage{eso-pic}"\\
+...\\
+"\AddToShipoutPicture{"\\
+"\includegraphics{gradient2.png}"\\
+"}"
+\end{Ex}
+
+\n\AddToShipoutPicture"{}" puts the picture on every page, \n\AddToShipoutPicture"*{}" puts
+it on to the current page, \n\ClearShipoutPicture\ clears the background beginning with the current
+page. Details of "eso-pic"'s commands can be found in  its own documentation.
+
+\section{beamer Class}
+\XePersian\ currently works with \textsf{beamer} class quite well and all should go well with \textsf{default}, \textsf{Warsaw}, \textsf{Goettingen}, \textsf{Hannover}, \textsf{Malmoe}, \textsf{Marburg}, \textsf{Montpellier}, \textsf{PaloAlto}, \textsf{Pittsburgh}, \textsf{Singapore}, \textsf{Szeged} and \textsf{xepersian-JLTree}\footnote{\textsf{xepersian-JLTree} theme is the modified version of \textsf{JLTree} theme.} themes but other themes are not yet supported.
+
+\begin{Warning}
+I have defined some new environments for beamer and you should use these new  environments instead beamer's original environments. These new environments are:
+\end{Warning}
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{قضیه}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{قضیه}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{قضیه}} environment instead \textbf{theorem} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{نتیجه}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{نتیجه}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{نتیجه}} environment instead \textbf{corollary} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{حقیقت}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{حقیقت}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{حقیقت}} environment instead \textbf{fact} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{لما}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{لما}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{لما}} environment instead \textbf{lema} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{مسئله}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{مسئله}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{مسئله}} environment instead \textbf{problem} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{پاسخ}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{پاسخ}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{پاسخ}} environment instead \textbf{solution} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{تعریف}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{تعریف}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{تعریف}} environment instead \textbf{definition} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{تعریفها}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{تعریفها}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{تعریفها}} environment instead \textbf{definitions} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{مثال}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{مثال}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{مثال}} environment instead \textbf{example} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{مثالها}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{مثالها}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{مثالها}} environment instead \textbf{examples} environment.
+
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{اثبات}}"}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{اثبات}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{اثبات}} environment instead \textbf{proof} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{بلوک}}"}{<title>}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{بلوک}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{بلوک}} environment instead \textbf{block} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{بلوک‌مثال}}"}{<title>}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{بلوک‌مثال}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{بلوک‌مثال}} environment instead \textbf{exampleblock} environment.
+\begin{Ex}
+"\begin{"\textbf{\PersianTxt{بلوک‌هشدار}}"}{<title>}"
+\ldots\ "<text>" \ldots\
+"\end{"\textbf{\PersianTxt{بلوک‌هشدار}}"}"
+\end{Ex}
+You should use \textbf{\PersianTxt{بلوک‌هشدار}} environment instead \textbf{alertblock} environment.
+
+\subsection{An Example}
+
+\File{Example}
+\begin{LVerb}
+  \documentclass{beamer}
+  \usetheme{Warsaw}
+  \usepackage{xepersian}
+  \settextfont[Scale=1]{XB Zar}
+  \setromantextfont[Scale=1]{Linux Libertine}
+  \AtBeginDocument{\setdigitfont[Scale=1]{XB Zar}}
+  \title{<title>}
+  \subtitle{<subtitle>}
+  \author{<author>}
+  \institute{<institute>}
+  \begin{document}
+  \begin{frame}
+  \titlepage
+  \end{frame}
+  \begin{frame}{<frame-title>}
+  \framesubtitle{<frame-subtitle>}
+  ... <text> ...
+  \end{frame}
+  ...
+  \end{document}
+\end{LVerb}
+\endinput

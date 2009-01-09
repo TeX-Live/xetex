@@ -1,0 +1,262 @@
+\part{Magazine Typesetting}
+\section{Introduction}
+\textsf{xepersian-magazine} class allows you to create magazines, newspapers and any other types of papers. The output document has a front page and as many inner pages as desired. Articles appear one after another, telling the type, number of columns, heading, subheading, images, author and so forth. It is possible to change the aspect of (almost) everything therefore it is highly customizable. Commands to add different titles, headings and footers are also provided.
+\section{Usage}
+To create a magazine just load the class as usual\footnote{You also need to load \XePersian\ after loading the document class and choose fonts for the main text, Roman text and digits in maths formuals. For more detail see section \ref{s-1} of the manual.}, with
+\begingroup
+\catcode`\<=12
+  \Mac \documentclass`[<class-options>]'{xepersian-magazine}
+\endgroup
+at the beginning of your source file. The class options are  described in section \ref{s-options}.
+
+From this point it is possible to include packages and renew class commands described in section \ref{s-custom}.
+\subsection{Front Page}
+
+\File{\small frontpage}
+As every magazine, \textsf{xepersian-magazine} has its own front page. It includes main headings, an index, the magazine logo and other useful information. This environment should be the first you use within \textsf{xepersian-magazine} class but it is not mandatory.
+
+\File{\small\n\firstimage}
+\File{\small\n\firstarticle}
+The first two commands you can use inside the {\UsageFont frontpage} environment are \n\firstimage\ and \n\firstarticle\ which include, respectively, the main image and the main heading in the front page. The first one takes two arguments "<image>" and "<description>". Notice that second argument is optional and it declares the image caption; "<image>" defines the relative path to the image. In order to include the first piece of article use
+\begingroup
+\catcode`\<=12
+  \Mac \firstarticle{<title>}{<opening>}{`<time>'}
+\endgroup
+first two arguments are mandatory and represent heading and the opening paragraph. Last argument is optional (you can leave it blank) and indicates the time when article happened.
+
+\File{\footnotesize\n\secondarticle}
+The second piece of article is included using the command \n\secondarticle\ just as the first article. The main difference are that this second piece has two more arguments and it does not include an image.
+\begingroup
+\catcode`\<=12
+  \Mac \secondarticle{<title>}{<subtitle>}{<opening>}
+  \Mac {<pagesof>}{`<time>'}
+\endgroup
+The new arguments "<subtitle>" and "<pagesof>" define a subtitle and the name of the section for this piece of article.
+
+\File{\small\n\thirdarticle}
+The third piece of article is the last one in the \textsf{xepersian-magazine} front page. It works like the \n\secondarticle.
+\begingroup
+\catcode`\<=12
+  \Mac \thirdarticle{<title>}{<subtitle>}{<opening>}
+  \Mac {<pagesof>}{`<time>'}
+\endgroup
+The arguments meaning is the same as \n\secondarticle\ command.
+
+\File{\small indexblock}
+\File{\small authorblock}
+\File{\small weatherblock}
+The front page includes three information blocks besides the news: {\UsageFont indexblock} which contains the index, {\UsageFont authorblock} which includes information about the author and a {\UsageFont weatherblock} containing a weather forecast. All these three environments are mostly a frame in the front page therefore they can be redefined to fit your personal wishes but I kept them to give an example and to respec the original \textsf{xepersian-magazine} format.
+
+\File{\small \n\indexitem}
+The {\UsageFont indexblock} environment contains a manually editted index of \textsf{xepersian-magazine}. It takes one optional argument "<title>" and places a title over the index block. To add entries inside the index just type
+\begingroup
+\catcode`\<=12
+  \Mac \indexitem{`<title>'}{<reference>}
+\endgroup
+inside the environment. The "<title>" is the index entry text and the "<reference>" points to a article inside \textsf{xepersian-magazine}. It will be more clear when you read subsecton \ref{sub-1}. In order to get a correct output, it is necessary to leave a blank line between index items.
+
+The {\UsageFont authorblock} environment can include whatever you would like. I called it {\UsageFont authorblock} because I think it is nice to include some author reference in the front page: who you are, why are you doing this... This environment creates a frame box in the bottom right corner of the front page with your own logo at the top.
+
+\File{\small\n\weatheritem}
+Finally, the {\UsageFont weatherblock} lets you include a weather forecast. It takes one optional argument "<title>" that places a title over the weather block. It can fit up to three weather icons with maximum and minimum temperatures, description and name. To add each of the weather entries type the following
+\begingroup
+\catcode`\<=12
+  \Mac \weatheritem{<image>}{<day-name>}{<max>}
+  \Mac {<min>}{<short-des>}
+\endgroup
+The first argument includes the path to the weather icon (i.e. sunny or rainy), "<day-name>" like Monday, "<max>" and "<min>" are the highest and lowest day temperatures and "<short-des>" is a brief description of the weather condition: partly cloudy, sunny and windy \ldots
+\subsection{Inside\label{sub-1}}
+Once we have created the front page we should include all articles inside our magazine. \textsf{xepersian-magazine} arranges all articles one after each other, expanding headings all over the page and splitting the article text in the number of columns we wish. There are three different environments to define a piece of article: the {\UsageFont article} environment described in section \ref{subsub-1}, the {\UsageFont editorial} environment \ref{subsub-2} for opinion articles and the {\UsageFont shortarticle} environment explained in \ref{subsub-3}.
+\subsubsection{The article environment\label{subsub-1}}
+
+\File{\small article}The main environment to include a piece of article is called {\UsageFont article}. It takes four arguments that set up the headings and structure of the article.
+\begingroup
+\catcode`\<=12
+\begin{Ex}
+  "\begin{article}{<num-of-columns>}{<title>}{<subtitle>}"\\"{<pagesof>}{<label>}" \\
+\ldots\ "<text>" \ldots\ \\
+ "\end{article}"
+\end{Ex}
+\endgroup
+
+The first argument "<num-of-columns>" sets the number of columns the article will be divided whereas "<label>"  is used when pointing an article from the index in the front page. The rest of the arguments are easy to understand.
+
+Inside the {\UsageFont article} environment, besides the main text of the article, it is  possible to include additional information using several class commands.
+
+\File{\scriptsize\n\authorandplace}
+\File{\small\n\timestamp}
+The \n\authorandplace"{<author>}{<place>}" inserts the name of the editor and the place where the article happened in the way many magazines do. Another useful command is \n\timestamp"{<time>}" which includes the time and a separator just before the text. These two commands should be used before the text because they type the text as the same place they are executed.
+
+\File{\small\n\image}
+To include images within the text of an article, \textsf{xepersian-magazine} provides an \n\image\ command. Since \textsf{fmultico} package does not provide any float support for its \textsf{multicols} environment, I created a macro that includes an image only if that is possible, calculating if there is enough space for the image.It is not the best solution but it works quite well and I could not find a better one. To include an image use the command and its two arguments: the relative path to the image and a short description.
+\begingroup
+\catcode`\<=12
+  \Mac \image{<image>}{<description>}
+\endgroup
+
+\File{\small\n\columntitle}
+\File{\footnotesize\n\expandedtitle}
+Within the text of the article, it is possible to add column and expanded titles. The main difference between them is that the first one keeps inside the width of an article column whereas the second expands all over the width of the page, breaking all the columns. Their use is analogous, as follows
+\begingroup
+\catcode`\<=12
+  \Mac \columntitle{<type>}{<text>}
+  \Mac \expandedtitle{<type>}{<text>}
+\endgroup
+These two commands use \textsf{fancybox} package features. That’s why there are five different types of titles which correspond mainly with fancybox ones: \textsf{shadowbox},
+\textsf{doublebox}, \textsf{ovalbox}, \textsf{Ovalbox} and \textsf{lines}.
+\subsubsection{The editorial environment\label{subsub-2}}
+
+\File{editorial}
+In addition to the editorial article environment, one can use the editorial environment to create editorial or opinion texts. The main feature is that it transforms the style
+of the heading. Although this environment accepts all the commands article takes, it does not make any sense to use the \n\authorandplace\ command within it since it includes an author argument. To create an editorial text use
+\begingroup
+\catcode`\<=12
+\begin{Ex}
+"\begin{editorial}{<num-of-columns>}{<title>}{<author>}{<label>}"\\
+  \ldots\ "<text>" \ldots\ \\
+ "\end{editorial}"
+\end{Ex}
+\endgroup
+All arguments have the same meaning as article environment (see \ref{subsub-1}).
+\subsubsection{The shortarticle environment\label{subsub-3}}
+
+\File{\small shortarticle}
+The shortarticle environment creates a block of short article. Althought it has its own title and subtitle, each piece of article within it may have a title. To use it just
+type:
+\begingroup
+\catcode`\<=12
+\begin{Ex}
+"\begin{shortarticle}{<num-of-columns>}{<title>}{<subtitle>}{<label>}"\\
+\ldots\ "<text>" \ldots\ \\
+"\shortarticleitem{<title>}{<text>}"\\
+\ldots\ \\
+"\end{shortarticle}"
+\end{Ex}
+\endgroup
+You can also specify the number of columns of the block like editorial and article environments. To add a piece of article inside the shortarticle use the \n\shortarticleitem, indicating a title and the text of the issue.
+\subsubsection{Commands between articles}
+
+\File{\n\articlesep}
+\File{\small\n\newsection}
+There are two commands you can use among the articles inside \textsf{xepersian-magazine}: \n\articlesep\  and \n\newsection. The first one does not take any parameter and just draws a line between two articles. The second  changes the content of "\xepersian@section" to the new "<section name>". From the point it is used, all articles which follow will be grouped within the new section.
+\begingroup
+\catcode`\<=12
+  \Mac \newsection{<section name>}
+\endgroup
+
+
+\section{Customization\label{s-custom}}
+\textsf{xepersian-magazine} includes many commands which can be used to customize its aspect, from the front page to the last page. I will list them grouped so it is easy to find
+them. Treat them as standard \LaTeX\ commands, using \n\renewcommand\ to change
+their behaviour.
+\subsection{Front Page}
+
+\File{\small\n\customlogo}
+\File{\scriptsize\n\customminilogo}
+\File{\tiny\n\custommagazinename}
+When creating a magazine, everyone  wants to show its own logo instead of \textsf{xepersian-magazine} default heading. To achieve this, you need to put the following command at the preamble of your document:
+\begingroup
+\catcode`\<=12
+  \Mac \customlogo{<text>}
+  \Mac \customminilogo{<text>}
+  \Mac \custommagazinename{<text>}
+\endgroup
+
+\File{\n\edition}
+\File{\footnotesize\n\editionformat}
+The edition text has to be declared in the preamble of the document. One important thing to know is that \n\author, \n\date\ and \n\title\ have no effect inside \textsf{xepersian-magazine} since the magazine date is taken from \n\today\ command and the other two are only for the title page (if using \n\maketitle).
+
+\newpage
+\File{\footnotesize\n\indexFormat}
+\File{\tiny\n\indexEntryFormat}
+\File{\tiny\n\indexEntryPageTxt}
+\File{\tiny\n\indexEntryPageFormat}
+\File{\tiny\n\indexEntrySeparator}
+When defining the index in the front page, there are several commands to customize the final index style. \n\indexFormat\ sets the format of the title; \n\indexEntryFormat, the format of each index entry; \n\indexEntryPageTxt\ and \n\indexEntryPageFormat\ lets you define which is the text that goes with the page number  and its format. Finally, \textsf{xepersian-magazine} creates a thin line between index entries, you can redefine it using \n\indexEntrySeparator. To get the index with "xepersian@indexwidth" is provided.
+\vskip 3.5cm
+
+\File{\tiny\n\weatherFormat}
+\File{\tiny\n\weatherTempFormat}
+\File{\tiny\n\weatherUnits}
+Relating to the weather block, the title format can be changed redefining \n\weatherFormat. In order to customize the format of the temperature numbers and their units it is necessary to redefine \n\weatherTempFormat\ and \n\weatherUnits\ respectively.
+\vskip 3cm
+
+\File{\tiny\n\*TitleFormat}
+\File{\tiny\n\*SubtitleFormat}
+\File{\tiny\n\*TextFormat}
+The main article that appear in the front page can change their formats. To obtain that there are three standard commands to modify the title, subtitle and text style. You just have to replace the star ("*") with first, second or third depending on which article you are editing. Note that first piece of article has no subtitle therefore it does not make any sense to use the non-existent command \n\firstSubtitleFormat.
+\vskip 2cm
+
+\File{\tiny\n\pictureCaptionFormat}
+\File{\tiny\n\pagesFormat}
+Two other elements to configure are the picture captions and the pages or section format in the entire document. To proceed just redefine the macros \n\pictureCaptionFormat\ and \n\pagesFormat.
+\newpage
+\subsection{Inside The Magazine}
+\File{\tiny\n\innerTitleFormat}
+\File{\tiny\n\innerSubtitleFormat}
+\File{\tiny\n\innerAuthorFormat}
+\File{\tiny\n\innerPlaceFormat}
+The articles inside \textsf{xepersian-magazine} may have a different format from the ones in the front page. To change their title or subtitle format redefine \n\innerTitleFormat\ and \n\innerSubtitleFormat. The article text format matches the document general definition. When using the \n\authorandplace\ command, you might want to change the default style. Just renew \n\innerAuthorFormat\ and \n\innerPlaceFormat\ to get the results.
+\vskip 3cm
+
+\File{\tiny\n\timestampTxt}
+\File{\tiny\n\timestampSeparator}
+\File{\tiny\n\timestampFormat}
+The \n\timestamp\ command described in section \ref{subsub-1} lets you introduce the time of the event before the article text. You can configure its appearance by altering
+several commands: \n\timestampTxt\ which means the text after the timestamp; \n\timestampSeparator\ which defines the element between the actual timestamp and the beginning of the text and, finally, \n\timestampFormat\ to change the entire timestamp format.
+\vskip 2cm
+
+\File{\tiny\n\innerTextFinalMark}
+\textsf{xepersian-magazine} puts a small black square at the end of the article. As I wanted to create a highly customizable \LaTeX\ class I added the macro \n\innerTextFinalMark\ to change this black square. This item will appear always following the last character of the text with the "~" character.
+
+\File{\tiny\n\minraggedcols}
+\File{\tiny\n\raggedFormat}
+The \n\minraggedcols\ counter is used to tell \textsf{xepersian-magazine} when article text should be ragged instead of justified. The counter represents the minimum number of columns that are needed in order to use ragged texts. For example, if \n\minraggedcols\ is set to 3, all articles with 3 columns or more will be ragged. Articles with 1, 2 columns will have justified text. By default, \n\minraggedcols\ is set to 4. 
+
+The \n\raggedFormat\ macro can be redefined to fit user ragged style. Default value is \n\RaggedLeft.
+
+\File{\n\heading}
+\File{\n\foot}
+\textsf{xepersian-magazine} includes package \textsf{fancyhdr} for changing headings and footers. Although it is possible to use its own commands to modify \textsf{xepersian-magazine} style, there are two commands to change headings and foot appearance. Place them in the preamble of your \textsf{xepersian-magazine} document.
+\begingroup
+\catcode`\<=12
+  \Mac \heading{<left>}{<center>}{<right>}
+  \Mac \foot{<left>}{<center>}{<right>}
+\endgroup
+If you still prefer to use fancyhdr macros, use them after the {\UsageFont frontpage} environment.
+
+\begin{drivers}
+\textsf{xepersian-magazine} by default places no headers and footers. If you want headers and foooters, then after loading \textsf{xepersian} package, you should write "\pagestyle{fancy}" at the preamble of your document.
+\end{drivers}
+
+\section{Class Options\label{s-options}}
+The \textsf{xepersian-magazine} class is in itself an alteration of the standard \textsf{article} class, thus
+it inherits most of its class options but \textsf{twoside}, \textsf{twocolumn}, \textsf{notitlepage} and
+\textsf{a4paper}. If you find problems when loading other article features, please let me
+know to fix it.
+
+There are also five own options that \textsf{xepersian-magazine} implements.
+\begin{description}
+\mitem  a3paper 
+
+(false) This option makes \textsf{xepersian-magazine} 297 mm width by 420 mm height.
+This option is implemented because the standard \textsf{article} class does not
+allow this document size.
+
+\mitem 9pt 
+
+(false) Allows the 9pt font size that \textsf{article} class does not include (default
+is 10pt).
+
+\mitem columnlines
+
+(false) Adds lines between columns in the entire \textsf{xepersian-magazine}. The
+default line width is 0.1pt but it is possible to change this by setting length
+\n\columnlines\ in the preamble.
+
+\mitem showgrid 
+(false) This option is only for developing purposes. Because the front
+page has a personal design using the textpos package, I created this grid to
+make easier the lay out.
+\end{description}
+\endinput

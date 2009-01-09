@@ -1,0 +1,305 @@
+\part*{Welcome to XePersian}
+\XePersian\  is a set of macro written for \LaTeX\ over \XeTeX\ in the hope that Persian typesetting in \TeX\ becomes quite easy and at the same time the Persian users would benefit from the \TeX\ tools that are available for English users. 
+
+\File{\textsf{New!}}
+There is a change in the manual. I wrote a new \LaTeX\ class\footnote{The name of this class is \textsf{xepersian-user} and is included in the \XePersian\ package but please note that this class has no use for Persian typesetting and it is simply designed for typesetting the manual.} for writing the manual just to be more attractive, eye-catching and tidy. I also decided to write the manual in English and that is because \XePersian\ package will be placed on CTAN and it is included in  various \TeX\ distributions like MiK\TeX\ and \TeX Live and if I write the manual in Persian, then I have abused the hospitality of CTAN, MiK\TeX\ and \TeX Live distributions, so I wrote the manual in plain English in the hope that everyone will be  able to understand the material explained here. 
+
+I have rewritten almost all the macros, new functionalities have been added and lots of changes have been done, therefore, I would like to encourage all the users to read this manual very carefully before trying to use the package. \XePersian\ now works with \textsf{article}, \textsf{report}, \textsf{book}, \textsf{amsart}, \textsf{amsbook}, \textsf{refrep}, \textsf{bookest} and \textsf{beamer}  classes. Also I have written some new classes: \textsf{xepersian-thesis} (for typesetting Persian thesis), \textsf{xepersian-presentation} (for typesetting plain electronic Persian presentations) and \textsf{xepersian-magazine} (for typesetting Persian magazines, newspapers and other papers).
+
+\File{\textsf{Thanks}}
+Please note that \XePersian\ is not just mine, it belongs to all and it is the result of the hard work of several other people. I would like to thanks \textsf{Jonathan Kew} (the author of \XeTeX) for making such a wonderful \TeX\ system and answering my questions, \textsf{Karl Berry} and \textsf{Jim Hefferon} for all their wonderful encouragements, \textsf{Ross Moore} (my teacher and an abosolute \TeX acker) for helping and guiding me patiently and kindly, \textsf{Will Robertson} (the author of \textsf{fontspec} package) for his excellent \textsf{fontspec} package and also answering my question, \textsf{François Charette} (the author of several \XeLaTeX\ packages, more importantly the \textsf{bidi} package) for his wonderful \textsf{bidi} package which is currently the basis of \XePersian , \textsf{Mostafa Vahedi} for writing the preliminary version of the package and also motivating me to develop the package, \textsf{Mehdi Omidali} for participating in the development of \XePersian , contributiong mapping files, testing the development version of the package, his bug reports, bug fixes and writing the manual in Persian, and eventually I would like to thanks to all the users of \XePersian, firstly for using the package and secondly for their bug reports.
+
+
+
+\begin{Warning}
+Keep in mind the following typographical conventions in this User's Guide.
+\begin{itemize}
+  \item All literal input characters, i.e., those that should appear verbatim
+  in your input file, appear in upright "Helvetica" and {\UsageFont
+  Helvetica-Bold} fonts.
+  \item Meta arguments, for which you are supposed to substitute a value
+  (e.g., <Scale>) appear in slanted <Helvetica-Oblique> and
+  {\UsageFont\MetaFont Helvetica-BoldOblique} fonts.
+  \item The main entry for a macro or parameter that states its syntax appears
+  in a large bold font, \emph{except for the optional arguments, which are in
+    medium weight}. This is how you can recognize the optional arguments.
+  \item References to \XePersian\ commands and parameters within paragraphs are
+  set in {\UsageFont Helvetica-Bold}.
+
+\end{itemize}
+\end{Warning}
+\part{The Essentials}
+\section{An Example of the Input File}
+\begin{LVerb}
+  \documentclass{book}
+  \usepackage{xepersian}
+  \settextfont[Scale=1]{XB Zar}
+  \setromantextfont[Scale=1]{Linux Libertine}
+  \setdigitfont[Scale=1]{XB Zar}
+  \title{<title name>}
+  \author{<author name>}
+  \begin{document}
+  \maketitle
+  \tableofcontents
+  \chapter{<chapter name>}
+  ...
+  \section{<section name>}
+  ...
+  \subsection{<subsection name>}
+  ...
+  \end{document}
+\end{LVerb}
+
+\begin{Warning}
+Always load \XePersian\ package as the last package in the permeable of your document and put your definitions after loading \XePersian . Also note that the packages: \textsf{amsmath}, \textsf{amssymb}, \textsf{amsthm} and \textsf{graphicx} are loaded by default and you \emph{should not} load them.
+\end{Warning}
+
+\section{The Basic Commands of The Package\label{s-1}}
+In this section, I will be explaining some of the useful commands which you are best equipped to know.
+\begin{description}
+\mitem \settextfont`[...]'{...}
+
+Selects the default Persian font.
+
+\mitem \setromantextfont`[...]'{...}
+
+Selects the deafult Roman font.
+
+\mitem \setdigitfont`[...]'{...}
+
+Selects the digits font in maths formuals.
+
+\mitem \defpersianfont\n\fontname`[...]'{...}
+
+Defines an extra Persian font.
+
+\mitem \defromanfont\n\fontname`[...]'{...}
+
+Defines an extra Roman font.
+
+\mitem \footnote{...}
+
+Inserts Persian footnote.
+
+\mitem \Footnote{...}
+
+Inserts Roman footnote.
+
+\mitem \today
+
+Inserts Iranian date of today.
+
+\mitem \romantoday
+
+Inserts Roman date of today.
+
+\mitem \rldblcolumn
+
+Places columns from right to left in the \emph{twocolumns} documents (default).
+
+\mitem \lrdblcolumn
+
+Places columns from left to right in the \emph{twocolumns} documents.
+
+\mitem \twocolumnstableofcontents
+
+Typesets \emph{table of contents} in two columns (needs to load \textsf{fmultico} package at the permeable of the document).
+
+\mitem \lr{...} 
+
+Typesets a short Roman text in a Persian paragraph.
+
+\mitem \rl{...}
+
+Typesets a short Persian text in a Roman paragraph.
+\end{description}
+\begin{Ex}
+  "\begin{LTR}" \ldots\ "\end{LTR}"
+\end{Ex}
+Left To Right environment.
+
+\begin{Ex}
+  "\begin{RTL}" \ldots\ "\end{RTL}"
+\end{Ex}
+Right To Left environment.
+
+\begin{Ex}
+  "\begin{roman}" \ldots\ "\end{roman}"
+\end{Ex}
+Typesets a Roman paragraph.
+
+\begin{Ex}
+  "\begin{persian}" \ldots\ "\end{persian}"
+\end{Ex}
+Typesets a Persian paragraph.
+\begin{description}
+\mitem \Roman
+
+Similar to {\UsageFont roman} environment but intended to be used in the bibliography environment.
+
+\mitem \Persian
+
+Similar to {\UsageFont persian} environment but intended to be used in the bibliography environment.
+
+\mitem \rmfamily 
+
+Uses Roman font for typesetting (deafult in {\UsageFont roman} environment).
+
+\mitem \persianfont
+
+Uses Persian font for typesetting (deafualt in {\UsageFont persian} environment).
+
+\mitem \PersianFootNum
+
+Typesets the the Roman footnote numbers in Persian (default).
+
+\mitem \RomanFootNum
+
+Typesets the Roman footnote numbers in Roman.
+
+\mitem \RomanBibNum
+
+Typesets the numbers of \n\bibitem\ in Roman (default).
+
+\mitem \PersianBibNum
+
+Typesets the numbers of \n\bibitem\ in Persian.
+\end{description}
+\subsection{Using Different Fonts}
+To write a minimal document with \XePersian\, you will need to select a font for typesetting the main text. We achieve this by the following command:
+\begingroup
+\catcode`\<=12
+  \Mac  \settextfont`[Scale=<integer>]'{<fontname>}
+\endgroup
+For example with the command:
+\begin{LVerb}
+  \settextfont[Scale=1]{XB Zar}
+\end{LVerb}
+We choose {\UsageFont XB Zar} as the main text font with the Scale of 1.
+
+\begin{drivers} {\UsageFont XB Zar} is the name of the font which should be installed on your machine. If you are on \textsf{Microsoft Windows}, then the font should be avaliable in \fbox{C:$\backslash$windows$\backslash$fonts} folder. This font is one of the \textsf{X Series} font made by \textsf{IRMUG} (Iranian Mac Users Group) which are perfect and you are advised to use these fonts. To obtain them, you can explore \href{http://wiki.irmug.org/index.php/X_Series_2}{\textsf{IRMUG}}.\end{drivers}
+
+In addition to selecting the main text font, we also need to choose the fonts for Roman texts and digits in maths formuals. We select the font for Roman texts by the following command:
+\begingroup
+\catcode`\<=12
+  \Mac  \setromantextfont`[Scale=<integer>]'{<fontname>}
+\endgroup
+And we select the font for digits in maths formuals by the command:
+\begingroup
+\catcode`\<=12
+  \Mac  \setdigitfont`[Scale=<integer>]'{<fontname>}
+\endgroup
+You also can define as many extra Persian and Roman fonts as you wish and use them in your document. This is done in the following syntax:
+\begingroup
+\catcode`\<=12
+  \Mac  \defpersianfont\n\fontname`[Scale=<integer>]'{<fontname>}
+  \Mac  \defromanfont\n\fontname`[Scale=<integer>]'{<fontname>}
+\endgroup
+For example, the command:
+\begin{LVerb}
+  \defpersianfont\nastaligh[Scale=1.5]{IranNastaliq}
+\end{LVerb}
+Defines the {\UsageFont Nastaligh} font for the text and you can use it in the following ways:
+\begin{itemize}
+\item If your intention is to write  a short text with this font, you can use:
+\begingroup
+\catcode`\<=12
+  \Mac \nastaligh{<text>}
+\endgroup
+\item If you are going to write a long piece of text with this font you can either use {\UsageFont RTL} environment as follow:
+\begingroup
+\catcode`\<=12
+\begin{Ex}
+  "\begin{RTL}" 
+  "\nastaligh"
+  <text>
+ "\end{RTL}"
+\end{Ex}
+\endgroup
+or even better define a new environment as follow:
+\begin{LVerb}
+  \newenvironment{Nastaligh}{\begin{RTL}\nastaligh}
+  {\end{RTL}}
+\end{LVerb}
+and then use this environment to typeset the text whenever you wish.
+\end{itemize}
+I am not going to explain this for Roman fonts because I would just repeat myself but it can be done quite similar to what I have been demonstrating above for Persian fonts.
+\subsection{The Bilingual Bibliography Environment}
+The commands \n\Persian\ and \n\Roman\ are defined so that you can switch between Persian and Roman texts easily in the bibliography environment.
+\subsection{The Options Of The Package}
+\subsubsection{The Footnotes}
+You can use the commands \n\footnote\ and \n\Footnote\ to insert Persian and English footnotes respectively. The package puts the numbers of all footnotes in Persian and automatically places the footnote-rule on the appropriate side of the page based on the first footnote on the page automatically by default\footnote{This means if your first footnote in a page is a Roman footnote, then the footnote-rule will appear on the left bottom side of the page and if your first footnote in a page is a Persian footnote, then the footnote rule will appear on the right bottom side of the page.}.
+
+\File{OPTION!}
+If you wish all Roman footnote numbers appear in Roman instead Persian, then you can load \XePersian\ with the appropriate option as follow:
+  \Mac \usepackage[RomanFootNum]{xepersian}
+In addition to this, two commands: \n\PersianFootNum\ and \n\RomanFootNum\ are provided, as you might have guessed from the name of the commands \n\PersianFootNum\ puts the number of all Roman footnote in Persian and \n\RomanFootNum\ puts the number of all Roman footnotes in Roman.
+
+\subsubsection{The bibitem Numbers}
+
+\File{OPTION!}
+\XePersian\ will put the numbers of all Roman \n\bibitem\  In Roman by default, but if you wish that all Roman \n\bibitem\ numbers appear in Persian, you can load \XePersian\ with the appropriate option as follow:
+  \Mac \usepackage[PersianBibNum]{xepersian}
+In addition to this, two commands: \n\RomanBibNum\ and \n\PersianBibNum\ are provided, the command \n\RomanBibNum\ puts the number of all Roman \n\bibitem\ in Roman and \n\PersianBibNum\ puts the number of all Roman \n\bibitem\ in Persian.
+
+\File{Summary}
+If you wish to have Roman \n\bibitem\ numbers in Persian and the Roman footnote numbers in Roman, you can load \XePersian\ with the appropriate options as follow:
+  \Mac \usepackage[PersianBibNum,RomanFootNum]{xepersian}
+
+\section{The Counters}
+The following counters are defined in the package:
+\begin{description}
+\mitem arabic
+
+The main {\UsageFont arabic} counter of \LaTeX\ has been redefined for comaptibility with the package.
+
+\mitem persian
+
+Has the effect of the main {\UsageFont arabic} counter of \LaTeX .
+
+\mitem adadi
+
+Changes the counting to the Prsian Numbers.
+
+\mitem harfi
+
+Changes the counting to the Persian alphabets.
+
+\mitem tartibi
+
+Changes the counting to the Persian ordering numbers.
+\end{description}
+\section{Typesetting Persian Poems}
+To typeset a poem, you will nead to load \textsf{persianpoem} package as this package is not loaded by default and then use \textsf{oldpoem} or its starred version (\textsf{oldpoem*}). The \textsf{oldpoem} has the following syntax:
+\begin{LVerb}
+  \begin{oldpoem}
+  <verse1>&<verse2>\\
+  <verse3>&<verse4>\\
+  \end{oldpoem}
+\end{LVerb}
+\section{Multicolumns Typesetting}
+To typeset a text in multicolumns, you need to load \textsf{fmultico} package and use the \textsf{multicols} environment which has the following syntax:
+\begingroup
+\catcode`\<=12
+\begin{Ex}
+  "\begin{multicols}{<number of columns>}" 
+  <text>
+ "\end{multicols}"
+\end{Ex}
+\endgroup
+\section{The Persian Case}
+The Persian case is also defined which has the following syntax:
+\begin{LVerb}
+  $$\rcases{\mbox{<branch1>}\cr\mbox{<branch2>}\cr ...}
+  	\mbox{<main>}$$
+\end{LVerb}
+\section{Index Generation}
+To generate index, you will need to place \textsf{persian.xdy} file in the current directory and then open a \textsf{command prompt} and do the following:
+\begin{LVerb}
+  tex2xindy < filename.idx > filename.raw
+  xindy -I xindy -M persian.xdy filename.raw
+\end{LVerb}
+\begin{drivers}
+To generate index, the page counter should be \textsf{persian}\footnote{This is the default counter.}.
+\end{drivers}
+\endinput
