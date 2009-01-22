@@ -43,12 +43,14 @@
 
 \def\captionsrussian@modern{%
    \def\prefacename{Предисловие}%
-   \def\refname{Примечания}%
+   \def\refname{Список литературы}%
    \def\abstractname{Аннотация}%
-   \def\bibname{Библиография}%
+   \def\bibname{Литература}%
    \def\chaptername{Глава}%
    \def\appendixname{Приложение}%
-   \def\contentsname{Оглавление}%
+   \ifcsundef{thechapter}%
+   	{\def\contentsname{Содержание}}%
+	{\def\contentsname{Оглавление}}%
    \def\listfigurename{Список иллюстраций}%
    \def\listtablename{Список таблиц}%
    \def\indexname{Предметный указатель}%
@@ -88,7 +90,9 @@
    \def\bibname{Библіографія}%
    \def\chaptername{Глава}%
    \def\appendixname{Приложеніе}%
-   \def\contentsname{Оглавленіе}%
+   \ifcsundef{thechapter}%
+   	{\def\contentsname{Содержаніе}}%
+	{\def\contentsname{Оглавленіе}}%
    \def\listfigurename{Списокъ иллюстрацій}%
    \def\listtablename{Списокъ таблицъ}%
    \def\indexname{Предмѣтный указатель}%
