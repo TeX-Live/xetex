@@ -365,8 +365,12 @@
   \ignorespacesafterend
 }
 
-
-\def\@arabic#1{\beginL\number#1\endL}
+\newif\if@RomanBibNum
+\def\@arabic#1{\if@RomanBibNum\RL{\number#1}\else\RL{\persianfont\number#1}\fi}
+\def\RomanBibNum{\@RomanBibNumtrue}
+\def\PersianBibNum{\@RomanBibNumfalse}
+\@RomanBibNumtrue
+\DeclareOption{PersianBibNum}{\@RomanBibNumfalse}
 \def\@character#1{\ifcase#1\or الف\char"200D\or ب\or پ\or ت\or ث\or
 ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or
 ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\fi}
