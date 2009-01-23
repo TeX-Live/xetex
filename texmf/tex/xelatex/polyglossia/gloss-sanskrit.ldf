@@ -10,10 +10,11 @@
   \fi%
 \fi
 
-%%  requested from Yves Codet:
-%François, would it be possible to modify "gloss-sanskrit.ldf" so as  
-%to add a non-breaking space before punctuation marks, danda (U+0964)  
-%and double danda (U+0965)? 
+\def\tmp@deva{Devanagari}
+\define@key{sanskrit}{Script}[Devanagari]{%
+    \gdef\sanskrit@script{#1}}
+
+\setkeys{sanskrit}{Script}
 
 \def\sanskrit@punctuation{%
     \frenchspacing%
@@ -22,8 +23,8 @@
     \XeTeXcharclass `\? 7%
     \XeTeXcharclass `\; 7%
     \XeTeXcharclass `\: 7%
-    \XeTeXcharclass `\। 7%
-    \XeTeXcharclass `\॥ 7%
+    \XeTeXcharclass `\। 7% danda        \ as requested by
+    \XeTeXcharclass `\॥ 7% double danda / Yves Codet
     \XeTeXinterchartoks 0 7 = {\unskip\kern.1667em}%
 }
 
@@ -62,12 +63,16 @@
       \@ifundefined{devanagarifont}{%
         \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
         \zf@check@ot@script{deva}%
-	\if@tempswa%
-	  \addfontfeature{Script=Devanagari}%
+        \ifx\sanskrit@script\tmp@deva%
+		\if@tempswa%
+		  \addfontfeature{Script=Devanagari}%
+		\else%
+		  \PackageError{polyglossia}{^^J
+		  The current font does not contain the devanagari script!^^J
+		  Please define \string\devanagarifont\space or \string\sanskritfont\space with \string\newfontfamily}%
+		\fi%
 	\else%
-	  \PackageError{polyglossia}{^^J
-	  The current font does not contain the devanagari script!^^J
-	  Please define \string\devanagarifont\space or \string\sanskritfont\space with \string\newfontfamily}%
+		\addfontfeature{Script=\sanskrit@script}%
 	\fi%
 	\zf@check@ot@lang{SAN}%
 	\if@tempswa\addfontfeature{Language=Sanskrit}\fi%
@@ -75,7 +80,7 @@
         {\devanagarifont%
          \zf@check@ot@lang{SAN}%
          \if@tempswa\addfontfeature{Language=Sanskrit}\fi%
-	}
+	}%
      }% 
      {\sanskritfont}%
 }
