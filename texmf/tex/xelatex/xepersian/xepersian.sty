@@ -371,18 +371,17 @@
 \def\PersianBibNum{\@RomanBibNumfalse}
 \@RomanBibNumtrue
 \DeclareOption{PersianBibNum}{\@RomanBibNumfalse}
-\def\@character#1{\ifcase#1\or الف\char"200D\or ب\or پ\or ت\or ث\or
+\def\@harfi#1{\ifcase#1\or الف\char"200D\or ب\or پ\or ت\or ث\or
 ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or
-ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\fi}
+ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\else\@ctrerr\fi}
+\def\harfi#1{\expandafter\@harfi\csname c@#1\endcsname}
 
 
-\def\@harfi#1{\@character{\@@arabic#1}}
+\def\@adadi#1{\ifcase#1 \or یک\or دو\or سه\or چهار\or پنج\or شش\or هفت\or هشت\or نه\or ده\or یازده\or دوازده\or سیزده\or چهارده\or پانزده\or شانزده\or هفده\or هجده\or نوزده\or بیست\else\@ctrerr\fi}
+\def\adadi#1{\expandafter\@adadi\csname c@#1\endcsname}
 
-\def\@numeric#1{\ifcase#1 \or یک\or دو\or سه\or چهار\or پنج\or شش\or هفت\or هشت\or نه\or ده\or یازده\or دوازده\or سیزده\or چهارده\or پانزده\or شانزده\or هفده\or هجده\or نوزده\or بیست\fi}
-\def\@adadi#1{\@numeric{\@@arabic#1}}
-
-\def\@@tartibi#1{\ifcase#1 \or اول \or دوم \or سوم \or چهارم \or پنجم \or ششم \or هفتم \or هشتم \or نهم \or دهم \or یازدهم \or دوازدهم \or سیزدهم \or چهاردهم \or پانزدهم \or شانزدهم \or هفدهم \or هجدهم \or نوزدهم \or بیستم\fi}
-\def\@tartibi#1{\@@tartibi{\@@arabic#1}}
+\def\@tartibi#1{\ifcase#1 \or اول \or دوم \or سوم \or چهارم \or پنجم \or ششم \or هفتم \or هشتم \or نهم \or دهم \or یازدهم \or دوازدهم \or سیزدهم \or چهاردهم \or پانزدهم \or شانزدهم \or هفدهم \or هجدهم \or نوزدهم \or بیستم\else\@ctrerr\fi}
+\def\tartibi#1{\expandafter\@tartibi\csname c@#1\endcsname}
 
 
 
