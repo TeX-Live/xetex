@@ -50,6 +50,9 @@
      \fi}%
 }{}
 
+\def\SepMark#1{\gdef\@SepMark{\beginR#1\endR}}
+\SepMark{.}
+
 \def\lr#1{\LR{\rmfamily#1}}
 \def\rl#1{\RL{\persianfont#1}}
 \def\LTR{\bgroup\par\@rlfalse}
@@ -365,12 +368,8 @@
   \ignorespacesafterend
 }
 
-\newif\if@RomanBibNum
-\def\@arabic#1{\if@RomanBibNum\RL{\number#1}\else\RL{\persianfont\number#1}\fi}
-\def\RomanBibNum{\@RomanBibNumtrue}
-\def\PersianBibNum{\@RomanBibNumfalse}
-\@RomanBibNumtrue
-\DeclareOption{PersianBibNum}{\@RomanBibNumfalse}
+
+
 \def\@harfi#1{\ifcase#1\or الف\char"200D\or ب\or پ\or ت\or ث\or
 ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or
 ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\else\@ctrerr\fi}
@@ -396,6 +395,10 @@
 
 
 \@ifclassloaded{article}{%
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection\@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
 \def\@part[#1]#2{%
     \ifnum \c@secnumdepth >\m@ne
       \refstepcounter{part}%
@@ -486,6 +489,10 @@
 
 
 \@ifclassloaded{amsart}{%
+\renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\arabic{subparagraph}}
 \def\part{\@startsection{part}{0}%
   \z@{\linespacing\@plus\linespacing}{.5\linespacing}%
   {\normalfont\bfseries\raggedleft}}
@@ -513,6 +520,12 @@
 
 
 \@ifclassloaded{report}{%
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
 \def\@makechapterhead#1{%
   \vspace*{50\p@}%
   {\parindent \z@ \raggedleft \normalfont
@@ -604,6 +617,12 @@
 
 
 \@ifclassloaded{xepersian-thesis}{%
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
 \def\@makechapterhead#1{%
   \vspace*{50\p@}%
   {\parindent \z@ \raggedleft \normalfont
@@ -695,6 +714,10 @@
 
 
 \@ifclassloaded{amsbook}{%
+\renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\arabic{subparagraph}}
 \renewenvironment{thebibliography}[1]{%
   \@bibtitlestyle
   \normalfont\bibliofont\labelsep .5em\relax
@@ -812,6 +835,12 @@
 
 
 \@ifclassloaded{book}{%
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
 \def\@makechapterhead#1{%
   \vspace*{50\p@}%
   {\parindent \z@ \raggedleft \normalfont
@@ -927,6 +956,11 @@
 
 
 \@ifclassloaded{refrep}{%
+\renewcommand\thesection       {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection    {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\@arabic\c@subparagraph}
 \renewcommand \thepart {\@tartibi\c@part}
 %to make appendix numbering Persian
 \renewcommand\appendix{\par
@@ -1286,7 +1320,13 @@
 
 
 
-
+\renewcommand{\numberwithin}[3][\arabic]{%
+  \@ifundefined{c@#2}{\@nocounterr{#2}}{%
+    \@ifundefined{c@#3}{\@nocnterr{#3}}{%
+      \@addtoreset{#2}{#3}%
+      \@xp\xdef\csname the#2\endcsname{%
+        \@xp\@nx\csname the#3\endcsname \@SepMark\@nx#1{#2}}}}%
+}
 
 
 
