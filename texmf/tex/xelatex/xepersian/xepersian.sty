@@ -9,7 +9,7 @@
 \ProvidesPackage{xepersian}[2009/01/21 v0.164
 	Persian typesetting in XeLaTeX (Author: Vafa Khalighi)]
 \AtBeginDocument{\special{pdf: docinfo <<
-	/Creator (XePersian v0.164)
+	/Creator (XePersian v0.164 (Author: Vafa Khalighi))
          >>}}
 \RequirePackage{graphicx}
 \RequirePackage{amssymb}
@@ -1328,7 +1328,7 @@
         \@xp\@nx\csname the#3\endcsname \@SepMark\@nx#1{#2}}}}%
 }
 
-
+\def\@thmcountersep{\@SepMark}
 
 
 \def\rl@outputdblcolumn{\if@firstcolumn
