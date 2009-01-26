@@ -2,7 +2,7 @@
 % polyglossia.dtx generated using mkpolyglossiadtx.pl
 % (derived from makedtx.pl version  (c) Nicola Talbot)
 % 
-% Created on 2008/7/30 9:48
+% Created on 2009/1/26 11:54
 %<*internal>
 \iffalse
 %</internal>
@@ -10,7 +10,7 @@
 
    ¦----------------------------------------------¦
    ¦                                              ¦
-   ¦       THE POLYGLOSSIA PACKAGE v1.0.1         ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0.2         ¦
    ¦                                              ¦
    ¦ Modern multilingual typesetting with XeLaTeX ¦
    ¦                                              ¦
@@ -52,6 +52,14 @@ and follow the instructions displayed.
 
 CHANGES
 
+1.0.2 
+   This is mostly a bug fixes release.
+   * Captions corrected in Hebrew, Russian and Spanish
+   * Removed all \text<lang> wrappers within caption definitions
+   * Improved compatibility with Babel
+   * New option "babelshorthands" for German
+   * New option "Script" for Sanskrit
+
 1.0.1
    * Improved documentation (added sections on font setup and numeration mappings)
    * Improvements and bugfixes for English and German
@@ -64,7 +72,7 @@ CHANGES
 
 
   ------------------------------
-   François Charette, July 2008
+   François Charette, Jan 2009
     <firmicus ατ gmx δοτ net>
   ------------------------------
 %</README>
@@ -175,7 +183,6 @@ CHANGES
 \generate{\file{polyglossia.ins}{\from{polyglossia.dtx}{batchfile}}}
 \nopreamble\nopostamble
 \generate{\file{README}{\from{polyglossia.dtx}{README}}}
-\generate{\file{TODO}{\from{polyglossia.dtx}{TODO}}}
 \generate{\file{gloss-template.ldf}{\from{polyglossia.dtx}{gloss-template.ldf}}}
 \generate{\file{examples.tex}{\from{polyglossia.dtx}{examples.tex}}}
 \generate{\file{example-arabic.tex}{\from{polyglossia.dtx}{example-arabic.tex}}}
@@ -487,7 +494,7 @@ CHANGES
 % 	Likewise it is possible to use \Cmd\rmfamilylatin, \Cmd\sffamilylatin, 
 % 	and \Cmd\ttfamilylatin.
 % 
-% \item Also some macros defined in \Babel’s \file{hyphen.cfg} (and thus usually 
+% \item Some macros defined in \Babel’s \file{hyphen.cfg} (and thus usually 
 % 	compiled into the xelatex format) are redefined, but keep a similar
 % 	behaviour, namely \Cmd\selectlanguage, \Cmd\foreignlanguage,
 % 	and the environment ¦otherlanguage¦\DescribeEnv{otherlanguage}.
@@ -507,7 +514,7 @@ CHANGES
 % 
 % With polyglossia it is possible to associate a specific font with any script or language
 % that occurs in the document. That font should always be defined as
-% \cmd\⟨script⟩font\ or \cmd\⟨language⟩font. 
+% ¦\⟨script⟩font¦\ or ¦\⟨language⟩font¦. 
 % For instance, if the default roman font defined by \cmd\setromanfont\
 % does not support Greek, then one can define the font used to display Greek with:\\
 % \centerline{ \cmd\newfontfamily\cmd{\greekfont[⟨options⟩]\{⟨font⟩\}}. }
@@ -582,6 +589,30 @@ CHANGES
 % 		the latest (experimental) hyphenation patterns ‘(n)german-x-latest’ 
 % 		will be loaded instead of ‘german’ or ‘ngerman’. NB: This is based on
 % 		the file \texttt{language.dat} that comes with \TeX Live 2008.
+% 	\item\TB{babelshorthands} = \textit{false} or true: \new{1.0.2} 
+% 		if this is turned on, all shorthands defined in the Babel
+% 		language for fine-tuning the hyphenation of German words are
+% 		activated. NB: This feature has not been much tested and should be
+% 		considered experimental.
+% 		\begin{itemize}
+% 		\item  ¦"ck¦ for ¦ck¦ to be hyphenated as ¦k-k¦
+% 		\item  ¦"ff¦ for ¦ff¦ to be hyphenated as ¦ff-f¦; this is also available for the letters l, m, n, p, r and t
+% 		\item ¦"|¦ disables the ligature at this position
+% 		\item ¦"-¦ for an explicit hyphen sign, allowing hyphenation in the rest of the word
+% 		\item ¦""¦ is like ¦"-¦, but produces no hyphen sign 
+% 			(for compound words with an hyphen, e.g., ¦foo-""bar¦)
+% 		\item ¦"~¦ for a compound word mark without a breakpoint
+% 		\item ¦"=¦ for a compound word mark with a breakpoint, 
+% 			allowing hyphenation in the composing words.
+% 		\end{itemize}
+% 
+% 		There are also four shorthands for quotation signs:
+% 		\begin{itemize}
+% 		\item  ¦"`¦ for German left double quotes („)
+% 		\item  ¦"'¦ for German right double quotes (“)
+% 		\item  ¦"<¦ for French left double quotes («)
+% 		\item  ¦">¦ for French right double quotes (»).
+% 		\end{itemize}
 % 	\end{itemize}
 % 
 % \subsection{greek}
@@ -633,6 +664,15 @@ CHANGES
 % 	\item \TB{spelling} = \textit{modern} or old (for captions and date only, not for hyphenation)
 % 	\end{itemize}
 % 
+% \subsection{sanskrit}
+% \textbf{Options}: 
+% 	\begin{itemize}
+% 	\item \TB{Script} (default = Devanagari). \new{1.0.2}
+% 	The value is passed to \pkg{fontspec} in cases where ¦\sanskritfont¦ or
+% 	¦\devanagarifont¦ are not defined. This can be useful if you typeset
+% 	Sanskrit texts in scripts other than Devanagari.
+% 	\end{itemize}
+% 
 % \subsection{serbian}
 % \textbf{Options}: 
 % 	\begin{itemize}
@@ -644,7 +684,7 @@ CHANGES
 % 	\begin{itemize}
 % 	\item \TB{numerals} = \textit{western} (i.e., 1234567890), eastern 
 % 		(for which the Oriental Arabic numerals are used: \textarabic{١٢٣٤٥٦٧٨٩٠}),
-% 		or abjad (new in version 1.0.1).
+% 		or abjad\new{1.0.1}.
 % 	\end{itemize}
 % \textbf{Commands}:
 % 	\begin{itemize}
@@ -660,6 +700,17 @@ CHANGES
 % To insert the word breaks, you need to use an external processor.
 % See the documentation to \pkg{thai-latex} and the file \file{testthai.tex}
 % that comes with this package.
+% 
+% \section{Modifying or extending captions and date formats}
+% 
+% To redefine internal macros, you can use the command ¦\gappto¦ from the package 
+% \pkg{etoolbox}. For compatibility with Babel the command ¦\addto¦ is also available
+% with the same effect. For instance, to change the ¦\chaptername¦ for language ¦lingua¦, 
+% you can do this:
+% \begin{verbatim}
+% \gappto\linguacaptions{\renewcommand{\chaptername}{Caput}}
+% \end{verbatim}
+% 
 % 
 % \section{Alphabetic numeration in Greek, Arabic, Hebrew, Syriac and Farsi}\label{abjad}
 % 
@@ -752,10 +803,9 @@ CHANGES
 % Robertson (\pkg{fontspec}), Apostolos Syropoulos (\pkg{xgreek}), Youssef Jabri
 % (\pkg{arabi}), and Vafa Khalighi (\pkg{xepersian}). I should also thank other
 % individuals for their assistance in supporting specific languages: Yves Codet
-% (Sanskrit), Zdenek Wagner (Hindi), and other members of the \XeTeX\ user
-% community. And of course my gratitude also goes to Jonathan Kew, the formidable
-% author of \XeTeX! 
-% 
+% (Sanskrit), Zdenek Wagner (Hindi), Mikhal Oren (Hebrew), Sergey Astanin (Russian),
+% and several other members of the \XeTeX\ user community. 
+% And of course my gratitude also goes to Jonathan Kew, the formidable author of \XeTeX! 
 % 
 % 
 % 
@@ -769,10 +819,18 @@ CHANGES
 % \subsection{polyglossia.sty}
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{polyglossia}[2008/07/26 v1.0.1 
+\ProvidesPackage{polyglossia}[2009/01/25 v1.0.2 
 	Babel replacement for XeLaTeX]
-\RequirePackage{etoolbox} % TEMPORARY? but so convenient!
+\RequirePackage{etoolbox}
 \RequirePackage{fontspec} %which itself depends on xkeyval
+
+%% This is for compatibility with Babel-aware package:
+\cslet{ver@babel.sty}{\@empty} % this "fakes" babel
+\def\languageshorthands#1{\relax} %this is for scrlttr2 class
+\AtEndPreamble{\let\bbl@set@language\xpg@set@language} %for biblatex
+\AtEndPreamble{\let\bbl@main@language\xpg@main@language} %for biblatex
+
+%% custom message macros
 \providecommand*{\xpg@warning}[1]{%
    \PackageWarning{polyglossia}%
    {#1}}      
@@ -788,17 +846,22 @@ CHANGES
       %TODO try at least to load the hyphenation patterns for #1.
 \def\xpg@ill@value#1#2{%
   \xpg@warning{Illegal value (#1) for #2}}
-  
+
+%% use macro if defined, else warn that it is not
 \def\xpg@csifdef@warn#1{%
    \ifcsundef{#1}{\PackageWarning{polyglossia}{ #1 is not defined}}%
    {\expandafter\protect\csname #1\endcsname}}
-
+%% same without warning
 \def\xpg@csifdef#1{\ifcsundef{#1}{\relax}{\expandafter\protect\csname #1\endcsname}}
 
-
+%% ensure directionality if bidi is loaded, else ignore
 \def\@@ensure@dir#1{\ifcsundef{@ensure@dir}{#1}{\@ensure@dir{#1}}}
 \def\@@ensure@maindir#1{\ifcsundef{@ensure@maindir}{#1}{\@ensure@maindir{#1}}}
 
+%% compatibility with babel
+\let\addto\gappto% gappto is defined in etoolbox
+%%
+%% ensure localization of \markright and \markboth commands
 \def\opt@enabled{on}
 \def\opt@disabled{off}
 \define@key{polyglossia}{localmarks}[on]{%
@@ -829,31 +892,17 @@ CHANGES
             \def\@markright####1####2####3{\@temptokena{\protect\@@ensure@maindir{####1}}%
                \unrestored@protected@xdef\@themark{{\the\@temptokena}%
                {{\protect\@@ensure@maindir{####3}}}}}}
-   \else\ifx\@tmpa\opt@disabled
-      \def\local@marks#1{}
+   \else%\ifx\@tmpa\opt@disabled
+      \def\local@marks##1{}
       \xpg@info{Option: localmarks=off}
-      \fi%
+      %\fi%
    \fi%
 }
 \setkeys{polyglossia}{localmarks=on}
 
-%%TODO Use the etoolbox macros instead!
-%\def\oaddto#1#2{%
-%   \ifx#1\@undefined
-%      \def#1{#2}%
-%   \else
-%      \ifx#1\relax
-%         \def#1{#2}%
-%      \else
-%         {\toks@\expandafter{#1#2}%
-%           \xdef#1{\the\toks@}}%
-%      \fi
-%   \fi
-%}
-
 \newcommand{\setdefaultlanguage}[2][]{%
    \IfFileExists{gloss-#2.ldf}%
-   {\ifcsundef{#2@loaded}% from etoolbox.sty
+   {\ifcsundef{#2@loaded}%
      {\input{gloss-#2.ldf}%
      \xpg@info{Default language is #2.}
      \def\languagename{#2}%
@@ -970,7 +1019,7 @@ CHANGES
 
 \newcommand\setotherlanguages[1]{%
    \def\do##1{\setotherlanguage{##1}}%
-   \docsvlist{#1}}% from etoolbox.sty
+   \docsvlist{#1}}%
 
 \def\common@language{%
    \protect\language=0%
@@ -1133,8 +1182,6 @@ CHANGES
 {\edef\@temp{\noexpand\setotherlanguage{\CurrentOption}}}%
    \AtEndOfPackage{\@temp}}
 \ProcessOptions*
-%This is for compatibility with biblatex and perhaps other pkgs: 
-\def\languageshorthands#1{\relax}
 %    \end{macrocode}
 % \iffalse
 %</polyglossia.sty>
@@ -1866,34 +1913,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     \adddialect\l@albanian0\fi
 
 \def\captionsalbanian{%
-   \def\refname{\textalbanian{Referencat}}%
-   \def\abstractname{\textalbanian{Përmbledhja}}%
-   \def\bibname{\textalbanian{Bibliografia}}%
-   \def\prefacename{\textalbanian{Parathenia}}%
-   \def\chaptername{\textalbanian{Kapitulli}}%
-   \def\appendixname{\textalbanian{Shtesa}}%
-   \def\contentsname{\textalbanian{Përmbajta}}%
-   \def\listfigurename{\textalbanian{Figurat}}%
-   \def\listtablename{\textalbanian{Tabelat}}%
-   \def\indexname{\textalbanian{Indeksi}}%
-   \def\figurename{\textalbanian{Figura}}%
-   \def\tablename{\textalbanian{Tabela}}%
-   %\def\thepart{\textalbanian{}}%
-   \def\partname{\textalbanian{Pjesa}}%
-   \def\pagename{\textalbanian{Faqe}}%
-   \def\seename{\textalbanian{shiko}}%
-   \def\alsoname{\textalbanian{shiko dhe}}%
-   %\def\enclname{\textalbanian{}}%
-   %\def\ccname{\textalbanian{}}%
-   %\def\headtoname{\textalbanian{}}%
-   \def\proofname{\textalbanian{Vërtetim}}%
-   \def\glossaryname{\textalbanian{Përhasja e Fjalëve}}%
+   \def\refname{Referencat}%
+   \def\abstractname{Përmbledhja}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Parathenia}%
+   \def\chaptername{Kapitulli}%
+   \def\appendixname{Shtesa}%
+   \def\contentsname{Përmbajta}%
+   \def\listfigurename{Figurat}%
+   \def\listtablename{Tabelat}%
+   \def\indexname{Indeksi}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Pjesa}%
+   \def\pagename{Faqe}%
+   \def\seename{shiko}%
+   \def\alsoname{shiko dhe}%
+   %\def\enclname{}%
+   %\def\ccname{}%
+   %\def\headtoname{}%
+   \def\proofname{Vërtetim}%
+   \def\glossaryname{Përhasja e Fjalëve}%
    }
 \def\datealbanian{%
-   \def\today{\textalbanian{{\number\day~\ifcase\month\or
+   \def\today{{\number\day~\ifcase\month\or
     Janar\or Shkurt\or Mars\or Prill\or Maj\or
     Qershor\or Korrik\or Gusht\or Shtator\or Tetor\or Nëntor\or
-    Dhjetor\fi \space \number\year}}}}
+    Dhjetor\fi \space \number\year}}}
 
 \def\albanian@language{\protect\language=\l@albanian}
 
@@ -1926,28 +1973,28 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsamharic{%
-   \def\refname{\textamharic{የነሥ ጹሁፍ ምንጭ}}%
-   \def\abstractname{\textamharic{አኅጽተሮ ጽሁፍ}}%
-   \def\bibname{\textamharic{ቢዋ መጽሃፍት}}%
-   \def\prefacename{\textamharic{መቅድም}}%
-   \def\chaptername{\textamharic{ክፍል}}%
-   \def\appendixname{\textamharic{መድበል}}%
-   \def\contentsname{\textamharic{ይዘት}}%
-   \def\listfigurename{\textamharic{የሥዕችሎ ማውጫ}}%
-   \def\listtablename{\textamharic{የሰንጠዥረ ማውጫ}}%
-   \def\indexname{\textamharic{ምህጻር ቃል}}%
-   \def\figurename{\textamharic{ሥዕል}}%
-   \def\tablename{\textamharic{ሰንጠረዥ}}%
-   %\def\thepart{\textamharic{}}%
-   \def\partname{\textamharic{ንዑስ ክፍል}}%
-   \def\pagename{\textamharic{ገጽ}}%
-   \def\seename{\textamharic{ይመልከቱ}}%
-   \def\alsoname{\textamharic{ይህምን ይመልከቱ}}%
-   \def\enclname{\textamharic{አባሪዎች}}%
-   \def\ccname{\textamharic{ግልባጭ}}%
-   \def\headtoname{\textamharic{ለ}}%
-   \def\proofname{\textamharic{ማረጋገጫ}}%
-   %\def\glossaryname{\textamharic{<++>}}%
+   \def\refname{የነሥ ጹሁፍ ምንጭ}%
+   \def\abstractname{አኅጽተሮ ጽሁፍ}%
+   \def\bibname{ቢዋ መጽሃፍት}%
+   \def\prefacename{መቅድም}%
+   \def\chaptername{ክፍል}%
+   \def\appendixname{መድበል}%
+   \def\contentsname{ይዘት}%
+   \def\listfigurename{የሥዕችሎ ማውጫ}%
+   \def\listtablename{የሰንጠዥረ ማውጫ}%
+   \def\indexname{ምህጻር ቃል}%
+   \def\figurename{ሥዕል}%
+   \def\tablename{ሰንጠረዥ}%
+   %\def\thepart{}%
+   \def\partname{ንዑስ ክፍል}%
+   \def\pagename{ገጽ}%
+   \def\seename{ይመልከቱ}%
+   \def\alsoname{ይህምን ይመልከቱ}%
+   \def\enclname{አባሪዎች}%
+   \def\ccname{ግልባጭ}%
+   \def\headtoname{ለ}%
+   \def\proofname{ማረጋገጫ}%
+   %\def\glossaryname{<++>}%
    }
 
 \newcommand{\eth@monthname}[1]{\ifcase#1\or
@@ -2061,10 +2108,9 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     \eth@modulo{\ethcnt@ethday}{30}%
     \advance\ethcnt@ethday by 1%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \textamharic{%
     \eth@monthname{\ethcnt@ethmonth}\relax\space%
       \number\ethcnt@ethday\relax\space%
-      \number\ethcnt@ethyear}%
+      \number\ethcnt@ethyear%
   }}%
 }
 
@@ -2476,34 +2522,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsbahasai{%
-   \def\refname{\textbahasai{Pustaka}}%
-   \def\abstractname{\textbahasai{Ringkasan}}%
-   \def\bibname{\textbahasai{Bibliografi}}%
-   \def\prefacename{\textbahasai{Pendahuluan}}%
-   \def\chaptername{\textbahasai{Bab}}%
-   \def\appendixname{\textbahasai{Lampiran}}%
-   \def\contentsname{\textbahasai{Daftar Isi}}%
-   \def\listfigurename{\textbahasai{Daftar Gambar}}%
-   \def\listtablename{\textbahasai{Daftar Tabel}}%
-   \def\indexname{\textbahasai{Indeks}}%
-   \def\figurename{\textbahasai{Gambar}}%
-   \def\tablename{\textbahasai{Tabel}}%
+   \def\refname{Pustaka}%
+   \def\abstractname{Ringkasan}%
+   \def\bibname{Bibliografi}%
+   \def\prefacename{Pendahuluan}%
+   \def\chaptername{Bab}%
+   \def\appendixname{Lampiran}%
+   \def\contentsname{Daftar Isi}%
+   \def\listfigurename{Daftar Gambar}%
+   \def\listtablename{Daftar Tabel}%
+   \def\indexname{Indeks}%
+   \def\figurename{Gambar}%
+   \def\tablename{Tabel}%
    %\def\thepart{}%
-   \def\partname{\textbahasai{Bagian}}%
-   \def\pagename{\textbahasai{Halaman}}%
-   \def\seename{\textbahasai{lihat}}%
-   \def\alsoname{\textbahasai{lihat juga}}%
-   \def\enclname{\textbahasai{Lampiran}}%
+   \def\partname{Bagian}%
+   \def\pagename{Halaman}%
+   \def\seename{lihat}%
+   \def\alsoname{lihat juga}%
+   \def\enclname{Lampiran}%
    \def\ccname{cc}%
    \def\headtoname{Kepada}%
-   \def\proofname{\textbahasai{Bukti}}%
-   \def\glossaryname{\textbahasai{Daftar Istilah}}%
+   \def\proofname{Bukti}%
+   \def\glossaryname{Daftar Istilah}%
    }
 \def\datebahasai{%
-   \def\today{\textbahasai{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Maret\or April\or Mei\or Juni\or
     Juli\or Agustus\or September\or Oktober\or Nopember\or Desember\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\bahasai@language{\protect\language=\l@bahasai}
 
@@ -2552,34 +2598,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsbahasam{%
-   \def\refname{\textbahasam{Pustaka}}%
-   \def\abstractname{\textbahasam{Ringkasan}}%
-   \def\bibname{\textbahasam{Bibliografi}}%
-   \def\prefacename{\textbahasam{Pendahuluan}}%
-   \def\chaptername{\textbahasam{Bab}}%
-   \def\appendixname{\textbahasam{Lampiran}}%
-   \def\contentsname{\textbahasam{Kandungan}}%
-   \def\listfigurename{\textbahasam{Senarai Gambar}}%
-   \def\listtablename{\textbahasam{Senarai Jadual}}%
-   \def\indexname{\textbahasam{Indeks}}%
-   \def\figurename{\textbahasam{Gambar}}%
-   \def\tablename{\textbahasam{Jadual}}%
-   \def\thepart{}\textbahasam{}%
-   \def\partname{\textbahasam{Bahagian}}%
-   \def\pagename{\textbahasam{Halaman}}%
-   \def\seename{\textbahasam{lihat}}%
-   \def\alsoname{\textbahasam{lihat juga}}%
-   \def\enclname{\textbahasam{Lampiran}}%
-   \def\ccname{\textbahasam{cc}}%
-   \def\headtoname{\textbahasam{Kepada}}%
-   \def\proofname{\textbahasam{Bukti}}%
-   \def\glossaryname{\textbahasam{Istilah}}%
+   \def\refname{Pustaka}%
+   \def\abstractname{Ringkasan}%
+   \def\bibname{Bibliografi}%
+   \def\prefacename{Pendahuluan}%
+   \def\chaptername{Bab}%
+   \def\appendixname{Lampiran}%
+   \def\contentsname{Kandungan}%
+   \def\listfigurename{Senarai Gambar}%
+   \def\listtablename{Senarai Jadual}%
+   \def\indexname{Indeks}%
+   \def\figurename{Gambar}%
+   \def\tablename{Jadual}%
+   \def\thepart{}%
+   \def\partname{Bahagian}%
+   \def\pagename{Halaman}%
+   \def\seename{lihat}%
+   \def\alsoname{lihat juga}%
+   \def\enclname{Lampiran}%
+   \def\ccname{cc}%
+   \def\headtoname{Kepada}%
+   \def\proofname{Bukti}%
+   \def\glossaryname{Istilah}%
    }
 \def\datebahasam{%
-   \def\today{\textbahasam{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     Januari\or Pebruari\or Mac\or April\or Mei\or Jun\or
     Julai\or Ogos\or September\or Oktober\or November\or Disember\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\bahasam@language{\protect\language=\l@bahasam}
 
@@ -2604,35 +2650,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsbasque{%
-   \def\refname{\textbasque{Erreferentziak}}%
-   \def\abstractname{\textbasque{Laburpena}}%
-   \def\bibname{\textbasque{Bibliografia}}%
-   \def\prefacename{\textbasque{Hitzaurrea}}%
-   \def\chaptername{\textbasque{Kapitulua}}%
-   \def\appendixname{\textbasque{Eranskina}}%
-   \def\contentsname{\textbasque{Gaien Aurkibidea}}%
-   \def\listfigurename{\textbasque{Irudien Zerrenda}}%
-   \def\listtablename{\textbasque{Taulen Zerrenda}}%
-   \def\indexname{\textbasque{Kontzeptuen Aurkibidea}}%
-   \def\figurename{\textbasque{Irudia}}%
-   \def\tablename{\textbasque{Taula}}%
-   \def\thepart{\textbasque{}}%
-   \def\partname{\textbasque{Atala}}%
-   \def\pagename{\textbasque{Orria}}%
-   \def\seename{\textbasque{Ikusi}}%
-   \def\alsoname{\textbasque{Ikusi, halaber}}%
-   \def\enclname{\textbasque{Erantsia}}%
-   \def\ccname{\textbasque{Kopia}}%
-   \def\headtoname{\textbasque{Nori}}%
-   \def\proofname{\textbasque{Frogapena}}%
-   \def\glossaryname{\textbasque{Glosarioa}}%
+   \def\refname{Erreferentziak}%
+   \def\abstractname{Laburpena}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Hitzaurrea}%
+   \def\chaptername{Kapitulua}%
+   \def\appendixname{Eranskina}%
+   \def\contentsname{Gaien Aurkibidea}%
+   \def\listfigurename{Irudien Zerrenda}%
+   \def\listtablename{Taulen Zerrenda}%
+   \def\indexname{Kontzeptuen Aurkibidea}%
+   \def\figurename{Irudia}%
+   \def\tablename{Taula}%
+   \def\thepart{}%
+   \def\partname{Atala}%
+   \def\pagename{Orria}%
+   \def\seename{Ikusi}%
+   \def\alsoname{Ikusi, halaber}%
+   \def\enclname{Erantsia}%
+   \def\ccname{Kopia}%
+   \def\headtoname{Nori}%
+   \def\proofname{Frogapena}%
+   \def\glossaryname{Glosarioa}%
    }
 \def\datebasque{%
-   \def\today{\textbasque{\number\year.eko\space\ifcase\month\or
+   \def\today{\number\year.eko\space\ifcase\month\or
     urtarrilaren\or otsailaren\or martxoaren\or apirilaren\or
     maiatzaren\or ekainaren\or uztailaren\or abuztuaren\or
     irailaren\or urriaren\or azaroaren\or
-    abenduaren\fi~\number\day}}}
+    abenduaren\fi~\number\day}}
 
 \def\basque@language{\protect\language=\l@basque}
 
@@ -2662,34 +2708,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsbrazil{%
-   \def\refname{\textbrazil{Referências}}%
-   \def\abstractname{\textbrazil{Resumo}}%
-   \def\bibname{\textbrazil{Referências Bibliográficas}}%
-   \def\prefacename{\textbrazil{Prefácio}}%
-   \def\chaptername{\textbrazil{Capítulo}}%
-   \def\appendixname{\textbrazil{Apêndice}}%
-   \def\contentsname{\textbrazil{Sumário}}%
-   \def\listfigurename{\textbrazil{Lista de Figuras}}%
-   \def\listtablename{\textbrazil{Lista de Tabelas}}%
-   \def\indexname{\textbrazil{Índice Remissivo}}%
-   \def\figurename{\textbrazil{Figura}}%
-   \def\tablename{\textbrazil{Tabela}}%
-   %\def\thepart{\textbrazil{}}%
-   \def\partname{\textbrazil{Parte}}%
-   \def\pagename{\textbrazil{Página}}%
-   \def\seename{\textbrazil{veja}}%
-   \def\alsoname{\textbrazil{veja também}}%
-   \def\enclname{\textbrazil{Anexo}}%
-   \def\ccname{\textbrazil{Cópia para}}%
-   \def\headtoname{\textbrazil{Para}}%
-   \def\proofname{\textbrazil{Demonstração}}%
-   \def\glossaryname{\textbrazil{Glossary}}%
+   \def\refname{Referências}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Referências Bibliográficas}%
+   \def\prefacename{Prefácio}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apêndice}%
+   \def\contentsname{Sumário}%
+   \def\listfigurename{Lista de Figuras}%
+   \def\listtablename{Lista de Tabelas}%
+   \def\indexname{Índice Remissivo}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Parte}%
+   \def\pagename{Página}%
+   \def\seename{veja}%
+   \def\alsoname{veja também}%
+   \def\enclname{Anexo}%
+   \def\ccname{Cópia para}%
+   \def\headtoname{Para}%
+   \def\proofname{Demonstração}%
+   \def\glossaryname{Glossary}%
    }
 \def\datebrazil{%   
-   \def\today{\textbrazil{\number\day\space de\space\ifcase\month\or
+   \def\today{\number\day\space de\space\ifcase\month\or
       janeiro\or fevereiro\or março\or abril\or maio\or junho\or
       julho\or agosto\or setembro\or outubro\or novembro\or dezembro%
-      \fi\space de\space\number\year}}%
+      \fi\space de\space\number\year}%
       }
      
 \def\brazil@language{\protect\language=\l@portuges}
@@ -2732,35 +2778,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 
 \def\captionsbreton{%
-   \def\refname{\textbreton{Daveennoù}}%
-   \def\abstractname{\textbreton{Dvierrañ}}%
-   \def\bibname{\textbreton{Lennadurezh}}%
-   \def\prefacename{\textbreton{Rakskrid}}%
-   \def\chaptername{\textbreton{Pennad}}%
-   \def\appendixname{\textbreton{Stagadenn}}%
-   \def\contentsname{\textbreton{Taolenn}}%
-   \def\listfigurename{\textbreton{Listenn ar Figurennoù}}%
-   \def\listtablename{\textbreton{Listenn an taolennoù}}%
-   \def\indexname{\textbreton{Meneger}}%
-   \def\figurename{\textbreton{Figurenn}}%
-   \def\tablename{\textbreton{Taolenn}}%
-   \def\thepart{\textbreton{}}%
-   \def\partname{\textbreton{Lodenn}}%
-   \def\pagename{\textbreton{Pajenn}}%
-   \def\seename{\textbreton{Gwelout}}%
-   \def\alsoname{\textbreton{Gwelout ivez}}%
-   \def\enclname{\textbreton{Dielloù kevret}}%
-   \def\ccname{\textbreton{Eilskrid da}}%
-   \def\headtoname{\textbreton{evit}}%
-   \def\proofname{\textbreton{Proof}}%
-   \def\glossaryname{\textbreton{Glossary}}%
+   \def\refname{Daveennoù}%
+   \def\abstractname{Dvierrañ}%
+   \def\bibname{Lennadurezh}%
+   \def\prefacename{Rakskrid}%
+   \def\chaptername{Pennad}%
+   \def\appendixname{Stagadenn}%
+   \def\contentsname{Taolenn}%
+   \def\listfigurename{Listenn ar Figurennoù}%
+   \def\listtablename{Listenn an taolennoù}%
+   \def\indexname{Meneger}%
+   \def\figurename{Figurenn}%
+   \def\tablename{Taolenn}%
+   \def\thepart{}%
+   \def\partname{Lodenn}%
+   \def\pagename{Pajenn}%
+   \def\seename{Gwelout}%
+   \def\alsoname{Gwelout ivez}%
+   \def\enclname{Dielloù kevret}%
+   \def\ccname{Eilskrid da}%
+   \def\headtoname{evit}%
+   \def\proofname{Proof}%
+   \def\glossaryname{Glossary}%
    }
 \def\datebreton{%
-   \def\today{\textbreton{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
+   \def\today{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else
     \number\day\fi \space a\space viz\space\ifcase\month\or
     Genver\or C'hwevrer\or Meurzh\or Ebrel\or Mae\or Mezheven\or
     Gouere\or Eost\or Gwengolo\or Here\or Du\or Kerzu\fi
-    \space\number\year}}}
+    \space\number\year}}
 
 \def\breton@language{\protect\language=\l@breton}
 
@@ -2824,31 +2870,31 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 }
 
 \def\captionsbulgarian{%
-   \def\refname{\textbulgarian{Литература}}%
-   \def\abstractname{\textbulgarian{Абстракт}}%
-   \def\bibname{\textbulgarian{Библиография}}%
-   \def\prefacename{\textbulgarian{Предговор}}%
-   \def\chaptername{\textbulgarian{Глава}}%
-   \def\appendixname{\textbulgarian{Приложение}}%
-   \def\contentsname{\textbulgarian{Съдържание}}%
-   \def\listfigurename{\textbulgarian{Списхrdsnк на фигурите}}%
-   \def\listtablename{\textbulgarian{Списхrdsnк на таблиците}}%
-   \def\indexname{\textbulgarian{Азбуцhен указател}}%
-   \def\figurename{\textbulgarian{Фигура}}%
-   \def\tablename{\textbulgarian{Таблица}}%
-   %\def\thepart{\textbulgarian{}}%
-   %\def\partname{\textbulgarian{}}%
-   \def\pagename{\textbulgarian{Стр.}}%
-   \def\seename{\textbulgarian{вж.}}%
-   \def\alsoname{\textbulgarian{вж.\ също и}}%
-   \def\enclname{\textbulgarian{Приложения}}%
-   \def\ccname{\textbulgarian{копия}}%
-   %\def\headtoname{\textbulgarian{}}%
-   \def\proofname{\textbulgarian{Proof}}%
-   \def\glossaryname{\textbulgarian{Glossary}}%
+   \def\refname{Литература}%
+   \def\abstractname{Абстракт}%
+   \def\bibname{Библиография}%
+   \def\prefacename{Предговор}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Приложение}%
+   \def\contentsname{Съдържание}%
+   \def\listfigurename{Списхrdsnк на фигурите}%
+   \def\listtablename{Списхrdsnк на таблиците}%
+   \def\indexname{Азбуцhен указател}%
+   \def\figurename{Фигура}%
+   \def\tablename{Таблица}%
+   %\def\thepart{}%
+   %\def\partname{}%
+   \def\pagename{Стр.}%
+   \def\seename{вж.}%
+   \def\alsoname{вж.\ също и}%
+   \def\enclname{Приложения}%
+   \def\ccname{копия}%
+   %\def\headtoname{}%
+   \def\proofname{Proof}%
+   \def\glossaryname{Glossary}%
    }
 \def\datebulgarian{%
-   \def\today{\textbulgarian{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
        януари\or
        февруари\or
        март\or
@@ -2861,7 +2907,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
        октомври\or
        ноември\or
        декември\fi%
-       \number\year~г.}}%
+       \number\year~г.}%
     \def\month@Roman{\expandafter\@Roman\month}%
     \def\todayRoman{\number\day.\,\month@Roman.\,\number\year~г.}%
     }
@@ -2922,35 +2968,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionscatalan{%
-   \def\refname{\textcatalan{Referències}}%
-   \def\abstractname{\textcatalan{Resum}}%
-   \def\bibname{\textcatalan{Bibliografia}}%
-   \def\prefacename{\textcatalan{Pròleg}}%
-   \def\chaptername{\textcatalan{Capítol}}%
-   \def\appendixname{\textcatalan{Apèndix}}%
-   \def\contentsname{\textcatalan{Índex}}%
-   \def\listfigurename{\textcatalan{Índex de figures}}%
-   \def\listtablename{\textcatalan{Índex de taules}}%
-   \def\indexname{\textcatalan{Índex alfabètic}}%
-   \def\figurename{\textcatalan{Figura}}%
-   \def\tablename{\textcatalan{Taula}}%
-   %\def\thepart{\textcatalan{}}%
-   \def\partname{\textcatalan{Part}}%
-   \def\pagename{\textcatalan{Pàgina}}%
-   \def\seename{\textcatalan{Vegeu}}%
-   \def\alsoname{\textcatalan{Vegeu també}}%
-   \def\enclname{\textcatalan{Adjunt}}%
-   \def\ccname{\textcatalan{Còpies a}}%
-   \def\headtoname{\textcatalan{A}}%
-   \def\proofname{\textcatalan{Demostració}}%
-   \def\glossaryname{\textcatalan{Glossari}}%
+   \def\refname{Referències}%
+   \def\abstractname{Resum}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Pròleg}%
+   \def\chaptername{Capítol}%
+   \def\appendixname{Apèndix}%
+   \def\contentsname{Índex}%
+   \def\listfigurename{Índex de figures}%
+   \def\listtablename{Índex de taules}%
+   \def\indexname{Índex alfabètic}%
+   \def\figurename{Figura}%
+   \def\tablename{Taula}%
+   %\def\thepart{}%
+   \def\partname{Part}%
+   \def\pagename{Pàgina}%
+   \def\seename{Vegeu}%
+   \def\alsoname{Vegeu també}%
+   \def\enclname{Adjunt}%
+   \def\ccname{Còpies a}%
+   \def\headtoname{A}%
+   \def\proofname{Demostració}%
+   \def\glossaryname{Glossari}%
    }
 \datecatalan{%   
-   \def\today{\textcatalan{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     de gener\or de febrer\or de març\or d'abril\or de maig\or
     de juny\or de juliol\or d'agost\or de setembre\or d'octubre\or
     de novembre\or de desembre\fi
-    \space de~\number\year}}}
+    \space de~\number\year}}
 
 \def\catalan@language{\protect\language=\l@catalan}
 
@@ -2974,31 +3020,31 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 %\def\captionscoptic{%
-%   \def\refname{\textcoptic{<++>}}%
-%   \def\abstractname{\textcoptic{<++>}}%
-%   \def\bibname{\textcoptic{<++>}}%
-%   \def\prefacename{\textcoptic{<++>}}%
-%   \def\chaptername{\textcoptic{<++>}}%
-%   \def\appendixname{\textcoptic{<++>}}%
-%   \def\contentsname{\textcoptic{<++>}}%
-%   \def\listfigurename{\textcoptic{<++>}}%
-%   \def\listtablename{\textcoptic{<++>}}%
-%   \def\indexname{\textcoptic{<++>}}%
-%   \def\figurename{\textcoptic{<++>}}%
-%   \def\tablename{\textcoptic{<++>}}%
-%   \def\thepart{\textcoptic{}}%
-%   \def\partname{\textcoptic{<++>}}%
-%   \def\pagename{\textcoptic{<++>}}%
-%   \def\seename{\textcoptic{<++>}}%
-%   \def\alsoname{\textcoptic{<++>}}%
-%   \def\enclname{\textcoptic{<++>}}%
-%   \def\ccname{\textcoptic{<++>}}%
-%   \def\headtoname{\textcoptic{<++>}}%
-%   \def\proofname{\textcoptic{<++>}}%
-%   \def\glossaryname{\textcoptic{<++>}}%
+%   \def\refname{<++>}%
+%   \def\abstractname{<++>}%
+%   \def\bibname{<++>}%
+%   \def\prefacename{<++>}%
+%   \def\chaptername{<++>}%
+%   \def\appendixname{<++>}%
+%   \def\contentsname{<++>}%
+%   \def\listfigurename{<++>}%
+%   \def\listtablename{<++>}%
+%   \def\indexname{<++>}%
+%   \def\figurename{<++>}%
+%   \def\tablename{<++>}%
+%   \def\thepart{}%
+%   \def\partname{<++>}%
+%   \def\pagename{<++>}%
+%   \def\seename{<++>}%
+%   \def\alsoname{<++>}%
+%   \def\enclname{<++>}%
+%   \def\ccname{<++>}%
+%   \def\headtoname{<++>}%
+%   \def\proofname{<++>}%
+%   \def\glossaryname{<++>}%
 %   }
 %\def\datecoptic{%
-%   \def\today{\textcoptic{<++>}}%
+%   \def\today{<++>}%
 %   }
 
 \def\coptic@language{\protect\language=\l@coptic}
@@ -3045,33 +3091,33 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionscroatian{%
-   \def\refname{\textcroatian{Literatura}}%
-   \def\abstractname{\textcroatian{Sažetak}}%
-   \def\bibname{\textcroatian{Bibliografija}}%
-   \def\prefacename{\textcroatian{Predgovor}}%
-   \def\chaptername{\textcroatian{Poglavlje}}%
-   \def\appendixname{\textcroatian{Dodatak}}%
-   \def\contentsname{\textcroatian{Sadržaj}}%
-   \def\listfigurename{\textcroatian{Popis slika}}%
-   \def\listtablename{\textcroatian{Popis tablica}}%
-   \def\indexname{\textcroatian{Indeks}}%
-   \def\figurename{\textcroatian{Slika}}%
-   \def\tablename{\textcroatian{Tablica}}%
-   \def\partname{\textcroatian{Deo}}% <<< CHECK (taken from Serbian)
-   \def\pagename{\textcroatian{Stranica}}%
-   \def\seename{\textcroatian{Vidjeti}}%
-   \def\alsoname{\textcroatian{Vidjeti i}}%
-   \def\enclname{\textcroatian{Prilozi}}%
-   \def\ccname{\textcroatian{Kopije}}%
-   \def\headtoname{\textcroatian{Prima}}%
-   \def\proofname{\textcroatian{Dokaz}}%
-   \def\glossaryname{\textcroatian{Kazalo}}%
+   \def\refname{Literatura}%
+   \def\abstractname{Sažetak}%
+   \def\bibname{Bibliografija}%
+   \def\prefacename{Predgovor}%
+   \def\chaptername{Poglavlje}%
+   \def\appendixname{Dodatak}%
+   \def\contentsname{Sadržaj}%
+   \def\listfigurename{Popis slika}%
+   \def\listtablename{Popis tablica}%
+   \def\indexname{Indeks}%
+   \def\figurename{Slika}%
+   \def\tablename{Tablica}%
+   \def\partname{Deo}% <<< CHECK (taken from Serbian)
+   \def\pagename{Stranica}%
+   \def\seename{Vidjeti}%
+   \def\alsoname{Vidjeti i}%
+   \def\enclname{Prilozi}%
+   \def\ccname{Kopije}%
+   \def\headtoname{Prima}%
+   \def\proofname{Dokaz}%
+   \def\glossaryname{Kazalo}%
    }
 \def\datecroatian{%
-   \def\today{\textcroatian{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     siječnja\or veljače\or ožujka\or travnja\or svibnja\or
     lipnja\or srpnja\or kolovoza\or rujna\or listopada\or studenog\or
-    prosinca\fi \space \number\year.}}}
+    prosinca\fi \space \number\year.}}
 
 \def\croatian@language{\protect\language=\l@croatian}
 
@@ -3096,35 +3142,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsczech{%
-   \def\refname{\textczech{Reference}}%
-   \def\abstractname{\textczech{Abstrakt}}%
-   \def\bibname{\textczech{Literatura}}%
-   \def\prefacename{\textczech{Předmluva}}%
-   \def\chaptername{\textczech{Kapitola}}%
-   \def\appendixname{\textczech{Dodatek}}%
-   \def\contentsname{\textczech{Obsah}}%
-   \def\listfigurename{\textczech{Seznam obrázků}}%
-   \def\listtablename{\textczech{Seznam tabulek}}%
-   \def\indexname{\textczech{Index}}%
-   \def\figurename{\textczech{Obrázek}}%
-   \def\tablename{\textczech{Tabulka}}%
-   %\def\thepart{\textczech{}}%
-   \def\partname{\textczech{Část}}%
-   \def\pagename{\textczech{Strana}}%
-   \def\seename{\textczech{viz}}%
-   \def\alsoname{\textczech{viz}}%
-   \def\enclname{\textczech{Příloha}}%
-   \def\ccname{\textczech{Na vědomí:}}%
-   \def\headtoname{\textczech{Komu}}%
-   \def\proofname{\textczech{Důkaz}}%
-   \def\glossaryname{\textczech{Slovník}}%was Glosář
+   \def\refname{Reference}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Předmluva}%
+   \def\chaptername{Kapitola}%
+   \def\appendixname{Dodatek}%
+   \def\contentsname{Obsah}%
+   \def\listfigurename{Seznam obrázků}%
+   \def\listtablename{Seznam tabulek}%
+   \def\indexname{Index}%
+   \def\figurename{Obrázek}%
+   \def\tablename{Tabulka}%
+   %\def\thepart{}%
+   \def\partname{Část}%
+   \def\pagename{Strana}%
+   \def\seename{viz}%
+   \def\alsoname{viz}%
+   \def\enclname{Příloha}%
+   \def\ccname{Na vědomí:}%
+   \def\headtoname{Komu}%
+   \def\proofname{Důkaz}%
+   \def\glossaryname{Slovník}%was Glosář
    }
 \def\dateczech{%
-   \def\today{\textczech{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     ledna\or února\or března\or dubna\or května\or
     června\or července\or srpna\or září\or
     října\or listopadu\or prosince\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\czech@language{\protect\language=\l@czech}
 
@@ -3182,10 +3228,10 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
   \def\alsoname{Se også}}%
   \def\proofname{Bevis}%
   \def\glossaryname{Gloseliste}%
-  \def\today{\textdanish{\number\day.~\ifcase\month\or
+  \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or marts\or april\or maj\or juni\or
     juli\or august\or september\or oktober\or november\or december\fi
-    \space\number\year}}
+    \space\number\year}
 
 \def\danish@language{%
    \protect\language=\l@danish}
@@ -3225,30 +3271,30 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \def\divehi@RL{\relax}
 
 %\def\captionsdivehi{%
-%   \def\refname{\textdivehi{<++>}}%
-%   \def\abstractname{\textdivehi{<++>}}%
-%   \def\bibname{\textdivehi{<++>}}%
-%   \def\prefacename{\textdivehi{<++>}}%
-%   \def\chaptername{\textdivehi{<++>}}%
-%   \def\appendixname{\textdivehi{<++>}}%
-%   \def\contentsname{\textdivehi{<++>}}%
-%   \def\listfigurename{\textdivehi{<++>}}%
-%   \def\listtablename{\textdivehi{<++>}}%
-%   \def\indexname{\textdivehi{<++>}}%
-%   \def\figurename{\textdivehi{<++>}}%
-%   \def\tablename{\textdivehi{<++>}}%
-%   \def\thepart{\textdivehi{}}%
-%   \def\partname{\textdivehi{<++>}}%
-%   \def\pagename{\textdivehi{<++>}}%
-%   \def\seename{\textdivehi{<++>}}%
-%   \def\alsoname{\textdivehi{<++>}}%
-%   \def\enclname{\textdivehi{<++>}}%
-%   \def\ccname{\textdivehi{<++>}}%
-%   \def\headtoname{\textdivehi{<++>}}%
-%   \def\proofname{\textdivehi{<++>}}%
-%   \def\glossaryname{\textdivehi{<++>}}%
+%   \def\refname{<++>}%
+%   \def\abstractname{<++>}%
+%   \def\bibname{<++>}%
+%   \def\prefacename{<++>}%
+%   \def\chaptername{<++>}%
+%   \def\appendixname{<++>}%
+%   \def\contentsname{<++>}%
+%   \def\listfigurename{<++>}%
+%   \def\listtablename{<++>}%
+%   \def\indexname{<++>}%
+%   \def\figurename{<++>}%
+%   \def\tablename{<++>}%
+%   \def\thepart{}%
+%   \def\partname{<++>}%
+%   \def\pagename{<++>}%
+%   \def\seename{<++>}%
+%   \def\alsoname{<++>}%
+%   \def\enclname{<++>}%
+%   \def\ccname{<++>}%
+%   \def\headtoname{<++>}%
+%   \def\proofname{<++>}%
+%   \def\glossaryname{<++>}%
 %   }
-%\def\datedivehi{\def\today{\textdivehi{<++>}}}
+%\def\datedivehi{\def\today{<++>}}
 
 \def\divehi@language{\protect\language=\l@divehi}
 
@@ -3333,11 +3379,11 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     \def\alsoname{zie ook}%
     \def\proofname{Bewĳs}%
     \def\glossaryname{Verklarende Woordenlĳst}%
-    \def\today{\textdutch{\number\day~\ifcase\month%
+    \def\today{\number\day~\ifcase\month%
       Januarie\or Februarie\or Maart\or April\or Mei\or Junie\or
       Julie\or  Augustus\or September\or Oktober\or November\or
       Desember\fi
-      \space \number\year}}}
+      \space \number\year}}
 
 \def\dutch@language{\protect\language=\l@dutch}
 
@@ -3368,27 +3414,27 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \makeatletter
 \def\english@font{\normalfontlatin}
 
-\ifx\l@english\@undefined
-   \ifx\l@USenglish\@undefined
-      \ifx\l@american\@undefined
-         \xpg@nopatterns{English}
-         \adddialect\l@english0
-      \else
-         \let\l@english\l@american
-      \fi
-   \else
-      \let\l@english\l@USenglish
-   \fi
+\ifx\l@english\@undefined%
+   \ifx\l@USenglish\@undefined%
+      \ifx\l@american\@undefined%
+         \xpg@nopatterns{English}%
+         \adddialect\l@english0%
+      \else%
+         \let\l@english\l@american%
+      \fi%
+   \else%
+      \let\l@english\l@USenglish%
+   \fi%
 \fi
-\ifx\l@american\@undefined
-   \let\l@american\l@english
+\ifx\l@american\@undefined%
+   \let\l@american\l@english%
 \fi
-\ifx\l@british\@undefined
-   \ifx\l@UKenglish\@undefined
-      \adddialect\l@british\l@english
-  \else
-      \let\l@british\l@UKenglish
-  \fi
+\ifx\l@british\@undefined%
+   \ifx\l@UKenglish\@undefined%
+      \adddialect\l@british\l@english%
+  \else%
+      \let\l@british\l@UKenglish%
+  \fi%
 \fi
 
 \def\tmp@us{us}
@@ -3404,61 +3450,61 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \newif\if@ordinalmonthday
 
 \define@key{english}{variant}[american]{%
-  \def\@tmpa{#1}
-  \ifx\@tmpa\tmp@uk\def\en@variant{british}\@ordinalmonthdaytrue
-     \xpg@info{Option: english variant=british}
-  \else\ifx\@tmpa\tmp@british\def\en@variant{british}\@ordinalmonthdaytrue
-     \xpg@info{Option: english variant=british}
-  \else\ifx\@tmpa\tmp@us\def\en@variant{american}\@ordinalmonthdayfalse
-     \xpg@info{Option: english variant=american}
-  \else\ifx\@tmpa\tmp@usmax\def\en@variant{usenglishmax}\@ordinalmonthdayfalse
-     \xpg@info{Option: english variant=american (with additional patterns)}
-  \else\ifx\@tmpa\tmp@australian\def\en@variant{british}\@ordinalmonthdayfalse
-     \xpg@info{Option: english variant=australian}
-  \else\ifx\@tmpa\tmp@newzealand\def\en@variant{british}\@ordinalmonthdayfalse
-     \xpg@info{Option: english variant=newzealand}
+  \def\@tmpa{#1}%
+  \ifx\@tmpa\tmp@uk\def\en@variant{british}\@ordinalmonthdaytrue%
+     \xpg@info{Option: english variant=british}%
+  \else\ifx\@tmpa\tmp@british\def\en@variant{british}\@ordinalmonthdaytrue%
+     \xpg@info{Option: english variant=british}%
+  \else\ifx\@tmpa\tmp@us\def\en@variant{american}\@ordinalmonthdayfalse%
+     \xpg@info{Option: english variant=american}%
+  \else\ifx\@tmpa\tmp@usmax\def\en@variant{usenglishmax}\@ordinalmonthdayfalse%
+     \xpg@info{Option: english variant=american (with additional patterns)}%
+  \else\ifx\@tmpa\tmp@australian\def\en@variant{british}\@ordinalmonthdayfalse%
+     \xpg@info{Option: english variant=australian}%
+  \else\ifx\@tmpa\tmp@newzealand\def\en@variant{british}\@ordinalmonthdayfalse%
+     \xpg@info{Option: english variant=newzealand}%
   \fi\fi\fi\fi\fi\fi}
 
 \def\tmp@true{true}
 \define@key{english}{ordinalmonthday}[false]{%
-  \def\@tmpa{#1}
-  \ifx\@tmpa\tmp@true\@ordinalmonthdaytrue
-  \else\@ordinalmonthdayfalse
+  \def\@tmpa{#1}%
+  \ifx\@tmpa\tmp@true\@ordinalmonthdaytrue%
+  \else\@ordinalmonthdayfalse%
   \fi}
 
 \def\captionsenglish{%
-   \def\prefacename{\textenglish{Preface}}%
-   \def\refname{\textenglish{References}}%
-   \def\abstractname{\textenglish{Abstract}}%
-   \def\bibname{\textenglish{Bibliography}}%
-   \def\chaptername{\textenglish{Chapter}}%
-   \def\appendixname{\textenglish{Appendix}}%
-   \def\contentsname{\textenglish{Contents}}%
-   \def\listfigurename{\textenglish{List of Figures}}%
-   \def\listtablename{\textenglish{List of Tables}}%
-   \def\indexname{\textenglish{Index}}%
-   \def\figurename{\textenglish{Figure}}%
-   \def\tablename{\textenglish{Table}}%
-   \def\partname{\textenglish{Part}}%
-   \def\enclname{\textenglish{encl}}%
-   \def\ccname{\textenglish{cc}}%
-   \def\headtoname{\textenglish{To}}%
-   \def\pagename{\textenglish{Page}}%
-   \def\seename{\textenglish{see}}%
-   \def\alsoname{\textenglish{see also}}%
-   \def\proofname{\textenglish{Proof}}%
+   \def\prefacename{Preface}%
+   \def\refname{References}%
+   \def\abstractname{Abstract}%
+   \def\bibname{Bibliography}%
+   \def\chaptername{Chapter}%
+   \def\appendixname{Appendix}%
+   \def\contentsname{Contents}%
+   \def\listfigurename{List of Figures}%
+   \def\listtablename{List of Tables}%
+   \def\indexname{Index}%
+   \def\figurename{Figure}%
+   \def\tablename{Table}%
+   \def\partname{Part}%
+   \def\enclname{encl}%
+   \def\ccname{cc}%
+   \def\headtoname{To}%
+   \def\pagename{Page}%
+   \def\seename{see}%
+   \def\alsoname{see also}%
+   \def\proofname{Proof}%
   } 
 \def\dateenglish{%
    \def\english@day{%
      \if@ordinalmonthday%
-       \ifcase\day\or
-        1st\or 2nd\or 3rd\or 4th\or 5th\or
-        6th\or 7th\or 8th\or 9th\or 10th\or
-        11th\or 12th\or 13th\or 14th\or 15th\or
-        16th\or 17th\or 18th\or 19th\or 20th\or
-        21st\or 22nd\or 23rd\or 24th\or 25th\or
-        26th\or 27th\or 28th\or 29th\or 30th\or
-        31st\fi
+       \ifcase\day\or%
+        1st\or 2nd\or 3rd\or 4th\or 5th\or%
+        6th\or 7th\or 8th\or 9th\or 10th\or%
+        11th\or 12th\or 13th\or 14th\or 15th\or%
+        16th\or 17th\or 18th\or 19th\or 20th\or%
+        21st\or 22nd\or 23rd\or 24th\or 25th\or%
+        26th\or 27th\or 28th\or 29th\or 30th\or%
+        31st\fi%
      \else\number\day\fi}%
    \def\today{%
     \ifx\en@variant\tmp@british%
@@ -3467,12 +3513,12 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
       January\or February\or March\or April\or May\or June\or%
       July\or August\or September\or October\or November\or December\fi%
       \space\number\year%
-     \else% 
+     \else%
      \ifcase\month\or%
       January\or February\or March\or April\or May\or June\or%
       July\or August\or September\or October\or November\or December\fi%
       \space\english@day, \number\year%
-      \fi}
+      \fi}%
   }
 
 %\setlocalhyphenmins{english}{2}{3}% this is the default in babel
@@ -3496,34 +3542,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsesperanto{%
-   \def\refname{\textesperanto{Citaĵoj}}%
-   \def\abstractname{\textesperanto{Resumo}}%
-   \def\bibname{\textesperanto{Bibliografio}}%
-   \def\prefacename{\textesperanto{Antaŭparolo}}%
-   \def\chaptername{\textesperanto{Ĉapitro}}%
-   \def\appendixname{\textesperanto{Apendico}}%
-   \def\contentsname{\textesperanto{Enhavo}}%
-   \def\listfigurename{\textesperanto{Listo de figuroj}}%
-   \def\listtablename{\textesperanto{Listo de tabeloj}}%
-   \def\indexname{\textesperanto{Indekso}}%
-   \def\figurename{\textesperanto{Figuro}}%
-   \def\tablename{\textesperanto{Tabelo}}%
-   %\def\thepart{\textesperanto{}}%
-   %\def\partname{\textesperanto{}}%
-   \def\pagename{\textesperanto{Paĝo}}%
-   \def\seename{\textesperanto{vidu}}%
-   \def\alsoname{\textesperanto{Parto}}%
-   \def\enclname{\textesperanto{Aldono(j)}}%
-   \def\ccname{\textesperanto{Kopie al}}%
-   \def\headtoname{\textesperanto{Al}}%
-   \def\proofname{\textesperanto{Pruvo}}%
-   \def\glossaryname{\textesperanto{Glosaro}}%
+   \def\refname{Citaĵoj}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Bibliografio}%
+   \def\prefacename{Antaŭparolo}%
+   \def\chaptername{Ĉapitro}%
+   \def\appendixname{Apendico}%
+   \def\contentsname{Enhavo}%
+   \def\listfigurename{Listo de figuroj}%
+   \def\listtablename{Listo de tabeloj}%
+   \def\indexname{Indekso}%
+   \def\figurename{Figuro}%
+   \def\tablename{Tabelo}%
+   %\def\thepart{}%
+   %\def\partname{}%
+   \def\pagename{Paĝo}%
+   \def\seename{vidu}%
+   \def\alsoname{Parto}%
+   \def\enclname{Aldono(j)}%
+   \def\ccname{Kopie al}%
+   \def\headtoname{Al}%
+   \def\proofname{Pruvo}%
+   \def\glossaryname{Glosaro}%
    }
 \def\dateesperanto{%   
-   \def\today{\textesperanto{\number\day{–a}~de~\ifcase\month\or
+   \def\today{\number\day{–a}~de~\ifcase\month\or
     januaro\or februaro\or marto\or aprilo\or majo\or junio\or
     julio\or aŭgusto\or septembro\or oktobro\or novembro\or
-    decembro\fi,\space \number\year}}%
+    decembro\fi,\space \number\year}%
    \def\hodiau{la \today}%
    \def\hodiaun{la \number\day{–an}~de~\ifcase\month\or
       januaro\or februaro\or marto\or aprilo\or majo\or junio\or
@@ -3574,34 +3620,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsestonian{%
-   \def\refname{\textestonian{Viited}}%
-   \def\abstractname{\textestonian{Kokkuvõte}}%
-   \def\bibname{\textestonian{Kirjandus}}%
-   \def\prefacename{\textestonian{Sissejuhatus}}%
-   \def\chaptername{\textestonian{Peatükk}}%
-   \def\appendixname{\textestonian{Lisa}}%
-   \def\contentsname{\textestonian{Sisukord}}%
-   \def\listfigurename{\textestonian{Joonised}}%
-   \def\listtablename{\textestonian{Tabelid}}%
-   \def\indexname{\textestonian{Indeks}}%
-   \def\figurename{\textestonian{Joonis}}%
-   \def\tablename{\textestonian{Tabel}}%
-   %\def\thepart{\textestonian{}}%
-   \def\partname{\textestonian{Osa}}%
-   \def\pagename{\textestonian{Lk.}}%
-   \def\seename{\textestonian{vt.}}%
-   \def\alsoname{\textestonian{vt. ka}}%
-   \def\enclname{\textestonian{Lisa(d)}}%
-   \def\ccname{\textestonian{Koopia(d)}}%
-   %\def\headtoname{\textestonian{}}%
-   \def\proofname{\textestonian{Korrektuur}}%
-   \def\glossaryname{\textestonian{Glossary}}% <-- need translation
+   \def\refname{Viited}%
+   \def\abstractname{Kokkuvõte}%
+   \def\bibname{Kirjandus}%
+   \def\prefacename{Sissejuhatus}%
+   \def\chaptername{Peatükk}%
+   \def\appendixname{Lisa}%
+   \def\contentsname{Sisukord}%
+   \def\listfigurename{Joonised}%
+   \def\listtablename{Tabelid}%
+   \def\indexname{Indeks}%
+   \def\figurename{Joonis}%
+   \def\tablename{Tabel}%
+   %\def\thepart{}%
+   \def\partname{Osa}%
+   \def\pagename{Lk.}%
+   \def\seename{vt.}%
+   \def\alsoname{vt. ka}%
+   \def\enclname{Lisa(d)}%
+   \def\ccname{Koopia(d)}%
+   %\def\headtoname{}%
+   \def\proofname{Korrektuur}%
+   \def\glossaryname{Glossary}% <-- need translation
    }
 \def\dateestonian{%
-   \def\today{\textestonian{\number\day.\space\ifcase\month\or
+   \def\today{\number\day.\space\ifcase\month\or
     jaanuar\or veebruar\or märts\or aprill\or mai\or juuni\or
     juuli\or august\or september\or oktoober\or november\or
-    detsember\fi\space\number\year.\space a.}}}
+    detsember\fi\space\number\year.\space a.}}
 
 \def\estonian@language{\protect\language=\l@estonian}
 
@@ -3633,10 +3679,10 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \RequirePackage{farsical}
 \makeatletter
 
-\ifx\l@farsi\@undefined
-  \xpg@nopatterns{Farsi}%
-  \adddialect\l@farsi0
-\fi
+%\ifx\l@farsi\@undefined
+%  \xpg@nopatterns{Farsi}%
+\adddialect\l@farsi0
+%\fi
 
 \def\farsi@RL{\relax}
 
@@ -3845,35 +3891,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsfinnish{%
-   \def\refname{\textfinnish{Viitteet}}%
-   \def\abstractname{\textfinnish{Tiivistelmä}}%
-   \def\bibname{\textfinnish{Kirjallisuutta}}%
-   \def\prefacename{\textfinnish{Esipuhe}}%
-   \def\chaptername{\textfinnish{Luku}}%
-   \def\appendixname{\textfinnish{Liite}}%
-   \def\contentsname{\textfinnish{Sisältö}}%
-   \def\listfigurename{\textfinnish{Kuvat}}%
-   \def\listtablename{\textfinnish{Taulukot}}%
-   \def\indexname{\textfinnish{Hakemisto}}%
-   \def\figurename{\textfinnish{Kuva}}%
-   \def\tablename{\textfinnish{Taulukko}}%
-   %\def\thepart{\textfinnish{}}%
-   \def\partname{\textfinnish{Osa}}%
-   \def\pagename{\textfinnish{Sivu}}%
-   \def\seename{\textfinnish{katso}}%
-   \def\alsoname{\textfinnish{katso myös}}%
-   \def\enclname{\textfinnish{Liitteet}}%
-   \def\ccname{\textfinnish{Jakelu}}%
-   \def\headtoname{\textfinnish{Vastaanottaja}}%
-   \def\proofname{\textfinnish{Todistus}}%
-   \def\glossaryname{\textfinnish{Sanasto}}%
+   \def\refname{Viitteet}%
+   \def\abstractname{Tiivistelmä}%
+   \def\bibname{Kirjallisuutta}%
+   \def\prefacename{Esipuhe}%
+   \def\chaptername{Luku}%
+   \def\appendixname{Liite}%
+   \def\contentsname{Sisältö}%
+   \def\listfigurename{Kuvat}%
+   \def\listtablename{Taulukot}%
+   \def\indexname{Hakemisto}%
+   \def\figurename{Kuva}%
+   \def\tablename{Taulukko}%
+   %\def\thepart{}%
+   \def\partname{Osa}%
+   \def\pagename{Sivu}%
+   \def\seename{katso}%
+   \def\alsoname{katso myös}%
+   \def\enclname{Liitteet}%
+   \def\ccname{Jakelu}%
+   \def\headtoname{Vastaanottaja}%
+   \def\proofname{Todistus}%
+   \def\glossaryname{Sanasto}%
    }
 \def\datefinnish{%
-   \def\today{\textfinnish{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
     toukokuuta\or kesäkuuta\or heinäkuuta\or elokuuta\or
     syyskuuta\or lokakuuta\or marraskuuta\or joulukuuta\fi
-    \space\number\year}}}
+    \space\number\year}}
 
 \def\finnish@language{\protect\language=\l@finnish}
 
@@ -3903,6 +3949,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \ProvidesFile{gloss-french.ldf}[polyglossia: module for french]
 \makeatletter
 \def\french@font{\normalfontlatin}
+\lccode"2019="2019
 
 \ifx\l@french\@undefined%
    \xpg@nopatterns{French}%
@@ -3967,18 +4014,18 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 %   \fi}
 
 \def\captionsfrench{%
-   \def\refname{\textfrench{Références}}%
-   \def\abstractname{\textfrench{Résumé}}%
-   \def\bibname{\textfrench{Bibliographie}}%
-   \def\prefacename{\textfrench{Préface}}%
-   \def\chaptername{\textfrench{Chapitre}}%
-   \def\appendixname{\textfrench{Annexe}}%
-   \def\contentsname{\textfrench{Table des matières}}%
-   \def\listfigurename{\textfrench{Table des figures}}%
-   \def\listtablename{\textfrench{Liste des tableaux}}%
-   \def\indexname{\textfrench{Index}}%
-   \def\figurename{\textfrench{\scshape Fig.}}%
-   \def\tablename{\textfrench{\scshape Tab.}}%
+   \def\refname{Références}%
+   \def\abstractname{Résumé}%
+   \def\bibname{Bibliographie}%
+   \def\prefacename{Préface}%
+   \def\chaptername{Chapitre}%
+   \def\appendixname{Annexe}%
+   \def\contentsname{Table des matières}%
+   \def\listfigurename{Table des figures}%
+   \def\listtablename{Liste des tableaux}%
+   \def\indexname{Index}%
+   \def\figurename{\scshape Fig.}%
+   \def\tablename{\scshape Tab.}%
    \def\@Fpt{\ifcase\value{part}\or Première\or Deuxième\or%
    Troisième\or Quatrième\or Cinquième\or Sixième\or%
    Septième\or Huitième\or Neuvième\or Dixième\or Onzième\or%
@@ -3986,24 +4033,24 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    Seizième\or Dix-septième\or Dix-huitième\or Dix-neuvième\or%
    Vingtième\fi\space}%
    \def\thepart{}%
-   \def\partname{\textfrench{\protect\@Fpt partie}}%
-   \def\pagename{\textfrench{page}}%
-   \def\seename{\textfrench{\emph{voir}}}%
-   \def\alsoname{\textfrench{\emph{voir aussi}}}%
-   \def\enclname{\textfrench{P.~J. }}%
-   \def\ccname{\textfrench{Copie à }}%
+   \def\partname{\protect\@Fpt partie}%
+   \def\pagename{page}%
+   \def\seename{\emph{voir}}%
+   \def\alsoname{\emph{voir aussi}}%
+   \def\enclname{P.~J. }%
+   \def\ccname{Copie à }%
    \def\headtoname{}%
-   \def\proofname{\textfrench{Démonstration}}%
+   \def\proofname{Démonstration}%
    }
 \def\datefrench{%
-   \def\today{\textfrench{\ifx\ier\undefined\def\ier{er}\fi%
+   \def\today{\ifx\ier\undefined\def\ier{er}\fi%
       \ifnum\day=1\relax 1\ier%
       \else \number\day\fi%
       \space \ifcase\month%
       \or janvier\or février\or mars\or avril\or mai\or juin\or%
       juillet\or août\or septembre\or octobre\or novembre\or%
       décembre\fi%
-      \space \number\year}}}
+      \space \number\year}}
 
 \def\french@language{\protect\language=\l@french}
 
@@ -4043,34 +4090,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsgalician{%
-   \def\refname{\textgalician{Referencias}}%
-   \def\abstractname{\textgalician{Resumo}}%
-   \def\bibname{\textgalician{Bibliografía}}%
-   \def\prefacename{\textgalician{Prefacio}}%
-   \def\chaptername{\textgalician{Capítulo}}%
-   \def\appendixname{\textgalician{Apéndice}}%
-   \def\contentsname{\textgalician{Índice Xeral}}%
-   \def\listfigurename{\textgalician{Índice de Figuras}}%
-   \def\listtablename{\textgalician{Índice de Táboas}}%
-   \def\indexname{\textgalician{Índice de Materias}}%
-   \def\figurename{\textgalician{Figura}}%
-   \def\tablename{\textgalician{Táboa}}%
-   %\def\thepart{\textgalician{}}%
-   \def\partname{\textgalician{Parte}}%
-   \def\pagename{\textgalician{Páxina}}%
-   \def\seename{\textgalician{véxase}}%
-   \def\alsoname{\textgalician{véxase tamén}}%
-   \def\enclname{\textgalician{Adxunto}}%
-   \def\ccname{\textgalician{Copia a}}%
-   \def\headtoname{\textgalician{A}}%
-   \def\proofname{\textgalician{Demostración}}%
-   \def\glossaryname{\textgalician{Glosario}}%
+   \def\refname{Referencias}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Bibliografía}%
+   \def\prefacename{Prefacio}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apéndice}%
+   \def\contentsname{Índice Xeral}%
+   \def\listfigurename{Índice de Figuras}%
+   \def\listtablename{Índice de Táboas}%
+   \def\indexname{Índice de Materias}%
+   \def\figurename{Figura}%
+   \def\tablename{Táboa}%
+   %\def\thepart{}%
+   \def\partname{Parte}%
+   \def\pagename{Páxina}%
+   \def\seename{véxase}%
+   \def\alsoname{véxase tamén}%
+   \def\enclname{Adxunto}%
+   \def\ccname{Copia a}%
+   \def\headtoname{A}%
+   \def\proofname{Demostración}%
+   \def\glossaryname{Glosario}%
    }
 \def\dategalician{%
-   \def\today{\textgalician{\number\day~de\space\ifcase\month\or
+   \def\today{\number\day~de\space\ifcase\month\or
     xaneiro\or febreiro\or marzo\or abril\or maio\or xuño\or
     xullo\or agosto\or setembro\or outubro\or novembro\or decembro\fi
-    \space de~\number\year}}}
+    \space de~\number\year}}
 
 \def\galician@language{\protect\language=\l@galician}
 
@@ -4126,38 +4173,118 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 \define@boolkey{german}[german@]{latesthyphen}[false]{}
 
-\setkeys{german}{spelling,latesthyphen}
+\define@boolkey{german}[german@]{babelshorthands}[false]{}
+
+\setkeys{german}{spelling,latesthyphen,babelshorthands}
+
+%% definitions from babel.def and germanb.ldf
+\long\def\bbl@afterelse#1\else#2\fi{\fi#1}
+\long\def\bbl@afterfi#1\fi{\fi#1}
+\def\textormath#1#2{%
+  \ifmmode
+    \bbl@afterelse#2%
+  \else
+    \bbl@afterfi#1%
+  \fi}
+
+\def\bbl@disc#1#2{%
+  \nobreak\discretionary{#2-}{}{#1}}
+\def\bbl@discff{\penalty\@M
+  \afterassignment\bbl@insertff \let\bbl@nextff= }
+\def\bbl@insertff{%
+  \if f\bbl@nextff
+    \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+  {\relax\discretionary{ff-}{f}{ff}}{f\bbl@nextff}}
+\let\bbl@nextff=f
+
+\def\german@shorthands{%
+    \XeTeXinterchartokenstate=1%
+    \XeTeXcharclass `\" 7%
+    \XeTeXcharclass `\c 8%
+    \XeTeXcharclass `\C 9%
+    \XeTeXcharclass `\F 10%
+    \XeTeXcharclass `\l 11%
+    \XeTeXcharclass `\L 12%
+    \XeTeXcharclass `\m 13%
+    \XeTeXcharclass `\M 14%
+    \XeTeXcharclass `\n 15%
+    \XeTeXcharclass `\N 16%
+    \XeTeXcharclass `\p 17%
+    \XeTeXcharclass `\P 18%
+    \XeTeXcharclass `\r 19%
+    \XeTeXcharclass `\R 20%
+    \XeTeXcharclass `\t 21%
+    \XeTeXcharclass `\T 22%
+    \XeTeXcharclass `\f 23%
+    \XeTeXcharclass `\- 24%
+    \XeTeXcharclass `\| 25%
+    \XeTeXcharclass `\~ 26%
+    \XeTeXcharclass `\= 27%
+    \XeTeXcharclass `\` 28%
+    \XeTeXcharclass `\' 29%
+    \XeTeXcharclass `\< 30%
+    \XeTeXcharclass `\> 31%
+    \XeTeXinterchartoks 7 8 = {\textormath{\bbl@disc ck}{c}}%
+    \XeTeXinterchartoks 7 9 = {\textormath{\bbl@disc CK}{C}}%
+    \XeTeXinterchartoks 7 10 = {\textormath{\bbl@disc F{FF}}{F}}%
+    \XeTeXinterchartoks 7 11 = {\textormath{\bbl@disc l{ll}}{l}}%
+    \XeTeXinterchartoks 7 12 = {\textormath{\bbl@disc L{LL}}{L}}%
+    \XeTeXinterchartoks 7 13 = {\textormath{\bbl@disc m{mm}}{m}}%
+    \XeTeXinterchartoks 7 14 = {\textormath{\bbl@disc M{MM}}{M}}%
+    \XeTeXinterchartoks 7 15 = {\textormath{\bbl@disc n{nn}}{n}}%
+    \XeTeXinterchartoks 7 16 = {\textormath{\bbl@disc N{NN}}{N}}%
+    \XeTeXinterchartoks 7 17 = {\textormath{\bbl@disc p{pp}}{p}}%
+    \XeTeXinterchartoks 7 18 = {\textormath{\bbl@disc P{PP}}{P}}%
+    \XeTeXinterchartoks 7 19 = {\textormath{\bbl@disc r{rr}}{r}}%
+    \XeTeXinterchartoks 7 20 = {\textormath{\bbl@disc R{RR}}{R}}%
+    \XeTeXinterchartoks 7 21 = {\textormath{\bbl@disc t{tt}}{t}}%
+    \XeTeXinterchartoks 7 22 = {\textormath{\bbl@disc T{TT}}{T}}%
+    \XeTeXinterchartoks 7 23 = {\textormath{\bbl@discff}{f}}%
+    \XeTeXinterchartoks 7 24 = {\nobreak\-\nobreak\hskip\z@skip}%
+    \XeTeXinterchartoks 7 25 = {\textormath{\penalty\@M\discretionary{-}{}{\kern.03em}}{}}%
+    \XeTeXinterchartoks 7 7  = {\hskip\z@skip}%
+    \XeTeXinterchartoks 7 26 = {\textormath{\leavevmode\hbox{-}}{-}}%
+    \XeTeXinterchartoks 7 27 = {\penalty\@M-\hskip\z@skip}%
+    \XeTeXinterchartoks 7 28 = „%
+    \XeTeXinterchartoks 7 29 = “%
+    \XeTeXinterchartoks 7 30 = «%
+    \XeTeXinterchartoks 7 31 = »%
+    }
+
+\def\nogerman@shorthands{%
+    \XeTeXinterchartokenstate=0%
+}
 
 \def\captionsgerman{%
-   \def\prefacename{\textgerman{Vorwort}}%
-   \def\refname{\textgerman{Literatur}}%
-   \def\abstractname{\textgerman{Zusammenfassung}}%
-   \def\bibname{\textgerman{Literaturverzeichnis}}%
-   \def\chaptername{\textgerman{Kapitel}}%
-   \def\appendixname{\textgerman{Anhang}}%
-   \def\contentsname{\textgerman{Inhaltsverzeichnis}}%
-   \def\listfigurename{\textgerman{Abbildungsverzeichnis}}%
-   \def\listtablename{\textgerman{Tabellenverzeichnis}}%
-   \def\indexname{\textgerman{Index}}%
-   \def\figurename{\textgerman{Abbildung}}%
-   \def\tablename{\textgerman{Tabelle}}%
-   \def\partname{\textgerman{Teil}}%
-   \def\enclname{\textgerman{Anlage(n)}}%
-   \def\ccname{\textgerman{Verteiler}}%
+   \def\prefacename{Vorwort}%
+   \def\refname{Literatur}%
+   \def\abstractname{Zusammenfassung}%
+   \def\bibname{Literaturverzeichnis}%
+   \def\chaptername{Kapitel}%
+   \def\appendixname{Anhang}%
+   \def\contentsname{Inhaltsverzeichnis}%
+   \def\listfigurename{Abbildungsverzeichnis}%
+   \def\listtablename{Tabellenverzeichnis}%
+   \def\indexname{Index}%
+   \def\figurename{Abbildung}%
+   \def\tablename{Tabelle}%
+   \def\partname{Teil}%
+   \def\enclname{Anlage(n)}%
+   \def\ccname{Verteiler}%
    \def\headtoname{An}%
-   \def\pagename{\textgerman{Seite}}%
-   \def\seename{\textgerman{siehe}}%
-   \def\alsoname{\textgerman{siehe auch}}%
-   \def\proofname{\textgerman{Beweis}}%
-   \def\glossaryname{\textgerman{Glossar}}%
+   \def\pagename{Seite}%
+   \def\seename{siehe}%
+   \def\alsoname{siehe auch}%
+   \def\proofname{Beweis}%
+   \def\glossaryname{Glossar}%
 }
 \def\dategerman{%   
-   \def\today{\textgerman{\number\day.%
+   \def\today{\number\day.%
       \space \ifcase\month%TODO add option for Austrian forms (Jänner etc)
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
       Juli\or August\or September\or Oktober\or November\or%
       Dezember\fi%
-      \space \number\year}}%
+      \space \number\year}%
 }
 
 \def\german@language{\protect\language=%
@@ -4167,14 +4294,17 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 \def\noextras@german{%
    \nonfrenchspacing%
+   \nogerman@shorthands%
 }
 
 \def\blockextras@german{%
    \frenchspacing%
+   \ifgerman@babelshorthands\german@shorthands\fi%
 }
 
 \def\inlineextras@german{%
    \frenchspacing%
+   \ifgerman@babelshorthands\german@shorthands\fi%
 }
 
 %    \end{macrocode}
@@ -4193,7 +4323,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 %% module for greek. Currently large parts of it derive from the 
 %% package xgreek.sty (c) Apostolos Syropoulos 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% these fixes are taken verbatim from xgreek.sty:
+% the following fixes are taken verbatim from xgreek.sty:
 \global\lccode"0386="03AC \global\uccode"0386="0391
 \global\lccode"0388="03AD \global\uccode"0388="0395
 \global\lccode"0389="03AC \global\uccode"0389="0397
@@ -4584,37 +4714,37 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \setkeys{greek}{numerals,attic=false}
 
 \def\monogreekcaptions{%
-   \def\refname{\textgreek{Αναφορές}}%
-   \def\abstractname{\textgreek{Περίληψη}}%
-   \def\bibname{\textgreek{Βιβλιογραφία}}%
-   \def\prefacename{\textgreek{Πρόλογος}}%
-   \def\chaptername{\textgreek{Κεφάλαιο}}%
-   \def\appendixname{\textgreek{Παράρτημα}}%
-   \def\contentsname{\textgreek{Περιεχόμενα}}%
-   \def\listfigurename{\textgreek{Κατάλογος σχημάτων}}%
-   \def\listtablename{\textgreek{Κατάλογος πινάκων}}%
-   \def\indexname{\textgreek{Ευρετήριο}}%
-   \def\figurename{\textgreek{Σχήμα}}%
-   \def\tablename{\textgreek{Πίνακας}}%
-   \def\partname{\textgreek{Μέρος}}%
-   \def\pagename{\textgreek{Σελίδα}}%
-   \def\seename{\textgreek{βλέπε}}%
-   \def\alsoname{\textgreek{βλέπε επίσης}}%
-   \def\enclname{\textgreek{Συνημμένα}}%
-   \def\ccname{\textgreek{Κοινοποίηση}}%
-   \def\headtoname{\textgreek{Προς}}%
-   \def\proofname{\textgreek{Απόδειξη}}%
+   \def\refname{Αναφορές}%
+   \def\abstractname{Περίληψη}%
+   \def\bibname{Βιβλιογραφία}%
+   \def\prefacename{Πρόλογος}%
+   \def\chaptername{Κεφάλαιο}%
+   \def\appendixname{Παράρτημα}%
+   \def\contentsname{Περιεχόμενα}%
+   \def\listfigurename{Κατάλογος σχημάτων}%
+   \def\listtablename{Κατάλογος πινάκων}%
+   \def\indexname{Ευρετήριο}%
+   \def\figurename{Σχήμα}%
+   \def\tablename{Πίνακας}%
+   \def\partname{Μέρος}%
+   \def\pagename{Σελίδα}%
+   \def\seename{βλέπε}%
+   \def\alsoname{βλέπε επίσης}%
+   \def\enclname{Συνημμένα}%
+   \def\ccname{Κοινοποίηση}%
+   \def\headtoname{Προς}%
+   \def\proofname{Απόδειξη}%
    \def\glossaryname{Γλωσσάρι}}%
 \def\datemonogreek{%   
-   \def\today{\textgreek{\number\day\space%
+   \def\today{\number\day\space%
       \greek@month%
-      \space\number\year}}%
-   \def\greektoday{\textgreek{\greeknumber\day\space%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
       \greek@month%
-      \space\greeknumber\year}}%
-   \def\Greektoday{\textgreek{\Greeknumber\day\space%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
       \greek@month%
-      \space\Greeknumber\year}}%
+      \space\Greeknumber\year}%
    \def\greek@month{\ifcase\month\or%
       Ιανουαρίου\or
       Φεβρουαρίου\or
@@ -4629,36 +4759,36 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
       Νοεμβρίου\or
       Δεκεμβρίου\fi}}%
 \def\polygreekcaptions{%
-   \def\refname{\textgreek{Ἀναφορές}}%
-   \def\abstractname{\textgreek{Περίληψη}}%
-   \def\bibname{\textgreek{Βιβλιογραφία}}%
-   \def\prefacename{\textgreek{Πρόλογος}}%
-   \def\chaptername{\textgreek{Κεφάλαιο}}%
-   \def\appendixname{\textgreek{Παράρτημα}}%
-   \def\contentsname{\textgreek{Περιεχόμενα}}%
-   \def\listfigurename{\textgreek{Κατάλογος σχημάτων}}%
-   \def\listtablename{\textgreek{Κατάλογος πινάκων}}%
-   \def\indexname{\textgreek{Εὑρετήριο}}%
-   \def\figurename{\textgreek{Σχῆμα}}%
-   \def\tablename{\textgreek{Πίνακας}}%
-   \def\partname{\textgreek{Μέρος}}%
-   \def\pagename{\textgreek{Σελίδα}}%
-   \def\seename{\textgreek{βλέπε}}%
-   \def\alsoname{\textgreek{βλέπε ἐπίσης}}%
-   \def\enclname{\textgreek{Συνημμένα}}%
-   \def\ccname{\textgreek{Κοινοποίηση}}%
-   \def\headtoname{\textgreek{Πρὸς}}%
-   \def\proofname{\textgreek{Ἀπόδειξη}}}%
+   \def\refname{Ἀναφορές}%
+   \def\abstractname{Περίληψη}%
+   \def\bibname{Βιβλιογραφία}%
+   \def\prefacename{Πρόλογος}%
+   \def\chaptername{Κεφάλαιο}%
+   \def\appendixname{Παράρτημα}%
+   \def\contentsname{Περιεχόμενα}%
+   \def\listfigurename{Κατάλογος σχημάτων}%
+   \def\listtablename{Κατάλογος πινάκων}%
+   \def\indexname{Εὑρετήριο}%
+   \def\figurename{Σχῆμα}%
+   \def\tablename{Πίνακας}%
+   \def\partname{Μέρος}%
+   \def\pagename{Σελίδα}%
+   \def\seename{βλέπε}%
+   \def\alsoname{βλέπε ἐπίσης}%
+   \def\enclname{Συνημμένα}%
+   \def\ccname{Κοινοποίηση}%
+   \def\headtoname{Πρὸς}%
+   \def\proofname{Ἀπόδειξη}}%
 \def\datepolygreek{%   
-   \def\today{\textgreek{\number\day\space%
+   \def\today{\number\day\space%
       \greek@month%
-      \space\number\year}}%
-   \def\greektoday{\textgreek{\greeknumber\day\space%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
       \greek@month%
-      \space\greeknumber\year}}%
-   \def\Greektoday{\textgreek{\Greeknumber\day\space%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
       \greek@month%
-      \space\Greeknumber\year}}%
+      \space\Greeknumber\year}%
    \def\greek@month{\ifcase\month\or%
       Ἰανουαρίου\or
       Φεβρουαρίου\or
@@ -4700,15 +4830,15 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
   \def\figurename{Σχῆμα}%
   \def\headtoname{Πρὸς}}%
 \def\dateancientgreek{%
-  \def\today{\textgreek{\number\day\space%
+  \def\today{\number\day\space%
       \greek@month%
-      \space\number\year}}%
-   \def\greektoday{\textgreek{\greeknumber\day\space%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
       \greek@month%
-      \space\greeknumber\year}}%
-   \def\Greektoday{\textgreek{\Greeknumber\day\space%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
       \greek@month%
-      \space\Greeknumber\year}}%
+      \space\Greeknumber\year}%
    \def\greek@month{\ifcase\month\or%
       Ἰανουαρίου\or
       Φεβρουαρίου\or
@@ -4919,27 +5049,27 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 \def\captionshebrew{%
   \def\prefacename{מבוא}%
-  \def\refname{רשימט מקורוט}%
-  \def\abstractname{טקציר}%
-  \def\bibname{ביבליו גרפיח}%
+  \def\refname{מקורות}%
+  \def\abstractname{תקציר}%
+  \def\bibname{ביבליוגרפיה}%
   \def\chaptername{פרק}%
-  \def\appendixname{נספה}%
-  \def\contentsname{טוכן עניינים}%
-  \def\listfigurename{רשימט איורים}%
-  \def\listtablename{רשימט תבלאוט}%
-  \def\indexname{מפטה}%
+  \def\appendixname{נספח}%
+  \def\contentsname{תוכן העניינים}%
+  \def\listfigurename{רשימת האיורים}%
+  \def\listtablename{רשימת הטבלאות}%
+  \def\indexname{מפתח}%
   \def\figurename{איור}%
-  \def\tablename{תבלח}%
-  \def\partname{הלק}%
+  \def\tablename{טבלה}%
+  \def\partname{חלק}%
   \def\enclname{רצ"ב}%
-  \def\ccname{חעטקי ם}%
+  \def\ccname{העטקים}%
   \def\headtoname{אל}%
   \def\pagename{עמוד}%
   \def\psname{נ.ב.}%
-  \def\seename{ראח}%
-  \def\alsoname{ראח ג ם}% check
-  \def\proofname{חוכהח}
-  \def\glossaryname{אגרון מונחים}% check 
+  \def\seename{ראה}%
+  \def\alsoname{ראה גם}% check
+  \def\proofname{הוכחה}
+  \def\glossaryname{מילון מונחים}% check
 }
 \def\datehebrew{%
   \def\today{%
@@ -4955,8 +5085,8 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \def\hebrewgregmonth#1{\ifcase#1%
   \or ינואר% יאנואר
     \or פברואר\or מרץ% מרס / מארס
-    \or אפריל\or מי% מאי
-    \or יוני\or יולי\or אבגוסט% אוגוסט
+    \or אפריל\or מאי% מי
+    \or יוני\or יולי\or אוגוסט %אבגוסט
     \or ספטמבר\or אוקטובר\or נובמבר\or דצמבר\fi}
 
 
@@ -5114,33 +5244,33 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionshindi{%
-     \def\abstractname{\texthindi{सारांश}}%
-     \def\appendixname{\texthindi{परिशिष्ट}}%
-     \def\bibname{\texthindi{संदर ग्रन्थ}}% (?)
+     \def\abstractname{सारांश}%
+     \def\appendixname{परिशिष्ट}%
+     \def\bibname{संदर ग्रन्थ}% (?)
      \def\ccname{}%
-     \def\chaptername{\texthindi{अध्याय}}%
-     \def\contentsname{\texthindi{विषय सूची}}%
+     \def\chaptername{अध्याय}%
+     \def\contentsname{विषय सूची}%
      \def\enclname{}%
-     \def\figurename{\texthindi{चित्र}}% रेखाचित्र
-     \def\headpagename{\texthindi{पृषठ}}%
+     \def\figurename{चित्र}% रेखाचित्र
+     \def\headpagename{पृषठ}%
      \def\headtoname{}%
-     \def\indexname{\texthindi{सूची}}%
+     \def\indexname{सूची}%
      %              सूचक
      %              अनुक्रमणिका
      %              अनुक्रमणि
-     \def\listfigurename{\texthindi{चित्रों की सूची}}%
-     \def\listtablename{\texthindi{तालिकाओं की सूची}}%
-     \def\pagename{\texthindi{पृषठ}}%
-     \def\partname{\texthindi{खणड}}%
-     \def\prefacename{\texthindi{प्रस्तावना}}% प्राक्कथन
-     \def\refname{\texthindi{हवाले}}%
-     \def\tablename{\texthindi{तालिका}}%
-     \def\seename{\texthindi{देखिए}}%
-     \def\alsoname{\texthindi{और देखिए}}%
-     \def\alsoseename{\texthindi{और देखिए}}%
+     \def\listfigurename{चित्रों की सूची}%
+     \def\listtablename{तालिकाओं की सूची}%
+     \def\pagename{पृषठ}%
+     \def\partname{खणड}%
+     \def\prefacename{प्रस्तावना}% प्राक्कथन
+     \def\refname{हवाले}%
+     \def\tablename{तालिका}%
+     \def\seename{देखिए}%
+     \def\alsoname{और देखिए}%
+     \def\alsoseename{और देखिए}%
 }
 \def\datehindi{%
-   \def\today{\texthindi{\number\day\space\ifcase\month\or
+   \def\today{\number\day\space\ifcase\month\or
      जनवरी\or
      फ़रवरी\or
      मार्च\or
@@ -5153,7 +5283,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
      अक्तूबर\or
      नवम्बर\or
      दिसम्बर\fi
-     \space\number\year}}%
+     \space\number\year}%
 }
 
 \def\hindi@language{\protect\language=\l@hindi}
@@ -5215,35 +5345,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsicelandic{%
-   \def\refname{\texticelandic{Heimildir}}%
-   \def\abstractname{\texticelandic{Útdráttur}}%
-   \def\bibname{\texticelandic{Heimildir}}%
-   \def\prefacename{\texticelandic{Formáli}}%
-   \def\chaptername{\texticelandic{Kafli}}%
-   \def\appendixname{\texticelandic{Viðauki}}%
-   \def\contentsname{\texticelandic{Efnisyfirlit}}%
-   \def\listfigurename{\texticelandic{Myndaskrá}}%
-   \def\listtablename{\texticelandic{Töfluskrá}}%
-   \def\indexname{\texticelandic{Atriðisorðaskrá}}%
-   \def\figurename{\texticelandic{Mynd}}%
-   \def\tablename{\texticelandic{Tafla}}%
-   %\def\thepart{\texticelandic{}}%
-   \def\partname{\texticelandic{Hluti}}%
-   \def\pagename{\texticelandic{Blaðsíða}}%
-   \def\seename{\texticelandic{Sjá}}%
-   \def\alsoname{\texticelandic{Sjá einnig}}%
-   \def\enclname{\texticelandic{Hjálagt}}%
-   \def\ccname{\texticelandic{Samrit}}%
-   \def\headtoname{\texticelandic{Til:}}%
-   \def\proofname{\texticelandic{Sönnun}}%
-   \def\glossaryname{\texticelandic{Orðalisti}}%
+   \def\refname{Heimildir}%
+   \def\abstractname{Útdráttur}%
+   \def\bibname{Heimildir}%
+   \def\prefacename{Formáli}%
+   \def\chaptername{Kafli}%
+   \def\appendixname{Viðauki}%
+   \def\contentsname{Efnisyfirlit}%
+   \def\listfigurename{Myndaskrá}%
+   \def\listtablename{Töfluskrá}%
+   \def\indexname{Atriðisorðaskrá}%
+   \def\figurename{Mynd}%
+   \def\tablename{Tafla}%
+   %\def\thepart{}%
+   \def\partname{Hluti}%
+   \def\pagename{Blaðsíða}%
+   \def\seename{Sjá}%
+   \def\alsoname{Sjá einnig}%
+   \def\enclname{Hjálagt}%
+   \def\ccname{Samrit}%
+   \def\headtoname{Til:}%
+   \def\proofname{Sönnun}%
+   \def\glossaryname{Orðalisti}%
    }
 \def\dateicelandic{%
-   \def\today{\texticelandic{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     janúar\or febrúar\or mars\or apríl\or maí\or
     júní\or júlí\or ágúst\or september\or
     október\or nóvember\or desember\fi
-    \space\number\year}}%
+    \space\number\year}%
     }
 
 \def\icelandic@language{\protect\language=\l@icelandic}
@@ -5268,35 +5398,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsinterlingua{%
-   \def\refname{\textinterlingua{Referentias}}%
-   \def\abstractname{\textinterlingua{Summario}}%
-   \def\bibname{\textinterlingua{Bibliographia}}%
-   \def\prefacename{\textinterlingua{Prefacio}}%
-   \def\chaptername{\textinterlingua{Capitulo}}%
-   \def\appendixname{\textinterlingua{Appendice}}%
-   \def\contentsname{\textinterlingua{Contento}}%
-   \def\listfigurename{\textinterlingua{Lista de figuras}}%
-   \def\listtablename{\textinterlingua{Lista de tabellas}}%
-   \def\indexname{\textinterlingua{Indice}}%
-   \def\figurename{\textinterlingua{Figura}}%
-   \def\tablename{\textinterlingua{Tabella}}%
-   \def\partname{\textinterlingua{Parte}}%
-   %\def\thepart{\textinterlingua{}}%
-   \def\pagename{\textinterlingua{Pagina}}%
-   \def\seename{\textinterlingua{vide}}%
-   \def\alsoname{\textinterlingua{vide etiam}}%
-   \def\enclname{\textinterlingua{Incluso}}%
-   \def\ccname{\textinterlingua{Copia}}%
-   \def\headtoname{\textinterlingua{A}}%
-   \def\proofname{\textinterlingua{Prova}}%
-   \def\glossaryname{\textinterlingua{Glossario}}%
+   \def\refname{Referentias}%
+   \def\abstractname{Summario}%
+   \def\bibname{Bibliographia}%
+   \def\prefacename{Prefacio}%
+   \def\chaptername{Capitulo}%
+   \def\appendixname{Appendice}%
+   \def\contentsname{Contento}%
+   \def\listfigurename{Lista de figuras}%
+   \def\listtablename{Lista de tabellas}%
+   \def\indexname{Indice}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabella}%
+   \def\partname{Parte}%
+   %\def\thepart{}%
+   \def\pagename{Pagina}%
+   \def\seename{vide}%
+   \def\alsoname{vide etiam}%
+   \def\enclname{Incluso}%
+   \def\ccname{Copia}%
+   \def\headtoname{A}%
+   \def\proofname{Prova}%
+   \def\glossaryname{Glossario}%
    }
 \def\dateinterlingua{%
-   \def\today{\textinterlingua{le~\number\day\space de \ifcase\month\or
+   \def\today{le~\number\day\space de \ifcase\month\or
     januario\or februario\or martio\or april\or maio\or junio\or
     julio\or augusto\or septembre\or octobre\or novembre\or
     decembre\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\interlingua@language{\protect\language=\l@interlingua}
 
@@ -5321,38 +5451,38 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsirish{%
-   \def\refname{\textirish{Tagairtí}}%
-   \def\abstractname{\textirish{Achoimre}}%
-   \def\bibname{\textirish{Leabharliosta}}%
-   \def\prefacename{\textirish{Réamhrá}}%    <-- also "Brollach"
-   \def\refname{\textirish{Tagairtí}}%
-   \def\chaptername{\textirish{Tagairtí}}%
-   \def\appendixname{\textirish{Aguisín}}%
-   \def\contentsname{\textirish{Clár Ábhair}}%
-   \def\listfigurename{\textirish{Léaráidí}}%
-   \def\listtablename{\textirish{Táblaí}}%
-   \def\indexname{\textirish{Innéacs}}%
-   \def\figurename{\textirish{Léaráid}}%
-   \def\tablename{\textirish{Tábla}}%
-   %\def\thepart{\textirish{}}%
-   \def\partname{\textirish{Cuid}}%
-   \def\pagename{\textirish{Leathanach}}%
-   \def\seename{\textirish{féach}}%
-   \def\alsoname{\textirish{féach freisin}}%
-   \def\enclname{\textirish{faoi iamh}}%
-   \def\ccname{\textirish{cc}}%
-   \def\headtoname{\textirish{Go}}%
-   \def\proofname{\textirish{Cruthúnas}}%
-   \def\glossaryname{\textirish{Glossary}}%
+   \def\refname{Tagairtí}%
+   \def\abstractname{Achoimre}%
+   \def\bibname{Leabharliosta}%
+   \def\prefacename{Réamhrá}%    <-- also "Brollach"
+   \def\refname{Tagairtí}%
+   \def\chaptername{Tagairtí}%
+   \def\appendixname{Aguisín}%
+   \def\contentsname{Clár Ábhair}%
+   \def\listfigurename{Léaráidí}%
+   \def\listtablename{Táblaí}%
+   \def\indexname{Innéacs}%
+   \def\figurename{Léaráid}%
+   \def\tablename{Tábla}%
+   %\def\thepart{}%
+   \def\partname{Cuid}%
+   \def\pagename{Leathanach}%
+   \def\seename{féach}%
+   \def\alsoname{féach freisin}%
+   \def\enclname{faoi iamh}%
+   \def\ccname{cc}%
+   \def\headtoname{Go}%
+   \def\proofname{Cruthúnas}%
+   \def\glossaryname{Glossary}%
    }
 \def\dateirish{%
-   \def\today{\textirish{%
+   \def\today{%
     \number\day\space \ifcase\month\or
     Eanáir\or Feabhra\or Márta\or Aibreán\or
     Bealtaine\or Meitheamh\or Iúil\or Lúnasa\or
     Meán Fómhair\or Deireadh Fómhair\or
     Mí na Samhna\or Mí na Nollag\fi
-    \space \number\year}}}
+    \space \number\year}}
 
 \def\irish@language{\protect\language=\l@irish}
 
@@ -5400,10 +5530,10 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
   \def\glossaryname{Glossario}%
    }
 \def\dateitalian{%
-   \def\today{\textitalian{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     gennaio\or febbraio\or marzo\or aprile\or maggio\or giugno\or
     luglio\or agosto\or settembre\or ottobre\or novembre\or
-    dicembre\fi\space \number\year}}
+    dicembre\fi\space \number\year}
 }
 
 \def\italian@language{\protect\language=\l@italian}
@@ -5433,35 +5563,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionslatin{%
-   \def\prefacename{\textlatin{Praefatio}}%
-   \def\refname{\textlatin{Conspectus librorum}}%
-   \def\abstractname{\textlatin{Summarium}}%
-   \def\bibname{\textlatin{Conspectus librorum}}%
-   \def\chaptername{\textlatin{Caput}}%
-   \def\appendixname{\textlatin{Additamentum}}%
-   \def\contentsname{\textlatin{Index}}%
-   \def\listfigurename{\textlatin{Conspectus descriptionum}}%
-   \def\listtablename{\textlatin{Conspectus tabularum}}%
-   \def\indexname{\textlatin{Index rerum notabilium}}%
-   \def\figurename{\textlatin{Descriptio}}%
-   \def\tablename{\textlatin{Tabula}}%
-   \def\partname{\textlatin{Pars}}%
-   \def\enclname{\textlatin{Additur}}%
-   \def\ccname{\textlatin{Exemplar}}%
+   \def\prefacename{Praefatio}%
+   \def\refname{Conspectus librorum}%
+   \def\abstractname{Summarium}%
+   \def\bibname{Conspectus librorum}%
+   \def\chaptername{Caput}%
+   \def\appendixname{Additamentum}%
+   \def\contentsname{Index}%
+   \def\listfigurename{Conspectus descriptionum}%
+   \def\listtablename{Conspectus tabularum}%
+   \def\indexname{Index rerum notabilium}%
+   \def\figurename{Descriptio}%
+   \def\tablename{Tabula}%
+   \def\partname{Pars}%
+   \def\enclname{Additur}%
+   \def\ccname{Exemplar}%
    \def\headtoname{\ignorespaces}%
-   \def\pagename{\textlatin{pagina}}%
-   \def\seename{\textlatin{cfr.}}%
-   \def\alsoname{\textlatin{cfr.}}%
-   \def\proofname{\textlatin{Demonstratio}}%
-   \def\glossaryname{\textlatin{Glossarium}}%
+   \def\pagename{pagina}%
+   \def\seename{cfr.}%
+   \def\alsoname{cfr.}%
+   \def\proofname{Demonstratio}%
+   \def\glossaryname{Glossarium}%
    }
 \def\datelatin{%   
-   \def\today{\textlatin{\uppercase\expandafter{\romannumeral\day}%
+   \def\today{\uppercase\expandafter{\romannumeral\day}%
       \space \ifcase\month%
       \or Januarii\or Februarii\or Martii\or Aprilis\or Maji\or Junii\or%
       Julii\or Augusti\or Septembris\or Octobris\or Novembris\or%
       Decembris\fi%
-      \space \uppercase\expandafter{\romannumeral\year}}}}
+      \space \uppercase\expandafter{\romannumeral\year}}}
 
 \def\latin@language{\protect\language=\l@latin}
 
@@ -5498,36 +5628,36 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionslatvian{%
-   \def\prefacename{\textlatvian{Priekšvārds}}%
-   \def\refname{\textlatvian{Literatūras saraksts}}%
-   \def\abstractname{\textlatvian{Anotācija}}%
-   \def\bibname{\textlatvian{Literatūra}}%
-   \def\chaptername{\textlatvian{Nodaļa}}%
-   \def\appendixname{\textlatvian{Pielikums}}%
-   \def\contentsname{\textlatvian{Saturs}}%
-   \def\listfigurename{\textlatvian{Attēlu saraksts}}%
-   \def\listtablename{\textlatvian{Tabulu saraksts}}%
-   \def\indexname{\textlatvian{Index}}%
-   \def\figurename{\textlatvian{Att.}}%
-   \def\tablename{\textlatvian{Tabula}}%
-   \def\partname{\textlatvian{Daļa}}%
-   \def\enclname{\textlatvian{encl}}%
-   \def\ccname{\textlatvian{cc}}%
-   \def\headtoname{\textlatvian{To}}%
-   \def\pagename{\textlatvian{lpp.}}%
-   \def\seename{\textlatvian{sk.}}%
-   \def\alsoname{\textlatvian{sk. arī}}%
-   \def\proofname{\textlatvian{Pierādījums}}%
+   \def\prefacename{Priekšvārds}%
+   \def\refname{Literatūras saraksts}%
+   \def\abstractname{Anotācija}%
+   \def\bibname{Literatūra}%
+   \def\chaptername{Nodaļa}%
+   \def\appendixname{Pielikums}%
+   \def\contentsname{Saturs}%
+   \def\listfigurename{Attēlu saraksts}%
+   \def\listtablename{Tabulu saraksts}%
+   \def\indexname{Index}%
+   \def\figurename{Att.}%
+   \def\tablename{Tabula}%
+   \def\partname{Daļa}%
+   \def\enclname{encl}%
+   \def\ccname{cc}%
+   \def\headtoname{To}%
+   \def\pagename{lpp.}%
+   \def\seename{sk.}%
+   \def\alsoname{sk. arī}%
+   \def\proofname{Pierādījums}%
    }
 \def\datelatvian{%
-   \def\today{\textlatvian{%
+   \def\today{%
       \number\year.\thinspace gada%
       \space\number\day.\thinspace%
       \ifcase\month\or%
       janvārī\or februārī\or martā\or%
       aprīlī\or maijā\or jūnijā\or%
       jūlijā\or augustā\or septembrī\or%
-      oktobrī\or novembrī\or decembrī\fi}}}
+      oktobrī\or novembrī\or decembrī\fi}}
 
 \def\latvian@language{\protect\language=\l@latvian}
 
@@ -5559,35 +5689,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionslsorbian{%
-   \def\refname{\textlsorbian{Referency}}%
-   \def\abstractname{\textlsorbian{Abstrakt}}%
-   \def\bibname{\textlsorbian{Literatura}}%
-   \def\prefacename{\textlsorbian{Zawod}}%
-   \def\chaptername{\textlsorbian{Kapitl}}%
-   \def\appendixname{\textlsorbian{Dodawki}}%
-   \def\contentsname{\textlsorbian{Wopśimjeśe}}%
-   \def\listfigurename{\textlsorbian{Zapis wobrazow}}%
-   \def\listtablename{\textlsorbian{Zapis tabulkow}}%
-   \def\indexname{\textlsorbian{Indeks}}%
-   \def\figurename{\textlsorbian{Wobraz}}%
-   \def\tablename{\textlsorbian{Tabulka}}%
-   %\def\thepart{\textlsorbian{}}%
-   \def\partname{\textlsorbian{Źěl}}%
-   \def\pagename{\textlsorbian{Strona}}%
-   \def\seename{\textlsorbian{gl.}}%
-   \def\alsoname{\textlsorbian{gl.~teke}}%
-   \def\enclname{\textlsorbian{Pśiłoga}}%
-   \def\ccname{\textlsorbian{CC}}%
-   \def\headtoname{\textlsorbian{Komu}}%
-   \def\proofname{\textlsorbian{Proof}}%
-   \def\glossaryname{\textlsorbian{Glossary}}%
+   \def\refname{Referency}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Zawod}%
+   \def\chaptername{Kapitl}%
+   \def\appendixname{Dodawki}%
+   \def\contentsname{Wopśimjeśe}%
+   \def\listfigurename{Zapis wobrazow}%
+   \def\listtablename{Zapis tabulkow}%
+   \def\indexname{Indeks}%
+   \def\figurename{Wobraz}%
+   \def\tablename{Tabulka}%
+   %\def\thepart{}%
+   \def\partname{Źěl}%
+   \def\pagename{Strona}%
+   \def\seename{gl.}%
+   \def\alsoname{gl.~teke}%
+   \def\enclname{Pśiłoga}%
+   \def\ccname{CC}%
+   \def\headtoname{Komu}%
+   \def\proofname{Proof}%
+   \def\glossaryname{Glossary}%
    }
 \def\datelsorbian{%
-    \def\today{\textlsorbian{\number\day.~\ifcase\month\or
+    \def\today{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or maja\or
     junija\or julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
-    \space \number\year}}%
+    \space \number\year}%
     \def\oldtoday{\textlsorbian{\number\day.~\ifcase\month\or
     wjelikego rožka\or małego rožka\or nalětnika\or
     jatšownika\or rožownika\or smažnika\or pražnika\or
@@ -5625,37 +5755,37 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsmagyar{%
-   \def\refname{\textmagyar{Hivatkozások}}%
-   \def\abstractname{\textmagyar{Kivonat}}%
-   \def\bibname{\textmagyar{Irodalomjegyzék}}%
-   \def\prefacename{\textmagyar{Előszó}}%
-   \def\chaptername{\textmagyar{fejezet}}%
-   \def\appendixname{\textmagyar{Függelék}}%
-   \def\contentsname{\textmagyar{Tartalomjegyzék}}%
-   \def\listfigurename{\textmagyar{Ábrák jegyzéke}}%
-   \def\listtablename{\textmagyar{Táblázatok jegyzéke}}%
-   \def\indexname{\textmagyar{Tárgymutató}}%
-   \def\figurename{\textmagyar{ábra}}%
-   \def\tablename{\textmagyar{táblázat}}%
-   %\def\thepart{\textmagyar{}}%
-   \def\partname{\textmagyar{rész}}%
-   \def\pagename{\textmagyar{oldal}}%
-   \def\seename{\textmagyar{lásd}}%
-   \def\alsoname{\textmagyar{lásd még}}%
-   \def\enclname{\textmagyar{Melléklet}}%
-   \def\ccname{\textmagyar{Körlevél–címzettek}}%
-   \def\headtoname{\textmagyar{Címzett}}%
-   \def\proofname{\textmagyar{Bizonyítás}}%
-   \def\glossaryname{\textmagyar{Szójegyzék}}%
+   \def\refname{Hivatkozások}%
+   \def\abstractname{Kivonat}%
+   \def\bibname{Irodalomjegyzék}%
+   \def\prefacename{Előszó}%
+   \def\chaptername{fejezet}%
+   \def\appendixname{Függelék}%
+   \def\contentsname{Tartalomjegyzék}%
+   \def\listfigurename{Ábrák jegyzéke}%
+   \def\listtablename{Táblázatok jegyzéke}%
+   \def\indexname{Tárgymutató}%
+   \def\figurename{ábra}%
+   \def\tablename{táblázat}%
+   %\def\thepart{}%
+   \def\partname{rész}%
+   \def\pagename{oldal}%
+   \def\seename{lásd}%
+   \def\alsoname{lásd még}%
+   \def\enclname{Melléklet}%
+   \def\ccname{Körlevél–címzettek}%
+   \def\headtoname{Címzett}%
+   \def\proofname{Bizonyítás}%
+   \def\glossaryname{Szójegyzék}%
    }
 \def\datemagyar{%   
-   \def\today{\textmagyar{%
+   \def\today{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or
     április\or május\or június\or
     július\or augusztus\or szeptember\or
     október\or november\or december\fi
-    \space\number\day.}}%
+    \space\number\day.}%
    \def\ondatemagyar{\textmagyar{%
     \number\year.\nobreakspace\ifcase\month\or
     január\or február\or március\or
@@ -5699,34 +5829,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsnorsk{%
-   \def\refname{\textnorsk{Referanser}}%
-   \def\abstractname{\textnorsk{Sammendrag}}%
-   \def\bibname{\textnorsk{Bibliografi}}%
-   \def\prefacename{\textnorsk{Forord}}%
-   \def\chaptername{\textnorsk{Kapittel}}%
-   \def\appendixname{\textnorsk{Tillegg}}%
-   \def\contentsname{\textnorsk{Innhold}}%
-   \def\listfigurename{\textnorsk{Figurer}}%
-   \def\listtablename{\textnorsk{Tabeller}}%
-   \def\indexname{\textnorsk{Register}}%
-   \def\figurename{\textnorsk{Figur}}%
-   \def\tablename{\textnorsk{Tabell}}%
-   %\def\thepart{\textnorsk{}}% <<<
-   \def\partname{\textnorsk{Del}}%
-   \def\pagename{\textnorsk{Side}}%
-   \def\seename{\textnorsk{Se}}%
-   \def\alsoname{\textnorsk{Se også}}%
-   \def\enclname{\textnorsk{Vedlegg}}%
-   \def\ccname{\textnorsk{Kopi sendt}}%
-   \def\headtoname{\textnorsk{Til}}%
-   \def\proofname{\textnorsk{Bevis}}%
-   \def\glossaryname{\textnorsk{Ordliste}}%
+   \def\refname{Referanser}%
+   \def\abstractname{Sammendrag}%
+   \def\bibname{Bibliografi}%
+   \def\prefacename{Forord}%
+   \def\chaptername{Kapittel}%
+   \def\appendixname{Tillegg}%
+   \def\contentsname{Innhold}%
+   \def\listfigurename{Figurer}%
+   \def\listtablename{Tabeller}%
+   \def\indexname{Register}%
+   \def\figurename{Figur}%
+   \def\tablename{Tabell}%
+   %\def\thepart{}% <<<
+   \def\partname{Del}%
+   \def\pagename{Side}%
+   \def\seename{Se}%
+   \def\alsoname{Se også}%
+   \def\enclname{Vedlegg}%
+   \def\ccname{Kopi sendt}%
+   \def\headtoname{Til}%
+   \def\proofname{Bevis}%
+   \def\glossaryname{Ordliste}%
    }
 \def\datenorsk{%   
-   \def\today{\textnorsk{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or mars\or april\or mai\or juni\or
     juli\or august\or september\or oktober\or november\or desember
-    \fi\space\number\year}}%
+    \fi\space\number\year}%
     }
 
 \def\norsk@language{\protect\language=\l@norsk}
@@ -5764,34 +5894,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsnynorsk{%
-   \def\refname{\textnynorsk{Referansar}}%
-   \def\abstractname{\textnynorsk{Sammendrag}}%
-   \def\bibname{\textnynorsk{Litteratur}}%
-   \def\prefacename{\textnynorsk{Forord}}%
-   \def\chaptername{\textnynorsk{Kapittel}}%
-   \def\appendixname{\textnynorsk{Tillegg}}%
-   \def\contentsname{\textnynorsk{Innhald}}%
-   \def\listfigurename{\textnynorsk{Figurar}}%
-   \def\listtablename{\textnynorsk{Tabellar}}%
-   \def\indexname{\textnynorsk{Register}}%
-   \def\figurename{\textnynorsk{Figur}}%
-   \def\tablename{\textnynorsk{Tabell}}%
-   %\def\thepart{\textnynorsk{}}% <<<
-   \def\partname{\textnynorsk{Del}}%
-   \def\pagename{\textnynorsk{Side}}%
-   \def\seename{\textnynorsk{Sjå}}%
-   \def\alsoname{\textnynorsk{Sjå òg}}%
-   \def\enclname{\textnynorsk{Vedlegg}}%
-   \def\ccname{\textnynorsk{Kopi til}}%
-   \def\headtoname{\textnynorsk{Til}}%
-   \def\proofname{\textnynorsk{Bevis}}%
-   \def\glossaryname{\textnynorsk{Ordliste}}%
+   \def\refname{Referansar}%
+   \def\abstractname{Sammendrag}%
+   \def\bibname{Litteratur}%
+   \def\prefacename{Forord}%
+   \def\chaptername{Kapittel}%
+   \def\appendixname{Tillegg}%
+   \def\contentsname{Innhald}%
+   \def\listfigurename{Figurar}%
+   \def\listtablename{Tabellar}%
+   \def\indexname{Register}%
+   \def\figurename{Figur}%
+   \def\tablename{Tabell}%
+   %\def\thepart{}% <<<
+   \def\partname{Del}%
+   \def\pagename{Side}%
+   \def\seename{Sjå}%
+   \def\alsoname{Sjå òg}%
+   \def\enclname{Vedlegg}%
+   \def\ccname{Kopi til}%
+   \def\headtoname{Til}%
+   \def\proofname{Bevis}%
+   \def\glossaryname{Ordliste}%
    }
 \def\datenynorsk{%   
-   \def\today{\textnynorsk{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or mars\or april\or mai\or juni\or
     juli\or august\or september\or oktober\or november\or desember
-    \fi\space\number\year}}%
+    \fi\space\number\year}%
     }
 
 \def\norsk@language{\protect\language=\l@nynorsk}
@@ -5829,34 +5959,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionspolish{%
-  \def\prefacename{\textpolish{Przedmowa}}%
-  \def\refname{\textpolish{Literatura}}%
-  \def\abstractname{\textpolish{Streszczenie}}%
-  \def\bibname{\textpolish{Bibliografia}}%
-  \def\chaptername{\textpolish{Rozdział}}%
-  \def\appendixname{\textpolish{Dodatek}}%
-  \def\contentsname{\textpolish{Spis treści}}%
-  \def\listfigurename{\textpolish{Spis rysunków}}%
-  \def\listtablename{\textpolish{Spis tablic}}%
-  \def\indexname{\textpolish{Indeks}}%
-  \def\figurename{\textpolish{Rysunek}}%
-  \def\tablename{\textpolish{Tablica}}%
-  \def\partname{\textpolish{Część}}%
-  \def\enclname{\textpolish{Załącznik}}%
-  \def\ccname{\textpolish{Kopie:}}%
-  \def\headtoname{\textpolish{Do}}%
-  \def\pagename{\textpolish{Strona}}%
-  \def\seename{\textpolish{Porównaj}}%
-  \def\alsoname{\textpolish{Porównaj także}}%
-  \def\proofname{\textpolish{Dowód}}%
-  \def\glossaryname{\textpolish{Glossary}}% <-- Needs translation
+  \def\prefacename{Przedmowa}%
+  \def\refname{Literatura}%
+  \def\abstractname{Streszczenie}%
+  \def\bibname{Bibliografia}%
+  \def\chaptername{Rozdział}%
+  \def\appendixname{Dodatek}%
+  \def\contentsname{Spis treści}%
+  \def\listfigurename{Spis rysunków}%
+  \def\listtablename{Spis tablic}%
+  \def\indexname{Indeks}%
+  \def\figurename{Rysunek}%
+  \def\tablename{Tablica}%
+  \def\partname{Część}%
+  \def\enclname{Załącznik}%
+  \def\ccname{Kopie:}%
+  \def\headtoname{Do}%
+  \def\pagename{Strona}%
+  \def\seename{Porównaj}%
+  \def\alsoname{Porównaj także}%
+  \def\proofname{Dowód}%
+  \def\glossaryname{Glossary}% <-- Needs translation
    }
 \def\datepolish{%
-   \def\today{\textpolish{\ifcase\month\or%
+   \def\today{\ifcase\month\or%
       stycznia\or lutego\or marca\or kwietnia\or maja\or czerwca\or%
       lipca\or sierpnia\or września\or października\or%
       listopada\or grudnia\fi%
-      \space\number\day, \number\year}}}
+      \space\number\day, \number\year}}
 
 \def\polish@language{\protect\language=\l@polish}
 
@@ -5897,34 +6027,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsportuges{%
-   \def\refname{\textportuges{Referências}}%
-   \def\abstractname{\textportuges{Resumo}}%
-   \def\bibname{\textportuges{Bibliografia}}%
-   \def\prefacename{\textportuges{Prefácio}}%
-   \def\chaptername{\textportuges{Capítulo}}%
-   \def\appendixname{\textportuges{Apêndice}}%
-   \def\contentsname{\textportuges{Conteúdo}}%
-   \def\listfigurename{\textportuges{Lista de Figuras}}%
-   \def\listtablename{\textportuges{Lista de Tabelas}}%
-   \def\indexname{\textportuges{Índice}}%
-   \def\figurename{\textportuges{Figura}}%
-   \def\tablename{\textportuges{Tabela}}%
-   %\def\thepart{\textportuges{}}%
-   \def\partname{\textportuges{Parte}}%
-   \def\pagename{\textportuges{Página}}%
-   \def\seename{\textportuges{ver}}%
-   \def\alsoname{\textportuges{ver também}}%
-   \def\enclname{\textportuges{Anexo}}%
-   \def\ccname{\textportuges{Com cópia a}}%
-   \def\headtoname{\textportuges{Para}}%
-   \def\proofname{\textportuges{Demonstração}}%
-   \def\glossaryname{\textportuges{Glossário}}%
+   \def\refname{Referências}%
+   \def\abstractname{Resumo}%
+   \def\bibname{Bibliografia}%
+   \def\prefacename{Prefácio}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apêndice}%
+   \def\contentsname{Conteúdo}%
+   \def\listfigurename{Lista de Figuras}%
+   \def\listtablename{Lista de Tabelas}%
+   \def\indexname{Índice}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Parte}%
+   \def\pagename{Página}%
+   \def\seename{ver}%
+   \def\alsoname{ver também}%
+   \def\enclname{Anexo}%
+   \def\ccname{Com cópia a}%
+   \def\headtoname{Para}%
+   \def\proofname{Demonstração}%
+   \def\glossaryname{Glossário}%
    }
 \def\dateportuges{%   
-   \def\today{\textportuges{\number\day\space de\space\ifcase\month\or
+   \def\today{\number\day\space de\space\ifcase\month\or
       Janeiro\or Fevereiro\or Março\or Abril\or Maio\or Junho\or
       Julho\or Agosto\or Setembro\or Outubro\or Novembro\or Dezembro%
-      \fi\space de\space\number\year}}%
+      \fi\space de\space\number\year}%
       }
      
 \def\portuges@language{\protect\language=\l@portuges}
@@ -5950,35 +6080,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsromanian{%
-   \def\refname{\textromanian{Bibliografie}}%
-   \def\abstractname{\textromanian{Rezumat}}%
-   \def\bibname{\textromanian{Bibliografie}}%
-   \def\prefacename{\textromanian{Prefaţă}}%
-   \def\chaptername{\textromanian{Capitolul}}%
-   \def\appendixname{\textromanian{Anexa}}%
-   \def\contentsname{\textromanian{Cuprins}}%
-   \def\listfigurename{\textromanian{Listă de figuri}}%
-   \def\listtablename{\textromanian{Listă de tabele}}%
-   \def\indexname{\textromanian{Glosar}}%
-   \def\figurename{\textromanian{Figura}}%
-   \def\tablename{\textromanian{Tabela}}%
-   %\def\thepart{\textromanian{}}%
-   \def\partname{\textromanian{Partea}}%
-   \def\pagename{\textromanian{Pagina}}%
-   \def\seename{\textromanian{Vezi}}%
-   \def\alsoname{\textromanian{Vezi de asemenea}}%
-   \def\enclname{\textromanian{Anexă}}%
-   \def\ccname{\textromanian{Copie}}%
-   \def\headtoname{\textromanian{Pentru}}%
-   \def\proofname{\textromanian{Demonstraţie}}%
-   \def\glossaryname{\textromanian{Glosar}}%
+   \def\refname{Bibliografie}%
+   \def\abstractname{Rezumat}%
+   \def\bibname{Bibliografie}%
+   \def\prefacename{Prefaţă}%
+   \def\chaptername{Capitolul}%
+   \def\appendixname{Anexa}%
+   \def\contentsname{Cuprins}%
+   \def\listfigurename{Listă de figuri}%
+   \def\listtablename{Listă de tabele}%
+   \def\indexname{Glosar}%
+   \def\figurename{Figura}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Partea}%
+   \def\pagename{Pagina}%
+   \def\seename{Vezi}%
+   \def\alsoname{Vezi de asemenea}%
+   \def\enclname{Anexă}%
+   \def\ccname{Copie}%
+   \def\headtoname{Pentru}%
+   \def\proofname{Demonstraţie}%
+   \def\glossaryname{Glosar}%
    }
 \def\dateromanian{%   
-   \def\today{\textromanian{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     ianuarie\or februarie\or martie\or aprilie\or mai\or
     iunie\or iulie\or august\or septembrie\or octombrie\or
     noiembrie\or decembrie\fi
-    \space \number\year}}%
+    \space \number\year}%
     }
 
 \def\romanian@language{\protect\language=\l@romanian}
@@ -6038,30 +6168,32 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \setkeys{russian}{spelling}
 
 \def\captionsrussian@modern{%
-   \def\prefacename{\textrussian{Предисловие}}%
-   \def\refname{\textrussian{Примечания}}%
-   \def\abstractname{\textrussian{Аннотация}}%
-   \def\bibname{\textrussian{Библиография}}%
-   \def\chaptername{\textrussian{Глава}}%
-   \def\appendixname{\textrussian{Приложение}}%
-   \def\contentsname{\textrussian{Оглавление}}%
-   \def\listfigurename{\textrussian{Список иллюстраций}}%
-   \def\listtablename{\textrussian{Список таблиц}}%
-   \def\indexname{\textrussian{Предметный указатель}}%
-   \def\authorname{\textrussian{Именной указатель}}%
-   \def\figurename{\textrussian{Рис.}}%
-   \def\tablename{\textrussian{Таблица}}%
-   \def\partname{\textrussian{Часть}}%
-   \def\enclname{\textrussian{вкл.}}%
-   \def\ccname{\textrussian{исх.}}%
-   \def\headtoname{\textrussian{вх.}}%
-   \def\pagename{\textrussian{с.}}%
-   \def\seename{\textrussian{см.}}%
-   \def\alsoname{\textrussian{см.~также}}%
-   \def\proofname{\textrussian{Доказательство}}%
+   \def\prefacename{Предисловие}%
+   \def\refname{Список литературы}%
+   \def\abstractname{Аннотация}%
+   \def\bibname{Литература}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Приложение}%
+   \ifcsundef{thechapter}%
+   	{\def\contentsname{Содержание}}%
+	{\def\contentsname{Оглавление}}%
+   \def\listfigurename{Список иллюстраций}%
+   \def\listtablename{Список таблиц}%
+   \def\indexname{Предметный указатель}%
+   \def\authorname{Именной указатель}%
+   \def\figurename{Рис.}%
+   \def\tablename{Таблица}%
+   \def\partname{Часть}%
+   \def\enclname{вкл.}%
+   \def\ccname{исх.}%
+   \def\headtoname{вх.}%
+   \def\pagename{с.}%
+   \def\seename{см.}%
+   \def\alsoname{см.~также}%
+   \def\proofname{Доказательство}%
 }
 \def\daterussian@modern{%
-      \def\today{\textrussian{\number\day%
+      \def\today{\number\day%
       \space\ifcase\month\or%
       января\or
       февраля\or
@@ -6075,33 +6207,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
       октября\or
       ноября\or
       декабря\fi%
-      \space \number\year\space г.}}}
+      \space \number\year\space г.}}
      
 \def\captionsrussian@old{%
-   \def\prefacename{\textrussian{Предисловіе}}%
-   \def\refname{\textrussian{Примѣчанія}}%
-   \def\abstractname{\textrussian{Аннотація}}%
-   \def\bibname{\textrussian{Библіографія}}%
-   \def\chaptername{\textrussian{Глава}}%
-   \def\appendixname{\textrussian{Приложеніе}}%
-   \def\contentsname{\textrussian{Оглавленіе}}%
-   \def\listfigurename{\textrussian{Списокъ иллюстрацій}}%
-   \def\listtablename{\textrussian{Списокъ таблицъ}}%
-   \def\indexname{\textrussian{Предмѣтный указатель}}%
-   \def\authorname{\textrussian{Именной указатель}}%
-   \def\figurename{\textrussian{Рис.}}%
-   \def\tablename{\textrussian{Таблица}}%
-   \def\partname{\textrussian{Часть}}%
-   \def\enclname{\textrussian{вкл.}}%
-   \def\ccname{\textrussian{исх.}}%
-   \def\headtoname{\textrussian{вх.}}%
-   \def\pagename{\textrussian{с.}}%
-   \def\seename{\textrussian{см.}}%
-   \def\alsoname{\textrussian{см.~также}}%
-   \def\proofname{\textrussian{Доказательство}}%
+   \def\prefacename{Предисловіе}%
+   \def\refname{Примѣчанія}%
+   \def\abstractname{Аннотація}%
+   \def\bibname{Библіографія}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Приложеніе}%
+   \ifcsundef{thechapter}%
+   	{\def\contentsname{Содержаніе}}%
+	{\def\contentsname{Оглавленіе}}%
+   \def\listfigurename{Списокъ иллюстрацій}%
+   \def\listtablename{Списокъ таблицъ}%
+   \def\indexname{Предмѣтный указатель}%
+   \def\authorname{Именной указатель}%
+   \def\figurename{Рис.}%
+   \def\tablename{Таблица}%
+   \def\partname{Часть}%
+   \def\enclname{вкл.}%
+   \def\ccname{исх.}%
+   \def\headtoname{вх.}%
+   \def\pagename{с.}%
+   \def\seename{см.}%
+   \def\alsoname{см.~также}%
+   \def\proofname{Доказательство}%
 }  
 \def\daterussian@old{
-      \def\today{\textrussian{\number\day%
+      \def\today{\number\day%
       \space\ifcase\month\or%
       января\or
       февраля\or
@@ -6115,7 +6249,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
       октября\or
       ноября\or
       декабря\fi%
-      \space \number\year\space г.}}}
+      \space \number\year\space г.}}
 
 % The following is based on some ideas from ruscor.sty
 \def\russian@capsformat{%
@@ -6212,31 +6346,31 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 
 
 \def\captionssamin{%
-   \def\refname{\textsamin{Čujuhusat}}%
-   \def\abstractname{\textsamin{Čoahkkáigeassu}}%
-   \def\bibname{\textsamin{Girjjálašvuohta}}%
-   \def\prefacename{\textsamin{Ovdasátni}}%
-   \def\chaptername{\textsamin{Kapihttal}}%
-   \def\appendixname{\textsamin{Čuovus}}%
-   \def\contentsname{\textsamin{Sisdoallu}}%
-   \def\listfigurename{\textsamin{Govvosat}}%
-   \def\listtablename{\textsamin{Tabeallat}}%
-   \def\indexname{\textsamin{Registtar}}%
-   \def\figurename{\textsamin{Govus}}%
-   \def\tablename{\textsamin{Tabealla}}%
-   \def\thepart{\textsamin{}}%
-   \def\partname{\textsamin{Oassi}}%
-   \def\pagename{\textsamin{Siidu}}%
-   \def\seename{\textsamin{geahča}}%
-   \def\alsoname{\textsamin{geahča maiddái}}%
-   \def\enclname{\textsamin{Mielddus}}%
-   \def\ccname{\textsamin{Kopia sáddejuvvon}}%
-   \def\headtoname{\textsamin{Vuostáiváldi}}%
-   \def\proofname{\textsamin{Duođaštus}}%
-   \def\glossaryname{\textsamin{Sátnelistu}}%
+   \def\refname{Čujuhusat}%
+   \def\abstractname{Čoahkkáigeassu}%
+   \def\bibname{Girjjálašvuohta}%
+   \def\prefacename{Ovdasátni}%
+   \def\chaptername{Kapihttal}%
+   \def\appendixname{Čuovus}%
+   \def\contentsname{Sisdoallu}%
+   \def\listfigurename{Govvosat}%
+   \def\listtablename{Tabeallat}%
+   \def\indexname{Registtar}%
+   \def\figurename{Govus}%
+   \def\tablename{Tabealla}%
+   \def\thepart{}%
+   \def\partname{Oassi}%
+   \def\pagename{Siidu}%
+   \def\seename{geahča}%
+   \def\alsoname{geahča maiddái}%
+   \def\enclname{Mielddus}%
+   \def\ccname{Kopia sáddejuvvon}%
+   \def\headtoname{Vuostáiváldi}%
+   \def\proofname{Duođaštus}%
+   \def\glossaryname{Sátnelistu}%
    }
 \def\datesamin{%   
-   \def\today{\textsamin{\ifcase\month\or
+   \def\today{\ifcase\month\or
     ođđajagemánu\or
     guovvamánu\or
     njukčamánu\or
@@ -6249,7 +6383,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     golggotmánu\or
     skábmamánu\or
     juovlamánu\fi
-    \space\number\day.~b.\space\number\year}}%
+    \space\number\day.~b.\space\number\year}%
     }
 
 \def\samin@language{\protect\language=\l@samin}
@@ -6277,10 +6411,11 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
   \fi%
 \fi
 
-%%  requested from Yves Codet:
-%François, would it be possible to modify "gloss-sanskrit.ldf" so as  
-%to add a non-breaking space before punctuation marks, danda (U+0964)  
-%and double danda (U+0965)? 
+\def\tmp@deva{Devanagari}
+\define@key{sanskrit}{Script}[Devanagari]{%
+    \gdef\sanskrit@script{#1}}
+
+\setkeys{sanskrit}{Script}
 
 \def\sanskrit@punctuation{%
     \frenchspacing%
@@ -6289,8 +6424,8 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     \XeTeXcharclass `\? 7%
     \XeTeXcharclass `\; 7%
     \XeTeXcharclass `\: 7%
-    \XeTeXcharclass `\। 7%
-    \XeTeXcharclass `\॥ 7%
+    \XeTeXcharclass `\। 7% danda        \ as requested by
+    \XeTeXcharclass `\॥ 7% double danda / Yves Codet
     \XeTeXinterchartoks 0 7 = {\unskip\kern.1667em}%
 }
 
@@ -6300,41 +6435,45 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 }
 
 %\def\captionssanskrit{%
-%   \def\refname{\textsanskrit{<++>}}%
-%   \def\abstractname{\textsanskrit{<++>}}%
-%   \def\bibname{\textsanskrit{<++>}}%
-%   \def\prefacename{\textsanskrit{<++>}}%
-%   \def\chaptername{\textsanskrit{<++>}}%
-%   \def\appendixname{\textsanskrit{<++>}}%
-%   \def\contentsname{\textsanskrit{<++>}}%
-%   \def\listfigurename{\textsanskrit{<++>}}%
-%   \def\listtablename{\textsanskrit{<++>}}%
-%   \def\indexname{\textsanskrit{<++>}}%
-%   \def\figurename{\textsanskrit{<++>}}%
-%   \def\tablename{\textsanskrit{<++>}}%
-%   \def\thepart{\textsanskrit{}}%
-%   \def\partname{\textsanskrit{<++>}}%
-%   \def\pagename{\textsanskrit{<++>}}%
-%   \def\seename{\textsanskrit{<++>}}%
-%   \def\alsoname{\textsanskrit{<++>}}%
-%   \def\enclname{\textsanskrit{<++>}}%
-%   \def\ccname{\textsanskrit{<++>}}%
-%   \def\headtoname{\textsanskrit{<++>}}%
-%   \def\proofname{\textsanskrit{<++>}}%
-%   \def\glossaryname{\textsanskrit{<++>}}%
-%   \def\today{\textsanskrit{<++>}}}
+%   \def\refname{<++>}%
+%   \def\abstractname{<++>}%
+%   \def\bibname{<++>}%
+%   \def\prefacename{<++>}%
+%   \def\chaptername{<++>}%
+%   \def\appendixname{<++>}%
+%   \def\contentsname{<++>}%
+%   \def\listfigurename{<++>}%
+%   \def\listtablename{<++>}%
+%   \def\indexname{<++>}%
+%   \def\figurename{<++>}%
+%   \def\tablename{<++>}%
+%   \def\thepart{}%
+%   \def\partname{<++>}%
+%   \def\pagename{<++>}%
+%   \def\seename{<++>}%
+%   \def\alsoname{<++>}%
+%   \def\enclname{<++>}%
+%   \def\ccname{<++>}%
+%   \def\headtoname{<++>}%
+%   \def\proofname{<++>}%
+%   \def\glossaryname{<++>}%
+%   \def\today{<++>}}
 
 \def\sanskrit@font{%
 \@ifundefined{sanskritfont}{%
       \@ifundefined{devanagarifont}{%
         \font\zf@basefont="\csname zf@family@fontdef\f@family\endcsname" at \f@size pt
         \zf@check@ot@script{deva}%
-	\if@tempswa%
-	  \addfontfeature{Script=Devanagari}%
+        \ifx\sanskrit@script\tmp@deva%
+		\if@tempswa%
+		  \addfontfeature{Script=Devanagari}%
+		\else%
+		  \PackageError{polyglossia}{^^J
+		  The current font does not contain the devanagari script!^^J
+		  Please define \string\devanagarifont\space or \string\sanskritfont\space with \string\newfontfamily}%
+		\fi%
 	\else%
-	  \PackageError{polyglossia}{^^J
-	  The current font does not contain the devanagari script!^^J
-	  Please define \string\devanagarifont\space or \string\sanskritfont\space with \string\newfontfamily}%
+		\addfontfeature{Script=\sanskrit@script}%
 	\fi%
 	\zf@check@ot@lang{SAN}%
 	\if@tempswa\addfontfeature{Language=Sanskrit}\fi%
@@ -6342,7 +6481,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
         {\devanagarifont%
          \zf@check@ot@lang{SAN}%
          \if@tempswa\addfontfeature{Language=Sanskrit}\fi%
-	}
+	}%
      }% 
      {\sanskritfont}%
 }
@@ -6386,37 +6525,37 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsscottish{%
-   \def\refname{\textscottish{Iomraidh}}%
-   \def\abstractname{\textscottish{Brìgh}}%
-   \def\bibname{\textscottish{Leabhraichean}}%
-   \def\prefacename{\textscottish{Preface}}%    <-- needs translation
-   \def\chaptername{\textscottish{Caibideil}}%
-   \def\appendixname{\textscottish{Ath-sgr`ıobhadh}}%
-   \def\contentsname{\textscottish{Clàr-obrach}}%
-   \def\listfigurename{\textscottish{Liosta Dhealbh}}%
-   \def\listtablename{\textscottish{Liosta Chlàr}}%
-   \def\indexname{\textscottish{Clàr-innse}}%
-   \def\figurename{\textscottish{Dealbh}}%
-   \def\tablename{\textscottish{Clàr}}%
-   %\def\thepart{\textscottish{}}%
-   \def\partname{\textscottish{Cuid}}%
-   \def\pagename{\textscottish{t.d.}}%
-   \def\seename{\textscottish{see}}%    <-- needs translation
-   \def\alsoname{\textscottish{see also}}%    <-- needs translation
-   \def\enclname{\textscottish{a-staigh}}%
-   \def\ccname{\textscottish{lethbhreac gu}}%
-   \def\headtoname{\textscottish{gu}}%
-   \def\proofname{\textscottish{Proof}}%    <-- needs translation 
-   \def\glossaryname{\textscottish{Glossary}}%    <-- needs translation
+   \def\refname{Iomraidh}%
+   \def\abstractname{Brìgh}%
+   \def\bibname{Leabhraichean}%
+   \def\prefacename{Preface}%    <-- needs translation
+   \def\chaptername{Caibideil}%
+   \def\appendixname{Ath-sgr`ıobhadh}%
+   \def\contentsname{Clàr-obrach}%
+   \def\listfigurename{Liosta Dhealbh}%
+   \def\listtablename{Liosta Chlàr}%
+   \def\indexname{Clàr-innse}%
+   \def\figurename{Dealbh}%
+   \def\tablename{Clàr}%
+   %\def\thepart{}%
+   \def\partname{Cuid}%
+   \def\pagename{t.d.}%
+   \def\seename{see}%    <-- needs translation
+   \def\alsoname{see also}%    <-- needs translation
+   \def\enclname{a-staigh}%
+   \def\ccname{lethbhreac gu}%
+   \def\headtoname{gu}%
+   \def\proofname{Proof}%    <-- needs translation 
+   \def\glossaryname{Glossary}%    <-- needs translation
    }
 \def\datescottish{%
-   \def\today{\textscottish{%
+   \def\today{%
     \number\day\space \ifcase\month\or
     am Faoilteach\or an Gearran\or am Màrt\or an Giblean\or
     an Cèitean\or an t-Òg mhios\or an t-Iuchar\or
     Lùnasdal\or an Sultuine\or an Dàmhar\or
     an t-Samhainn\or an Dubhlachd\fi
-    \space \number\year}}%
+    \space \number\year}%
     }
 
 \def\scottish@language{\protect\language=\l@scottish}
@@ -6460,65 +6599,65 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    }
 
 \def\captionsserbian@lat{%
-   \def\refname{\textserbian{Literatura}}%
-   \def\abstractname{\textserbian{Sažetak}}%
-   \def\bibname{\textserbian{Bibliografija}}%
-   \def\prefacename{\textserbian{Predgovor}}%
-   \def\chaptername{\textserbian{Glava}}%
-   \def\appendixname{\textserbian{Dodatak}}%
-   \def\contentsname{\textserbian{Sadržaj}}%
-   \def\listfigurename{\textserbian{Slike}}%
-   \def\listtablename{\textserbian{Tabele}}%
-   \def\indexname{\textserbian{Indeks}}%
-   \def\figurename{\textserbian{Slika}}%
-   \def\tablename{\textserbian{Tabela}}%
-   \def\partname{\textserbian{Deo}}%
-   \def\pagename{\textserbian{Strana}}%
-   \def\seename{\textserbian{Vidi}}%
-   \def\alsoname{\textserbian{Vidi takođe}}%
-   \def\enclname{\textserbian{Prilozi}}%
-   \def\ccname{\textserbian{Kopije}}%
-   \def\headtoname{\textserbian{Prima}}%
-   \def\proofname{\textserbian{Dokaz}}%
-   \def\glossaryname{\textserbian{Glosar}}% <-- CHECK
+   \def\refname{Literatura}%
+   \def\abstractname{Sažetak}%
+   \def\bibname{Bibliografija}%
+   \def\prefacename{Predgovor}%
+   \def\chaptername{Glava}%
+   \def\appendixname{Dodatak}%
+   \def\contentsname{Sadržaj}%
+   \def\listfigurename{Slike}%
+   \def\listtablename{Tabele}%
+   \def\indexname{Indeks}%
+   \def\figurename{Slika}%
+   \def\tablename{Tabela}%
+   \def\partname{Deo}%
+   \def\pagename{Strana}%
+   \def\seename{Vidi}%
+   \def\alsoname{Vidi takođe}%
+   \def\enclname{Prilozi}%
+   \def\ccname{Kopije}%
+   \def\headtoname{Prima}%
+   \def\proofname{Dokaz}%
+   \def\glossaryname{Glosar}% <-- CHECK
    }
 \def\dateserbian@lat{%   
-   \def\today{\textserbian{\number\day .~\ifcase\month\or
+   \def\today{\number\day .~\ifcase\month\or
     januar\or februar\or mart\or april\or maj\or
     juni\or juli\or avgust\or septembar\or oktobar\or novembar\or
-    decembar\fi \space \number\year}}%
+    decembar\fi \space \number\year}%
     }
 
 %%%TODO ASK SOMEONE TO CHECK THESE!
 \def\captionsserbian@cyr{%
-   \def\refname{\textserbian{Литература}}%
-   \def\abstractname{\textserbian{Сажетак}}%
-   \def\bibname{\textserbian{Библиографија}}%
-   \def\prefacename{\textserbian{Предговор}}%
-   \def\chaptername{\textserbian{Глава}}%
-   \def\appendixname{\textserbian{Додатак}}%
-   \def\contentsname{\textserbian{Садржај}}%
-   \def\listfigurename{\textserbian{Слике}}%
-   \def\listtablename{\textserbian{Табеле}}%
-   \def\indexname{\textserbian{Индекс}}%
-   \def\figurename{\textserbian{Слика}}%
-   \def\tablename{\textserbian{Табела}}%
-   %\def\thepart{\textserbian{}}%
-   \def\partname{\textserbian{Део}}%
-   \def\pagename{\textserbian{Страна}}%
-   \def\seename{\textserbian{Види}}%
-   \def\alsoname{\textserbian{Види такође}}%
-   \def\enclname{\textserbian{Прилоzи}}%
-   \def\ccname{\textserbian{Копије}}%
-   \def\headtoname{\textserbian{Прима}}%
-   \def\proofname{\textserbian{Докаz}}%
-   \def\glossaryname{\textserbian{Глосар}}% <-- CHECK
+   \def\refname{Литература}%
+   \def\abstractname{Сажетак}%
+   \def\bibname{Библиографија}%
+   \def\prefacename{Предговор}%
+   \def\chaptername{Глава}%
+   \def\appendixname{Додатак}%
+   \def\contentsname{Садржај}%
+   \def\listfigurename{Слике}%
+   \def\listtablename{Табеле}%
+   \def\indexname{Индекс}%
+   \def\figurename{Слика}%
+   \def\tablename{Табела}%
+   %\def\thepart{}%
+   \def\partname{Део}%
+   \def\pagename{Страна}%
+   \def\seename{Види}%
+   \def\alsoname{Види такође}%
+   \def\enclname{Прилоzи}%
+   \def\ccname{Копије}%
+   \def\headtoname{Прима}%
+   \def\proofname{Докаz}%
+   \def\glossaryname{Глосар}% <-- CHECK
    }
 \def\dateserbian@cyr{%
-   \def\today{\textserbian{\number\day .~\ifcase\month\or
+   \def\today{\number\day .~\ifcase\month\or
     јануар\or фебруар\or март\or април\or мај\or
     јуни\or јули\or август\or септембар\or октобар\or нобембар\or
-    децембар\fi \space \number\year}}%
+    децембар\fi \space \number\year}%
     }
 
 \def\serbian@font@cyr{%
@@ -6586,35 +6725,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsslovak{%
-   \def\refname{\textslovak{Referencie}}%
-   \def\abstractname{\textslovak{Abstrakt}}%
-   \def\bibname{\textslovak{Literatúra}}%
-   \def\prefacename{\textslovak{Úvod}}%
-   \def\chaptername{\textslovak{Kapitola}}%
-   \def\appendixname{\textslovak{Dodatok}}%
-   \def\contentsname{\textslovak{Obsah}}%
-   \def\listfigurename{\textslovak{Zoznam obrázkov}}%
-   \def\listtablename{\textslovak{Zoznam tabuliek}}%
-   \def\indexname{\textslovak{Index}}%
-   \def\figurename{\textslovak{Obrázok}}%
-   \def\tablename{\textslovak{Tabuľka}}%
-   %\def\thepart{\textslovak{}}%
-   \def\partname{\textslovak{Časť}}%
-   \def\pagename{\textslovak{Strana}}%
-   \def\seename{\textslovak{viď}}%
-   \def\alsoname{\textslovak{viď tiež}}%
-   \def\enclname{\textslovak{Prílohy}}%
-   \def\ccname{\textslovak{cc.}}%
-   \def\headtoname{\textslovak{Pre}}% was komu
-   \def\proofname{\textslovak{Dôkaz}}%
-   \def\glossaryname{\textslovak{Slovník}}%
+   \def\refname{Referencie}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatúra}%
+   \def\prefacename{Úvod}%
+   \def\chaptername{Kapitola}%
+   \def\appendixname{Dodatok}%
+   \def\contentsname{Obsah}%
+   \def\listfigurename{Zoznam obrázkov}%
+   \def\listtablename{Zoznam tabuliek}%
+   \def\indexname{Index}%
+   \def\figurename{Obrázok}%
+   \def\tablename{Tabuľka}%
+   %\def\thepart{}%
+   \def\partname{Časť}%
+   \def\pagename{Strana}%
+   \def\seename{viď}%
+   \def\alsoname{viď tiež}%
+   \def\enclname{Prílohy}%
+   \def\ccname{cc.}%
+   \def\headtoname{Pre}% was komu
+   \def\proofname{Dôkaz}%
+   \def\glossaryname{Slovník}%
    }
 \def\dateslovak{%   
-   \def\today{\textslovak{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januára\or februára\or marca\or apríla\or mája\or
     júna\or júla\or augusta\or septembra\or októbra\or
     novembra\or decembra\fi
-    \space \number\year}}%
+    \space \number\year}%
     }
 
 \def\slovak@language{\protect\language=\l@slovak}
@@ -6641,34 +6780,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi\fi
 
 \def\captionsslovenian{%
-   \def\refname{\textslovenian{Literatura}}%
-   \def\abstractname{\textslovenian{Povzetek}}%
-   \def\bibname{\textslovenian{Literatura}}%
-   \def\prefacename{\textslovenian{Predgovor}}%
-   \def\chaptername{\textslovenian{Poglavje}}%
-   \def\appendixname{\textslovenian{Dodatek}}%
-   \def\contentsname{\textslovenian{Kazalo}}%
-   \def\listfigurename{\textslovenian{Slike}}%
-   \def\listtablename{\textslovenian{Tabele}}%
-   \def\indexname{\textslovenian{Stvarno kazalo}}%
-   \def\figurename{\textslovenian{Slika}}%
-   \def\tablename{\textslovenian{Tabela}}%
-   %\def\thepart{\textslovenian{}}%
-   \def\partname{\textslovenian{Del}}%
-   \def\pagename{\textslovenian{Stran}}%
-   \def\seename{\textslovenian{glej}}%
-   \def\alsoname{\textslovenian{glej tudi}}%
-   \def\enclname{\textslovenian{Priloge}}%
-   \def\ccname{\textslovenian{Kopije}}%
-   \def\headtoname{\textslovenian{Prejme}}%
-   \def\proofname{\textslovenian{Dokaz}}%
-   \def\glossaryname{\textslovenian{Glosar}}% <-- CHECK!
+   \def\refname{Literatura}%
+   \def\abstractname{Povzetek}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Predgovor}%
+   \def\chaptername{Poglavje}%
+   \def\appendixname{Dodatek}%
+   \def\contentsname{Kazalo}%
+   \def\listfigurename{Slike}%
+   \def\listtablename{Tabele}%
+   \def\indexname{Stvarno kazalo}%
+   \def\figurename{Slika}%
+   \def\tablename{Tabela}%
+   %\def\thepart{}%
+   \def\partname{Del}%
+   \def\pagename{Stran}%
+   \def\seename{glej}%
+   \def\alsoname{glej tudi}%
+   \def\enclname{Priloge}%
+   \def\ccname{Kopije}%
+   \def\headtoname{Prejme}%
+   \def\proofname{Dokaz}%
+   \def\glossaryname{Glosar}% <-- CHECK!
    }
 \def\dateslovenian{%   
-   \def\today{\textslovenian{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januar\or februar\or marec\or april\or maj\or junij\or
     julij\or avgust\or september\or oktober\or november\or december\fi
-    \space \number\year}}%
+    \space \number\year}%
     }
 
 \def\slovenian@language{\protect\language=\l@slovenian}
@@ -6694,36 +6833,34 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsspanish{%
-   \def\prefacename{\textspanish{Prefacio}}%
-   \def\refname{\textspanish{Referencias}}%
-   \def\abstractname{\textspanish{Resumen}}%
-   \def\bibname{\textgerman{Bibliografía}}%
-   \def\chaptername{\textspanish{Capítulo}}%
-   \def\appendixname{\textspanish{Apéndice}}%
-   \def\contentsname{\textspanish{Índice general}}%
-   \def\listfigurename{\textspanish{Índice de figuras}}%
-   \def\listtablename{\textspanish{Índice de cuadros}}%
-   \def\indexname{\textspanish{Índice alfabético}}%
-   \def\figurename{\textspanish{Figura}}%
-   \def\tablename{\textspanish{Cuadro}}%
-   \def\partname{\textspanish{Parte}}%
-   \def\enclname{\textspanish{Adjunto(s)}}%
-   \def\ccname{\textspanish{Copia a}}%
-   \def\headtoname{\textspanish{A}}%
-   \def\pagename{\textspanish{Página}}%
-   \def\seename{\textspanish{véase}}%
-   \def\alsoname{\textspanish{véase también}}%
-   \def\proofname{\textspanish{Prueba}}%
-   \def\glossaryname{\textspanish{Glosario}}%
+   \def\prefacename{Prefacio}%
+   \def\refname{Referencias}%
+   \def\abstractname{Resumen}%
+   \def\bibname{Bibliografía}%
+   \def\chaptername{Capítulo}%
+   \def\appendixname{Apéndice}%
+   \def\contentsname{Índice general}%
+   \def\listfigurename{Índice de figuras}%
+   \def\listtablename{Índice de cuadros}%
+   \def\indexname{Índice alfabético}%
+   \def\figurename{Figura}%
+   \def\tablename{Cuadro}%
+   \def\partname{Parte}%
+   \def\enclname{Adjunto(s)}%
+   \def\ccname{Copia a}%
+   \def\headtoname{A}%
+   \def\pagename{Página}%
+   \def\seename{véase}%
+   \def\alsoname{véase también}%
+   \def\proofname{Prueba}%
+   \def\glossaryname{Glosario}%
    }
-\def\datespanish{%   
-   \def\today{\textspanish{\number\day\NonBreakingSpace de%
-      \space \ifcase\month%
-      \or enero\or febrero\or marzo\or abril\or mayo\or junio\or%
-      julio\or agosto\or septiembre\or octubre\or noviembre\or%
-      diciembre\fi%
-      \space de~\number\year}}%
-      }
+\def\datespanish{%
+   \def\today{\number\day~de~\ifcase\month\or
+    enero\or febrero\or marzo\or abril\or mayo\or junio\or
+    julio\or agosto\or septiembre\or octubre\or noviembre\or
+    diciembre\fi\space \number\year}
+}
 
 \def\spanish@language{\protect\language=\l@spanish}
 
@@ -6760,36 +6897,36 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsswedish{%
-   \def\refname{\textswedish{Referenser}}%
-   \def\abstractname{\textswedish{Sammanfattning}}%
-   \def\bibname{\textswedish{Litteraturförteckning}}%
-   \def\prefacename{\textswedish{Förord}}%
-   \def\chaptername{\textswedish{Kapitel}}%
-   \def\appendixname{\textswedish{Bilaga}}%
-   \def\contentsname{\textswedish{Innehåll}}%
-   \def\listfigurename{\textswedish{Figurer}}%
-   \def\listtablename{\textswedish{Tabeller}}%
-   \def\indexname{\textswedish{Sakregister}}%
-   \def\figurename{\textswedish{Figur}}%
-   \def\tablename{\textswedish{Tabell}}%
-   %\def\thepart{\textswedish{}}%
-   \def\partname{\textswedish{Del}}%
-   \def\pagename{\textswedish{Sida}}%
-   \def\seename{\textswedish{se}}%
-   \def\alsoname{\textswedish{se även}}%
-   \def\enclname{\textswedish{Bil.}}%
-   \def\ccname{\textswedish{Kopia för kännedom}}%
-   \def\headtoname{\textswedish{Till}}%
-   \def\proofname{\textswedish{Bevis}}%
-   \def\glossaryname{\textswedish{Ordlista}}%
+   \def\refname{Referenser}%
+   \def\abstractname{Sammanfattning}%
+   \def\bibname{Litteraturförteckning}%
+   \def\prefacename{Förord}%
+   \def\chaptername{Kapitel}%
+   \def\appendixname{Bilaga}%
+   \def\contentsname{Innehåll}%
+   \def\listfigurename{Figurer}%
+   \def\listtablename{Tabeller}%
+   \def\indexname{Sakregister}%
+   \def\figurename{Figur}%
+   \def\tablename{Tabell}%
+   %\def\thepart{}%
+   \def\partname{Del}%
+   \def\pagename{Sida}%
+   \def\seename{se}%
+   \def\alsoname{se även}%
+   \def\enclname{Bil.}%
+   \def\ccname{Kopia för kännedom}%
+   \def\headtoname{Till}%
+   \def\proofname{Bevis}%
+   \def\glossaryname{Ordlista}%
    }
 \def\dateswedish{%   
-   \def\today{\textswedish{%
+   \def\today{%
     \number\day~\ifcase\month\or
     januari\or februari\or mars\or april\or maj\or juni\or
     juli\or augusti\or september\or oktober\or november\or
     december\fi
-    \space\number\year}}
+    \space\number\year}
     \def\datesymd{%
       \def\today{\number\year-\two@digits\month-\two@digits\day}}%
     \def\datesdmy{%
@@ -7031,28 +7168,28 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \setkeys{thai}{numerals}
 
 \def\captionsthai{%
-   \def\refname{\textthai{หนังสืออ้างอิง}}%
-   \def\abstractname{\textthai{บทคัดย่อ}}%
-   \def\bibname{\textthai{บรรณานุกรม}}%
-   \def\prefacename{\textthai{คำนำ}}%
-   \def\chaptername{\textthai{บทที่}}%
-   \def\appendixname{\textthai{ภาคผนวก}}%
-   \def\contentsname{\textthai{สารบัญ}}%
-   \def\listfigurename{\textthai{สารบัญรูป}}%
-   \def\listtablename{\textthai{สารบัญตาราง}}%
-   \def\indexname{\textthai{ดรรชนี}}%
-   \def\figurename{\textthai{รูปที่}}%
-   \def\tablename{\textthai{ตารางที่}}%
-   %\def\thepart{\textthai{}}%
-   \def\partname{\textthai{ภาค}}%
-   \def\pagename{\textthai{หน้า}}%
-   \def\seename{\textthai{ดู}}%
-   \def\alsoname{\textthai{ดูเพิ่มเติม}}%
-   \def\enclname{\textthai{สิ่งที่แนบมาด้วย}}%
-   \def\ccname{\textthai{สำเนาถึง}}%
-   \def\headtoname{\textthai{เรียน}}%
-   \def\proofname{\textthai{พิสูจน์}}%
-   %\def\glossaryname{\textthai{}}%
+   \def\refname{หนังสืออ้างอิง}%
+   \def\abstractname{บทคัดย่อ}%
+   \def\bibname{บรรณานุกรม}%
+   \def\prefacename{คำนำ}%
+   \def\chaptername{บทที่}%
+   \def\appendixname{ภาคผนวก}%
+   \def\contentsname{สารบัญ}%
+   \def\listfigurename{สารบัญรูป}%
+   \def\listtablename{สารบัญตาราง}%
+   \def\indexname{ดรรชนี}%
+   \def\figurename{รูปที่}%
+   \def\tablename{ตารางที่}%
+   %\def\thepart{}%
+   \def\partname{ภาค}%
+   \def\pagename{หน้า}%
+   \def\seename{ดู}%
+   \def\alsoname{ดูเพิ่มเติม}%
+   \def\enclname{สิ่งที่แนบมาด้วย}%
+   \def\ccname{สำเนาถึง}%
+   \def\headtoname{เรียน}%
+   \def\proofname{พิสูจน์}%
+   %\def\glossaryname{}%
    }
 \def\datethai{%   
    \def\thai@month{%
@@ -7063,7 +7200,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
    \newcount\thai@year%
    \thai@year=\year%
    \advance\thai@year by 543%
-   \def\today{\textthai{\thainumber\day \space \thai@month\space พ.ศ.~\thainumber\thai@year}}%
+   \def\today{\thainumber\day \space \thai@month\space พ.ศ.~\thainumber\thai@year}%
    }
 
 %NB: thai-latex had "plus 0.6pt", but .4em appears to give better results
@@ -7267,32 +7404,32 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 }%
 
 \def\captionsukrainian{%
-   \def\refname{\textukrainian{Література}}%
-   \def\abstractname{\textukrainian{Анотація}}%
-   \def\bibname{\textukrainian{Бібліоґрафія}}%
-   \def\prefacename{\textukrainian{Вступ}}%
-   \def\chaptername{\textukrainian{Розділ}}%
-   \def\appendixname{\textukrainian{Додаток}}%
-   \def\contentsname{\textukrainian{Зміст}}%
-   \def\listfigurename{\textukrainian{Перелік ілюстрацій}}%
-   \def\listtablename{\textukrainian{Перелік таблиць}}%
-   \def\indexname{\textukrainian{Покажчик}}%
-   \def\authorname{\textukrainian{Іменний покажчик}}% babel has "Їменний покажчик"
-   \def\figurename{\textukrainian{Рис.}}%
-   \def\tablename{\textukrainian{Табл.}}%
-   %\def\thepart{\textukrainian{}}%
-   \def\partname{\textukrainian{Частина}}%
-   \def\pagename{\textukrainian{с.}}%
-   \def\seename{\textukrainian{див.}}%
-   \def\alsoname{\textukrainian{див.\ також}}%
-   \def\enclname{\textukrainian{вкладка}}%
-   \def\ccname{\textukrainian{копія}}%
-   \def\headtoname{\textukrainian{До}}%
-   \def\proofname{\textukrainian{Доведення}}%
-   \def\glossaryname{\textukrainian{Словник термінів}}%
+   \def\refname{Література}%
+   \def\abstractname{Анотація}%
+   \def\bibname{Бібліоґрафія}%
+   \def\prefacename{Вступ}%
+   \def\chaptername{Розділ}%
+   \def\appendixname{Додаток}%
+   \def\contentsname{Зміст}%
+   \def\listfigurename{Перелік ілюстрацій}%
+   \def\listtablename{Перелік таблиць}%
+   \def\indexname{Покажчик}%
+   \def\authorname{Іменний покажчик}% babel has "Їменний покажчик"
+   \def\figurename{Рис.}%
+   \def\tablename{Табл.}%
+   %\def\thepart{}%
+   \def\partname{Частина}%
+   \def\pagename{с.}%
+   \def\seename{див.}%
+   \def\alsoname{див.\ також}%
+   \def\enclname{вкладка}%
+   \def\ccname{копія}%
+   \def\headtoname{До}%
+   \def\proofname{Доведення}%
+   \def\glossaryname{Словник термінів}%
    }
 \def\dateukrainian{%
-   \def\today{\textukrainian{\number\day~\ifcase\month\or
+   \def\today{\number\day~\ifcase\month\or
     січня\or
     лютого\or
     березня\or
@@ -7305,7 +7442,7 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
     жовтня\or
     листопада\or
     грудня\fi%
-    \space\number\year~р.}}}
+    \space\number\year~р.}}
 
 \def\ukrainian@Alph#1{\ifcase#1\or
    А\or Б\or В\or г\or д\or Е\or Є\or Ж\or
@@ -7372,35 +7509,35 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionsusorbian{%
-   \def\refname{\textusorbian{Referency}}%
-   \def\abstractname{\textusorbian{Abstrakt}}%
-   \def\bibname{\textusorbian{Literatura}}%
-   \def\prefacename{\textusorbian{Zawod}}%
-   \def\chaptername{\textusorbian{Kapitl}}%
-   \def\appendixname{\textusorbian{Dodawki}}%
-   \def\contentsname{\textusorbian{Wobsah}}%
-   \def\listfigurename{\textusorbian{Zapis wobrazow}}%
-   \def\listtablename{\textusorbian{Zapis tabulkow}}%
-   \def\indexname{\textusorbian{Indeks}}%
-   \def\figurename{\textusorbian{Wobraz}}%
-   \def\tablename{\textusorbian{Tabulka}}%
-   %\def\thepart{\textusorbian{}}%
-   \def\partname{\textusorbian{Dźěl}}%
-   \def\pagename{\textusorbian{Strona}}%
-   \def\seename{\textusorbian{hl.}}%
-   \def\alsoname{\textusorbian{hl.~tež}}%
-   \def\enclname{\textusorbian{Přłoha}}%
-   \def\ccname{\textusorbian{CC}}%
-   \def\headtoname{\textusorbian{Komu}}%
-   \def\proofname{\textusorbian{Proof}}% <-- needs translation
-   \def\glossaryname{\textusorbian{Glossary}}% <-- needs translation
+   \def\refname{Referency}%
+   \def\abstractname{Abstrakt}%
+   \def\bibname{Literatura}%
+   \def\prefacename{Zawod}%
+   \def\chaptername{Kapitl}%
+   \def\appendixname{Dodawki}%
+   \def\contentsname{Wobsah}%
+   \def\listfigurename{Zapis wobrazow}%
+   \def\listtablename{Zapis tabulkow}%
+   \def\indexname{Indeks}%
+   \def\figurename{Wobraz}%
+   \def\tablename{Tabulka}%
+   %\def\thepart{}%
+   \def\partname{Dźěl}%
+   \def\pagename{Strona}%
+   \def\seename{hl.}%
+   \def\alsoname{hl.~tež}%
+   \def\enclname{Přłoha}%
+   \def\ccname{CC}%
+   \def\headtoname{Komu}%
+   \def\proofname{Proof}% <-- needs translation
+   \def\glossaryname{Glossary}% <-- needs translation
    }%
 \def\dateusorbian{%   
-   \def\today{\textusorbian{\number\day.~\ifcase\month\or
+   \def\today{\number\day.~\ifcase\month\or
     januara\or februara\or měrca\or apryla\or meje\or junija\or
     julija\or awgusta\or septembra\or oktobra\or
     nowembra\or decembra\fi
-    \space \number\year}}%
+    \space \number\year}%
 %TODO implement option olddate:
     \def\oldtoday{\number\day.~\ifcase\month\or
     wulkeho róžka\or małeho róžka\or nalětnika\or
@@ -7432,36 +7569,36 @@ Shawwāl\or Dhū ’l-Qaʿda\or Dhū ’l-Ḥijja\fi}
 \fi
 
 \def\captionswelsh{%
-   \def\refname{\textwelsh{Cyfeiriadau}}%
-   \def\abstractname{\textwelsh{Crynodeb}}%
-   \def\bibname{\textwelsh{Llyfryddiaeth}}%
-   \def\prefacename{\textwelsh{Rhagair}}%
-   \def\chaptername{\textwelsh{Pennod}}%
-   \def\appendixname{\textwelsh{Atodiad}}%
-   \def\contentsname{\textwelsh{Cynnwys}}%
-   \def\listfigurename{\textwelsh{Rhestr Ddarluniau}}%
-   \def\listtablename{\textwelsh{Rhestr Dablau}}%
-   \def\indexname{\textwelsh{Mynegai}}%
-   \def\figurename{\textwelsh{Darlun}}%
-   \def\tablename{\textwelsh{Taflen}}%
-   %\def\thepart{\textwelsh{}}%
-   \def\partname{\textwelsh{Rhan}}%
-   \def\pagename{\textwelsh{tudalen}}%
-   \def\seename{\textwelsh{gweler}}%
-   \def\alsoname{\textwelsh{gweler hefyd}}%
-   \def\enclname{\textwelsh{amgaeëdig}}%
-   \def\ccname{\textwelsh{copïau}}%
-   \def\headtoname{\textwelsh{At}}%
-   \def\proofname{\textwelsh{Prawf}}%
-   \def\glossaryname{\textwelsh{Rhestr termau}}%
+   \def\refname{Cyfeiriadau}%
+   \def\abstractname{Crynodeb}%
+   \def\bibname{Llyfryddiaeth}%
+   \def\prefacename{Rhagair}%
+   \def\chaptername{Pennod}%
+   \def\appendixname{Atodiad}%
+   \def\contentsname{Cynnwys}%
+   \def\listfigurename{Rhestr Ddarluniau}%
+   \def\listtablename{Rhestr Dablau}%
+   \def\indexname{Mynegai}%
+   \def\figurename{Darlun}%
+   \def\tablename{Taflen}%
+   %\def\thepart{}%
+   \def\partname{Rhan}%
+   \def\pagename{tudalen}%
+   \def\seename{gweler}%
+   \def\alsoname{gweler hefyd}%
+   \def\enclname{amgaeëdig}%
+   \def\ccname{copïau}%
+   \def\headtoname{At}%
+   \def\proofname{Prawf}%
+   \def\glossaryname{Rhestr termau}%
    }
 \def\datewelsh{%   
-   \def\today{\textwelsh{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else%
+   \def\today{\ifnum\day=1\relax 1\/\textsuperscript{añ}\else%
     \number\day\fi\space\ifcase\month\or
      Ionawr\or Chwefror\or Mawrth\or Ebrill\or
      Mai\or Mehefin\or Gorffennaf\or Awst\or
      Medi\or Hydref\or Tachwedd\or Rhagfyr\fi%
-     \space\number\year}}%
+     \space\number\year}%
      }
 
 \def\welsh@language{\protect\language=\l@welsh}
@@ -7556,7 +7693,7 @@ U+0039 <> U+0E59 ;
 
    ¦----------------------------------------------¦
    ¦                                              ¦
-   ¦       THE POLYGLOSSIA PACKAGE v1.0.1         ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0.2         ¦
    ¦                                              ¦
    ¦ Modern multilingual typesetting with XeLaTeX ¦
    ¦                                              ¦
@@ -7598,6 +7735,14 @@ and follow the instructions displayed.
 
 CHANGES
 
+1.0.2 
+   This is mostly a bug fixes release.
+   * Captions corrected in Hebrew, Russian and Spanish
+   * Removed all \text<lang> wrappers within caption definitions
+   * Improved compatibility with Babel
+   * New option "babelshorthands" for German
+   * New option "Script" for Sanskrit
+
 1.0.1
    * Improved documentation (added sections on font setup and numeration mappings)
    * Improvements and bugfixes for English and German
@@ -7610,124 +7755,10 @@ CHANGES
 
 
   ------------------------------
-   François Charette, July 2008
+   François Charette, Jan 2009
     <firmicus ατ gmx δοτ net>
   ------------------------------
 %</README>
-%<*TODO>
-=== THIS IS THE TODO LIST FOR THE POLYGLOSSIA PACKAGE ===
-
-polyglossia.sty:
-	* for languages with hyphenation patterns but without
-	  a gloss-* module, allow to load it with only a warning message ?
-	  => perhaps better use hyphenrules: DONE
-	* MAKE polyglossia cooperate with Babel-aware packages and classes, for
-	  example scrlttr2! Lines 1347 to 1708 of scrlttr2.cls are a sort of 
-	  patch for Babel, which is not compatible with polyglossia right now...
-
-	* hyphenation shorthands: 
-	  Perhaps implement the following as an option, based on dutch module of babel:
-
-	  "|   disable ligature at this position
-	  "-   an explicit hyphen sign, allowing hyphenation in the rest of the word
-	  "~   to produce a hyphencharacter without the following \discretionary{}{}{}.
-	  ""   to produce an invisible ‘breakpoint’.
-	  \-   like the old \-, but allowing hyphenation in the rest of the word.
-
-
-TEST THIS:
-============================================================================
-\newcommand{\PolyglossiaSetup}[2]{%
-   \xpg@define@keys{#1}%
-   \setkeys[xpg@setup]{#1}{script,direction,hyphenmins,frenchspacing,frenchindent}% to set the defaults
-   \setkeys[xpg@setup]{#1}{#2}}
-
-\def\xpg@first#1,#2{#1}
-\def\xpg@second#1,#2{#2}
-
-\def\xpg@define@keys#1{%
-    \define@key[xpg@setup]{#1}{script}{%
-       \def\@tmpa{##1}\def\tmp@latin{latin}%
-       \csgdef{#1@script}{\@tmpa}% -> could be eventually useful
-       \ifx\@tmpa\tmp@latin%
-          \csgdef{#1@script@latin}{\relax}%
-	  \ifcsundef{#1@font}{\cslet{#1@font}{\normalfontlatin}}{}%
-       \fi}%
-    \define@choicekey+[xpg@setup]{#1}[\tmp@val]{Direction}{LR,RL}[LR]{%
-        \def\tmp@RL{RL}%
-	\ifx\tmp@val\tmp@RL%
-	   \csgdef{#1@RL}{\relax}%
-	\else%
-	   \cslet{#1@RL}{\@undefined}
-        \fi}%
-       {\PackageWarning{polyglossia}{#1: Invalid value for key Direction}}% 
-    \define@key[xpg@setup]{#1}{hyphenmins}[{2,2}]{%
-           \edef\@tmpb{\xpg@first{##1}}%
-           \edef\@tmpc{\xpg@second{##1}}%
-	   \providehyphenmins{#1}{\@tmpb\@tmpc\relax}%
-         }%
-    \define@boolkeys[xpg@setup]{#1}[#1@]{frenchspacing,frenchindent}[false]%
-}
-   
-\endinput
-
-Example (at the end of a gloss file): 
-\PolyglossiaSetup{<lang>}{%
-   Script=Latin, %default=Latin
-   Direction=LR, %default=LR
-%   LanguageString=<lang>, %default=<lang>
-%   Aliases={Foo,Bar},
-   hyphenmins={x,y} %default={2,2} ?  {2,3} in babel...
-   frenchspacing=true, %default=false
-   frenchindent=true %default=false
-   }
-
-=> \<lang>@latin is defined and if \<lang>@font is not def. it is set to \normalfontlatin
-=> if Direction=RL , \<lang>@RL is defined
-=> \providehyphenmins{<lang>}{xy}
-=> \frenchspacing etc are set in \select@language etc
-
-
-============================================================================
-
-gloss-arabic.ldf:
-	* check locales: if morocco or algeria : use western numerals but don't 
-	  override the numbers key: DONE
-	* define a defaultLRlanguage … \def\LRtoday{\localdefaultLRlanguage{\today}} ???
-
-gloss-english.ldf: 
-	* change format to Day Month Year when dialect is british: DONE
-
-gloss-farsi.ldf:
-	* add option for months 
-	* implement ftoday.sty? DONE
-
-gloss-finnish.ldf:
-	* hyphenpenalty as in Babel?
-
-gloss-french.ldf:
-	* \define@key{french}{guillemets}[normal]{…}
-	* \addfontfeature{Mapping=sansaccents}%
-
-gloss-hebrew.ldf
-	* insert gereshayim (\char"05F4) before last letter of a sequence of two letters or more
-	* insert geresh (\char"05F3) after letter if it is alone
-
-gloss-italian.ldf
-	* \clubpenalty3000\widowpenalty3000\finalhyphendemerits50000000 ?
-	
-gloss-{l,u}sorbian.ldf
-	* implement option date=old
-
-gloss-ukrainian.ldf and others
-	* add stuff from Babel ? (operators etc)
-
-hijrical.sty
-	* \def\CYearsFromHijri#1{%yields the corr julian or gregorian years
-
-** UPDATE ldf for spanish using new ldf for Babel by J Bezos
-          and add option for mexican (using mx package)
-%</TODO>
 %<*gloss-template.ldf>
 \ProvidesFile{gloss-<lang>.ldf}[polyglossia: module for <lang>]
 \makeatletter
@@ -7829,7 +7860,7 @@ hijrical.sty
 \setotherlanguage[variant=british,ordinalmonthday=false]{english}
 \setotherlanguage[variant=poly]{greek}
 \setotherlanguage[numerals=thai]{thai}
-\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew,amharic,tigriya}
+\setotherlanguages{german,latin,russian,turkish,polish,latvian,sanskrit,ukrainian,arabic,farsi,syriac,divehi,hebrew,amharic}
 \setromanfont{Linux Libertine}
 \defaultfontfeatures{Scale=MatchLowercase,RawFeature={+locl}}
 \setmonofont{Inconsolata}
@@ -7964,7 +7995,7 @@ Quamquam sermone nativo fungi desinit, cumque nostris diebus perpauci Latine loq
 \usepackage[no-math]{fontspec}
 \usepackage{xltxtra,url,amsmath}
 \usepackage[quiet]{polyglossia}
-\setdefaultlanguage[calendar=gregorian,hijricorrection=1,locale=syria]{arabic}
+\setdefaultlanguage[calendar=gregorian,hijricorrection=1,locale=mashriq]{arabic}
 \setotherlanguage[variant=british]{english}
 \setotherlanguage{farsi}
 \setromanfont{Junicode}

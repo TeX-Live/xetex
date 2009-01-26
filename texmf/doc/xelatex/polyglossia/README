@@ -1,7 +1,7 @@
 
    ¦----------------------------------------------¦
    ¦                                              ¦
-   ¦       THE POLYGLOSSIA PACKAGE v1.0.1         ¦
+   ¦       THE POLYGLOSSIA PACKAGE v1.0.2         ¦
    ¦                                              ¦
    ¦ Modern multilingual typesetting with XeLaTeX ¦
    ¦                                              ¦
@@ -43,6 +43,14 @@ and follow the instructions displayed.
 
 CHANGES
 
+1.0.2 
+   This is mostly a bug fixes release.
+   * Captions corrected in Hebrew, Russian and Spanish
+   * Removed all \text<lang> wrappers within caption definitions
+   * Improved compatibility with Babel
+   * New option "babelshorthands" for German
+   * New option "Script" for Sanskrit
+
 1.0.1
    * Improved documentation (added sections on font setup and numeration mappings)
    * Improvements and bugfixes for English and German
@@ -55,6 +63,6 @@ CHANGES
 
 
   ------------------------------
-   François Charette, July 2008
+   François Charette, Jan 2009
     <firmicus ατ gmx δοτ net>
   ------------------------------
