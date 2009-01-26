@@ -197,6 +197,16 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
      \endgroup
      \fi}%
 }{}
+\@ifpackageloaded{fancyhdr}{%
+\def\@fancyhead#1#2#3#4#5{\beginR#1\hbox to\headwidth{\vbox{\hbox
+{\rlap{\parbox[b]{\headwidth}{\raggedright#2\strut}}\hfill
+\parbox[b]{\headwidth}{\centering#3\strut}\hfill
+\llap{\parbox[b]{\headwidth}{\raggedleft#4\strut}}}\headrule}}#5\endR}
+\def\@fancyfoot#1#2#3#4#5{\beginR#1\hbox to\headwidth{\vbox{\footrule
+\hbox{\rlap{\parbox[t]{\headwidth}{\raggedright#2\strut}}\hfill
+\parbox[t]{\headwidth}{\centering#3\strut}\hfill
+\llap{\parbox[t]{\headwidth}{\raggedleft#4\strut}}}}}#5\endR}
+}{}
 \newcommand*\settextfont[2][]{%
 \newfontfamily\persianfont[Script=Arabic,Mapping=parsidigits,#1]{#2}
 \let\rmdefault\zf@family
