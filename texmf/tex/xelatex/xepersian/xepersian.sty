@@ -19,6 +19,31 @@
 \RequirePackage{etoolbox}
 \RequirePackage{xepersian-mathsdigitspec}
 \RequirePackage{xunicode}
+\gdef\@latex@error#1#2{%
+   \GenericError{%
+      \space\space\space\@spaces\@spaces\@spaces
+   }{%
+      XePersian Error: #1%
+   }{%
+      Please first produce a similar file without using XePersian package and then compile it with xelatex, if you got the same error, then please study the Persian translation of 'The not so Short Introduction to LaTeX' by MEHDI OMIDALI, otherwise please report the error with a minimal tex file which shows the error to  the Author of XePersian.%
+   }{#2}%
+}
+\def\@latex@warning#1{%
+   \GenericWarning{%
+      \space\space\space\@spaces\@spaces\@spaces
+   }{%
+      XePersian Warning: #1%
+   }%
+}
+\def\@latex@info#1{%
+   \GenericInfo{%
+      \@spaces\@spaces\@spaces
+   }{%
+      XePersian Info: #1%
+   }%
+}
+\gdef\@latexbug{%
+  \@latex@error{This may be a XePersian bug}{Please inform the Author of XePersian}}
 \TeXXeTstate=1
 \newif\if@RTL
 \def\XePersian@RTL@everypar{\if@RTL{\setbox\z@\lastbox\beginR\usebox\z@}\fi} 
