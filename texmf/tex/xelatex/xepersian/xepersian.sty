@@ -605,6 +605,12 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{report}{%
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
 \renewcommand \thechapter {\@arabic\c@chapter}
 \renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
 \renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
@@ -702,6 +708,12 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{xepersian-thesis}{%
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
 \renewcommand \thechapter {\@arabic\c@chapter}
 \renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
 \renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
@@ -920,6 +932,12 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{book}{%
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
 \renewcommand \thechapter {\@arabic\c@chapter}
 \renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
 \renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
@@ -1041,6 +1059,12 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{refrep}{%
+\renewcommand\theequation
+{\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand\thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand\thetable%
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
 \renewcommand\thesection       {\thechapter\@SepMark\@arabic\c@section}
 \renewcommand\thesubsection    {\thesection\@SepMark\@arabic\c@subsection}
 \renewcommand\thesubsubsection {\thesubsection \@SepMark\@arabic\c@subsubsection}
