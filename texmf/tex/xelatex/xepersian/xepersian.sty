@@ -480,6 +480,23 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 \def\SepMark#1{\gdef\@SepMark{\beginR#1\endR}}
 \SepMark{.}
 \@ifclassloaded{article}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty\@secpenalty
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+       \if@compatibility
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+      \fi
+    \endgroup
+  \fi}
 \renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
 \renewcommand\thesubsubsection{\thesubsection\@SepMark\@arabic\c@subsubsection}
 \renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
@@ -574,6 +591,23 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{amsart}{%
+\def\@tocline#1#2#3#4#5#6#7{\relax
+  \ifnum #1>\c@tocdepth % then omit
+  \else
+    \par \addpenalty\@secpenalty\addvspace{#2}%
+    \begingroup \hyphenpenalty\@M
+    \@ifempty{#4}{%
+      \@tempdima\csname r@tocindent\number#1\endcsname\relax
+    }{%
+      \@tempdima#4\relax
+    }%
+    \parindent\z@ \if@RTL\rightskip\else\leftskip\fi#3\relax \advance\if@RTL\rightskip\else\leftskip\fi\@tempdima\relax
+    \if@RTL\leftskip\else\rightskip\fi\@pnumwidth plus4em \parfillskip-\@pnumwidth
+    #5\leavevmode\hskip-\@tempdima #6\nobreak\relax
+    \hfil\hbox to\@pnumwidth{\@tocpagenum{#7}}\par
+    \nobreak
+    \endgroup
+  \fi}
 \renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
 \renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
 \renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
@@ -605,6 +639,21 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{report}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
 \renewcommand\theequation
   {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
 \renewcommand \thefigure
@@ -708,6 +757,21 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{xepersian-thesis}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
 \renewcommand\theequation
   {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
 \renewcommand \thefigure
@@ -811,6 +875,23 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{amsbook}{%
+\def\@tocline#1#2#3#4#5#6#7{\relax
+  \ifnum #1>\c@tocdepth % then omit
+  \else
+    \par \addpenalty\@secpenalty\addvspace{#2}%
+    \begingroup \hyphenpenalty\@M
+    \@ifempty{#4}{%
+      \@tempdima\csname r@tocindent\number#1\endcsname\relax
+    }{%
+      \@tempdima#4\relax
+    }%
+    \parindent\z@ \if@RTL\rightskip\else\leftskip\fi#3\relax \advance\if@RTL\rightskip\else\leftskip\fi\@tempdima\relax
+    \if@RTL\leftskip\else\rightskip\fi\@pnumwidth plus4em \parfillskip-\@pnumwidth
+    #5\leavevmode\hskip-\@tempdima #6\nobreak\relax
+    \hfil\hbox to\@pnumwidth{\@tocpagenum{#7}}\par
+    \nobreak
+    \endgroup
+  \fi}
 \renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
 \renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
 \renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
@@ -932,6 +1013,21 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{book}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
 \renewcommand\theequation
   {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
 \renewcommand \thefigure
@@ -1059,6 +1155,20 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 
 
 \@ifclassloaded{refrep}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hbox to\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+      \endgroup
+  \fi}
 \renewcommand\theequation
 {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
 \renewcommand\thefigure
