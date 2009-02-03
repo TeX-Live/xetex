@@ -1289,6 +1289,19 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
     {\par%
       \usebeamertemplate{block example end}%
     \end{actionenv}}
+\def\@listi{\if@RTL\rightmargin\leftmargini\else\leftmargin\leftmargini\fi
+            \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+            \parsep 0\p@
+            \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+\let\@listI\@listi
+\def\@listii{\if@RTL\rightmargin\leftmarginii\else\leftmargin\leftmarginii\fi
+              \topsep    2\p@ \@plus1\p@ \@minus2\p@
+              \parsep    0\p@   \@plus\p@
+              \itemsep   \parsep}
+\def\@listiii{\if@RTL\rightmargin\leftmarginiii\else\leftmargin\leftmarginiii\fi
+              \topsep    2\p@ \@plus1\p@ \@minus2\p@
+              \parsep    0\p@   \@plus\p@
+              \itemsep   \parsep}
 \def\beamer@enum@{%
   \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
   \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
@@ -1302,7 +1315,7 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
                 \usebeamerfont*{enumerate \beameritemnestingprefix item}%
                 \usebeamercolor[fg]{enumerate \beameritemnestingprefix item}##1}}}}}%
   \beamer@cramped%
-  \raggedleft\rightskip=2em%
+  \raggedleft%
   \beamer@firstlineitemizeunskip%
 }
 \renewcommand{\itemize}[1][]{%
@@ -1325,7 +1338,7 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
       }
   \fi%
   \beamer@cramped%
-  \raggedleft\rightskip=2em%
+  \raggedleft%
   \beamer@firstlineitemizeunskip%
 }
 \def\@@description{%
@@ -1545,30 +1558,20 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
   \beamer@todo%
   \fi\fi%
 }
+\long\def\beamer@makecaption#1#2{%
+  \def\insertcaptionname{\csname#1name\endcsname}%
+  \def\insertcaptionnumber{\csname the#1\endcsname}%
+  \def\insertcaption{#2}%
+  \nobreak\vskip\abovecaptionskip\nobreak
+  \sbox\@tempboxa{\usebeamertemplate**{caption}}%
+  \ifdim \wd\@tempboxa >\hsize
+    \usebeamertemplate**{caption}\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil\if@RTL\endR\fi}%
+  \fi
+  \nobreak\vskip\belowcaptionskip\nobreak}
 }{}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \providecommand*{\xpg@warning}[1]{%
    \PackageWarning{XePersian}%
