@@ -222,8 +222,9 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 \renewcommand\SetWatermarkText[1]{%
   \def\sc@wm@text{\if@RTL\beginR\fi#1\if@RTL\endR\fi}}
 }{}
+\newfontscript{Persian}{arab}
 \newcommand*\settextfont[2][]{%
-\newfontfamily\persianfont[Script=Arabic,Mapping=parsidigits,#1]{#2}
+\newfontfamily\persianfont[Script=Persian,Mapping=parsidigits,#1]{#2}
 \let\rmdefault\zf@family
   \normalfont
 }
@@ -233,7 +234,7 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 \newcommand*\defpersianfont[1]{%
   \@ifnextchar[{\defpersianfont@i#1}{\defpersianfont@i#1[]}}
 \def\defpersianfont@i#1[#2]#3{%
-  \zf@fontspec{Script=Arabic,Mapping=parsidigits,#2}{#3}%
+  \zf@fontspec{Script=Persian,Mapping=parsidigits,#2}{#3}%
   \edef\@tempa{%
     \noexpand\DeclareRobustCommand\noexpand#1
       {\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}%
