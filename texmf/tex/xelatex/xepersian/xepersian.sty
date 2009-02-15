@@ -247,8 +247,17 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
     \noexpand\DeclareRobustCommand\noexpand#1
       {\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}%
   \@tempa}
-\def\lr#1{\begingroup\beginL\rmfamily#1\endL\endgroup}
-\def\rl#1{\begingroup\beginR\persianfont#1\endR\endgroup}
+\let\n@xt=\
+\def\LRE{\protect\pLRE}%
+\def\pLRE{\protect\afterassignment\moreLRE \let\n@xt= }
+\def\moreLRE{\bracetext \aftergroup\endL \beginL\@RTLfalse}
+\def\RLE{\protect\pRLE}
+\def\pRLE{\protect\afterassignment\moreRLE \let\n@xt= }
+\def\moreRLE{\bracetext \aftergroup\endR \beginR\@RTLtrue}
+\def\bracetext{\ifcat\n@xt{\else\ifcat\n@xt}\fi
+  \errmessage{Missing left brace has been substituted}\fi \bgroup}
+\def\textLRE#1{\begingroup\beginL\rmfamily#1\endL\endgroup}
+\def\textRLE#1{\begingroup\beginR\persianfont#1\endR\endgroup}
 \def\LTR{\bgroup\par\@RTLfalse}
 \def\endLTR{\par\egroup}
 \def\RTL{\bgroup\par\@RTLtrue}
