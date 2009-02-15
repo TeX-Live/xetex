@@ -451,9 +451,9 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 دی\or بهمن\or 
 اسفند\fi}
 \let\originaltoday=\today
-\def\today{\lr{\originaltoday}}
+\def\today{\textLRE{\originaltoday}}
 \let\romantoday\today
-\def\today{\rl{\ftoday}}
+\def\today{\textRLE{\ftoday}}
 \newcommand\twocolumnstableofcontents{%
   \begin{multicols}{2}[\section*{\contentsname}]%
     \small
