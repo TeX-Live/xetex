@@ -257,8 +257,8 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 \def\moreRLE{\bracetext \aftergroup\endR \beginR\@RTLtrue}
 \def\bracetext{\ifcat\n@xt{\else\ifcat\n@xt}\fi
   \errmessage{Missing left brace has been substituted}\fi \bgroup}
-\def\textLRE#1{\begingroup\beginL\rmfamily#1\endL\endgroup}
-\def\textRLE#1{\begingroup\beginR\persianfont#1\endR\endgroup}
+\def\lr#1{\begingroup\beginL\rmfamily#1\endL\endgroup}
+\def\rl#1{\begingroup\beginR\persianfont#1\endR\endgroup}
 \def\LTR{\bgroup\par\@RTLfalse}
 \def\endLTR{\par\egroup}
 \def\RTL{\bgroup\par\@RTLtrue}
@@ -452,9 +452,9 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 دی\or بهمن\or 
 اسفند\fi}
 \let\originaltoday=\today
-\def\today{\textLRE{\originaltoday}}
+\def\today{\lr{\originaltoday}}
 \let\romantoday\today
-\def\today{\textRLE{\ftoday}}
+\def\today{\rl{\ftoday}}
 \newcommand\twocolumnstableofcontents{%
   \begin{multicols}{2}[\section*{\contentsname}]%
     \small
