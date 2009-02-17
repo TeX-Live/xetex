@@ -6,10 +6,10 @@
 %% conditions of the LaTeX Project Public License, either version 1.3c
 %% of this license or (at your option) any later version.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{xepersian}[2009/01/26 v0.164
+\ProvidesPackage{xepersian}[2009/02/20 v1
 	Persian typesetting in XeLaTeX (Author: Vafa Khalighi)]
 \AtBeginDocument{\special{pdf: docinfo <<
-	/Creator (XePersian v0.164 (Author: Vafa Khalighi))
+	/Creator (XePersian v1 (Author: Vafa Khalighi))
          >>}}
 \RequirePackage{graphicx}
 \RequirePackage{amssymb}
@@ -209,14 +209,16 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
      \fi}%
 }{}
 \@ifpackageloaded{fancyhdr}{%
-\def\@fancyhead#1#2#3#4#5{#1\hbox to\headwidth{\vbox{\hbox
-{\rlap{\parbox[b]{\headwidth}{\raggedright#2\strut}}\hfill
-\parbox[b]{\headwidth}{\centering#3\strut}\hfill
-\llap{\parbox[b]{\headwidth}{\raggedleft#4\strut}}}\headrule}}#5}
-\def\@fancyfoot#1#2#3#4#5{#1\hbox to\headwidth{\vbox{\footrule
-\hbox{\rlap{\parbox[t]{\headwidth}{\raggedright#2\strut}}\hfill
-\parbox[t]{\headwidth}{\centering#3\strut}\hfill
-\llap{\parbox[t]{\headwidth}{\raggedleft#4\strut}}}}}#5}
+\def\@fancyhead#1#2#3#4#5{\beginR#1\endR\hbox to\headwidth{\fancy@reset
+  \@fancyvbox\headheight{\hbox
+    {\rlap{\parbox[b]{\headwidth}{\raggedright\beginR#2\endR}}\hfill
+      \parbox[b]{\headwidth}{\centering\beginR#3\endR}\hfill
+      \llap{\parbox[b]{\headwidth}{\raggedleft\beginR#4\endR}}}\headrule}}\beginR#5\endR}
+\def\@fancyfoot#1#2#3#4#5{\beginR#1\endR\hbox to\headwidth{\fancy@reset
+    \@fancyvbox\footskip{\footrule
+      \hbox{\rlap{\parbox[t]{\headwidth}{\raggedright\beginR#2\endR}}\hfill
+        \parbox[t]{\headwidth}{\centering\beginR#3\endR}\hfill
+        \llap{\parbox[t]{\headwidth}{\raggedleft\beginR#4\endR}}}}}\beginR#5\endR}
 }{}
 \@ifpackageloaded{draftwatermark}{%
 \renewcommand\SetWatermarkText[1]{%
