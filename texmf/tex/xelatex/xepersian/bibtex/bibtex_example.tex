@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article} 
+% محمود امین‌طوسی، http://webpages.iust.ac.ir/mamintoosi
+% فایل حاضر مثالی برای استفاده از سبک‌های فارسی در زی‌پرشین می‌باشد.
+% توجه نمایید که برای استفاده از این مثال باید به صورت زیر عمل نمایید:
+% xelatex filename  (در نوت‌پد++ F6 یا Ctrl+F6) - با توجه به راهنمای زی‌پرشین
+% bibtex  filename  (تایپ دستور در خط فرمان نوت‌پد++)
+% xelatex filename  (در نوت‌پد++ F6)
+% xelatex filename  (در نوت‌پد++ F6 یا Ctrl+F6)
+% در این مثال به جای filename باید bibtex_example قرار دهید.
+% برای ویرایش مدخل‌ها فایل MyReferences.bib را باز کنید. در صورت تغییر این فایل بایستی دو مرحله‌ی میانی را پس از ذخیره‌ی آن اجرا نمایید.
+% در صورت تغییر در ارجاعات در این فایل باید هر چهار مرحله انجام شوند.
+
+% به جای unsrt می‌توانید سایر سبک‌ها را قرار داده و نتیجه را مشاهده نمایید. (plain-fa, acm-fa, ieeetr-fa, persia)
+
+\usepackage{verbatim}
+\usepackage{xepersian}
+\settextfont[Scale=1]{XB Zar}
+\setromantextfont[Scale=.95]{Linux Libertine}%{Times New Roman}
+\setdigitfont{Parsi Digits}
+
+\title{نمونه خروجی با استیل فارسی \lr{unsrt-fa} برای \lr{BibTeX} در زی‌پرشین}
+\author{}\date{}
+\begin{document}
+\maketitle
+
+مرجع \cite{امیدعلی82دکترا} یک نمونه پروژه دکترا و مرجع\cite{واحدی87} یک نمونه مقاله مجله فارسی است.
+مرجع \cite{Baker02limits} یک نمونه مقاله انگلیسی است که در بین مراجع فارسی قرار گرفته است، مرجع \cite{Amintoosi87using}  یک نمونه  مقاله کنفرانس فارسی و
+مرجع \cite{استالینگ۸۰کتاب} یک نمونه کتاب فارسی با ذکر مترجمان و ویراستاران فارسی است. مرجع \cite{Khalighi07MscThesis} یک نمونه پروژه کارشناسی ارشد انگلیسی و
+\cite{خلیقی۸۷زی‌پرشین} هم یک نمونه متفرقه  می‌باشند.
+
+%\nocite{*}
+{\small
+\bibliographystyle{unsrt-fa}%{plain-fa}%{ieeetr-fa}%{persia}%
+\bibliography{MyReferences}
+}
+
+\end{document}
