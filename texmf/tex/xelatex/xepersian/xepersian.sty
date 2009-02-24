@@ -1,0 +1,1798 @@
+%% This file is xepersian.sty 
+%%
+%% Copyright 2009 by Vafa Khalighi
+%%
+%%%% It may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3c
+%% of this license or (at your option) any later version.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{xepersian}[2009/02/26 v1.1
+	Persian typesetting in XeLaTeX (Author: Vafa Khalighi)]
+\AtBeginDocument{\special{pdf: docinfo <<
+	/Creator (XePersian v1.1 (Author: Vafa Khalighi))
+         >>}}
+\RequirePackage{graphicx}
+\RequirePackage{amssymb}
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{fontspec}
+\RequirePackage{etoolbox}
+\RequirePackage{xepersian-mathsdigitspec}
+\RequirePackage{xunicode}
+\DeclareOption{Kashida}{\input{PersianKashida.tex}}
+\gdef\@latex@error#1#2{%
+   \GenericError{%
+      \space\space\space\@spaces\@spaces\@spaces
+   }{%
+      XePersian Error: #1%
+   }{%
+      Please first produce a similar file without using XePersian package and then compile it with xelatex, if you got the same error, then please study the Persian translation of 'The not so Short Introduction to LaTeX' by MEHDI OMIDALI, otherwise please report the error with a minimal tex file which shows the error to  the Author of XePersian.%
+   }{#2}%
+}
+\gdef\@latexbug{%
+  \@latex@error{This may be a XePersian bug}{Please inform the Author of XePersian}}
+\TeXXeTstate=1
+\newif\if@RTL
+\def\XePersian@RTL@everypar{\if@RTL{\setbox\z@\lastbox\beginR\usebox\z@}\fi} 
+   \let\o@everypar=\everypar 
+   \newtoks\n@everypar 
+   \n@everypar\expandafter{\the\o@everypar} 
+   \o@everypar{\XePersian@RTL@everypar\the\n@everypar} 
+   \let\everypar=\n@everypar
+\@RTLtrue
+\def\list#1#2{%
+  \ifnum \@listdepth >5\relax
+    \@toodeep
+  \else
+    \global\advance\@listdepth\@ne
+  \fi
+  \rightmargin\z@
+  \listparindent\z@
+  \itemindent\z@
+  \csname @list\romannumeral\the\@listdepth\endcsname
+  \def\@itemlabel{#1}%
+  \let\makelabel\@mklab
+  \@nmbrlistfalse
+  #2\relax
+  \@trivlist
+  \parskip\parsep
+  \parindent\listparindent
+  \advance\linewidth -\rightmargin
+  \advance\linewidth -\leftmargin
+  \if@RTL
+    \advance\@totalleftmargin \rightmargin
+  \else
+    \advance\@totalleftmargin \leftmargin
+  \fi
+  \parshape \@ne \@totalleftmargin \linewidth
+  \ignorespaces}
+\def\raggedright{%
+  \let\\\@centercr
+  \leftskip\z@skip\rightskip\@flushglue
+  \parindent\z@\parfillskip\z@skip}
+\let\@@raggedleft=\raggedleft
+\let\@@raggedright=\raggedright
+\renewcommand\raggedleft{\if@RTL\@@raggedright%
+                         \else\@@raggedleft\fi}
+\renewcommand\raggedright{\if@RTL\@@raggedleft%
+                          \else\@@raggedright\fi}
+\def\raggedright{%
+  \let\\\@centercr
+  \rightskip\z@skip\rightskip\@flushglue
+  \parindent\z@\parfillskip\z@skip}
+\renewcommand\raggedleft{\@@raggedleft}
+\renewcommand\raggedright{\@@raggedright}
+\def\centerline#1{%
+\if@RTL\@@line{\hss\beginR#1\endR\hss}
+\else\@@line{\hss#1\hss}\fi}
+\def\leftline#1{%
+\if@RTL\@@line{\beginR#1\endR\hss}
+\else\@@line{#1\hss}\fi}
+\def\rightline#1{%
+\if@RTL\@@line{\hss\beginR#1\endR}
+\else\@@line{\hss#1}\fi}
+\def\leftmark{\beginR\expandafter\@leftmark\botmark\@empty\@empty\endR}
+\def\rightmark{\beginR\expandafter\@rightmark\firstmark\@empty\@empty\endR}
+\def\underline#1{%
+  \relax
+  \ifmmode\@@underline{#1}%
+  \else
+\if@RTL $\@@underline{\hbox{\beginR#1\endR}}\m@th$\relax
+\else
+$\@@underline{\hbox{#1}}\m@th$\relax\fi\fi}
+\newif\if@tabsw
+\global\@tabswfalse
+\def\@tabular{\if@RTL\global\@tabswtrue\fi
+     \leavevmode \hbox \bgroup \if@tabsw\beginR \fi
+     $\let\@acol\@tabacol
+     \let\@classz\@tabclassz
+     \let\@classiv\@tabclassiv \let\\\@tabularcr\@tabarray}
+\def\endtabular{\crcr\egroup\if@tabsw\egroup\endR\egroup\fi
+		 \egroup $\if@tabsw\endR\fi \egroup
+		 \global\@tabswfalse}
+\expandafter \let \csname endtabular*\endcsname = \endtabular
+
+\def\@array[#1]#2{\setbox\@arstrutbox=\hbox{\vrule
+     height\arraystretch \ht\strutbox
+     depth\arraystretch \dp\strutbox
+     width\z@}\@mkpream{#2}\edef\@preamble{%
+\halign \noexpand\@halignto
+\bgroup \tabskip\z@ \@arstrut \@preamble \tabskip\z@ \cr}%
+\let\@startpbox\@@startpbox \let\@endpbox\@@endpbox
+\if #1t\vtop \else \if#1b\vbox \else \vcenter \fi\fi
+\bgroup \let\par\relax
+\let\@sharp##\let\protect\relax \lineskip\z@\baselineskip\z@
+\if@tabsw\hbox\bgroup\beginR\vbox\bgroup\fi
+\@preamble}
+\def\@dottedtocline#1#2#3#4#5{\ifnum #1>\c@tocdepth \else
+  \vskip \z@ plus .2pt
+  {\hangindent #2\relax
+    \if@RTL \leftskip \else \rightskip \fi
+    \@tocrmarg \parfillskip -\if@RTL \leftskip \else
+    \rightskip \fi
+    \parindent #2\relax\@afterindenttrue
+   \interlinepenalty\@M
+   \leavevmode
+   \@tempdima #3\relax
+    #4\nobreak\leaders
+    \hbox{$\m@th \mkern \@dotsep mu.\mkern \@dotsep
+    mu$}\hfill \nobreak
+    \hbox to\@pnumwidth{\hfil #5}\par}\fi}
+\def\RTL@outputdblcol{\if@firstcolumn
+\global\@firstcolumnfalse
+    \global\setbox\@leftcolumn\box\@outputbox
+  \else \global\@firstcolumntrue
+    \setbox\@outputbox\vbox{%
+     \hbox to\textwidth{%
+      \hbox to\columnwidth{\box\@outputbox \hss}%
+      \hfil \vrule width\columnseprule\hfil
+      \hbox to\columnwidth{\box\@leftcolumn \hss}%
+   }}\@combinedblfloats
+\@outputpage \begingroup \@dblfloatplacement
+\@startdblcolumn
+\@whilesw\if@fcolmade \fi
+{\@outputpage\@startdblcolumn}\endgroup
+    \fi}
+\def\LTR@outputdblcol{\if@firstcolumn
+\global\@firstcolumnfalse
+    \global\setbox\@leftcolumn\box\@outputbox
+  \else \global\@firstcolumntrue
+    \setbox\@outputbox\vbox{\hbox to\textwidth{%
+      \hbox to\columnwidth
+      {\box\@leftcolumn \hss}\hfil
+       \vrule width\columnseprule\hfil
+       \hbox to\columnwidth{\box\@outputbox \hss}}}%
+       \@combinedblfloats
+       \@outputpage \begingroup \@dblfloatplacement
+       \@startdblcolumn
+       \@whilesw\if@fcolmade \fi
+       {\@outputpage\@startdblcolumn}\endgroup
+    \fi}
+\newcommand{\RTLdblcol}{\renewcommand{\@outputdblcol}{\RTL@outputdblcol}}
+\newcommand{\LTRdblcol}{\renewcommand{\@outputdblcol}{\LTR@outputdblcol}}
+\RTLdblcol
+\long\def\@makecaption#1#2{%
+ \vskip 10pt%
+ \setbox\@tempboxa\hbox{#1: #2}%
+ \ifdim \wd\@tempboxa >\hsize \if@RTL\beginR\fi#1: #2\par%
+ \else \hbox
+to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
+\if@RTL\endR\fi}%
+ \fi}
+\renewenvironment{equation}{%
+  \incr@eqnum
+  \mathdisplay@push
+  \st@rredfalse \global\@eqnswtrue
+  \beginL\mathdisplay{equation}%
+}{%
+  \endmathdisplay{equation}\endL%
+  \mathdisplay@pop
+  \ignorespacesafterend
+}
+\let\@@text=\text
+\def\text#1{\@@text{\beginR#1\endR}}
+\def\tagform@#1{\maketag@@@{)\ignorespaces\text{#1}\unskip\@@italiccorr(}}
+\renewcommand{\eqref}[1]{\beginL\textup{\tagform@{\ref{#1}}}\endL}
+\@ifpackageloaded{graphicx}{%
+\def\Gin@ii[#1]#2{%
+    \def\@tempa{[}\def\@tempb{#2}%
+    \ifx\@tempa\@tempb
+      \def\@tempa{\Gin@iii[#1][}%
+      \expandafter\@tempa
+    \else
+     \begingroup
+       \@tempswafalse
+       \toks@{\beginL\Ginclude@graphics{#2}\endL}%
+       \setkeys{Gin}{#1}%
+       \Gin@esetsize
+       \the\toks@
+     \endgroup
+     \fi}%
+}{}
+\@ifpackageloaded{fancyhdr}{%
+\def\@fancyhead#1#2#3#4#5{\beginR#1\endR\hbox to\headwidth{\fancy@reset
+  \@fancyvbox\headheight{\hbox
+    {\rlap{\parbox[b]{\headwidth}{\raggedright\beginR#2\endR}}\hfill
+      \parbox[b]{\headwidth}{\centering\beginR#3\endR}\hfill
+      \llap{\parbox[b]{\headwidth}{\raggedleft\beginR#4\endR}}}\headrule}}\beginR#5\endR}
+\def\@fancyfoot#1#2#3#4#5{\beginR#1\endR\hbox to\headwidth{\fancy@reset
+    \@fancyvbox\footskip{\footrule
+      \hbox{\rlap{\parbox[t]{\headwidth}{\raggedright\beginR#2\endR}}\hfill
+        \parbox[t]{\headwidth}{\centering\beginR#3\endR}\hfill
+        \llap{\parbox[t]{\headwidth}{\raggedleft\beginR#4\endR}}}}}\beginR#5\endR}
+}{}
+\@ifpackageloaded{draftwatermark}{%
+\renewcommand\SetWatermarkText[1]{%
+  \def\sc@wm@text{\if@RTL\beginR\fi#1\if@RTL\endR\fi}}
+}{}
+\newfontscript{Persian}{arab}
+\newfontlanguage{Persian}{ARA}
+\newcommand*\settextfont[2][]{%
+\newfontfamily\persianfont[Script=Persian,Mapping=parsidigits,#1]{#2}
+\let\rmdefault\zf@family
+  \normalfont
+}
+\newcommand*\setromantextfont[2][]{%
+\newfontfamily\rmfamily[Mapping=tex-text,#1]{#2}
+}
+\newcommand*\defpersianfont[1]{%
+  \@ifnextchar[{\defpersianfont@i#1}{\defpersianfont@i#1[]}}
+\def\defpersianfont@i#1[#2]#3{%
+  \zf@fontspec{Script=Persian,Mapping=parsidigits,#2}{#3}%
+  \edef\@tempa{%
+    \noexpand\DeclareRobustCommand\noexpand#1
+      {\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}%
+  \@tempa}
+\newcommand*\defromanfont[1]{%
+  \@ifnextchar[{\defromanfont@i#1}{\defromanfont@i#1[]}}
+\def\defromanfont@i#1[#2]#3{%
+  \zf@fontspec{Mapping=tex-text,#2}{#3}%
+  \edef\@tempa{%
+    \noexpand\DeclareRobustCommand\noexpand#1
+      {\noexpand\fontfamily{\zf@family}\noexpand\selectfont}}%
+  \@tempa}
+\let\n@xt=\
+\def\LRE{\protect\pLRE}%
+\def\pLRE{\protect\afterassignment\moreLRE \let\n@xt= }
+\def\moreLRE{\bracetext \aftergroup\endL \beginL\@RTLfalse}
+\def\RLE{\protect\pRLE}
+\def\pRLE{\protect\afterassignment\moreRLE \let\n@xt= }
+\def\moreRLE{\bracetext \aftergroup\endR \beginR\@RTLtrue}
+\def\bracetext{\ifcat\n@xt{\else\ifcat\n@xt}\fi
+  \errmessage{Missing left brace has been substituted}\fi \bgroup}
+\def\lr#1{\begingroup\beginL\rmfamily#1\endL\endgroup}
+\def\rl#1{\begingroup\beginR\persianfont#1\endR\endgroup}
+\def\LTR{\bgroup\par\@RTLfalse}
+\def\endLTR{\par\egroup}
+\def\RTL{\bgroup\par\@RTLtrue}
+\def\endRTL{\par\egroup}
+\def\roman{\bgroup\par\@RTLfalse\rmfamily}
+\def\endroman{\par\egroup}
+\def\persian{\bgroup\par\@RTLtrue\persianfont}
+\def\endpersian{\par\egroup}
+\def\Roman{\if@RTL\par\@RTLfalse\rmfamily\fi}
+\def\Persian{\if@RTL\relax\else\par\@RTLtrue\persianfont\fi}
+
+\newif\ifFT@leap \newif\ifFT@kabiseh
+\newcount\FT@i  \newcount\FT@y  \newcount\FT@m  \newcount\FT@d
+\newcount\FT@latini    \newcount\FT@persiani
+\newcount\FT@latinii   \newcount\FT@persianii
+\newcount\FT@latiniii  \newcount\FT@persianiii
+\newcount\FT@latiniv   \newcount\FT@persianiv
+\newcount\FT@latinv    \newcount\FT@persianv
+\newcount\FT@latinvi   \newcount\FT@persianvi
+\newcount\FT@latinvii  \newcount\FT@persianvii
+\newcount\FT@latinviii \newcount\FT@persianviii
+\newcount\FT@latinix   \newcount\FT@persianix
+\newcount\FT@latinx    \newcount\FT@persianx
+\newcount\FT@latinxi   \newcount\FT@persianxi
+\newcount\FT@latinxii  \newcount\FT@persianxii
+                       \newcount\FT@persianxiii
+
+\newcount\FT@temp
+\newcount\FT@temptwo
+\newcount\FT@tempthree
+\newcount\FT@yModHundred
+\newcount\FT@thirtytwo
+\newcount\FT@dn
+\newcount\FT@sn
+\newcount\FT@mminusone
+
+\def\ftoday{%
+\FT@y=\year \FT@m=\month \FT@d=\day
+%
+\FT@temp=\FT@y
+\divide\FT@temp by 100\relax
+\multiply\FT@temp by 100\relax
+\FT@yModHundred=\FT@y
+\advance\FT@yModHundred by -\FT@temp\relax
+%
+\ifodd\FT@yModHundred
+   \FT@leapfalse
+\else
+   \FT@temp=\FT@yModHundred
+   \divide\FT@temp by 2\relax
+   \ifodd\FT@temp\FT@leapfalse
+   \else
+      \ifnum\FT@yModHundred=0%
+         \FT@temp=\FT@y
+         \divide\FT@temp by 400\relax
+         \multiply\FT@temp by 400\relax
+         \ifnum\FT@y=\FT@temp\FT@leaptrue\else\FT@leapfalse\fi
+      \else\FT@leaptrue
+      \fi
+   \fi
+\fi
+%
+\FT@latini=31\relax
+\ifFT@leap
+  \FT@latinii = 29\relax
+\else
+  \FT@latinii = 28\relax
+\fi
+\FT@latiniii = 31\relax
+\FT@latiniv  = 30\relax
+\FT@latinv = 31\relax
+\FT@latinvi = 30\relax
+\FT@latinvii = 31\relax
+\FT@latinviii = 31\relax
+\FT@latinix = 30\relax
+\FT@latinx = 31\relax
+\FT@latinxi = 30\relax
+\FT@latinxii = 31\relax
+%
+\FT@thirtytwo=32\relax
+%
+\FT@temp=\FT@y
+\advance\FT@temp by -17\relax
+\FT@temptwo=\FT@temp
+\divide\FT@temptwo by 33\relax
+\multiply\FT@temptwo by 33\relax
+\advance\FT@temp by -\FT@temptwo
+\ifnum\FT@temp=\FT@thirtytwo\FT@kabisehfalse
+\else
+   \FT@temptwo=\FT@temp
+   \divide\FT@temptwo by 4\relax
+   \multiply\FT@temptwo by 4\relax
+   \advance\FT@temp by -\FT@temptwo
+   \ifnum\FT@temp=\z@\FT@kabisehtrue\else\FT@kabisehfalse\fi
+\fi
+%
+% --BE
+% In fact persiani is equal to the Leap years from a fixed year to the last
+% year minus the Kabise years from a fixed year to the last year plus a const.
+%
+\FT@tempthree=\FT@y                 % Number of Leap years
+\advance\FT@tempthree by -1
+\FT@temp=\FT@tempthree              % T := (MY-1) div 4
+\divide\FT@temp by 4\relax
+\FT@temptwo=\FT@tempthree           % T := T - ((MY-1) div 100)
+\divide\FT@temptwo by 100\relax
+\advance\FT@temp by -\FT@temptwo
+\FT@temptwo=\FT@tempthree           % T := T + ((MY-1) div 400)
+\divide\FT@temptwo by 400\relax
+\advance\FT@temp by \FT@temptwo
+\advance\FT@tempthree by -611       % Number of Kabise years
+\FT@temptwo=\FT@tempthree           % T := T - ((SY+10) div 33) * 8
+\divide\FT@temptwo by 33\relax
+\multiply\FT@temptwo by 8\relax
+\advance\FT@temp by -\FT@temptwo
+\FT@temptwo=\FT@tempthree           %
+\divide\FT@temptwo by 33\relax
+\multiply\FT@temptwo by 33\relax
+\advance\FT@tempthree by -\FT@temptwo
+\ifnum\FT@tempthree=32\advance\FT@temp by 1\fi % if (SY+10) mod 33=32 then Inc(T);
+\divide\FT@tempthree by 4\relax     % T := T - ((SY+10) mod 33) div 4
+\advance\FT@temp by -\FT@tempthree
+\advance\FT@temp by -137            % T := T - 137  Adjust the value
+\FT@persiani=31
+\advance\FT@persiani by -\FT@temp                 % now 31 - T is the persiani
+%
+\FT@persianii = 30\relax
+\ifFT@kabiseh
+  \FT@persianiii = 30\relax
+\else
+  \FT@persianiii = 29\relax
+\fi
+\FT@persianiv  = 31\relax
+\FT@persianv   = 31\relax
+\FT@persianvi  = 31\relax
+\FT@persianvii = 31\relax
+\FT@persianviii= 31\relax
+\FT@persianix  = 31\relax
+\FT@persianx   = 30\relax
+\FT@persianxi  = 30\relax
+\FT@persianxii = 30\relax
+\FT@persianxiii= 30\relax
+%
+\FT@dn= 0\relax
+\FT@sn= 0\relax
+\FT@mminusone=\FT@m
+\advance\FT@mminusone by -1\relax
+%
+\FT@i=0\relax
+\ifnum\FT@i < \FT@mminusone
+\loop
+\advance \FT@i by 1\relax
+\advance\FT@dn by \csname FT@latin\romannumeral\the\FT@i\endcsname
+\ifnum\FT@i<\FT@mminusone \repeat
+\fi
+\advance \FT@dn by \FT@d
+%
+\FT@i=1\relax
+\FT@sn = \FT@persiani
+\ifnum \FT@sn<\FT@dn
+\loop
+\advance \FT@i by 1\relax
+\advance\FT@sn by \csname FT@persian\romannumeral\the\FT@i\endcsname
+\ifnum \FT@sn<\FT@dn \repeat
+\fi
+\ifnum \FT@i < 4
+   \FT@m = 9 \advance\FT@m by \FT@i
+   \advance \FT@y by -622\relax
+\else
+   \FT@m = \FT@i \advance \FT@m by -3\relax
+   \advance \FT@y by -621\relax
+\fi
+\advance\FT@sn by -\csname FT@persian\romannumeral\the\FT@i%
+\endcsname
+\ifnum\FT@i = 1
+  \FT@d = \FT@dn \advance \FT@d by 30 \advance\FT@d by -\FT@persiani
+\else
+  \FT@d = \FT@dn \advance \FT@d by -\FT@sn
+\fi
+\beginL\number\FT@d\endL\space%
+%Changedc from here YJ
+\persianmonth{\FT@m}\space\beginL\number\FT@y\endL%
+}
+% added \persianmonth YJ
+\def\persianmonth#1{\ifcase#1\or فروردین\or 
+اردیبهشت\or 
+خرداد\or تیر\or 
+مرداد\or 
+شهریور\or مهر\or 
+آبان\or آذر\or 
+دی\or بهمن\or 
+اسفند\fi}
+\let\originaltoday=\today
+\def\today{\lr{\originaltoday}}
+\let\romantoday\today
+\def\today{\rl{\ftoday}}
+\newcommand\twocolumnstableofcontents{%
+  \begin{multicols}{2}[\section*{\contentsname}]%
+    \small
+    \@starttoc{toc}%
+  \end{multicols}}
+\def\rcases#1{\left.\vcenter{\normalbaselines\m@th
+    \ialign{$##\hfil$&\quad{##}\hfil\crcr#1\crcr}}\,\right\}}
+\def\reflect#1{{\setbox0=\hbox{#1}\rlap{\kern0.5\wd0
+  \special{x:gsave}\special{x:scale -1 1}}\box0 \special{x:grestore}}}
+\def\XePersian{\leavevmode$\smash{\hbox{X\lower.5ex
+  \hbox{\kern-.125em\reflect{E}}Persian}}$}
+\def\figurename{شکل}
+\def\tablename{جدول}
+\def\contentsname{فهرست مطالب}
+\def\listfigurename{لیست تصاویر}
+\def\listtablename{لیست جداول}
+\def\appendixname{پیوست}
+\def\indexname{نمایه}
+\def\refname{مراجع}
+\def\abstractname{چکیده}
+\def\partname{بخش}
+\def\datename{تاریخ:}
+\def\bibname{کتاب‌نامه}
+\def\chaptername{فصل}
+\def\ccname{رونوشت}
+\def\enclname{پیوست}
+\def\pagename{صفحه}
+\def\headtoname{به}
+\def\proofname{اثبات}
+\def\@harfi#1{\ifcase#1\or الف\char"200D\or ب\or پ\or ت\or ث\or
+ج\or چ\or ح\or خ\or د\or ذ\or ر\or ز\or س\or ش\or ص\or ض\or ع\or غ\or
+ف\or ق\or ک\or گ\or ل\or م\or ن\or ه\or و\or ی\else\@ctrerr\fi}
+\def\harfi#1{\expandafter\@harfi\csname c@#1\endcsname}
+\def\@adadi#1{\ifcase#1 \or یک\or دو\or سه\or چهار\or پنج\or شش\or هفت\or هشت\or نه\or ده\or یازده\or دوازده\or سیزده\or چهارده\or پانزده\or شانزده\or هفده\or هجده\or نوزده\or بیست\else\@ctrerr\fi}
+\def\adadi#1{\expandafter\@adadi\csname c@#1\endcsname}
+\def\@tartibi#1{\ifcase#1 \or اول \or دوم \or سوم \or چهارم \or پنجم \or ششم \or هفتم \or هشتم \or نهم \or دهم \or یازدهم \or دوازدهم \or سیزدهم \or چهاردهم \or پانزدهم \or شانزدهم \or هفدهم \or هجدهم \or نوزدهم \or بیستم\else\@ctrerr\fi}
+\def\tartibi#1{\expandafter\@tartibi\csname c@#1\endcsname}
+\def\SepMark#1{\gdef\@SepMark{\beginR#1\endR}}
+\SepMark{.}
+\@ifclassloaded{article}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty\@secpenalty
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+       \if@compatibility
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+      \fi
+    \endgroup
+  \fi}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection\@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
+\def\@part[#1]#2{%
+    \ifnum \c@secnumdepth >\m@ne
+      \refstepcounter{part}%
+      \addcontentsline{toc}{part}{\thepart\hspace{1em}#1}%
+    \else
+      \addcontentsline{toc}{part}{#1}%
+    \fi
+    {\parindent \z@ \raggedleft
+     \interlinepenalty \@M
+     \normalfont
+     \ifnum \c@secnumdepth >\m@ne
+       \Large\bfseries \partname\nobreakspace\thepart
+       \par\nobreak
+     \fi
+     \huge \bfseries #2%
+     \markboth{}{}\par}%
+    \nobreak
+    \vskip 3ex
+    \@afterheading}
+    \def\ps@plain{\ps@empty
+	\def\@oddfoot{\hfil\thepage\hfil}%
+	\let\@evenfoot\@oddfoot
+}
+\renewenvironment{thebibliography}[1]
+     {\section*{\refname}%
+      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \rightmargin\labelwidth    \advance\rightmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\if@twoside
+  \def\ps@headings{%
+      \let\@oddfoot\@empty\let\@evenfoot\@empty
+      \def\@evenhead{\sl\beginR\leftmark\endR\hfil\thepage}%
+      \def\@oddhead{\sl\thepage\hfil\beginR\rightmark\endR}%
+      \let\@mkboth\markboth
+    \def\sectionmark##1{%
+      \markboth {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\z@
+          \thesection\quad
+        \fi
+        \beginR##1\endR}}{}}%
+    \def\subsectionmark##1{%
+      \markright {%
+        \ifnum \c@secnumdepth >\@ne
+          \beginR\thesubsection\quad\endR
+        \fi
+        \beginR##1\endR}}}
+\else
+  \def\ps@headings{%
+    \let\@oddfoot\@empty
+    \def\@oddhead{\sl\thepage\hfil\beginR\rightmark\endR}%
+    \let\@mkboth\markboth
+    \def\sectionmark##1{%
+      \markright {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\m@ne
+          \beginR\thesection\quad\endR
+        \fi
+        \beginR##1\endR}}}}
+\fi
+\def\ps@myheadings{%
+    \let\@oddfoot\@empty\let\@evenfoot\@empty
+    \def\@evenhead{\sl\thepage\hfil\beginR\leftmark\endR}%
+    \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+    \let\@mkboth\@gobbletwo
+    \let\sectionmark\@gobble
+    \let\subsectionmark\@gobble
+    }
+\pagestyle{plain}
+\renewcommand \thepart {\@tartibi\c@part}
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@harfi\c@section}}
+}{}
+
+
+
+\@ifclassloaded{amsart}{%
+\def\@tocline#1#2#3#4#5#6#7{\relax
+  \ifnum #1>\c@tocdepth % then omit
+  \else
+    \par \addpenalty\@secpenalty\addvspace{#2}%
+    \begingroup \hyphenpenalty\@M
+    \@ifempty{#4}{%
+      \@tempdima\csname r@tocindent\number#1\endcsname\relax
+    }{%
+      \@tempdima#4\relax
+    }%
+    \parindent\z@ \if@RTL\rightskip\else\leftskip\fi#3\relax \advance\if@RTL\rightskip\else\leftskip\fi\@tempdima\relax
+    \if@RTL\leftskip\else\rightskip\fi\@pnumwidth plus4em \parfillskip-\@pnumwidth
+    #5\leavevmode\hskip-\@tempdima #6\nobreak\relax
+    \hfil\hbox to\@pnumwidth{\@tocpagenum{#7}}\par
+    \nobreak
+    \endgroup
+  \fi}
+\renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\arabic{subparagraph}}
+\def\part{\@startsection{part}{0}%
+  \z@{\linespacing\@plus\linespacing}{.5\linespacing}%
+  {\normalfont\bfseries\raggedleft}}
+\renewenvironment{thebibliography}[1]{%
+  \@bibtitlestyle
+  \normalfont\bibliofont\labelsep .5em\relax
+  \renewcommand\theenumiv{\arabic{enumiv}}\let\p@enumiv\@empty
+  \list{\@biblabel{\theenumiv}}{\settowidth\labelwidth{\@biblabel{#1}}%
+    \leftmargin\labelwidth \advance\leftmargin\labelsep
+    \rightmargin\labelwidth \advance\rightmargin\labelsep
+    \usecounter{enumiv}}%
+  \sloppy \clubpenalty\@M \widowpenalty\clubpenalty
+  \sfcode`\.=\@m
+}{%
+  \def\@noitemerr{\@latex@warning{Empty `thebibliography' environment}}%
+  \endlist
+}
+\renewcommand \thepart {\@tartibi\c@part}
+\renewcommand\appendix{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thesection{\@harfi\c@section}}
+}{}
+
+
+
+\@ifclassloaded{report}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
+\def\@makechapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedleft \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+        \huge\bfseries \@chapapp\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+    \fi
+    \interlinepenalty\@M
+    \Huge \bfseries #1\par\nobreak
+    \vskip 40\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedleft
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries  #1\par\nobreak
+    \vskip 40\p@
+  }}
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}%
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \rightmargin\labelwidth
+            \advance\rightmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\if@twoside
+  \def\ps@headings{%
+      \let\@oddfoot\@empty\let\@evenfoot\@empty
+      \def\@evenhead{\sl\thepage\hfil\beginR\leftmark\endR}%
+      \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+      \let\@mkboth\markboth
+    \def\chaptermark##1{%
+      \markboth {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\m@ne
+            \beginR\@chapapp\ \thechapter. \ \endR%
+        \fi
+        \beginR##1\endR}}{}}%
+    \def\sectionmark##1{%
+      \markright {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\z@
+          \beginR\thesection. \ \endR%
+        \fi
+        \beginR##1\endR}}}}
+\else
+  \def\ps@headings{%
+    \let\@oddfoot\@empty
+    \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+    \let\@mkboth\markboth
+    \def\chaptermark##1{%
+      \markright {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\m@ne
+            \beginR\@chapapp\ \thechapter. \ \endR%
+        \fi
+        \beginR##1\endR}}}}
+\fi
+\def\ps@myheadings{%
+    \let\@oddfoot\@empty\let\@evenfoot\@empty
+    \def\@evenhead{\sl\thepage\hfil\beginR\leftmark\endR}%
+    \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+    \let\@mkboth\@gobbletwo
+    \let\chaptermark\@gobble
+    \let\sectionmark\@gobble
+    }
+\pagestyle{plain}
+\renewcommand \thepart {\@tartibi\c@part}
+%to make appendix numbering Persian
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+}{}
+
+
+
+\@ifclassloaded{xepersian-thesis}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
+\def\@makechapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedleft \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+        \huge\bfseries \@chapapp\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+    \fi
+    \interlinepenalty\@M
+    \Huge \bfseries #1\par\nobreak
+    \vskip 40\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedleft
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries  #1\par\nobreak
+    \vskip 40\p@
+  }}
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}%
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \rightmargin\labelwidth
+            \advance\rightmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\if@twoside
+  \def\ps@headings{%
+      \let\@oddfoot\@empty\let\@evenfoot\@empty
+      \def\@evenhead{\sl\thepage\hfil\beginR\leftmark\endR}%
+      \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+      \let\@mkboth\markboth
+    \def\chaptermark##1{%
+      \markboth {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\m@ne
+            \beginR\@chapapp\ \thechapter. \ \endR%
+        \fi
+        \beginR##1\endR}}{}}%
+    \def\sectionmark##1{%
+      \markright {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\z@
+          \beginR\thesection. \ \endR%
+        \fi
+        \beginR##1\endR}}}}
+\else
+  \def\ps@headings{%
+    \let\@oddfoot\@empty
+    \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+    \let\@mkboth\markboth
+    \def\chaptermark##1{%
+      \markright {\MakeUppercase{%
+        \ifnum \c@secnumdepth >\m@ne
+            \beginR\@chapapp\ \thechapter. \ \endR%
+        \fi
+        \beginR##1\endR}}}}
+\fi
+\def\ps@myheadings{%
+    \let\@oddfoot\@empty\let\@evenfoot\@empty
+    \def\@evenhead{\sl\thepage\hfil\beginR\leftmark\endR}%
+    \def\@oddhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+    \let\@mkboth\@gobbletwo
+    \let\chaptermark\@gobble
+    \let\sectionmark\@gobble
+    }
+\pagestyle{plain}
+\renewcommand \thepart {\@tartibi\c@part}
+%to make appendix numbering persian
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+}{}
+
+
+
+\@ifclassloaded{amsbook}{%
+\def\@tocline#1#2#3#4#5#6#7{\relax
+  \ifnum #1>\c@tocdepth % then omit
+  \else
+    \par \addpenalty\@secpenalty\addvspace{#2}%
+    \begingroup \hyphenpenalty\@M
+    \@ifempty{#4}{%
+      \@tempdima\csname r@tocindent\number#1\endcsname\relax
+    }{%
+      \@tempdima#4\relax
+    }%
+    \parindent\z@ \if@RTL\rightskip\else\leftskip\fi#3\relax \advance\if@RTL\rightskip\else\leftskip\fi\@tempdima\relax
+    \if@RTL\leftskip\else\rightskip\fi\@pnumwidth plus4em \parfillskip-\@pnumwidth
+    #5\leavevmode\hskip-\@tempdima #6\nobreak\relax
+    \hfil\hbox to\@pnumwidth{\@tocpagenum{#7}}\par
+    \nobreak
+    \endgroup
+  \fi}
+\renewcommand\thesubsection    {\thesection\@SepMark\arabic{subsection}}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\arabic{subsubsection}}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\arabic{paragraph}}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\arabic{subparagraph}}
+\renewenvironment{thebibliography}[1]{%
+  \@bibtitlestyle
+  \normalfont\bibliofont\labelsep .5em\relax
+  \renewcommand\theenumiv{\arabic{enumiv}}\let\p@enumiv\@empty
+  \list{\@biblabel{\theenumiv}}{\settowidth\labelwidth{\@biblabel{#1}}%
+    \rightmargin\labelwidth \advance\rightmargin\labelsep
+     \leftmargin\labelwidth \advance\leftmargin\labelsep
+    \usecounter{enumiv}}%
+  \sloppy \clubpenalty\@M \widowpenalty\clubpenalty
+  \sfcode`\.=\@m
+}{%
+  \def\@noitemerr{\@latex@warning{Empty `thebibliography' environment}}%
+  \endlist
+}
+\def\frontmatter{\cleardoublepage\pagenumbering{harfi}}
+\renewcommand \thepart {\@tartibi\c@part}
+%to make appendix numbering persian
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+\def\theindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
+\columnseprule\z@ \columnsep 35\p@
+\@indextitlestyle
+\thispagestyle{plain}%
+\let\item\@idxitem
+\parindent\z@ \parskip\z@\@plus.3\p@\relax
+\raggedleft
+\hyphenpenalty\@M
+\footnotesize}
+
+\def\@idxitem{\par\hangindent -2em}
+\def\subitem{\par\hangindent -2em\hspace*{1em}}
+\def\subsubitem{\par\hangindent -3em\hspace*{2em}}
+}{}
+
+
+
+\@ifclassloaded{bookest}{%
+\AtBeginDocument{
+\def\@makechapterhead#1{%
+  \vspace*{20\p@}
+  {\parindent \z@ \raggedleft \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        {\colorA\huge\scshape \@chapapp\space \thechapter}
+        \par\nobreak
+        \vskip 10\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+  {\colorB\hrule}
+  \vskip 15\p@
+   \begin{flushleft}
+     {\colorA\Huge \bfseries #1}\par\nobreak
+   \end{flushleft}
+  \vskip 5\p@
+  {\colorB\hrule}
+  \vskip 30\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{20\p@}
+  {\parindent \z@ \raggedright \normalfont
+  {\colorB\hrule}
+  \vskip 15\p@
+   \begin{center}
+     {\colorA\Huge \bfseries #1}\par\nobreak
+   \end{center}
+  \vskip 5\p@
+  {\colorB\hrule}
+  \vskip 30\p@
+  }}
+\renewcommand{\setevenhead}[1]{\def\@evenhead{#1}}
+\renewcommand{\setoddhead}[1]{\def\@oddhead{#1}}
+\renewcommand{\setevenfoot}[1]{\def\@evenfoot{#1}}
+\renewcommand{\setoddfoot}[1]{\def\@oddfoot{#1}}
+\renewcommand{\oddheadtext}{{\colorA{\slshape\rightmark}\hfill\thepage}}
+\renewcommand{\setoddheadtext}[1]{\renewcommand{\oddheadtext}{#1}}
+\renewcommand{\evenheadtext}{\oddheadtext}
+\renewcommand{\setevenheadtext}[1]{\renewcommand{\evenheadtext}{#1}}
+\renewcommand{\evenfoottext}{}
+\renewcommand{\setevenfoottext}[1]{\renewcommand{\evenfoottext}{#1}}
+\renewcommand{\oddfoottext}{}
+\renewcommand{\setoddfoottext}[1]{\renewcommand{\oddfoottext}{#1}}
+\renewcommand{\setleftmark}[1]{\renewcommand{\leftmark}{#1}}
+\renewcommand{\setrightmark}[1]{\renewcommand{\rightmark}{#1}}
+\renewcommand{\makeheadrule}{{\colorB\hrule\@width\textwidth \@height 0.4pt \vskip-0.4pt}}
+\renewcommand{\makefootrule}{\makeheadrule}
+\if@twoside
+  \setevenheadtext{{\colorA\thepage\hfill\slshape\leftmark}}
+\fi
+\setevenhead{\vbox{\evenheadtext \vskip 5\p@ \makeheadrule}}
+\setoddhead{\vbox{\oddheadtext \vskip 5\p@ \makeheadrule}}
+\let\UCase\MakeUppercase
+\renewcommand{\MakeUppercase}{}
+\def\ps@plain{%
+    \def\@oddfoot{{\hfil\colorA\thepage\hfil}}
+    \def\@evenfoot{{\hfil\colorA\thepage\hfil}}
+    \let\@oddhead\@empty
+    \let\@evenhead\@empty
+}
+}
+\NoHyper
+\renewcommand \thepart {\@tartibi\c@part}
+%to make appendix numbering persian
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+}{}
+
+
+\@ifclassloaded{book}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \setlength\@tempdima{3em}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
+\renewcommand \thechapter {\@arabic\c@chapter}
+\renewcommand \thesection {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection   {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection{\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph    {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph {\theparagraph\@SepMark\@arabic\c@subparagraph}
+\def\@makechapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedleft \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \huge\bfseries \@chapapp\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \Huge \bfseries #1\par\nobreak
+    \vskip 40\p@
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{50\p@}%
+  {\parindent \z@ \raggedleft
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries  #1\par\nobreak
+    \vskip 40\p@
+  }}
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}%
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \rightmargin\labelwidth
+            \advance\rightmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\renewcommand\frontmatter{%
+    \cleardoublepage
+  \@mainmatterfalse
+  \pagenumbering{harfi}}
+\renewcommand\mainmatter{%
+    \cleardoublepage
+  \@mainmattertrue
+  \pagenumbering{arabic}}
+\renewcommand\backmatter{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+  \@mainmatterfalse}
+
+\if@twoside
+  \def\ps@headings{%
+      \let\@oddfoot\@empty\let\@evenfoot\@empty
+      \def\@evenhead{\sl\beginR\rightmark\endR\hfil\thepage}%
+      \def\@oddhead{\sl\thepage\hfil\beginR\leftmark\endR}%
+      \let\@mkboth\markboth
+    \def\chaptermark##1{%
+      \markboth {\MakeUppercase{%
+		 \beginR\@chapapp\ \thechapter.\,\,\endR%
+        \ifnum \c@secnumdepth >\m@ne
+          \if@mainmatter
+          	\beginR##1\endR
+          \fi
+        \fi
+        }}{}}%
+    \def\ps@plain{\ps@empty
+	\def\@oddfoot{\hfil\thepage\hfil}%
+	\let\@evenfoot\@oddfoot
+}
+    \def\sectionmark##1{%
+      \markright {\MakeUppercase{%
+		\beginR\thesection\endR\,
+        \ifnum \c@secnumdepth >\z@
+          \beginR##1\endR \ %
+        \fi
+        }}}}
+\else
+  \def\ps@headings{%
+    \let\@oddfoot\@empty
+    \def\@oddhead{\sl\thepage\hfil\beginR\rightmark\endR}%
+    \let\@mkboth\markboth
+    \def\chaptermark##1{%
+      \markright {\MakeUppercase{%
+      	\beginR\@chapapp\ \thechapter. \endR %
+        \ifnum \c@secnumdepth >\m@ne
+          \if@mainmatter
+            \beginR##1\endR
+          \fi
+        \fi
+        }}}}
+   
+\fi
+\pagestyle{headings}
+
+
+\renewcommand \thepart {\@tartibi\c@part}
+%to make appendix numbering Persian
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+\def\@idxitem{\par\hangindent -40\p@}
+}{}
+
+
+\@ifclassloaded{refrep}{%
+\renewcommand*\l@part[2]{%
+  \ifnum \c@tocdepth >-2\relax
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \begingroup
+      \parindent \z@ \if@RTL\leftskip\else\rightskip\fi \@pnumwidth
+      \parfillskip -\@pnumwidth
+      {\leavevmode
+       \large \bfseries #1\hfil \hbox to\@pnumwidth{\hss #2}}\par
+       \nobreak
+         \global\@nobreaktrue
+         \everypar{\global\@nobreakfalse\everypar{}}%
+      \endgroup
+  \fi}
+\renewcommand\theequation
+{\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@equation}
+\renewcommand\thefigure
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@figure}
+\renewcommand\thetable%
+     {\ifnum \c@chapter>\z@ \thechapter\@SepMark\fi \@arabic\c@table}
+\renewcommand\thesection       {\thechapter\@SepMark\@arabic\c@section}
+\renewcommand\thesubsection    {\thesection\@SepMark\@arabic\c@subsection}
+\renewcommand\thesubsubsection {\thesubsection \@SepMark\@arabic\c@subsubsection}
+\renewcommand\theparagraph     {\thesubsubsection\@SepMark\@arabic\c@paragraph}
+\renewcommand\thesubparagraph  {\theparagraph\@SepMark\@arabic\c@subparagraph}
+\renewcommand \thepart {\@tartibi\c@part}
+%to make appendix numbering Persian
+\renewcommand\appendix{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thechapter{\@harfi\c@chapter}
+}%end appendix
+}{}
+
+\renewcommand{\numberwithin}[3][\arabic]{%
+  \@ifundefined{c@#2}{\@nocounterr{#2}}{%
+    \@ifundefined{c@#3}{\@nocnterr{#3}}{%
+      \@addtoreset{#2}{#3}%
+      \@xp\xdef\csname the#2\endcsname{%
+        \@xp\@nx\csname the#3\endcsname \@SepMark\@nx#1{#2}}}}%
+}
+
+\def\@thmcountersep{\@SepMark}
+
+
+\@ifclassloaded{beamer}{%
+\def\familydefault{\rmdefault}
+\raggedleft
+\def\LTR{\bgroup\par\raggedright\@RTLfalse}
+\def\endLTR{\par\egroup}
+\def\RTL{\bgroup\par\raggedleft\@RTLtrue}
+\def\endRTL{\par\egroup}
+\def\roman{\bgroup\par\raggedright\@RTLfalse\rmfamily}
+\def\endroman{\par\egroup}
+\def\persian{\bgroup\par\raggedleft\@RTLtrue\persianfont}
+\def\endpersian{\par\egroup}
+\long\def\beamer@@frametitle[#1]#2{%
+  \beamer@ifempty{#2}{}{%
+    \gdef\insertframetitle{\raggedleft\rightskip=2em{\beginR#2\endR\ifnum\beamer@autobreakcount>0\relax{}\space\usebeamertemplate*{frametitle continuation}\fi}}%
+  \gdef\beamer@frametitle{\beginR#2\endR}%
+  \gdef\beamer@shortframetitle{\beginR#1\endR}%
+}%
+}
+\def\@thm#1#2#3{%
+  \ifhmode\unskip\unskip\par\fi
+  \normalfont
+  \let\thmheadnl\relax
+  \let\thm@swap\@gobble
+  \thm@headpunct{.}% add period after heading
+  \thm@space@setup
+  #1% style overrides
+  \def\inserttheoremname{#3}
+  \def\inserttheorempunctuation{\the\thm@headpunct}
+  \def\@tempa{#2}%
+  \ifx\@empty\@tempa
+    \def\inserttheoremnumber{}
+  \else
+    \refstepcounter{#2}%
+    \expandafter\def\expandafter\inserttheoremnumber\expandafter{ \csname the#2\endcsname}
+  \fi
+  \beamer@begintheorem%
+\raggedleft\@RTLtrue
+}
+ \ifbeamer@countsect
+      \newtheorem{قضیه}{\raggedleft قضیه}[section]
+    \else
+      \newtheorem{قضیه}{\raggedleft قضیه}
+    \fi
+    \newtheorem{نتیجه}[theorem]{\raggedleft نتیجه}
+    \newtheorem{حقیقت}[theorem]{\raggedleft حقیقت}
+    \newtheorem{لم}[theorem]{\raggedleft لم}
+    \newtheorem{مسئله}[theorem]{\raggedleft مسئله}
+    \newtheorem{پاسخ}[theorem]{\raggedleft پاسخ}
+\theoremstyle{definition}
+    \newtheorem{تعریف}[theorem]{\raggedleft تعریف}
+    \newtheorem{تعریفها}[theorem]{\raggedleft تعریف‌ها}
+\theoremstyle{example}
+    \newtheorem{مثال}[theorem]{\raggedleft مثال}
+    \newtheorem{مثالها}[theorem]{\raggedleft مثال‌ها}
+\newenvironment<>{اثبات}[1][\raggedleft اثبات]{%
+  \par
+  \def\insertproofname{#1\@addpunct{}}%
+  \pushQED{\qed}
+  \usebeamertemplate{proof begin}\@RTLtrue#2}
+{\popQED\usebeamertemplate{proof end}}
+ \newenvironment<>{بلوک}[1]{%
+    \begin{actionenv}#2%
+      \def\insertblocktitle{\raggedleft#1}%
+      \par%
+      \usebeamertemplate{block begin}\raggedleft\@RTLtrue}
+    {\par%
+      \usebeamertemplate{block end}%
+    \end{actionenv}}
+  \newenvironment<>{بلوک‌هشدار}[1]{%
+    \begin{actionenv}#2%
+      \def\insertblocktitle{\raggedleft#1}%
+      \par%
+      \mode<presentation>{%\usebeamerfont{block}%
+        \setbeamercolor{local structure}{parent=alerted text}}%
+      \usebeamertemplate{block alerted begin}\raggedleft\@RTLtrue}
+    {\par%
+      \usebeamertemplate{block alerted end}%
+    \end{actionenv}}
+  \newenvironment<>{بلوک‌مثال}[1]{%
+    \begin{actionenv}#2%
+      \def\insertblocktitle{\raggedleft#1}%
+      \par%
+      \mode<presentation>{%\usebeamerfont{block}%
+        \setbeamercolor{local structure}{parent=example text}}%
+      \usebeamertemplate{block example begin}\raggedleft\@RTLtrue}
+    {\par%
+      \usebeamertemplate{block example end}%
+    \end{actionenv}}
+\def\@listi{\if@RTL\rightmargin\leftmargini\else\leftmargin\leftmargini\fi
+            \topsep 3\p@ \@plus2\p@ \@minus2.5\p@
+            \parsep 0\p@
+            \itemsep3\p@ \@plus2\p@ \@minus3\p@}
+\let\@listI\@listi
+\def\@listii{\if@RTL\rightmargin\leftmarginii\else\leftmargin\leftmarginii\fi
+              \topsep    2\p@ \@plus1\p@ \@minus2\p@
+              \parsep    0\p@   \@plus\p@
+              \itemsep   \parsep}
+\def\@listiii{\if@RTL\rightmargin\leftmarginiii\else\leftmargin\leftmarginiii\fi
+              \topsep    2\p@ \@plus1\p@ \@minus2\p@
+              \parsep    0\p@   \@plus\p@
+              \itemsep   \parsep}
+\def\beamer@enum@{%
+  \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+  \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+  \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+  \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+  \expandafter
+    \list
+      {\usebeamertemplate{\beamer@enumtempl}}
+      {\usecounter\@enumctr%
+        \def\makelabel##1{{\hss\llap{{%
+                \usebeamerfont*{enumerate \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{enumerate \beameritemnestingprefix item}##1}}}}}%
+  \beamer@cramped%
+  \raggedleft%
+  \beamer@firstlineitemizeunskip%
+}
+\renewcommand{\itemize}[1][]{%
+  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+  \ifnum \@itemdepth >2\relax\@toodeep\else
+    \advance\@itemdepth\@ne
+    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+    \list
+      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
+      {\def\makelabel##1{%
+          {%
+            \hss\llap{{%
+                \usebeamerfont*{itemize \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+          }%
+        }%
+      }
+  \fi%
+  \beamer@cramped%
+  \raggedleft%
+  \beamer@firstlineitemizeunskip%
+}
+\def\@@description{%
+  \advance\beamer@descdefault by \labelsep%
+  \list
+  {}
+  {\labelwidth\beamer@descdefault\leftmargin\beamer@descdefault\let\makelabel\beamer@descriptionitem}%
+  \beamer@cramped%
+  \raggedleft\rightskip=6em
+  \beamer@firstlineitemizeunskip%
+}
+\AtBeginDocument{\@RTLfalse}
+\renewenvironment{beamer@frameslide}{%
+  \ifbeamer@autobreak\else%
+    \ifx\beamer@againname\@empty%
+      {\let\@elt\beamer@restorecounter\beamer@overlaycounterresets}%
+    \else%
+      {\let\@elt\beamer@labelrestorecounter\beamer@overlaycounterresets}%      
+    \fi%
+  \fi%
+  \global\c@beamerpauses=1\relax%
+  \expandafter\beamer@ifempty\expandafter{\beamer@framestartpage}{%
+    \refstepcounter{subsectionslide}%
+    \xdef\beamer@framestartpage{\the\c@page}% only first time
+  }{\clearpage\beamer@notesactions}% cleanup from previous slide
+  \hypersetup{pdfpagetransition=R}%
+  \hypersetup{pdfpageduration=}%
+  \xdef\beamer@frameendpage{\the\c@page}% every time
+  \beamer@setuplinks%
+  \beamer@displaybreak%
+  \global\setbox\beamer@zoombox=\box\voidb@x%
+  \def\beamer@zoomer{}%
+  \beamer@slidehaszoomfalse%
+  \gdef\insertframetitle{}%
+  \gdef\insertframesubtitle{}%
+  \gdef\beamer@frametitle{}%
+  \gdef\beamer@shortframetitle{}%
+  \gdef\beamer@framesubtitle{}%
+  \let\beamer@startcomment=\beamer@startcommentinframe%
+  % Start slide:
+  \beamer@framenotesbegin\@RTLtrue%
+    \global\setbox\beamer@framebox=\vbox\bgroup%
+    \beamer@inframetrue%
+    \let\frame=\framelatex% inside frames, use LaTeX's \frame command
+    \begin{beamer@framepauses}%
+      \ifbeamer@shrink%
+        \hsize=\beamer@shrinkfactorinv\hsize%
+        \textwidth=\beamer@shrinkfactorinv\textwidth%
+        \linewidth=\beamer@shrinkfactorinv\linewidth%
+      \fi%
+      % Insert labels if necessary:
+      \ifx\beamer@againname\@empty\else%
+        \nointerlineskip\vbox to0pt{\vss%
+        \label<\the\beamer@slideinframe>{\beamer@againname<\the\beamer@slideinframe>}%
+        \ifnum\beamer@slideinframe=1\relax%
+          \label<1>{\beamer@againname}%
+        \fi%
+        }\nointerlineskip%
+      \fi%
+      \ifx\beamer@framehypertargets\@empty\else%
+        \nointerlineskip\vbox to0pt{\vss%
+          \beamer@framehypertargets%
+          \global\let\beamer@framehypertargets\@empty%
+        }\nointerlineskip%
+      \fi%
+      \vskip-\parskip\vbox{}%
+      \beamer@initfirstlineunskip%
+      \ifbeamer@plainframe\nointerlineskip\fi%
+    \beamer@checkframetitle}%
+    {\end{beamer@framepauses}%
+  \egroup%
+  \ifx\beamer@frametitle\@empty%
+    \setbox\beamer@frametitlebox=\box\voidb@x%
+  \else%
+    \setbox\beamer@frametitlebox=\vbox{%
+      \vbox{}%
+      {\parskip0pt\usebeamertemplate***{frametitle}\vskip0.25em}%
+    }%
+  \fi%
+  \ifbeamer@plainframe%
+    \beamer@frametextheight=\paperheight%
+  \else%
+    \beamer@frametextheight=\textheight%
+  \fi%
+  \advance\beamer@frametextheight by-\ht\beamer@frametitlebox%
+  \advance\beamer@frametextheight by-\dp\beamer@frametitlebox%
+  \advance\beamer@frametextheight by-\beamer@frametopskip%
+  \ifbeamer@shrink%
+    \beamer@shrinkframebox%
+  \fi%
+  \ifx\beamer@zoomer\@empty  
+    \setbox\beamer@framebox=\vbox{%
+      \nobreak\vbox{}\nobreak\par\nobreak\beamer@entrycode\nobreak%
+      \nointerlineskip\unvbox\beamer@frametitlebox%
+      \nobreak%
+      \ifbeamer@autobreak%
+        \vskip\beamer@frametopskipautobreak%
+      \else%
+        \vskip\beamer@frametopskip%
+      \fi%
+      \nobreak%
+      \nointerlineskip\box\beamer@zoombox\nointerlineskip%
+      \nobreak%
+      \ifbeamer@slidehaszoom\box\beamer@framebox\else\unvbox\beamer@framebox\fi%
+      % bottom skip is added in autobreakframebox
+    }%
+    \beamer@autobreakframebox%
+  \else%
+    \beamer@zoomer%
+  \fi%
+  \beamer@undolabels%
+  \beamer@framenotesend%
+  \box\beamer@framebox}
+\long\def\beamer@title[#1]#2{%
+  \def\inserttitle{\beginR#2\endR}%
+  \def\beamer@shorttitle{\beginR#1\endR}%
+  }
+\long\def\beamer@subtitle[#1]#2{%
+  \def\insertsubtitle{\beginR#2\endR}%
+  \def\beamer@shortsubtitle{\beginR#1\endR}%
+  }
+\long\def\beamer@date[#1]#2{%
+  \def\insertdate{\beginR#2\endR}%
+  \def\beamer@shortdate{\beginR#1\endR}%
+  }
+\long\def\beamer@author[#1]#2{%
+  \def\insertauthor{\def\inst{\beamer@insttitle}\def\and{\beamer@andtitle}\beginR#2\endR}%
+  \def\beamer@shortauthor{\beginR#1\endR}%
+  \ifbeamer@autopdfinfo%
+    \def\beamer@andstripped{}%
+    \beamer@stripands#2 \and\relax
+    {\let\inst=\@gobble\let\thanks=\@gobble\def\and{, }\hypersetup{pdfauthor={\beamer@andstripped}}}
+  \fi%
+}
+\long\def\beamer@institute[#1]#2{%
+  \def\beamer@temp{\beginR#2\endR}%
+  \ifx\beamer@temp\@empty
+    \def\insertinstitute{}
+  \else
+    \def\insertinstitute{\def\inst{\beamer@instinst}\def\and{\beamer@andinst}\beginR#2\endR}%
+  \fi
+ \def\beamer@shortinstitute{\beginR#1\endR}}
+\renewenvironment{thebibliography}[1]
+{%\leavevmode\unskip%
+  \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\beamer@biblabeltemplate{\@biblabel{#1}}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \itemsep=0pt%
+            \partopsep=0pt%
+            \topsep=0pt%
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}
+            \let\makelabel\beamer@biblabeltemplate}%
+      \sloppy\raggedleft
+      \clubpenalty10000
+      \@clubpenalty \clubpenalty
+      \widowpenalty10000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \ifhmode\unskip\fi\endlist}
+\long\def\beamer@@@section#1{\beamer@section[\beginR#1\endR]{#1}}
+\def\beamer@@@subsection#1{\beamer@subsection[\beginR#1\endR]{#1}}
+\def\beamer@@@subsubsection#1{\beamer@subsubsection[\beginR#1\endR]{#1}}
+\long\def\beamer@subsectionintoc#1#2#3#4#5#6{%
+  \ifnum\c@tocdepth>1%
+  \ifnum#5=\beamer@showpartnumber%
+  {
+    \beamer@saveanother%
+    \gdef\beamer@todo{}%
+    \beamer@slideinframe=#1\relax%
+    \expandafter\only\beamer@tocsections{\gdef\beamer@todo{%
+      \ifbeamer@pausesubsections\pause\fi%
+      \beamer@tempcount=#6%
+      \advance\beamer@tempcount by\beamer@sectionadjust%
+      \edef\inserttocsectionnumber{\the\beamer@tempcount}%
+      \def\inserttocsubsectionnumber{#2}%
+      \def\inserttocsubsection{\rightskip=1.5em\hyperlink{Navigation#4}{\beginR#3\endR\hfill}}%
+      \beamer@tocifnothide{\ifnum\c@section=#1\beamer@toc@oss\else\beamer@toc@ooss\fi}%
+      {%
+        \def\beamer@breakhere{\\}%              
+        \beamer@tocact{\ifnum\c@section=#1\ifnum\c@subsection=#2\beamer@toc@css\else\beamer@toc@oss\fi\else\beamer@toc@ooss\fi}
+        {subsection in toc}%
+      }%
+    }}%
+    \beamer@restoreanother%
+  }
+  \beamer@todo%
+  \fi\fi%
+}
+\long\def\beamer@subsubsectionintoc#1#2#3#4#5#6#7{%
+  \ifnum\c@tocdepth>2%
+  \ifnum#1=\beamer@showpartnumber%
+  {
+    \beamer@saveanother%
+    \gdef\beamer@todo{}%
+    \beamer@slideinframe=#2\relax%
+    \expandafter\only\beamer@tocsections{\gdef\beamer@todo{%
+      \ifbeamer@pausesubsections\pause\fi%
+      \beamer@tempcount=#6%
+      \advance\beamer@tempcount by\beamer@sectionadjust%
+      \edef\inserttocsectionnumber{\the\beamer@tempcount}%
+      \def\inserttocsubsectionnumber{#3}%
+      \def\inserttocsubsubsectionnumber{#4}%
+      \def\inserttocsubsubsection{\rightskip=3em\hyperlink{Navigation#5}{\beginR#7\endR\hfill}}%
+      \beamer@tocifnothide{\ifnum\c@section=#2\beamer@toc@oss\else\beamer@toc@ooss\fi}%
+      {%
+        \def\beamer@breakhere{\\}%              
+        \beamer@tocact{\ifnum\c@section=#2\ifnum\c@subsection=#3\beamer@toc@css\else\beamer@toc@oss\fi\else\beamer@toc@ooss\fi}
+        {subsubsection in toc}%
+      }%
+    }}%
+    \beamer@restoreanother%
+  }
+  \beamer@todo%
+  \fi\fi%
+}
+\long\def\beamer@makecaption#1#2{%
+  \def\insertcaptionname{\csname#1name\endcsname}%
+  \def\insertcaptionnumber{\csname the#1\endcsname}%
+  \def\insertcaption{#2}%
+  \nobreak\vskip\abovecaptionskip\nobreak
+  \sbox\@tempboxa{\usebeamertemplate**{caption}}%
+  \ifdim \wd\@tempboxa >\hsize
+    \usebeamertemplate**{caption}\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil\if@RTL\endR\fi}%
+  \fi
+  \nobreak\vskip\belowcaptionskip\nobreak}
+}{}
+
+\providecommand*{\xpg@warning}[1]{%
+   \PackageWarning{XePersian}%
+   {#1}}      
+\ifcsdef{abjad}{}{%
+\def\abjad#1{%
+\ifnum#1>1999 \xpg@warning{Illegal value (#1) for abjad numeral} {#1}
+\else
+  \ifnum#1<\z@\space\xpg@warning{Illegal value (#1) for abjad numeral}%
+  \else
+    \ifnum#1<10\expandafter\abj@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\abj@num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\abj@num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\abj@num@iv\number#1%since #1<2000, we must have 1000
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+\fi
+}
+\def\abjad@zero{}
+\def\abj@num@i#1{%
+  \ifcase#1\or الف\or ب\or ج\or د%
+           \or ه\char"200D\or و\or ز\or ح\or ط\fi
+  \ifnum#1=\z@\abjad@zero\fi}
+\def\abj@num@ii#1{%
+  \ifcase#1\or ی\or ک\or ل\or م\or ن%
+           \or س\or ع\or ف\or ص\fi
+  \ifnum#1=\z@\fi\abj@num@i}
+\def\abj@num@iii#1{%
+  \ifcase#1\or ق\or ر\or ش\or ت\or ث%
+            \or خ\or ذ\or ض\or ظ\fi
+  \ifnum#1=\z@\fi\abj@num@ii}
+\def\abj@num@iv#1{%
+  \ifcase#1\or غ\fi
+  \ifnum#1=\z@\fi\abj@num@iii}
+}
+
+   \let\@latinalph\@alph%
+   \let\@latinAlph\@Alph%
+   \let\@alph\abjad%
+   \let\@Alph\abjad%
+
+
+
+
+
+                                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                    %                                                                                     %
+                                    %                               footnote setup                                        %
+                                    %                                                                                     %
+                                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifx \CatEscape\undefined
+    \chardef\CatEscape=0
+    \chardef\CatOpen=1
+    \chardef\CatClose=2
+    \chardef\CatIgnore=9
+    \chardef\CatLetter=11
+    \chardef\CatOther=12
+    \chardef\CatActive=13		% is defined in Plain already
+
+    \chardef\CatUsCode=\catcode`\_
+\fi
+
+\catcode`\_=\CatLetter			% top level macro file
+
+
+\def\r@fn{%
+  \hbox to \columnwidth
+  {\beginR \vbox{\kern -3\p@
+   \hrule width .4\columnwidth \kern2.6\p@}\hfil\endR}}
+\def\l@fn{%
+   \hrule width .4\columnwidth\kern 2.6\p@}
+
+
+\def\@makefnmark{\hbox{$^{\hbox{\scriptsize\@thefnmark}}\m@th$}}
+
+
+\def\leftfootnoterule{\global\def\footnoterule{\l@fn}}
+\def\rightfootnoterule{\global\def\footnoterule{\r@fn}}
+\leftfootnoterule
+
+%%% \beginprog
+\newread\old_foot_file
+\newwrite\foot_file
+\def\foot_file_name{\jobname.fot\relax}
+\def\init_footnote{%
+   \openin\old_foot_file\foot_file_name
+   \ifeof\old_foot_file  \closein\old_foot_file
+   \else  \closein\old_foot_file
+      \read_foot_file
+   \fi
+   \immediate\openout\foot_file\foot_file_name
+   \immediate\write\foot_file{\relax}%
+   \global\let\init_footnote\relax
+   }
+
+\newcount\foot_name_no  % for generating footnote mark names
+
+
+
+
+
+\newcount\autofootnote
+\def\fnpp_next_footnote{%
+    \init_footnote
+    \global\advance\foot_name_no\@ne
+    \global\advance\c@footnote\@ne
+    \edef\do_write{%
+	\immediate\write\foot_file{%
+	    \string\advance\autofootnote\@ne
+	    \string\expandafter\xdef
+			\string\csname\space f@\number\foot_name_no \endcsname{%
+		\string\number\autofootnote
+		}%
+	    }%
+	}%
+    \do_write
+    \global\autofootnote 0\csname f@\number\foot_name_no \endcsname \relax
+    }
+
+\def\read_foot_file{%
+   \begingroup
+      \catcode`\@\CatLetter \catcode`\^^M\CatIgnore
+      \input \foot_file_name
+   \endgroup
+   }
+
+\let\fnpp_orig_outputpage=\@outputpage
+\def\@outputpage{%
+    \ifx \init_footnote\relax
+	\immediate\write\foot_file{\autofootnote\z@}%
+    \fi
+    \fnpp_orig_outputpage
+    }
+
+\let\FnppOrigFootnote=\footnote		% save original bindings
+\let\FnppOrigFootnotemark=\footnotemark
+
+\def\footnote{%
+    \@ifnextchar[%			% ] (Emacs)
+	\@xfootnote
+	{\fnpp_next_footnote \ifnum\autofootnote=1\rightfootnoterule\fi \@xfootnote[\the\c@footnote] %
+}%
+    }
+\def\footnotemark{%
+    \@ifnextchar[%			% ] (Emacs)
+	\@xfootnotemark
+	{\fnpp_next_footnote \ifnum\autofootnote=1\rightfootnoterule\fi \@xfootnotemark[\the\c@footnote]}%
+    }
+
+
+
+
+\def\footnotemarkLR{%
+    \@ifnextchar[%			% ] (Emacs)
+	\@xfootnotemark
+	{\fnpp_next_footnote \ifnum\autofootnote=1\leftfootnoterule\fi\@xfootnotemark[\the\c@footnote]}%
+    }
+
+\newif\if@RomanFootNum
+\providerobustcmd{\Footnote}[1]{%
+\bgroup
+\footnotemarkLR%
+\renewcommand{\thefootnote}{\if@RomanFootNum\rmfamily{\@arabic\c@footnote}\else\@arabic\c@footnote\fi}%
+\@RTLfalse\footnotetext{\rmfamily#1}%
+\egroup
+}
+\@RomanFootNumfalse
+\def\PersianFootNum{\@RomanFootNumfalse}
+\def\RomanFootNum{\@RomanFootNumtrue}
+\DeclareOption{RomanFootNum}{\@RomanFootNumtrue}
+\ProcessOptions
+
+
+
+\ifx \@minipagerestore\relax
+    \let\@minipagerestore\@empty
+\fi
+
+\g@addto@macro\@minipagerestore{%
+    \let\footnote\FnppOrigFootnote
+    }
+
+\let\fnpp_orig_maketitle=\maketitle
+\def\maketitle{%
+    \begingroup
+    	\let\footnotemark\FnppOrigFootnotemark
+	\fnpp_orig_maketitle
+    \endgroup
+    }
+
+\catcode`\_=\CatUsCode
+
+                                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                    %                                                                                     %
+                                    %                            End of footnote setup                                    %
+                                    %                                                                                     %
+                                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

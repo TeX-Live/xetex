@@ -1,0 +1,46 @@
+%% Configure xetex to do kashida justification in Persian text
+
+\chardef\zwj="200D % zero-width joiner
+\chardef\ksh="0640 % kashida
+
+\chardef\D=10 % dual-joiner class
+\chardef\L=11 % lam
+\chardef\R=12 % right-joiner
+\chardef\A=13 % alef
+\chardef\V=256 % vowel or other combining mark (to be ignored)
+
+\def\kashida{\zwj\nobreak \setbox0=\hbox{\ksh}%
+    \leaders\hrule height\ht0 \hskip0pt plus 0.5em \zwj}
+
+\def\setclass#1#2{\def\theclass{#1}\def\charlist{#2}%
+  \expandafter\dosetclass\charlist,\end}
+\def\dosetclass#1,#2\end{%
+  \def\test{#1}\def\charlist{#2}%
+  \ifx\test\empty\let\next\finishsetclass
+  \else \XeTeXcharclass "\test = \theclass
+     \let\next\dosetclass \fi
+  \expandafter\next\charlist,,\end}
+\def\finishsetclass#1,,\end{}
+
+\setclass \A {0622,0623,0625,0627}
+\setclass \R {0624,0629,062F,0630,0631,0632,0648,0698}
+\setclass \D {0626,0628,062A,062B,062C,062D,062E}
+\setclass \D {0633,0634,0635,0636,0637,0638,0639,063A}
+\setclass \D {0640,0641,0642,0643,0645,0646,0647,0649,064A}
+\setclass \D {067E,0686,06A9,06AF,06CC}
+\setclass \L {0644}
+\setclass \V {064B,064C,064D,064E,064F,0650,0651,0652}
+
+\XeTeXinterchartoks \D \D = {\kashida}
+\XeTeXinterchartoks \L \D = {\kashida}
+\XeTeXinterchartoks \D \L = {\kashida}
+\XeTeXinterchartoks \L \L = {\kashida}
+\XeTeXinterchartoks \D \R = {\kashida}
+\XeTeXinterchartoks \D \A = {\kashida}
+\XeTeXinterchartoks \L \R = {\kashida}
+\XeTeXinterchartoks \L \A = {}
+
+\XeTeXinterchartokenstate=1
+
+\endinput
+
