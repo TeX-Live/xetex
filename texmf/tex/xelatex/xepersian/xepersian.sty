@@ -225,6 +225,55 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 \renewcommand\SetWatermarkText[1]{%
   \def\sc@wm@text{\if@RTL\beginR\fi#1\if@RTL\endR\fi}}
 }{}
+\@ifpackageloaded{pdfpages}{%
+\renewcommand*{\includepdf}[2][]{%
+  \begingroup
+  \@RTLfalse
+  \let\AM@threadname\relax
+  \AM@split@options{pdfpages}{#1}%
+  \edef\AM@temp{{pdfpages}{\the\@temptokena}}%
+  \expandafter\setkeys\AM@temp
+  \ifthenelse{\boolean{AM@pkg@draft} \and \boolean{AM@survey}}{%
+    \let\AM@currentdocname\relax
+    \renewcommand\includegraphics[2][]{Survey in draft-mode}%
+    \def\AM@pagecount{0}%
+  }{%
+    \AM@findfile{#2}%
+    \if\AM@threadname\relax
+      \def\AM@threadname{\AM@currentdocname}%
+    \fi
+  }%
+  \ifAM@survey
+    \def\AM@pagestemp{}%
+    \@tempcnta=0
+    \def\foo{%
+      \@ifundefined{r@\AM@xrprefix pdfpages@page\the\@tempcnta}%
+         {\let\foo\relax}
+         {\expandafter\ifx\expandafter\\\AM@pagestemp\\
+             \edef\AM@pagestemp{%
+                \AM@pageref{\AM@xrprefix pdfpages@page\the\@tempcnta}}%
+          \else
+            \edef\AM@pagestemp{\AM@pagestemp,%
+               \AM@pageref{\AM@xrprefix pdfpages@page\the\@tempcnta}}%
+          \fi
+          \advance\@tempcnta 1\relax
+         }%
+      \foo
+    }%
+    \foo
+    \expandafter\ifx\expandafter\\\AM@pagestemp\\
+      \def\AM@pagestemp{1}%
+    \fi
+  \fi
+  \ifAM@output
+    \expandafter\AM@readlist\expandafter{\AM@pagestemp}%
+    \AM@output{#1}%
+  \fi
+  \AM@CheckAtEnd
+  \endgroup
+  \AM@ClearShipoutPicture
+}
+}{}
 \newfontscript{Persian}{arab}
 \newfontlanguage{Persian}{ARA}
 \newcommand*\settextfont[2][]{%
