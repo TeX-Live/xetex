@@ -1,5 +1,12 @@
+%% This file is xepersian-manual.cls 
+%%
+%% Copyright 2009 by Vafa Khalighi
+%%
+%%%% It may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3c
+%% of this license or (at your option) any later version.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{xepersian-manual}[2009/03/01 v0.1 Typesetting XePersian Manual in Persian (Author: Vafa Khalighi)]
+\ProvidesClass{xepersian-manual}[2009/03/01 v0.1 Typesetting XePersian Manual in Persian in XeLaTeX (Author: Vafa Khalighi)]
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions
 \LoadClass[a4paper,12pt,twoside]{article}
