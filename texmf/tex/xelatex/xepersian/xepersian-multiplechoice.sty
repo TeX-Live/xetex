@@ -13,26 +13,22 @@
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{verbatim}
-\RequirePackage{fmultico,xepersian}
-\RequirePackage{tabularx}
+\RequirePackage{fmultico}
 \def\@headerfont{\bfseries}
 \newcommand\headerfont[1]{\gdef\@headerfont{#1}}
 \def\@X{X}
 \newcommand\X[1]{\gdef\@X{#1}}
 \def\pbs#1{\let\tmp=\\#1\let\\=\tmp}
-\newcolumntype{D}{>{\pbs\centering}X}
-\newcolumntype{Q}{>{\@headerfont}X}
-\renewcommand\tabularxcolumn[1]{m{#1}}
 \newcommand\makeform@nocorrection{%
-  \addtocontents{frm}{\protect\end{tabularx}}
+  \addtocontents{frm}{\protect\end{tabular}}
   \@starttoc{frm}}
 \newcommand\makeform@correction{%
-  \addtocontents{frm}{\protect\end{tabularx}}}
+  \addtocontents{frm}{\protect\end{tabular}}}
 \newcommand\makemask@nocorrection{%
-  \addtocontents{msk}{\protect\end{tabularx}}
+  \addtocontents{msk}{\protect\end{tabular}}
   \@starttoc{msk}}
 \newcommand\makemask@correction{%
-  \addtocontents{msk}{\protect\end{tabularx}}}
+  \addtocontents{msk}{\protect\end{tabular}}}
 \newlength\questionspace
 \setlength\questionspace{0pt}
 \newcommand\answerstitle[1]{\gdef\@answerstitle{#1}}
@@ -45,21 +41,21 @@
 \def\@initorcheck{%
   \xdef\@choices{\the@choice}%
   \setcounter{@choice}{1}%
-  \gdef\@arraydesc{|Q||}%
+  \gdef\@arraydesc{|l||}%
   \gdef\@headerline{}%
   \whiledo{\not{\value{@choice}>\@choices}}{
-    \xdef\@arraydesc{\@arraydesc D|}
+    \xdef\@arraydesc{\@arraydesc c|}
     \def\@appendheader{\g@addto@macro\@headerline}
     \@appendheader{&\protect\@headerfont}
     \edef\@the@choice{{\alph{@choice}}}
     \expandafter\@appendheader\@the@choice
     \stepcounter{@choice}}%
   \addtocontents{frm}{%
-    \protect\begin{tabularx}{\protect\linewidth}{\@arraydesc}
+    \protect\begin{tabular}{\@arraydesc}
     \protect\hline
     \@headerline\protect\\\protect\hline\protect\hline}%
   \addtocontents{msk}{%
-    \protect\begin{tabularx}{\protect\linewidth}{\@arraydesc}
+    \protect\begin{tabular}{\@arraydesc}
     \protect\hline
     \@headerline\protect\\\protect\hline\protect\hline}%
   \gdef\@initorcheck{%
