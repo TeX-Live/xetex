@@ -126,11 +126,11 @@
 \providecommand*{\sectionstyle}[1]{{\sectionfont\@sectiontitlecolour#1}}
 \providecommand*{\subsectionstyle}[1]{{\subsectionfont\@subsectioncolour#1}}
 \providecommand*{\hintstyle}[1]{{\hintfont\@hintcolour#1}}
-\newcommand*{\xepersiantheme}[2][]{
-  \def\@xepersiantheme{#2}
-  \def\@xepersianthemeoptions{#1}}
-\xepersiantheme{xepersian-casual}   
-\AtBeginDocument{\RequirePackage[\@xepersianthemeoptions]{xepersiantheme\@xepersiantheme}}
+\newcommand*{\cvtheme}[2][]{
+  \def\@cvtheme{#2}
+  \def\@cvthemeoptions{#1}}
+\cvtheme{xepersian-casual}   
+\AtBeginDocument{\RequirePackage[\@cvthemeoptions]{cvtheme\@cvtheme}}
 \newcommand*{\firstname}[1]{\def\@firstname{#1}}
 \newcommand*{\familyname}[1]{\def\@familyname{#1}}
 \renewcommand*{\title}[1]{\def\@title{#1}}
@@ -178,7 +178,7 @@
 	\vspace*{2.5ex \@plus 1ex \@minus .2ex}%
   \phantomsection{}% 
   \addcontentsline{toc}{part}{#1}%
-  \parbox[m]{\hintscolumnwidth}{\raggedleft\hintfont{\beginL\psline[linecolor=sectionrectanglecolor,linewidth=4pt](0,0)(-2,0)\endL}}%
+  \parbox[m]{\hintscolumnwidth}{\raggedleft\hintfont{\beginL\psline[linecolor=sectionrectanglecolour,linewidth=4pt](-2.5,0)(0,0)\endL}}%
   \hspace{\separatorcolumnwidth}%
   \parbox[m]{\maincolumnwidth}{\sectionstyle{#1}}\\[1ex]}
 \newcommand*{\subsection}[1]{%
@@ -236,7 +236,7 @@
   \AtEndDocument{\label{lastpage}}%
   \fi}
 \newcommand{\refname}{انتشارات}
-\setlength{\bibindent}{1.5em}
+%\setlength{\bibindent}{1.5em}
 \newcommand*{\bibliographyitemlabel}{}
 \newenvironment{thebibliography}[1]%
   {%
