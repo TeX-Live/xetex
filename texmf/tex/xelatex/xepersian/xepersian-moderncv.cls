@@ -77,7 +77,7 @@
       pdfauthor     = \@firstname~\@familyname,%
       pdftitle      = \@title,%
       pdfsubject    = \@firstname~\@familyname,%
-      pdfkeywords   = \@firstname~\@familyname{} curriculum vit\ae{}}}}
+      pdfkeywords   = رزومهٔ \@firstname~\@familyname}}}
 \urlstyle{tt}
 \RequirePackage{fancyhdr}
 \fancypagestyle{plain}{%
@@ -231,7 +231,7 @@
     \@ifundefined{r@lastpage}{}{%
       \ifthenelse{\pageref{lastpage} > 1}{%
       \fancypagestyle{plain}{%
-        \fancyfoot[r]{\addressfont\@quotecolour\footnotesize\beginL\thepage/\pageref{lastpage}\endL}}%
+        \fancyfoot[r]{\beginL\addressfont\@quotecolour\footnotesize\thepage\beginL/\endL\pageref{lastpage}\endL}}%
       \pagestyle{plain}}{}}%
   \AtEndDocument{\label{lastpage}}%
   \fi}

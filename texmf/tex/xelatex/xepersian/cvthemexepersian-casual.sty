@@ -31,8 +31,6 @@
 \ExecuteOptions{colour}
 \ProcessOptions\relax
 \renewcommand*{\listitemsymbol}{\textbullet}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \familynamecolour{808080}
 \firstnamecolour{A9A9A9}
 \quotecolour{696969}
@@ -42,30 +40,26 @@
 \subsectioncolour{4682B4}
 \definecolor{rulecolour}{gray}{0.6}
 \definecolor{footersymbolcolour}{rgb}{0.25,0.50,0.75}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \if@colourorange
-  \definecolor{sectionrectanglecolor}{rgb}{1.00,0.65,0.20}
-  \definecolor{sectiontitlecolor}{rgb}{0.95,0.55,0.15}
-  \definecolor{subsectioncolor}{rgb}{0.95,0.55,0.15}
-  \definecolor{footersymbolcolor}{rgb}{0.95,0.55,0.15}\fi
+  \definecolor{sectionrectanglecolour}{rgb}{1.00,0.65,0.20}
+  \sectiontitlecolour{FF8C00}
+  \subsectioncolour{FF8C00}
+  \definecolor{footersymbolcolour}{rgb}{0.95,0.55,0.15}\fi
 \if@colourgreen
-  \definecolor{sectionrectanglecolor}{rgb}{0.55,0.85,0.35}
-  \definecolor{sectiontitlecolor}{rgb}{0.30,0.65,0.15}
-  \definecolor{subsectioncolor}{rgb}{0.30,0.65,0.15}
-  \definecolor{footersymbolcolor}{rgb}{0.30,0.65,0.15}\fi
+  \definecolor{sectionrectanglecolour}{rgb}{0.55,0.85,0.35}
+  \sectiontitlecolour{008000}
+  \subsectioncolour{008000}
+  \definecolor{footersymbolcolour}{rgb}{0.30,0.65,0.15}\fi
 \if@colourred
-  \definecolor{sectionrectanglecolor}{rgb}{1.00,0.30,0.30}
-  \definecolor{sectiontitlecolor}{rgb}{0.95,0.20,0.20}
-  \definecolor{subsectioncolor}{rgb}{0.95,0.20,0.20}
-  \definecolor{footersymbolcolor}{rgb}{0.95,0.20,0.20}\fi
+  \definecolor{sectionrectanglecolour}{rgb}{1.00,0.30,0.30}
+  \sectiontitlecolour{FF0000}
+  \subsectioncolour{FF0000}
+  \definecolor{footersymbolcolour}{rgb}{0.95,0.20,0.20}\fi
 \if@colourgrey
-  \definecolor{sectionrectanglecolor}{rgb}{0.75,0.75,0.75}
-  \definecolor{sectiontitlecolor}{rgb}{0.35,0.35,0.35}
-  \definecolor{subsectioncolor}{rgb}{0.35,0.35,0.35}
-  \definecolor{footersymbolcolor}{rgb}{0.35,0.35,0.35}\fi
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \definecolor{sectionrectanglecolour}{rgb}{0.75,0.75,0.75}
+  \sectiontitlecolour{808080}
+  \subsectioncolour{808080}
+  \definecolor{footersymbolcolour}{rgb}{0.35,0.35,0.35}\fi
 \renewcommand*{\ttdefault}{pcr}
 \renewcommand*{\firstnamefont}{\fontsize{38}{40}\mdseries\upshape}
 \renewcommand*{\familynamefont}{\firstnamefont}
@@ -77,7 +71,7 @@
   {\beginL%
     \ifthenelse{\isundefined{\@photo}}%
       {}%
-      {{\color{sectionrectanglecolour}\framebox{\includegraphics[width=\@photowidth]{\@photo}}}}%
+      {{\framebox{\includegraphics[width=\@photowidth]{\@photo}}}}%
     \hfill%
 %    
     \raggedleft{\beginR\firstnamestyle{\@firstname}~\familynamestyle{\@familyname}\endR}\endL\\[-.35em]}%
@@ -103,11 +97,11 @@
       \ifthenelse{\isundefined{\@address}}{}{%
         \beginR\addresssymbol~\@address\endR\\%
         \@firstfooterelementfalse}%
-      \ifthenelse{\isundefined{\@mobile}}{}{\beginL\textcolor{footersymbolcolour}{\footersymbol}\endL\beginR\mobilesymbol~\@mobile\endR\@firstfooterelementfalse}%
+      \beginR\ifthenelse{\isundefined{\@mobile}}{}{\beginR\mobilesymbol~\@mobile\endR\@firstfooterelementfalse}%
       \ifthenelse{\isundefined{\@phone}}{}{\footersymbol\beginR\phonesymbol~\@phone\endR\@firstfooterelementfalse}%
       \ifthenelse{\isundefined{\@fax}}{}{\footersymbol\beginR\faxsymbol~\@fax\endR\@firstfooterelementfalse}%
       \ifthenelse{\isundefined{\@email}}{}{\footersymbol\beginR\emailsymbol~\emaillink{\@email}\endR\@firstfooterelementfalse}%
-      \ifthenelse{\isundefined{\@extrainfo}}{}{\beginR\footersymbol\@extrainfo\endR\@firstfooterelementfalse}}}%
+      \ifthenelse{\isundefined{\@extrainfo}}{}{\beginR\footersymbol\@extrainfo\endR\@firstfooterelementfalse}\endR}}%
   }%
   \pagestyle{plain}}
 \AtBeginDocument{\makefooter}
