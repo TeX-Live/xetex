@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{xepersian-moderncv}
+\cvtheme[red]{xepersian-casual} % you can use orange, red, green and blue as options
+\usepackage[scale=0.8]{geometry}
+\usepackage{xepersian}
+\settextfont[Scale=1]{XB Zar}
+\setromantextfont[Scale=1]{Linux Libertine}
+\setdigitfont[Scale=1]{XB Zar}
+\AtBeginDocument{\recomputelengths} 
+\firstname{سید محمد}
+\familyname{یزدی اصفهانی}
+\title{رزومهٔ من}               
+\address{تهران، خیابان آزادی پلاک ۹}   
+\mobile{۰۹۱۸۹۶۹۴۹۶}                   
+\phone{۹۸۹۰۸۳۴۱}                      
+\fax{۹۸۹۰۸۳۴۲}                          
+\email{me@you.com}                      
+\extrainfo{اطلاعات اضافی} 
+\photo[64pt]{picture}                         
+\quote{نقل قول}  
+\begin{document}
+\maketitle
+\section{تحصیلات}
+\cventry{سال--سال}{درجه}{دانشگاه}{شهر}{\textit{نمره}}{توضیح}   % arguments 3 to 6 are optional
+\cventry{سال--سال}{درجه}{دانشگاه}{شهر}{\textit{نمره}}{توضیح}  % arguments 3 to 6 are optional
+
+\section{پایان‌نامهٔ کارشناسی ارشد}
+\cvline{عنوان}{\emph{عنوان}}
+\cvline{استاد راهنما}{استاد راهنما}
+\cvline{توضیح}{\small چکیده کوچک پایان‌نامه}
+
+\section{تجربیات}
+\subsection{عنوان}
+\cventry{سال--سال}{نام شغل}{صاحب کار}{شهر}{}{توضیح}                % arguments 3 to 6 are optional
+\cventry{سال--سال}{نام شغل}{صاحب کار}{شهر}{}{توضیح}                % arguments 3 to 6 are optional
+\subsection{متفرقه}
+\cventry{سال--سال}{نام شغل}{صاحب کار}{شهر}{}{توضیح خط ۱\newline{}توضیح خط ۲}% arguments 3 to 6 are optional
+
+\section{زبانها}
+\cvlanguage{زبان ۱}{درجه مهارت}{نظر}
+\cvlanguage{زبان ۲}{درجه مهارت}{نظر}
+\cvlanguage{زبان ۳}{درجه مهارت}{نظر}
+
+\section{مهارتهای رایانه‌ای}
+\cvcomputer{طبقه ۱}{یک، دو، سه}{طبقه ۴}{یک، دو، سه}
+\cvcomputer{طبقه ۲}{یک، دو، سه}{طبقه ۵}{یک، دو، سه}
+\cvcomputer{طبقه ۳}{یک، دو، سه}{طبقه ۶}{یک، دو، سه}
+
+\section{علاقه‌ها}
+\cvline{علاقه ۱}{\small توضیح}
+\cvline{علاقه ۲}{\small توضیح}
+\cvline{علاقه ۳}{\small توضیح}
+
+\renewcommand{\listitemsymbol}{-} % change the symbol for lists
+
+\section{بعدی ۱}
+\cvlistitem{شماره ۱}
+\cvlistitem{شماره ۲}
+\cvlistitem[+]{شماره ۳}            % optional other symbol
+
+\section{بعدی ۲}
+\cvlistdoubleitem[\Neutral]{شماره ۱}{شماره ۴}
+\cvlistdoubleitem[\Neutral]{شماره ۲}{شماره ۵}
+\cvlistdoubleitem[\Neutral]{شماره ۳}{}
+
+% Publications from a BibTeX file
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{publications}       % 'publications' is the name of a BibTeX file
+
+\end{document}
