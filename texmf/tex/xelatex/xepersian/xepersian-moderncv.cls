@@ -235,7 +235,7 @@
       \pagestyle{plain}}{}}%
   \AtEndDocument{\label{lastpage}}%
   \fi}
-\newcommand{\refname}{انتشارات}
+\AtBeginDocument{\def\refname{تألیفات}}
 %\setlength{\bibindent}{1.5em}
 \newcommand*{\bibliographyitemlabel}{}
 \newenvironment{thebibliography}[1]%
