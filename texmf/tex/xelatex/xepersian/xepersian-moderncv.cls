@@ -236,8 +236,9 @@
   \AtEndDocument{\label{lastpage}}%
   \fi}
 \AtBeginDocument{\def\refname{تألیفات}}
-%\setlength{\bibindent}{1.5em}
-\newcommand*{\bibliographyitemlabel}{}
+\newlength{\bibindent}
+\setlength{\bibindent}{1.5em}
+\newcommand*{\bibliographyitemlabel}{\includegraphics{bibitem.pdf}}
 \newenvironment{thebibliography}[1]%
   {%
     \section{\refname}%
