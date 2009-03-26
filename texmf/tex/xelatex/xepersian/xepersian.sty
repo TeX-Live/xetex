@@ -274,6 +274,17 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
   \AM@ClearShipoutPicture
 }
 }{}
+\@ifpackageloaded{listings}{%
+\def\lstlistingname{برنامهٔ}
+\def\lstlistlistingname{فهرست برنامه‌ها}
+\long\def\@makecaption#1#2{%
+ \vskip 10pt%
+ \setbox\@tempboxa\hbox{#1: #2}%
+ \ifdim \wd\@tempboxa >\hsize \beginR#1: #2\par%
+ \else \hbox
+to\hsize{\beginR\hfil\box\@tempboxa\hfil%
+\endR}%
+ \fi}}{}
 \newfontscript{Persian}{arab}
 \newfontlanguage{Persian}{ARA}
 \newcommand*\settextfont[2][]{%
