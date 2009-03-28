@@ -285,6 +285,15 @@ to\hsize{\if@RTL\beginR\fi\hfil\box\@tempboxa\hfil%
 to\hsize{\beginR\hfil\box\@tempboxa\hfil%
 \endR}%
  \fi}}{}
+\@ifpackageloaded{pstricks}{%
+\def\pspicture{\begingroup\@RTLfalse\pst@ifstar\pst@picture}%
+}{}
+\@ifpackageloaded{tikz}{%
+\let\origin@tikzpicture=\tikzpicture
+\let\origin@endtikzpicture=\endtikzpicture
+\def\tikzpicture{\LTR\origin@tikzpicture}
+\def\endtikzpicture{\origin@endtikzpicture\endLTR}
+}{}
 \newfontscript{Persian}{arab}
 \newfontlanguage{Persian}{ARA}
 \newcommand*\settextfont[2][]{%
