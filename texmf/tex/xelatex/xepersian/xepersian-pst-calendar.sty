@@ -38,22 +38,22 @@
 
 \pst@addfams{pst-calendar}% hv
 
-\def\CalendrierFP@version{Version 0.47, 2005-11-07}
-\message{`pst-Calendar avec FP', \CalendrierFP@version\space ML/hv}
+%\def\CalendrierFP@version{Version 0.47, 2005-11-07}
+%\message{`pst-Calendar avec FP', \CalendrierFP@version\space ML/hv}
 %
 
-\def\ps@Jan{ژانویه}
-\def\ps@Feb{فوریه}
-\def\ps@Mar{مارس}
-\def\ps@Apr{آوریل}
-\def\ps@May{می}
-\def\ps@Jun{جون}
-\def\ps@Jul{جولای}
-\def\ps@Aug{آگست}
-\def\ps@Sep{سپتامبر}
-\def\ps@Oct{اکتبر}
-\def\ps@Nov{نوامبر}
-\def\ps@Dec{دسامبر}
+\def\ps@Farvardin{فروردین}
+\def\ps@Ordibehesht{اردیبهشت}
+\def\ps@Khordad{خرداد}
+\def\ps@Tir{تیر}
+\def\ps@Mordad{مرداد}
+\def\ps@Shahrivar{شهریور}
+\def\ps@Mehr{مهر}
+\def\ps@Aban{آبان}
+\def\ps@Azar{آذر}
+\def\ps@Dey{دی}
+\def\ps@Bahman{بهمن}
+\def\ps@Esfand{اسفند}
 \def\ps@Mon{د}
 \def\ps@Tue{س}
 \def\ps@Wed{چ}
@@ -71,56 +71,21 @@
 \define@key[psset]{pst-calendar}{Year}{\def\psk@CalendrierA{#1}}
 \psset{Day=\number\day,Month=\number\month,MonthUse=\number\month,Year=\number\year}
 %
-\define@key[psset]{pst-calendar}{Jour}{\def\psk@CalendrierJ{#1}}
-\define@key[psset]{pst-calendar}{MoisChoisi}{\def\psk@CalendrierMchoix{#1}}
-\define@key[psset]{pst-calendar}{Mois}{\def\psk@CalendrierM{#1}}
-\define@key[psset]{pst-calendar}{An}{\def\psk@CalendrierA{#1}}
-\psset{Jour=\number\day,Mois=\number\month,MoisChoisi=\number\month,An=\number\year}
+
+\newpsstyle{farvardin}{Vx=-\rc,Vy=0,Vz=-\rd,viewangle=108}
+\newpsstyle{ordibehesht}{Vx=\rc,Vy=0,Vz=-\rd,viewangle=180}
+\newpsstyle{khordad}{Vx=0,Vy=-\ra,Vz=-\rb,viewangle=144}
+\newpsstyle{tir}{Vx=-\rd,Vy=-\rc,Vz=0,viewangle=162}
+\newpsstyle{mordad}{Vx=-\rd,Vy=\rc,Vz=0,viewangle=198}
+\newpsstyle{shahrivar}{Vx=0,Vy=\ra,Vz=-\rb,viewangle=216}
+\newpsstyle{mehr}{Vx=-\rc,Vy=0,Vz=\rd,viewangle=0}
+\newpsstyle{aban}{Vx=0,Vy=-\ra,Vz=\rb,viewangle=-36}
+\newpsstyle{azar}{Vx=\rd,Vy=-\rc,Vz=0,viewangle=-18}
+\newpsstyle{dey}{Vx=\rd,Vy=\rc,Vz=0,viewangle=18}
+\newpsstyle{bahman}{Vx=0,Vy=\ra,Vz=\rb,viewangle=36}
+\newpsstyle{esfand}{Vx=\rc,Vy=0,Vz=\rb,viewangle=0}
 %
-\define@key[psset]{pst-calendar}{Tag}{\def\psk@CalendrierJ{#1}}
-\define@key[psset]{pst-calendar}{MonatT}{\def\psk@CalendrierMchoix{#1}}
-\define@key[psset]{pst-calendar}{Monat}{\def\psk@CalendrierM{#1}}
-\define@key[psset]{pst-calendar}{Jahr}{\def\psk@CalendrierA{#1}}
-\psset{Tag=\number\day,Monat=\number\month,MonatT=\number\month,Jahr=\number\year}
-%
-\newpsstyle{january}{Vx=-\rc,Vy=0,Vz=-\rd,viewangle=108}
-\newpsstyle{february}{Vx=\rc,Vy=0,Vz=-\rd,viewangle=180}
-\newpsstyle{march}{Vx=0,Vy=-\ra,Vz=-\rb,viewangle=144}
-\newpsstyle{april}{Vx=-\rd,Vy=-\rc,Vz=0,viewangle=162}
-\newpsstyle{may}{Vx=-\rd,Vy=\rc,Vz=0,viewangle=198}
-\newpsstyle{june}{Vx=0,Vy=\ra,Vz=-\rb,viewangle=216}
-\newpsstyle{july}{Vx=-\rc,Vy=0,Vz=\rd,viewangle=0}
-\newpsstyle{august}{Vx=0,Vy=-\ra,Vz=\rb,viewangle=-36}
-\newpsstyle{september}{Vx=\rd,Vy=-\rc,Vz=0,viewangle=-18}
-\newpsstyle{october}{Vx=\rd,Vy=\rc,Vz=0,viewangle=18}
-\newpsstyle{november}{Vx=0,Vy=\ra,Vz=\rb,viewangle=36}
-\newpsstyle{december}{Vx=\rc,Vy=0,Vz=\rb,viewangle=0}
-%
-\newpsstyle{Januar}{Vx=-\rc,Vy=0,Vz=-\rd,viewangle=108}
-\newpsstyle{Februar}{Vx=\rc,Vy=0,Vz=-\rd,viewangle=180}
-\newpsstyle{Maerz}{Vx=0,Vy=-\ra,Vz=-\rb,viewangle=144}
-\newpsstyle{April}{Vx=-\rd,Vy=-\rc,Vz=0,viewangle=162}
-\newpsstyle{Mai}{Vx=-\rd,Vy=\rc,Vz=0,viewangle=198}
-\newpsstyle{Juni}{Vx=0,Vy=\ra,Vz=-\rb,viewangle=216}
-\newpsstyle{Juli}{Vx=-\rc,Vy=0,Vz=\rd,viewangle=0}
-\newpsstyle{August}{Vx=0,Vy=-\ra,Vz=\rb,viewangle=-36}
-\newpsstyle{September}{Vx=\rd,Vy=-\rc,Vz=0,viewangle=-18}
-\newpsstyle{Oktober}{Vx=\rd,Vy=\rc,Vz=0,viewangle=18}
-\newpsstyle{November}{Vx=0,Vy=\ra,Vz=\rb,viewangle=36}
-\newpsstyle{Dezember}{Vx=\rc,Vy=0,Vz=\rb,viewangle=0}
-%
-\newpsstyle{janvier}{Vx=-\rc,Vy=0,Vz=-\rd,viewangle=108}
-\newpsstyle{fevrier}{Vx=\rc,Vy=0,Vz=-\rd,viewangle=180}
-\newpsstyle{mars}{Vx=0,Vy=-\ra,Vz=-\rb,viewangle=144}
-\newpsstyle{avril}{Vx=-\rd,Vy=-\rc,Vz=0,viewangle=162}
-\newpsstyle{mai}{Vx=-\rd,Vy=\rc,Vz=0,viewangle=198}
-\newpsstyle{juin}{Vx=0,Vy=\ra,Vz=-\rb,viewangle=216}
-\newpsstyle{juillet}{Vx=-\rc,Vy=0,Vz=\rd,viewangle=0}
-\newpsstyle{aout}{Vx=0,Vy=-\ra,Vz=\rb,viewangle=-36}
-\newpsstyle{septembre}{Vx=\rd,Vy=-\rc,Vz=0,viewangle=-18}
-\newpsstyle{octobre}{Vx=\rd,Vy=\rc,Vz=0,viewangle=18}
-\newpsstyle{novembre}{Vx=0,Vy=\ra,Vz=\rb,viewangle=36}
-\newpsstyle{decembre}{Vx=\rc,Vy=0,Vz=\rb,viewangle=0}
+
 %
 \definecolor{RougeA}{cmyk}{0.05,0.1,0.1,0}
 \definecolor{RougeB}{cmyk}{0.05,0.15,0.15,0}
@@ -157,51 +122,51 @@
 %face1
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(0)+(\psk@Solide@Viewpointy)*(\ra)+(\psk@Solide@Viewpointz)*(\rb)}%
 \FPifpos{\Test}\ThreeDput[normal=0 {\ra} {\rb}](0,\ra,\rb){%
-\psset{fillcolor=RougeA}\faceA\rput{36}{\rput(0,0){\psCalendar[Mois=11]}}}\fi
+\psset{fillcolor=RougeA}\faceA\rput{36}{\rput(0,0){\psCalendar[Month=11]}}}\fi
 %face2
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(0)-(\psk@Solide@Viewpointy)*(\ra)+(\psk@Solide@Viewpointz)*(\rb)}%
 \FPifpos{\Test}\ThreeDput[normal=0 {-\ra} {\rb}](0,-\ra,\rb){%
-\psset{fillcolor=RougeB}\faceA\rput{-36}{\rput(0,0){\psCalendar[Mois=8]}}}\fi
+\psset{fillcolor=RougeB}\faceA\rput{-36}{\rput(0,0){\psCalendar[Month=8]}}}\fi
 %face3
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(0)+(\psk@Solide@Viewpointy)*(\ra)-(\psk@Solide@Viewpointz)*(\rb)}%
 \FPifpos{\Test}\ThreeDput[normal=0 {\ra} {-\rb}](0,\ra,-\rb){%
-\psset{fillcolor=RougeC}\faceB\rput{216}{\rput(0,0){\psCalendar[Mois=6]}}}\fi
+\psset{fillcolor=RougeC}\faceB\rput{216}{\rput(0,0){\psCalendar[Month=6]}}}\fi
 %face4
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(0)-(\psk@Solide@Viewpointy)*(\ra)-(\psk@Solide@Viewpointz)*(\rb)}%
 \FPifpos{\Test}\ThreeDput[normal=0 {-\ra} {-\rb}](0,-\ra,-\rb){%
-\psset{fillcolor=RougeD}\faceB\rput{144}{\rput(0,0){\psCalendar[Mois=3]}}}\fi%
+\psset{fillcolor=RougeD}\faceB\rput{144}{\rput(0,0){\psCalendar[Month=3]}}}\fi%
 %face 5
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(\rc)+(\psk@Solide@Viewpointy)*(0)+(\psk@Solide@Viewpointz)*(\rd)}%
 \FPifpos{\Test}\ThreeDput[normal={\rc} 0  {\rd}](\rc,0,\rd){%
-\psset{fillcolor=RougeE}\faceB\rput(0,0){\psCalendar[Mois=12]}}\fi
+\psset{fillcolor=RougeE}\faceB\rput(0,0){\psCalendar[Month=12]}}\fi
 %face6
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(-\rc)+(\psk@Solide@Viewpointy)*(0)+(\psk@Solide@Viewpointz)*(\rd)}%
 \FPifpos{\Test}\ThreeDput[normal={-\rc} 0  {\rd}](-\rc,0,\rd){%
-\psset{fillcolor=RougeF}\faceB\rput{0}{\rput(0,0){\psCalendar[Mois=7]}}}\fi
+\psset{fillcolor=RougeF}\faceB\rput{0}{\rput(0,0){\psCalendar[Month=7]}}}\fi
 %face7
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(\rc)+(\psk@Solide@Viewpointy)*(0)-(\psk@Solide@Viewpointz)*(\rd)}%
 \FPifpos{\Test}\ThreeDput[normal={\rc} 0 {-\rd}](\rc,0,-\rd){%
-\psset{fillcolor=RougeG}\faceA\rput{180}{\rput(0,0){\psCalendar[Mois=2]}}}\fi
+\psset{fillcolor=RougeG}\faceA\rput{180}{\rput(0,0){\psCalendar[Month=2]}}}\fi
 %face8
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(-\rc)+(\psk@Solide@Viewpointy)*(0)-(\psk@Solide@Viewpointz)*(\rd)}%
 \FPifpos{\Test}\ThreeDput[normal={-\rc} 0 {-\rd}](-\rc,0,-\rd){%
-\psset{fillcolor=RougeH}\faceA\rput{108}{\rput(0,0){\psCalendar[Mois=1]}}}\fi%
+\psset{fillcolor=RougeH}\faceA\rput{108}{\rput(0,0){\psCalendar[Month=1]}}}\fi%
 %face 9
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(\rd)+(\psk@Solide@Viewpointy)*(\rc)+(\psk@Solide@Viewpointz)*(0)}%
 \FPifpos{\Test}\ThreeDput[normal={\rd} {\rc} 0](\rd,\rc,0){%
-\psset{fillcolor=RougeI}\faceC\rput{18}{\rput(0,0){\psCalendar[Mois=10]}}}\fi
+\psset{fillcolor=RougeI}\faceC\rput{18}{\rput(0,0){\psCalendar[Month=10]}}}\fi
 %face10
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(-\rd)+(\psk@Solide@Viewpointy)*(\rc)+(\psk@Solide@Viewpointz)*(0)}%
 \FPifpos{\Test}\ThreeDput[normal={-\rd} {\rc} 0](-\rd,\rc,0){%
-\psset{fillcolor=RougeJ}\faceD\rput{198}{\rput(0,0){\psCalendar[Mois=5]}}}\fi
+\psset{fillcolor=RougeJ}\faceD\rput{198}{\rput(0,0){\psCalendar[Month=5]}}}\fi
 %face11
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(\rd)-(\psk@Solide@Viewpointy)*(\rc)+(\psk@Solide@Viewpointz)*(0)}%
 \FPifpos{\Test}\ThreeDput[normal={\rd} {-\rc} 0](\rd,-\rc,0){%
-\psset{fillcolor=RougeK}\faceD\rput{-18}{\rput(0,0){\psCalendar[Mois=9]}}}\fi
+\psset{fillcolor=RougeK}\faceD\rput{-18}{\rput(0,0){\psCalendar[Month=9]}}}\fi
 %face8
 \FPeval{\Test}{(\psk@Solide@Viewpointx)*(-\rd)+(\psk@Solide@Viewpointz)*(0)-(\psk@Solide@Viewpointy)*(\rc)}%
 \FPifpos{\Test}\ThreeDput[normal={-\rd} {-\rc} 0](-\rd,-\rc,0){%
-\psset{fillcolor=RougeL}\faceC\rput{162}{\rput(0,0){\psCalendar[Mois=4]}}}\fi%
+\psset{fillcolor=RougeL}\faceC\rput{162}{\rput(0,0){\psCalendar[Month=4]}}}\fi%
 \endpspicture
 }}
 %
@@ -297,40 +262,40 @@
 \FPeval{\YearBissextil}{(\YearBissextil)*4}%
 \FPtrunc{\YearBissextil}{\YearBissextil}{0}%
 %
-\ifnum\psk@CalendrierM=1\def\adddays{0}\let\Name\ps@Jan\def\NbreJours{31}\fi%
-\ifnum\psk@CalendrierM=2\def\adddays{31}\let\Name\ps@Feb%
+\ifnum\psk@CalendrierM=1\def\adddays{0}\let\Name\ps@Farvardin\def\NbreJours{31}\fi%
+\ifnum\psk@CalendrierM=2\def\adddays{31}\let\Name\ps@Ordibehesht%
   \ifnum\YearBissextil=\psk@CalendrierA\def\NbreJours{29}\else\def\NbreJours{28}%
 \fi\fi%
 \ifnum\psk@CalendrierM=3
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{60}\else\def\adddays{59}\fi%
-\let\Name\ps@Mar\def\NbreJours{31}\fi%
+\let\Name\ps@Khordad\def\NbreJours{31}\fi%
 \ifnum\psk@CalendrierM=4
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{91}\else\def\adddays{90}\fi%
-\let\Name\ps@Apr\def\NbreJours{30}\fi%
+\let\Name\ps@Tir\def\NbreJours{30}\fi%
 \ifnum\psk@CalendrierM=5
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{121}\else\def\adddays{120}\fi%
-\let\Name\ps@May\def\NbreJours{31}\fi%
+\let\Name\ps@Mordad\def\NbreJours{31}\fi%
 \ifnum\psk@CalendrierM=6
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{152}\else\def\adddays{151}\fi%
-\let\Name\ps@Jun\def\NbreJours{30}\fi%
+\let\Name\ps@Shahrivar\def\NbreJours{30}\fi%
 \ifnum\psk@CalendrierM=7
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{182}\else\def\adddays{181}\fi%
-\let\Name\ps@Jul\def\NbreJours{31}\fi%
+\let\Name\ps@Mehr\def\NbreJours{31}\fi%
 \ifnum\psk@CalendrierM=8
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{213}\else\def\adddays{212}\fi%
-\let\Name\ps@Aug\def\NbreJours{31}\fi%
+\let\Name\ps@Aban\def\NbreJours{31}\fi%
 \ifnum\psk@CalendrierM=9
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{244}\else\def\adddays{243}\fi%
-\let\Name\ps@Sep\def\NbreJours{30}\fi%
+\let\Name\ps@Azar\def\NbreJours{30}\fi%
 \ifnum\psk@CalendrierM=10
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{274}\else\def\adddays{273}\fi%
-\let\Name\ps@Oct\def\NbreJours{31}\fi%
+\let\Name\ps@Dey\def\NbreJours{31}\fi%
 \ifnum\psk@CalendrierM=11
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{305}\else\def\adddays{304}\fi%
-\let\Name\ps@Nov\def\NbreJours{30}\fi%
+\let\Name\ps@Bahman\def\NbreJours{30}\fi%
 \ifnum\psk@CalendrierM=12
   \ifnum\YearBissextil=\psk@CalendrierA\def\adddays{335}\else\def\adddays{334}\fi%
-\let\Name\ps@Dec\def\NbreJours{31}\fi%
+\let\Name\ps@Esfand\def\NbreJours{31}\fi%
 %
 \ifnum\YearBissextil=\psk@CalendrierA
     \FPeval{\NbYearBissextil}{((\psk@CalendrierA)-2000)/4}%
