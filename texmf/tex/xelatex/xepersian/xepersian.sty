@@ -339,6 +339,10 @@ to\hsize{\beginR\hfil\box\@tempboxa\hfil%
 \def\endroman{\par\egroup}
 \def\persian{\bgroup\par\@RTLtrue\persianfont}
 \def\endpersian{\par\egroup}
+\def\setRTL{\@RTLtrue}
+\def\setLTR{\@RTLfalse}
+\let\unsetRTL=\setLTR
+\let\unsetLTR=\setRTL
 \def\Roman{\if@RTL\par\@RTLfalse\rmfamily\fi}
 \def\Persian{\if@RTL\relax\else\par\@RTLtrue\persianfont\fi}
 
