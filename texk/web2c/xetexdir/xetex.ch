@@ -65,7 +65,7 @@ authorization from SIL International.
 
 @d XeTeX_version=0
 @d XeTeX_revision==".999"
-@d XeTeX_version_string=='-0.999.7' {current \XeTeX\ version}
+@d XeTeX_version_string=='-0.999.8' {current \XeTeX\ version}
 @z
 
 @x
@@ -81,7 +81,7 @@ authorization from SIL International.
 @y
 @d XeTeX_banner=='This is XeTeX, Version 3.1415926',eTeX_version_string,XeTeX_version_string
   {printed when \XeTeX\ starts}
-@d XeTeX_banner_k=='This is XeTeXk, Version 3.1415926',eTeX_version_string,XeTeX_version_string
+@d XeTeX_banner_k==XeTeX_banner {Web2C ident is enough}
 @#
 @d banner==XeTeX_banner
 @d banner_k==XeTeX_banner_k
@@ -5032,13 +5032,15 @@ ligature_node: begin f:=font(lig_char(cur_p));
 @x
 @!hc:array[0..65] of 0..256; {word to be hyphenated}
 @y
-@!hc:array[0..65] of 0..too_big_char; {word to be hyphenated}
+@!hc:array[0..66] of 0..number_usvs; {word to be hyphenated}
+{ note that element 0 needs to be a full UnicodeScalar, even though we
+  basically work in utf16 }
 @z
 
 @x
 @!hu:array[0..63] of 0..256; {like |hc|, before conversion to lowercase}
 @y
-@!hu:array[0..63] of 0..too_big_char;
+@!hu:array[0..64] of 0..too_big_char;
      {like |hc|, before conversion to lowercase}
 @z
 
@@ -5062,7 +5064,7 @@ max_hyph_char:=too_big_lang;
 @x
 @!c:0..255; {character being considered for hyphenation}
 @y
-@!c:ASCII_code; {character being considered for hyphenation}
+@!c:UnicodeScalar; {character being considered for hyphenation}
 @z
 
 @x
@@ -5099,7 +5101,7 @@ done6:
 hn := 0;
 restart:
 for l := 0 to native_length(ha)-1 do begin
-  c := get_native_char(ha, l);
+  c := get_native_usv(ha, l);
   set_lc_code(c);
   if (hc[0] = 0) then begin
     if (hn > 0) then begin
@@ -5118,7 +5120,19 @@ for l := 0 to native_length(ha)-1 do begin
     goto done3
   else begin
     { found a letter that is part of a potentially hyphenatable sequence }
-    incr(hn); hu[hn] := c; hc[hn] := hc[0]; hyf_bchar := non_char;
+    incr(hn);
+    if c<@"10000 then begin
+      hu[hn] := c; hc[hn] := hc[0];
+      end
+    else begin
+      hu[hn] := (c - @"10000) div @"400 + @"D800;
+      hc[hn] := (hc[0] - @"10000) div @"400 + @"D800;
+      incr(hn);
+      hu[hn] := c mod @"400 + @"DC00;
+      hc[hn] := hc[0] mod @"400 + @"DC00;
+      incr(l);
+      end;
+    hyf_bchar := non_char;
   end
 end;
 
@@ -5149,12 +5163,13 @@ first letter.
       if subtype(s) = native_word_node then begin
         { we only consider the node if it contains at least one letter, otherwise we'll skip it }
         for l:=0 to native_length(s) - 1 do begin
-          c := get_native_char(s, l);
+          c := get_native_usv(s, l);
           if lc_code(c) <> 0 then begin
             hf := native_font(s);
             prev_s := s;
             goto done2;
-          end
+          end;
+          if c>=@"10000 then incr(l);
         end
       end;
       @<Advance \(p)past a whatsit node in the \(p)pre-hyphenation loop@>;
@@ -5264,6 +5279,12 @@ flush_node_list(ha);
 @z
 
 @x
+@!c:ASCII_code; {character temporarily replaced by a hyphen}
+@y
+@!c:UnicodeScalar; {character temporarily replaced by a hyphen}
+@z
+
+@x
   begin decr(l); c:=hu[l]; c_loc:=l; hu[l]:=256;
 @y
   begin decr(l); c:=hu[l]; c_loc:=l; hu[l]:=max_hyph_char;
@@ -5297,6 +5318,22 @@ hc[0]:=0; hc[hn+1]:=0; hc[hn+2]:=max_hyph_char; {insert delimiters}
   else if language>255 then cur_lang:=0
 @y
   else if language>biggest_lang then cur_lang:=0
+@z
+
+@x
+  else if n<63 then
+    begin incr(n); hc[n]:=hc[0];
+    end;
+@y
+  else if n<63 then
+    begin incr(n);
+      if hc[0]<@"10000 then hc[n]:=hc[0]
+      else begin
+        hc[n] := (hc[0] - @"10000) div @"400 + @"D800;
+        incr(n);
+        hc[n] := hc[0] mod @"400 + @"DC00;
+        end;
+    end;
 @z
 
 @x
