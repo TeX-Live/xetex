@@ -955,6 +955,8 @@ static struct option long_options[]
 #endif /* pdfTeX */
       { "shell-escape",              0, &shellenabledp, 1 },
       { "no-shell-escape",           0, &shellenabledp, -1 },
+      { "enable-write18",            0, &shellenabledp, 1 },
+      { "disable-write18",           0, &shellenabledp, -1 },
       { "debug-format",              0, &debugformatfile, 1 },
       { "src-specials",              2, 0, 0 },
 #if defined(__SyncTeX__)
