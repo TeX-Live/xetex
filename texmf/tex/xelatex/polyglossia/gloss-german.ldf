@@ -44,6 +44,24 @@
 \setkeys{german}{spelling,latesthyphen,babelshorthands}
 
 %% definitions from babel.def and germanb.ldf
+\def\bbl@firstcs#1#2{\csname#1\endcsname}
+\def\bbl@scndcs#1#2{\csname#2\endcsname}
+\def\declare@shorthand#1#2{\@decl@short{#1}#2\@nil}
+\def\@decl@short#1#2#3\@nil#4{%
+  \def\bbl@tempa{#3}%
+  \ifx\bbl@tempa\@empty
+    \expandafter\let\csname #1@sh@\string#2@sel\endcsname\bbl@scndcs
+    \@namedef{#1@sh@\string#2@}{#4}%
+  \else
+    \expandafter\let\csname #1@sh@\string#2@sel\endcsname\bbl@firstcs
+    \@namedef{#1@sh@\string#2@\string#3@}{#4}%
+  \fi}
+\def\textormath#1#2{%
+  \ifmmode
+    \bbl@afterelse#2%
+  \else
+    \bbl@afterfi#1%
+  \fi}
 \long\def\bbl@afterelse#1\else#2\fi{\fi#1}
 \long\def\bbl@afterfi#1\fi{\fi#1}
 \def\textormath#1#2{%
@@ -64,61 +82,36 @@
 \let\bbl@nextff=f
 
 \def\german@shorthands{%
-    \XeTeXinterchartokenstate=1%
-    \XeTeXcharclass `\" 7%
-    \XeTeXcharclass `\c 8%
-    \XeTeXcharclass `\C 9%
-    \XeTeXcharclass `\F 10%
-    \XeTeXcharclass `\l 11%
-    \XeTeXcharclass `\L 12%
-    \XeTeXcharclass `\m 13%
-    \XeTeXcharclass `\M 14%
-    \XeTeXcharclass `\n 15%
-    \XeTeXcharclass `\N 16%
-    \XeTeXcharclass `\p 17%
-    \XeTeXcharclass `\P 18%
-    \XeTeXcharclass `\r 19%
-    \XeTeXcharclass `\R 20%
-    \XeTeXcharclass `\t 21%
-    \XeTeXcharclass `\T 22%
-    \XeTeXcharclass `\f 23%
-    \XeTeXcharclass `\- 24%
-    \XeTeXcharclass `\| 25%
-    \XeTeXcharclass `\~ 26%
-    \XeTeXcharclass `\= 27%
-    \XeTeXcharclass `\` 28%
-    \XeTeXcharclass `\' 29%
-    \XeTeXcharclass `\< 30%
-    \XeTeXcharclass `\> 31%
-    \XeTeXinterchartoks 7 8 = {\textormath{\bbl@disc ck}{c}}%
-    \XeTeXinterchartoks 7 9 = {\textormath{\bbl@disc CK}{C}}%
-    \XeTeXinterchartoks 7 10 = {\textormath{\bbl@disc F{FF}}{F}}%
-    \XeTeXinterchartoks 7 11 = {\textormath{\bbl@disc l{ll}}{l}}%
-    \XeTeXinterchartoks 7 12 = {\textormath{\bbl@disc L{LL}}{L}}%
-    \XeTeXinterchartoks 7 13 = {\textormath{\bbl@disc m{mm}}{m}}%
-    \XeTeXinterchartoks 7 14 = {\textormath{\bbl@disc M{MM}}{M}}%
-    \XeTeXinterchartoks 7 15 = {\textormath{\bbl@disc n{nn}}{n}}%
-    \XeTeXinterchartoks 7 16 = {\textormath{\bbl@disc N{NN}}{N}}%
-    \XeTeXinterchartoks 7 17 = {\textormath{\bbl@disc p{pp}}{p}}%
-    \XeTeXinterchartoks 7 18 = {\textormath{\bbl@disc P{PP}}{P}}%
-    \XeTeXinterchartoks 7 19 = {\textormath{\bbl@disc r{rr}}{r}}%
-    \XeTeXinterchartoks 7 20 = {\textormath{\bbl@disc R{RR}}{R}}%
-    \XeTeXinterchartoks 7 21 = {\textormath{\bbl@disc t{tt}}{t}}%
-    \XeTeXinterchartoks 7 22 = {\textormath{\bbl@disc T{TT}}{T}}%
-    \XeTeXinterchartoks 7 23 = {\textormath{\bbl@discff}{f}}%
-    \XeTeXinterchartoks 7 24 = {\nobreak\-\nobreak\hskip\z@skip}%
-    \XeTeXinterchartoks 7 25 = {\textormath{\penalty\@M\discretionary{-}{}{\kern.03em}}{}}%
-    \XeTeXinterchartoks 7 7  = {\hskip\z@skip}%
-    \XeTeXinterchartoks 7 26 = {\textormath{\leavevmode\hbox{-}}{-}}%
-    \XeTeXinterchartoks 7 27 = {\penalty\@M-\hskip\z@skip}%
-    \XeTeXinterchartoks 7 28 = „%
-    \XeTeXinterchartoks 7 29 = “%
-    \XeTeXinterchartoks 7 30 = «%
-    \XeTeXinterchartoks 7 31 = »%
+\initiate@active@char{"}
+%     " "  = {\hskip\z@skip}%
+%     " \c = {\textormath{\bbl@disc ck}{c}}%
+%     " \C = {\textormath{\bbl@disc CK}{C}}%
+%     " \F = {\textormath{\bbl@disc F{FF}}{F}}%
+%     " \l = {\textormath{\bbl@disc l{ll}}{l}}%
+%     " \L = {\textormath{\bbl@disc L{LL}}{L}}%
+%     " \m = {\textormath{\bbl@disc m{mm}}{m}}%
+%     " \M = {\textormath{\bbl@disc M{MM}}{M}}%
+%     " \n = {\textormath{\bbl@disc n{nn}}{n}}%
+%     " \N = {\textormath{\bbl@disc N{NN}}{N}}%
+%     " \p = {\textormath{\bbl@disc p{pp}}{p}}%
+%     " \P = {\textormath{\bbl@disc P{PP}}{P}}%
+%     " \r = {\textormath{\bbl@disc r{rr}}{r}}%
+%     " \R = {\textormath{\bbl@disc R{RR}}{R}}%
+%     " \t = {\textormath{\bbl@disc t{tt}}{t}}%
+%     " \T = {\textormath{\bbl@disc T{TT}}{T}}%
+%     " \f = {\textormath{\bbl@discff}{f}}%
+%     " \- = {\nobreak\-\nobreak\hskip\z@skip}%
+%     " \| = {\textormath{\penalty\@M\discretionary{-}{}{\kern.03em}}{}}%
+%     " \~ = {\textormath{\leavevmode\hbox{-}}{-}}%
+%     " \= = {\penalty\@M-\hskip\z@skip}%
+%     " \` = {\char"201e}%„
+%     " \' = {\char"201c}%“
+%     " \< = {\char"ab}%«
+%     " \> = {\char"bb}%»
     }
 
 \def\nogerman@shorthands{%
-    \XeTeXinterchartokenstate=0%
+     \catcode `" = 9%
 }
 
 \def\captionsgerman{%
