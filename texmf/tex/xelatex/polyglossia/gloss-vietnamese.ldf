@@ -1,5 +1,5 @@
 \ProvidesFile{gloss-vietnamese.ldf}[polyglossia: module for vietnamese]
-%% Contributed by Dennis Heidsiek <HeidsiekB . aol . com>
+%% Contributed by Daniel Owens < dhowens . pmbx . net >
 \makeatletter
 
 \def\vietnamese@font{%
