@@ -37,11 +37,19 @@
    \fi%
 }
 
+\newif\if@german@fraktur
+\def\tmp@fraktur{fraktur}
+\define@key{german}{script}[latin]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@fraktur\@german@frakturtrue\else%
+	  \@german@frakturfalse\fi%
+	\fi}
+
 \define@boolkey{german}[german@]{latesthyphen}[false]{}
 
 \define@boolkey{german}[german@]{babelshorthands}[false]{}
 
-\setkeys{german}{spelling,latesthyphen,babelshorthands}
+\setkeys{german}{spelling,latesthyphen,babelshorthands,script}
 
 %% definitions from babel.def and germanb.ldf
 \def\bbl@firstcs#1#2{\csname#1\endcsname}
@@ -114,7 +122,7 @@
      \catcode `" = 9%
 }
 
-\def\captionsgerman{%
+\def\captions@german{%
    \def\prefacename{Vorwort}%
    \def\refname{Literatur}%
    \def\abstractname{Zusammenfassung}%
@@ -137,7 +145,7 @@
    \def\proofname{Beweis}%
    \def\glossaryname{Glossar}%
 }
-\def\dategerman{%   
+\def\date@german{%   
    \def\today{\number\day.%
       \space \ifcase\month%TODO add option for Austrian forms (Jänner etc)
       \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
@@ -145,6 +153,32 @@
       Dezember\fi%
       \space \number\year}%
 }
+
+%%Strings for Fraktur contributed by Gerrit <z0idberg . gmx . de>
+\def\captions@german@fraktur{%
+   \captions@german%
+   \def\abstractname{Zuſammenfaſſung}%
+   \def\seename{ſiehe}%
+   \def\alsoname{ſiehe auch}%
+   \def\glossaryname{Gloſſar}%
+   }
+
+\def\date@german@fraktur{%
+   \def\today{\number\day.%
+      \space \ifcase\month%TODO add option for Austrian forms (Jänner etc)
+      \or Januar\or Februar\or März\or April\or Mai\or Juni\or%
+      Juli\or Auguſt\or September\or Oktober\or November\or%
+      Dezember\fi%
+      \space \number\year}%
+}
+
+\def\captionsgerman{%
+   \if@german@fraktur\captions@german@fraktur\else\captions@german\fi%
+   }
+
+\def\dategerman{%
+   \if@german@fraktur\date@german@fraktur\else\date@german\fi%
+   }
 
 \def\german@language{\protect\language=%
   \csname l@\if@german@oldspelling\else n\fi german\ifgerman@latesthyphen -x-latest\fi\endcsname}
