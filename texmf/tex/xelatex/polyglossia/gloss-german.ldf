@@ -42,7 +42,7 @@
 \define@key{german}{script}[latin]{%
 	\def\@tmpa{#1}%
 	\ifx\@tmpa\tmp@fraktur\@german@frakturtrue\else%
-	  \@german@frakturfalse\fi%
+	  \@german@frakturfalse%
 	\fi}
 
 \define@boolkey{german}[german@]{latesthyphen}[false]{}
@@ -51,75 +51,48 @@
 
 \setkeys{german}{spelling,latesthyphen,babelshorthands,script}
 
-%% definitions from babel.def and germanb.ldf
-\def\bbl@firstcs#1#2{\csname#1\endcsname}
-\def\bbl@scndcs#1#2{\csname#2\endcsname}
-\def\declare@shorthand#1#2{\@decl@short{#1}#2\@nil}
-\def\@decl@short#1#2#3\@nil#4{%
-  \def\bbl@tempa{#3}%
-  \ifx\bbl@tempa\@empty
-    \expandafter\let\csname #1@sh@\string#2@sel\endcsname\bbl@scndcs
-    \@namedef{#1@sh@\string#2@}{#4}%
-  \else
-    \expandafter\let\csname #1@sh@\string#2@sel\endcsname\bbl@firstcs
-    \@namedef{#1@sh@\string#2@\string#3@}{#4}%
-  \fi}
-\def\textormath#1#2{%
-  \ifmmode
-    \bbl@afterelse#2%
-  \else
-    \bbl@afterfi#1%
-  \fi}
-\long\def\bbl@afterelse#1\else#2\fi{\fi#1}
-\long\def\bbl@afterfi#1\fi{\fi#1}
-\def\textormath#1#2{%
-  \ifmmode
-    \bbl@afterelse#2%
-  \else
-    \bbl@afterfi#1%
-  \fi}
-
+\def\german@shorthands{%
+\@ifundefined{bbl@afterfi}{\input{babelsh.def}}{}
+\initiate@active@char{"}%
 \def\bbl@disc#1#2{%
-  \nobreak\discretionary{#2-}{}{#1}}
+  \nobreak\discretionary{#2-}{}{#1}}%
+\declare@shorthand{german}{"`}{\char"201e}%„
+\declare@shorthand{german}{"'}{\char"201c}%“
+\declare@shorthand{german}{"<}{\char"ab}%«
+\declare@shorthand{german}{">}{\char"bb}%»
+\declare@shorthand{german}{"c}{\textormath{\bbl@disc ck}{c}}%
+\declare@shorthand{german}{"C}{\textormath{\bbl@disc CK}{C}}%
+\declare@shorthand{german}{"F}{\textormath{\bbl@disc F{FF}}{F}}%
+\declare@shorthand{german}{"l}{\textormath{\bbl@disc l{ll}}{l}}%
+\declare@shorthand{german}{"L}{\textormath{\bbl@disc L{LL}}{L}}%
+\declare@shorthand{german}{"m}{\textormath{\bbl@disc m{mm}}{m}}%
+\declare@shorthand{german}{"M}{\textormath{\bbl@disc M{MM}}{M}}%
+\declare@shorthand{german}{"n}{\textormath{\bbl@disc n{nn}}{n}}%
+\declare@shorthand{german}{"N}{\textormath{\bbl@disc N{NN}}{N}}%
+\declare@shorthand{german}{"p}{\textormath{\bbl@disc p{pp}}{p}}%
+\declare@shorthand{german}{"P}{\textormath{\bbl@disc P{PP}}{P}}%
+\declare@shorthand{german}{"r}{\textormath{\bbl@disc r{rr}}{r}}%
+\declare@shorthand{german}{"R}{\textormath{\bbl@disc R{RR}}{R}}%
+\declare@shorthand{german}{"t}{\textormath{\bbl@disc t{tt}}{t}}%
+\declare@shorthand{german}{"T}{\textormath{\bbl@disc T{TT}}{T}}%
+\declare@shorthand{german}{"f}{\textormath{\bbl@discff}{f}}%
 \def\bbl@discff{\penalty\@M
-  \afterassignment\bbl@insertff \let\bbl@nextff= }
+  \afterassignment\bbl@insertff \let\bbl@nextff= }%
 \def\bbl@insertff{%
   \if f\bbl@nextff
     \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
-  {\relax\discretionary{ff-}{f}{ff}}{f\bbl@nextff}}
-\let\bbl@nextff=f
-
-\def\german@shorthands{%
-\initiate@active@char{"}
-%     " "  = {\hskip\z@skip}%
-%     " \c = {\textormath{\bbl@disc ck}{c}}%
-%     " \C = {\textormath{\bbl@disc CK}{C}}%
-%     " \F = {\textormath{\bbl@disc F{FF}}{F}}%
-%     " \l = {\textormath{\bbl@disc l{ll}}{l}}%
-%     " \L = {\textormath{\bbl@disc L{LL}}{L}}%
-%     " \m = {\textormath{\bbl@disc m{mm}}{m}}%
-%     " \M = {\textormath{\bbl@disc M{MM}}{M}}%
-%     " \n = {\textormath{\bbl@disc n{nn}}{n}}%
-%     " \N = {\textormath{\bbl@disc N{NN}}{N}}%
-%     " \p = {\textormath{\bbl@disc p{pp}}{p}}%
-%     " \P = {\textormath{\bbl@disc P{PP}}{P}}%
-%     " \r = {\textormath{\bbl@disc r{rr}}{r}}%
-%     " \R = {\textormath{\bbl@disc R{RR}}{R}}%
-%     " \t = {\textormath{\bbl@disc t{tt}}{t}}%
-%     " \T = {\textormath{\bbl@disc T{TT}}{T}}%
-%     " \f = {\textormath{\bbl@discff}{f}}%
-%     " \- = {\nobreak\-\nobreak\hskip\z@skip}%
-%     " \| = {\textormath{\penalty\@M\discretionary{-}{}{\kern.03em}}{}}%
-%     " \~ = {\textormath{\leavevmode\hbox{-}}{-}}%
-%     " \= = {\penalty\@M-\hskip\z@skip}%
-%     " \` = {\char"201e}%„
-%     " \' = {\char"201c}%“
-%     " \< = {\char"ab}%«
-%     " \> = {\char"bb}%»
+  {\relax\discretionary{ff-}{f}{ff}\allowhyphens}{f\bbl@nextff}}%
+\let\bbl@nextff=f%
+\declare@shorthand{german}{"-}{\nobreak\-\nobreak\hskip\z@skip}%
+\declare@shorthand{german}{"|}{\textormath{\penalty\@M\discretionary{-}{}{\kern.03em}}{}}%
+\declare@shorthand{german}{""}{\hskip\z@skip}%
+\declare@shorthand{german}{"~}{\textormath{\leavevmode\hbox{-}}{-}}%
+\declare@shorthand{german}{"=}{\penalty\@M-\hskip\z@skip}%
+\def\ck{\allowhyphens\discretionary{k-}{k}{ck}\allowhyphens}%
     }
 
 \def\nogerman@shorthands{%
-     \catcode `" = 9%
+    \bbl@deactivate{"}
 }
 
 \def\captions@german{%

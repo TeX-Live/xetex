@@ -1,5 +1,5 @@
 \ProvidesFile{gloss-vietnamese.ldf}[polyglossia: module for vietnamese]
-%% Contributed by Daniel Owens < dhowens . pmbx . net >
+%% Strings contributed by Daniel Owens < dhowens . pmbx . net >
 \makeatletter
 
 \def\vietnamese@font{%
@@ -51,14 +51,14 @@
 \setlocalhyphenmins{vietnamese}{2}{2}%
 
 \def\noextras@vietnamese{%
-   \novietnamese@punctuation%
+    %\nonfrenchspacing% ???
 }
 
 \def\blockextras@vietnamese{%
-   \vietnamese@punctuation%
+    %\nonfrenchspacing% ???
 }
 
 \def\inlineextras@vietnamese{%
-   \vietnamese@punctuation%
+    %\frenchspacing% ???
 }
 \endinput
