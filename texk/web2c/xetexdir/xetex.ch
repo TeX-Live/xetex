@@ -64,8 +64,8 @@ authorization from SIL International.
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".999"
-@d XeTeX_version_string=='-0.999.8' {current \XeTeX\ version}
+@d XeTeX_revision==".9999"
+@d XeTeX_version_string=='-0.9999.0' {current \XeTeX\ version}
 @z
 
 @x
@@ -129,12 +129,15 @@ authorization from SIL International.
 @d hyph_prime=607 {another prime for hashing \.{\\hyphenation} exceptions;
                 if you change this, you should also change |iinf_hyphen_size|.}
 
+{NB: |biggest_char| here refers to UTF16 codepoints that we store in strings, etc;
+ actual character codes can exceed this range, up to |biggest_usv|.}
 @d biggest_char=65535 {the largest allowed character number;
    must be |<=max_quarterword|}
 @d biggest_usv=@"10FFFF {the largest Unicode Scalar Value}
 @d too_big_char=65536 {|biggest_char+1|}
 @d special_char=65537 {|biggest_char+2|}
 @d number_chars=65536 {|biggest_char+1|}
+@d too_big_usv=@"110000
 @d number_usvs=@"110000
 @d biggest_reg=255 {the largest allowed register number;
    must be |<=max_quarterword|}
@@ -1754,7 +1757,7 @@ primitive("XeTeXradical",radical,1);@/
 @x
 primitive("relax",relax,256); {cf.\ |scan_file_name|}
 @y
-primitive("relax",relax,too_big_char); {cf.\ |scan_file_name|}
+primitive("relax",relax,too_big_usv); {cf.\ |scan_file_name|}
 @z
 
 @x
@@ -2047,7 +2050,7 @@ declared at this point.
 @x
 primitive("par",par_end,256); {cf.\ |scan_file_name|}
 @y
-primitive("par",par_end,too_big_char); {cf.\ |scan_file_name|}
+primitive("par",par_end,too_big_usv); {cf.\ |scan_file_name|}
 @z
 
 @x
@@ -2369,7 +2372,7 @@ if cur_cs=0 then cur_tok:=(cur_cmd*max_char_val)+cur_chr
 @x
   begin eq_define(cur_cs,relax,256); {N.B.: The |save_stack| might change}
 @y
-  begin eq_define(cur_cs,relax,too_big_char);
+  begin eq_define(cur_cs,relax,too_big_usv);
         {N.B.: The |save_stack| might change}
 @z
 
@@ -2812,7 +2815,7 @@ if (cur_cmd>active_char)or(cur_chr>255) then {not a character}
   begin m:=relax; n:=256;
 @y
 if (cur_cmd>active_char)or(cur_chr>biggest_usv) then {not a character}
-  begin m:=relax; n:=too_big_char;
+  begin m:=relax; n:=too_big_usv;
 @z
 
 @x
@@ -2820,7 +2823,7 @@ if (cur_cmd>active_char)or(cur_chr>255) then
   begin cur_cmd:=relax; cur_chr:=256;
 @y
 if (cur_cmd>active_char)or(cur_chr>biggest_usv) then
-  begin cur_cmd:=relax; cur_chr:=too_big_char;
+  begin cur_cmd:=relax; cur_chr:=too_big_usv;
 @z
 
 @x
@@ -6418,7 +6421,7 @@ XeTeX_math_given: begin print_esc("XeTeXmathchar"); print_hex(chr_code);
 @x
 else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,256);
 @y
-else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_char);
+else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,too_big_usv);
 @z
 
 @x
