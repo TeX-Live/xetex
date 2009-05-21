@@ -28,7 +28,6 @@
    \def\indexname{Chỉ mục}%
    \def\figurename{Hình}%
    \def\tablename{Bẳng}%
-   \def\thepart{Part}% << FIXME
    \def\partname{Phần}%
    \def\pagename{Trang}%
    \def\seename{Xem}%
@@ -51,14 +50,14 @@
 \setlocalhyphenmins{vietnamese}{2}{2}%
 
 \def\noextras@vietnamese{%
-    %\nonfrenchspacing% ???
+    \nonfrenchspacing%
 }
 
 \def\blockextras@vietnamese{%
-    %\nonfrenchspacing% ???
+    \frenchspacing%
 }
 
 \def\inlineextras@vietnamese{%
-    %\frenchspacing% ???
+    \frenchspacing%
 }
 \endinput
