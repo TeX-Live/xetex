@@ -2552,6 +2552,48 @@ else if m<math_code_base then scanned_result(equiv(m+cur_val) mod @"10000)(int_v
 @#
 @d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
 @#
+@d XeTeX_version_code=XeTeX_int {code for \.{\\XeTeXversion}}
+
+{ these are also in xetexmac.c and must correspond! }
+@d XeTeX_count_glyphs_code=XeTeX_int+1
+
+@d XeTeX_count_variations_code=XeTeX_int+2
+@d XeTeX_variation_code=XeTeX_int+3
+@d XeTeX_find_variation_by_name_code=XeTeX_int+4
+@d XeTeX_variation_min_code=XeTeX_int+5
+@d XeTeX_variation_max_code=XeTeX_int+6
+@d XeTeX_variation_default_code=XeTeX_int+7
+
+@d XeTeX_count_features_code=XeTeX_int+8
+@d XeTeX_feature_code_code=XeTeX_int+9
+@d XeTeX_find_feature_by_name_code=XeTeX_int+10
+@d XeTeX_is_exclusive_feature_code=XeTeX_int+11
+@d XeTeX_count_selectors_code=XeTeX_int+12
+@d XeTeX_selector_code_code=XeTeX_int+13
+@d XeTeX_find_selector_by_name_code=XeTeX_int+14
+@d XeTeX_is_default_selector_code=XeTeX_int+15
+
+@d XeTeX_OT_count_scripts_code=XeTeX_int+16
+@d XeTeX_OT_count_languages_code=XeTeX_int+17
+@d XeTeX_OT_count_features_code=XeTeX_int+18
+@d XeTeX_OT_script_code=XeTeX_int+19
+@d XeTeX_OT_language_code=XeTeX_int+20
+@d XeTeX_OT_feature_code=XeTeX_int+21
+
+@d XeTeX_map_char_to_glyph_code=XeTeX_int+22
+@d XeTeX_glyph_index_code=XeTeX_int+23
+@d XeTeX_font_type_code=XeTeX_int+24
+
+@d XeTeX_first_char_code=XeTeX_int+25
+@d XeTeX_last_char_code=XeTeX_int+26
+
+@d pdf_last_x_pos_code        = XeTeX_int+27
+@d pdf_last_y_pos_code        = XeTeX_int+28
+
+@d XeTeX_pdf_page_count_code  = XeTeX_int+29
+
+{ NB: must update |eTeX_dim| when items are added here! }
+@#
 @d eTeX_dim=XeTeX_int+30 {first of \eTeX\ codes for dimensions}
  {changed for \XeTeX\ to make room for \XeTeX\ integers}
 @z
@@ -7874,48 +7916,6 @@ end
 @d eTeX_version_code=eTeX_int {code for \.{\\eTeXversion}}
 @y
 @d eTeX_version_code=eTeX_int {code for \.{\\eTeXversion}}
-
-@d XeTeX_version_code=XeTeX_int {code for \.{\\XeTeXversion}}
-
-{ these are also in xetexmac.c and must correspond! }
-@d XeTeX_count_glyphs_code=XeTeX_int+1
-
-@d XeTeX_count_variations_code=XeTeX_int+2
-@d XeTeX_variation_code=XeTeX_int+3
-@d XeTeX_find_variation_by_name_code=XeTeX_int+4
-@d XeTeX_variation_min_code=XeTeX_int+5
-@d XeTeX_variation_max_code=XeTeX_int+6
-@d XeTeX_variation_default_code=XeTeX_int+7
-
-@d XeTeX_count_features_code=XeTeX_int+8
-@d XeTeX_feature_code_code=XeTeX_int+9
-@d XeTeX_find_feature_by_name_code=XeTeX_int+10
-@d XeTeX_is_exclusive_feature_code=XeTeX_int+11
-@d XeTeX_count_selectors_code=XeTeX_int+12
-@d XeTeX_selector_code_code=XeTeX_int+13
-@d XeTeX_find_selector_by_name_code=XeTeX_int+14
-@d XeTeX_is_default_selector_code=XeTeX_int+15
-
-@d XeTeX_OT_count_scripts_code=XeTeX_int+16
-@d XeTeX_OT_count_languages_code=XeTeX_int+17
-@d XeTeX_OT_count_features_code=XeTeX_int+18
-@d XeTeX_OT_script_code=XeTeX_int+19
-@d XeTeX_OT_language_code=XeTeX_int+20
-@d XeTeX_OT_feature_code=XeTeX_int+21
-
-@d XeTeX_map_char_to_glyph_code=XeTeX_int+22
-@d XeTeX_glyph_index_code=XeTeX_int+23
-@d XeTeX_font_type_code=XeTeX_int+24
-
-@d XeTeX_first_char_code=XeTeX_int+25
-@d XeTeX_last_char_code=XeTeX_int+26
-
-@d pdf_last_x_pos_code        = XeTeX_int+27
-@d pdf_last_y_pos_code        = XeTeX_int+28
-
-@d XeTeX_pdf_page_count_code  = XeTeX_int+29
-
-{ NB: must update |eTeX_dim| when items are added here! }
 @z
 
 @x
