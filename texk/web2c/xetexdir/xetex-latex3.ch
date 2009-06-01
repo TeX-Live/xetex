@@ -1,11 +1,4 @@
-% update version
-@x
-@d XeTeX_revision==".9990"
-@d XeTeX_version_string=='-0.9990.0' {current \XeTeX\ version}
-@y
-@d XeTeX_revision==".9991"
-@d XeTeX_version_string=='-0.9991.0' {current \XeTeX\ version}
-@z
+% When updating code here, also increment version number/string in xetex.ch
 
 % \vadjust
 @x l.3142
@@ -177,6 +170,51 @@ for k:=j+1 to j+l-1 do
   end
 
 @ Single-character control sequences do not need to be looked up in a hash
+@z
+
+% \primitive
+@x
+@p @!init procedure primitive(@!s:str_number;@!c:quarterword;@!o:halfword);
+var k:pool_pointer; {index into |str_pool|}
+@!j:0..buf_size; {index into |buffer|}
+@!l:small_number; {length of the string}
+begin if s<256 then cur_val:=s+single_base
+else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
+    {we will move |s| into the (possibly non-empty) |buffer|}
+  if first+l>buf_size+1 then
+      overflow("buffer size",buf_size);
+@:TeX capacity exceeded buffer size}{\quad buffer size@>
+  for j:=0 to l-1 do buffer[first+j]:=so(str_pool[k+j]);
+  cur_val:=id_lookup(first,l); {|no_new_control_sequence| is |false|}
+  flush_string; text(cur_val):=s; {we don't want to have the string twice}
+  end;
+eq_level(cur_val):=level_one; eq_type(cur_val):=c; equiv(cur_val):=o;
+end;
+@y
+@p @!init procedure primitive(@!s:str_number;@!c:quarterword;@!o:halfword);
+var k:pool_pointer; {index into |str_pool|}
+@!j:0..buf_size; {index into |buffer|}
+@!l:small_number; {length of the string}
+@!prim_val:integer; {needed to fill |prim_eqtb|}
+begin if s<256 then begin
+  cur_val:=s+single_base;
+  prim_val:=s;
+end
+else  begin k:=str_start_macro(s); l:=str_start_macro(s+1)-k;
+    {we will move |s| into the (possibly non-empty) |buffer|}
+  if first+l>buf_size+1 then
+      overflow("buffer size",buf_size);
+@:TeX capacity exceeded buffer size}{\quad buffer size@>
+  for j:=0 to l-1 do buffer[first+j]:=so(str_pool[k+j]);
+  cur_val:=id_lookup(first,l); {|no_new_control_sequence| is |false|}
+  flush_string; text(cur_val):=s; {we don't want to have the string twice}
+  prim_val:=prim_lookup(s);
+  end;
+eq_level(cur_val):=level_one; eq_type(cur_val):=c; equiv(cur_val):=o;
+prim_eq_level(prim_val):=level_one;
+prim_eq_type(prim_val):=c;
+prim_equiv(prim_val):=o;
+end;
 @z
 
 % \primitive
@@ -530,6 +568,35 @@ pre_adjust_tail := pre_adjust_head;
 just_box:=hpack(q,cur_width,exactly);
 @z
 
+% \primitive
+@x
+any_mode(ignore_spaces): begin @<Get the next non-blank non-call...@>;
+  goto reswitch;
+  end;
+@y
+any_mode(ignore_spaces): begin
+  if cur_chr = 0 then begin
+    @<Get the next non-blank non-call...@>;
+    goto reswitch;
+  end
+  else begin
+    t:=scanner_status;
+    scanner_status:=normal;
+    get_next;
+    scanner_status:=t;
+    if cur_cs < hash_base then
+      cur_cs := prim_lookup(cur_cs-257)
+    else
+      cur_cs  := prim_lookup(text(cur_cs));
+    if cur_cs<>undefined_primitive then begin
+      cur_cmd := prim_eq_type(cur_cs);
+      cur_chr := prim_equiv(cur_cs);
+      goto reswitch;
+      end;
+    end;
+  end;
+@z
+
 % \vadjust
 @x l.23545
     begin append_to_vlist(cur_box);
@@ -625,6 +692,24 @@ if pre_t<>pre_adjust_head then
   begin link(tail):=link(pre_adjust_head); tail:=pre_t;
   end;
 tail_append(new_penalty(post_display_penalty));
+@z
+
+% \primitive
+@x
+@<Dump the hash table@>=
+@y
+@<Dump the hash table@>=
+for p:=0 to prim_size do dump_hh(prim[p]);
+for p:=0 to prim_size do dump_wd(prim_eqtb[p]);
+@z
+
+% \primitive
+@x
+@ @<Undump the hash table@>=
+@y
+@ @<Undump the hash table@>=
+for p:=0 to prim_size do undump_hh(prim[p]);
+for p:=0 to prim_size do undump_wd(prim_eqtb[p]);
 @z
 
 % \strcmp
