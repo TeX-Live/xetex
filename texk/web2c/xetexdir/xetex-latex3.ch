@@ -38,10 +38,10 @@ node_list_display(adjust_ptr(p)); {recursive call}
 @d frozen_null_font=frozen_control_sequence+11
   {permanent `\.{\\nullfont}'}
 @y
-@d frozen_null_font=frozen_control_sequence+11
-  {permanent `\.{\\nullfont}'}
-@d frozen_primitive=frozen_control_sequence+12
+@d frozen_primitive=frozen_control_sequence+11
   {permanent `\.{\\primitive}'}
+@d frozen_null_font=frozen_control_sequence+12
+  {permanent `\.{\\nullfont}'}
 @z
 
 % \primitive
@@ -64,8 +64,8 @@ text(frozen_dont_expand):="notexpanded:";
 
 @ Primitive support needs a few extra variables and definitions
 
-@d prim_size=480 {2100} {maximum number of primitives }
-@d prim_prime=401 {1777} {about 85\pct! of |primitive_size|}
+@d prim_size=480 {maximum number of primitives }
+@d prim_prime=409 {about 85\pct! of |primitive_size|}
 @d prim_base=1
 @d prim_next(#) == prim[#].lh {link for coalesced lists}
 @d prim_text(#) == prim[#].rh {string number for control sequence name}

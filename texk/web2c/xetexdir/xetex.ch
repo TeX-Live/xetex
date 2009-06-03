@@ -64,8 +64,8 @@ authorization from SIL International.
 @d eTeX_version_string=='-2.2' {current \eTeX\ version}
 
 @d XeTeX_version=0
-@d XeTeX_revision==".9992"
-@d XeTeX_version_string=='-0.9992.0' {current \XeTeX\ version}
+@d XeTeX_revision==".9993"
+@d XeTeX_version_string=='-0.9993.0' {current \XeTeX\ version}
 @z
 
 @x
