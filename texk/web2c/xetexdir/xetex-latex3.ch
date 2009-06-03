@@ -91,8 +91,6 @@ prim_eq_level(0) := level_zero;
 prim_eq_type(0) := undefined_cs;
 prim_equiv(0) := null;
 for k:=1 to prim_size do prim_eqtb[k]:=prim_eqtb[0];
-next(hash_base):=0; text(hash_base):=0;
-for k:=hash_base+1 to undefined_control_sequence-1 do hash[k]:=hash[hash_base];
 
 @ @<Initialize table entries...@>=
 prim_used:=prim_size; {nothing is used}
