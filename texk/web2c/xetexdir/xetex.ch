@@ -636,10 +636,14 @@ done: if a<>@$ then
 c:=true;
 end
 @y
-@ @<Read the other strings...@>=
-if init_pool(pool_size-string_vacancies) = 0 then
-  get_strings_started:=false;
-get_strings_started:=true;
+@ @d bad_pool(#)==begin wake_up_terminal; write_ln(term_out,#);
+  get_strings_started:=false; return;
+  end
+@<Read the other strings...@>=
+if init_pool(pool_size-string_vacancies) = 0 then begin
+  bad_pool('! You have to increase POOLSIZE.');
+end else
+  get_strings_started := true;
 @z
 
 @x
