@@ -2,18 +2,37 @@
    and it produces several .c and .h files in the current directory
    as its output.
 
-   $Id: splitup.c 7124 2008-03-24 15:47:15Z martin $
+   $Id: splitup.c 12570 2009-03-30 11:13:40Z peter $
 
    Tim Morgan  September 19, 1987.  */
 
 #include "config.h"
 #include <kpathsea/getopt.h>
 
+#if defined (FATAL)
+#undef FATAL
+#endif
+
+#define FATAL(str) do {                                                 \
+        fprintf (stderr, "%s: fatal: ", argv[0]);                       \
+        fputs (str, stderr);                                            \
+        fputs (".\n", stderr); exit (1); } while (0)
+
+
+#if defined (FATAL1)
+#undef FATAL1
+#endif
+
+#define FATAL1(str, e1) do {                                            \
+        fprintf (stderr, "%s: fatal: ", argv[0]);                       \
+        fprintf (stderr, str, e1);                                      \
+        fputs (".\n", stderr); exit (1); } while (0)
+
+
 #ifdef VMS
 #define unlink delete
 #endif
 
-char *program_invocation_name;
 int filenumber = 0, ifdef_nesting = 0, lines_in_file = 0;
 char *output_name = NULL;
 boolean has_ini;
@@ -63,8 +82,6 @@ main P2C(int, argc, string *, argv)
   unsigned coerce_len;
   int option;
 
-  program_invocation_name = argv[0];
-  
   while ((option = getopt(argc, argv, "il:")) != -1) {
     switch (option) {
     case 'i':
@@ -100,24 +117,15 @@ main P2C(int, argc, string *, argv)
   } else if (STREQ (output_name, "aleph")) {
     fputs ("#define INITEX\n#define TeX\n#define Aleph\n", out);
     coerce = "alephcoerce.h";
-  } else if (STREQ (output_name, "eomega")) {
-    fputs ("#define INITEX\n#define TeX\n#define eOmega\n", out);
-    coerce = "eomegacoerce.h";
   } else if (STREQ (output_name, "etex")) {
     fputs ("#define INITEX\n#define TeX\n#define eTeX\n", out);
     coerce = "etexcoerce.h";
-  } else if (STREQ (output_name, "omega")) {
-    fputs ("#define INITEX\n#define TeX\n#define Omega\n", out);
-    coerce = "omegacoerce.h";
   } else if (STREQ (output_name, "pdftex")) {
     fputs ("#define INITEX\n#define TeX\n#define pdfTeX\n", out);
     coerce = "pdftexcoerce.h";
   } else if (STREQ (output_name, "luatex")) {
     fputs ("#define INITEX\n#define TeX\n#define luaTeX\n", out);
     coerce = "luatexcoerce.h";
-  } else if (STREQ (output_name, "pdfetex")) {
-    fputs ("#define INITEX\n#define TeX\n#define pdfeTeX\n", out);
-    coerce = "pdfetexcoerce.h";
   } else if (STREQ (output_name, "xetex")) {
     fputs ("#define INITEX\n#define TeX\n#define XeTeX\n", out);
     coerce = "xetexcoerce.h";
@@ -125,7 +133,7 @@ main P2C(int, argc, string *, argv)
     fputs ("#define INIMP\n#define MP\n", out);
     coerce = "mpcoerce.h";
   } else
-    FATAL1 ("Can only split mf, mp, tex, etex, omega, eomega, aleph, luatex, pdf[e]tex, or xetex,\n not %s", output_name);
+    FATAL1 ("Can only split mf, mp, tex, etex, aleph, luatex, pdftex, or xetex,\n not %s", output_name);
   
   coerce_len = strlen (coerce);
   

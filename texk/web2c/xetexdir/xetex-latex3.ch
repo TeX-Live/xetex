@@ -359,7 +359,7 @@ is_in_csname := false;
   badness_code: cur_val:=last_badness;
   pdf_shell_escape_code:
     begin
-    if shell_enabled_p then cur_val := 1
+    if shellenabledp then cur_val := 1
     else cur_val := 0;
     end;
 @z
