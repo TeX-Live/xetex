@@ -230,6 +230,45 @@ or the unicode character slot:
 \char"00A5.
 \end{example}
 
+\cmd|\XeTeXglyphbounds|
+\xarg{edge} \xarg{glyph number}
+\desc{Expands to a dimension corresponding to one of the bounds of a glyph,
+where \xarg{edge} is an integer from 1 to 4 indicating left/top/right/bottom
+edge respectively, and \xarg{glyph number} is an integer glyph index in the
+current font (only valid for TrueType/OpenType/PostScript fonts loaded
+`natively', not TFM-based fonts). The left and right
+measurements are the glyph sidebearings, measured `inwards' from the
+origin and advance respectively, so for a glyph that fits completely
+within its `cell' they will both be positive; for a glyph that
+`overhangs' to the left or right, they will be negative. The actual
+width of the glyph's bounding box, therefore, is the character width
+(advance) minus both these sidebearings. The top and bottom are
+measured from the baseline, like \TeX's height and depth; the height of
+the bounding box is the sum of these two dimensions.}
+\endcmd
+
+\begin{example}
+\def\shadebbox#1{%
+\leavevmode\rlap{%
+  \dimen0=\fontcharwd\font`#1%
+  \edef\gid{\the\XeTeXcharglyph`#1}%
+  \advance\dimen0 by -\XeTeXglyphbounds1 \gid
+  \advance\dimen0 by -\XeTeXglyphbounds3 \gid
+  \kern\XeTeXglyphbounds1 \gid
+  \special{color push rgb 1 1 0.66667}%
+  \vrule width \dimen0
+         height \XeTeXglyphbounds2 \gid
+         depth \XeTeXglyphbounds4 \gid
+  \special{color pop}%
+  \kern\XeTeXglyphbounds3 \gid}%
+  #1}
+	
+\noindent
+\font\x="Charis SIL/I" at 24pt \x
+\shadebbox{A} \shadebbox{W} \shadebbox{a} \shadebbox{f}
+\shadebbox{;} \shadebbox{*} \shadebbox{=}
+\end{example}
+
 \cmd|\XeTeXfonttype|
 \xarg{font}
 \desc{
@@ -568,7 +607,7 @@ This description is incomplete.
 \desc{Insert (pages of) a PDF.}
 \endcmd
 
-\subsection{Parity with \pdfTeX}
+\section{Parity with \pdfTeX}
 
 \cmd|\pdfpageheight|
 \xarg{dimension}
@@ -585,12 +624,58 @@ This description is incomplete.
 \endcmd
 
 \cmd|\pdflastxpos|
-\desc{Retrieves the horizontal position saved by the above.}
+\desc{Retrieves the horizontal position saved by \texttt{\char`\\pdfsavepos}.}
 \endcmd
 
 \cmd|\pdflastypos|
-\desc{Retrieves the vertical position saved by the above.}
+\desc{Retrieves the vertical position saved by \texttt{\char`\\pdfsavepos}.}
 \endcmd
+
+\cmd|\ifincsname...(\else...)\fi|
+\desc{\TeX\ conditional to branch true if the expansion occurs within \texttt{\char`\\csname ... \char`\\endcsname}.}
+\endcmd
+
+\begin{example}
+\def\x{\ifincsname y\else hello\fi}
+\def\y{goodbye}
+\x/\csname\x\endcsname
+\end{example}
+
+\cmd|\ifprimitive| \xarg{control sequence} |...(\else...)\fi|
+\desc{\TeX\ conditional to test if a control sequence is a primitive and that it has not been redefined.}
+\endcmd
+
+\cmd|\primitive|
+\xarg{control sequence}
+\desc{If the control sequence is a primitive that's been redefined, this command causes it to expand with its original (i.e., primitive) definition.}
+\endcmd
+
+\cmd|\shellescape|
+\desc{Read-only status indicating the level of `shell escape' allowed. That is, whether commands are allowed to be executed through \texttt{\char`\\write18\char`\{...\char`\}}. Expands to zero for off; one for on (allowed); two is `restricted' (default in TeX Live 2009 and greater) in which a subset of commands only are allowed.}
+\endcmd
+
+\begin{example}
+Shell escape \ifnum\shellescape>0 is \else is not \fi enabled.
+\end{example}
+
+\cmd|\strcmp|
+\xarg{arg one}
+\xarg{arg two}
+\desc{Compares the full expansion of the two token list arguments. Expands to zero if they are the same, less than one if the first argument sorts lower (lexicographically) than the second argument, and greater than one if vice versa.}
+\endcmd
+
+\begin{example}
+`a' is less than `z': \strcmp{a}{z}
+
+\def\z{a}
+The tokens expand before being compared: \strcmp{a}{\z}
+
+\def\a{z}
+Therefore, |\a| is greater than |\z|: \strcmp{\a}{\z}
+
+\edef\b{\string b}
+Also note that catcodes are ignored: \strcmp{b}{\b}
+\end{example}
 
 \section{Misc.}
 
