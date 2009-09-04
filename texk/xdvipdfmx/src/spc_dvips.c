@@ -581,7 +581,8 @@ spc_handler_ps_tricks_parse_path (struct spc_env *spe, struct spc_arg *args,
     }
   }
 #endif
-  error = dpx_file_apply_filter(distiller_template, gs_in, gs_out);
+  error = dpx_file_apply_filter(distiller_template, gs_in, gs_out,
+                               (unsigned char) pdf_get_version());
   if (error) {
     WARN("Image format conversion for PSTricks failed.");
     RELEASE(gs_in);
@@ -668,7 +669,8 @@ spc_handler_ps_tricks_render (struct spc_env *spe, struct spc_arg *args)
       }
     }
 #endif
-    error = dpx_file_apply_filter(distiller_template, gs_in, gs_out);
+    error = dpx_file_apply_filter(distiller_template, gs_in, gs_out,
+                                 (unsigned char) pdf_get_version());
     if (error) {
       WARN("Image format conversion for PSTricks failed.");
       RELEASE(gs_in);
