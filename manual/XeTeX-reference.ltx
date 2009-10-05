@@ -514,44 +514,53 @@ The idea behind character classes is to define a boundary where tokens can be ad
 \desc{Counter. If positive, enables the character classes functionality.}
 \endcmd
 
+\cmd|\newXeTeXintercharclass|
+\xarg{control sequence}
+\desc{Allocates a new interchar class and assigns it to the \xarg{control sequence} argument.}
+\endcmd
+
 \cmd|\XeTeXcharclass|
 \xarg{char slot}
 \opteq
-\xarg{class number}
-\desc{Assigns a class corresponding to \xarg{class number} (range 0--255) to a \xarg{char slot}. Most characters are class 0 by default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK punctuation. The boundary of a text string is considered class 255, wherever there is a boundary between a `run' of characters and something else --- glue, kern, math, box, etc. Special case class 256 is ignored; useful for diacritics so I'm told.}
+\xarg{interchar class}
+\desc{Assigns a class corresponding to \xarg{interchar class} (range 0--255) to a \xarg{char slot}. Most characters are class 0 by default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK punctuation. The boundary of a text string is considered class 255, wherever there is a boundary between a `run' of characters and something else --- glue, kern, math, box, etc. Special case class 256 is ignored; useful for diacritics so I'm told.}
 \endcmd
 
 \cmd|\XeTeXinterchartoks|
-\xarg{class num. 1}
-\xarg{class num. 2}
+\xarg{interchar class 1}
+\xarg{interchar class\ 2}
 \opteq
 |{|\xarg{token list}|}|
-\desc{Defines tokens to be inserted at the interface between \xarg{class num. 1} and \xarg{class num. 2} (in that order).}
+\desc{Defines tokens to be inserted at the interface between \xarg{interchar class 1} and \xarg{interchar class 2} (in that order).}
 \endcmd
 
 \begin{example}
 \XeTeXinterchartokenstate = 1
-\XeTeXcharclass `\a 7
-\XeTeXcharclass `\A 8
-\XeTeXcharclass `\B 9
+\newXeTeXintercharclass \mycharclassa
+\newXeTeXintercharclass \mycharclassA
+\newXeTeXintercharclass \mycharclassB
+\XeTeXcharclass `\a \mycharclassa
+\XeTeXcharclass `\A \mycharclassA
+\XeTeXcharclass `\B \mycharclassB
 
 % between "a" and "A":
-\XeTeXinterchartoks 7 8 = {[\itshape}
-\XeTeXinterchartoks 8 7 = {\upshape]}
+\XeTeXinterchartoks \mycharclassa \mycharclassA = {[\itshape}
+\XeTeXinterchartoks \mycharclassA \mycharclassa = {\upshape]}
 
-% between " " and "A":
-\XeTeXinterchartoks 255 9 = {\bgroup\color{blue}}
-\XeTeXinterchartoks 9 255 = {\egroup}
+% between " " and "B":
+\XeTeXinterchartoks 255 \mycharclassB = {\bgroup\color{blue}}
+\XeTeXinterchartoks \mycharclassB 255 = {\egroup}
 
 % between "B" and "B":
-\XeTeXinterchartoks 9 9 = {.}
+\XeTeXinterchartoks \mycharclassB \mycharclassB = {.}
 
 aAa A a B aBa BB
 \end{example}
 
-In the above example the input text is typeset as\\
-{\null\hfill\small\verb|a[\itshape A\unshape]a A a \bgroup\color{blue}B\egroup aBa B.B|}
+\noindent In the above example the input text is typeset as\par
+{\centering\verb|a[\itshape A\unshape]a A a \bgroup\color{blue}B\egroup aBa B.B|\par}
 
+\newpage
 \section{Encodings}
 
 \cmd|\XeTeXinputencoding|
