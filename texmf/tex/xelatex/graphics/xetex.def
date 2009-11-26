@@ -2,7 +2,7 @@
 %% This is file `xetex.def',
 %% based upon other drivers for LaTeX color and graphics support.
 %%
-%%  Copyright 2004, 2005  Ross Moore <ross@maths.mq.edu.au>
+%%  Copyright 2004, 2005, 2006, 2007, 2009  Ross Moore <ross@maths.mq.edu.au>
 %%                        modified by Jonathan Kew <jonathan_kew@sil.org>
 %%
 %% This file is *not yet* part of the Standard LaTeX `Graphics Bundle'.
@@ -12,6 +12,10 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Version History
+%%
+%%  2009/11/21  [KB] Version v0.94  merge the two 0.93's.
+%%
+%%  2009/10/28  [RRM] Version v0.93  fix big-point incompatibility;
 %%
 %%  2007/10/25  [JK] Version v0.93  added EPS support from dvipdfmx.def
 %%              (for use with xdvipdfmx, default driver in xetex 0.997)
@@ -59,7 +63,7 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ProvidesFile{xetex.def}
-        [2006/08/10 v0.92 LaTeX color/graphics driver for XeTeX (RRM, mod. JK)]
+        [2009/11/22 v0.94 LaTeX color/graphics driver for XeTeX (RRM/JK)]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % make sure we can use " with correct catcode
@@ -345,9 +349,11 @@
   \dimen@\Gin@urx\p@
   \advance\dimen@ -\Gin@vllx\p@
   \wd\@tempboxa\strip@pt\dimen@ bp\relax
+%  \wd\@tempboxa\dimen@ \relax
   \dimen@\Gin@ury\p@
   \advance\dimen@ -\Gin@vlly\p@
   \ht\@tempboxa\strip@pt\dimen@ bp\relax
+%  \ht\@tempboxa\dimen@ \relax
   %  when clipping is implemented for XeTeX
   %  make the changes here:
   \box\@tempboxa
@@ -377,8 +383,9 @@
      \piccommand
     }\dimen0=\wd0 \dimen2=\ht0
    \edef\next{\egroup
-     \def\noexpand\Gin@urx{\strip@pt\dimen0}%
-     \def\noexpand\Gin@ury{\strip@pt\dimen2}}%
+     \edef\noexpand\Gin@urx{\the\dimen0}%
+     \edef\noexpand\Gin@ury{\the\dimen2}%
+     }%
   \next
   \Gin@defaultbp\Gin@llx{0}%
   \Gin@defaultbp\Gin@lly{0}%
