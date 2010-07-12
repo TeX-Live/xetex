@@ -1,4 +1,4 @@
-%!TEX TS-program = XeLaTeX+xdvipdfmx
+%!TEX TS-program = XeLaTeX
 
 \documentclass[12pt]{article}
 
@@ -6,7 +6,7 @@
 \def\@dotsep{999}
 
 \usepackage{fontspec,xltxtra,xunicode}
-\setromanfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Bonum}
+\setromanfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Pagella}
 \setsansfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Heros}
 \setmonofont[Scale=MatchLowercase]{Monaco}
 
@@ -84,7 +84,6 @@
 \begin{document}
 \title{The \texorpdfstring{\XeTeX}{XeTeX} reference guide}
 \author{Will Robertson}
-\date{October 5, 2009}
 \maketitle
 
 \vfill 
@@ -95,7 +94,7 @@ This document serves to summarise \XeTeX's additional features without being so 
 The descriptions here should be a fairly exhaustive list of the new primitives and features of \XeTeX. Descriptions are still a little aenemic, however. I don't have much time to maintain this document, so contributions are highly welcomed \verb|:)|
 
 \section*{License}
-Copyright 2007--2009 Will Robertson. This work, \verb|XeTeX-reference.ltx|, also known as `\verb|xetexref|', is distributed under the terms of the LaTeX Project Public License \textup(\,\url{http://www.latex-project.org/lppl.txt}\,\textup), version 1.3c or later (your choice), and maintained by Will Robertson.
+Copyright 2007--2010 Will Robertson. This work, \verb|XeTeX-reference.ltx|, also known as `\verb|xetexref|', is distributed under the terms of the LaTeX Project Public License \textup(\,\url{http://www.latex-project.org/lppl.txt}\,\textup), version 1.3c or later (your choice), and maintained by Will Robertson.
 
 This basically means you are free to re-distribute this file as you wish; you may also make changes to this file or use its contents for another purpose, in which case you should make it clear, by way of a name-change or some other means, that your changed version is a modified version of the original. Please read the license text for more detailed information.
 
@@ -113,7 +112,7 @@ This syntax looks something like\par
 {\centering|\font\1="|\xarg{font name}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
 The \xarg{font name} is the actual name of the font (e.g., `|Charis SIL|') and the only mandatory part of the above syntax. 
 
-When using the |xdvipdfmx| driver (not yet the default in Mac~OS~X), it is possible to use fonts
+When using the |xdvipdfmx| driver, it is possible to use fonts
 that aren't installed in the operating system by surrounding their name with square brackets. The current directory and the |texmf| trees are searched for files named in this way, or the path may be embedded in the
 font declaration. \Eg,
 \begin{quote}\small
@@ -133,7 +132,8 @@ font declaration. \Eg,
 \item[/IB] Same as \texttt{/BI}.
 \item[/S=$x$] Use the version of the selected font corresponding to the optical size $x$\,pt.
 \item[/AAT] Explicitly use the ATSUI renderer (Mac OS X only).
-\item[/ICU] Explicitly use the ICU OpenType renderer (only useful on Mac OS X).
+\item[/ICU] Explicitly use the ICU OpenType renderer.
+\item[/GR] Explicitly use the Graphite font\footnote{\url{http://scripts.sil.org/RenderingGraphite}} renderer.
 \end{optdesc}
 
 \subsection{Font features}
@@ -573,6 +573,17 @@ aAa A a B aBa BB
 
 \newpage
 \section{Encodings}
+
+\cmd|\XeTeXinputnormalization|
+\xarg{Integer}
+\desc{Specify whether \XeTeX\ is to perform normalisation on the input text and, if so, what type of normalisation to use. See \url{http://unicode.org/reports/tr15/} for a description of Unicode normalisation.
+\bigskip
+\begin{description}[parsep=1ex]
+\item[\cs{XeTeXinputnormalization}\texttt{=0}] (default) do not perform normalisation.
+\item[\cs{XeTeXinputnormalization}\texttt{=1}] normalise to NFC form, using precomposed characters where possible instead base characters with combining marks.
+\item[\cs{XeTeXinputnormalization}\texttt{=2}] normalise to NFD form, using base characters with combining marks instead of precomposed characters.
+\end{description}}
+\endcmd
 
 \cmd|\XeTeXinputencoding|
 \xarg{Charset name}
