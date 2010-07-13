@@ -3,6 +3,7 @@
    Written in 1995 by Karl Berry.  Public domain.  */
 
 #include "config.h"
+#include "lib.h"
 
 /* Return the basename of NAME, with trailing characters OLD replaced by
    NEW.  (If last characters in NAME are not OLD, just append NEW.)
@@ -12,8 +13,8 @@
    In other words, we're implementing `basename NAME OLD`NEW.  */
 
 string
-basenamechangesuffix P3C(const_string, name,  const_string, old_suffix,
-                         const_string, new_suffix)
+basenamechangesuffix (const_string name,  const_string old_suffix,
+                      const_string new_suffix)
 {
   string answer;
   unsigned c;
@@ -33,7 +34,7 @@ basenamechangesuffix P3C(const_string, name,  const_string, old_suffix,
     }
   }
   
-  answer = (string)xmalloc (copy_limit + strlen (new_suffix) + 1);
+  answer = xmalloc (copy_limit + strlen (new_suffix) + 1);
   strncpy (answer, base, copy_limit);
   answer[copy_limit] = 0;
   strcat (answer, new_suffix);

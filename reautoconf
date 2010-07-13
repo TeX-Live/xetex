@@ -1,16 +1,15 @@
 #! /bin/sh
-
-# A replacement for the "reautoconf" script found at the root of the
-# web2c/teTeX/TeX-Live tree Used to run autoconf Versions 2.13 (old)
-# resp. 2.59 (new) in various directories.  Adapted from Peter
-# Breitenlohner's original version.
-
-# Copyright 2005 Olaf Weber.
-# Copyright 2004 Peter Breitenlohner.
+# $Id: reautoconf 15977 2009-11-10 10:34:20Z peter $
+# This "reautoconf" script found at the root of the TeX Live source tree 
+# runs aclocal and autoconf (from PATH) in all relevant directories.
 #
-# This program is free software; you can redistribute it and/or modify
+# Copyright 2008 Karl Berry.
+# Copyright 2005 Olaf Weber.
+# Copyright 2004 - 2009 Peter Breitenlohner.
+#
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -19,96 +18,108 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[ -f ./texk/make/common.mk ] || {
-	echo "*** can't find ./texk/make/common.mk"
+unset CDPATH
+
+usage="Usage: $0 [OPTION]... [DIR]...
+  Run \`autoreconf --no-recursive' in the directories DIR...
+  (default all) of the TeX Live source tree.
+
+Options:
+  -h, --help      display this help and exit successfully
+  -n, --dry-run   don't run any commands; just print them
+  -q, --quiet     don't echo commands
+  -v, --verbose   verbosely report processing (default)
+
+Environment variables:
+  TL_AUTOCONF:   program to use instead of autoconf from PATH
+  TL_AUTOHEADER: program to use instead of autoheader from PATH
+  TL_AUTOMAKE:   program to use instead of automake from PATH
+  TL_ACLOCAL:    program to use instead of aclocal from PATH"
+
+do_cmd=eval
+do_say=echo
+verbose=-v
+
+list=
+
+for option
+do
+  case $option in
+    -h | --help) echo "$usage"; exit 0
+      ;;
+    -n | --dry-run) do_cmd=:
+      ;;
+    -q | --quiet) do_say=:; verbose=
+      ;;
+    -v | --verbose) do_say=echo; verbose=-v
+      ;;
+    -*) echo "$0: *** unrecognized option \`$option'"
+      echo "$usage"; exit 1
+      ;;
+    *) list="$list $option"
+      ;;
+  esac
+done
+
+[ "$do_cmd" = : ] && do_say=echo	# -n implies -v
+
+[ -f ./m4/kpse-setup.m4 ] || {
+	echo "$0: *** can't find ./m4/kpse-setup.m4 (from `pwd`)" >&2
 	exit 1
 }
 
-# Remember the topdir.
-topdir=`pwd`
+: ${TL_AUTOCONF=autoconf}
+echo "$0: using \"$TL_AUTOCONF\" = `$TL_AUTOCONF --version | sed 1q`"
+: ${TL_AUTOHEADER=autoheader}
+echo "$0: using \"$TL_AUTOHEADER\" = `$TL_AUTOHEADER --version | sed 1q`"
+: ${TL_AUTOMAKE=automake}
+echo "$0: using \"$TL_AUTOMAKE\" = `$TL_AUTOMAKE --version | sed 1q`"
+: ${TL_ACLOCAL=aclocal}
+echo "$0: using \"$TL_ACLOCAL\" = `$TL_ACLOCAL --version | sed 1q`"
+echo "$0:       if you want to use different versions, set TL_AUTOCONF,"
+echo "$0:               TL_AUTOHEADER, TL_AUTOMAKE, and/or TL_ACLOCAL."
 
-# "acold" runs autoconf-2.13
-# "acnew" runs current autoconf
+# Give users a chance to quit here
+# and set TL_AUTOCONF, TL_AUTOHEADER, TL_AUTOMAKE, and/or TL_ACLOCAL
+$do_cmd sleep 5
 
-acold () {	# $dir=current
-	echo "    Running autoconf-2.13 in \`$dir'"
-	$topdir/texk/autoconf2.13 -m "$topdir/texk/etc/autoconf"
+AUTOCONF=$TL_AUTOCONF
+AUTOHEADER=$TL_AUTOHEADER
+AUTOMAKE=$TL_AUTOMAKE
+ACLOCAL=$TL_ACLOCAL
+export AUTOCONF AUTOHEADER AUTOMAKE ACLOCAL
+
+do_it () {
+  $do_say "$0: running \"$@\""
+  $do_cmd "$@"
 }
 
-# For autoconf-2.59 two things have to be done:
-#
-# 1. Rebuild aclocal.m4, using a patched version of aclocal-1.9.5.
-#
-# The patches (as obtained from one of the automake maintainers)
-# can be found in
-#	ftp://ftpth.mppmu.mpg.de/pub/peb/web2c/autoconf/aclocal.patch
-# and should be part of the next release, i.e., automake-1.9.6.
-#
-# Obviously directories that come with a prebuilt aclocal.m4, but without
-# the ingredients to rebuild it, need special treatment.
-#
-# 2. Run /usr/local/bin/autoconf
+if test "x$list" = x; then
+  list=". auxdir/auxsub libs utils texk `find libs utils texk -type d -name ac |
+    sed 's,/ac\$,,'`"
+fi
 
-###################################
-# The patch quoted above fixes only part of the sinclude problems.
-# The generated aclocal.m4 still contains erroneous m4_include's
-# that have to be removed before running autoconf.
-###################################
-
-acnew () {	# $dir=current, $dir/$rdir->./texk/m4 with the KPSE macros.
-	#arg="-I $rdir"
-	#[ -n "$1" ] && {
-	#	# Move existing aclocal.m4 into subdir and build new one
-	#	mkdir m4
-	#	mv aclocal.m4 m4/oldlocal.m4
-	#	arg="-I m4 $arg"
-	#}
-	#echo "Running aclocal-1.9 (patched) in \`$dir'"
-	#$topdir/config/aclocal-1.9peb --force $arg || return
-	echo "    Running autoconf in \`$dir'"
-	autoconf --force || return
-	#rm -rf autom4te.cache
-}
-
-# Autoconf in .
-dir=. rdir=texk/m4
-acold
-
-# Autoconf in all other directories
-for dir in `find libs texk -name configure.in | sed 's,/configure.in$,,'`; do
-	case $dir in
-		*/texi*)	# texinfo and texi2html are automade
-		;;
-		*/ncurses)	# ncurses has it's own special configure
-		;;
-		*/xdv2pdf)	# skip xdv2pdf as it seems to be fussy
-		;;
-		utils/*)	# Skip everything in utils for now.
-		;;
-		*/curl)		# Is automade.
-		;;
-		texk)	rdir=m4
-			(cd $dir; acnew)
-		;;
-		*/icu*|*/fontconfig)		# ICU and fontconfig need new autoconf
-			(cd $dir; acnew)
-		;;
-		texk/*)	rdir=`echo $dir | sed -e 's,^texk/,,' -e 's,[^/]*,..,g'`/m4
-			case $dir in
-				*/devnag|*/dvipdfmx|*/xdvipdfmx)
-					(cd $dir; acnew);;
-				*)	(cd $dir; acold);;
-			esac
-		;;
-		*)	rdir=`echo $dir | sed 's,[^/]*,..,g'`/texk/m4
-			case $dir in
-			*/t1utils|*/lcdf-typetools|*/curl|*/expat)
-				(cd $dir; acnew) ;;
-			*)	(cd $dir; acold) ;;
-			esac
-		;;
-	esac
+# Autoreconf in all directories
+for dir in $list; do
+  # Remove trailing slash from shell filename completion
+  dir=`echo $dir | sed 's,/\$,,'`
+  if test ! -d "$dir"; then
+    echo "$0: $dir not a directory, skipping." >&2
+    continue
+  fi
+  if test ! -f "$dir/configure.ac"; then
+    echo "$0: $dir/configure.ac: no such file, skipping." >&2
+    continue
+  fi
+  if test -f "$dir/ac/withenable.ac"; then
+    extra_dirs=`grep 'dnl extra_dirs = ' $dir/ac/withenable.ac |
+      sed 's,^.*= ,,'`
+  else
+    extra_dirs=
+  fi
+  do_it autoreconf $verbose --no-recursive $dir $extra_dirs
 done
+
+echo "$0: done."

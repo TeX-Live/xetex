@@ -1,0 +1,111 @@
+2010-04-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.h: Move extern declarations of papersize and
+	outputdriver from ../lib/texmfmp.c to here; use 'const char *',
+	'const_string' is not defined in this file.
+	* XeTeX_ext.c (papersize, outputdriver): Use 'const char *'.
+
+2010-03-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeXLayoutInterface.cpp: #include "unicode/platform.h" first,
+	required with ICU 4.4 for MinGW32.
+
+2010-02-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c [MINGW32]: First #include <kpathsea/config.h> to
+	avoid conflicting eof() declarations.
+
+2010-02-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* pngimage.c (check_for_png): Replace png_check_sig() by
+	png_sig_cmp() for libpng-1.4.
+	From Hanno Boeck <hanno@hboeck,de>.
+
+2009-12-12  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Replace the obsolete $(mkdir_p) by $(MKDIR_P).
+
+2009-12-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c: Remove extern declaration of gettexstring(),
+	now in ../web2c/coerce.h.
+
+2009-11-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c, XeTeX_mac.c: #include <teckit/TECkit_Engine.h>
+	instead of "TECkit_Engine.h".
+	* xetex.h: #include <teckit/TECkit_Common.h> instead of
+	"TECkit_Common.h".
+
+2009-10-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeXOTLayoutEngine,{cpp,h}: Adjust to ICU-4.2.1.
+
+2009-10-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* xetex.ch: Use kpse_{in,out}_name_ok(), now in Kpathsea,
+	instead of open_{in,out}_name_ok().
+
+2009-10-12  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeXOTLayoutEngine.h: Drop #include "layout/HanLayoutEngine.h".
+	Move #include "layout/{Arabic,Indic,Tibetan}LayoutEngine.h" and
+	declaration of class XeTeXHanLayoutEngine from here ...
+	* XeTeXOTLayoutEngine.cpp: ... to here.
+
+2009-10-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* FontTableCache.{cpp,h}, MathTable.h, XeTeXFontInst.{cpp,h},
+	XeTeXFontMgr.cpp, XeTeXLayoutInterface.cpp,
+	XeTeXOTLayoutEngine.{cpp,h}, XeTeXOTMath.{cpp,h}, cmaps.{cpp,h},
+	sfnt.h: Include, e.g., "layout/LETypes.h" instead of "LETypes.h"
+	for consistency with installed (system) headers.
+
+2009-10-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* xetex.ch (do_extension): Recover variables unused by TeX.
+
+2009-09-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Prepare compiler warnings.
+
+2009-08-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am: SyncTeX now integrated into ../texmfmp.h.
+
+2009-08-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Adapt to tangle-sh and web2c-sh.
+
+2009-08-13  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am (xetex_c_h): avoid to split the C code.
+
+2009-07-16  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Put ICU_INCLUDES first to avoid an installed
+	version.
+
+2009-05-13  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Put FREETYPE2_INCLUDES as early as possible to
+	avoid freetype1/freetype2 problems when both are installed under
+	the same prefix.
+
+2009-05-06  Karl Berry  <karl@tug.org>
+
+	* jpegimage.c: #include <stdlib.h> and <string.h>
+	instead of <memory.h>.
+
+2009-05-05  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* am/xetex.am: in CPPFLAGS define U_STATIC_IMPLEMENTATION
+	instead of DLE_USE_CMEMORY, required for Cygwin but also works for
+	others.
+
+2009-05-05  Peter Breitenlohner <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c, image/pdfimage.cpp: adapt for poppler.
+
+	patches from Norbert Preinig <preining@logic.at>
+

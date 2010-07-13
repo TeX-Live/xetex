@@ -1,5 +1,5 @@
 % odvitype.ch: web2c changes for file odvitype.web
-% 
+%
 % This file is part of the Omega project, which
 % is based in the web2c distribution of TeX.
 %
@@ -55,7 +55,7 @@ procedure initialize; {this procedure gets things started properly}
 procedure initialize; {this procedure gets things started properly}
   var i:integer; {loop index for initializations}
   begin
-  kpse_set_progname (argv[0]);
+  kpse_set_program_name (argv[0], nil);
   parse_arguments;
   print (banner);
   print_ln (version_string);
@@ -122,8 +122,7 @@ end;
 @y
 @p procedure open_dvi_file; {prepares to read packed bytes in |dvi_file|}
 begin
-  cur_name := extend_filename (cmdline (optind), 'dvi');
-  resetbin (dvi_file, cur_name);
+  resetbin (dvi_file, extend_filename (cmdline (optind), 'dvi'));
   cur_loc := 0;
 end;
 @#
@@ -198,6 +197,14 @@ begin
   cur_loc:=n;
 end;
 @z
+
+@x [35] Avoid compiler warnings
+read_tfm_word;
+@y
+nco:=0; extra_words:=0;
+read_tfm_word;
+@z
+
 
 @x [35] Make 16-bit TFM calculations work.
 if (b0*256+b1)<>0 then begin {TFM file}
@@ -533,6 +540,15 @@ end;
 cur_name[r] := 0; {Append null byte for C.}
 @z
 
+@x [75] Diagnose impossible cases.
+sixty_four_cases(fnt_num_0): first_par:=o-fnt_num_0;
+end;
+@y
+sixty_four_cases(fnt_num_0): first_par:=o-fnt_num_0;
+othercases abort('internal error');
+endcases;
+@z
+
 @x [80] (major,minor) optionally show opcode
 @d show(#)==begin flush_text; showing:=true; print(a:1,': ',#);
   end
@@ -608,26 +624,26 @@ begin
     end else if argument_is ('version') then begin
       print_version_and_exit
         (banner, nil, 'J. Plaice, Y. Haralambous, D.E. Knuth', nil);
-    
+
     end else if argument_is ('output-level') then begin
       out_mode := atou (optarg);
       if (out_mode = 0) or (out_mode > 4) then begin
         write_ln (stderr, 'Value for --output-level must be >= 1 and <= 4.');
         uexit (1);
       end;
-    
+
     end else if argument_is ('page-start') then begin
       @<Determine the desired |start_count| values from |optarg|@>;
-    
+
     end else if argument_is ('max-pages') then begin
       max_pages := atou (optarg);
-      
+
     end else if argument_is ('dpi') then begin
       resolution := atof (optarg);
-    
+
     end else if argument_is ('magnification') then begin
       new_mag := atou (optarg);
-    
+
     end; {Else it was a flag; |getopt| has already done the assignment.}
   until getopt_return_val = -1;
 
@@ -680,7 +696,7 @@ long_options[current_option].flag := 0;
 long_options[current_option].val := 0;
 incr (current_option);
 
-@ Parsing the starting page specification is a bit complicated. 
+@ Parsing the starting page specification is a bit complicated.
 
 @<Determine the desired |start_count|...@> =
 k := 0; {which \.{\\count} register we're on}
@@ -689,7 +705,7 @@ while optarg[m] do begin
   if optarg[m] = "*" then begin
     start_there[k] := false;
     incr (m);
-  
+
   end else if optarg[m] = "." then begin
     incr (k);
     if k >= 10 then begin
@@ -697,7 +713,7 @@ while optarg[m] do begin
       uexit (1);
     end;
     incr (m);
-  
+
   end else begin
     start_count[k] := strtol (optarg + m, address_of (end_num), 10);
     if end_num = optarg + m then begin

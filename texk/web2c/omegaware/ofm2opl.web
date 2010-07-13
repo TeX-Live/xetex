@@ -1,4 +1,4 @@
-% 
+%
 % This file is part of the Omega project, which
 % is based in the web2c distribution of TeX.
 %
@@ -21,6 +21,8 @@
 % Version 3.1 (November 1989) renamed z[] to lig_z[] for better portability.
 
 % Version 1.0 of OFM2OPL (December 1995) allows one to read OFM files.
+% Version 1.11 (February 2000).
+% Version 1.12 (September 2009) various bug fixes by Peter Breitenlohner.
 
 % Here is TeX material that gets inserted after \input webmac
 \def\hang{\hangindent 3em\indent\ignorespaces}
@@ -39,7 +41,7 @@
   \vfill
   \centerline{\titlefont The {\ttitlefont OFM2OPL} processor}
   \vskip 15pt
-  \centerline{(Version 1.11, February 2000)}
+  \centerline{(Version 1.12, September 2009)}
   \vfill}
 \def\botofcontents{\vfill
   \centerline{\hsize 5in\baselineskip9pt
@@ -62,7 +64,7 @@ if \TeX\ or $\Omega$ complains that a \.{TFM} or an \.{OFM}
 file is ``bad,'' this program will pinpoint the source or sources of
 badness. A \.{PL} or \.{OPL} file output by this program can be edited
 with a normal text editor, and the result can be converted back to \.{TFM}
-or \.{OFM} format using the companion program \.{OPLtoOFM}.
+or \.{OFM} format using the companion program \.{OPL2OFM}.
 
 The first \.{TFtoPL} program was designed by Leo Guibas in the summer of
 1978. Contributions by Frank Liang, Doug Wyatt, and Lyle Ramshaw
@@ -81,7 +83,7 @@ and \.{OPL} files.
 The |banner| string defined here should be changed whenever \.{OFM2OPL}
 gets modified.
 
-@d banner=='This is OFM2OPL, Version 1.11'
+@d banner=='This is OFM2OPL, Version 1.12'
 
 @ This program is written entirely in standard \PASCAL, except that
 it occasionally has lower case letters in strings that are output.
@@ -123,11 +125,11 @@ reduce \.{TFtoPL}'s capacity.
 @!hash_size=130003; {preferably a prime number, a bit larger than the number
   of character pairs in lig/kern steps}
 @!hash_mult=16007; {another prime}
-@!max_char=65535; {the largest character number in a font} 
-@!xmax_char=65536; {|max_char|+1} 
-@!xxmax_char=65537;{|max_char|+2} 
+@!max_char=65535; {the largest character number in a font}
+@!xmax_char=65536; {|max_char|+1}
+@!xxmax_char=65537;{|max_char|+2}
 @!xmax_label=80001;{must be greater than |max_lig_steps|}
-@!mem_size=262152; {|max_char|*4+8} 
+@!mem_size=262152; {|max_char|*4+8}
 
 @ Here are some macros for common programming idioms.
 
@@ -137,7 +139,7 @@ reduce \.{TFtoPL}'s capacity.
 
 @* Font metric data.
 The following description of \.{TFM} files is not sufficient for
-\.{OFM} files.  The additional documentation necessary for the 
+\.{OFM} files.  The additional documentation necessary for the
 \.{OFM} files can be found in another file, such as the $\Omega$
 change files.
 
@@ -195,7 +197,7 @@ This is called BigEndian order.
 @<Glob...@>=
 @!ofm_level,
 @!nco,@!ncw,@!npc,@!nki,@!nwi,@!nkf,@!nwf,@!nkr,@!nwr,@!nkg,@!nwg,@!nkp,@!nwp,
-@!nkm,@!nwm,@!real_lf,
+@!nkm,@!nwm,@!real_lf,@!nlw,@!neew,
 @!lf,@!lh,@!bc,@!ec,@!nw,@!nh,@!nd,@!ni,@!nl,@!nk,@!ne,@!np,@!font_dir:integer;
   {subfile sizes}
 @!ofm_on:boolean;
@@ -497,7 +499,11 @@ if lf=0 then begin
     read(tfm_file, tfm[i]);
   end;
   ofm_on := true; ofm_level := tfm[2]*@"100+tfm[3];
+  if ofm_level>1 then
+    abort('OFMLEVEL ',ofm_level:1,' not supported, must be 0 or 1!');
+@.OFMLEVEL...must be 0 or 1@>
   if tfm[4]>127 then abort('The fifth byte of the input file exceeds 127!');
+@.The fifth byte...@>
   lf := tfm[4]*@"1000000 + tfm[5]*@"10000 + tfm[6]*@"100 + tfm[7];
 end
 else
@@ -563,6 +569,8 @@ if not ofm_on then begin
   eval_two_bytes(ne);
   eval_two_bytes(np);
   ncw:=(ec-bc+1);
+  nlw:=nl;
+  neew:=ne;
   header_length:=6;
   top_char:=255;
   top_width:=255;
@@ -577,13 +585,15 @@ else begin
   eval_four_bytes(ec);
   eval_four_bytes(nw);
   eval_four_bytes(nh);
-  eval_four_bytes(nd);     
+  eval_four_bytes(nd);
   eval_four_bytes(ni);
   eval_four_bytes(nl);
   eval_four_bytes(nk);
   eval_four_bytes(ne);
   eval_four_bytes(np);
   eval_four_bytes(font_dir);
+  nlw:=2*nl;
+  neew:=2*ne;
   top_char:=65535;
   top_width:=65535;
   top_height:=255;
@@ -612,13 +622,13 @@ else begin
     eval_four_bytes(nwp); {Words of font penalties}
     end;
   end;
-if lf<>(header_length+lh+ncw+nw+nh+nd+ni+2*nl+nk+2*ne+np+
+if lf<>(header_length+lh+ncw+nw+nh+nd+ni+nlw+nk+neew+np+
         nki+nwi+nkf+nwf+nkm+nwm+nkr+nwr+nkg+nwg+nkp+nwp) then
   abort('Subfile sizes don''t add up to the stated total!');
 @.Subfile sizes don't add up...@>
 if lh<2 then abort('The header length is only ',lh:1,'!');
 @.The header length...@>
-if (2*nl)>(4*lig_size) then
+if nl>4*lig_size then
   abort('The lig/kern program is longer than I can handle!');
 @.The lig/kern program...@>
 if (bc>ec+1)or(ec>top_char) then abort('The character code range ',
@@ -654,7 +664,7 @@ integer;
 @!bytes_per_entry:integer;
 
 @ @<Compute the base addresses@>=
-begin 
+begin
 ivalues_start:=header_length+lh;
 fvalues_start:=ivalues_start+nki;
 mvalues_start:=fvalues_start+nkf;
@@ -678,7 +688,7 @@ else if ofm_level=0 then begin
   for i:=bc to ec do begin
     char_start[i]:=4*char_base+8*(i-bc);
     end;
-  end   
+  end
 else begin
   char_ptr:=4*char_base;
   i:=bc;
@@ -698,9 +708,9 @@ height_base:=width_base+nw;
 depth_base:=height_base+nh;
 italic_base:=depth_base+nd;
 lig_kern_base:=italic_base+ni;
-kern_base:=lig_kern_base+2*nl;
+kern_base:=lig_kern_base+nlw;
 exten_base:=kern_base+nk;
-param_base:=exten_base+2*ne-1;
+param_base:=exten_base+neew-1;
 end
 
 @ Of course we want to define macros that suppress the detail of how the
@@ -743,8 +753,6 @@ end;
 function italic_index(c:char_type):integer;
 begin if not ofm_on then
   italic_index:=tfm[char_info(c)+2] div 4
-else if ofm_level=0 then
-  italic_index:=tfm[char_info(c)+4]*64 + tfm[char_info(c)+5] div 4
 else
   italic_index:=tfm[char_info(c)+4];
 end;
@@ -763,6 +771,20 @@ else
   tfm[char_info(c)+5] := (tfm[char_info(c)+5] div 64)*64 + no_tag;
 end;
 
+procedure check_unused(c:char_type);
+var @!x:integer;
+begin if ofm_level=1 then x:=tfm[char_info(c)+5] div 8
+else x:=tfm[char_info(c)+5] div 4;
+if x<>0 then begin
+  if ofm_level=1 then x:=tfm[char_info(c)+5] mod 8
+  else x:=tfm[char_info(c)+5] mod 4;
+  tfm[char_info(c)+5]:=x;
+  perfect:=false; if chars_on_line>0 then print_ln(' ');
+  chars_on_line:=0; print_ln('Ignoring non-zero unused char info bits');
+@.Ignoring non-zero unused...@>
+  end;
+end;
+
 function ctag(c:char_type):boolean;
 begin if not (ofm_level=1) then
   ctag:=false
@@ -772,7 +794,7 @@ end;
 
 procedure set_no_ctag(c:char_type);
 begin if not (ofm_level=1) then
-  tfm[char_info(c)+5] := 
+  tfm[char_info(c)+5] :=
     tfm[char_info(c)+5] div 8 * 8 + tfm[char_info(c)+5] mod 4;
 end;
 
@@ -1341,9 +1363,15 @@ the \.{TFM} file; the stated value is merely put into the \.{PL} file.
 The \.{PLtoTF} program will store a correct value and give a warning
 message if a file falsely claims to be safe.
 
+\.{OFM} files are assumed to be seven-bit-unsafe.
+
 @<Output the |seven_bit_safe_flag|@>=
-begin left; out('SEVENBITSAFEFLAG FALSE'); right;
-end
+if ofm_on then
+  begin left; out('SEVENBITSAFEFLAG FALSE'); right;
+  end
+else if (lh>17) and (tfm[random_word]>127) then
+  begin left; out('SEVENBITSAFEFLAG TRUE'); right;
+  end
 
 @ The next thing to take care of is the list of parameters.
 
@@ -1415,10 +1443,10 @@ if nki>0 then begin
 
 @ @<Check and output the $i$th ivalue table@>=
 begin
-left; out('FONTIVALUE'); out_hex_number(i); out_ln; 
+left; out('FONTIVALUE'); out_hex_number(i); out_ln;
 number_entries:=256*tfm[start_counter+2]+tfm[start_counter+3];
 for j:=0 to number_entries-1 do begin
-  left; out('IVALUE'); out_hex_number(j); out_ln; 
+  left; out('IVALUE'); out_hex_number(j); out_ln;
   value:=256*tfm[base_counter+2]+tfm[base_counter+3];
   left; out('IVALUEVAL'); out_hex_number(value); right;
   right;
@@ -1458,10 +1486,10 @@ if nkm>0 then begin
 
 @ @<Check and output the $i$th mvalue table@>=
 begin
-left; out('FONTMVALUE'); out_hex_number(i); out_ln; 
+left; out('FONTMVALUE'); out_hex_number(i); out_ln;
 number_entries:=256*tfm[start_counter+2]+tfm[start_counter+3];
 for j:=0 to number_entries-1 do begin
-  left; out('MVALUE'); out_hex_number(j); out_ln; 
+  left; out('MVALUE'); out_hex_number(j); out_ln;
   left; out('MVALUEVAL'); out_fix(base_counter); right;
   right;
   base_counter:=base_counter+4;
@@ -1480,10 +1508,10 @@ if nkr>0 then
 
 @ @<Check and output the $i$th rule table@>=
 begin
-left; out('FONTRULE'); out_hex_number(i); out_ln; 
+left; out('FONTRULE'); out_hex_number(i); out_ln;
 number_entries:=256*tfm[start_counter+2]+tfm[start_counter+3];
 for j:=0 to number_entries-1 do begin
-  left; out('RULE'); out_hex_number(j); out_ln; 
+  left; out('RULE'); out_hex_number(j); out_ln;
   left; out('RULEWD'); out_fix(base_counter); right;
   left; out('RULEHT'); out_fix(base_counter+4); right;
   left; out('RULEDP'); out_fix(base_counter+8); right;
@@ -1507,17 +1535,17 @@ if nkg>0 then begin
 
 @ @<Check and output the $i$th glue table@>=
 begin
-left; out('FONTGLUE'); out_hex_number(i); out_ln; 
+left; out('FONTGLUE'); out_hex_number(i); out_ln;
 number_entries:=256*tfm[start_counter+2]+tfm[start_counter+3];
 for j:=0 to number_entries-1 do begin
-  left; out('GLUE'); out_hex_number(j); out_ln; 
+  left; out('GLUE'); out_hex_number(j); out_ln;
   glue_subtype:=tfm[base_counter] div 16;
   glue_argument_kind:=tfm[base_counter] mod 16;
   glue_stretch_order:=tfm[base_counter+1] div 16;
   glue_shrink_order:=tfm[base_counter+1] mod 16;
   glue_argument:=tfm[base_counter+2]*256+tfm[base_counter+3];
   left;
-  out('GLUETYPE'); 
+  out('GLUETYPE');
   case glue_subtype of
     0: out(' H 0');
     1: out(' H 1');
@@ -1528,13 +1556,13 @@ for j:=0 to number_entries-1 do begin
   case glue_argument_kind of
     1: begin
       left; out('GLUERULE'); out_hex_number(glue_argument); right;
-      end; 
+      end;
     2: begin
       left; out('GLUECHAR'); out_hex_number(glue_argument); right;
-      end; 
+      end;
   end;
   left;
-  out('GLUESTRETCHORDER'); 
+  out('GLUESTRETCHORDER');
   case glue_stretch_order of
     0: out(' H 0');
     1: out(' H 1');
@@ -1544,7 +1572,7 @@ for j:=0 to number_entries-1 do begin
     end;
   right;
   left;
-  out('GLUESHRINKORDER'); 
+  out('GLUESHRINKORDER');
   case glue_shrink_order of
     0: out(' H 0');
     1: out(' H 1');
@@ -1569,20 +1597,20 @@ if nkp>0 then begin
   base_counter:=penalties_base*4;
   for i:=0 to nkp-1 do @<Check and output the $i$th penalty table@>;
   end;
- 
+
 @ @<Check and output the $i$th penalty table@>=
-begin 
-left; out('FONTPENALTY'); out_hex_number(i); out_ln; 
-number_entries:=256*tfm[start_counter+2]+tfm[start_counter+3]; 
-for j:=0 to number_entries-1 do begin 
+begin
+left; out('FONTPENALTY'); out_hex_number(i); out_ln;
+number_entries:=256*tfm[start_counter+2]+tfm[start_counter+3];
+for j:=0 to number_entries-1 do begin
   left; out('PENALTY'); out_hex_number(j); out_ln;
-  value:=256*tfm[base_counter+2]+tfm[base_counter+3]; 
-  left; out('PENALTYVAL'); out_hex_number(value); right; 
-  right; 
-  base_counter:=base_counter+4; 
-  end; 
+  value:=256*tfm[base_counter+2]+tfm[base_counter+3];
+  left; out('PENALTYVAL'); out_hex_number(value); right;
+  right;
+  base_counter:=base_counter+4;
+  end;
 right;
-start_counter:=start_counter+4; 
+start_counter:=start_counter+4;
 end;
 
 @ We need to check the range of all the remaining |fix_word| values,
@@ -1756,7 +1784,7 @@ for clabel_runner:=0 to 256 do
 
 @ @<Output any labels...@>=
 while i=label_table[sort_ptr].rr do begin
-  if not label_table[sort_ptr].ischar then begin
+  if label_table[sort_ptr].cc<>xmax_char and not label_table[sort_ptr].ischar then begin
     if not output_clabels[label_table[sort_ptr].cc] then begin
       output_clabels[label_table[sort_ptr].cc]:=true;
       left;
@@ -1910,6 +1938,7 @@ if width_index(c)>0 then begin
     print_hex(c); {progress report}
     left; out('CHARACTER'); out_char(c); out_ln;
     end;
+  if ofm_on then check_unused(c);
   @<Output the character's width@>;
   if height_index(c)>0 then @<Output the character's height@>;
   if depth_index(c)>0 then @<Output the character's depth@>;
@@ -1930,14 +1959,17 @@ if width_index(c)>0 then begin
       else if i<(nki+nkf) then begin
         out('CHARFVALUE'); out_hex_number(i-nki);
         end
-      else if i<(nki+nkf+nkr) then begin
-        out('CHARRULE'); out_hex_number(i-nki-nkf);
+      else if i<(nki+nkf+nkm) then begin
+        out('CHARMVALUE'); out_hex_number(i-nki-nkf);
         end
-      else if i<(nki+nkf+nkr+nkg) then begin
-        out('CHARGLUE'); out_hex_number(i-nki-nkf-nkr);
+      else if i<(nki+nkf+nkm+nkr) then begin
+        out('CHARRULE'); out_hex_number(i-nki-nkf-nkm);
         end
-      else if i<(nki+nkf+nkr+nkg+nkp) then begin
-        out('CHARPENALTY'); out_hex_number(i-nki-nkf-nkr-nkg);
+      else if i<(nki+nkf+nkm+nkr+nkg) then begin
+        out('CHARGLUE'); out_hex_number(i-nki-nkf-nkm-nkr);
+        end
+      else if i<(nki+nkf+nkm+nkr+nkg+nkp) then begin
+        out('CHARPENALTY'); out_hex_number(i-nki-nkf-nkm-nkr-nkg);
         end;
       out_hex_number(char_param(c,i));
       right;
@@ -2243,7 +2275,7 @@ both_z: begin class[h]:=pending; lig_z[h]:=eval(eval(x,lig_z[h]),y);
   end;
 pending: begin x_lig_cycle:=x; y_lig_cycle:=y;
   lig_z[h]:=xxmax_char; class[h]:=simple;
-  end; {the value |xxmax_char| will break all cycles, 
+  end; {the value |xxmax_char| will break all cycles,
         since it's not in |hash|}
 end; {there are no other cases}
 f:=lig_z[h];
@@ -2303,8 +2335,10 @@ do_characters; print_ln('.');@/
 if level<>0 then print_ln('This program isn''t working!');
 @.This program isn't working@>
 if not perfect then
-  out('(COMMENT THE OFM FILE WAS BAD, SO THE DATA HAS BEEN CHANGED!)');
+  begin out('(COMMENT THE OFM FILE WAS BAD, SO THE DATA HAS BEEN CHANGED!)');
 @.THE OFM FILE WAS BAD...@>
+  write_ln(pl_file);
+  end;
 final_end:end.
 
 @* System-dependent changes.

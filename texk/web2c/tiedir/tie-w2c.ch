@@ -42,14 +42,16 @@ typedef char* string;
 void get_line(i)
 	file_index i;
 @y
-void get_line P1C(file_index, i)
+static void
+get_line (file_index i)
 @z
 
 @x
 void err_loc(i) /* prints location of error */
         int i;
 @y
-void err_loc P1C(int, i) /* prints location of error */
+static void
+err_loc (int i) /* prints location of error */
 @z
 
 @x
@@ -68,48 +70,58 @@ void err_loc P1C(int, i) /* prints location of error */
 boolean lines_dont_match(i,j)
 	file_index i,j;
 @y
-boolean lines_dont_match P2C(file_index, i, file_index, j)
+static boolean
+lines_dont_match (file_index i, file_index j)
 @z
 
 @x
 void init_change_file(i,b)
 	file_index i; boolean b;
 @y
-void init_change_file P2C(file_index, i, boolean, b)
+static void
+init_change_file (file_index i, boolean b)
 @z
 
 @x
 void put_line(j)
 	file_index j;
 @y
-void put_line P1C(file_index, j)
+static void
+put_line (file_index j)
 @z
 
 @x
 boolean e_of_ch_module(i)
 	file_index i;
 @y
-boolean e_of_ch_module P1C(file_index, i)
+static boolean
+e_of_ch_module (file_index i)
 @z
 
 @x
 boolean e_of_ch_preamble(i)
 	file_index i;
 @y
-boolean e_of_ch_preamble P1C(file_index, i)
+static boolean
+e_of_ch_preamble (file_index i)
 @z
 
 @x
 void usage()
+{
+   print("Usage: tie -[mc] outfile master changefile(s)");
 @y
-void usage P1H(void)
+static
+void usage (void)
+{
+   print("Usage: tie -m|-c outfile master changefile(s)");
 @z
 
 @x
 main(argc,argv)
         int argc; string *argv;
 @y
-int main P2C(int, argc, string *, argv)
+int main (int argc, string *argv)
 @z
 
 @x
@@ -120,4 +132,17 @@ int main P2C(int, argc, string *, argv)
   print(banner); /* print a ``banner line'' */
   print_ln(versionstring);  /* Web2C version */
   print_ln(copyright); /* include the copyright notice */
+@z
+
+@x
+{string msg;
+@y
+{const_string msg;
+@z
+
+@x -- silence unitialized warning
+      case fatal: msg="That was a fatal error, my friend";  break;
+@y
+      default: /* Anything except spotless, troublesome, or fatal is a bug. */
+      case fatal: msg="That was a fatal error, my friend";  break;
 @z

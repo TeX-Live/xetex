@@ -1,3 +1,47 @@
+2010-03-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am (EXTRA_DIST): Distribute the whole tests/ tree.
+
+2010-03-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am (triptrap): New target to first ensure that
+	web2c/Makefile exists and then run TRIP and TRAP tests.
+
+2010-02-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am (EXTRA_DIST): Add tests/common-test.pl.
+
+2010-02-18  Karl Berry  <karl@tug.org>
+
+	* tests: new subdir for common test files.
+
+2009-10-08  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Import bibtexu (static icu libs only).
+
+2009-05-26  Karl Berry  <karl@tug.org>
+
+	* README: dvipdfm can now be emulated by dvipdfmx.
+
+2009-02-02  Karl Berry  <karl@tug.org>
+
+	* install-sh: rename from install.sh.
+
+2008-05-28  Karl Berry  <karl@tug.org>
+
+	* Makefile.in (default all): always make all, rather than $@.
+
+2008-04-25  Karl Berry  <karl@tug.org>
+
+	* xdvik/Makefile.in (xdvizilla): skip (un)installing this.  debian
+	477160, tex-live 24 Apr 2008 02:03:57.
+
+2008-02-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* withenable.ac (kpse_texk_pkglist): m4_defined list of all
+	optional packages, used to generate --without-PKG options.
+	* configure.in: use kpse_texk_pkglist to select subdirs.
+
 2008-02-02  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	Convert from autoconf-2.13 to autoconf-2.59+:
@@ -243,7 +287,7 @@
 	Albert Chin-A-Young <china@thewrittenword.com>
 
 	* etc/autoconf/acsite.m4: Merge changes made by Roozbeh Pournader
-	in the TeX live tree.
+	in the TeX Live tree.
 
 2003-02-07  Olaf Weber  <olaf@infovore.xs4all.nl>
 
@@ -901,7 +945,7 @@ Thu Feb 24 13:54:36 1994  Karl Berry  (karl@cs.umb.edu)
 
 Mon Feb 21 13:32:30 1994  Karl Berry  (karl@cs.umb.edu)
 
-        * Makefile.in (triptrap ...): Defpend on do-kpathsea, to help
+        * Makefile.in (triptrap ...): Depend on do-kpathsea, to help
         propagate the paths. From Martyn.
 
         * configure.in: Merge srcdir ==/!= . cases.

@@ -1,4 +1,4 @@
-% 
+%
 % This file is part of the Omega project, which
 % is based in the web2c distribution of TeX.
 %
@@ -26,7 +26,7 @@ procedure initialize; {this procedure gets things started properly}
 procedure initialize; {this procedure gets things started properly}
   var @!k:integer; {all-purpose index for initialization}
   begin
-    kpse_set_progname (argv[0]);
+    kpse_set_program_name (argv[0], nil);
     kpse_init_prog ('VFTOVP', 0, nil, nil);
     parse_arguments;
 @z
@@ -239,11 +239,11 @@ cur_name[r] := 0; {Append null byte since this is C.}
 @!MBL_string,@!RI_string,@!RCE_string:packed array [1..3] of char;
   {handy string constants for |face| codes}
 @y
-@!ASCII_04,@!ASCII_10,@!ASCII_14,HEX: c_string;
+@!ASCII_04,@!ASCII_10,@!ASCII_14,HEX: const_c_string;
   {strings for output in the user's external character set}
 @!ASCII_all: packed array[0..256] of char;
 @!xchr:packed array [0..255] of char;
-@!MBL_string,@!RI_string,@!RCE_string: c_string;
+@!MBL_string,@!RI_string,@!RCE_string: const_c_string;
   {handy string constants for |face| codes}
 @z
 
@@ -308,7 +308,7 @@ f:=((tfm[k+1] mod 16)*@'400+tfm[k+2])*@'400+tfm[k+3];
 f:=((tfm[k+1] mod 16)*intcast(@'400)+tfm[k+2])*@'400+tfm[k+3];
 @z
 
-% [100] No progress reports unless verbose.
+% [101] No progress reports unless verbose.
 @x
       incr(chars_on_line);
       end;
@@ -354,8 +354,8 @@ f:=((tfm[k+1] mod 16)*intcast(@'400)+tfm[k+2])*@'400+tfm[k+3];
 @p function f(@!h,@!x,@!y:index):index; forward;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 @y
-@p 
-ifdef('notdef') 
+@p
+ifdef('notdef')
 function lig_f(@!h,@!x,@!y:index):index; begin end;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 endif('notdef')
@@ -382,31 +382,11 @@ lig_f:=lig_z[h];
 @x [124] Some cc's can't handle 136 case labels.
     o:=vf[vf_ptr]; incr(vf_ptr);
     case o of
-    @<Cases of \.{DVI} instructions that can appear in character packets@>@;
 @y
     o:=vf[vf_ptr]; incr(vf_ptr);
-    if ((o<=set_char_0+127))or
-       ((o>=set1)and(o<=set1+3))or((o>=put1)and(o<=put1+3)) then
-begin if o>=set1 then
-    if o>=put1 then c:=get_bytes(o-put1+1,false)
-    else c:=get_bytes(o-set1+1,false)
-  else c:=o;
-  if f=font_ptr then
-    bad_vf('Character ',c:1,' in undeclared font will be ignored')
-@.Character...will be ignored@>
-  else begin vf[font_start[f+1]-1]:=c; {store |c| in the ``hole'' we left}
-    k:=font_chars[f];@+while vf[k]<>c do incr(k);
-    if k=font_start[f+1]-1 then
-      bad_vf('Character ',c:1,' in font ',f:1,' will be ignored')
-    else begin if o>=put1 then out('(PUSH)');
-      left; out('SETCHAR'); out_char(c);
-      if o>=put1 then out(')(POP');
-      right;
-      end;
-    end;
-  end
+    if (o<=set1+3)or((o>=put1)and(o<=put1+3)) then
+      @<Special cases of \.{DVI} instructions to typeset characters@>@;
     else case o of
-    @<Cases of \.{DVI} instructions that can appear in character packets@>
 @z
 
 @x [125] `signed' is a reserved word in ANSI C.
@@ -422,35 +402,64 @@ begin if o>=set1 then
     begin write_ln(stderr, 'Stack overflow!'); uexit(1);
 @z
 
-@x [129] This code moved outside the case statement
+@x [129] This block of code moved outside the case statement.
 @ Before we typeset a character we make sure that it exists.
 
 @<Cases...@>=
 sixty_four_cases(set_char_0),sixty_four_cases(set_char_0+64),
  four_cases(set1),four_cases(put1):begin if o>=set1 then
-    if o>=put1 then c:=get_bytes(o-put1+1,false)
-    else c:=get_bytes(o-set1+1,false)
-  else c:=o;
-  if f=font_ptr then
-    bad_vf('Character ',c:1,' in undeclared font will be ignored')
-@.Character...will be ignored@>
-  else begin vf[font_start[f+1]-1]:=c; {store |c| in the ``hole'' we left}
-    k:=font_chars[f];@+while vf[k]<>c do incr(k);
-    if k=font_start[f+1]-1 then
-      bad_vf('Character ',c:1,' in font ',f:1,' will be ignored')
-    else begin if o>=put1 then out('(PUSH)');
-      left; out('SETCHAR'); out_char(c);
-      if o>=put1 then out(')(POP');
-      right;
-      end;
-    end;
-  end;
 @y
 @ Before we typeset a character we make sure that it exists.
-(These cases moved outside the case statement, section 124.)
+
+@<Special cases...@>=
+begin if o>=set1 then
 @z
 
-@x [134] No final newline unless verbose.
+@x [129] End of block of code moved outside the case statement.
+  end;
+@y
+  end
+@z
+
+@x [132] Eliminate the |final_end| and |exit| labels.
+label final_end, exit;
+@y
+@z
+@x
+vf_input:=true; return;
+final_end: vf_input:=false;
+exit: end;
+@y
+vf_input:=true;
+end;
+@z
+@x
+label final_end, exit;
+@y
+@z
+@x
+organize:=vf_input; return;
+final_end: organize:=false;
+exit: end;
+@y
+organize:=vf_input;
+end;
+@z
+
+@x [134] Eliminate the |final_end| and |exit| labels.
+label final_end,exit;
+@y
+@z
+@x
+do_map:=true; return;
+final_end: do_map:=false;
+exit:end;
+@y
+do_map:=true;
+end;
+@z
+
+@x [135] No final newline unless verbose.
 print_ln('.');@/
 @y
 if verbose then print_ln('.');@/
@@ -508,7 +517,7 @@ begin
 
   {Now |optind| is the index of first non-option on the command line.
    We must have one two three remaining arguments.}
-  if (optind + 1 <> argc) and (optind + 2 <> argc) 
+  if (optind + 1 <> argc) and (optind + 2 <> argc)
      and (optind + 3 <> argc) then begin
     write_ln (stderr, 'ovf2ovp: Need one to three file arguments.');
     usage ('ovf2ovp');
@@ -606,5 +615,6 @@ long_options[current_option].val := 0;
 @ Global filenames.
 
 @<Global...@> =
-@!vf_name, @!tfm_name, @!vpl_name:c_string;
+@!tfm_name:c_string;
+@!vf_name, @!vpl_name:const_c_string;
 @z

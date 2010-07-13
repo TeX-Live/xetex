@@ -1,35 +1,101 @@
-$Id: README 6662 2008-02-17 19:29:39Z karl $
-Copyright 2006, 2007 TeX Users Group.
-(Originally written in 2006 by Karl Berry.)
+$Id: README 17693 2010-04-05 00:34:08Z karl $
+Copyright 2006, 2007, 2008, 2009, 2010 TeX Users Group.
 You may freely use, modify and/or distribute this file.
 
 This TeX Live directory contains the programs that use the kpathsea
 library for configuration and path searching, and the library itself.
 
 Some programs can be built on their own, but others, including kpathsea
-itself, cannot.  Instead, try configure --enable-tetex-build in .., or
-using the Build script there.  In general, for TeX Live we only test
+itself, cannot.  Instead, try using the script ../../Build or the
+equivalent configure && make. In general, for TeX Live we only test
 configuring the whole tree.
 
-Upstream sources for the programs as last checked:
+Upstream sources and last-checked versions follow.  If a url is given,
+that is the upstream, although this does not mean the program is
+actively maintained.  Programs marked with a "?" are not (knowingly)
+maintained here, but the upstream is unknown.  If a program is knowingly
+maintained here in the TL repo, that is explicitly stated.
 
-afm2pl 0.7.03 - ok 5dec06
+Anyone -- please research and update any of this information.
+
+
+afm2pl 0.7.03 - checked 28apr08
   http://tex.aanhet.net/afm2pl/
+
+bibtex8 - ?
+
+bibtexu - ?
+  http://omega.enstb.org/yannis/bibtexu/
+
+cjkutils - Werner Lemberg
+  ctan
+
+detex - ?
 
 devnag - from devnag package installed in texmf-dist.
 
-dvipdfmx 20061211 - ok 14dec06
-  http://project.ktug.or.kr/dvipdfmx/snapshot/current/
-  -> http://www.ctan.org/tex-archive/dviware/dvipdfmx/
+djgpp - ?
 
-dvipng 1.9 - ok 5dec06
-  http://www.ctan.org/tex-archive/dviware/dvipng/
+dtl - ?
 
 dvi2tty 5.3.1 - needs update 18may07
   http://www.mesa.nl/pub/dvi2tty/
 
-lcdf-typetools 2.66 - ok 17feb08
-  http://www.lcdf.org/type/
+dvidvi - ?
 
-xdvik 22.84.10 - ok 4dec06
-  http://xdvi.sourceforge.net/
+dviljk - maintained here, by Joachim Schrod
+
+dvipdfmx - checked 5apr10
+  http://project.ktug.or.kr/dvipdfmx/snapshot/latest/
+  http://project.ktug.or.kr/dvipdfmx/snapshot/latest/dvipdfmx-20100328.tar.gz
+  dvipdfmx@project.ktug.or.kr (ChoF, Matthias, Hirata)
+
+dvipng - checked 18mar10
+  http://www.ctan.org/tex-archive/dviware/dvipng/ (but maybe stale)
+  http://savannah.nongnu.org/files/?group=dvipng
+  http://mirror.cinquix.com/pub/savannah/dvipng/dvipng-1.13.tar.gz
+
+dvipos - ?
+
+dvipsk - maintained here by Tom Rokicki, Karl Berry, Akira Kakuto, ...
+
+dvisvgm - checked 13nov09
+  http://downloads.sourceforge.net/dvisvgm/dvisvgm-0.8.7.tar.gz
+
+gsftopk - from Paul Vojta's xdvi?
+
+kpathsea - maintained here by Karl Berry, Akira Kakuto, ...
+
+lacheck - ?
+
+lcdf-typetools - checked 15jun09
+  http://www.lcdf.org/type/
+  http://www.lcdf.org/type/lcdf-typetools-2.79.tar.gz
+
+makeindexk - maintained here, by us
+
+musixflx - ?
+
+ps2pkm - ?
+
+seetexk - ?
+
+tex4htk 
+  http://www.cse.ohio-state.edu/~gurari/TeX4ht/
+
+texlive - maintained here, scripts
+
+ttf2pk - maintained here, by us
+
+ttfdump - ?
+
+web2c - maintained here by Karl Berry et al. - core web2c, plain tex, omega.
+        The TeX variant dirs (pdftexdir, xetexdir, etc.)
+        updated here by their respective maintainers.
+
+xdv2pdf - Jonathan Kew
+
+xdvik 22.84.16 - checked 18may09
+  ftp://tug.org/tex/
+
+xdvipdfmx - Jonathan Kew

@@ -1,9 +1,9 @@
-/* kdefault.c: Expand extra colons.
+/* kdefault.c: expand extra colons.
    (This is not named default.c because then the OSF/1 make tries to
    make a program `default' from it, since we have a target `default';
    and OSF/1 make doesn't understand .PHONY.)
 
-   Copyright 1993, 1994, 1996, 2008 Karl Berry.
+   Copyright 1993, 1994, 1996, 2008, 2009 Karl Berry.
    Copyright 2002, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -28,15 +28,17 @@
 /* Check for leading colon first, then trailing, then doubled, since
    that is fastest.  Usually it will be leading or trailing.  */
 
-string 
-kpse_expand_default P2C(const_string, path,  const_string, fallback)
+string
+kpathsea_expand_default (kpathsea kpse, const_string path,
+                         const_string fallback)
 {
   unsigned path_length;
   string expansion;
-  
+  (void)kpse; /* currenty not used */
+
   /* The default path better not be null.  */
   assert (fallback);
-  
+
   if (path == NULL)
     expansion = xstrdup (fallback);
 
@@ -79,9 +81,17 @@ kpse_expand_default P2C(const_string, path,  const_string, fallback)
           expansion = xstrdup(path);
         }
     }
-  
+
   return expansion;
 }
+#if defined (KPSE_COMPAT_API)
+string
+kpse_expand_default (const_string path,  const_string fallback)
+{
+    return kpathsea_expand_default (kpse_def, path, fallback);
+}
+#endif
+
 
 #ifdef TEST
 
@@ -89,7 +99,7 @@ void
 test_expand_default (const_string path, const_string def)
 {
   string answer;
-  
+
   printf ("Expansion of `%s':\t", path ? path : "(nil)");
   answer = kpse_expand_default (path, def);
   puts (answer);
@@ -106,8 +116,9 @@ main ()
   test_expand_default (ENV_SEP_STRING, default_path);
   test_expand_default (ENV_SEP_STRING "first", default_path);
   test_expand_default ("last" ENV_SEP_STRING, default_path);
-  test_expand_default ("middle" ENV_SEP_STRING ENV_SEP_STRING "elddim", default_path);
-  
+  test_expand_default ("middle" ENV_SEP_STRING ENV_SEP_STRING "elddim",
+                       default_path);
+
   return 0;
 }
 
@@ -116,6 +127,6 @@ main ()
 
 /*
 Local variables:
-standalone-compile-command: "gcc -g -I. -I.. -DTEST default.c kpathsea.a"
+standalone-compile-command: "gcc -g -I. -I.. -DTEST kdefault.c kpathsea.a"
 End:
 */

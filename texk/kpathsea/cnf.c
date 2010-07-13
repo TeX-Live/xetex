@@ -1,6 +1,6 @@
 /* cnf.c: read config files.
 
-   Copyright 1994, 1995, 1996, 1997, 2008 Karl Berry.
+   Copyright 1994, 1995, 1996, 1997, 2008, 2009 Karl Berry.
    Copyright 1997-2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
    `kpse_init_format' can distinguish between values originating from
    the cnf file and ones from environment variables, which can be useful
    for users trying to figure out what's going on.  */
-static hash_table_type cnf_hash;
+
 #define CNF_HASH_SIZE 751
 #define CNF_NAME "texmf.cnf"
 
@@ -49,7 +49,7 @@ static hash_table_type cnf_hash;
    looking for the cnf value.  */
 
 static void
-do_line P1C(string, line)
+do_line (kpathsea kpse, string line)
 {
   unsigned len;
   string start;
@@ -142,7 +142,7 @@ do_line P1C(string, line)
     free (prog);
     var = lhs;
   }
-  hash_insert (&cnf_hash, var, value);
+  hash_insert (&(kpse->cnf_hash), var, value);
   
   /* We could check that anything remaining is preceded by a comment
      character, but let's not bother.  */
@@ -151,21 +151,21 @@ do_line P1C(string, line)
 /* Read all the configuration files in the path.  */
 
 static void
-read_all_cnf P1H(void)
+read_all_cnf (kpathsea kpse)
 {
   string *cnf_files;
   string *cnf;
-  const_string cnf_path = kpse_init_format (kpse_cnf_format);
+  const_string cnf_path = kpathsea_init_format (kpse, kpse_cnf_format);
 
-  cnf_hash = hash_create (CNF_HASH_SIZE);
+  kpse->cnf_hash = hash_create (CNF_HASH_SIZE);
 
-  cnf_files = kpse_all_path_search (cnf_path, CNF_NAME);
+  cnf_files = kpathsea_all_path_search (kpse, cnf_path, CNF_NAME);
   if (cnf_files && *cnf_files) {
     for (cnf = cnf_files; *cnf; cnf++) {
       string line;
       FILE *cnf_file = xfopen (*cnf, FOPEN_R_MODE);
-      if (kpse_record_input)
-        kpse_record_input (*cnf);
+      if (kpse->record_input)
+        kpse->record_input (*cnf);
 
       while ((line = read_line (cnf_file)) != NULL) {
         unsigned len = strlen (line);
@@ -189,7 +189,7 @@ read_all_cnf P1H(void)
           }
         }
 
-        do_line (line);
+        do_line (kpse, line);
         free (line);
       }
 
@@ -197,48 +197,56 @@ read_all_cnf P1H(void)
       free (*cnf);
     }
     free (cnf_files);
-  } else
-    WARNING1 ("Configuration file texmf.cnf not found! Searched these directories:\n%s\nTrying to proceed..", cnf_path);
+  } else {
+    string warn = getenv ("KPATHSEA_WARNING");
+    if (!(warn && STREQ (warn, "0"))) {
+      WARNING1
+ ("kpathsea: configuration file texmf.cnf not found in these directories: %s", 
+        cnf_path);
+    }
+  }
 }
 
 /* Read the cnf files on the first call.  Return the first value in the
    returned list -- this will be from the last-read cnf file.  */
 
 string
-kpse_cnf_get P1C(const_string, name)
+kpathsea_cnf_get (kpathsea kpse, const_string name)
 {
   string ret, ctry;
   string *ret_list;
-  static boolean doing_cnf_init = false;
 
   /* When we expand the compile-time value for DEFAULT_TEXMFCNF,
      we end up needing the value for TETEXDIR and other variables,
-     so kpse_var_expand ends up calling us again.  No good.  */
-  if (doing_cnf_init)
+     so kpse_var_expand ends up calling us again.  No good.  Except this
+     code is not sufficient, somehow the ls-R path needs to be
+     computed when initializing the cnf path.  Better to ensure that the
+     compile-time path does not contain variable references.  */
+  if (kpse->doing_cnf_init)
     return NULL;
     
-  if (cnf_hash.size == 0) {
-    doing_cnf_init = true;
-    read_all_cnf ();
-    doing_cnf_init = false;
+  if (kpse->cnf_hash.size == 0) {
+    /* Read configuration files and initialize databases.  */
+    kpse->doing_cnf_init = true;
+    read_all_cnf (kpse);
+    kpse->doing_cnf_init = false;
     
-    /* Here's a pleasant kludge: Since `kpse_init_dbs' recursively calls
-       us, we must call it from outside a `kpse_path_element' loop
-       (namely, the one in `read_all_cnf' above): `kpse_path_element' is
-       not reentrant.  */
-    kpse_init_db ();
+    /* Since `kpse_init_db' recursively calls us, we must call it from
+       outside a `kpse_path_element' loop (namely, the one in
+       `read_all_cnf' above): `kpse_path_element' is not reentrant.  */
+    kpathsea_init_db (kpse);
   }
   
-  /* First look up NAME.`kpse_program_name', then NAME.  */
-  assert (kpse_program_name);
-  ctry = concat3 (name, ".", kpse_program_name);
-  ret_list = hash_lookup (cnf_hash, ctry);
+  /* First look up NAME.`kpse->program_name', then NAME.  */
+  assert (kpse->program_name);
+  ctry = concat3 (name, ".", kpse->program_name);
+  ret_list = hash_lookup (kpse->cnf_hash, ctry);
   free (ctry);
   if (ret_list) {
     ret = *ret_list;
     free (ret_list);
   } else {
-    ret_list = hash_lookup (cnf_hash, name);
+    ret_list = hash_lookup (kpse->cnf_hash, name);
     if (ret_list) {
       ret = *ret_list;
       free (ret_list);
@@ -249,3 +257,12 @@ kpse_cnf_get P1C(const_string, name)
   
   return ret;
 }
+
+#if defined(KPSE_COMPAT_API)
+string
+kpse_cnf_get (const_string name)
+{
+    return kpathsea_cnf_get(kpse_def, name);
+}
+#endif
+

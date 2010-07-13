@@ -30,6 +30,8 @@ use or other dealings in this Software without prior written
 authorization from the copyright holders.
 \****************************************************************************/
 
+#include "unicode/platform.h"	// We need this first
+
 #include "XeTeXLayoutInterface.h"
 
 #include "XeTeXOTLayoutEngine.h"
@@ -47,8 +49,8 @@ authorization from the copyright holders.
 #include "XeTeXGrLayout.h"
 #endif
 
-#include "Features.h"
-#include "ScriptAndLanguage.h"
+#include "layout/ICUFeatures.h"
+#include "layout/ScriptAndLanguage.h"
 
 #include "unicode/ubidi.h"
 #include "unicode/utext.h"

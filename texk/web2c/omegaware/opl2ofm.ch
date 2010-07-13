@@ -1,4 +1,4 @@
-% 
+%
 % This file is part of the Omega project, which
 % is based in the web2c distribution of TeX.
 %
@@ -35,7 +35,7 @@ procedure initialize; {this procedure gets things started properly}
 procedure initialize; {this procedure gets things started properly}
   var @<Local variables for initialization@>@/
 begin
-  kpse_set_progname (argv[0]);
+  kpse_set_program_name (argv[0], nil);
   parse_arguments;
 @z
 
@@ -86,6 +86,13 @@ packed file of bytes.  It's no problem in C.
 rewritebin (tfm_file, tfm_name);
 @z
 
+@x [18] Pascal Web's char
+@d first_ord=0 {ordinal number of the smallest element of |char|}
+@y
+@d char == 0..255
+@d first_ord=0 {ordinal number of the smallest element of |char|}
+@z
+
 @x [79] `index' might be a library routine.
 |k|th element of its list.
 @y
@@ -93,10 +100,23 @@ rewritebin (tfm_file, tfm_name);
 @d index == index_var
 @z
 
-@x [103] No output (except errors) unless verbose.
+@x [116] No output (except errors) unless verbose.
 @<Print |c| in hex notation@>;
 @y
 if verbose then @<Print |c| in hex notation@>;
+@z
+
+@x [119] No output (except errors) unless verbose.
+@<Print |c| in hex notation@>;
+@y
+if verbose then @<Print |c| in hex notation@>;
+@z
+@x
+print('-'); print_hex(c+crange);
+@y
+if verbose then begin
+  print('-'); print_hex(c+crange);
+  end;
 @z
 
 % [27, 28] Change strings to C char pointers. The Pascal strings are
@@ -107,10 +127,10 @@ if verbose then @<Print |c| in hex notation@>;
 @!MBL_string,@!RI_string,@!RCE_string:packed array [1..3] of char;
   {handy string constants for |face| codes}
 @y
-@!ASCII_04,@!ASCII_10,@!ASCII_14,HEX: c_string;
+@!ASCII_04,@!ASCII_10,@!ASCII_14,HEX: const_c_string;
   {strings for output in the user's external character set}
 @!ASCII_all: packed array[0..256] of char;
-@!MBL_string,@!RI_string,@!RCE_string: c_string;
+@!MBL_string,@!RI_string,@!RCE_string: const_c_string;
   {handy string constants for |face| codes}
 @z
 
@@ -144,7 +164,7 @@ MBL_string:=' MBL'; RI_string:=' RI '; RCE_string:=' RCE';
 
 % [118] Change the name of the variable `class', since AIX 3.1's <math.h>
 % defines a function by that name.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 @d pending=4 {$f(x,y)$ is being evaluated}
 @y
@@ -155,24 +175,24 @@ MBL_string:=' MBL'; RI_string:=' RI '; RCE_string:=' RCE';
 % [123] web2c can't handle these mutually recursive procedures.
 % But let's do a fake definition of f here, so that it gets into web2c's
 % symbol table...
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 @p function f(@!h,@!x,@!y:indx):indx; forward;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 @y
-@p 
-ifdef('notdef') 
+@p
+ifdef('notdef')
 function f(@!h,@!x,@!y:indx):indx; begin end;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 endif('notdef')
 @z
 
 % [124] ... and then really define it now.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 @p function f;
 @y
-@p function f(@!h,@!x,@!y:indx):indx; 
+@p function f(@!h,@!x,@!y:indx):indx;
 @z
 
 @x [127] Fix up output of bytes.
@@ -217,7 +237,13 @@ begin if fabs(x/design_units)>=16.0 then begin
   while label_table[sort_ptr].rr>intcast(char_remainder[c]) do begin
 @z
 
-@x [147] Be quiet unless verbose. 
+@x [170] Eliminate unused variables.
+var @!krn_ptr:0..max_kerns; {an index into |kern|}
+@!c:integer; {runs through all character codes}
+@y
+@z
+
+@x [147?] Be quiet unless verbose.
 read_input; print('.');@/
 @y
 read_input;
@@ -273,7 +299,7 @@ begin
     write_ln (stderr, 'opl2ofm: Need one or two file arguments.');
     usage ('opl2ofm');
   end;
-  
+
   pl_name := extend_filename (cmdline (optind), 'opl');
 
   {If an explicit output filename isn't given, construct it from |pl_name|.}
@@ -314,7 +340,7 @@ long_options[current_option].flag := address_of (verbose);
 long_options[current_option].val := 1;
 incr (current_option);
 
-@ 
+@
 @<Glob...@> =
 @!verbose: c_int_type;
 
@@ -333,5 +359,5 @@ long_options[current_option].val := 0;
 @ Global filenames.
 
 @<Global...@> =
-@!tfm_name,@!pl_name:c_string;
+@!tfm_name,@!pl_name:const_c_string;
 @z

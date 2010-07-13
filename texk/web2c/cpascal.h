@@ -57,8 +57,8 @@
 
 #define floorunscaled(i) ((i)>>16)
 #define floorscaled(i) ((i)&(-65536))
-#define roundunscaled(i) (((i>>15)+1)>>1)
-#define roundfraction(i) (((i>>11)+1)>>1)
+#define roundunscaled(i) ((((i)>>15)+1)>>1)
+#define roundfraction(i) ((((i)>>11)+1)>>1)
 #ifndef TeX
 /* In TeX, the half routine is always applied to positive integers.
    In MF and MP, it isn't; therefore, we can't portably use the C shift
@@ -159,17 +159,28 @@ typedef unsigned char *pointertobyte;
 #define xmallocarray(type,size) ((type*)xmalloc((size+1)*sizeof(type)))
 /* Same for reallocating an array. */
 #define xreallocarray(ptr,type,size) ((type*)xrealloc(ptr,(size+1)*sizeof(type)))
+/* Allocate and clear an array of a given type. Add 1 to nmemb and size. */
+#define xcallocarray(type,nmemb,size) ((type*)xcalloc(nmemb+1,(size+1)*sizeof(type)))
 
 /* BibTeX needs this to dynamically reallocate arrays.  Too bad we can't
    rely on stringification, or we could avoid the ARRAY_NAME arg.
    Actually allocate one more than requests, so we can index the last
    entry, as Pascal wants to do.  */
-#define BIBXRETALLOC(array_name, array_var, type, size_var, new_size) do { \
+#define BIBXRETALLOCNOSET(array_name, array_var, type, size_var, new_size) \
   fprintf (logfile, "Reallocated %s (elt_size=%d) to %ld items from %ld.\n", \
            array_name, (int) sizeof (type), new_size, size_var); \
-  XRETALLOC (array_var, new_size + 1, type); \
+  XRETALLOC (array_var, new_size + 1, type)
+/* Same as above, but also increase SIZE_VAR when no more arrays
+   with the same size parameter will be resized.  */
+#define BIBXRETALLOC(array_name, array_var, type, size_var, new_size) do { \
+  BIBXRETALLOCNOSET(array_name, array_var, type, size_var, new_size); \
   size_var = new_size; \
 } while (0)
+/* Same as above, but for the pseudo-TYPE ASCII_code[LENGTH+1].  */
+#define BIBXRETALLOCSTRING(array_name, array_var, length, size_var, new_size) \
+  fprintf (logfile, "Reallocated %s (elt_size=%d) to %ld items from %ld.\n", \
+           array_name, (int) (length + 1), new_size, size_var); \
+  XRETALLOC (array_var, new_size * (length + 1), ASCIIcode)
   
 /* Need precisely int for getopt, etc. */
 #define cinttype int
@@ -179,6 +190,11 @@ typedef unsigned char *pointertobyte;
 #define cstring string
 
 #define constcstring const_string
+
+/* For strings of unsigned chars, used as array indices.  */
+#define constw2custring const_w2custring
+typedef unsigned char *w2custring;
+typedef const unsigned char *const_w2custring;
 
 /* Not all C libraries have fabs, so we'll roll our own.  */
 #undef fabs
@@ -225,13 +241,13 @@ typedef unsigned char *pointertobyte;
 #define kpsefindfile	kpse_find_file
 #define kpsefindmf	kpse_find_mf
 #define kpsefindmft	kpse_find_mft
-#define kpsefindofm    kpse_find_ofm
-#define kpsefindovf    kpse_find_ovf
+#define kpsefindofm	kpse_find_ofm
+#define kpsefindovf	kpse_find_ovf
 #define kpsefindtex	kpse_find_tex
 #define kpsefindtfm	kpse_find_tfm
 #define kpsefindvf	kpse_find_vf
+#define kpseinnameok	kpse_in_name_ok
 #define kpseinitprog	kpse_init_prog
-#define kpsesetprogname kpse_set_progname
 #define kpsesetprogramname kpse_set_program_name
 #define kpseresetprogramname kpse_reset_program_name
 #define kpsegfformat	kpse_gf_format
@@ -244,6 +260,7 @@ typedef unsigned char *pointertobyte;
 #define kpseofmformat	kpse_ofm_format
 #define kpseoplformat	kpse_opl_format
 #define kpseotpformat	kpse_otp_format
+#define kpseoutnameok	kpse_out_name_ok
 #define kpseovpformat	kpse_ovp_format
 #define kpseovfformat	kpse_ovf_format
 #define kpseopenfile	kpse_open_file
@@ -254,10 +271,9 @@ typedef unsigned char *pointertobyte;
 #define kpsevarvalue	kpse_var_value
 #define kpsesetprogramenabled	kpse_set_program_enabled
 #define kpsesrccmdline	kpse_src_cmdline
-#define makesuffix	make_suffix
+#define kpsesrccompile	kpse_src_compile
 #define recorderchangefilename	recorder_change_filename
 #define recorderenabled	recorder_enabled
-#define removesuffix	remove_suffix
 
 /* We need a new type for the argument parsing, too.  */
 typedef struct option getoptstruct;
@@ -283,37 +299,8 @@ typedef struct option getoptstruct;
 
 
 /* Declarations for the routines we provide ourselves in lib/.  */
+#include "lib/lib.h"
 
-extern string basenamechangesuffix P3H(const_string,const_string,const_string);
-extern string chartostring P1H(char);
-extern boolean eof P1H(FILE *);
-extern boolean eoln P1H(FILE *);
-extern void readln P1H(FILE *);
-extern void fprintreal P4H(FILE *, double, int, int);
-extern integer inputint P1H(FILE *);
-extern int loadpoolstrings P1H(integer);
-extern void printversionandexit P4H(const_string, const_string, const_string, char*);
-extern void zinput2ints P2H(integer *, integer *);
-extern void zinput3ints P3H(integer *, integer *, integer *);
-extern integer zround P1H(double);
-
-/* main.c */
-extern int argc;
-extern string *argv;
-extern string cmdline P1H(int);
-extern TEXDLL void mainbody P1H(void); /* generated by web2c */
-
-/* openclose.c */
-extern boolean open_input P3H(FILE **, int, const_string fopen_mode);
-extern boolean open_output P2H(FILE **, const_string fopen_mode);
-extern void close_file P1H(FILE *);
-extern void recorder_change_filename P1H(string);
-extern boolean recorder_enabled;
-extern string output_directory;
-extern void recorder_record_input P1H(const_string);
-extern void recorder_record_output P1H(const_string);
-
-/* version.c */
-extern string versionstring;
+extern int loadpoolstrings (integer);
 
 #endif /* not CPASCAL_H */

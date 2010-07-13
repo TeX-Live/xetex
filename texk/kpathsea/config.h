@@ -1,7 +1,7 @@
 /* config.h: master configuration file, included first by all compilable
    source files (not headers).
 
-   Copyright 1993, 1995, 1996, 1997, 2008 Karl Berry.
+   Copyright 1993, 1995, 1996, 1997, 2008, 2010 Karl Berry.
    Copyright 2000, 2003, 2004, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
 /* System defines are for non-Unix systems only.  (Testing for all Unix
    variations should be done in configure.)  Presently the defines used
    are: AMIGA DOS OS2 WIN32.  I do not use any of these systems myself;
-   if you do, I'd be grateful for any changes. --olaf@infovore.xs4all.nl */
+   if you do, I'd be grateful for any changes.  */
 
 #if defined(DJGPP)    || defined(__DJGPP__)     || \
     defined(CYGWIN)   || defined(__CYGWIN__)    || \
@@ -33,8 +33,7 @@
 #endif
 
 /* If we have either DOS or OS2, we are DOSISH.  Cygwin pretends to be
- * unix, mostly, so don't include it here.
- */
+   Unix, mostly, so don't include it here.  */
 #if defined(OS2)     || \
     defined(MSDOS)   || defined(__MSDOS__) || defined(DOS)    || \
     defined(WIN32)   || defined(__WIN32__) || defined(_WIN32) || \
@@ -55,9 +54,9 @@
 #define DEV_NULL "/dev/null"
 #endif
 
-#ifdef WIN32
+#if defined (WIN32) && !defined (__STDC__)
 #define __STDC__ 1
-#endif /* not WIN32 */
+#endif
 
 /* System dependencies that are figured out by `configure'.  */
 #include <kpathsea/c-auto.h>
@@ -73,7 +72,21 @@
 #define KPATHSEA 34
 #endif
 
+#ifdef __MINGW32__
+/* In mingw32, the eof() function is part of the !_NO_OLDNAMES section
+   of <io.h>, that is read in automatically via <unistd.h>. We cannot
+   allow that because web2c/lib/eofeoln.c defines a private,
+   incompatible function named eof().
+   But many of the other things defined via !_NO_OLDNAMES are needed,
+   so #define _NO_OLDNAMES cannot be used. So, temporarily define eof
+   as a macro.
+*/
+#define eof saved_eof
 #include <kpathsea/c-std.h>    /* <stdio.h>, <math.h>, etc.  */
+#undef eof
+#else
+#include <kpathsea/c-std.h>    /* <stdio.h>, <math.h>, etc.  */
+#endif
 
 #include <kpathsea/c-proto.h>  /* Macros to discard or keep prototypes.  */
 
@@ -81,8 +94,12 @@
   This must be included after "c-proto.h"
   but before "lib.h". FP.
 */
-#ifdef WIN32
-#include <win32lib.h>
+#if defined (WIN32) || defined (_WIN32)
+#ifdef __MINGW32__
+#include <kpathsea/mingw32.h>
+#else
+#include <kpathsea/win32lib.h>
+#endif
 #endif
 
 #include <kpathsea/debug.h>    /* Runtime tracing.  */

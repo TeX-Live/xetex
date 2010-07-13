@@ -35,9 +35,9 @@ authorization from the copyright holders.
  */
 
 #ifdef __POWERPC__
-#define MAC_OS_X_VERSION_MIN_REQUIRED	MAC_OS_X_VERSION_10_2
+#define MAC_OS_X_VERSION_MIN_REQUIRED	1030
 #else
-#define MAC_OS_X_VERSION_MIN_REQUIRED	MAC_OS_X_VERSION_10_4
+#define MAC_OS_X_VERSION_MIN_REQUIRED	1040
 #endif
 
 #define EXTERN extern
@@ -47,7 +47,7 @@ authorization from the copyright holders.
 #include <Carbon/Carbon.h>
 #include <QuickTime/QuickTime.h>
 
-#include "TECkit_Engine.h"
+#include <teckit/TECkit_Engine.h>
 #include "XeTeX_ext.h"
 #include "XeTeXLayoutInterface.h"
 
@@ -471,19 +471,51 @@ int MapGlyphToIndex_AAT(ATSUStyle style, const char* glyphName)
 	ByteCount	length;
 	OSStatus status = ATSFontGetTable(fontRef, kPost, 0, 0, 0, &length);
 	if (status != noErr)
-		return 0;
+		goto ats_failed;
 
 	void*	table = xmalloc(length);
 	status = ATSFontGetTable(fontRef, kPost, 0, length, table, &length);
 	if (status != noErr) {
 		free(table);
-		return 0;
+		goto ats_failed;
 	}
 	
 	int	rval = findGlyphInPostTable(table, length, glyphName);
 	free(table);
 
+    if (rval)
+		return rval;
+
+ats_failed:
+	return GetGlyphIDFromCGFont(fontRef, glyphName);
+}
+
+int GetGlyphIDFromCGFont(ATSFontRef atsFontRef, const char* glyphName)
+{
+#if defined(MAC_OS_X_VERSION_10_5) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+	if (&CGFontGetGlyphWithGlyphName == NULL)
+		return 0;
+
+	int rval = 0;
+	CFStringRef psname;
+	OSStatus status = ATSFontGetPostScriptName(atsFontRef, 0, &psname);
+	if ((status == noErr) && psname) {
+		CGFontRef cgfont = CGFontCreateWithFontName(psname);
+		CFRelease(psname);
+		if (cgfont) {
+			CFStringRef glyphname = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
+																	glyphName,
+																	kCFStringEncodingUTF8,
+																	kCFAllocatorNull);
+			rval = CGFontGetGlyphWithGlyphName(cgfont, glyphname);
+			CFRelease(glyphname);
+			CGFontRelease(cgfont);
+		}
+	}
 	return rval;
+#else
+    return 0;
+#endif
 }
 
 char*
@@ -500,15 +532,16 @@ GetGlyphName_AAT(ATSUStyle style, UInt16 gid, int* len)
 	ByteCount	length;
 	OSStatus status = ATSFontGetTable(fontRef, kPost, 0, 0, 0, &length);
 	if (status != noErr)
-		return 0;
+		goto ats_failed;
 
 	void*	table = xmalloc(length);
 	status = ATSFontGetTable(fontRef, kPost, 0, length, table, &length);
 	if (status != noErr) {
 		free(table);
-		return 0;
+		goto ats_failed;
 	}
 	
+	buffer[0] = 0;
 	namePtr = getGlyphNamePtr(table, length, gid, len);
 	if (*len > 255)
 		*len = 255;
@@ -518,6 +551,42 @@ GetGlyphName_AAT(ATSUStyle style, UInt16 gid, int* len)
 	}
 	
 	free(table);
+
+	if (buffer[0])
+		return &buffer[0];
+
+ats_failed:
+	return GetGlyphNameFromCGFont(fontRef, gid, len);
+}
+
+char*
+GetGlyphNameFromCGFont(ATSFontRef atsFontRef, UInt16 gid, int* len)
+{
+	*len = 0;
+	static char buffer[256];
+	buffer[0] = 0;
+
+#if defined(MAC_OS_X_VERSION_10_5) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
+	if (&CGFontCopyGlyphNameForGlyph == NULL)
+		return &buffer[0];
+
+	CFStringRef psname;
+	OSStatus status = ATSFontGetPostScriptName(atsFontRef, 0, &psname);
+	if ((status == noErr) && psname) {
+		CGFontRef cgfont = CGFontCreateWithFontName(psname);
+		CFRelease(psname);
+		if (cgfont && gid < CGFontGetNumberOfGlyphs(cgfont)) {
+			CFStringRef glyphname = CGFontCopyGlyphNameForGlyph(cgfont, gid);
+			if (glyphname) {
+				if (CFStringGetCString(glyphname, buffer, 256, kCFStringEncodingUTF8)) {
+					*len = strlen(buffer);
+				}
+				CFRelease(glyphname);
+			}
+			CGFontRelease(cgfont);
+		}
+	}
+#endif
 
 	return &buffer[0];
 }

@@ -1,18 +1,14 @@
 /* eofeoln.c: implement Pascal's ideas for end-of-file and end-of-line
    testing.  Public domain. */
 
-#ifdef __MINGW32__
-#define _UWIN 1
-#endif
-
 #include "config.h"
-
+#include "lib.h"
 
 /* Return true if we're at the end of FILE, else false.  This implements
    Pascal's `eof' builtin.  */
 
 boolean
-eof P1C(FILE *, file)
+eof (FILE *file)
 {
   register int c;
 
@@ -40,7 +36,7 @@ eof P1C(FILE *, file)
 /* Accept both CR and LF as end-of-line. */
 
 boolean
-eoln P1C(FILE*, file)
+eoln (FILE *file)
 {
   register int c;
 
@@ -59,7 +55,7 @@ eoln P1C(FILE*, file)
 /* Handle CRLF as a single end-of-line. */
 
 void
-readln P1C(FILE*, f)
+readln (FILE *f)
 {
     int c;
     while ((c = getc (f)) != '\n' && c != '\r' && c != EOF)

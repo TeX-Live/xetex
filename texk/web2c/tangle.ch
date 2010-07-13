@@ -44,6 +44,16 @@
 \def\title{TANGLE changes for C}
 @z
 
+@x [2] Eliminate the |end_of_TANGLE| label.
+@d end_of_TANGLE = 9999 {go here to wrap it up}
+
+@y
+@z
+@x
+label end_of_TANGLE; {go here to finish}
+@y
+@z
+
 @x [2] Define and call parse_arguments.
 procedure initialize;
   var @<Local variables for initialization@>@/
@@ -53,7 +63,7 @@ procedure initialize;
 procedure initialize;
   var @<Local variables for initialization@>@/
   begin
-    kpse_set_progname (argv[0]);
+    kpse_set_program_name (argv[0], nil);
     parse_arguments;
     @<Set initial values@>@/
 @z
@@ -94,10 +104,10 @@ procedure initialize;
 @!def_unambig_length=32; {identifiers must be unique if chopped to this length}
 @z
 
-% [??] The text_char type is used as an array index into xord.  The
-% default type `char' produces signed integers, which are bad array
+% [12] The text_char type is used as an array index into xord.  The
+% default type `char' may produce signed integers, which are bad array
 % indices in C.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 @d text_char == char {the data type of characters in text files}
 @y
@@ -175,7 +185,7 @@ rewrite (Pascal_file, pascal_name);
       begin while not eoln(f) do vgetc(f);
 @z
 
-@x [??] Fix `jump_out'.
+@x [34] Fix `jump_out'.
 @d fatal_error(#)==begin new_line; print(#); error; mark_fatal; jump_out;
   end
 
@@ -185,7 +195,7 @@ begin goto end_of_TANGLE;
 end;
 @y
 @d jump_out==uexit(1)
-@d fatal_error(#)==begin new_line; write(stderr, #); 
+@d fatal_error(#)==begin new_line; write(stderr, #);
      error; mark_fatal; uexit(1);
   end
 @z
@@ -617,6 +627,11 @@ print (banner); {print a ``banner line''}
 print_ln (version_string);
 @z
 
+@x Eliminate the |end_of_TANGLE| label.
+end_of_TANGLE:
+@y
+@z
+
 @x
 @<Print the job |history|@>;
 @y
@@ -657,7 +672,7 @@ begin
                                            address_of (option_index));
     if getopt_return_val = -1 then begin
       {End of arguments; we exit the loop below.} ;
-    
+
     end else if getopt_return_val = "?" then begin
       usage ('tangle');
 
@@ -701,13 +716,13 @@ begin
     write_ln (stderr, 'tangle: Need one or two file arguments.');
     usage ('tangle');
   end;
-  
+
   {Supply |".web"| and |".ch"| extensions if necessary.}
   web_name := extend_filename (cmdline (optind), 'web');
   if optind + 2 = argc then begin
     chg_name := extend_filename (cmdline (optind + 1), 'ch');
   end;
-  
+
   {Change |".web"| to |".p"| and use the current directory.}
   pascal_name := basename_change_suffix (web_name, '.web', '.p');
 end;
@@ -814,7 +829,7 @@ long_options[current_option].val := 0;
 @ Global filenames.
 
 @<Globals...@>=
-@!web_name,@!chg_name,@!pascal_name,@!pool_name:c_string;
+@!web_name,@!chg_name,@!pascal_name,@!pool_name:const_c_string;
 @!force_uppercase,@!force_lowercase,@!allow_underlines,@!strict_mode:boolean;
 @!unambig_length:0..max_id_length;
 @z

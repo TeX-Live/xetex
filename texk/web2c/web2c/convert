@@ -41,62 +41,50 @@ web2c_options=-c$basefile
 precmd=
 midcmd=
 fixwrites_options=
-splitup_options="-i -l 11500"
-# was 10000, but that caused pdfetex4.c to appear. With 11500, the number of
-# files for pdf{e}tex is unchanged.
+# This used to have various values to control the number of *tex[0-9].c files.
+# We now avoid to split the C code for MF and all TeX-like engines.
+splitup_options="-i -l 65000"
 postcmd=
 output="> $cfile"
 output_files="$cfile $basefile.h"
 
 case $basefile in
-  bibtex)
+  pbibtex|pdvitype|ppltotf|ptftopl)
+    more_defines="$srcdir/ptexdir/ptex.defines"
+    hfile=ptexdir/kanji.h
+    ;;
+esac
+
+case $basefile in
+  bibtex|pbibtex)
     midcmd="| sed -f $srcdir/web2c/cvtbib.sed"
     ;;
 
-  mf)
-    more_defines="$srcdir/web2c/texmf.defines $srcdir/web2c/mfmp.defines"
-    precmd="| sed -f $srcdir/web2c/cvtmf1.sed"
-    web2c_options="-m -c${basefile}coerce"
+  mf|tex|aleph|etex|pdftex|ptex|xetex)
+    case $basefile in
+      mf)
+        more_defines="$srcdir/web2c/texmf.defines $srcdir/web2c/mfmp.defines"
+        precmd="| sed -f $srcdir/web2c/cvtmf1.sed"
+        web2c_options="-m -c${basefile}coerce"
+        midcmd="| sed -f $srcdir/web2c/cvtmf2.sed"
+        ;;
+
+      *)
+        more_defines="$srcdir/web2c/texmf.defines $srcdir/synctexdir/synctex.defines"
+        prog_defines="$srcdir/${basefile}dir/$basefile.defines"
+        if test -f $prog_defines; then
+          more_defines="$more_defines $prog_defines"
+        fi
+        web2c_options="-t -c${basefile}coerce"
+        fixwrites_options=-t
+        ;;
+    esac
     hfile=texmfmp.h
-    midcmd="| sed -f $srcdir/web2c/cvtmf2.sed"
     postcmd="| ./web2c/splitup $splitup_options $basefile"
-    cfile=${basefile}1.c # last output file, or thereabouts
-    output=
-    output_files="$basefile[0-9].c ${basefile}ini.c ${basefile}d.h \
-${basefile}coerce.h"
-    ;;
-
-  tex|etex|pdftex|aleph|xetex)
-    more_defines="$srcdir/web2c/texmf.defines $srcdir/synctexdir/synctex.defines"
-    prog_defines="$srcdir/${basefile}dir/$basefile.defines"
-    if test -f $prog_defines; then
-      more_defines="$more_defines $prog_defines"
-    fi
-    web2c_options="-t -c${basefile}coerce"
-    hfile=texmfmp.h
-    fixwrites_options=-t
-    postcmd="| ./web2c/splitup $splitup_options ${basefile}"
-    cfile=${basefile}2.c # last output file, or thereabouts
-    output=
-    output_files="$basefile[0-9].c ${basefile}ini.c ${basefile}d.h \
-                  ${basefile}coerce.h"
-    ;;
-
-  luatex)
-    more_defines="$srcdir/web2c/texmf.defines"
-    prog_defines="$srcdir/${basefile}dir/$basefile.defines"
-    if test -f $prog_defines; then
-      more_defines="$more_defines $prog_defines"
-    fi
-    web2c_options="-t -c${basefile}coerce"
-    hfile=texmfmp.h
-    fixwrites_options=-t
-    splitup_options="-i -l 65000"
-    postcmd="| ./web2c/splitup $splitup_options ${basefile}"
     cfile=${basefile}0.c # last output file, or thereabouts
     output=
     output_files="$basefile[0-9].c ${basefile}ini.c ${basefile}d.h \
-                 ${basefile}coerce.h"
+                  ${basefile}coerce.h"
     ;;
 esac
 
@@ -125,11 +113,11 @@ if test ! -s $cfile || grep @error@ $output_files >/dev/null; then
 fi
 
 case $basefile in
-  bibtex)
-    sed -e 's/(buftype)//g' -e 's/(pdstype)//g' <bibtex.h >xbibtex.h
-    mv xbibtex.h bibtex.h
+  bibtex|pbibtex)
+    sed -e 's/(buftype)//g' -e 's/(pdstype)//g' <$basefile.h >x$basefile.h
+    mv x$basefile.h $basefile.h
     ;;
-  tex|etex|luatex|pdftex|aleph|mf|xetex)
+  mf|tex|aleph|etex|pdftex|ptex|xetex)
     sleep 2 # so timestamps are definitely later, to avoid make weirdness
     cat $srcdir/web2c/coerce.h >>${basefile}coerce.h
     touch ${basefile}d.h

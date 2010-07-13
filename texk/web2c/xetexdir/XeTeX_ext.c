@@ -34,6 +34,10 @@ authorization from the copyright holders.
  * additional plain C extensions for XeTeX - mostly platform-neutral
  */
 
+/* We must include this first to avoid conflicting eof() declarations
+   from mingw32's <io.h> and web2c/lib/lib.h.  */
+#include <kpathsea/config.h>
+
 #ifdef XETEX_OTHER
 #ifdef POPPLER_VERSION
 #define xpdfVersion POPPLER_VERSION
@@ -55,6 +59,7 @@ authorization from the copyright holders.
 
 #ifdef XETEX_MAC
 #undef input /* this is defined in texmfmp.h, but we don't need it and it confuses the carbon headers */
+#undef output
 #include <Carbon/Carbon.h>
 #endif
 
@@ -63,7 +68,7 @@ authorization from the copyright holders.
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "TECkit_Engine.h"
+#include <teckit/TECkit_Engine.h>
 
 #include <kpathsea/c-ctype.h>
 #include <kpathsea/line.h>
@@ -94,6 +99,7 @@ authorization from the copyright holders.
 #include "unicode/ubrk.h"
 #include "unicode/ucnv.h"
 
+#include <assert.h>
 /* 
 #include "sfnt.h"
 	doesn't work in plain C files :(
@@ -178,8 +184,8 @@ const UInt32 byteMark				= 0x00000080UL;
 
 
 /* if the user specifies a paper size or output driver program */
-const_string papersize;
-const_string outputdriver = "xdvipdfmx -q -E"; /* default to portable xdvipdfmx driver */
+const char *papersize;
+const char *outputdriver = "xdvipdfmx -q -E"; /* default to portable xdvipdfmx driver */
 
 
 void initversionstring(char **versions)
@@ -242,7 +248,6 @@ void initversionstring(char **versions)
 }
 
 
-extern char*	gettexstring(integer strNumber);
 void
 setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 {
@@ -358,8 +363,9 @@ input_line(UFILE* f)
 static char* byteBuffer = NULL;
 static UInt32 *utf32Buf = NULL;
 	int	i, tmpLen;
-
 	int norm = getinputnormalizationstate();
+
+	last = first;
 
 	if (f->encodingMode == ICUMAPPING) {
 		UInt32		bytesRead = 0;
@@ -452,7 +458,6 @@ static UInt32 *utf32Buf = NULL;
 				break;
 				
 			default: // none
-				last = first;
 				if (last < bufsize && i != EOF && i != '\n' && i != '\r')
 					buffer[last++] = i;
 				if (i != EOF && i != '\n' && i != '\r')
@@ -3179,3 +3184,38 @@ makeutf16name()
 	namelength16 = t - nameoffile16;
 }
 
+
+int getcpcode(int fontNum, unsigned int code, int side)
+{
+    return get_cp_code(fontNum, code, side);
+}
+
+void setcpcode(int fontNum, unsigned int code, int side, int value)
+{
+    set_cp_code(fontNum, code, side, value);
+}
+
+integer get_native_word_cp(void* pNode, int side)
+{
+	memoryword*	node = (memoryword*)pNode;
+	FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
+	UInt16*		glyphIDs = (UInt16*)(locations + native_glyph_count(node));
+    UInt16      glyphCount = native_glyph_count(node);
+    integer     f = native_font(node);
+    UInt16      actual_glyph;
+
+    if (glyphCount == 0)
+        return 0;
+
+    switch (side) {
+    case LEFT_SIDE:
+        actual_glyph = *glyphIDs;
+        break;
+    case RIGHT_SIDE:
+        actual_glyph = glyphIDs[glyphCount - 1];
+        break;
+    default:
+        assert(0); // we should not reach this point
+    }
+    return get_cp_code(f, actual_glyph, side);
+}

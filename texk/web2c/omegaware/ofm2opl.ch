@@ -1,4 +1,4 @@
-% 
+%
 % This file is part of the Omega project, which
 % is based in the web2c distribution of TeX.
 %
@@ -6,7 +6,7 @@
 % applies only to the changes to the original tftopl.ch.
 %
 % tftopl.ch for C compilation with web2c.
-% 
+%
 % 04/04/83 (PC)  Original version, made to work with version 1.0 of TFtoPL,
 %                released with version 0.96 of TeX in February, 1983.
 % 04/16/83 (PC)  Brought up to version 1.0 released with version 0.97 of TeX
@@ -49,7 +49,7 @@ procedure initialize; {this procedure gets things started properly}
 @<Define |parse_arguments|@>
 procedure initialize; {this procedure gets things started properly}
   begin
-    kpse_set_progname (argv[0]);
+    kpse_set_program_name (argv[0], nil);
     kpse_init_prog ('OFM2OPL', 0, nil, nil);
     {We |xrealloc| when we know how big the file is.  The 1000 comes
      from the negative lower bound.}
@@ -165,10 +165,10 @@ if 4*lf-1>tfm_size then abort('The file is bigger than I can handle!');
 @!MBL_string,@!RI_string,@!RCE_string:packed array [1..3] of char;
   {handy string constants for |face| codes}
 @y
-@!ASCII_04,@!ASCII_10,@!ASCII_14,HEX: c_string;
+@!ASCII_04,@!ASCII_10,@!ASCII_14,HEX: const_c_string;
   {strings for output in the user's external character set}
 @!ASCII_all: packed array[0..256] of char;
-@!MBL_string,@!RI_string,@!RCE_string: c_string;
+@!MBL_string,@!RI_string,@!RCE_string: const_c_string;
   {handy string constants for |face| codes}
 @z
 
@@ -190,7 +190,7 @@ MBL_string:=' MBL'; RI_string:=' RI '; RCE_string:=' RCE';
 @z
 
 % [38] How we output the character code depends on |charcode_format|.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 begin if font_type>vanilla then
   out_hex_char(c)
@@ -212,7 +212,7 @@ else out_hex_char(c);
 @z
 
 % [39] Don't output the face code as an integer.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
   out(MBL_string[1+(b mod 3)]);
   out(RI_string[1+s]);
@@ -230,7 +230,7 @@ f:=((tfm[k+1] mod 16)*intcast(@'400)+tfm[k+2])*@'400+tfm[k+3];
 @z
 
 % [78] No progress reports unless verbose.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
     incr(chars_on_line);
     end;
@@ -259,17 +259,17 @@ f:=((tfm[k+1] mod 16)*intcast(@'400)+tfm[k+2])*@'400+tfm[k+3];
 
 % [89] Change the name of the variable `class', since AIX 3.1's <math.h>
 % defines a function by that name.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 @d pending=4 {$f(x,y)$ is being evaluated}
 @y
 @d pending=4 {$f(x,y)$ is being evaluated}
 
-@d class == class_var 
+@d class == class_var
 @z
 
 % [90] Change name of the function `f'.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
      r:=f(r,(hash[r]-1)div xmax_char,(hash[r]-1)mod xmax_char);
 @y
@@ -284,8 +284,8 @@ f:=((tfm[k+1] mod 16)*intcast(@'400)+tfm[k+2])*@'400+tfm[k+3];
 @p function f(@!h,@!x,@!y:index):index; forward;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 @y
-@p 
-ifdef('notdef') 
+@p
+ifdef('notdef')
 function f_fn(@!h,@!x,@!y:index):index; begin end;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 endif('notdef')
@@ -297,11 +297,11 @@ else eval:=f_fn(h,x,y);
 @z
 
 % [95] The real definition of f.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 @p function f;
 @y
-@p function f_fn(@!h,@!x,@!y:index):index; 
+@p function f_fn(@!h,@!x,@!y:index):index;
 @z
 @x
 f:=lig_z[h];
@@ -310,7 +310,7 @@ f_fn:=lig_z[h];
 @z
 
 % [99] No final newline unless verbose.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 @x
 do_characters; print_ln('.');@/
 @y
@@ -457,5 +457,5 @@ long_options[current_option].val := 0;
 @ Global filenames.
 
 @<Global...@> =
-@!tfm_name, @!pl_name:c_string;
+@!tfm_name, @!pl_name:const_c_string;
 @z

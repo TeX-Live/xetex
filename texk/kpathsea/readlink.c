@@ -1,6 +1,6 @@
 /* readlink -- obtain contents of symlink.
 
-   Copyright 2008 Karl Berry.
+   Copyright 2008, 2009 Karl Berry.
    Copyright 1998, 1999, 2001, 2005 Olaf Weber.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
    You should have received a copy of the GNU Lesser General Public License
    along with this library; if not, see <http://www.gnu.org/licenses/>.  */
 
-#include <stdio.h>
 #include <kpathsea/config.h>
 #include <kpathsea/c-pathmx.h>
 #include <kpathsea/c-unistd.h>
@@ -33,7 +32,7 @@
  */
 
 int
-main P2C(int, argc, char **, argv)
+main (int argc, char **argv)
 {
 #ifdef S_ISLNK
     int status;
@@ -47,11 +46,11 @@ main P2C(int, argc, char **, argv)
 \n\
 --help      display this help and exit\n\
 --version   output version information and exit\n\n", argv[0]);
-        fputs ("Email bug reports to tex-k@mail.tug.org.\n", stdout);
+        fputs ("Email bug reports to tex-k@tug.org.\n", stdout);
         exit(0);
     } else if (argc > 1 && strcmp (argv[1], "--version") == 0) {
         printf ("%s (%s)\n\
-Copyright (C) 1998 Olaf Weber.\n\
+Copyright (C) 2009 Olaf Weber & Karl Berry.\n\
 There is NO warranty.  You may redistribute this software\n\
 under the terms of the GNU General Public License\n\
 For more information about these matters, see the file named GPL.\n\

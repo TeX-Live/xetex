@@ -1,3 +1,5 @@
+/* aconf.h.in.  Generated from configure.ac by autoheader.  */
+
 /*
  * aconf.h
  *
@@ -10,81 +12,107 @@
 #include <aconf2.h>
 
 /*
- * Use A4 paper size instead of Letter for PostScript output.
+ * Enable C++ exceptions.
  */
+#undef USE_EXCEPTIONS
+
+/* Use A4 paper size instead of Letter for PostScript output */
 #undef A4_PAPER
 
-/*
- * Do not allow text selection.
- */
-#undef NO_TEXT_SELECT
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_DIRENT_H
 
-/*
- * Include support for OPI comments.
- */
-#undef OPI_SUPPORT
+/* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
+#undef HAVE_FSEEKO
 
-/*
- * Enable multithreading support.
- */
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mkstemp' function. */
+#undef HAVE_MKSTEMP
+
+/* Define to 1 if you have the `mkstemps' function. */
+#undef HAVE_MKSTEMPS
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+#undef HAVE_NDIR_H
+
+/* Define to 1 if you have the `popen' function. */
+#undef HAVE_POPEN
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_DIR_H
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_NDIR_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Enable multithreading support */
 #undef MULTITHREADED
 
-/*
- * Enable word list support.
- */
-#undef TEXTOUT_WORD_LIST
+/* Include support for OPI comments */
+#undef OPI_SUPPORT
 
-/*
- * Directory with the Xpdf app-defaults file.
- */
-#undef APPDEFDIR
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
 
-/*
- * Full path for the system-wide xpdfrc file.
- */
-#undef SYSTEM_XPDFRC
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
 
-/*
- * Various include files and functions.
- */
-#undef HAVE_DIRENT_H
-#undef HAVE_SYS_NDIR_H
-#undef HAVE_SYS_DIR_H
-#undef HAVE_NDIR_H
-#undef HAVE_SYS_SELECT_H
-#undef HAVE_SYS_BSDTYPES_H
-#undef HAVE_STRINGS_H
-#undef HAVE_BSTRING_H
-#undef HAVE_POPEN
-#undef HAVE_MKSTEMP
-#undef HAVE_MKSTEMPS
-#undef SELECT_TAKES_INT
-#undef HAVE_FSEEKO
-#undef HAVE_FSEEK64
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
-#undef _LARGE_FILES
+
+/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
 #undef _LARGEFILE_SOURCE
-#undef HAVE_XTAPPSETEXITFLAG
 
-/*
- * This is defined if using libXpm.
- */
-#undef HAVE_X11_XPM_H
-
-/*
- * This is defined if using t1lib.
- */
-#undef HAVE_T1LIB_H
-
-/*
- * One of these is defined if using FreeType 2.
- */
-#undef HAVE_FREETYPE_H
-#undef HAVE_FREETYPE_FREETYPE_H
-
-/*
- * This is defined if using libpaper.
- */
-#undef HAVE_PAPER_H
+/* Define for large files, on AIX-style hosts. */
+#undef _LARGE_FILES
 
 #endif

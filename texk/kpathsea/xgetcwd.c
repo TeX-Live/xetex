@@ -1,8 +1,7 @@
-/* xgetcwd.c: a from-scratch version of getwd.  Ideas from the tcsh 5.20
-   source, apparently uncopyrighted.
+/* xgetcwd.c: a from-scratch version of getwd.  Ideas from tcsh 5.20 source.
 
-   Copyright 2005         Olaf Weber.
-   Copyright 1992, 94, 96 Karl Berry.
+   Copyright 1992, 1994, 1996, 2008 Karl Berry.
+   Copyright 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -14,10 +13,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+   You should have received a copy of the GNU Lesser General Public License
+   along with this library; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <kpathsea/config.h>
 
@@ -30,10 +27,10 @@
 
 
 static void
-xchdir P1C(string, dirname)
+xchdir (string dirname)
 {
     if (chdir(dirname) != 0)
-        FATAL_PERROR(dirname);
+        _PERROR(dirname);
 }
 
 #endif /* not HAVE_GETCWD && not HAVE_GETWD */
@@ -42,7 +39,7 @@ xchdir P1C(string, dirname)
 /* Return the pathname of the current directory, or give a fatal error.  */
 
 string
-xgetcwd P1H(void)
+xgetcwd (void)
 {
     /* If the system provides getcwd, use it.  If not, use getwd if
        available.  But provide a way not to use getcwd: on some systems
@@ -108,7 +105,7 @@ xgetcwd P1H(void)
             }
         }
         if (!found)
-            FATAL2("No inode %d/device %d in parent directory",
+            LIB_FATAL2("No inode %d/device %d in parent directory",
                    cwd_stat.st_ino, cwd_stat.st_dev);
       
         xclosedir(parent_dir);

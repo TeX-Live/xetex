@@ -1,8 +1,0 @@
-The libs/graphite-engine code is a copy of the code in trunk/engine rev. 803
-from the Graphite repository at http://scripts.sil.org/svn/graphite/graphite.
-
-autoreconf --install has been run to create the configure/Make files.
-
-The following files have been added:
-  graphite-engine.ac
-  withenable.ac

@@ -1,9 +1,0 @@
-xetex for Debian
-----------------
-
-Currently not compliant with Debian policy:
-  installs files into /usr/local/share/texmf
-  lacks man page, needs other docs, etc
-  probably lots of other details too
-
- -- Jonathan Kew <jonathan_kew@sil.org>, Fri, 21 Apr 2006 11:33:10 +0100

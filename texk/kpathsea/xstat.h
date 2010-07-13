@@ -1,6 +1,6 @@
 /* xstat.h: stat with error checking.
 
-   Copyright 1992, 93, 94 Karl Berry.
+   Copyright 1992, 1993, 1994, 2008, 2010 Karl Berry.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -12,11 +12,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-*/
+   You should have received a copy of the GNU Lesser General Public License
+   along with this library; if not, see <http://www.gnu.org/licenses/>.  */
 
 #ifndef KPATHSEA_XSTAT_H
 #define KPATHSEA_XSTAT_H
@@ -31,14 +28,18 @@
 #define SAME_FILE_P(s1, s2) \
   ((s1).st_ino == (s2).st_ino && (s1).st_dev == (s2).st_dev)
 
+#ifdef MAKE_KPSE_DLL /* libkpathsea internal only */
+
 /* Does stat(2) on PATH, and aborts if the stat fails.  */
-extern struct stat xstat P1H(const_string path);
+extern struct stat xstat (const_string path);
 
 /* Ditto, for lstat(2) (except that lstat might not exist).  */
 #ifdef S_ISLNK
-extern struct stat xlstat P1H(const_string path);
+extern struct stat xlstat (const_string path);
 #else
 #define xlstat xstat
 #endif
+
+#endif /* MAKE_KPSE_DLL */
 
 #endif /* not KPATHSEA_XSTAT_H */

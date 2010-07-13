@@ -40,9 +40,9 @@ authorization from the copyright holders.
  */
 
 
-#include "LETypes.h"
-#include "LEFontInstance.h"
-#include "LESwaps.h"
+#include "layout/LETypes.h"
+#include "layout/LEFontInstance.h"
+#include "layout/LESwaps.h"
 
 #include "XeTeXFontInst.h"
 #include "XeTeXLayoutInterface.h"
@@ -311,9 +311,10 @@ XeTeXFontInst::getGlyphName(LEGlyphID gid, int& nameLen)
 {
     le_uint32	len;
     const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
-    if (p != NULL) {
+    if (p != NULL)
 		return getGlyphNamePtr(p, len, gid, &nameLen);
-	}
+	else
+		return NULL;
 }
 
 LEUnicode32

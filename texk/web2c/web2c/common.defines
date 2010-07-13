@@ -51,6 +51,7 @@
 @define const kpsevfformat;
 @define const kpsewebformat;
 @define const kpsesrccmdline;
+@define const kpsesrccompile;
 @define const maxint;
 @define const nil;
 @define const output;
@@ -68,7 +69,6 @@
 @define const GFTODVIHELP;
 @define const GFTOPKHELP;
 @define const GFTYPEHELP;
-@define const LUATANGLEHELP;
 @define const LUATEXHELP;
 @define const MFTHELP;
 @define const ODVICOPYHELP;
@@ -79,11 +79,15 @@
 @define const OVP2OVFHELP;
 @define const OVF2OVPHELP;
 @define const PATGENHELP;
+@define const PBIBTEXHELP;
+@define const PDVITYPEHELP;
 @define const PDFTEXHELP;
 @define const PKTOGFHELP;
 @define const PKTYPEHELP;
 @define const PLTOTFHELP;
 @define const POOLTYPEHELP;
+@define const PPLTOTFHELP;
+@define const PTFTOPLHELP;
 @define const TANGLEHELP;
 @define const TFTOPLHELP;
 @define const VFTOVPHELP;
@@ -123,16 +127,16 @@
 @define function kpsefindtex ();
 @define function kpsefindtfm ();
 @define function kpsefindvf ();
+@define function kpseinnameok ();
 @define function kpseopenfile ();
+@define function kpseoutnameok ();
 @define function kpsevarvalue ();
 @define function inputint ();
 @define function intcast ();
 @define function isprint ();
 @define function makebinaryfile ();
-@define function makesuffix ();
 @define function odd ();
 @define function ord ();
-@define function removesuffix ();
 @define function round ();
 @define function strcmp ();
 @define function stringcast ();
@@ -140,6 +144,8 @@
 @define function strlen ();
 @define function strtol ();
 @define function trunc ();
+@define function xcalloc ();
+@define function xcallocarray ();
 @define function xftell ();
 @define function xmalloc ();
 @define function xmallocarray ();
@@ -150,6 +156,8 @@
 
 @define procedure aclose ();
 @define procedure BIBXRETALLOC (); {For BibTeX.}
+@define procedure BIBXRETALLOCNOSET ();
+@define procedure BIBXRETALLOCSTRING ();
 @define procedure decr ();
 @define procedure fflush (); {can't keep |break|, since it's a reserved word}
 @define procedure free ();
@@ -159,7 +167,6 @@
 @define procedure input2ints ();
 @define procedure input3ints ();
 @define procedure kpseinitprog ();
-@define procedure kpsesetprogname ();
 @define procedure kpsesetprogramname ();
 @define procedure kpseresetprogramname ();
 @define procedure kpsesetprogramenabled ();
@@ -176,6 +183,7 @@
 @define procedure rewrite ();
 @define procedure rewritebin ();
 @define procedure setpaths ();
+@define procedure setupboundvariable ();
 @define procedure strcat ();
 @define procedure strcpy ();
 @define procedure usage ();
@@ -190,8 +198,9 @@
 
 @define type boolean = 0..1;
 @define type cinttype;
-@define type cstring;
 @define type constcstring;
+@define type constw2custring;
+@define type cstring;
 @define type char = 0..255;
 @define type getoptstruct;
 @define type integer;
@@ -200,6 +209,7 @@
 @define type pointertobyte;
 @define type real;
 @define type text;
+@define type w2custring;
 
 @define var argc;
 @define var argv;

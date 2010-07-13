@@ -1,7 +1,7 @@
 /* tex-glyph.h: look for a TeX glyph font (GF or PK).
 
+   Copyright 1993, 2008, 2009 Karl Berry.
    Copyright 1999, 2005 Olaf Weber.
-   Copyright 1993 Karl Berry.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -13,11 +13,8 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-*/
+   You should have received a copy of the GNU Lesser General Public License
+   along with this library; if not, see <http://www.gnu.org/licenses/>.  */
 
 #ifndef KPATHSEA_TEX_GLYPH_H
 #define KPATHSEA_TEX_GLYPH_H
@@ -52,14 +49,32 @@ typedef struct
 
 /* Search first for the font named FONT_NAME at resolution DPI in the
    glyph format FORMAT (see `try_size' for details of format searching).
-   Then try resolutions within KPSE_BITMAP_TOLERANCE of DPI.  Then try
-   the resolutions in `kpse_fallback_sizes', then within the tolerance
-   of each of those.  Then if FONT_NAME is an alias defined in a
-   texfonts.map do all the above for its real name.  Then try the above
-   for kpse_fallback_name.  Then fail.  Return either the filename
-   found, or NULL.  Also return information about the file found in
+   Then try resolutions within KPSE_BITMAP_TOLERANCE of DPI.  Then if
+   FONT_NAME is an alias defined in a texfonts.map do all the above for
+   its real name.  If not an alias, try creating it on the fly with
+   mktexpk.  Then try the resolutions in `kpse_fallback_sizes', then
+   within the tolerance of each of those.  Then try the above for
+   kpse_fallback_name.  Then fail.  Return either the filename found, or
+   NULL.  Also return information about the file found in
    *GLYPH_FILE.  */
-extern KPSEDLL string kpse_find_glyph P4H(const_string font_name, unsigned dpi, 
+extern KPSEDLL string kpathsea_find_glyph (kpathsea kpse,
+                                  const_string font_name, unsigned dpi, 
+                                  kpse_file_format_type format,
+                                  kpse_glyph_file_type *glyph_file);
+
+
+/* Defines how far away a pixel file can be found from its stated size.
+   The DVI standard says any resolution within 0.2% of the stated size
+   is ok, but we are more forgiving.  */
+#define KPSE_BITMAP_TOLERANCE(r) ((r) / 500.0 + 1)
+
+/* Check whether DPI1 is within KPSE_BITMAP_TOLERANCE of DPI2. */
+extern KPSEDLL boolean kpathsea_bitmap_tolerance (kpathsea kpse, 
+                                  double dpi1, double dpi2);
+
+
+#if defined (KPSE_COMPAT_API)
+extern KPSEDLL string kpse_find_glyph (const_string font_name, unsigned dpi, 
                                   kpse_file_format_type format,
                                   kpse_glyph_file_type *glyph_file);
 
@@ -69,13 +84,7 @@ extern KPSEDLL string kpse_find_glyph P4H(const_string font_name, unsigned dpi,
 #define kpse_find_gf(font_name, dpi, glyph_file) \
   kpse_find_glyph (font_name, dpi, kpse_gf_format, glyph_file)
 
-
-/* Defines how far away a pixel file can be found from its stated size.
-   The DVI standard says any resolution within 0.2% of the stated size
-   is ok, but we are more forgiving.  */
-#define KPSE_BITMAP_TOLERANCE(r) ((r) / 500.0 + 1)
-
-/* Check whether DPI1 is within KPSE_BITMAP_TOLERANCE of DPI2. */
-extern KPSEDLL boolean kpse_bitmap_tolerance P2H(double dpi1, double dpi2);
+extern KPSEDLL boolean kpse_bitmap_tolerance (double dpi1, double dpi2);
+#endif
 
 #endif /* not KPATHSEA_TEX_GLYPH_H */

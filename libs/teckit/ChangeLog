@@ -1,1 +1,43 @@
-(Not here. See the Subversion logs.)
+2009-10-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Reorganize the TECkit build system.
+	* Makefile.am, configure.ac: Move sources to the TECkit-2.5.1
+	subdirectory.
+	* TECkit-2.5.1-PATCHES: New directory with patches applied to
+	the TECkit-2.5.1 distribution.
+	* teckit/Makefile.am (new): Create header symlinks in build tree.
+
+2009-10-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Avoid maximal compiler warnings.
+	* source/Sample-tools/TECkit_Compile.cpp, source/Engine.{cpp,h},
+	source/Public-headers/TECkit_Compiler.h, source/Compiler.cpp:
+	Constify.
+	* teckit-patches (new): Modifications.
+	* Makefile.am: Add teckit-patches.
+
+2009-06-26  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* teckit.test, tex-text.map, tex-text.tec (all new):
+	Shell script and data for test case.
+	* Makefile.am: add test case.
+
+2009-06-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* source/Compiler.h: change type of Compiler::Pass.passType
+	long -> UInt32, to avoid compiler warnings.
+
+2009-06-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: enable cxx-runtime-hack (for teckit_compile).
+	* Makefile.am: build teckit_compile.
+
+2009-06-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: enable compiler warnings.
+	* Makefile.am (AM_CFLAGS, AM_CXXFLAGS): enable compiler warnings.
+
+2009-05-07  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Adapt to TL2009 build system.
+

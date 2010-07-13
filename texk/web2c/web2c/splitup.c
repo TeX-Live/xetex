@@ -2,7 +2,7 @@
    and it produces several .c and .h files in the current directory
    as its output.
 
-   $Id: splitup.c 12570 2009-03-30 11:13:40Z peter $
+   $Id: splitup.c 17953 2010-04-21 10:54:29Z peter $
 
    Tim Morgan  September 19, 1987.  */
 
@@ -58,8 +58,8 @@ FILE *out, *ini, *temp;
  * `true' else `false'.  We also keep up with the #ifdef/#endif nesting
  * so we know when it's safe to finish writing the current file.
  */
-int
-read_line P1H(void)
+static int
+read_line (void)
 {
   if (fgets (buffer, sizeof (buffer), stdin) == NULL)
     return false;
@@ -76,9 +76,9 @@ read_line P1H(void)
 }
 
 int
-main P2C(int, argc, string *, argv)
+main (int argc, string *argv)
 {
-  string coerce;
+  const_string coerce;
   unsigned coerce_len;
   int option;
 
@@ -123,17 +123,14 @@ main P2C(int, argc, string *, argv)
   } else if (STREQ (output_name, "pdftex")) {
     fputs ("#define INITEX\n#define TeX\n#define pdfTeX\n", out);
     coerce = "pdftexcoerce.h";
-  } else if (STREQ (output_name, "luatex")) {
-    fputs ("#define INITEX\n#define TeX\n#define luaTeX\n", out);
-    coerce = "luatexcoerce.h";
+  } else if (STREQ (output_name, "ptex")) {
+    fputs ("#define INITEX\n#define TeX\n#define pTeX\n", out);
+    coerce = "ptexcoerce.h";
   } else if (STREQ (output_name, "xetex")) {
     fputs ("#define INITEX\n#define TeX\n#define XeTeX\n", out);
     coerce = "xetexcoerce.h";
-  } else if (STREQ (output_name, "mp")) {
-    fputs ("#define INIMP\n#define MP\n", out);
-    coerce = "mpcoerce.h";
   } else
-    FATAL1 ("Can only split mf, mp, tex, etex, aleph, luatex, pdftex, or xetex,\n not %s", output_name);
+    FATAL1 ("Can only split mf, tex, aleph, etex, pdftex, ptex, or xetex,\n not %s", output_name);
   
   coerce_len = strlen (coerce);
   

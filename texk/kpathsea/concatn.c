@@ -1,7 +1,7 @@
-/* concatn.c: Concatenate an arbitrary number of strings.
+/* concatn.c: concatenate an arbitrary number of strings.
 
+   Copyright 1993, 1995, 2008, 2009 Karl Berry.
    Copyright 1999, 2005 Olaf Weber.
-   Copyright 1993, 1995, 2008 Karl Berry.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -25,16 +25,18 @@
    and then do the copying ourselves, but I doubt it matters in reality.  */
 
 string
-concatn PVAR1C(const_string, str1,  ap)
+concatn (const_string str1, ...)
 {
   string arg;
   string ret;
+  va_list ap;
 
   if (!str1)
     return NULL;
   
   ret = xstrdup (str1);
   
+  va_start (ap, str1);
   while ((arg = va_arg (ap, string)) != NULL)
     {
       string temp = concat (ret, arg);
@@ -44,7 +46,7 @@ concatn PVAR1C(const_string, str1,  ap)
   va_end (ap);
   
   return ret;
-}}
+}
 
 #ifdef TEST
 int

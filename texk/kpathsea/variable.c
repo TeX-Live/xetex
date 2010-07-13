@@ -1,6 +1,6 @@
 /* variable.c: variable expansion.
 
-    Copyright 1993, 1994, 1995, 1996, 2008 Karl Berry.
+    Copyright 1993, 1994, 1995, 1996, 2008, 2009 Karl Berry.
     Copyright 1997, 1999, 2001, 2002, 2005 Olaf Weber.
 
     This library is free software; you can redistribute it and/or
@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
- 
+
     You should have received a copy of the GNU Lesser General Public License
     along with this library; if not, see <http://www.gnu.org/licenses/>.  */
 
@@ -21,62 +21,63 @@
 #include <kpathsea/c-ctype.h>
 #include <kpathsea/cnf.h>
 #include <kpathsea/fn.h>
-#include <kpathsea/tilde.h>
+#include <kpathsea/expand.h>
 #include <kpathsea/variable.h>
 
 
 /* Here's the simple one, when a program just wants a value.  */
 
 string
-kpse_var_value P1C(const_string, var)
+kpathsea_var_value (kpathsea kpse, const_string var)
 {
   string vtry, ret;
+  const_string value;
 
-  assert (kpse_program_name);
+  assert (kpse->program_name);
 
   /* First look for VAR.progname. */
-  vtry = concat3 (var, ".", kpse_program_name);
-  ret = getenv (vtry);
+  vtry = concat3 (var, ".", kpse->program_name);
+  value = getenv (vtry);
   free (vtry);
 
-  if (!ret || !*ret) {
+  if (!value || !*value) {
     /* Now look for VAR_progname. */
-    vtry = concat3 (var, "_", kpse_program_name);
-    ret = getenv (vtry);
+    vtry = concat3 (var, "_", kpse->program_name);
+    value = getenv (vtry);
     free (vtry);
   }
 
   /* Just plain VAR.  */
-  if (!ret || !*ret)
-    ret = getenv (var);
+  if (!value || !*value)
+    value = getenv (var);
 
   /* Not in the environment; check a config file.  */
-  if (!ret || !*ret)
-    ret = kpse_cnf_get (var);
+  if (!value || !*value)
+      value = kpathsea_cnf_get (kpse, var);
 
   /* We have a value; do variable and tilde expansion.  We want to use ~
      in the cnf files, to adapt nicely to Windows and to avoid extra /'s
      (see tilde.c), but we also want kpsewhich -var-value=foo to not
      have any literal ~ characters, so our shell scripts don't have to
      worry about doing the ~ expansion.  */
-  if (ret) {
-    string tmp = kpse_var_expand (ret);
-    /* We don't want to free the previous value of ret here; apparently
-       it's used later, somewhere, somehow.  (The end result was a crash
-       when making tex.fmt.)  Sigh.  */
-    ret = kpse_tilde_expand (tmp);
-    if (ret != tmp) {
-      free (tmp);
-    }
-  }
+  ret = value ? kpathsea_expand (kpse, value) : NULL;
 
 #ifdef KPSE_DEBUG
-  if (KPSE_DEBUG_P (KPSE_DEBUG_VARS))
+  if (KPATHSEA_DEBUG_P (KPSE_DEBUG_VARS))
     DEBUGF2("variable: %s = %s\n", var, ret ? ret : "(nil)");
 #endif
 
   return ret;
 }
+
+#if defined (KPSE_COMPAT_API)
+string
+kpse_var_value (const_string var)
+{
+    return kpathsea_var_value (kpse_def,var);
+}
+#endif
+
 
 /* We have to keep track of variables being expanded, otherwise
    constructs like TEXINPUTS = $TEXINPUTS result in an infinite loop.
@@ -84,93 +85,84 @@ kpse_var_value P1C(const_string, var)
    add to a list each time an expansion is started, and check the list
    before expanding.  */
 
-typedef struct {
-  const_string var;
-  boolean expanding;
-} expansion_type;
-static expansion_type *expansions; /* The sole variable of this type.  */
-static unsigned expansion_len = 0;
-
 static void
-expanding P2C(const_string, var,  boolean, xp)
+expanding (kpathsea kpse, const_string var, boolean xp)
 {
   unsigned e;
-  for (e = 0; e < expansion_len; e++) {
-    if (STREQ (expansions[e].var, var)) {
-      expansions[e].expanding = xp;
+  for (e = 0; e < kpse->expansion_len; e++) {
+    if (STREQ (kpse->expansions[e].var, var)) {
+      kpse->expansions[e].expanding = xp;
       return;
     }
   }
 
   /* New variable, add it to the list.  */
-  expansion_len++;
-  XRETALLOC (expansions, expansion_len, expansion_type);
-  expansions[expansion_len - 1].var = xstrdup (var);
-  expansions[expansion_len - 1].expanding = xp;
+  kpse->expansion_len++;
+  XRETALLOC (kpse->expansions, kpse->expansion_len, expansion_type);
+  kpse->expansions[kpse->expansion_len - 1].var = xstrdup (var);
+  kpse->expansions[kpse->expansion_len - 1].expanding = xp;
 }
 
 
 /* Return whether VAR is currently being expanding.  */
 
 static boolean
-expanding_p P1C(const_string, var)
+expanding_p (kpathsea kpse, const_string var)
 {
   unsigned e;
-  for (e = 0; e < expansion_len; e++) {
-    if (STREQ (expansions[e].var, var))
-      return expansions[e].expanding;
+  for (e = 0; e < kpse->expansion_len; e++) {
+    if (STREQ (kpse->expansions[e].var, var))
+      return kpse->expansions[e].expanding;
   }
-  
+
   return false;
 }
 
 /* Append the result of value of `var' to EXPANSION, where `var' begins
    at START and ends at END.  If `var' is not set, do not complain.
-   This is a subroutine for the more complicated expansion function.  */
+   Return 1 if `var' was defined, 0 if not.  This is a subroutine for
+   the `kpathsea_var_expand' function.  */
 
-static void
-expand P3C(fn_type *, expansion,  const_string, start,  const_string, end)
+static boolean
+expand (kpathsea kpse, fn_type *expansion,
+        const_string start, const_string end)
 {
-  string value;
+  boolean ret = false;
+  const_string value;
   unsigned len = end - start + 1;
   string var = (string)xmalloc (len + 1);
   strncpy (var, start, len);
   var[len] = 0;
-  
-  if (expanding_p (var)) {
+
+  if (expanding_p (kpse, var)) {
     WARNING1 ("kpathsea: variable `%s' references itself (eventually)", var);
   } else {
-    string vtry = concat3 (var, "_", kpse_program_name);
+    string vtry = concat3 (var, "_", kpse->program_name);
     /* Check for an environment variable.  */
     value = getenv (vtry);
     free (vtry);
-    
+
     if (!value || !*value)
       value = getenv (var);
 
     /* If no envvar, check the config files.  */
     if (!value || !*value)
-      value = kpse_cnf_get (var);
+      value = kpathsea_cnf_get (kpse, var);
 
     if (value) {
-      expanding (var, true);
-      value = kpse_var_expand (value);
-      expanding (var, false);
-      
-      { /* Do tilde expansion; see explanation above in kpse_var_value.  */
-        string tmp = kpse_tilde_expand (value);
-        if (value != tmp) {
-          free (value);
-          value = tmp;
-        }
-      }
-      
-      fn_grow (expansion, value, strlen (value));
-      free (value);
-    }
+      string tmp;
+      ret = true;
+      expanding (kpse, var, true);
+      tmp = kpathsea_expand (kpse, value);
+      expanding (kpse, var, false);
 
-    free (var);
+      fn_grow (expansion, tmp, strlen (tmp));
+      free (tmp);
+    }
   }
+
+  free (var);
+  return ret;
 }
 
 /* Can't think of when it would be useful to change these (and the
@@ -193,13 +185,13 @@ expand P3C(fn_type *, expansion,  const_string, start,  const_string, end)
    constructs, especially ${var-value}.  We do do ~ expansion.  */
 
 string
-kpse_var_expand P1C(const_string, src)
+kpathsea_var_expand (kpathsea kpse, const_string src)
 {
   const_string s;
   string ret;
   fn_type expansion;
   expansion = fn_init ();
-  
+
   /* Copy everything but variable constructs.  */
   for (s = src; *s; s++) {
     if (IS_VAR_START (*s)) {
@@ -215,7 +207,13 @@ kpse_var_expand P1C(const_string, src)
         } while (IS_VAR_CHAR (*var_end));
 
         var_end--; /* had to go one past */
-        expand (&expansion, s, var_end);
+        if (!expand (kpse, &expansion, s, var_end)) {
+          /* If no expansion, include the literal $x construct,
+             so filenames containing dollar signs can be read.
+             The first +1 is to get the full variable name,
+             the other +1 is to get the dollar sign; we've moved past it.  */
+          fn_grow (&expansion, s - 1, var_end - s + 1 + 1);
+        }
         s = var_end;
 
       } else if (IS_VAR_BEGIN_DELIMITER (*s)) {
@@ -229,23 +227,33 @@ kpse_var_expand P1C(const_string, src)
           WARNING1 ("%s: No matching } for ${", src);
           s = var_end - 1; /* will incr to null at top of loop */
         } else {
-          expand (&expansion, s, var_end - 1);
+          expand (kpse, &expansion, s, var_end - 1);
           s = var_end; /* will incr past } at top of loop*/
         }
 
       } else {
-        /* $<something-else>: error.  */
+        /* $<something-else>: warn, but preserve characters; again, so
+           filenames containing dollar signs can be read.  */
         WARNING2 ("%s: Unrecognized variable construct `$%c'", src, *s);
-        /* Just ignore those chars and keep going.  */
+        fn_grow (&expansion, s - 1, 2);  /* moved past the $  */
       }
     } else
      fn_1grow (&expansion, *s);
   }
   fn_1grow (&expansion, 0);
-          
+
   ret = FN_STRING (expansion);
   return ret;
 }
+
+#if defined (KPSE_COMPAT_API)
+string
+kpse_var_expand (const_string src)
+{
+    return kpathsea_var_expand (kpse_def,src);
+}
+#endif
+
 
 #ifdef TEST
 
@@ -253,7 +261,7 @@ static void
 test_var (string test, string right_answer)
 {
   string result = kpse_var_expand (test);
-  
+
   printf ("expansion of `%s'\t=> %s", test, result);
   if (!STREQ (result, right_answer))
     printf (" [should be `%s']", right_answer);
@@ -262,8 +270,9 @@ test_var (string test, string right_answer)
 
 
 int
-main ()
+main (int argc, char **argv)
 {
+  kpse_set_program_name(argv[0], NULL);
   test_var ("a", "a");
   test_var ("$foo", "");
   test_var ("a$foo", "a");

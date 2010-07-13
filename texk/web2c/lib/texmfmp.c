@@ -46,16 +46,16 @@
 #elif defined (pdfTeX)
 #include <pdftexdir/pdftexextra.h>
 #include <pdftexdir/ptexlib.h>
-#elif defined (luaTeX)
-#include <luatexdir/luatexextra.h>
 #elif defined (Aleph)
 #include <alephdir/alephextra.h>
+#elif defined (pTeX)
+#include <ptexdir/ptexextra.h>
 #else
 #define BANNER "This is TeX, Version 3.1415926"
 #define COPYRIGHT_HOLDER "D.E. Knuth"
 #define AUTHOR NULL
 #define PROGRAM_HELP TEXHELP
-#define BUG_ADDRESS "tex-k@mail.tug.org"
+#define BUG_ADDRESS "tex-k@tug.org"
 #define DUMP_VAR TEXformatdefault
 #define DUMP_LENGTH_VAR formatdefaultlength
 #define DUMP_OPTION "fmt"
@@ -71,7 +71,7 @@
 #define COPYRIGHT_HOLDER "D.E. Knuth"
 #define AUTHOR NULL
 #define PROGRAM_HELP MFHELP
-#define BUG_ADDRESS "tex-k@mail.tug.org"
+#define BUG_ADDRESS "tex-k@tug.org"
 #define DUMP_VAR MFbasedefault
 #define DUMP_LENGTH_VAR basedefaultlength
 #define DUMP_OPTION "base"
@@ -136,10 +136,11 @@
 static char **cmdlist = NULL;
 
 void 
-mk_shellcmdlist (char *v)
+mk_shellcmdlist (const char *v)
 {
   char **p;
-  char *q, *r;
+  const char *q, *r1;
+  char *r;
   int  n;
 
   q = v;
@@ -148,19 +149,19 @@ mk_shellcmdlist (char *v)
 /* analyze the variable shell_escape_commands = foo,bar,...
    spaces before and after (,) are not allowed. */
 
-  while ((r = strchr (q, ',')) != 0) {
+  while ((r1 = strchr (q, ',')) != 0) {
     n++;
-    r++;
-    q = r;
+    r1++;
+    q = r1;
   }
   if (*q)
     n++;
-  cmdlist = (char **) xmalloc ((n + 1) * sizeof (char *));
+  cmdlist = xmalloc ((n + 1) * sizeof (char *));
   p = cmdlist;
   q = v;
   while ((r = strchr (q, ',')) != 0) {
     *r = '\0';
-    *p = (char *) xmalloc (strlen (q) + 1);
+    *p = xmalloc (strlen (q) + 1);
     strcpy (*p, q);
     *r = ',';
     r++;
@@ -168,7 +169,7 @@ mk_shellcmdlist (char *v)
     p++;
   }
   if (*q) {
-    *p = (char *) xmalloc (strlen (q) + 1);
+    *p = xmalloc (strlen (q) + 1);
     strcpy (*p, q);
     p++;
     *p = NULL;
@@ -203,7 +204,7 @@ init_shell_escape (void)
     if (shellenabledp && restrictedshell == 1) {
       char *v2 = kpse_var_value ("shell_escape_commands");
       if (v2) {
-        mk_shellcmdlist (v2);
+        mk_shellcmdlist ((const char *)v2);
         free (v2);
       }
     }
@@ -263,22 +264,23 @@ free_shellcmdlist (void)
    what is checked against the shell_escape_commands list.  */
 
 int
-shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
+shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
 {
   char **p;
   char *buf;
-  char *s, *d;
+  char *c, *d;
+  const char *s;
   int  pre, spaces;
   int  allow = 0;
 
   /* pre == 1 means that the previous character is a white space
      pre == 0 means that the previous character is not a white space */
-  buf = (char *) xmalloc (strlen (*cmd) + 1);
-  strcpy (buf, *cmd);
-  s = buf;
-  while (Isspace (*s))
-    s++;
-  d = s;
+  buf = xmalloc (strlen (cmd) + 1);
+  strcpy (buf, cmd);
+  c = buf;
+  while (Isspace (*c))
+    c++;
+  d = c;
   while (!Isspace(*d) && *d)
     d++;
   *d = '\0';
@@ -287,7 +289,7 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
      *cmdname == "kpsewhich" for
      \write18{kpsewhich --progname=dvipdfm --format="other text files" config}
   */
-  *cmdname = xstrdup (s);
+  *cmdname = xstrdup (c);
   free (buf);
 
   /* Is *cmdname listed in a texmf.cnf vriable as
@@ -306,20 +308,20 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
   }
   if (allow == 2) {
     spaces = 0;
-    for (s = *cmd; *s; s++) {
+    for (s = cmd; *s; s++) {
       if (Isspace (*s))
         spaces++;
     }
 
     /* allocate enough memory (too much?) */
 #ifdef WIN32
-    *safecmd = (char *) xmalloc (2 * strlen (*cmd) + 3 + 2 * spaces);
+    *safecmd = xmalloc (2 * strlen (cmd) + 3 + 2 * spaces);
 #else
-    *safecmd = (char *) xmalloc (strlen (*cmd) + 3 + 2 * spaces);
+    *safecmd = xmalloc (strlen (cmd) + 3 + 2 * spaces);
 #endif
 
     /* make a safe command line *safecmd */
-    s = *cmd;
+    s = cmd;
     while (Isspace (*s))
       s++;
     d = *safecmd;
@@ -329,7 +331,7 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
     pre = 1;
     while (*s) {
       /* Quotation given by a user.  " should always be used; we
-         transform it below.  On Unix, if ' is used, simply immediately
+         transform it below.  If ' is used, simply immediately
          return a quotation error.  */
       if (*s == '\'') {
         return -1;
@@ -342,7 +344,7 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
            example:
            --format="other text files" becomes
            '--format=''other text files' (Unix)
-           "--format=""other test files" (Windows) */
+           "--format=""other text files" (Windows) */
 
         if (pre == 0)
           *d++ = QUOTE;
@@ -353,8 +355,8 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
         s++;
 
         while (*s != '"') {
-          /* Closing quotation mark is missing */
-          if (*s == '\0')
+          /* Illegal use of ', or closing quotation mark is missing */
+          if (*s == '\'' || *s == '\0')
             return -1;
 #ifdef WIN32
           if (char_needs_quote (*s))
@@ -389,7 +391,7 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
         *d++ = QUOTE;
         *d++ = *s++;
       } else {
-        /* Copy a character from *cmd to *safecmd. */
+        /* Copy a character from cmd to *safecmd. */
 #ifdef WIN32
         if (char_needs_quote (*s))
           *d++ = '^';
@@ -413,10 +415,11 @@ shell_cmd_is_allowed (char **cmd, char **safecmd, char **cmdname)
    0 if CMD is not allowed; given shellenabledp==1, this is because
       shell escapes are restricted and CMD is not allowed.
    1 if shell escapes are not restricted, hence any command is allowed.
-   2 if shell escapes are restricted and CMD is allowed.  */
+   2 if shell escapes are restricted and CMD is allowed (possibly after
+      quoting).  */
    
 int
-runsystem (char *cmd)
+runsystem (const char *cmd)
 {
   int allow = 0;
   char *safecmd = NULL;
@@ -430,7 +433,7 @@ runsystem (char *cmd)
   if (restrictedshell == 0)
     allow = 1;
   else
-    allow = shell_cmd_is_allowed (&cmd, &safecmd, &cmdname);
+    allow = shell_cmd_is_allowed (cmd, &safecmd, &cmdname);
 
   if (allow == 1)
     (void) system (cmd);
@@ -445,13 +448,14 @@ runsystem (char *cmd)
   return allow;
 }
 
+#ifdef pdfTeX
 /* Like runsystem(), the runpopen() function is called only when
    shellenabledp == 1.   Unlike runsystem(), here we write errors to
    stderr, since we have nowhere better to use; and of course we return
    a file handle (or NULL) instead of a status indicator.  */
 
 static FILE *
-runpopen (char *cmd, char *mode)
+runpopen (const char *cmd, const char *mode)
 {
   FILE *f = NULL;
   char *safecmd = NULL;
@@ -462,7 +466,7 @@ runpopen (char *cmd, char *mode)
   if (restrictedshell == 0)
     allow = 1;
   else
-    allow = shell_cmd_is_allowed (&cmd, &safecmd, &cmdname);
+    allow = shell_cmd_is_allowed (cmd, &safecmd, &cmdname);
 
   if (allow == 1)
     f = popen (cmd, mode);
@@ -480,20 +484,13 @@ runpopen (char *cmd, char *mode)
     free (cmdname);
   return f;
 }
-#endif
+#endif /* pdfTeX */
+#endif /* TeX */
 
 /* The main program, etc.  */
 
 #ifdef XeTeX
 #include "xetexdir/XeTeX_ext.h"
-#endif
-
-#if defined(luaTeX)
-extern void lua_initialize(int ac, char **av);
-int etexp;
-#define MAYBE_STATIC  /* symbols needed in luainit.c */
-#else
-#define MAYBE_STATIC static
 #endif
 
 /* What we were invoked as and with.  */
@@ -504,35 +501,31 @@ int argc;
 static const_string user_progname;
 
 /* The C version of what might wind up in DUMP_VAR.  */
-MAYBE_STATIC const_string dump_name;
+static const_string dump_name;
 
 /* The C version of the jobname, if given. */
-MAYBE_STATIC const_string c_job_name;
-
-/* Full source file name. */
-extern string fullnameoffile;
+static const_string c_job_name;
 
 /* The filename for dynamic character translation, or NULL.  */
 string translate_filename;
 string default_translate_filename;
 
+#if defined(TeX)
 /* Needed for --src-specials option. */
-MAYBE_STATIC char *last_source_name;
+static char *last_source_name;
 static int last_lineno;
-MAYBE_STATIC boolean srcspecialsoption = false;
-MAYBE_STATIC void parse_src_specials_option P1H(const_string);
-
-/* The main body of the WEB is transformed into this procedure.  */
-extern TEXDLL void mainbody P1H(void);
+static boolean srcspecialsoption = false;
+static void parse_src_specials_option (const_string);
+#endif
 
 /* Parsing a first %&-line in the input file. */
-static void parse_first_line P1H(const_string);
+static void parse_first_line (const_string);
 
 /* Parse option flags. */
-static void parse_options P2H(int, string *);
+static void parse_options (int, string *);
 
 /* Try to figure out if we have been given a filename. */
-static string get_input_file_name P1H(void);
+static string get_input_file_name (void);
 
 #if defined(Aleph)
 /* Declare this for Omega family, so they can parse the -8bit option,
@@ -540,10 +533,6 @@ static string get_input_file_name P1H(void);
  */
 static int eightbitp;
 #endif /* Aleph */
-
-#if defined(pdfTeX) || defined(luaTeX)
-char *ptexbanner;
-#endif
 
 /* Get a true/false value for a variable from texmf.cnf and the environment. */
 static boolean
@@ -553,35 +542,15 @@ texmf_yesno(const_string var)
   return value && (*value == 't' || *value == 'y' || *value == '1');
 }
 
-#ifdef luaTeX
-#define TEXformatdefault TEX_format_default
-#define debugformatfile debug_format_file
-#define formatdefaultlength format_default_length
-#define iniversion ini_version
-#define outputfilename output_file_name
-#define readyalready ready_already
-#define dumpoption dump_option
-#define outputcomment output_comment
-#define pdfoutputoption pdf_output_option
-#define pdfoutputvalue pdf_output_value
-#define pdfdraftmodeoption pdf_draftmode_option
-#define pdfdraftmodevalue pdf_draftmode_value
-#define dumpline dump_line
-#define bufsize buf_size
-#define maxbufstack max_buf_stack
-#define inopen in_open
-#define inputfile input_file
-#define strstart str_start
-#define strpool str_pool
-#define poolptr pool_ptr
-#define poolsize pool_size
+#ifdef pdfTeX
+const char *ptexbanner = BANNER;
 #endif
 
 /* The entry point: set up for reading the command line, which will
    happen in `topenin', then call the main body.  */
 
 void TEXDLL
-maininit P2C(int, ac, string *, av)
+maininit (int ac, string *av)
 {
   string main_input_file;
 
@@ -591,6 +560,9 @@ maininit P2C(int, ac, string *, av)
 
   /* Must be initialized before options are parsed.  */
   interactionoption = 4;
+#ifdef pTeX
+  set_enc_string (NULL, "default");
+#endif /* pTeX */
 
   /* Have things to record as we go along.  */
   kpse_record_input = recorder_record_input;
@@ -607,14 +579,10 @@ maininit P2C(int, ac, string *, av)
 # define SYNCTEX_NO_OPTION INT_MAX
   synctexoption = SYNCTEX_NO_OPTION;
 #else
-# /* Omit warning for Aleph and non-TeX.  */
-# if defined(TeX) && !defined(Aleph)
+# /* Omit warning for Aleph, pTeX, and non-TeX.  */
+# if defined(TeX) && !defined(Aleph) && !defined(pTeX)
 #  warning SyncTeX: -synctex command line option NOT available
 # endif
-#endif
-
-#if defined(pdfTeX) || defined(luaTeX)
-  ptexbanner = BANNER;
 #endif
 
   /* If the user says --help or --version, we need to notice early.  And
@@ -676,10 +644,10 @@ maininit P2C(int, ac, string *, av)
       iniversion = true;
     } else if (FILESTRCASEEQ (kpse_program_name, "virtex")) {
       virversion = true;
-#if !defined(Aleph) && !defined(luaTeX)
+#ifndef Aleph
     } else if (FILESTRCASEEQ (kpse_program_name, "mltex")) {
       mltexp = true;
-#endif /* !Aleph && !luaTeX */
+#endif /* !Aleph */
 #endif /* TeX */
     }
 
@@ -693,11 +661,11 @@ maininit P2C(int, ac, string *, av)
 #ifdef TeX
   /* Sanity check: -mltex, -enc, -etex only work in combination with -ini. */
   if (!iniversion) {
-#if !defined(Aleph) && !defined(luaTeX)
+#if !defined(Aleph)
     if (mltexp) {
       fprintf(stderr, "-mltex only works with -ini\n");
     }
-#if !defined(XeTeX)
+#if !defined(XeTeX) && !defined(pTeX)
     if (enctexp) {
       fprintf(stderr, "-enc only works with -ini\n");
     }
@@ -770,7 +738,7 @@ maininit P2C(int, ac, string *, av)
    happen in `topenin', then call the main body.  */
 
 int
-main P2C(int, ac,  string *, av)
+main (int ac, string *av)
 {
 #ifdef __EMX__
   _wildcard (&ac, &av);
@@ -781,11 +749,7 @@ main P2C(int, ac,  string *, av)
   _setmaxstdio(2048);
 #endif
 
-#if defined(luaTeX)
-  lua_initialize (ac, av);
-#else
   maininit (ac, av);
-#endif /* not luaTeX */
 
   /* Call the real main program.  */
   mainbody ();
@@ -802,7 +766,7 @@ main P2C(int, ac,  string *, av)
    `last=first'.  */
 
 void
-topenin P1H(void)
+topenin (void)
 {
   int i;
 
@@ -868,7 +832,7 @@ topenin P1H(void)
 
   /* One more time, this time converting to TeX's internal character
      representation.  */
-#if !defined(Aleph) && !defined(XeTeX) && !defined(luaTeX)
+#if !defined(Aleph) && !defined(XeTeX)
   for (i = first; i < last; i++)
     buffer[i] = xord[buffer[i]];
 #endif
@@ -879,6 +843,9 @@ topenin P1H(void)
    incrementally.  Shamim Mohamed adapted it for Web2c.  */
 #if defined (TeX) && defined (IPC)
 
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <sys/socket.h>
 #include <fcntl.h>
 #ifndef O_NONBLOCK /* POSIX */
@@ -892,6 +859,7 @@ what the fcntl? cannot implement IPC without equivalent for O_NONBLOCK.
 #endif /* no FNDELAY */
 #endif /* no O_NDELAY */
 #endif /* no O_NONBLOCK */
+#endif /* !WIN32 */
 
 #ifndef IPC_PIPE_NAME /* $HOME is prepended to this.  */
 #define IPC_PIPE_NAME "/.TeXview_Pipe"
@@ -914,7 +882,7 @@ static struct sockaddr *ipc_addr;
 static int ipc_addr_len;
 
 static int
-ipc_make_name P1H(void)
+ipc_make_name (void)
 {
   if (ipc_addr_len == 0) {
     string s = getenv ("HOME");
@@ -934,14 +902,20 @@ ipc_make_name P1H(void)
 static int sock = -1;
 
 static int
-ipc_is_open P1H(void)
+ipc_is_open (void)
 {
    return sock >= 0;
 }
 
 
 static void
-ipc_open_out P1H(void) {
+ipc_open_out (void) {
+#ifdef WIN32
+  u_long mode = 1;
+#define SOCK_NONBLOCK(s) ioctlsocket (s, FIONBIO, &mode)
+#else
+#define SOCK_NONBLOCK(s) fcntl (s, F_SETFL, O_NONBLOCK)
+#endif
 #ifdef IPC_DEBUG
   fputs ("tex: Opening socket for IPC output ...\n", stderr);
 #endif
@@ -957,7 +931,7 @@ ipc_open_out P1H(void) {
   sock = socket (PF_UNIX, SOCK_STREAM, 0);
   if (sock >= 0) {
     if (connect (sock, ipc_addr, ipc_addr_len) != 0
-        || fcntl (sock, F_SETFL, O_NONBLOCK) < 0) {
+        || SOCK_NONBLOCK (sock) < 0) {
       close (sock);
       sock = -1;
       return;
@@ -970,7 +944,7 @@ ipc_open_out P1H(void) {
 
 
 static void
-ipc_close_out P1H(void)
+ipc_close_out (void)
 {
 #ifdef IPC_DEBUG
   fputs ("tex: Closing output socket ...\n", stderr);
@@ -983,7 +957,7 @@ ipc_close_out P1H(void)
 
 
 static void
-ipc_snd P3C(int, n,  int, is_eof,  char *, data)
+ipc_snd (int n, int is_eof, char *data)
 {
   struct
   {
@@ -1022,11 +996,11 @@ ipc_snd P3C(int, n,  int, is_eof,  char *, data)
    too_big_char = biggest_char + 1 = 65536 (omstr.ch).*/
 
 void
-ipcpage P1C(int, is_eof)
+ipcpage (int is_eof)
 {
   static boolean begun = false;
   unsigned len = 0;
-  string p = (string)"";
+  string p = NULL;
 
   if (!begun) {
     string name; /* Just the filename.  */
@@ -1039,7 +1013,7 @@ ipcpage P1C(int, is_eof)
     len = strstartar[outputfilename + 1 - 65536L] -
             strstartar[outputfilename - 65536L];
 #endif
-    name = (string)xmalloc (len + 1);
+    name = xmalloc (len + 1);
 #if !defined(Aleph)
     strncpy (name, (string)&strpool[strstart[outputfilename]], len);
 #else
@@ -1061,7 +1035,7 @@ ipcpage P1C(int, is_eof)
   }
   ipc_snd (len, is_eof, p);
   
-  if (len > 0) {
+  if (p) {
     free (p);
   }
 }
@@ -1069,17 +1043,17 @@ ipcpage P1C(int, is_eof)
 
 #if defined (TeX) || defined (MF)
   /* TCX and Aleph&Co get along like sparks and gunpowder. */
-#if !defined(Aleph) && !defined(XeTeX) && !defined(luaTeX) 
+#if !defined(Aleph) && !defined(XeTeX)
 
 /* Return the next number following START, setting POST to the following
    character, as in strtol.  Issue a warning and return -1 if no number
    can be parsed.  */
 
 static int
-tcx_get_num P4C(int, upb,
-                unsigned, line_count,
-                string, start,
-                string *, post)
+tcx_get_num (int upb,
+             unsigned line_count,
+             string start,
+             string *post)
 {
   int num = strtol (start, post, 0);
   assert (post && *post);
@@ -1110,7 +1084,7 @@ tcx_get_num P4C(int, upb,
 /* FIXME: A new format ought to be introduced for these files. */
 
 void
-readtcxfile P1H(void)
+readtcxfile (void)
 {
   string orig_filename;
   if (!find_suffix (translate_filename)) {
@@ -1170,12 +1144,12 @@ readtcxfile P1H(void)
     WARNING1 ("Could not open char translation file `%s'", orig_filename);
   }
 }
-#endif /* !Aleph && !XeTeX && !luaTeX */
+#endif /* !Aleph && !XeTeX */
 #endif /* TeX || MF [character translation] */
 
 #ifdef XeTeX /* XeTeX handles this differently, and allows odd quotes within names */
 string
-normalize_quotes P2C(const_string, name, const_string, mesg)
+normalize_quotes (const_string name, const_string mesg)
 {
     int quote_char = 0;
     boolean must_quote = false;
@@ -1198,7 +1172,7 @@ normalize_quotes P2C(const_string, name, const_string, mesg)
             len += 2; /* this could sometimes add length we don't need */
         }
     }
-    ret = (string)xmalloc(len + 1);
+    ret = xmalloc(len + 1);
     p = ret;
     if (must_quote) {
         if (quote_char == 0)
@@ -1222,12 +1196,12 @@ normalize_quotes P2C(const_string, name, const_string, mesg)
 /* Normalize quoting of filename -- that is, only quote if there is a space,
    and always use the quote-name-quote style. */
 string
-normalize_quotes P2C(const_string, name, const_string, mesg)
+normalize_quotes (const_string name, const_string mesg)
 {
     boolean quoted = false;
     boolean must_quote = (strchr(name, ' ') != NULL);
     /* Leave room for quotes and NUL. */
-    string ret = (string)xmalloc(strlen(name)+3);
+    string ret = xmalloc(strlen(name)+3);
     string p;
     const_string q;
     p = ret;
@@ -1252,7 +1226,7 @@ normalize_quotes P2C(const_string, name, const_string, mesg)
 
 /* Getting the input filename. */
 string
-get_input_file_name P1H(void)
+get_input_file_name (void)
 {
   string input_file_name = NULL;
 
@@ -1309,17 +1283,17 @@ static struct option long_options[]
       { "ipc",                       0, &ipcon, 1 },
       { "ipc-start",                 0, &ipcon, 2 },
 #endif /* IPC */
-#if !defined(Aleph) && !defined(luaTeX)
+#if !defined(Aleph)
       { "mltex",                     0, &mltexp, 1 },
-#if !defined(XeTeX)
+#if !defined(XeTeX) && !defined(pTeX)
       { "enc",                       0, &enctexp, 1 },
-#endif /* !XeTeX */
-#endif /* !Aleph && !luaTeX */
-#if defined (eTeX) || defined(pdfTeX) || defined(Aleph) || defined(XeTeX) || defined(luaTeX)
+#endif /* !XeTeX && !pTeX */
+#endif /* !Aleph */
+#if defined (eTeX) || defined(pdfTeX) || defined(Aleph) || defined(XeTeX)
       { "etex",                      0, &etexp, 1 },
 #endif /* eTeX || pdfTeX || Aleph */
       { "output-comment",            1, 0, 0 },
-#if defined(pdfTeX) || defined(luaTeX)
+#if defined(pdfTeX)
       { "draftmode",                 0, 0, 0 },
       { "output-format",             1, 0, 0 },
 #endif /* pdfTeX */
@@ -1347,11 +1321,7 @@ static struct option long_options[]
       { "no-parse-first-line",       0, &parsefirstlinep, -1 },
       { "translate-file",            1, 0, 0 },
       { "default-translate-file",    1, 0, 0 },
-#if !defined(luaTeX)
       { "8bit",                      0, &eightbitp, 1 },
-#else
-      { "8bit",                      0, 0, 0 },
-#endif
 #if defined(XeTeX)
       { "no-pdf",                 0, &nopdfoutput, 1 },
       { "output-driver",          1, 0, 0 },
@@ -1360,11 +1330,14 @@ static struct option long_options[]
       { "mktex",                     1, 0, 0 },
       { "no-mktex",                  1, 0, 0 },
 #endif /* TeX or MF */
+#ifdef pTeX
+      { "kanji",                     1, 0, 0 },
+#endif /* pTeX */
       { 0, 0, 0, 0 } };
 
 
 static void
-parse_options P2C(int, argc,  string *, argv)
+parse_options (int argc, string *argv)
 {
   int g;   /* `getopt' return code.  */
   int option_index;
@@ -1387,10 +1360,8 @@ parse_options P2C(int, argc,  string *, argv)
 
 #ifdef XeTeX
     } else if (ARGUMENT_IS ("papersize")) {
-      extern const_string papersize;
       papersize = optarg;
     } else if (ARGUMENT_IS ("output-driver")) {
-      extern const_string outputdriver;
       outputdriver = optarg;
 #endif
 
@@ -1426,7 +1397,7 @@ parse_options P2C(int, argc,  string *, argv)
       } else {
         WARNING2 ("Comment truncated to 255 characters from %d. (%s)",
                   len, optarg);
-        outputcomment = (string) xmalloc (256);
+        outputcomment = xmalloc (256);
         strncpy (outputcomment, optarg, 255);
         outputcomment[255] = 0;
       }
@@ -1439,7 +1410,11 @@ parse_options P2C(int, argc,  string *, argv)
         if (system (IPC_SERVER_CMD) == 0) {
           unsigned i;
           for (i = 0; i < 20 && !ipc_is_open (); i++) {
+#ifdef WIN32
+            Sleep (2000);
+#else
             sleep (2);
+#endif
             ipc_open_out ();
           }
         }
@@ -1450,7 +1425,6 @@ parse_options P2C(int, argc,  string *, argv)
       shellenabledp = 1;
       restrictedshell = 1;
       
-#if ! defined (luaTeX)
     } else if (ARGUMENT_IS ("src-specials")) {
        last_source_name = xstrdup("");
        /* Option `--src" without any value means `auto' mode. */
@@ -1462,9 +1436,8 @@ parse_options P2C(int, argc,  string *, argv)
        } else {
           parse_src_specials_option(optarg);
        }
-#endif
 #endif /* TeX */
-#if defined(pdfTeX) || defined(luaTeX)
+#if defined(pdfTeX)
     } else if (ARGUMENT_IS ("output-format")) {
        pdfoutputoption = 1;
        if (strcmp(optarg, "dvi") == 0) {
@@ -1507,7 +1480,13 @@ parse_options P2C(int, argc,  string *, argv)
       } else {
         WARNING1 ("Ignoring unknown argument `%s' to --interaction", optarg);
       }
-      
+#ifdef pTeX
+    } else if (ARGUMENT_IS ("kanji")) {
+      if (!set_enc_string (optarg, NULL)) {
+        WARNING1 ("Ignoring unknown argument `%s' to --kanji", optarg);
+      }
+#endif /* pTeX */
+
     } else if (ARGUMENT_IS ("help")) {
         usagehelp (PROGRAM_HELP, BUG_ADDRESS);
 
@@ -1519,7 +1498,7 @@ parse_options P2C(int, argc,  string *, argv)
 
     } else if (ARGUMENT_IS ("version")) {
         char *versions;
-#if defined (pdfTeX) || defined(XeTeX) || defined(luaTeX)
+#if defined (pdfTeX) || defined(XeTeX)
         initversionstring(&versions); 
 #else
         versions = NULL;
@@ -1531,9 +1510,8 @@ parse_options P2C(int, argc,  string *, argv)
 }
 
 #if defined(TeX)
-#if ! defined (luaTeX)
 void 
-parse_src_specials_option P1C(const_string, opt_list)
+parse_src_specials_option (const_string opt_list)
 {
   char * toklist = xstrdup(opt_list);
   char * tok;
@@ -1582,7 +1560,6 @@ parse_src_specials_option P1C(const_string, opt_list)
   srcspecialsoption = true;
 }
 #endif
-#endif
 
 /* If the first thing on the command line (we use the globals `argv' and
    `optind') is a normal filename (i.e., does not start with `&' or
@@ -1591,7 +1568,7 @@ parse_src_specials_option P1C(const_string, opt_list)
    Also call kpse_reset_program_name to ensure the correct paths for the
    format are used.  */
 static void
-parse_first_line P1C(const_string, filename)
+parse_first_line (const_string filename)
 {
   FILE *f = filename ? fopen (filename, FOPEN_R_MODE) : NULL;
   if (f) {
@@ -1639,6 +1616,7 @@ parse_first_line P1C(const_string, filename)
       /* The tcx stuff, if any.  Should we support the -translate-file
          form as well as --translate-file?  */
       if (*parse) {
+        s = NULL;
         if (translate_filename) {
           /* TCX file already set, do nothing. */
         } else if (STREQ (*parse, "--translate-file")) {
@@ -1662,115 +1640,6 @@ parse_first_line P1C(const_string, filename)
   }
 }
 
-/* Return true if FNAME is acceptable as a name for \openout, \openin, or
-   \input.  */
-
-typedef enum ok_type {
-    ok_reading,
-    ok_writing
-} ok_type;
-
-static const_string ok_type_name[] = {
-    "reading",
-    "writing"
-};
-
-static boolean
-opennameok P4C(const_string, fname, const_string, check_var,
-               const_string, default_choice, ok_type, action)
-{
-  /* We distinguish three cases:
-     'a' (any)        allows any file to be opened.
-     'r' (restricted) means disallowing special file names.
-     'p' (paranoid)   means being really paranoid: disallowing special file
-                      names and restricting output files to be in or below
-                      the working directory or $TEXMFOUTPUT, while input files
-                      must be below the current directory, $TEXMFOUTPUT, or
-                      (implicitly) in the system areas.
-     We default to "paranoid".  The error messages from TeX will be somewhat
-     puzzling...
-     This function contains several return statements...  */
-
-  const_string open_choice = kpse_var_value (check_var);
-
-  if (!open_choice) open_choice = default_choice;
-
-  if (*open_choice == 'a' || *open_choice == 'y' || *open_choice == '1')
-    return true;
-
-#if defined (unix) && !defined (MSDOS)
-  {
-    const_string base = xbasename (fname);
-    /* Disallow .rhosts, .login, etc.  Allow .tex (for LaTeX).  */
-    if (base[0] == 0 ||
-        (base[0] == '.' && !IS_DIR_SEP(base[1]) && !STREQ (base, ".tex"))) {
-      fprintf(stderr, "%s: Not %s to %s (%s = %s).\n",
-              program_invocation_name, ok_type_name[action], fname,
-              check_var, open_choice);
-      return false;
-    }
-  }
-#else
-  /* Other OSs don't have special names? */
-#endif
-
-  if (*open_choice == 'r' || *open_choice == 'n' || *open_choice == '0')
-    return true;
-
-  /* Paranoia supplied by Charles Karney...  */
-  if (kpse_absolute_p (fname, false)) {
-    const_string texmfoutput = kpse_var_value ("TEXMFOUTPUT");
-    /* Absolute pathname is only OK if TEXMFOUTPUT is set, it's not empty,
-       fname begins the TEXMFOUTPUT, and is followed by / */
-    if (!texmfoutput || *texmfoutput == '\0'
-        || fname != strstr (fname, texmfoutput)
-        || !IS_DIR_SEP(fname[strlen(texmfoutput)])) {
-      fprintf(stderr, "%s: Not %s to %s (%s = %s).\n",
-              program_invocation_name, ok_type_name[action], fname,
-              check_var, open_choice);
-      return false;
-    }
-  }
-  /* For all pathnames, we disallow "../" at the beginning or "/../"
-     anywhere.  */
-  if (fname[0] == '.' && fname[1] == '.' && IS_DIR_SEP(fname[2])) {
-    fprintf(stderr, "%s: Not %s to %s (%s = %s).\n",
-            program_invocation_name, ok_type_name[action], fname,
-            check_var, open_choice);
-    return false;
-  } else {
-    /* Check for "/../".  Since more than one characted can be matched
-       by IS_DIR_SEP, we cannot use "/../" itself. */
-    const_string dotpair = strstr(fname, "..");
-    while (dotpair) {
-      /* If dotpair[2] == DIR_SEP, then dotpair[-1] is well-defined,
-         because the "../" case was handled above. */
-      if (IS_DIR_SEP(dotpair[2]) && IS_DIR_SEP(dotpair[-1])) {
-        fprintf(stderr, "%s: Not %s to %s (%s = %s).\n",
-                program_invocation_name, ok_type_name[action], fname,
-                check_var, open_choice);
-        return false;
-      }
-      /* Continue after the dotpair. */
-      dotpair = strstr(dotpair+2, "..");
-    }
-  }
-
-  /* We passed all tests.  */
-  return true;
-}
-
-boolean openinnameok P1C(const_string, fname)
-{
-    /* For input default to all. */
-    return opennameok (fname, "openin_any", "a", ok_reading);
-}
-
-boolean openoutnameok P1C(const_string, fname)
-{
-    /* For output, default to paranoid. */
-    return opennameok (fname, "openout_any", "p", ok_writing);
-}
 /* 
   piped I/O
  */
@@ -1780,13 +1649,13 @@ boolean openoutnameok P1C(const_string, fname)
    closed using pclose().
 */
 
-#if defined(pdfTeX) || defined(luaTeX)
+#if defined(pdfTeX)
 
 static FILE *pipes [] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                          NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 
 boolean
-open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
+open_in_or_pipe (FILE **f_ptr, int filefmt, const_string fopen_mode)
 {
     string fname = NULL;
     int i; /* iterator */
@@ -1798,13 +1667,8 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
     if (shellenabledp && *(nameoffile+1) == '|') {
       /* the user requested a pipe */
       *f_ptr = NULL;
-      fname = (string)xmalloc(strlen((const_string)(nameoffile+1))+1);
+      fname = xmalloc(strlen((const_string)(nameoffile+1))+1);
       strcpy(fname,(const_string)(nameoffile+1));
-#if !defined(pdfTeX)
-      if (fullnameoffile)
-         free (fullnameoffile);
-      fullnameoffile = xstrdup (fname);
-#endif
       recorder_record_input (fname + 1);
       *f_ptr = runpopen(fname+1,"r");
       free(fname);
@@ -1815,7 +1679,7 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
         }
       }
       if (*f_ptr)
-        setvbuf (*f_ptr,(char *)NULL,_IOLBF,0);
+        setvbuf (*f_ptr,NULL,_IOLBF,0);
 
       return *f_ptr != NULL;
     }
@@ -1825,7 +1689,7 @@ open_in_or_pipe P3C(FILE **, f_ptr,  int, filefmt,  const_string, fopen_mode)
 
 
 boolean
-open_out_or_pipe P2C(FILE **, f_ptr,  const_string, fopen_mode)
+open_out_or_pipe (FILE **f_ptr, const_string fopen_mode)
 {
     string fname;
     int i; /* iterator */
@@ -1838,7 +1702,7 @@ open_out_or_pipe P2C(FILE **, f_ptr,  const_string, fopen_mode)
 	
     if (shellenabledp && *(nameoffile+1) == '|') {
       /* the user requested a pipe */
-      fname = (string)xmalloc(strlen((const_string)(nameoffile+1))+1);
+      fname = xmalloc(strlen((const_string)(nameoffile+1))+1);
       strcpy(fname,(const_string)(nameoffile+1));
       if (strchr (fname,' ')==NULL && strchr(fname,'>')==NULL) {
         /* mp and mf currently do not use this code, but it 
@@ -1861,7 +1725,7 @@ open_out_or_pipe P2C(FILE **, f_ptr,  const_string, fopen_mode)
       }
 
       if (*f_ptr)
-        setvbuf(*f_ptr,(char *)NULL,_IOLBF,0);
+        setvbuf(*f_ptr,NULL,_IOLBF,0);
 
       return *f_ptr != NULL;
     }
@@ -1871,7 +1735,7 @@ open_out_or_pipe P2C(FILE **, f_ptr,  const_string, fopen_mode)
 
 
 void
-close_file_or_pipe P1C(FILE *, f)
+close_file_or_pipe (FILE *f)
 {
   int i; /* iterator */
 
@@ -1894,7 +1758,7 @@ close_file_or_pipe P1C(FILE *, f)
    variable `interrupt'; then they will do everything needed.  */
 #ifdef WIN32
 /* Win32 doesn't set SIGINT ... */
-BOOL WINAPI
+static BOOL WINAPI
 catch_interrupt (DWORD arg)
 {
   switch (arg) {
@@ -1909,7 +1773,7 @@ catch_interrupt (DWORD arg)
 }
 #else /* not WIN32 */
 static RETSIGTYPE
-catch_interrupt P1C (int, arg)
+catch_interrupt (int arg)
 {
   interrupt = 1;
 #ifdef OS2
@@ -1927,8 +1791,8 @@ catch_interrupt P1C (int, arg)
    good a place as any.  */
 
 void
-get_date_and_time P4C(integer *, minutes,  integer *, day,
-                      integer *, month,  integer *, year)
+get_date_and_time (integer *minutes,  integer *day,
+                   integer *month,  integer *year)
 {
   time_t myclock = time ((time_t *) 0);
   struct tm *tmptr = localtime (&myclock);
@@ -1959,7 +1823,7 @@ get_date_and_time P4C(integer *, minutes,  integer *, day,
 #ifdef WIN32
     SetConsoleCtrlHandler(catch_interrupt, TRUE);
 #else /* not WIN32 */
-    RETSIGTYPE (*old_handler) P1H(int);
+    RETSIGTYPE (*old_handler) (int);
     
     old_handler = signal (SIGINT, catch_interrupt);
     if (old_handler != SIG_DFL)
@@ -1973,7 +1837,7 @@ get_date_and_time P4C(integer *, minutes,  integer *, day,
  Getting a high resolution time.
  */
 void
-get_seconds_and_micros P2C(integer *, seconds,  integer *, micros)
+get_seconds_and_micros (integer *seconds,  integer *micros)
 {
 #if defined (HAVE_GETTIMEOFDAY)
   struct timeval tv;
@@ -1996,7 +1860,7 @@ get_seconds_and_micros P2C(integer *, seconds,  integer *, micros)
   Generating a better seed numbers
   */
 integer
-getrandomseed()
+getrandomseed(void)
 {
 #if defined (HAVE_GETTIMEOFDAY)
   struct timeval tv;
@@ -2020,14 +1884,18 @@ getrandomseed()
 
 #ifndef XeTeX /* for XeTeX, we have a replacement function in XeTeX_ext.c */
 boolean
-input_line P1C(FILE *, f)
+input_line (FILE *f)
 {
   int i = EOF;
 
   /* Recognize either LF or CR as a line terminator.  */
+#ifdef pTeX
+  last = input_line2(f, buffer, first, bufsize, &i);
+#else /* pTeX */
   last = first;
   while (last < bufsize && (i = getc (f)) != EOF && i != '\n' && i != '\r')
     buffer[last++] = i;
+#endif /* pTeX */
 
   if (i == EOF && errno != EINTR && last == first)
     return false;
@@ -2057,10 +1925,15 @@ input_line P1C(FILE *, f)
     --last;
 
   /* Don't bother using xord if we don't need to.  */
-#if !defined(Aleph) && !defined(luaTeX)
+#if !defined(Aleph)
   for (i = first; i <= last; i++)
      buffer[i] = xord[buffer[i]];
 #endif
+
+#ifdef pTeX
+  for (i = last+1; (i < last + 5 && i < bufsize) ; i++)
+    buffer[i] = '\0';
+#endif /* pTeX */
 
     return true;
 }
@@ -2076,10 +1949,10 @@ static const_string edit_value = EDITOR;
    actual filename starts; FNLENGTH is how long the filename is.  */
    
 void
-calledit P4C(packedASCIIcode *, filename,
-             poolpointer, fnstart,
-             integer, fnlength,
-             integer, linenumber)
+calledit (packedASCIIcode *filename,
+          poolpointer fnstart,
+          integer fnlength,
+          integer linenumber)
 {
   char *temp, *command;
   char c;
@@ -2104,7 +1977,7 @@ calledit P4C(packedASCIIcode *, filename,
 
   /* Construct the command string.  The `11' is the maximum length an
      integer might be.  */
-  command = (string) xmalloc (strlen (edit_value) + fnlength + 11);
+  command = xmalloc (strlen (edit_value) + fnlength + 11);
 
   /* So we can construct it as we go.  */
   temp = command;
@@ -2151,7 +2024,7 @@ calledit P4C(packedASCIIcode *, filename,
   *temp = 0;
 
   /* Execute the command.  */
-#ifdef WIN32
+#ifdef __MINGW32__
   /* Win32 reimplementation of the system() command
      provides opportunity to call it asynchronously */
   if (win32_system(command, true) != 0 )
@@ -2184,7 +2057,7 @@ calledit P4C(packedASCIIcode *, filename,
    opposite-endianness of whatever they are now.  */
 
 static void
-swap_items P3C(char *, p,  int, nitems,  int, size)
+swap_items (char *p, int nitems, int size)
 {
   char temp;
 
@@ -2254,9 +2127,9 @@ swap_items P3C(char *, p,  int, nitems,  int, size)
 
 void
 #ifdef XeTeX
-do_dump P4C(char *, p,  int, item_size,  int, nitems,  gzFile, out_file)
+do_dump (char *p, int item_size, int nitems,  gzFile out_file)
 #else
-do_dump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, out_file)
+do_dump (char *p, int item_size, int nitems,  FILE *out_file)
 #endif
 {
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_DUMP_SHARE)
@@ -2269,8 +2142,8 @@ do_dump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, out_file)
   if (fwrite (p, item_size, nitems, out_file) != nitems)
 #endif
     {
-      fprintf (stderr, "! Could not write %d %d-byte item(s).\n",
-               nitems, item_size);
+      fprintf (stderr, "! Could not write %d %d-byte item(s) to %s.\n",
+               nitems, item_size, nameoffile+1);
       uexit (1);
     }
 
@@ -2286,9 +2159,9 @@ do_dump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, out_file)
 
 void
 #ifdef XeTeX
-do_undump P4C(char *, p,  int, item_size,  int, nitems,  gzFile, in_file)
+do_undump (char *p, int item_size, int nitems, gzFile in_file)
 #else
-do_undump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, in_file)
+do_undump (char *p, int item_size, int nitems, FILE *in_file)
 #endif
 {
 #ifdef XeTeX
@@ -2296,41 +2169,17 @@ do_undump P4C(char *, p,  int, item_size,  int, nitems,  FILE *, in_file)
 #else
   if (fread (p, item_size, nitems, in_file) != (size_t) nitems)
 #endif
-    FATAL2 ("Could not undump %d %d-byte item(s)", nitems, item_size);
+    FATAL3 ("Could not undump %d %d-byte item(s) from %s",
+            nitems, item_size, nameoffile+1);
 
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_DUMP_SHARE)
   swap_items (p, nitems, item_size);
 #endif
 }
 
-/* Look up VAR_NAME in texmf.cnf; assign either the value found there or
-   DFLT to *VAR.  */
-
-void
-setupboundvariable P3C(integer *, var,  const_string, var_name,  integer, dflt)
-{
-  string expansion = kpse_var_value (var_name);
-  *var = dflt;
-
-  if (expansion) {
-    integer conf_val = atoi (expansion);
-    /* It's ok if the cnf file specifies 0 for extra_mem_{top,bot}, etc.
-       But negative numbers are always wrong.  */
-    if (conf_val < 0 || (conf_val == 0 && dflt > 0)) {
-      fprintf (stderr,
-               "%s: Bad value (%ld) in texmf.cnf for %s, keeping %ld.\n",
-               program_invocation_name,
-               (long) conf_val, var_name + 1, (long) dflt);
-    } else {
-      *var = conf_val; /* We'll make further checks later.  */
-    }
-    free (expansion);
-  }
-}
-
 /* FIXME -- some (most?) of this can/should be moved to the Pascal/WEB side. */
 #if defined(TeX) || defined(MF)
-#if !defined(pdfTeX) && !defined(luaTeX)
+#if !defined(pdfTeX)
 static void
 checkpoolpointer (poolpointer poolptr, size_t len)
 {
@@ -2350,7 +2199,7 @@ maketexstring(const_string s)
   size_t len;
 #ifdef XeTeX
   UInt32 rval;
-  unsigned char* cp = (unsigned char*)s;
+  const unsigned char* cp = (const unsigned char*)s;
 #endif
   assert (s != 0);
   len = strlen(s);
@@ -2385,7 +2234,7 @@ maketexstring(const_string s)
 #endif /* !pdfTeX */
 
 strnumber
-makefullnamestring()
+makefullnamestring(void)
 {
   return maketexstring(fullnameoffile);
 }
@@ -2403,8 +2252,8 @@ getjobname(strnumber name)
 #endif
 
 #if defined(TeX)
-int
-compare_paths P2C(const_string, p1, const_string, p2)
+static int
+compare_paths (const_string p1, const_string p2)
 {
   int ret;
   while (
@@ -2423,13 +2272,14 @@ compare_paths P2C(const_string, p1, const_string, p2)
 #ifdef XeTeX /* the string pool is UTF-16 but we want a UTF-8 string */
 
 string
-gettexstring P1C(strnumber, s)
+gettexstring (strnumber s)
 {
   unsigned bytesToWrite = 0;
   poolpointer len, i, j;
   string name;
   len = strstart[s + 1 - 65536L] - strstart[s - 65536L];
-  name = (string)xmalloc(len * 3 + 1); /* max UTF16->UTF8 expansion (code units, not bytes) */
+  name = xmalloc(len * 3 + 1); /* max UTF16->UTF8 expansion
+                                  (code units, not bytes) */
   for (i = 0, j = 0; i < len; i++) {
     unsigned c = strpool[i + strstart[s - 65536L]];
     if (c >= 0xD800 && c <= 0xDBFF) {
@@ -2468,7 +2318,7 @@ gettexstring P1C(strnumber, s)
 #else
 
 string
-gettexstring P1C(strnumber, s)
+gettexstring (strnumber s)
 {
   poolpointer len;
   string name;
@@ -2494,15 +2344,14 @@ gettexstring P1C(strnumber, s)
 #endif /* not XeTeX */
 
 boolean
-isnewsource P2C(strnumber, srcfilename, int, lineno)
+isnewsource (strnumber srcfilename, int lineno)
 {
   char *name = gettexstring(srcfilename);
   return (compare_paths(name, last_source_name) != 0 || lineno != last_lineno);
 }
 
 void
-remembersourceinfo P2C(strnumber, srcfilename,
-                                          int, lineno)
+remembersourceinfo (strnumber srcfilename, int lineno)
 {
   if (last_source_name)
        free(last_source_name);
@@ -2511,8 +2360,7 @@ remembersourceinfo P2C(strnumber, srcfilename,
 }
 
 poolpointer
-makesrcspecial P2C(strnumber, srcfilename,
-                                  int, lineno)
+makesrcspecial (strnumber srcfilename, int lineno)
 {
   poolpointer oldpoolptr = poolptr;
   char *filename = gettexstring(srcfilename);
@@ -2613,7 +2461,7 @@ connection with the use or performance of this software.
 #define TWEXP_28 (1.0/268435456.0)
 
 integer
-ztakefraction P2C(integer, p, integer, q)     /* Approximate p*q/2^28 */
+ztakefraction (integer p, integer q)     /* Approximate p*q/2^28 */
 {	register double d;
 	register integer i;
 	d = (double)p * (double)q * TWEXP_28;
@@ -2640,7 +2488,7 @@ ztakefraction P2C(integer, p, integer, q)     /* Approximate p*q/2^28 */
 }
 
 integer
-ztakescaled P2C(integer, p, integer, q)		/* Approximate p*q/2^16 */
+ztakescaled (integer p, integer q)		/* Approximate p*q/2^16 */
 {	register double d;
 	register integer i;
 	d = (double)p * (double)q * TWEXP_16;
@@ -2671,7 +2519,7 @@ ztakescaled P2C(integer, p, integer, q)		/* Approximate p*q/2^16 */
    and 8/1.  No pair of integers less than 2^31 has such a ratio.
 */
 integer
-zmakefraction P2C(integer, p, integer, q)	/* Approximate 2^28*p/q */
+zmakefraction (integer p, integer q)	/* Approximate 2^28*p/q */
 {	register double d;
 	register integer i;
 #ifdef DEBUG
@@ -2699,7 +2547,7 @@ zmakefraction P2C(integer, p, integer, q)	/* Approximate 2^28*p/q */
    and 2^15/1.  No pair of integers less than 2^31 has such a ratio.
 */
 integer
-zmakescaled P2C(integer, p, integer, q)		/* Approximate 2^16*p/q */
+zmakescaled (integer p, integer q)		/* Approximate 2^16*p/q */
 {	register double d;
 	register integer i;
 #ifdef DEBUG
@@ -2746,77 +2594,9 @@ zmakescaled P2C(integer, p, integer, q)		/* Approximate 2^16*p/q */
 #undef X11WIN
 #endif
 
-#ifdef AMIGAWIN
-extern int mf_amiga_initscreen P1H(void);
-extern void mf_amiga_updatescreen P1H(void);
-extern void mf_amiga_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_amiga_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef EPSFWIN
-extern int mf_epsf_initscreen P1H(void);
-extern void mf_epsf_updatescreen P1H(void);
-extern void mf_epsf_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_epsf_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef HP2627WIN
-extern int mf_hp2627_initscreen P1H(void);
-extern void mf_hp2627_updatescreen P1H(void);
-extern void mf_hp2627_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_hp2627_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef MFTALKWIN
-extern int mf_mftalk_initscreen P1H(void);
-extern void mf_mftalk_updatescreen P1H(void);
-extern void mf_mftalk_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_mftalk_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef NEXTWIN
-extern int mf_next_initscreen P1H(void);
-extern void mf_next_updatescreen P1H(void);
-extern void mf_next_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_next_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef REGISWIN
-extern int mf_regis_initscreen P1H(void);
-extern void mf_regis_updatescreen P1H(void);
-extern void mf_regis_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_regis_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef SUNWIN
-extern int mf_sun_initscreen P1H(void);
-extern void mf_sun_updatescreen P1H(void);
-extern void mf_sun_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_sun_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef TEKTRONIXWIN
-extern int mf_tektronix_initscreen P1H(void);
-extern void mf_tektronix_updatescreen P1H(void);
-extern void mf_tektronix_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_tektronix_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef UNITERMWIN
-extern int mf_uniterm_initscreen P1H(void);
-extern void mf_uniterm_updatescreen P1H(void);
-extern void mf_uniterm_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_uniterm_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef WIN32WIN
-extern int mf_win32_initscreen P1H(void);
-extern void mf_win32_updatescreen P1H(void);
-extern void mf_win32_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_win32_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-#ifdef X11WIN
-extern int mf_x11_initscreen P1H(void);
-extern void mf_x11_updatescreen P1H(void);
-extern void mf_x11_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_x11_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-#endif
-extern int mf_trap_initscreen P1H(void);
-extern void mf_trap_updatescreen P1H(void);
-extern void mf_trap_blankrectangle P4H(screencol, screencol, screenrow, screenrow);
-extern void mf_trap_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
-
+/* Prototypes for Metafont display routines: mf_XXX_initscreen,
+   mf_XXX_updatescreen, mf_XXX_blankrectangle, and mf_XXX_paintrow.  */
+#include <window/mfdisplay.h>
 
 /* This variable, `mfwsw', contains the dispatch tables for each
    terminal.  We map the Pascal calls to the routines `init_screen',
@@ -2826,11 +2606,11 @@ extern void mf_trap_paintrow P4H(screenrow, pixelcolor, transspec, screencol);
 
 struct mfwin_sw
 {
-  char *mfwsw_type;		/* Name of terminal a la TERMCAP.  */
-  int (*mfwsw_initscreen) P1H(void);
-  void (*mfwsw_updatescrn) P1H(void);
-  void (*mfwsw_blankrect) P4H(screencol, screencol, screenrow, screenrow);
-  void (*mfwsw_paintrow) P4H(screenrow, pixelcolor, transspec, screencol);
+  const char *mfwsw_type;	/* Name of terminal a la TERMCAP.  */
+  int (*mfwsw_initscreen) (void);
+  void (*mfwsw_updatescrn) (void);
+  void (*mfwsw_blankrect) (screencol, screencol, screenrow, screenrow);
+  void (*mfwsw_paintrow) (screenrow, pixelcolor, transspec, screencol);
 } mfwsw[] =
 {
 #ifdef AMIGAWIN
@@ -2902,7 +2682,7 @@ static struct mfwin_sw *mfwp;
 /* This returns true if we can do window operations, else false.  */
 
 boolean
-initscreen P1H(void)
+initscreen (void)
 {
   /* If MFTERM is set, use it.  */
   const_string tty_type = kpse_var_value ("MFTERM");
@@ -2933,7 +2713,7 @@ initscreen P1H(void)
      under Emacs, the first one.  */
   for (mfwp = mfwsw; mfwp->mfwsw_type != NULL; mfwp++) {
     if (!strncmp (mfwp->mfwsw_type, tty_type, strlen (mfwp->mfwsw_type))
-	|| STREQ (tty_type, "emacs"))
+	|| STREQ (tty_type, "emacs")) {
       if (mfwp->mfwsw_initscreen)
 	return ((*mfwp->mfwsw_initscreen) ());
       else {
@@ -2941,6 +2721,7 @@ initscreen P1H(void)
                  tty_type);
         break;
       }
+    }
   }
   
   /* We disable X support by default, since most sites don't use it, and
@@ -2968,7 +2749,7 @@ initscreen P1H(void)
 /* Make sure everything is visible.  */
 
 void
-updatescreen P1H(void)
+updatescreen (void)
 {
   if (mfwp->mfwsw_updatescrn)
     (*mfwp->mfwsw_updatescrn) ();
@@ -2979,8 +2760,8 @@ updatescreen P1H(void)
    the background color.  */
 
 void
-blankrectangle P4C(screencol, left, screencol, right,
-                   screenrow, top, screenrow, bottom)
+blankrectangle (screencol left, screencol right,
+                screenrow top, screenrow bottom)
 {
   if (mfwp->mfwsw_blankrect)
     (*mfwp->mfwsw_blankrect) (left, right, top, bottom);
@@ -2992,8 +2773,8 @@ blankrectangle P4C(screencol, left, screencol, right,
    switch colors.  This goes on for VECTOR_SIZE transitions.  */
 
 void
-paintrow P4C(screenrow, row, pixelcolor, init_color,
-             transspec, transition_vector, screencol, vector_size)
+paintrow (screenrow row, pixelcolor init_color,
+          transspec transition_vector, screencol vector_size)
 {
   if (mfwp->mfwsw_paintrow)
     (*mfwp->mfwsw_paintrow) (row, init_color, transition_vector, vector_size);

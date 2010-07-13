@@ -1,3 +1,254 @@
+2010-04-21  Karl Berry  <karl@tug.org>
+
+	* Makefile.am (EXTRA_DIST),
+	* win32main.c: rm per Akira.
+
+2010-04-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c, lib.h: Remove luaTeX specific code.
+
+	* lib.h: Move extern declaration of ptexbanner from here
+	to ../pdftexdir/ptexlib.h (instatiated in texmfmp.c).
+
+2010-04-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* main.c, texmfmp.c: Remove extern declaration of mainbody,
+	is in lib.h.
+	* openclose.c (recorder_enabled, output_directory): Remove
+	extern declarations, are in lib.h.
+	* lib.h: Move extern declaration of fullnameoffile to here ...
+	* texmfmp.c: ... from here ...
+	* openclose.c: ... and from here.
+	* texmfmp.c [XeTeX]: Move extern declarations of papersize and
+	outputdriver from here to ../xetexdir/XeTeX_ext.h.
+
+	* Makefile.am, openclose.c, printversion.c:
+	Integrate libp.a for pTeX.
+
+2010-04-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (maininit) [__SyncTeX__]: omit warning about no
+	SyncTeX for pTeX.
+
+2010-04-11  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c,
+	* printversion.c,
+	* openclose.c,
+	* chartostring.c,
+	* basechsuffix.c: remove useless casts to (string) or (char *),
+	etc. of xmalloc.
+
+2010-03-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* openclose.c (open_input): Fixed a typo.
+	From Akira Kakuto <kakuto@fuk.kindai.ac.jp>, 30 Mar 2010 12:33:33.
+
+2010-03-30  Karl Berry  <karl@tug.org>
+
+	* (recorder_start): throw in pid in recorder_name so parallel builds
+	have a chance of working.  Report from
+	Kirill Smelkov, Debian bug 575731, tex-k mail 29 Mar 2010 06:18:35.
+
+2010-03-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* setupvar.c (setupboundvariable): Fix off by one error in msg.
+
+2010-03-05  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (setupboundvariable): Moved from here ...
+	* setupvar.c (new): ... to here for use in non-engine programs.
+	* lib.h (setupboundvariable): Moved from ../texmfmp.h to here.
+	* Makefile.am (lib_a_SOURCES): Added setupvar.c.
+
+2010-02-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (IPC) [WIN32]: #include <winsock2.h> instead of
+	<sys/socket.h> and <fcntl.h>, use ioctlsocket() instead of
+	fcnt() for non-blocking, and use Sleep() instead of sleep().
+
+2010-02-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: #include <window/mfdisplay.h> instead of externs.
+
+2010-02-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (calledit): Use win32_system() with two args only
+	for MinGW32, native WIN32 uses only one arg.
+	(catch_interrupt) [WIN32]: Declare as static.
+
+2010-02-01  Karl Berry  <karl@tug.org>
+
+	* openclose.c (open_input): do not try prepending TEXMFOUTPUT for
+	reading if the filename is absolute.
+
+2010-01-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (mk_shellcmdlist): Declare string param as const.
+
+2010-01-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (maininit) [__SyncTeX__]: omit warning about no
+	SyncTeX for luaTeX.
+	(gettexstring): Declare as static for luaTeX.
+
+2010-01-16  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c (do_dump, do_undump): give full name of file
+	in fatal message when something cannot be (un)dumped.
+
+2010-01-02  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c (runsystem): doc fix.
+
+2009-12-23  Karl Berry  <karl@tug.org>
+
+	* usage.c (usagehelp)
+	* texmfmp.c (BUG_ADDRESS): default to tex-k@tug.org, no @mail.
+
+2009-12-01  Alexander Cherepanov  <cherepan@mccme.ru>
+
+	* texmfmp.c (parse_first_line): initialize s to NULL.
+	* usage.c: doc fix.
+
+2009-11-12  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (shell_cmd_is_allowed): Check for invalid single
+	quote also within quoted arguments.
+	Reported by Akira Kakuto <kakuto@fuk.kindai.ac.jp>,
+	diagnosed by Manuel P\'egouri\'e-Gonnard <mpg@elzevir.fr>.
+
+2009-10-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (openinnameok, openoutnameok): Moved to Kpathsea
+	and renamed kpse_{in,out}_name_ok.
+
+2009-09-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (last_lineno): MAYBE_STATIC for luaTeX.
+	(srcspecialsoption, parse_src_specials_option): static but not
+	used for luaTeX.
+
+2009-09-05  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (runpopen): Used only for pdfTeX and luaTeX.
+	(last_source_name etc): Not used by MF.
+	(ipcpage): Avoid unconstifying cast.
+	(compare_paths): Declare as static.
+	(mfwin_sw): Constify member string.
+
+2009-09-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (initscreen): Add explicit braces.
+	(getrandomseed, makefullnamestring): ANSI C definition.
+
+2009-08-27  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* lib.h (NOT_WEB2C): New preprocessor macro, if defined prevents
+	declaration of argc, argv, cmdline, and mainbody (from main.c).
+
+2009-08-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* openclose.c (open_output): Bugfix? local var 'fname' was
+	shadowed by a second one.  Avoid memory leak.
+
+2009-08-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* lib.h, texmfmp.c, version.c: Constify ptexbanner and
+	versionstring.
+
+2009-08-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Avoid maximal compiler warnings.
+	* openclose.c (recorder_record_name): Constify string param1.
+	(recorder_record_{name,input,output}): Rename param
+	nameoffile=>name, not to shadow global var.
+
+2009-08-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* lib.h (ptexbanner): Add decl for pdfTeX and luaTeX.
+	* texmfmp.c (ptexbanner): Drop decl but keep initializer.
+	* printversion.c (kpathsea_version_string):
+	#include <kpathsea/version.h> and drop extern declaration.
+
+2009-08-17  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c (shell_cmd_is_allowed): Change param1 from 'char **'
+	to 'const char *'.
+	(runsystem, runpopen): Constify string params.
+
+2009-07-24  Martin Schröder  <martin@oneiros.de>
+
+	* printversion.c: don't nest extern declarations
+
+2009-06-23  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* basechsuffix.c, chartostring.c, coredump.c, eofeoln.c,
+	fprintreal.c, input2int.c, inputint.c, main.c, openclose.c,
+	printversion.c, texmfmp.c, uexit.c, usage.c, win32main.c,
+	zround.c: drop P?C, P?H, use ANSI C function declarations.
+
+2009-06-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am (AM_CFLAGS): enable compiler warnings.
+	* lib.h (new): declarations for *.c from ../cpascal.h.
+	* basechsuffix.c, chartostring.c, eofeoln.c, fprintreal.c,
+	input2int.c, inputint.c, main.c, openclose.c, printversion.c,
+	zround.c: #include "lib.h" to declare function prototypes.
+	* openclose.c: declare internal function recorder_record_name as
+	static; declare param of recorder_record_input and
+	recorder_record_output as const_string as from ../cpascal.h.
+
+2009-06-01  Karl Berry  <karl@tug.org>
+
+	* printversion.c (printversionandexit): it's 2009.
+	Also, remove special references to kpathsea author(s) etc.
+
+2009-03-29  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: remove all references to (Web2C version of) MP.
+
+2009-05-18  Karl Berry  <karl@tug.org>
+
+	* openclose.c (recorder_start): use output_directory for the .fls
+	  file, if it has been specified with --output-directory.
+	  metapost mail from Nicola, 16 May 2009 13:41:36.
+
+2009-03-29  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: remove all references to Omega, eOmega, and pdfeTeX.
+
+2009-03-28  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c (mk_shellcmdlist, shell_cmd_is_allowed): not static,
+	so luatex can access.  From Taco.
+
+2009-03-27  Taco Hoekwater  <taco@luatex.org>
+
+	* texmfmp.c (parse_options): add #ifndef luaTeX guard for 
+	--src-specials, because luaTeX does not implement it.
+	(parse_src_specials_option): add #ifndef luaTeX guard for
+	 the same reason.
+
+2009-03-02  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c (long_options): make -enable-write18 and -disable-write18
+	synonyms for -shell-escape and -no-shell-escape.
+
+2009-02-26  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c: Implementation of restricted shell escapes from Akira.
+	(mk_shellcmdlist, init_shell_escape, char_needs_quote, Isspace,
+	shell_cmd_is_allowed, runsystem, runpopen): new fns.
+	(long_options, parse_cmd_line): new option --shell-restricted.
+	(main): call init_shell_escape.
+	(open_in_or_pipe, open_out_or_pipe): call runpopen.
+
+2009-02-06  Karl Berry  <karl@tug.org>
+
+	* texmfmp.c (maininit) [__SyncTeX__]: omit warning about no
+	SyncTeX for Omega and MF/MP.
+
 2008-03-24  Karl Berry  <karl@tug.org>
 
 	* printversion.c: it's 2008.
@@ -38,7 +289,7 @@
 	* openclose.c (recorder_record_name): fflush the recorder file,
 	since this is for debugging.  Suggested by George White.
 
-2006-12-28  Martin Schr�der <martin@oneiros.de>
+2006-12-28  Martin Schröder <martin@oneiros.de>
 
 	* texmfmp.c: fixed some warnings raised by gcc for unused variables
 	and different signedness of arguments

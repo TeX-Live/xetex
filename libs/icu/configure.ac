@@ -1,0 +1,76 @@
+dnl Process this file with autoconf to produce a configure script.
+dnl
+dnl   Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+dnl
+dnl   This file is free software; the copyright holder
+dnl   gives unlimited permission to copy and/or distribute it,
+dnl   with or without modifications, as long as this notice is preserved.
+dnl
+m4_define([icu_version], [4.4.1])[]dnl using modified icu/source source tree
+AC_INIT([icu for TeX Live], icu_version, [tex-k@tug.org])
+AC_PREREQ([2.65])
+AC_CONFIG_SRCDIR([icu-]icu_version[/common/unicode/utypes.h])
+AC_CONFIG_AUX_DIR([../../build-aux])
+AC_CONFIG_MACRO_DIR([../../m4])
+
+AM_INIT_AUTOMAKE([foreign])
+AM_MAINTAINER_MODE
+KPSE_CANONICAL_HOST
+
+AM_CONDITIONAL([build], [test "x$enable_build" != xno])
+
+AM_CONDITIONAL([cross], [test "x$cross_compiling" = xyes])
+
+AC_PROG_LN_S
+
+ICU_TREE=[icu-]icu_version
+AC_SUBST([ICU_TREE])
+
+# Prepare configure arguments for ICU.
+# Can not share the cache file for various reasons.
+icu_config="'\${abs_srcdir}'/$ICU_TREE/configure --enable-static --disable-shared"
+icu_config="$icu_config --disable-extras --disable-samples --disable-tests"
+if test "x$cache_file" != x/dev/null; then
+  icu_config="$icu_config -C"
+fi
+# Add '--disable-strict': required for MinGW32, otherwise reduce warnings.
+# Add '--disable-threads': required for FreeBSD, neither XeTeX nor BibTeXU use threads.
+# Add '--disable-dyload': neither XeTeX nor BibTeXU use plugins, new in ICU 4.4.
+icu_config="$icu_config --disable-strict --disable-threads --disable-dyload"
+
+# Add '--disable-utf16-string-check': gcc 4.4+ supports this, but
+# XeTeX/BibTeXU don't need it, and propagating the necessary compiler
+# flags as computed by ICU is not easy.
+icu_config="$icu_config --disable-utf16-string-check"
+AC_SUBST([icu_config])
+
+if test "x$cross_compiling" = xyes; then
+  icu_native_args="--build=$build_alias --host=$build_alias"
+  icu_build_args="--build=$build_alias --host=$host_alias --with-cross-build='\${abs_builddir}'/icu-native"
+else
+  icu_build_args="--build=$kpse_build_alias"
+  icu_native_args=
+fi
+eval "set x $ac_configure_args"
+shift
+for icu_arg
+do
+  case $icu_arg in
+  BUILD*=*) icu_arg=`echo "$icu_arg" | sed 's/^BUILD//'`; icu_list=native ;;
+  *) icu_list=build ;;
+  esac
+  case $icu_arg in
+  CC=* | CFLAGS=* | CPPFLAGS=* | CXX=* | CXXFLAGS=* | LDFLAGS=*) ;;
+  *) continue ;;
+  esac
+  case $icu_arg in
+  *\'*) icu_arg=`echo "$icu_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+  esac
+  eval icu_${icu_list}_args="\"\$icu_${icu_list}_args '\$icu_arg'\""
+done
+AC_SUBST([icu_build_args])
+AC_SUBST([icu_native_args])
+
+AC_CONFIG_FILES([Makefile include/Makefile include/unicode/Makefile include/layout/Makefile])
+
+AC_OUTPUT

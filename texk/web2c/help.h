@@ -10,9 +10,9 @@
    thing, the messages have a lot in common, so it's nice to have them
    in one place.)
 
-Copyright 1995, 1996 Karl Berry.
-Copyright 2001, 2003, 2004 Olaf Weber.
+Copyright 1995, 1996, 2009 Karl Berry.
 Copyright 2008 Taco Hoekwater.
+Copyright 2001, 2003, 2004 Olaf Weber.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 #ifdef BIBTEX
 const_string BIBTEXHELP[] = {
     "Usage: bibtex [OPTION]... AUXFILE[.aux]",
-    "  Write bibliography for entries in AUXFILE to AUXFILE.bbl.",
+    "  Write bibliography for entries in AUXFILE to AUXFILE.bbl,",
+    "  along with a log file AUXFILE.blg."
     "",
     "-min-crossrefs=NUMBER  include item after NUMBER cross-refs; default 2",
     "-terse                 do not print progress reports",
@@ -288,7 +289,7 @@ const_string OVP2OVFHELP[] = {
     "Usage: ovp2ovf [OPTION]... OVPFILE[.ovp] [OVFFILE[.ovf] [OFMFILE[.ofm]]]",
     "  Translate OVPFILE to OVFFILE and companion OFMFILE.",
     "  Default OVFFILE is basename of OVPFILE extended with `.ovf'.",
-    "  Default OFMFILE is OVFFILE extended with `.ofm'.",
+    "  Default OFMFILE is basename of OVFFILE extended with `.ofm'.",
     "",
     "-help                  display this help and exit",
     "-verbose               display progress reports",
@@ -308,6 +309,40 @@ const_string PATGENHELP[] = {
     NULL
 };
 #endif /* PATGEN */
+
+#ifdef PBIBTEX
+const_string PBIBTEXHELP[] = {
+"Usage: pbibtex [option] auxfile",
+"",
+"  -min-crossrefs=INTEGER     minimum number of cross-refs required",
+"                             for automatic cite_list inclusion (default 2).",
+"  -terse                     do silently.",
+"  -version                   print version information and exit.",
+"  -help                      print this message and exit.",
+"  -kanji={jis|euc|sjis|utf8} kanji code for output-file.",
+NULL };
+#endif /* PBIBTEX */
+
+#ifdef PDVITYPE
+const_string PDVITYPEHELP[] = {
+"Usage: pdvitype [option] dvifile",
+"",
+"  -dpi=REAL                  assumed device resolution in pixels per inch",
+"                             (default 300.0).",
+"  -magnification=INTEGER     overrride the postamble's magnification.",
+"  -max-pages=INTEGER         maximum number of pages (default 1000000).",
+"  -output-level=1..4         verbosity level.",
+"                                 1: terse, 2: medium-level, 3: verbose,",
+"                                 4: plus check for postamble(default).",
+"  -page-start=PAGE           type, e.g., `1.*.-5' to specify the first page",
+"                             with \\count0=1, \\count2=4.",
+"                             (see the TeX book chapter 15).",
+"  -show-opcodes              show opcodes in decimal.",
+"  -kanji={jis|euc|sjis|utf8} kanji code for output-file.",
+"  -version                   print version information and exit.",
+"  -help                      print this message and exit.",
+NULL };
+#endif /* PDVITYPE */
 
 #ifdef PKTOGF
 const_string PKTOGFHELP[] = {
@@ -357,6 +392,30 @@ const_string POOLTYPEHELP[] = {
     NULL
 };
 #endif /* POOLTYPE */
+
+#ifdef PPLTOTF
+const_string PPLTOTFHELP[] = {
+"Usage: ppltotf [option] plfile [tfmfile]",
+"",
+"  -verbose               output progress reports.",
+"  -version               print version information and exit.",
+"  -help                  print this message and exit.",
+"  -kanji={jis|euc|sjis|utf8}",
+"                         plfile kanji code.",
+NULL };
+#endif /* PPLTOTF */
+
+#ifdef PTFTOPL
+const_string PTFTOPLHELP[] = {
+"Usage: ptftopl [option] tfmfile [plfile]",
+"",
+"  -verbose               output progress reports.",
+"  -version               print version information and exit.",
+"  -help                  print this message and exit.",
+"  -kanji={jis|euc|sjis|utf8}",
+"                         plfile kanji code.",
+NULL };
+#endif /* PTFTOPL */
 
 #if defined (TANGLE) || defined (TANGLEBOOT)
 const_string TANGLEHELP[] = {
@@ -420,7 +479,7 @@ const_string VPTOVFHELP[] = {
     "Usage: vptovf [OPTION]... VPLFILE[.vpl] [VFFILE[.vf] [TFMFILE[.tfm]]]",
     "  Translate VPLFILE to VFFILE and companion TFMFILE.",
     "  Default VFFILE is basename of VPLFILE extended with `.vf'.",
-    "  Default TFMFILE is VFFILE extended with `.tfm'.",
+    "  Default TFMFILE is basename of VFFILE extended with `.tfm'.",
     "",
     "-help                  display this help and exit",
     "-verbose               display progress reports",

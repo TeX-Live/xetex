@@ -4,9 +4,6 @@
 #include "config.h"
 #include <kpathsea/c-pathmx.h>
 
-int argc;
-char **gargv;
-
 char buf[BUFSIZ], filename[PATH_MAX], args[100];
 char *file, *argp, *as, *cmd;
 
@@ -15,7 +12,7 @@ int tex = false;
 /* Replace the last (should be only) newline in S with a null.  */
 
 static void
-remove_newline P1C(string, s)
+remove_newline (string s)
 {
   char *temp = strrchr (s, '\n');
   if (temp == NULL)
@@ -31,7 +28,7 @@ remove_newline P1C(string, s)
 
 
 static char *
-insert_long P1C(string, cp)
+insert_long (string cp)
 {
   char tbuf[BUFSIZ];
   register int i;
@@ -46,7 +43,7 @@ insert_long P1C(string, cp)
 
 
 static void
-join P1C(string, cp)
+join (string cp)
 {
   char temp[BUFSIZ], *tp;
 
@@ -63,7 +60,7 @@ join P1C(string, cp)
 
 
 static void
-do_blanks P1C(int, indent)
+do_blanks (int indent)
 {
   register int i;
 
@@ -78,7 +75,7 @@ do_blanks P1C(int, indent)
 /* Return true if we have a whole write/writeln statement.  We determine
    this by matching parens, ignoring those within strings.  */
 static int
-whole P1C(string, cp)
+whole (string cp)
 {
   register int depth = 0;
 
@@ -112,7 +109,7 @@ whole P1C(string, cp)
 /* Skips to the next , or ), skipping over balanced paren pairs.  */
 
 static char *
-skip_balanced P1C(string, cp)
+skip_balanced (string cp)
 {
   register int depth = 0;
 
@@ -136,7 +133,7 @@ skip_balanced P1C(string, cp)
 /* Return true if c appears, except inside a quoted string */
 
 static int
-bare P2C(string, cp,  char, c)
+bare (string cp,  char c)
 {
   for (; *cp && *cp != c; ++cp)
     {
@@ -169,8 +166,8 @@ bare P2C(string, cp,  char, c)
    errors.  Ensures that it is the matching bracket that is replaced,
    not the first one.  */
 
-char *
-advance_cp P2C(char *, cp, int, lefts)
+static char *
+advance_cp (char *cp, int lefts)
 {
   char *cp1;
   char *cp2;
@@ -185,11 +182,11 @@ advance_cp P2C(char *, cp, int, lefts)
 }
 
 int
-main P2C(int, argc,  string *, argv)
+main (int argc,  string *argv)
 {
   register char *cp;
   int blanks_done, indent, i;
-  char *program_name = "";
+  const char *program_name = "";
 
   for (i = 1; i < argc; i++)
     {
@@ -361,7 +358,7 @@ main P2C(int, argc,  string *, argv)
                   && (STREQ (program_name, "vptovf")
                       || STREQ (program_name, "pltotf")
                       || STREQ (program_name, "ovp2ovf")
-                      || STREQ (program_name, "ofm2opl")))
+                      || STREQ (program_name, "opl2ofm")))
               || (((strncmp (cp, "buf", 3) == 0
 		    || strncmp (cp, "xdig", 4) == 0
 		    || strncmp (cp, "xext", 4) == 0
@@ -440,7 +437,7 @@ main P2C(int, argc,  string *, argv)
 	  *as = '\0';
 	  printf ("putc (%s, %s);\n", argp, filename);
 	}
-      else if (STREQ (args, "%s"))
+      else if (strcmp (args, "%s") == 0)
         printf ("Fputs (%s, %s\n", filename, argp);
       else
         printf ("fprintf (%s, \"%s\", %s\n", filename, args, argp);

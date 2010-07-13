@@ -45,7 +45,7 @@
 %     "mltex.ch", "char_sub.ch", or "charsub.ch".
 %
 % Except for MLTeX, the new code in this file is in the public domain.
-% 
+%
 % The module numbers in this change file refer to TEX.WEB 3.14159 as
 % of March, 1995 (published as Donald E. Knuth, TeX: The Program,
 % Volume B of Computers & Typesetting).
@@ -204,7 +204,7 @@ versions of the program.
 @d file_name_size == maxint
 @d ssup_error_line = 255
 @d ssup_max_strings == 2097151
-{Larger values than 65536 cause the arrays consume much more memory.}
+{Larger values than 65536 cause the arrays to consume much more memory.}
 @d ssup_trie_opcode == 65535
 @d ssup_trie_size == @"3FFFFF
 
@@ -372,7 +372,7 @@ for i:=@'177 to @'377 do xchr[i]:=i;
 for i:=0 to 255 do mubyte_read[i]:=null;
 for i:=0 to 255 do mubyte_write[i]:=0;
 for i:=0 to 128 do mubyte_cswrite[i]:=null;
-mubyte_keep := 0; mubyte_start := false; 
+mubyte_keep := 0; mubyte_start := false;
 write_noexpanding := false; cs_converting := false;
 special_printing := false; message_printing := false;
 no_convert := false; active_noconvert := false;
@@ -901,7 +901,7 @@ end;
    end
 
 @<Error hand...@>=
-procedure jump_out;
+noreturn procedure jump_out;
 begin
 close_files_and_terminate;
 do_final_end;
@@ -956,6 +956,24 @@ been commented~out.
                       str_start[edit_file.name_field];
     edit_line:=line;
     jump_out;
+@z
+
+@x [6.93] l.2056 - Declare fatal_error as noreturn.
+procedure fatal_error(@!s:str_number); {prints |s|, and that's it}
+@y
+noreturn procedure fatal_error(@!s:str_number); {prints |s|, and that's it}
+@z
+
+@x [6.94] l.2065 - Declare overflow as noreturn.
+procedure overflow(@!s:str_number;@!n:integer); {stop due to finiteness}
+@y
+noreturn procedure overflow(@!s:str_number;@!n:integer); {stop due to finiteness}
+@z
+
+@x [6.95] l.2084 - Declare confusion as noreturn.
+procedure confusion(@!s:str_number);
+@y
+noreturn procedure confusion(@!s:str_number);
 @z
 
 % [7.104] `remainder' is a library routine on some systems, so change
@@ -1143,7 +1161,7 @@ else  begin if (font(p)>font_max) then print_char("*")
 % can not be translated. For example, messages printed by |print_mode|
 % from [16.211] use different word order and [46.1049] use different
 % word order and words are declined.
-@x [16.211] l.4256 
+@x [16.211] l.4256
 begin if m>0 then
   case m div (max_command+1) of
   0:print("vertical");
@@ -1210,7 +1228,7 @@ page_depth:=0; page_max_depth:=0;
     print_int(nest[p].pg_field); print(" line");
     if nest[p].pg_field<>1 then print_char("s");
 @y
-    print_int(nest[p].pg_field); 
+    print_int(nest[p].pg_field);
     if nest[p].pg_field<>1 then print(" lines")
     else print(" line");
 @z
@@ -1533,7 +1551,7 @@ end;
 @x [18.266] - encTeX: \endmubyte primitive
 end_cs_name: print_esc("endcsname");
 @y
-end_cs_name: if chr_code = 10 then print_esc("endmubyte") 
+end_cs_name: if chr_code = 10 then print_esc("endmubyte")
              else print_esc("endcsname");
 @z
 
@@ -1698,7 +1716,7 @@ var k:0..buf_size; {an index into |buffer|}
     { Use |k| instead of |loc| for type correctness. }
     k := loc;
     cur_chr := read_buffer (k);
-    loc := k; incr (loc); 
+    loc := k; incr (loc);
     if (mubyte_token > 0) then
     begin
       state := mid_line;
@@ -1716,7 +1734,7 @@ else  begin start_cs:
    cur_chr := read_buffer (k); cat := cat_code (cur_chr);
    if (mubyte_in>0) and (not mubyte_incs) and
      ((mubyte_skip>0) or (cur_chr<>buffer[k])) then mubyte_incs := true;
-   incr (k); 
+   incr (k);
    if mubyte_token > 0 then
    begin
      state := mid_line;
@@ -1758,17 +1776,17 @@ if k>loc+1 then {multiletter control sequence has been scanned}
   end;
 end
 @y
-begin 
+begin
   repeat cur_chr := read_buffer (k); cat := cat_code (cur_chr);
     if mubyte_token>0 then cat := escape;
     if (mubyte_in>0) and (not mubyte_incs) and (cat=letter) and
       ((mubyte_skip>0) or (cur_chr<>buffer[k])) then mubyte_incs := true;
     incr (k);
   until (cat <> letter) or (k > limit);
-  @<If an expanded...@>;  
-  if cat <> letter then 
-  begin 
-    decr (k); k := k - mubyte_skip; 
+  @<If an expanded...@>;
+  if cat <> letter then
+  begin
+    decr (k); k := k - mubyte_skip;
   end;
   if k > loc + 1 then { multiletter control sequence has been scanned }
   begin
@@ -2164,7 +2182,7 @@ length will be set in the main program.
 TEX_format_default:='TeXformats:plain.fmt';
 @y
 @!format_default_length: integer;
-@!TEX_format_default: ^char;
+@!TEX_format_default: w2c_u_string;
 
 @ We set the name of the default format file and the length of that name
 in C, instead of Pascal, since we want them to depend on the name of the
@@ -2428,7 +2446,7 @@ loop@+begin
   begin_file_reading; {set up |cur_file| and new level of input}
   tex_input_type := 1; {Tell |open_input| we are \.{\\input}.}
   {Kpathsea tries all the various ways to get the file.}
-  if open_in_name_ok(stringcast(name_of_file+1))
+  if kpse_in_name_ok(stringcast(name_of_file+1))
      and a_open_in(cur_file, kpse_tex_format) then
     goto done;
 @z
@@ -2459,7 +2477,7 @@ if name=str_ptr-1 then {we can try to conserve string pool space now}
   begin job_name:=get_job_name(cur_name); open_log_file;
 @z
 
-@x [29.537] l.10356 - 
+@x [29.537] l.10356 -
 if term_offset+length(name)>max_print_line-2 then print_ln
 else if (term_offset>0)or(file_offset>0) then print_char(" ");
 print_char("("); incr(open_parens); slow_print(name); update_terminal;
@@ -2680,7 +2698,29 @@ metric information in this font, and character accesses in math mode.
 function read_font_info(@!u:pointer;@!nom,@!aire:str_number;
 @z
 
-@x [30.563] l.10943 - Don't use TEX_font_area.
+@x [30.560] l.10898 - Check lengths
+@!file_opened:boolean; {was |tfm_file| successfully opened?}
+@y
+@!name_too_long:boolean; {|nom| or |aire| exceeds 255 bytes?}
+@!file_opened:boolean; {was |tfm_file| successfully opened?}
+@z
+
+@x [30.561] l.10939 - Check lengths
+else print(" not loadable: Metric (TFM) file not found");
+@y
+else if name_too_long then print(" not loadable: Metric (TFM) file name too long")
+else print(" not loadable: Metric (TFM) file not found");
+@z
+
+@x [30.563] l.10960 - Check lengths
+file_opened:=false;
+@y
+file_opened:=false;
+name_too_long:=(length(nom)>255)or(length(aire)>255);
+if name_too_long then abort;
+@z
+
+@x [30.563] l.10961 - Don't use TEX_font_area.
 if aire="" then pack_file_name(nom,TEX_font_area,".tfm")
 else pack_file_name(nom,aire,".tfm");
 @y
@@ -2917,7 +2957,7 @@ endifn ('IPC')
   print(" ("); print_int(total_pages); print(" page");
   if total_pages<>1 then print_char("s");
 @y
-  print(" ("); print_int(total_pages); 
+  print(" ("); print_int(total_pages);
   if total_pages<>1 then print(" pages")
   else print(" page");
 @z
@@ -3171,7 +3211,7 @@ done:
 @z
 
 %%%%%%%% dynamic hyph_size
-@x 18245 m.934 
+@x 18245 m.934
 @!s,@!t:str_number; {strings being compared or stored}
 @y
 @!s:str_number; {strings being compared or stored}
@@ -3573,7 +3613,7 @@ begin print_err("Extra "); print_esc("endcsname");
 help1("I'm ignoring this, since I wasn't doing a \csname.");
 @y
 begin
-if cur_chr = 10 then 
+if cur_chr = 10 then
 begin
   print_err("Extra "); print_esc("endmubyte");
 @.Extra \\endmubyte@>
@@ -3582,7 +3622,7 @@ end else begin
   print_err("Extra "); print_esc("endcsname");
 @.Extra \\endcsname@>
   help1("I'm ignoring this, since I wasn't doing a \csname.");
-end;  
+end;
 @z
 
 @x [48.1139] l.21650 - source specials
@@ -3638,7 +3678,7 @@ end;
 @x [49.1220] - encTeX: \mubyte primitive
 let: if chr_code<>normal then print_esc("futurelet")@+else print_esc("let");
 @y
-let: if chr_code<>normal then 
+let: if chr_code<>normal then
       if chr_code = normal+10 then print_esc("mubyte")
       else if chr_code = normal+11 then print_esc("noconvert")
       else print_esc("futurelet")
@@ -3648,10 +3688,10 @@ let: if chr_code<>normal then
 @x [49.1221] - encTeX: \mubyte primitive
 let:  begin n:=cur_chr;
 @y
-let:  if cur_chr = normal+11 then do_nothing  { noconvert primitive } 
+let:  if cur_chr = normal+11 then do_nothing  { noconvert primitive }
       else if cur_chr = normal+10 then        { mubyte primitive }
       begin
-        selector:=term_and_log; 
+        selector:=term_and_log;
         get_token;
         mubyte_stoken := cur_tok;
         if cur_tok <= cs_token_flag then mubyte_stoken := cur_tok mod 256;
@@ -3667,10 +3707,10 @@ let:  if cur_chr = normal+11 then do_nothing  { noconvert primitive }
             mubyte_tableout := true; mubyte_tablein := false;
             get_x_token;
           end;
-        end else if (mubyte_stoken > cs_token_flag) and 
-                    (cur_cmd = mac_param) then 
+        end else if (mubyte_stoken > cs_token_flag) and
+                    (cur_cmd = mac_param) then
                  begin
-                   mubyte_tableout := false; 
+                   mubyte_tableout := false;
                    scan_int; mubyte_prefix := cur_val; get_x_token;
                    if mubyte_prefix > 50 then mubyte_prefix := 52;
                    if mubyte_prefix <= 0 then mubyte_prefix := 51;
@@ -3692,25 +3732,25 @@ let:  if cur_chr = normal+11 then do_nothing  { noconvert primitive }
         p := link(r);
         if (p = null) and mubyte_tablein then
         begin
-          print_err("The empty <byte sequence>, "); 
+          print_err("The empty <byte sequence>, ");
           print_esc("mubyte"); print(" ignored");
           help2("The <byte sequence> in")@/
 ("\mubyte <token> <byte sequence>\endmubyte should not be empty.");
           error;
-        end else begin         
-          while p <> null do 
-          begin 
+        end else begin
+          while p <> null do
+          begin
             append_char (info(p) mod 256);
             p := link (p);
           end;
           flush_list (r);
-          if (str_start [str_ptr] + 1 = pool_ptr) and 
+          if (str_start [str_ptr] + 1 = pool_ptr) and
             (str_pool [pool_ptr-1] = mubyte_stoken) then
           begin
-            if mubyte_read [mubyte_stoken] <> null 
+            if mubyte_read [mubyte_stoken] <> null
                and mubyte_tablein then  { clearing data }
                   dispose_munode (mubyte_read [mubyte_stoken]);
-            if mubyte_tablein then mubyte_read [mubyte_stoken] := null; 
+            if mubyte_tablein then mubyte_read [mubyte_stoken] := null;
             if mubyte_tableout then mubyte_write [mubyte_stoken] := 0;
             pool_ptr := str_start [str_ptr];
           end else begin
@@ -3725,18 +3765,18 @@ let:  if cur_chr = normal+11 then do_nothing  { noconvert primitive }
                   r := mubyte_cswrite[(mubyte_stoken-cs_token_flag) mod 128];
                   p := get_avail;
                   mubyte_cswrite[(mubyte_stoken-cs_token_flag) mod 128] := p;
-                  info (p) := mubyte_stoken-cs_token_flag; 
-                  link (p) := get_avail; 
-                  p := link (p); 
+                  info (p) := mubyte_stoken-cs_token_flag;
+                  link (p) := get_avail;
+                  p := link (p);
                   if mubyte_relax then begin
                     info (p) := 0; pool_ptr := str_start [str_ptr];
-                  end else info (p) := slow_make_string; 
+                  end else info (p) := slow_make_string;
                   link (p) := r;
                 end;
               end else begin                       { single character  }
                 if str_start [str_ptr] = pool_ptr then
                   mubyte_write [mubyte_stoken] := 0
-                else 
+                else
                   mubyte_write [mubyte_stoken] := slow_make_string;
               end;
             end else pool_ptr := str_start [str_ptr];
@@ -3824,11 +3864,11 @@ def_code: if chr_code=xord_code_base then print_esc("xordcode")
   p:=cur_chr; scan_char_num; p:=p+cur_val; scan_optional_equals;
   scan_int;
 @y
-  p:=cur_chr; scan_char_num; 
+  p:=cur_chr; scan_char_num;
   if p=xord_code_base then p:=cur_val
   else if p=xchr_code_base then p:=cur_val+256
   else if p=xprn_code_base then p:=cur_val+512
-  else p:=p+cur_val; 
+  else p:=p+cur_val;
   scan_optional_equals;
   scan_int;
 @z
@@ -3900,7 +3940,7 @@ else kpse_make_tex_discard_errors := 0;
 @y
   pack_cur_name;
   tex_input_type:=0; {Tell |open_input| we are \.{\\openin}.}
-  if open_in_name_ok(stringcast(name_of_file+1))
+  if kpse_in_name_ok(stringcast(name_of_file+1))
      and a_open_in(read_file[n], kpse_tex_format) then
     read_open[n]:=just_open;
 @z
@@ -3910,9 +3950,9 @@ old_setting:=selector; selector:=new_string;
 token_show(def_ref); selector:=old_setting;
 @y
 old_setting:=selector; selector:=new_string;
-message_printing := true; active_noconvert := true; 
-token_show(def_ref); 
-message_printing := false; active_noconvert := false; 
+message_printing := true; active_noconvert := true;
+token_show(def_ref);
+message_printing := false; active_noconvert := false;
 selector:=old_setting;
 @z
 
@@ -4587,7 +4627,7 @@ if (x<>69069)or feof(fmt_file) then goto bad_fmt
 @z
 
 % Eliminate probably wrong word `preloaded' from format_idents.
-@x [50.1328] l.24124 
+@x [50.1328] l.24124
 print(" (preloaded format="); print(job_name); print_char(" ");
 @y
 print(" (format="); print(job_name); print_char(" ");
@@ -4603,7 +4643,7 @@ print(" (format="); print(job_name); print_char(" ");
 @d setup_bound_var(#)==bound_default:=#; setup_bound_var_end
 @d setup_bound_var_end(#)==bound_name:=#; setup_bound_var_end_end
 @d setup_bound_var_end_end(#)==
-  setup_bound_variable(addressof(#), bound_name, bound_default);
+  setup_bound_variable(addressof(#), bound_name, bound_default)
 
 @p procedure main_body;
 begin @!{|start_here|}
@@ -4891,6 +4931,14 @@ primitive("special",extension,special_node);@/
 text(frozen_special):="special"; eqtb[frozen_special]:=eqtb[cur_val];@/
 @z
 
+@x [53.1348] (do_extension) Remove unused variables
+var i,@!j,@!k:integer; {all-purpose integers}
+@!p,@!q,@!r:pointer; {all-purpose pointers}
+@y
+var k:integer; {all-purpose integers}
+@!p:pointer; {all-purpose pointers}
+@z
+
 % [53.1350] (new_write_whatsit) Allow 18 as a \write stream. We never
 % refer to an actual file, though, so we don't need to change the
 % write_file or write_open arrays. We provide for disabling this at
@@ -4906,7 +4954,7 @@ write_stream(tail):=cur_val;
 @y
 write_stream(tail):=cur_val;
 if mubyte_out + mubyte_zero < 0 then write_mubyte(tail) := 0
-else if mubyte_out + mubyte_zero >= 2*mubyte_zero then 
+else if mubyte_out + mubyte_zero >= 2*mubyte_zero then
        write_mubyte(tail) := 2*mubyte_zero - 1
      else write_mubyte(tail) := mubyte_out + mubyte_zero;
 @z
@@ -5060,7 +5108,7 @@ if j=18 then
       if runsystem_ret = -1 then print("quotation error in system command")
       else if runsystem_ret = 0 then print("disabled (restricted)")
       else if runsystem_ret = 1 then print("executed")
-      else if runsystem_ret = 2 then print("executed (allowed)")
+      else if runsystem_ret = 2 then print("executed safely (allowed)")
     end;
   end else begin
     print("disabled"); {|shellenabledp| false}
@@ -5085,7 +5133,7 @@ var j:small_number; {write stream number}
         prompt_file_name("output file name",".tex");
       write_open[j]:=true;
 @y
-      while not open_out_name_ok(stringcast(name_of_file+1))
+      while not kpse_out_name_ok(stringcast(name_of_file+1))
             or not a_open_out(write_file[j]) do
         prompt_file_name("output file name",".tex");
       write_open[j]:=true;
@@ -5484,7 +5532,7 @@ for cycles in all character substitution definitions.
 @ This outputs the accent and the base character given in the
 substitution.  It uses code virtually identical to the |make_accent|
 procedure, but without the node creation steps.
- 
+
 Additionally if the accent character has to be shifted vertically it
 does {\it not\/} create the same code.  The original routine in
 |make_accent| and former versions of ML\TeX{} creates a box node
@@ -5584,16 +5632,16 @@ this tree is token list with n+1 tokens (first token consist the byte
 from the byte sequence itself and the other tokens point to the
 branches). If you travel from root of the tree to a leaf then you
 find exactly one byte sequence which we have to convert to one byte or
-control sequence. There are two variants of the leaf: the ``definitive 
+control sequence. There are two variants of the leaf: the ``definitive
 end'' or the ``middle leaf'' if a longer byte sequence exists and the mubyte
 tree continues under this leaf. First variant is implemented as one
 memory word where the link part includes the token to
 which we have to convert and type part includes the number 60 (normal
-conversion) or 1..52 (insert the control sequence). 
+conversion) or 1..52 (insert the control sequence).
 The second variant of ``middle leaf'' is implemented as two memory words:
 first one has a type advanced by 64 and link points to the second
 word where info part includes the token to which we have to convert
-and link points to the next token list with the branches of 
+and link points to the next token list with the branches of
 the subtree.
 
 The inverse: one byte to multi byte (for log printing and \.{\\write}
@@ -5601,7 +5649,7 @@ printing) is implemented via a pool. Each multibyte sequence is stored
 in a pool as a string and |mubyte_write|[{\it printed char\/}] points
 to this string.
 
-@d new_mubyte_node == 
+@d new_mubyte_node ==
   link (p) := get_avail; p := link (p); info (p) := get_avail; p := info (p)
 @d subinfo (#) == subtype (#)
 
@@ -5609,12 +5657,12 @@ to this string.
 { read |buffer|[|i|] and convert multibyte.  |i| should have been
   of type 0..|buf_size|, but web2c doesn't like that construct in
   argument lists. }
-function read_buffer(var i:integer):ASCII_code; 
+function read_buffer(var i:integer):ASCII_code;
 var p: pointer;
     last_found: integer;
     last_type: integer;
 begin
-  mubyte_skip := 0; mubyte_token := 0; 
+  mubyte_skip := 0; mubyte_token := 0;
   read_buffer := buffer[i];
   if mubyte_in = 0 then
   begin
@@ -5635,7 +5683,7 @@ begin
   end;
 restart:
   mubyte_start := false;
-  if (mubyte_read [buffer[i]] = null) or (mubyte_keep > 0) then 
+  if (mubyte_read [buffer[i]] = null) or (mubyte_keep > 0) then
   begin
     if mubyte_keep > 0 then decr (mubyte_keep);
     return ;
@@ -5645,9 +5693,9 @@ continue:
   if type (p) >= 64 then
   begin
     last_type := type (p) - 64;
-    p := link (p); 
+    p := link (p);
     mubyte_token := info (p); last_found := mubyte_skip;
-  end else if type (p) > 0 then 
+  end else if type (p) > 0 then
   begin
     last_type := type (p);
     mubyte_token := link (p);
@@ -5674,7 +5722,7 @@ continue:
 found:
   if mubyte_token < 256 then  { multibyte to one byte }
   begin
-    read_buffer := mubyte_token;  mubyte_token := 0; 
+    read_buffer := mubyte_token;  mubyte_token := 0;
     i := i + mubyte_skip;
     if mubyte_start and (i >= start) then mubyte_start := false;
     return;
@@ -5687,7 +5735,7 @@ found:
       if i < start then mubyte_start := true;
       if last_type = 52 then mubyte_keep := 10000;
       if last_type = 51 then mubyte_keep := mubyte_skip + 1;
-      mubyte_skip := -1;  
+      mubyte_skip := -1;
     end;
     if mubyte_start and (i >= start) then mubyte_start := false;
     return;
@@ -5704,7 +5752,7 @@ begin
   j := str_start [str_ptr];
   if mubyte_read [so(str_pool[j])] = null then
   begin
-    in_mutree := 0;    
+    in_mutree := 0;
     p := get_avail;
     mubyte_read [so(str_pool[j])] := p;
     subinfo (p) := so(str_pool[j]); type (p) := 0;
@@ -5713,17 +5761,17 @@ begin
     p := mubyte_read [so(str_pool[j])];
   end;
   incr (j);
-  while j < pool_ptr do 
+  while j < pool_ptr do
   begin
-    if in_mutree = 0 then 
+    if in_mutree = 0 then
     begin
       new_mubyte_node; subinfo (p) := so(str_pool[j]); type (p) := 0;
     end else { |in_mutree| = 1 }
-      if (type (p) > 0) and (type (p) < 64) then 
+      if (type (p) > 0) and (type (p) < 64) then
       begin
         type (p) := type (p) + 64;
-        q := link (p); link (p) := get_avail; p := link (p); 
-        info (p) := q; 
+        q := link (p); link (p) := get_avail; p := link (p);
+        info (p) := q;
         new_mubyte_node; subinfo (p) := so(str_pool[j]); type (p) := 0;
         in_mutree := 0;
       end else begin
@@ -5732,14 +5780,14 @@ begin
           p := link (p);
           if subinfo (info(p)) = so(str_pool[j]) then
           begin
-            p := info (p); 
+            p := info (p);
             goto continue;
           end;
         until link (p) = null;
         new_mubyte_node; subinfo (p) := so(str_pool[j]); type (p) := 0;
         in_mutree := 0;
       end;
-continue: 
+continue:
     incr (j);
   end;
   if in_mutree = 1 then
@@ -5749,7 +5797,7 @@ continue:
        type (p) := mubyte_prefix + 64;
        q := link (p);  link (p) := get_avail; p := link (p);
        link (p) := q; info (p) := mubyte_stoken;
-       return; 
+       return;
     end;
     if type (p) >= 64 then
     begin
@@ -5779,7 +5827,7 @@ begin
       free_avail (p);
       p := q;
     end;
-  end;     
+  end;
 end;
 @#
 procedure dispose_mutableout (cs: pointer); { frees record from out table }
@@ -5792,9 +5840,9 @@ begin
     begin
       if r <> null then link (r) := link (link (p))
       else mubyte_cswrite[cs mod 128] := link (link (p));
-      q := link (link(p)); 
+      q := link (link(p));
       free_avail (link(p)); free_avail (p);
-      p := q;  
+      p := q;
     end else begin
       r := link (p); p := link (r);
     end;

@@ -1,6 +1,6 @@
 /* getopt_long and getopt_long_only entry points for GNU getopt.
 
-   Copyright 2008 Karl Berry.
+   Copyright 2008, 2010 Karl Berry.
    Copyright (C) 1987,88,89,90,91,92,93,94,96,97 Free Software Foundation, Inc.
 
    The original version of this file was part of the GNU C Library.
@@ -25,14 +25,6 @@
 #endif
 
 #include "getopt.h"
-
-#if !defined (__STDC__) || !__STDC__
-/* This is a separate conditional since some stdc systems
-   reject `defined (const)'.  */
-#ifndef const
-#define const
-#endif
-#endif
 
 #include <stdio.h>
 
@@ -61,18 +53,17 @@
 #include <stdlib.h>
 #endif
 
-#ifndef	NULL
+#ifndef NULL
 #define NULL 0
 #endif
 
-int
-getopt_long (argc, argv, options, long_options, opt_index)
-     int argc;
-     char *const *argv;
-     const char *options;
-     const struct option *long_options;
-     int *opt_index;
-{
+int getopt_long(
+     int argc,
+     char *const *argv,
+     const char *options,
+     const struct option *long_options,
+     int *opt_index
+){
   return _getopt_internal (argc, argv, options, long_options, opt_index, 0);
 }
 
@@ -81,14 +72,13 @@ getopt_long (argc, argv, options, long_options, opt_index)
    but does match a short option, it is parsed as a short option
    instead.  */
 
-int
-getopt_long_only (argc, argv, options, long_options, opt_index)
-     int argc;
-     char *const *argv;
-     const char *options;
-     const struct option *long_options;
-     int *opt_index;
-{
+int getopt_long_only(
+     int argc,
+     char *const *argv,
+     const char *options,
+     const struct option *long_options,
+     int *opt_index
+){
   return _getopt_internal (argc, argv, options, long_options, opt_index, 1);
 }
 
@@ -99,10 +89,7 @@ getopt_long_only (argc, argv, options, long_options, opt_index)
 
 #include <stdio.h>
 
-int
-main (argc, argv)
-     int argc;
-     char **argv;
+int main(int argc, char **argv)
 {
   int c;
   int digit_optind = 0;

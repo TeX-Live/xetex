@@ -1,7 +1,7 @@
 /* c-ctype.h: ASCII-safe versions of the <ctype.h> macros.
 
-   Copyright 1992, 1994, 2008 Karl Berry
-   Copyright 1998, 2000, 2005 Olaf Weber
+   Copyright 1992, 1994, 2008, 2010 Karl Berry.
+   Copyright 1998, 2000, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,9 @@
 
 #include <ctype.h>
 
-/* Be sure we have `isascii'.  */
-#ifdef WIN32
-#include <oldnames.h>
-#else
+/* Be sure we have `isascii', even if wrong.  */
 #ifndef isascii
 #define isascii(c) 1
-#endif
 #endif
 
 #define ISALNUM(c) (isascii (c) && isalnum(c))

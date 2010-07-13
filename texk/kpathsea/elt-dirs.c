@@ -1,6 +1,6 @@
 /* elt-dirs.c: Translate a path element to its corresponding director{y,ies}.
 
-   Copyright 1993, 1994, 1995, 1996, 1997, 2008 Karl Berry.
+   Copyright 1993, 1994, 1995, 1996, 1997, 2008, 2009, 2010 Karl Berry.
    Copyright 1997, 1998, 1999, 2000, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
    DIR ends with a DIR_SEP for the benefit of later searches.  */
 
 static void
-dir_list_add P2C(str_llist_type *, l,  const_string, dir)
+dir_list_add (str_llist_type *l,  const_string dir)
 {
   char last_char = dir[strlen (dir) - 1];
   string saved_dir
@@ -47,9 +47,9 @@ dir_list_add P2C(str_llist_type *, l,  const_string, dir)
 /* If DIR is a directory, add it to the list L.  */
 
 static void
-checked_dir_list_add P2C(str_llist_type *, l,  const_string, dir)
+checked_dir_list_add (kpathsea kpse, str_llist_type *l,  const_string dir)
 {
-  if (dir_p (dir))
+    if (kpathsea_dir_p (kpse, dir))
     dir_list_add (l, dir);
 }
 
@@ -59,16 +59,6 @@ checked_dir_list_add P2C(str_llist_type *, l,  const_string, dir)
    the dir_links call, that's not enough -- without this path element
    caching as well, the execution time doubles.  */
 
-typedef struct
-{
-  const_string key;
-  str_llist_type *value;
-} cache_entry;
-
-static cache_entry *the_cache = NULL;
-static unsigned cache_length = 0;
-
-
 /* Associate KEY with VALUE.  We implement the cache as a simple linear
    list, since it's unlikely to ever be more than a dozen or so elements
    long.  We don't bother to check here if PATH has already been saved;
@@ -76,26 +66,26 @@ static unsigned cache_length = 0;
    that's right, but it seems to be all that's needed.  */
 
 static void
-cache P2C(const_string, key,  str_llist_type *, value)
+cache (kpathsea kpse, const_string key,  str_llist_type *value)
 {
-  cache_length++;
-  XRETALLOC (the_cache, cache_length, cache_entry);
-  the_cache[cache_length - 1].key = xstrdup (key);
-  the_cache[cache_length - 1].value = value;
+  kpse->cache_length++;
+  XRETALLOC (kpse->the_cache, kpse->cache_length, cache_entry);
+  kpse->the_cache[kpse->cache_length - 1].key = xstrdup (key);
+  kpse->the_cache[kpse->cache_length - 1].value = value;
 }
 
 
 /* To retrieve, just check the list in order.  */
 
 static str_llist_type *
-cached P1C(const_string, key)
+cached (kpathsea kpse, const_string key)
 {
   unsigned p;
   
-  for (p = 0; p < cache_length; p++)
+  for (p = 0; p < kpse->cache_length; p++)
     {
-      if (FILESTRCASEEQ (the_cache[p].key, key))
-        return the_cache[p].value;
+      if (FILESTRCASEEQ (kpse->the_cache[p].key, key))
+        return kpse->the_cache[p].value;
     }
   
   return NULL;
@@ -104,7 +94,7 @@ cached P1C(const_string, key)
 /* Handle the magic path constructs.  */
 
 /* Declare recursively called routine.  */
-static void expand_elt P3H(str_llist_type *, const_string, unsigned);
+static void expand_elt (kpathsea, str_llist_type *, const_string, unsigned);
 
 
 /* POST is a pointer into the original element (which may no longer be
@@ -118,8 +108,8 @@ static char dirname[MAX_PATH];
 #endif
 
 static void
-do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
-              unsigned, elt_length,  const_string, post)
+do_subdir (kpathsea kpse, str_llist_type *str_list_ptr,  const_string elt,
+              unsigned elt_length,  const_string post)
 {
 #ifdef WIN32
   WIN32_FIND_DATA find_file_data;
@@ -156,7 +146,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
        example, POST might be `pk/ljfour', and they might have a
        directory `$TEXMF/fonts/pk/ljfour' that we should find.  */
     fn_str_grow (&name, post);
-    expand_elt (str_list_ptr, FN_STRING (name), elt_length);
+    expand_elt (kpse, str_list_ptr, FN_STRING (name), elt_length);
     fn_shrink_to (&name, elt_length);
   }
   proceed = 1;
@@ -170,7 +160,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
       /* Maybe we have cached the leafness of this directory.
 		 The function will return 0 if unknown, 
 		 else the actual (Unix-like) value. */
-      links = dir_links (FN_STRING (name), 0);
+      links = kpathsea_dir_links (kpse, FN_STRING (name), 0);
 
       if (find_file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 	unsigned potential_len = FN_LENGTH (name);
@@ -186,7 +176,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
              name here, we just have a path spec. This means we
              may descend into a leaf directory cm/pk, if the
              spec is ...fonts//pk//.  */
-          expand_elt (str_list_ptr, FN_STRING (name), potential_len);
+          expand_elt (kpse, str_list_ptr, FN_STRING (name), potential_len);
           fn_shrink_to (&name, potential_len);
         }
 	/* Should we recurse?  To see if the subdirectory is a
@@ -198,7 +188,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
 	   
 	if (links == 0 || links > 2)
 	  /* All criteria are met; find subdirectories.  */
-	  do_subdir (str_list_ptr, FN_STRING (name),
+        do_subdir (kpse, str_list_ptr, FN_STRING (name),
 		     potential_len, post);
 	else if (*post == 0)
 	  /* Nothing to match, no recursive subdirectories to
@@ -210,7 +200,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
     proceed = FindNextFile (hnd, &find_file_data);
   }
   /* Update the leafness of name. */
-  dir_links(FN_STRING(name), nlinks);
+  kpathsea_dir_links(kpse, FN_STRING(name), nlinks);
   fn_free (&name);
   FindClose(hnd);
 
@@ -232,7 +222,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
          example, POST might be `pk/ljfour', and they might have a
          directory `$TEXMF/fonts/pk/ljfour' that we should find.  */
       fn_str_grow (&name, post);
-      expand_elt (str_list_ptr, FN_STRING (name), elt_length);
+      expand_elt (kpse, str_list_ptr, FN_STRING (name), elt_length);
       fn_shrink_to (&name, elt_length);
     }
 
@@ -247,7 +237,7 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
           fn_str_grow (&name, e->d_name);
           
           /* If we can't stat it, or if it isn't a directory, continue.  */
-          links = dir_links (FN_STRING (name), 0);
+          links = kpathsea_dir_links (kpse, FN_STRING (name), 0);
 
           if (links >= 0)
             { 
@@ -264,7 +254,8 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
                      name here, we just have a path spec. This means we
                      may descend into a leaf directory cm/pk, if the
                      spec is ...fonts//pk//.  */
-                  expand_elt (str_list_ptr, FN_STRING (name), potential_len);
+                  expand_elt (kpse, str_list_ptr, FN_STRING (name),
+                              potential_len);
                   fn_shrink_to (&name, potential_len);
                 }
               
@@ -280,16 +271,15 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
                  some such, we can still find subdirectories, even if it
                  is much slower.  */
 #ifdef ST_NLINK_TRICK
-#ifdef AMIGA
-              /* With SAS/C++ 6.55 on the Amiga, `stat' sets the `st_nlink'
-                 field to -1 for a file, or to 1 for a directory.  */
-              if (links == 1)
-#else
-              if (links > 2)
-#endif /* not AMIGA */
-#endif /* not ST_NLINK_TRICK */
+              /* With SAS/C++ 6.55 on the Amiga, stat sets the st_nlink
+                 field to -1 for a file, or to 1 for a directory.
+                 Cygwin 1.7 also leaves st_nlink as 1:
+                 http://cygwin.com/ml/cygwin-developers/2008-04/msg00110.html
+                 */
+              if (links != 2)
+#endif /* ST_NLINK_TRICK */
                 /* All criteria are met; find subdirectories.  */
-                do_subdir (str_list_ptr, FN_STRING (name),
+                  do_subdir (kpse, str_list_ptr, FN_STRING (name),
                            potential_len, post);
 #ifdef ST_NLINK_TRICK
               else if (*post == 0)
@@ -315,8 +305,8 @@ do_subdir P4C(str_llist_type *, str_list_ptr,  const_string, elt,
    looking for magic constructs at START.  */
 
 static void
-expand_elt P3C(str_llist_type *, str_list_ptr,  const_string, elt,
-               unsigned, start)
+expand_elt (kpathsea kpse, str_llist_type * str_list_ptr,  const_string elt,
+               unsigned start)
 {
   const_string dir = elt + start, post;
   
@@ -328,7 +318,7 @@ expand_elt P3C(str_llist_type *, str_list_ptr,  const_string, elt,
           if (IS_DIR_SEP (dir[1]))
             {
 	      for (post = dir + 1; IS_DIR_SEP (*post); post++) ;
-              do_subdir (str_list_ptr, elt, dir - elt + 1, post);
+            do_subdir (kpse, str_list_ptr, elt, dir - elt + 1, post);
 	      return;
             }
 
@@ -339,14 +329,14 @@ expand_elt P3C(str_llist_type *, str_list_ptr,  const_string, elt,
     }
   
   /* When we reach the end of ELT, it will be a normal filename.  */
-  checked_dir_list_add (str_list_ptr, elt);
+  checked_dir_list_add (kpse, str_list_ptr, elt);
 }
 
 /* The first bits of a path element can be problematic because they
    look like a request to expand a whole disk, rather than a subtree.
    - It can contain a drive specification.
-   - It can be a UNC path (win32, but they are part of the single
-     UNIX specification as well).
+   - It can be a UNC path (w32, but they are part of the single
+     Unix specification as well).
    The argument is a string as the function can diddle into the argument
    to canonicalize it, which tends to matter on windows platforms.
    - Always lower-case drive letters a-z, even those filesystem that
@@ -357,44 +347,56 @@ expand_elt P3C(str_llist_type *, str_list_ptr,  const_string, elt,
      The resulting name will always be shorter than the one passed, so no
      problem.
    - If possible, we merely skip multiple leading slashes to prevent
-     expanding from the root of a UNIX filesystem tree.
-*/
+     expanding from the root of a UNIX filesystem tree.  */
+
 unsigned
-kpse_normalize_path P1C(string, elt)
+kpathsea_normalize_path (kpathsea kpse, string elt)
 {
   unsigned ret;
   unsigned i;
 
   if (NAME_BEGINS_WITH_DEVICE(elt)) {
-      if (*elt >= 'A' && *elt <= 'Z')
-          *elt += 'a' - 'A';
-      for (i = 2; IS_DIR_SEP(elt[i]); ++i)
-          ;
-      if (i > 3)
-          memmove(elt+3, elt+i, strlen(elt+i) + 1);
-      ret = 2;
+    if (*elt >= 'A' && *elt <= 'Z')
+      *elt += 'a' - 'A';
+    for (i = 2; IS_DIR_SEP(elt[i]); ++i)
+      ;
+    if (i > 3)
+      memmove (elt+3, elt+i, strlen(elt+i) + 1);
+    ret = 2;
+
   } else if (IS_UNC_NAME(elt)) {
-      for (ret = 2; elt[ret] && !IS_DIR_SEP(elt[ret]); ++ret)
-          ;
-      for (i = ret; elt[i] && IS_DIR_SEP(elt[i]); ++i)
-          ;
-      if (i > ret+1)
-          memmove(elt+ret+1, elt+i, strlen(elt+i) + 1);
+    for (ret = 2; elt[ret] && !IS_DIR_SEP(elt[ret]); ++ret)
+      ;
+    for (i = ret; elt[i] && IS_DIR_SEP(elt[i]); ++i)
+      ;
+    if (i > ret+1)
+      memmove (elt+ret+1, elt+i, strlen(elt+i) + 1);
+
   } else {
-      for (ret = 0; IS_DIR_SEP(elt[ret]); ++ret)
-          ;
+    for (ret = 0; IS_DIR_SEP(elt[ret]); ++ret)
+      ;
   }
   
-  if (KPSE_DEBUG_P (KPSE_DEBUG_STAT))
-	DEBUGF2 ("kpse_normalize_path (%s) => %u\n", elt, ret);
+#ifdef KPSE_DEBUG
+  if (KPATHSEA_DEBUG_P (KPSE_DEBUG_STAT) && ret != 1)
+    DEBUGF2 ("kpse_normalize_path (%s) => %u\n", elt, ret);
+#endif /* KPSE_DEBUG */
 
   return ret;
 }
+
+#if defined(KPSE_COMPAT_API)
+unsigned
+kpse_normalize_path (string elt)
+{
+    return kpathsea_normalize_path(kpse_def, elt);
+}
+#endif
 
 /* Here is the entry point.  Returns directory list for ELT.  */
 
 str_llist_type *
-kpse_element_dirs P1C(string, elt)
+kpathsea_element_dirs (kpathsea kpse, string elt)
 {
   str_llist_type *ret;
 
@@ -403,7 +405,7 @@ kpse_element_dirs P1C(string, elt)
     return NULL;
 
   /* If we've already cached the answer for ELT, return it.  */
-  ret = cached (elt);
+  ret = cached (kpse, elt);
   if (ret)
     return ret;
 
@@ -412,14 +414,14 @@ kpse_element_dirs P1C(string, elt)
   *ret = NULL;
 
   /* We handle the hard case in a subroutine.  */
-  expand_elt (ret, elt, kpse_normalize_path (elt));
+  expand_elt (kpse, ret, elt, kpathsea_normalize_path (kpse, elt));
 
   /* Remember the directory list we just found, in case future calls are
      made with the same ELT.  */
-  cache (elt, ret);
+  cache (kpse, elt, ret);
 
 #ifdef KPSE_DEBUG
-  if (KPSE_DEBUG_P (KPSE_DEBUG_EXPAND))
+  if (KPATHSEA_DEBUG_P (KPSE_DEBUG_EXPAND))
     {
       DEBUGF1 ("path element %s =>", elt);
       if (ret)
@@ -435,6 +437,14 @@ kpse_element_dirs P1C(string, elt)
 
   return ret;
 }
+
+#if defined(KPSE_COMPAT_API)
+str_llist_type *
+kpse_element_dirs (string elt)
+{
+    return kpathsea_element_dirs(kpse_def, elt);
+}
+#endif
 
 #ifdef TEST
 
@@ -475,7 +485,7 @@ main ()
   print_element_dirs (".//archive");	/* ./ ./archive/ */
 #ifdef AMIGA
   print_element_dirs ("TeXMF:AmiWeb2c/texmf/fonts//"); /* lots */
-  print_element_dirs ("TeXMF:AmiWeb2c/share/texmf/fonts//bakoma"); /* just one */
+  print_element_dirs ("TeXMF:AmiWeb2c/share/texmf/fonts//bakoma"); /*just one*/
   print_element_dirs ("TeXMF:AmiWeb2c/texmf/fonts//"); /* lots again [cache] */
   print_element_dirs ("TeXMF:");	/* TeXMF: */
   print_element_dirs ("TeXMF:/");	/* TeXMF: and all subdirs */
@@ -496,6 +506,6 @@ main ()
 
 /*
 Local variables:
-test-compile-command: "gcc -g -I. -I.. -DTEST elt-dirs.c kpathsea.a"
+standalone-compile-command: "gcc -g -I. -I.. -DTEST elt-dirs.c kpathsea.a"
 End:
 */
