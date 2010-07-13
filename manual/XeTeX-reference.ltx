@@ -482,6 +482,13 @@ In the following commands, \xarg{fam.} is a number (0--255) representing font to
 \desc{Defines a maths glyph accessible via a control sequence.}
 \endcmd
 
+\cmd|\XeTeXmathcharnumdef|
+\xarg{control sequence}
+\opteq
+\xarg{type/fam./glyph slot}
+\desc{Defines a control sequence for accessing a maths glyph using the `bit-packed' number output by, e.g., \cs{XeTeXmathcodenum}. This would be used to replace legacy code such as \cs{mathchardef}\cs{foo}\texttt{=}\cs{mathcode}\texttt{`}\cs{\-}.}
+\endcmd
+
 \cmd|\XeTeXdelcode|
 \xarg{char slot}
 \opteq
