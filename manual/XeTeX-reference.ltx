@@ -219,6 +219,11 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 \desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font specific}, so will give different output for different fonts.}
 \endcmd
 
+\cmd|\XeTeXcountglyphs|
+\xarg{Font}
+\desc{The count of the number of glyphs in the specified \xarg{font}.}
+\endcmd
+
 \cmd|\XeTeXglyphindex|
 |"|\xarg{Glyph name}|"| \xarg{space} \emph{or} \cs{relax}
 \desc{Expands to the \xarg{glyph slot} corresponding to the (possibly font specific) \xarg{glyph name} in the currently selected font. Only works for TrueType fonts (or TrueType-based OpenType fonts) at present. Use \texttt{fontforge} or similar to discover glyph names.}
