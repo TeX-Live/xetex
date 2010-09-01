@@ -650,7 +650,7 @@ This description is incomplete.
 \desc{Insert (pages of) a PDF.}
 \endcmd
 
-\section{Parity with \pdfTeX}
+\section{Cross-compatibility with \pdfTeX\ and/or Lua\TeX}
 
 \cmd|\pdfpageheight|
 \xarg{dimension}
@@ -719,6 +719,19 @@ Therefore, |\a| is greater than |\z|: \strcmp{\a}{\z}
 \edef\b{\string b}
 Also note that catcodes are ignored: \strcmp{b}{\b}
 \end{example}
+
+\cmd|\suppressfontnotfounderror|
+\xarg{integer}
+\desc{When set to zero (default) if a font is loaded that cannot be located by \XeTeX, an error message will result and typesetting will halt under normal circumstances. When set to one, this error message is suppressed and the font control sequence being defined is set to \cs{nullfont}.}
+\begin{example}
+\suppressfontnotfounderror=1
+\font\x="ImpossibleFont" at 10pt
+\ifx\x\nullfont
+  \font\x="Georgia" at 10pt
+\fi
+\x This would be ‘ImpossibleFont’, if it existed.
+\end{example}
+\endcmd
 
 \section{Misc.}
 
