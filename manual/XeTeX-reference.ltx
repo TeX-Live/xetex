@@ -31,8 +31,11 @@
     aftersave={%
       \begin{minipage}{\linewidth}
         \UseVerb{CMD}}]{CMD}}
+\edef\|{|}
 \DefineShortVerb{\|}
-\newcommand\xarg[1]{‹\textit{#1}›}
+\newcommand\xarg[1]{\texttt‹{\rmfamily\itshape #1}\texttt›}
+\def\<#1>{\xarg{#1}}
+\newcommand\oarg[1]{\texttt{[\,#1\,]}}
 \newcommand\desc[1]{\par#1\par}
 \def\endcmd{%
   \end{minipage}  
@@ -636,19 +639,55 @@ aAa A a B aBa BB
 
 \section{Graphics}
 
-This description is incomplete.
+This description is thanks to Heiko Oberdiek.
 
 \cmd|\XeTeXpicfile|
 \xarg{filename}
-\xarg{optional options}
-\desc{Insert an image.}
+\oarg{ scaled \xarg{int} \|
+  xscaled \xarg{int} \|
+  yscaled \xarg{int} \| \\\hspace*{2em}
+  width \xarg{dimen} \|
+  height \xarg{dimen} \|
+  rotated \xarg{decimal} }
+\desc{Insert an image. See below for explanation of optional arguments.}
 \endcmd
 
 \cmd|\XeTeXpdffile|
 \xarg{filename}
-\xarg{optional options}
-\desc{Insert (pages of) a PDF.}
+\oarg{page \xarg{int}}
+\oarg{ crop \| media \| bleed \| trim \| art }\\\hspace*{2em}
+\oarg{scaled \xarg{int} \|
+  xscaled \xarg{int} \|
+  yscaled \xarg{int} \|
+  width \xarg{dimen} \|\\\hspace*{2em}~
+  height \xarg{dimen} \|
+  rotated \xarg{decimal}}
+\desc{Insert (pages of) a PDF. See below for explanation of optional arguments.}
 \endcmd
+
+In the graphic/PDF commands above,
+\xarg{filename} is the usual file name argument of \cs{input}, \cs{openin}, \etc.
+It must not terminated by \cs{relax} if options are given.  
+\xarg{int} and \xarg{dimen} are the usual integer or dimen specifications
+of regular \TeX.
+
+The rotation is specified in degrees (\ie, an input of `|360|' is full circle)  
+and the rotation is counterclockwise. The syntax of \xarg{decimal}
+require some explanation:
+\begin{quote}
+\<decimal> $\to$ \<optional signs>\<unsigned decimal>\\
+\<unsigned decimal> $\to$ \<normal decimal> \| \<coerced dimen> \| \<internal dimen>\\
+\<normal decimal> -> \<normal integer> \| \<decimal constant>
+\end{quote}
+A \xarg{coerced dimen} or \xarg{internal dimen} is interpreted as number with  
+unit `|pt|'. For example, for a rotation specified with a dimension \cs{testdim},
+\begin{itemize}
+\item \verb|\testdim=45pt  | results in a rotation of 45\textdegree,
+\item \verb|\testdim=1in    | is 72.27\textdegree, and
+\item \verb|\testdim=100sp| is (100/65536)\textdegree.
+\end{itemize}
+In all cases the resulting decimal number for rotation $x$ must be  
+within limits $-16384 < x < 16384$.
 
 \section{Cross-compatibility with \pdfTeX\ and/or Lua\TeX}
 
