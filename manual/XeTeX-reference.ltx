@@ -689,6 +689,15 @@ unit `|pt|'. For example, for a rotation specified with a dimension \cs{testdim}
 In all cases the resulting decimal number for rotation $x$ must be  
 within limits $-16384 < x < 16384$.
 
+The \cs{XeTeXpdffile} command takes one more optional argument for specifying to which `box' the PDF should be cropped before inserting it (the second optional argument listed in thes syntax of \cs{XeTeXpdffile} above). The PDF standard defines a number of (rectangular) bounding boxes that may be specified for various purposes. These are described in the PDF Standard\footnote{Adobe Systems Incorporated, 2008: \url{http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf}} and summarised below.
+\begin{quote}
+\begin{description}
+\item[media] the box defining the physical page size.
+\item [crop] the box of the page contents for display/printing purposes.\item [bleed] the box containing the page contents plus whatever extra space required for printing purposes.\item [trim] the box of the finished page after trimming the printed `bleed box'.\item [art] the box containing the `meaningful content' of the page. This could be the crop box with boilerplate text/logos trimmed off.
+\end{description}
+\end{quote}
+When not specified in the PDF to be inserted, the crop box defaults to the media box, and the bleed, trim, and art boxes default to the crop box.
+
 \section{Cross-compatibility with \pdfTeX\ and/or Lua\TeX}
 
 \cmd|\pdfpageheight|
