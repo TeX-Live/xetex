@@ -14,6 +14,8 @@
 \usepackage{geometry}
 %\geometry{screen,margin=3cm}
 
+\def\PDF{\textsc{pdf}}
+
 \hypersetup{colorlinks,linkcolor=black,urlcolor=black}
 
 \usepackage[it]{titlesec}
@@ -115,7 +117,7 @@ This syntax looks something like\par
 {\centering|\font\1="|\xarg{font name}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
 The \xarg{font name} is the actual name of the font (e.g., `|Charis SIL|') and the only mandatory part of the above syntax. 
 
-When using the |xdvipdfmx| driver, it is possible to use fonts
+When using the |xdvipdfmx| driver (which is the default), it is possible to use fonts
 that aren't installed in the operating system by surrounding their name with square brackets. The current directory and the |texmf| trees are searched for files named in this way, or the path may be embedded in the
 font declaration. \Eg,
 \begin{quote}\small
@@ -219,7 +221,7 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 
 \cmd|\XeTeXglyph|
 \xarg{Glyph slot}
-\desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font specific}, so will give different output for different fonts.}
+\desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font specific}, so will give different output for different fonts and possibly even different versions of the same font.}
 \endcmd
 
 \cmd|\XeTeXcountglyphs|
@@ -639,7 +641,7 @@ aAa A a B aBa BB
 
 \section{Graphics}
 
-This description is thanks to Heiko Oberdiek.
+Thanks to Heiko Oberdiek, Paul Isambert, and William Adams for their help with the documentation in this section.
 
 \cmd|\XeTeXpicfile|
 \xarg{filename}
@@ -662,10 +664,11 @@ This description is thanks to Heiko Oberdiek.
   width \xarg{dimen} \|\\\hspace*{2em}~
   height \xarg{dimen} \|
   rotated \xarg{decimal}}
-\desc{Insert (pages of) a PDF. See below for explanation of optional arguments.}
+\desc{Insert (pages of) a \PDF{}. See below for explanation of optional arguments.}
 \endcmd
 
-In the graphic/PDF commands above,
+\noindent
+In the graphic/\PDF{} commands above,
 \xarg{filename} is the usual file name argument of \cs{input}, \cs{openin}, \etc.
 It must not terminated by \cs{relax} if options are given.  
 \xarg{int} and \xarg{dimen} are the usual integer or dimen specifications
@@ -689,25 +692,25 @@ unit `|pt|'. For example, for a rotation specified with a dimension \cs{testdim}
 In all cases the resulting decimal number for rotation $x$ must be  
 within limits $-16384 < x < 16384$.
 
-The \cs{XeTeXpdffile} command takes one more optional argument for specifying to which `box' the PDF should be cropped before inserting it (the second optional argument listed in thes syntax of \cs{XeTeXpdffile} above). The PDF standard defines a number of (rectangular) bounding boxes that may be specified for various purposes. These are described in the PDF Standard\footnote{Adobe Systems Incorporated, 2008: \url{http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf}} and summarised below.
+The \cs{XeTeXpdffile} command takes one more optional argument for specifying to which `box' the \PDF{} should be cropped before inserting it (the second optional argument listed in thes syntax of \cs{XeTeXpdffile} above). The \PDF{} standard defines a number of (rectangular) bounding boxes that may be specified for various purposes. These are described in the \PDF{} Standard\footnote{Adobe Systems Incorporated, 2008:\\ \url{http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf}} and summarised below.
 \begin{quote}
 \begin{description}
 \item[media] the box defining the physical page size.
 \item [crop] the box of the page contents for display/printing purposes.\item [bleed] the box containing the page contents plus whatever extra space required for printing purposes.\item [trim] the box of the finished page after trimming the printed `bleed box'.\item [art] the box containing the `meaningful content' of the page. This could be the crop box with boilerplate text/logos trimmed off.
 \end{description}
 \end{quote}
-When not specified in the PDF to be inserted, the crop box defaults to the media box, and the bleed, trim, and art boxes default to the crop box.
+When not specified in the \PDF{} to be inserted, the crop box defaults to the media box, and the bleed, trim, and art boxes default to the crop box.
 
 \section{Cross-compatibility with \pdfTeX\ and/or Lua\TeX}
 
 \cmd|\pdfpageheight|
 \xarg{dimension}
-\desc{The height of the PDF page.}
+\desc{The height of the \PDF{} page.}
 \endcmd
 
 \cmd|\pdfpagewidth|
 \xarg{dimension}
-\desc{The width of the PDF page.}
+\desc{The width of the \PDF{} page.}
 \endcmd
 
 \cmd|\pdfsavepos|
