@@ -97,14 +97,31 @@
 \vfill 
 
 \section*{Introduction}
-This document serves to summarise \XeTeX's additional features without being so much as a `users' guide'. Note that much of the functionality addressed here is provided in abstracted form in various \LaTeX\ packages and Con\TeX{}t modules.
 
-The descriptions here should be a fairly exhaustive list of the new primitives and features of \XeTeX. Descriptions are still a little aenemic, however. I don't have much time to maintain this document, so contributions are highly welcomed \verb|:)|
+This document serves to summarise \XeTeX's additional features without
+being so much as a `users' guide'. Note that much of the functionality
+addressed here is provided in abstracted form in various \LaTeX\
+packages and Con\TeX{}t modules.
+
+The descriptions here should be a fairly exhaustive list of the new
+primitives and features of \XeTeX. Descriptions are still a little
+aenemic, however. I don't have much time to maintain this document, so
+contributions are highly welcomed \verb|:)|
 
 \section*{License}
-Copyright 2007--2010 Will Robertson. This work, \verb|XeTeX-reference.ltx|, also known as `\verb|xetexref|', is distributed under the terms of the LaTeX Project Public License \textup(\,\url{http://www.latex-project.org/lppl.txt}\,\textup), version 1.3c or later (your choice), and maintained by Will Robertson.
 
-This basically means you are free to re-distribute this file as you wish; you may also make changes to this file or use its contents for another purpose, in which case you should make it clear, by way of a name-change or some other means, that your changed version is a modified version of the original. Please read the license text for more detailed information.
+Copyright 2007--2010 Will Robertson. This work,
+\verb|XeTeX-reference.ltx|, also known as `\verb|xetexref|', is
+distributed under the terms of the LaTeX Project Public License
+\textup(\,\url{http://www.latex-project.org/lppl.txt}\,\textup), version
+1.3c or later (your choice), and maintained by Will Robertson.
+
+This basically means you are free to re-distribute this file as you
+wish; you may also make changes to this file or use its contents for
+another purpose, in which case you should make it clear, by way of a
+name-change or some other means, that your changed version is a modified
+version of the original. Please read the license text for more detailed
+information.
 
 \vfill\vfill\vfill\null
 
@@ -114,87 +131,142 @@ This basically means you are free to re-distribute this file as you wish; you ma
 \part{\texorpdfstring{\XeTeX}{XeTeX}\ specifics}
 
 \section{The \cs{font} command}
-The |\font| command has seen significant addition in \XeTeX\ to facilitate extended font feature selection. Under \TeX, fonts were selected like so: |\font\1="|\xarg{tfm name}|"| with various options appended such as `|at 10pt|' or `|scaled 1.2|', with obvious meaning. This syntax still works, but it has been greatly extended in \XeTeX.
+
+The |\font| command has seen significant addition in \XeTeX\ to
+facilitate extended font feature selection. Under \TeX, fonts were
+selected like so: |\font\1="|\xarg{tfm name}|"| with various options
+appended such as `|at 10pt|' or `|scaled 1.2|', with obvious
+meaning. This syntax still works, but it has been greatly extended in
+\XeTeX.
 
 The extended syntax looks something like\par
-{\centering|\font\1="|\xarg{font identifier}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
-The \xarg{font identifier} is the only mandatory part of the above syntax.  It is either a declared name of a font (e.g., `|Latin Modern Roman|') or a font file name in square brackets (e.g., |[lmroman10-regular]|).
+{\centering|\font\1="|\xarg{font identifier}\xarg{font
+options}|:|\xarg{font features}|"| \xarg{\TeX\ font
+features}\par}\noindent The \xarg{font identifier} is the only mandatory
+part of the above syntax.  It is either a declared name of a font (e.g.,
+`|Latin Modern Roman|') or a font file name in square brackets (e.g.,
+|[lmroman10-regular]|).
 
-When using a font name, the font is looked up through the operating system, using (except on Mac~OS~X) the |fontconfig| library.  Running |fc-list| should show you the font names available.  \Eg,
+When using a font name, the font is looked up through the operating
+system, using (except on Mac~OS~X) the |fontconfig| library.  Running
+|fc-list| should show you the font names available.  \Eg,
 |\font\1="Liberation Serif"| \hfill \emph{look for OS-installed font}
 
-When using a file name, the |xdvipdfmx| driver must be used (this is the default), and the file name must be surrounded with square brackets. The current directory and the |texmf| trees are searched for files matching the name, or the path may be embedded in the
-font declaration, as usual with |kpathsea|. \Eg,
+When using a file name, the |xdvipdfmx| driver must be used (this is the
+default), and the file name must be surrounded with square brackets. The
+current directory and the |texmf| trees are searched for files matching
+the name, or the path may be embedded in the font declaration, as usual
+with |kpathsea|. \Eg,
 \begin{quote}\small
-|\font\2="[lmroman10-regular]"| \hfill {\em find |lmroman10-regular.otf| in any tree}
-|\font\3="[/myfonts/fp9r8a]"| \hfill {\em look for |fp9r8a| only in |/myfonts/|}
+|\font\2="[lmroman10-regular]"| \hfill
+  {\em find |lmroman10-regular.otf| in any tree}
+|\font\3="[/myfonts/fp9r8a]"| \hfill
+  {\em look for |fp9r8a| only in |/myfonts/|}
 \end{quote}
 
-A file with either an |.otf| or |.ttf| extension will be found.  The extension can also be specified explicitly.
+A file with either an |.otf| or |.ttf| extension will be found.  The
+extension can also be specified explicitly.
 
-(Aside: if you load |luaotfload.sty|, you can use this same syntax in Lua\TeX, which doesn't provide \TeX-layer syntax by default.  The |luaotfload| package works in plain \TeX\ and \LaTeX.)
+(Aside: if you load |luaotfload.sty|, you can use this same syntax in
+Lua\TeX, which doesn't provide \TeX-layer syntax by default.  The
+|luaotfload| package works in plain \TeX\ and \LaTeX.)
 
 
 \subsection{Font options}
 
-\xarg{Font options} are only applicable when the font is selected through the operating system (\ie, without square brackets).  They may be any concatenation of the following: 
+\xarg{Font options} are only applicable when the font is selected
+through the operating system (\ie, without square brackets).  They may
+be any concatenation of the following:
 
 \begin{optdesc}
 \item[/B] Use the bold version of the selected font.
 \item[/I] Use the italic version of the selected font.
 \item[/BI] Use the bold italic version of the selected font.
 \item[/IB] Same as \texttt{/BI}.
-\item[/S=$x$] Use the version of the selected font corresponding to the optical size $x$\,pt.
+\item[/S=$x$] Use the version of the selected font corresponding to the
+optical size $x$\,pt.
 \item[/AAT] Explicitly use the ATSUI renderer (Mac~OS~X only).
 \item[/ICU] Explicitly use the ICU OpenType renderer.
-\item[/GR] Explicitly use the Graphite font\footnote{\url{http://scripts.sil.org/RenderingGraphite}} renderer.
+\item[/GR] Explicitly use the Graphite
+font\footnote{\url{http://scripts.sil.org/RenderingGraphite}} renderer.
 \end{optdesc}
 
 \subsection{Font features}
 
-The \xarg{font features} is a comma or semi-colon separated list activating or deactivating various OpenType, Graphite, or AAT font features, which will vary by font. 
-The \XeTeX\ documentation files \path{aat-info.tex} and \path{opentype-info.tex} provide per-font lists of supported features.
+The \xarg{font features} is a comma or semi-colon separated list
+activating or deactivating various OpenType, Graphite, or AAT font
+features, which will vary by font.  The \XeTeX\ documentation files
+\path{aat-info.tex} and \path{opentype-info.tex} provide per-font lists
+of supported features.
 
 \subsubsection{Arbitrary OpenType, Graphite, or AAT features}
-OpenType font features are chosen with \hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{standard tags}. They may be either comma- or semicolon-separated, and prepended with a |+| to turn them on and a |-| to turn them off.
+
+OpenType font features are chosen with
+\hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{standard
+tags}. They may be either comma- or semicolon-separated, and prepended
+with a |+| to turn them on and a |-| to turn them off.
+
 \begin{example}
 \font\liber="Linux Libertine O/I=5:+smcp" at 12pt
 \liber This is the OpenType font Linux Libertine in italic with small caps.
 \end{example}
 
-Varying depending on the language and script in use (see \secref[vref]{script}), a small number of OpenType features, if they exist, will be activated by default.
+Varying depending on the language and script in use (see
+\secref[vref]{script}), a small number of OpenType features, if they
+exist, will be activated by default.
 
-AAT font features and Graphite font features are specified by strings within each font rather than standardised tags. Therefore, even equivalent features between different fonts can have different names.
+AAT font features and Graphite font features are specified by strings
+within each font rather than standardised tags. Therefore, even
+equivalent features between different fonts can have different names.
+
 \begin{example}
 \font\gra="Charis SIL/GR:Small Caps=True" at 12pt
 \gra This is the Graphite font Charis SIL with small caps.
 \end{example}
 
 \subsubsection{Options for all fonts}
+
 Some font features may be applied for any font. These are
 \begin{optdesc}
 \item[mapping=\textsl{<font map>}] 
-Uses the specified font mapping for this font. This uses the TECKit engine to transform unicode characters in the last-minute processing stage of the source. For example, |mapping=tex-text| will enable the classical mappings from ugly ascii |``---''| to proper typographical glyphs ``---'', and so on.
+Uses the specified font mapping for this font. This uses the TECKit
+engine to transform unicode characters in the last-minute processing
+stage of the source. For example, |mapping=tex-text| will enable the
+classical mappings from ugly ascii |``---''| to proper typographical
+glyphs ``---'', and so on.
 
 \item[color={\slshape RRGGBB}{[{\slshape TT}]}] 
-Triple pair of hex values to specify the colour in RGB space, with an optional value for the transparency. 
+Triple pair of hex values to specify the colour in RGB space, with an
+optional value for the transparency.
 
 \item[letterspace=$x$] 
 Adds $x/S$ space between letters in words, where $S$ is the font size.
 
 \item[embolden=$x$]
-Increase the envelope of each glyph by the set amount (this makes the letters look `more bold'). $x=0$ corresponds to no change; $x=1.5$ is a good default value.
+Increase the envelope of each glyph by the set amount (this makes the
+letters look `more bold'). $x=0$ corresponds to no change; $x=1.5$ is a
+good default value.
 
 \item[extend=$x$]
-Stretch each glyph horizontally by a factor of $x$ (i.e., $x=1$ corresponds to no change).
+Stretch each glyph horizontally by a factor of $x$ (i.e., $x=1$
+corresponds to no change).
 
 \item[slant=$x$]
-Slant each glyph by the set amount. $x=0$ corresponds to no change; $x=0.2$ is a good default value. The slant is given by $x=R/S$ where $R$ is the displacement of the top edge of each glyph and $S$ is the point size.
+Slant each glyph by the set amount. $x=0$ corresponds to no change;
+$x=0.2$ is a good default value. The slant is given by $x=R/S$ where $R$
+is the displacement of the top edge of each glyph and $S$ is the point
+size.
 
 \end{optdesc}
 
 \subsubsection{OpenType script and language support}\seclabel{script}
-OpenType font features (and font behaviour) can vary by \hlink{http://www.microsoft.com/typography/otspec/scripttags.htm}{script} (`alphabet') and by \hlink{http://www.microsoft.com/typography/otspec/languagetags.htm}{language}. These are selected with four and three letter tags, respectively.
+
+OpenType font features (and font behaviour) can vary by
+\hlink{http://www.microsoft.com/typography/otspec/scripttags.htm}{script}
+(`alphabet') and by
+\hlink{http://www.microsoft.com/typography/otspec/languagetags.htm}{language}.
+These are selected with four and three letter tags, respectively.
+
 \begin{optdesc}
 \item[script=\textsl{<script tag>}] Selects the font script.
 \item[language=\textsl{<lang tag>}] Selects the font language.
@@ -205,7 +277,9 @@ OpenType font features (and font behaviour) can vary by \hlink{http://www.micros
 \begin{optdesc}
 \item[weight=$x$] Selects the normalised font weight, $x$.
 \item[width=$x$] Selects the normalised font width, $x$.
-\item[optical size=$x$] Selects the optical size, $x$\,pt. Note the difference between the \texttt{/S} font option, which selects discrete fonts.
+\item[optical size=$x$] Selects the optical size, $x$\,pt. Note the
+difference between the \texttt{/S} font option, which selects discrete
+fonts.
 \end{optdesc}
 
 \subsubsection{Vertical typesetting}
@@ -221,7 +295,8 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 \cmd|\XeTeXfonttype|
 \xarg{font}
 \desc{
-  Expands to a number corresponding to which renderer is used for a \xarg{font}:
+  Expands to a number corresponding to which renderer is used for a
+  \xarg{font}:
   \begin{optdesc}
     \item [0] for \TeX\ (a legacy TFM-based font);
     \item [1] for ATSUI (usually an AAT font);
@@ -243,7 +318,9 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 
 \cmd|\XeTeXglyph|
 \xarg{Glyph slot}
-\desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font specific}, so will give different output for different fonts and possibly even different versions of the same font.}
+\desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font
+specific}, so will give different output for different fonts and
+possibly even different versions of the same font.}
 \endcmd
 
 \cmd|\XeTeXcountglyphs|
@@ -253,12 +330,17 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 
 \cmd|\XeTeXglyphindex|
 |"|\xarg{Glyph name}|"| \xarg{space} \emph{or} \cs{relax}
-\desc{Expands to the \xarg{glyph slot} corresponding to the (possibly font specific) \xarg{glyph name} in the currently selected font. Only works for TrueType fonts (or TrueType-based OpenType fonts) at present. Use \texttt{fontforge} or similar to discover glyph names.}
+\desc{Expands to the \xarg{glyph slot} corresponding to the (possibly
+font specific) \xarg{glyph name} in the currently selected font. Only
+works for TrueType fonts (or TrueType-based OpenType fonts) at
+present. Use \texttt{fontforge} or similar to discover glyph names.}
 \endcmd
 
 \cmd|\XeTeXcharglyph|
 \xarg{Char code} 
-\desc{Expands to the default glyph number of character \xarg{Char code} in the current font, or 0 if the character is not available in the font.}
+\desc{Expands to the default glyph number of character \xarg{Char code}
+in the current font, or 0 if the character is not available in the
+font.}
 \endcmd
 
 \begin{example}
@@ -275,22 +357,22 @@ or the unicode character slot:
 
 \cmd|\XeTeXglyphbounds|
 \xarg{edge} \xarg{glyph number}
-\desc{Expands to a dimension corresponding to one of the bounds of a glyph,
-where \xarg{edge} is an integer from 1 to~4 indicating the left/top/right/bottom
-edge respectively, and \xarg{glyph number} is an integer glyph index in the
-current font (only valid for non TFM-based fonts).
+\desc{Expands to a dimension corresponding to one of the bounds of a
+glyph, where \xarg{edge} is an integer from 1 to~4 indicating the
+left/top/right/bottom edge respectively, and \xarg{glyph number} is an
+integer glyph index in the current font (only valid for non TFM-based
+fonts).
 
-The left and right
-measurements are the glyph sidebearings, measured `inwards' from the
-origin and advance respectively, so for a glyph that fits completely
-within its `cell' they will both be positive; for a glyph that
-`overhangs' to the left or right, they will be negative. The actual
-width of the glyph's bounding box, therefore, is the character width
-(advance) minus both these sidebearings.
+The left and right measurements are the glyph sidebearings, measured
+`inwards' from the origin and advance respectively, so for a glyph that
+fits completely within its `cell' they will both be positive; for a
+glyph that `overhangs' to the left or right, they will be negative. The
+actual width of the glyph's bounding box, therefore, is the character
+width (advance) minus both these sidebearings.
 
-The top and bottom measurements are
-measured from the baseline, like \TeX's height and depth; the height of
-the bounding box is the sum of these two dimensions.}
+The top and bottom measurements are measured from the baseline, like
+\TeX's height and depth; the height of the bounding box is the sum of
+these two dimensions.}
 \endcmd
 
 \begin{example}
@@ -316,7 +398,10 @@ the bounding box is the sum of these two dimensions.}
 \end{example}
 
 \cmd|\XeTeXuseglyphmetrics|
-\desc{Counter to specify if the height and depth of characters are taken into account while typesetting ($\ge\mathtt1$). Otherwise ($<\mathtt1$), a single height and depth for the entire alphabet is used. Gives better output but is slower. Activated ($\ge\mathtt1$) by default.}
+\desc{Counter to specify if the height and depth of characters are taken
+into account while typesetting ($\ge\mathtt1$). Otherwise ($<\mathtt1$),
+a single height and depth for the entire alphabet is used. Gives better
+output but is slower. Activated ($\ge\mathtt1$) by default.}
 \endcmd
 
 \begin{example}
@@ -384,19 +469,25 @@ the bounding box is the sum of these two dimensions.}
 \cmd|\XeTeXfeaturename|
 \xarg{font}
 \xarg{feature code}
-\desc{Expands to the name corresponding to the \xarg{feature code} in the \xarg{font}.}
+\desc{Expands to the name corresponding to the \xarg{feature code} in
+the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXisexclusivefeature|
 \xarg{font}
 \xarg{feature code}
-\desc{Expands to a number greater than zero if the feature of a font is exclusive (can only take a single selector).}
+\desc{Expands to a number greater than zero if the feature of a font is
+exclusive (can only take a single selector).}
 \endcmd
 
 \cmd|\XeTeXfindfeaturebyname|
 \xarg{font}
 \xarg{feature name}
-\desc{This command provides a method to query whether a feature name corresponds to a feature contained in the font. It represents an integer corresponding to the feature number used to access the feature numerically. If the feature does not exist, the integer is \texttt{-1}. Also see \cs{XeTeXfindselectorbyname}.}
+\desc{This command provides a method to query whether a feature name
+corresponds to a feature contained in the font. It represents an integer
+corresponding to the feature number used to access the feature
+numerically. If the feature does not exist, the integer is
+\texttt{-1}. Also see \cs{XeTeXfindselectorbyname}.}
 \endcmd
 
 \begin{example}
@@ -418,21 +509,25 @@ The feature `\featname' has index
 \xarg{font}
 \xarg{feature code}
 \xarg{integer, $n$}
-\desc{Expands to the selector code for the $n$-th selector in a \xarg{feature} of a \xarg{font}.}
+\desc{Expands to the selector code for the $n$-th selector in a
+\xarg{feature} of a \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXselectorname|
 \xarg{font}
 \xarg{feature code}
 \xarg{selector code}
-\desc{Expands to the name corresponding to the \xarg{selector code} of a feature of a \xarg{font}.}
+
+\desc{Expands to the name corresponding to the \xarg{selector code} of a
+feature of a \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXisdefaultselector|
 \xarg{font}
 \xarg{feature code}
 \xarg{selector code}
-\desc{Expands to a number greater than zero if the selector of a feature of a font is on by default.}
+\desc{Expands to a number greater than zero if the selector of a feature
+of a font is on by default.}
 \endcmd
 
 
@@ -440,9 +535,16 @@ The feature `\featname' has index
 \xarg{font}
 \xarg{feature name}
 \xarg{selector name}
-\desc{This command provides a method to query whether a feature selector name corresponds to a selector of a specific feature contained in the font. It represents an integer corresponding to the selector number used to access the feature selector numerically. If the feature selector does not exist, the integer is \texttt{-1}.
+\desc{This command provides a method to query whether a feature selector
+name corresponds to a selector of a specific feature contained in the
+font. It represents an integer corresponding to the selector number used
+to access the feature selector numerically. If the feature selector does
+not exist, the integer is \texttt{-1}.
 
-The indices given by this command and by \cs{XeTeXfindfeaturebyname} can be used in Graphite fonts to select font features directly (see example below). Alternatively, they can be used as a means of checking whether a feature/selector exists before attempting to use it.}
+The indices given by this command and by \cs{XeTeXfindfeaturebyname} can
+be used in Graphite fonts to select font features directly (see example
+below). Alternatively, they can be used as a means of checking whether a
+feature/selector exists before attempting to use it.}
 \endcmd
 
 \begin{example}
@@ -478,38 +580,47 @@ Activating the feature: \1 Ŋ \2 Ŋ \3 Ŋ
 \cmd|\XeTeXvariationname|
 \xarg{font}
 \xarg{variation code}
-\desc{Expands to the name corresponding to the \xarg{feature code} in the \xarg{font}.}
+\desc{Expands to the name corresponding to the \xarg{feature code} in
+the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationmin|
 \xarg{font}
 \xarg{variation code}
-\desc{Expands to the minimum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\desc{Expands to the minimum value of the variation corresponding to the
+\xarg{variation code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationmax|
 \xarg{font}
 \xarg{variation code}
-\desc{Expands to the maximum value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\desc{Expands to the maximum value of the variation corresponding to the
+\xarg{variation code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXvariationdefault|
 \xarg{font}
 \xarg{variation code}
-\desc{Expands to the default value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\desc{Expands to the default value of the variation corresponding to the
+\xarg{variation code} in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXfindvariationbyname|
 \xarg{font}
 \xarg{variation name}
-\desc{An integer corresponding to the internal index corresponding to the \xarg{variation name}. This index cannot be used directly but may be used to error-check that a specified variation name exists before attempting to use it.}
+\desc{An integer corresponding to the internal index corresponding to
+the \xarg{variation name}. This index cannot be used directly but may be
+used to error-check that a specified variation name exists before
+attempting to use it.}
 \endcmd
 
 \subsection{Maths fonts}
 
 The primitives described following are extensions of \TeX's 8-bit primitives.
 
-In the following commands, \xarg{fam.} is a number (0--255) representing font to use in maths. \xarg{math type} is the 0--7 number corresponding to the type of math symbol; see a \TeX\ reference for details.
+In the following commands, \xarg{fam.} is a number (0--255) representing
+font to use in maths. \xarg{math type} is the 0--7 number corresponding
+to the type of math symbol; see a \TeX\ reference for details.
 
 \cmd|\XeTeXmathcode|
 \xarg{char slot}
@@ -517,26 +628,32 @@ In the following commands, \xarg{fam.} is a number (0--255) representing font to
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
-\desc{Defines a maths glyph accessible via an input character. Note that the input takes \emph{three} arguments unlike \TeX's \cs{mathcode}.}
+\desc{Defines a maths glyph accessible via an input character. Note that
+the input takes \emph{three} arguments unlike \TeX's \cs{mathcode}.}
 \endcmd
 
 \cmd|\XeTeXmathcodenum|
 \xarg{char slot}
 \opteq
 \xarg{math type/fam./glyph slot}
-\desc{Pure extension of \cs{mathcode} that uses a `bit-packed' single number argument. Can also be used to extract the bit-packed mathcode number of the \xarg{char slot} if no assignment is given.}
+\desc{Pure extension of \cs{mathcode} that uses a `bit-packed' single
+number argument. Can also be used to extract the bit-packed mathcode
+number of the \xarg{char slot} if no assignment is given.}
 \endcmd
 
 \cmd|\XeTeXmathchar|
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
-\desc{Typesets the math character in the \xarg{glyph slot} in the family specified.}
+\desc{Typesets the math character in the \xarg{glyph slot} in the family
+specified.}
 \endcmd
 
 \cmd|\XeTeXmathcharnum|
 \xarg{type/fam./glyph slot}
-\desc{Pure extension of \cs{mathchar} that uses a `bit-packed' single number argument. Can also be used to extract the bit-packed mathcode number of the \xarg{char slot} if no assignment is given.}
+\desc{Pure extension of \cs{mathchar} that uses a `bit-packed' single
+number argument. Can also be used to extract the bit-packed mathcode
+number of the \xarg{char slot} if no assignment is given.}
 \endcmd
 
 \cmd|\XeTeXmathchardef|
@@ -552,7 +669,10 @@ In the following commands, \xarg{fam.} is a number (0--255) representing font to
 \xarg{control sequence}
 \opteq
 \xarg{type/fam./glyph slot}
-\desc{Defines a control sequence for accessing a maths glyph using the `bit-packed' number output by, e.g., \cs{XeTeXmathcodenum}. This would be used to replace legacy code such as \cs{mathchardef}\cs{foo}\texttt{=}\cs{mathcode}\texttt{`}\cs{\-}.}
+\desc{Defines a control sequence for accessing a maths glyph using the
+`bit-packed' number output by, e.g., \cs{XeTeXmathcodenum}. This would
+be used to replace legacy code such as
+\cs{mathchardef}\cs{foo}\texttt{=}\cs{mathcode}\texttt{`}\cs{\-}.}
 \endcmd
 
 \cmd|\XeTeXdelcode|
@@ -567,21 +687,25 @@ In the following commands, \xarg{fam.} is a number (0--255) representing font to
 \xarg{char slot}
 \opteq
 \xarg{fam./glyph slot}
-\desc{Pure extension of \cs{delcode} that uses a `bit-packed' single number argument. Can also be used to extract the bit-packed delcode number of the \xarg{char slot} if no assignment is given.}
+\desc{Pure extension of \cs{delcode} that uses a `bit-packed' single
+number argument. Can also be used to extract the bit-packed delcode
+number of the \xarg{char slot} if no assignment is given.}
 \endcmd
 
 \cmd|\XeTeXdelimiter|
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
-\desc{Typesets the delimiter in the \xarg{glyph slot} in the family specified of either \xarg{math type} 4 (opening) or 5 (closing).}
+\desc{Typesets the delimiter in the \xarg{glyph slot} in the family
+specified of either \xarg{math type} 4 (opening) or 5 (closing).}
 \endcmd
 
 \cmd|\XeTeXmathaccent|
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
-\desc{Typesets the math accent character in the \xarg{glyph slot} in the family specified.}
+\desc{Typesets the math accent character in the \xarg{glyph slot} in the
+family specified.}
 \endcmd
 
 \cmd|\XeTeXradical|
@@ -592,7 +716,14 @@ In the following commands, \xarg{fam.} is a number (0--255) representing font to
 
 \section{Character classes}
 
-The idea behind character classes is to define a boundary where tokens can be added to the input stream without explicit markup. It was originally intended to add glue around punctuation to effect correct Japanese typesetting. This feature can also be used to adjust space around punctuation for European traditions. The general nature of this feature, however, lends it to several other useful applications including automatic font switching when small amounts of another language (in another script) is present in the text.
+The idea behind character classes is to define a boundary where tokens
+can be added to the input stream without explicit markup. It was
+originally intended to add glue around punctuation to effect correct
+Japanese typesetting. This feature can also be used to adjust space
+around punctuation for European traditions. The general nature of this
+feature, however, lends it to several other useful applications
+including automatic font switching when small amounts of another
+language (in another script) is present in the text.
 
 \cmd|\XeTeXinterchartokenstate|
 \desc{Counter. If positive, enables the character classes functionality.}
@@ -600,14 +731,21 @@ The idea behind character classes is to define a boundary where tokens can be ad
 
 \cmd|\newXeTeXintercharclass|
 \xarg{control sequence}
-\desc{Allocates a new interchar class and assigns it to the \xarg{control sequence} argument.}
+\desc{Allocates a new interchar class and assigns it to the
+\xarg{control sequence} argument.}
 \endcmd
 
 \cmd|\XeTeXcharclass|
 \xarg{char slot}
 \opteq
 \xarg{interchar class}
-\desc{Assigns a class corresponding to \xarg{interchar class} (range 0--255) to a \xarg{char slot}. Most characters are class 0 by default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK punctuation. The boundary of a text string is considered class 255, wherever there is a boundary between a `run' of characters and something else --- glue, kern, math, box, etc. Special case class 256 is ignored; useful for diacritics so I'm told.}
+\desc{Assigns a class corresponding to \xarg{interchar class} (range
+0--255) to a \xarg{char slot}. Most characters are class 0 by
+default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK
+punctuation. The boundary of a text string is considered class 255,
+wherever there is a boundary between a `run' of characters and something
+else --- glue, kern, math, box, etc. Special case class 256 is ignored;
+useful for diacritics so I'm told.}
 \endcmd
 
 \cmd|\XeTeXinterchartoks|
@@ -615,7 +753,8 @@ The idea behind character classes is to define a boundary where tokens can be ad
 \xarg{interchar class\ 2}
 \opteq
 |{|\xarg{token list}|}|
-\desc{Defines tokens to be inserted at the interface between \xarg{interchar class 1} and \xarg{interchar class 2} (in that order).}
+\desc{Defines tokens to be inserted at the interface between
+\xarg{interchar class 1} and \xarg{interchar class 2} (in that order).}
 \endcmd
 
 \begin{example}
@@ -642,19 +781,27 @@ aAa A a B aBa BB
 \end{example}
 
 \noindent In the above example the input text is typeset as\par
-{\centering\verb|a[\itshape A\upshape]a A a \bgroup\color{blue}B\egroup aBa B.B|\par}
+{\centering
+ \verb|a[\itshape A\upshape]a A a \bgroup\color{blue}B\egroup aBa B.B|\par}
 
 \newpage
 \section{Encodings}
 
 \cmd|\XeTeXinputnormalization|
 \xarg{Integer}
-\desc{Specify whether \XeTeX\ is to perform normalisation on the input text and, if so, what type of normalisation to use. See \url{http://unicode.org/reports/tr15/} for a description of Unicode normalisation.
-\bigskip
+\desc{Specify whether \XeTeX\ is to perform normalisation on the input
+text and, if so, what type of normalisation to use. See
+\url{http://unicode.org/reports/tr15/} for a description of Unicode
+normalisation.  \bigskip
 \begin{description}[parsep=1ex]
-\item[\cs{XeTeXinputnormalization}\texttt{=0}] (default) do not perform normalisation.
-\item[\cs{XeTeXinputnormalization}\texttt{=1}] normalise to NFC form, using precomposed characters where possible instead base characters with combining marks.
-\item[\cs{XeTeXinputnormalization}\texttt{=2}] normalise to NFD form, using base characters with combining marks instead of precomposed characters.
+\item[\cs{XeTeXinputnormalization}\texttt{=0}] (default) do not perform
+normalisation.
+\item[\cs{XeTeXinputnormalization}\texttt{=1}] normalise to NFC form,
+using precomposed characters where possible instead base characters with
+combining marks.
+\item[\cs{XeTeXinputnormalization}\texttt{=2}] normalise to NFD form,
+using base characters with combining marks instead of precomposed
+characters.
 \end{description}}
 \endcmd
 
@@ -672,7 +819,8 @@ aAa A a B aBa BB
 
 \cmd|\XeTeXdashbreakstate|
 \xarg{Integer}
-\desc{Specify whether line breaks after en- and em-dashes are allowed. Off, 0, by default.}
+\desc{Specify whether line breaks after en- and em-dashes are
+allowed. Off, 0, by default.}
 \endcmd
 
 \cmd|\XeTeXlinebreaklocale|
@@ -692,12 +840,14 @@ aAa A a B aBa BB
 
 \cmd|\XeTeXupwardsmode|
 \xarg{Integer} 
-\desc{If greater than zero, successive lines of text (and rules, boxes, etc.) will be stacked upwards instead of downwards.}
+\desc{If greater than zero, successive lines of text (and rules, boxes,
+etc.) will be stacked upwards instead of downwards.}
 \endcmd
 
 \section{Graphics}
 
-Thanks to Heiko Oberdiek, Paul Isambert, and William Adams for their help with the documentation in this section.
+Thanks to Heiko Oberdiek, Paul Isambert, and William Adams for their
+help with the documentation in this section.
 
 \cmd|\XeTeXpicfile|
 \xarg{filename}
@@ -720,26 +870,28 @@ Thanks to Heiko Oberdiek, Paul Isambert, and William Adams for their help with t
   width \xarg{dimen} \|\\\hspace*{2em}~
   height \xarg{dimen} \|
   rotated \xarg{decimal}}
-\desc{Insert (pages of) a \PDF{}. See below for explanation of optional arguments.}
+\desc{Insert (pages of) a \PDF{}. See below for explanation of optional
+arguments.}
 \endcmd
 
-\noindent
-In the graphic/\PDF{} commands above,
-\xarg{filename} is the usual file name argument of \cs{input}, \cs{openin}, \etc.
-It must not terminated by \cs{relax} if options are given.  
-\xarg{int} and \xarg{dimen} are the usual integer or dimen specifications
-of regular \TeX.
+\noindent In the graphic/\PDF{} commands above, \xarg{filename} is the
+usual file name argument of \cs{input}, \cs{openin}, \etc.  It must not
+terminated by \cs{relax} if options are given.  \xarg{int} and
+\xarg{dimen} are the usual integer or dimen specifications of regular
+\TeX.
 
-The rotation is specified in degrees (\ie, an input of `|360|' is full circle)  
-and the rotation is counterclockwise. The syntax of \xarg{decimal}
-require some explanation:
+The rotation is specified in degrees (\ie, an input of `|360|' is full
+circle) and the rotation is counterclockwise. The syntax of
+\xarg{decimal} require some explanation:
 \begin{quote}
 \<decimal> $\to$ \<optional signs>\<unsigned decimal>\\
-\<unsigned decimal> $\to$ \<normal decimal> \| \<coerced dimen> \| \<internal dimen>\\
+\<unsigned decimal> $\to$ \<normal decimal>
+  \| \<coerced dimen> \| \<internal dimen>\\
 \<normal decimal> -> \<normal integer> \| \<decimal constant>
 \end{quote}
-A \xarg{coerced dimen} or \xarg{internal dimen} is interpreted as number with  
-unit `|pt|'. For example, for a rotation specified with a dimension \cs{testdim},
+A \xarg{coerced dimen} or \xarg{internal dimen} is interpreted as number
+with unit `|pt|'. For example, for a rotation specified with a dimension
+\cs{testdim},
 \begin{itemize}
 \item \verb|\testdim=45pt  | results in a rotation of 45\textdegree,
 \item \verb|\testdim=1in    | is 72.27\textdegree, and
@@ -748,17 +900,31 @@ unit `|pt|'. For example, for a rotation specified with a dimension \cs{testdim}
 In all cases the resulting decimal number for rotation $x$ must be  
 within limits $-16384 < x < 16384$.
 
-The \cs{XeTeXpdffile} command takes one more optional argument for specifying to which `box' the \PDF{} should be cropped before inserting it (the second optional argument listed in thes syntax of \cs{XeTeXpdffile} above). The \PDF{} standard defines a number of (rectangular) bounding boxes that may be specified for various purposes. These are described in the \PDF{} Standard\footnote{Adobe Systems Incorporated, 2008:\\ \url{http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf}} and summarised below.
+The \cs{XeTeXpdffile} command takes one more optional argument for
+specifying to which `box' the \PDF{} should be cropped before inserting
+it (the second optional argument listed in thes syntax of
+\cs{XeTeXpdffile} above). The \PDF{} standard defines a number of
+(rectangular) bounding boxes that may be specified for various
+purposes. These are described in the \PDF{} Standard\footnote{Adobe
+Systems Incorporated, 2008:\\
+\url{http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf}} and
+summarised below.
 \begin{quote}
 \begin{description}
 \item[media] the box defining the physical page size.
 \item [crop] the box of the page contents for display/printing purposes.
-\item [bleed] the box containing the page contents plus whatever extra space required for printing purposes.
-\item [trim] the box of the finished page after trimming the printed `bleed box'.
-\item [art] the box containing the `meaningful content' of the page. This could be the crop box with boilerplate text/logos trimmed off.
+\item [bleed] the box containing the page contents plus whatever extra
+space required for printing purposes.
+\item [trim] the box of the finished page after trimming the printed
+`bleed box'.
+\item [art] the box containing the `meaningful content' of the
+page. This could be the crop box with boilerplate text/logos trimmed
+off.
 \end{description}
 \end{quote}
-When not specified in the \PDF{} to be inserted, the crop box defaults to the media box, and the bleed, trim, and art boxes default to the crop box.
+When not specified in the \PDF{} to be inserted, the crop box defaults
+to the media box, and the bleed, trim, and art boxes default to the crop
+box.
 
 \cmd|\XeTeXpdfpagecount|
 \xarg{filename}
@@ -790,7 +956,8 @@ When not specified in the \PDF{} to be inserted, the crop box defaults to the me
 \endcmd
 
 \cmd|\ifincsname...(\else...)\fi|
-\desc{\TeX\ conditional to branch true if the expansion occurs within \texttt{\char`\\csname ... \char`\\endcsname}.}
+\desc{\TeX\ conditional to branch true if the expansion occurs within
+\texttt{\char`\\csname ... \char`\\endcsname}.}
 \endcmd
 
 \begin{example}
@@ -800,16 +967,23 @@ When not specified in the \PDF{} to be inserted, the crop box defaults to the me
 \end{example}
 
 \cmd|\ifprimitive| \xarg{control sequence} |...(\else...)\fi|
-\desc{\TeX\ conditional to test if a control sequence is a primitive and that it has not been redefined.}
+\desc{\TeX\ conditional to test if a control sequence is a primitive and
+that it has not been redefined.}
 \endcmd
 
 \cmd|\primitive|
 \xarg{control sequence}
-\desc{If the control sequence is a primitive that's been redefined, this command causes it to expand with its original (i.e., primitive) definition.}
+\desc{If the control sequence is a primitive that's been redefined, this
+command causes it to expand with its original (i.e., primitive)
+definition.}
 \endcmd
 
 \cmd|\shellescape|
-\desc{Read-only status indicating the level of `shell escape' allowed. That is, whether commands are allowed to be executed through \texttt{\char`\\write18\char`\{...\char`\}}. Expands to zero for off; one for on (allowed); two is `restricted' (default in TeX Live 2009 and greater) in which a subset of commands only are allowed.}
+\desc{Read-only status indicating the level of `shell escape'
+allowed. That is, whether commands are allowed to be executed through
+\texttt{\char`\\write18\char`\{...\char`\}}. Expands to zero for off;
+one for on (allowed); two is `restricted' (default in TeX Live 2009 and
+greater) in which a subset of commands only are allowed.}
 \endcmd
 
 \begin{example}
@@ -819,7 +993,10 @@ Shell escape \ifnum\shellescape>0 is \else is not \fi enabled.
 \cmd|\strcmp|
 \xarg{arg one}
 \xarg{arg two}
-\desc{Compares the full expansion of the two token list arguments. Expands to zero if they are the same, less than one if the first argument sorts lower (lexicographically) than the second argument, and greater than one if vice versa.}
+\desc{Compares the full expansion of the two token list
+arguments. Expands to zero if they are the same, less than one if the
+first argument sorts lower (lexicographically) than the second argument,
+and greater than one if vice versa.}
 \endcmd
 
 \begin{example}
@@ -837,7 +1014,11 @@ Also note that catcodes are ignored: \strcmp{b}{\b}
 
 \cmd|\suppressfontnotfounderror|
 \xarg{integer}
-\desc{When set to zero (default) if a font is loaded that cannot be located by \XeTeX, an error message will result and typesetting will halt under normal circumstances. When set to one, this error message is suppressed and the font control sequence being defined is set to \cs{nullfont}.}
+\desc{When set to zero (default) if a font is loaded that cannot be
+located by \XeTeX, an error message will result and typesetting will
+halt under normal circumstances. When set to one, this error message is
+suppressed and the font control sequence being defined is set to
+\cs{nullfont}.}
 \begin{example}
 \suppressfontnotfounderror=1
 \font\x="ImpossibleFont" at 10pt
