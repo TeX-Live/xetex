@@ -2,13 +2,15 @@
 
 \documentclass[12pt]{article}
 
+\suppressfontnotfounderror=1
+
 \makeatletter
 \def\@dotsep{999}
 
 \usepackage{fontspec,xltxtra,xunicode}
 \setromanfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Pagella}
 \setsansfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Heros}
-\setmonofont[Scale=MatchLowercase]{Monaco}
+\setmonofont[Scale=MatchLowercase]{Inconsolata}
 
 \usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
 \usepackage{geometry}
@@ -32,13 +34,14 @@
   \SaveVerb[%
     aftersave={%
       \begin{minipage}{\linewidth}
+        \parindent=2em\relax\noindent
         \UseVerb{CMD}}]{CMD}}
 \edef\|{|}
 \DefineShortVerb{\|}
 \newcommand\xarg[1]{\texttt‹{\rmfamily\itshape #1}\texttt›}
 \def\<#1>{\xarg{#1}}
 \newcommand\oarg[1]{\texttt{[\,#1\,]}}
-\newcommand\desc[1]{\par#1\par}
+\newcommand\desc[1]{\par\noindent\ignorespaces#1\par}
 \def\endcmd{%
   \end{minipage}  
   \end{trivlist}}
@@ -111,24 +114,30 @@ This basically means you are free to re-distribute this file as you wish; you ma
 \part{\texorpdfstring{\XeTeX}{XeTeX}\ specifics}
 
 \section{The \cs{font} command}
-The |\font| command has seen significant addition in \XeTeX\ to facilitate rich font feature selection. Under \TeX, fonts were selected like so: |\font\1="|\xarg{font name}|"| with various options appended such as `|at 10pt|' or `|scaled 1.2|', with obvious meaning. This syntax has been extended in \XeTeX\ by passing additions options through the \xarg{font name}.
+The |\font| command has seen significant addition in \XeTeX\ to facilitate extended font feature selection. Under \TeX, fonts were selected like so: |\font\1="|\xarg{tfm name}|"| with various options appended such as `|at 10pt|' or `|scaled 1.2|', with obvious meaning. This syntax still works, but it has been greatly extended in \XeTeX.
 
-This syntax looks something like\par
-{\centering|\font\1="|\xarg{font name}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
-The \xarg{font name} is the actual name of the font (e.g., `|Charis SIL|') and the only mandatory part of the above syntax. 
+The extended syntax looks something like\par
+{\centering|\font\1="|\xarg{font identifier}\xarg{font options}|:|\xarg{font features}|"| \xarg{\TeX\ font features}\par}\noindent
+The \xarg{font identifier} is the only mandatory part of the above syntax.  It is either a declared name of a font (e.g., `|Latin Modern Roman|') or a font file name in square brackets (e.g., |[lmroman10-regular]|).
 
-When using the |xdvipdfmx| driver (which is the default), it is possible to use fonts
-that aren't installed in the operating system by surrounding their name with square brackets. The current directory and the |texmf| trees are searched for files named in this way, or the path may be embedded in the
-font declaration. \Eg,
+When using a font name, the font is looked up through the operating system, using (except on Mac~OS~X) the |fontconfig| library.  Running |fc-list| should show you the font names available.  \Eg,
+|\font\1="Liberation Serif"| \hfill \emph{look for OS-installed font}
+
+When using a file name, the |xdvipdfmx| driver must be used (this is the default), and the file name must be surrounded with square brackets. The current directory and the |texmf| trees are searched for files matching the name, or the path may be embedded in the
+font declaration, as usual with |kpathsea|. \Eg,
 \begin{quote}\small
-|\font\1="[fp9r8a]"| \hfill \emph{Selects `FPL Neu' in the current directory}
-|\font\1="[/myfonts/fp9r8a]"| \hfill \emph{Selects `FPL Neu' somewhere else}
-|\font\1="[lmroman10-regular]"| \hfill \emph{Selects a Latin Modern font in the \emph{TDS}}
+|\font\2="[lmroman10-regular]"| \hfill {\em find |lmroman10-regular.otf| in any tree}
+|\font\3="[/myfonts/fp9r8a]"| \hfill {\em look for |fp9r8a| only in |/myfonts/|}
 \end{quote}
+
+A file with either an |.otf| or |.ttf| extension will be found.  The extension can also be specified explicitly.
+
+(Aside: if you load |luaotfload.sty|, you can use this same syntax in Lua\TeX, which doesn't provide \TeX-layer syntax by default.  The |luaotfload| package works in plain \TeX\ and \LaTeX.)
+
 
 \subsection{Font options}
 
-\xarg{Font options} are only applicable when the font is selected through the operating system (\ie, without square brackets), and may be any concatenation of the following: 
+\xarg{Font options} are only applicable when the font is selected through the operating system (\ie, without square brackets).  They may be any concatenation of the following: 
 
 \begin{optdesc}
 \item[/B] Use the bold version of the selected font.
@@ -136,30 +145,29 @@ font declaration. \Eg,
 \item[/BI] Use the bold italic version of the selected font.
 \item[/IB] Same as \texttt{/BI}.
 \item[/S=$x$] Use the version of the selected font corresponding to the optical size $x$\,pt.
-\item[/AAT] Explicitly use the ATSUI renderer (Mac OS X only).
+\item[/AAT] Explicitly use the ATSUI renderer (Mac~OS~X only).
 \item[/ICU] Explicitly use the ICU OpenType renderer.
 \item[/GR] Explicitly use the Graphite font\footnote{\url{http://scripts.sil.org/RenderingGraphite}} renderer.
 \end{optdesc}
 
 \subsection{Font features}
 
-The \xarg{font features} is a comma or semi-colon separated list activating or deactivating various AAT or OpenType font features, which will vary by font. 
+The \xarg{font features} is a comma or semi-colon separated list activating or deactivating various OpenType, Graphite, or AAT font features, which will vary by font. 
 The \XeTeX\ documentation files \path{aat-info.tex} and \path{opentype-info.tex} provide per-font lists of supported features.
 
-\subsubsection{Arbitrary AAT or OpenType features}
+\subsubsection{Arbitrary OpenType, Graphite, or AAT features}
 OpenType font features are chosen with \hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{standard tags}. They may be either comma- or semicolon-separated, and prepended with a |+| to turn them on and a |-| to turn them off.
 \begin{example}
-\font\warnock="Warnock Pro/I/S=5:+smcp" at 12pt
-\warnock This is the OpenType font Warnock Pro in italic 
-         with small caps at a small optical size.
+\font\liber="Linux Libertine O/I=5:+smcp" at 12pt
+\liber This is the OpenType font Linux Libertine in italic with small caps.
 \end{example}
 
 Varying depending on the language and script in use (see \secref[vref]{script}), a small number of OpenType features, if they exist, will be activated by default.
 
-AAT font features are specified by strings within each font. Therefore, even equivalent features between different fonts can have different names.
+AAT font features and Graphite font features are specified by strings within each font rather than standardised tags. Therefore, even equivalent features between different fonts can have different names.
 \begin{example}
-\font\hoefler="Hoefler Text/B:Letter Case=Small Caps" at 12pt
-\hoefler This is the AAT font Hoefler Text in bold with small caps.
+\font\gra="Charis SIL/GR:Small Caps=True" at 12pt
+\gra This is the Graphite font Charis SIL with small caps.
 \end{example}
 
 \subsubsection{Options for all fonts}
@@ -181,7 +189,7 @@ Increase the envelope of each glyph by the set amount (this makes the letters lo
 Stretch each glyph horizontally by a factor of $x$ (i.e., $x=1$ corresponds to no change).
 
 \item[slant=$x$]
-Slant each glyph by the set amount. $x=0$ corresponds to no change; $x=0.2$ is a good default value.
+Slant each glyph by the set amount. $x=0$ corresponds to no change; $x=0.2$ is a good default value. The slant is given by $x=R/S$ where $R$ is the displacement of the top edge of each glyph and $S$ is the point size.
 
 \end{optdesc}
 
@@ -210,13 +218,27 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 
 \section{Font primitives}
 
-\cmd|\XeTeXuseglyphmetrics|
-\desc{Counter to specify if the height and depth of characters are taken into account while typesetting ($\ge\mathtt1$). Otherwise ($<\mathtt1$), a single height and depth for the entire alphabet is used. Gives better output but is slower. Activated ($\ge\mathtt1$) by default.}
+\cmd|\XeTeXfonttype|
+\xarg{font}
+\desc{
+  Expands to a number corresponding to which renderer is used for a \xarg{font}:
+  \begin{optdesc}
+    \item [0] for \TeX\ (a legacy TFM-based font);
+    \item [1] for ATSUI (usually an AAT font);
+    \item [2] for ICU (an OpenType font);
+    \item [3] for Graphite.
+  \end{optdesc}
+}
 \endcmd
 
 \begin{example}
-\XeTeXuseglyphmetrics=0 \fbox{a}\fbox{A}\fbox{j}\fbox{J} vs.
-\XeTeXuseglyphmetrics=1 \fbox{a}\fbox{A}\fbox{j}\fbox{J}
+\newcommand\whattype[1]{%
+  \texttt{\fontname#1} is rendered by
+  \ifcase\XeTeXfonttype#1\TeX\or ATSUI\or ICU\fi.\par}
+\font\1="cmr10"
+\font\2="Charis SIL"
+\font\3="Charis SIL/AAT" 
+\whattype\1 \whattype\2 \whattype\3
 \end{example}
 
 \cmd|\XeTeXglyph|
@@ -254,16 +276,19 @@ or the unicode character slot:
 \cmd|\XeTeXglyphbounds|
 \xarg{edge} \xarg{glyph number}
 \desc{Expands to a dimension corresponding to one of the bounds of a glyph,
-where \xarg{edge} is an integer from 1 to 4 indicating left/top/right/bottom
+where \xarg{edge} is an integer from 1 to~4 indicating the left/top/right/bottom
 edge respectively, and \xarg{glyph number} is an integer glyph index in the
-current font (only valid for TrueType/OpenType/PostScript fonts loaded
-`natively', not TFM-based fonts). The left and right
+current font (only valid for non TFM-based fonts).
+
+The left and right
 measurements are the glyph sidebearings, measured `inwards' from the
 origin and advance respectively, so for a glyph that fits completely
 within its `cell' they will both be positive; for a glyph that
 `overhangs' to the left or right, they will be negative. The actual
 width of the glyph's bounding box, therefore, is the character width
-(advance) minus both these sidebearings. The top and bottom are
+(advance) minus both these sidebearings.
+
+The top and bottom measurements are
 measured from the baseline, like \TeX's height and depth; the height of
 the bounding box is the sum of these two dimensions.}
 \endcmd
@@ -290,28 +315,13 @@ the bounding box is the sum of these two dimensions.}
 \shadebbox{;} \shadebbox{*} \shadebbox{=}
 \end{example}
 
-\cmd|\XeTeXfonttype|
-\xarg{font}
-\desc{
-  Expands to a number corresponding to which renderer is used for a \xarg{font}:
-  \begin{optdesc}
-    \item [0] for \TeX\ (a legacy TFM-based font);
-    \item [1] for ATSUI (usually an AAT font);
-    \item [2] for ICU (an OpenType font);
-    \item [3] for Graphite.
-  \end{optdesc}
-}
+\cmd|\XeTeXuseglyphmetrics|
+\desc{Counter to specify if the height and depth of characters are taken into account while typesetting ($\ge\mathtt1$). Otherwise ($<\mathtt1$), a single height and depth for the entire alphabet is used. Gives better output but is slower. Activated ($\ge\mathtt1$) by default.}
 \endcmd
 
 \begin{example}
-\newcommand\whattype[1]{%
-  \texttt{\fontname#1} is rendered by
-  \ifcase\XeTeXfonttype#1\TeX\or ATSUI\or ICU\fi.\par}
-\font\1="cmr10"
-\font\2="Hoefler Text"
-\font\3="Charis SIL"
-\font\4="Charis SIL/AAT" 
-\whattype\1\whattype\2\whattype\3\whattype\4
+\XeTeXuseglyphmetrics=0 \fbox{a}\fbox{A}\fbox{j}\fbox{J} vs.
+\XeTeXuseglyphmetrics=1 \fbox{a}\fbox{A}\fbox{j}\fbox{J}
 \end{example}
 
 \subsection{OpenType fonts}
@@ -356,7 +366,7 @@ the bounding box is the sum of these two dimensions.}
 \endcmd
 
 
-\subsection{AAT fonts}
+\subsection{AAT and Graphite fonts}
 
 \subsubsection{Features}
 
@@ -382,6 +392,19 @@ the bounding box is the sum of these two dimensions.}
 \xarg{feature code}
 \desc{Expands to a number greater than zero if the feature of a font is exclusive (can only take a single selector).}
 \endcmd
+
+\cmd|\XeTeXfindfeaturebyname|
+\xarg{font}
+\xarg{feature name}
+\desc{This command provides a method to query whether a feature name corresponds to a feature contained in the font. It represents an integer corresponding to the feature number used to access the feature numerically. If the feature does not exist, the integer is \texttt{-1}. Also see \cs{XeTeXfindselectorbyname}.}
+\endcmd
+
+\begin{example}
+\font\1="Charis SIL/GR" at 10pt
+\def\featname{Uppercase Eng alternates}
+The feature `\featname' has index
+\the\XeTeXfindfeaturebyname\1 "\featname"\relax
+\end{example}
 
 \subsubsection{Feature selectors}
 
@@ -411,6 +434,33 @@ the bounding box is the sum of these two dimensions.}
 \xarg{selector code}
 \desc{Expands to a number greater than zero if the selector of a feature of a font is on by default.}
 \endcmd
+
+
+\cmd|\XeTeXfindselectorbyname|
+\xarg{font}
+\xarg{feature name}
+\xarg{selector name}
+\desc{This command provides a method to query whether a feature selector name corresponds to a selector of a specific feature contained in the font. It represents an integer corresponding to the selector number used to access the feature selector numerically. If the feature selector does not exist, the integer is \texttt{-1}.
+
+The indices given by this command and by \cs{XeTeXfindfeaturebyname} can be used in Graphite fonts to select font features directly (see example below). Alternatively, they can be used as a means of checking whether a feature/selector exists before attempting to use it.}
+\endcmd
+
+\begin{example}
+\font\1="Charis SIL/GR" at 10pt
+\def\featname{Uppercase Eng alternates}
+\newcount\featcount
+\featcount=\XeTeXfindfeaturebyname\1 "\featname"\relax
+
+\def\selecname{Large eng on baseline}
+\newcount\seleccount
+\seleccount=\XeTeXfindselectorbyname\1 \featcount "\selecname"\relax
+The feature selector `\selecname' has index \the\seleccount
+
+\font\2="Charis SIL/GR:\featname=\selecname" at 10pt
+\font\3="Charis SIL/GR:\the\featcount=\the\seleccount" at 10pt
+
+Activating the feature: \1 Ŋ \2 Ŋ \3 Ŋ
+\end{example}
 
 \subsubsection{Variation axes}
 
@@ -447,6 +497,12 @@ the bounding box is the sum of these two dimensions.}
 \xarg{font}
 \xarg{variation code}
 \desc{Expands to the default value of the variation corresponding to the \xarg{variation code} in the \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXfindvariationbyname|
+\xarg{font}
+\xarg{variation name}
+\desc{An integer corresponding to the internal index corresponding to the \xarg{variation name}. This index cannot be used directly but may be used to error-check that a specified variation name exists before attempting to use it.}
 \endcmd
 
 \subsection{Maths fonts}
@@ -696,10 +752,18 @@ The \cs{XeTeXpdffile} command takes one more optional argument for specifying to
 \begin{quote}
 \begin{description}
 \item[media] the box defining the physical page size.
-\item [crop] the box of the page contents for display/printing purposes.\item [bleed] the box containing the page contents plus whatever extra space required for printing purposes.\item [trim] the box of the finished page after trimming the printed `bleed box'.\item [art] the box containing the `meaningful content' of the page. This could be the crop box with boilerplate text/logos trimmed off.
+\item [crop] the box of the page contents for display/printing purposes.
+\item [bleed] the box containing the page contents plus whatever extra space required for printing purposes.
+\item [trim] the box of the finished page after trimming the printed `bleed box'.
+\item [art] the box containing the `meaningful content' of the page. This could be the crop box with boilerplate text/logos trimmed off.
 \end{description}
 \end{quote}
 When not specified in the \PDF{} to be inserted, the crop box defaults to the media box, and the bleed, trim, and art boxes default to the crop box.
+
+\cmd|\XeTeXpdfpagecount|
+\xarg{filename}
+\desc{Expands to the number of pages in a PDF file.}
+\endcmd
 
 \section{Cross-compatibility with \pdfTeX\ and/or Lua\TeX}
 
