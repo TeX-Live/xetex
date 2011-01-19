@@ -10,7 +10,7 @@
 \usepackage{fontspec,xltxtra,xunicode}
 \setromanfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Pagella}
 \setsansfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Heros}
-\setmonofont[Scale=MatchLowercase]{Inconsolata}
+\setmonofont[Scale=MatchLowercase]{[Inconsolata]}
 
 \usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
 \usepackage{geometry}
@@ -110,7 +110,7 @@ contributions are highly welcomed \verb|:)|
 
 \section*{License}
 
-Copyright 2007--2010 Will Robertson. This work,
+Copyright 2007--2011 Will Robertson. This work,
 \verb|XeTeX-reference.ltx|, also known as `\verb|xetexref|', is
 distributed under the terms of the LaTeX Project Public License
 \textup(\,\url{http://www.latex-project.org/lppl.txt}\,\textup), version
@@ -132,31 +132,33 @@ information.
 
 \section{The \cs{font} command}
 
-The |\font| command has seen significant addition in \XeTeX\ to
-facilitate extended font feature selection. Under \TeX, fonts were
-selected like so: |\font\1="|\xarg{tfm name}|"| with various options
-appended such as `|at 10pt|' or `|scaled 1.2|', with obvious
-meaning. This syntax still works, but it has been greatly extended in
-\XeTeX.
+Traditionally, fonts were selected in \TeX\ like this:
+|\font\1=|\xarg{tfm name} with various options possibly appended
+such as `| at 10pt|' or `| scaled 1.2|', with obvious meaning. This syntax
+still works, but it has been greatly extended in \XeTeX.
 
-The extended syntax looks something like\par
-{\centering|\font\1="|\xarg{font identifier}\xarg{font
-options}|:|\xarg{font features}|"| \xarg{\TeX\ font
-features}\par}\noindent The \xarg{font identifier} is the only mandatory
-part of the above syntax.  It is either a declared name of a font (e.g.,
-`|Latin Modern Roman|') or a font file name in square brackets (e.g.,
-|[lmroman10-regular]|).
+The extended syntax looks schematically like this:
 
+{\centering
+ |\font\1="|\xarg{font identifier}\xarg{font options}|:|\xarg{font features}|"|
+ \xarg{\TeX\ font options}\par}
+
+\noindent The \xarg{font identifier} is the only mandatory part of the
+above syntax.  If it is given in square brackets, (e.g.,
+|[lmroman10-regular]|), it is taken as a font file name.
+Without brackets, the name is looked up both as a file name and a system
+font name.
+% the real rules are complicated, see comments in XeTeXFontMgr.h.
+% it will take time to write them down.
 When using a font name, the font is looked up through the operating
 system, using (except on Mac~OS~X) the |fontconfig| library.  Running
 |fc-list| should show you the font names available.  \Eg,
 |\font\1="Liberation Serif"| \hfill \emph{look for OS-installed font}
 
 When using a file name, the |xdvipdfmx| driver must be used (this is the
-default), and the file name must be surrounded with square brackets. The
-current directory and the |texmf| trees are searched for files matching
-the name, or the path may be embedded in the font declaration, as usual
-with |kpathsea|. \Eg,
+default). The current directory and the |texmf| trees are searched for
+files matching the name, or the path may be embedded in the font
+declaration, as usual with |kpathsea|. \Eg,
 \begin{quote}\small
 |\font\2="[lmroman10-regular]"| \hfill
   {\em find |lmroman10-regular.otf| in any tree}
@@ -166,7 +168,7 @@ with |kpathsea|. \Eg,
 
 A file with either an |.otf| or |.ttf| extension will be found.  The
 extension can also be specified explicitly.
-
+% seems .pfb and/or .tfm is also found, sometimes.
 (Aside: if you load |luaotfload.sty|, you can use this same syntax in
 Lua\TeX, which doesn't provide \TeX-layer syntax by default.  The
 |luaotfload| package works in plain \TeX\ and \LaTeX.)
@@ -191,13 +193,17 @@ optical size $x$\,pt.
 font\footnote{\url{http://scripts.sil.org/RenderingGraphite}} renderer.
 \end{optdesc}
 
+
 \subsection{Font features}
 
 The \xarg{font features} is a comma or semi-colon separated list
 activating or deactivating various OpenType, Graphite, or AAT font
-features, which will vary by font.  The \XeTeX\ documentation files
-\path{aat-info.tex} and \path{opentype-info.tex} provide per-font lists
-of supported features.
+features, which will vary by font.  In contrast to font options,
+features work whether the font is selected by file name or through the
+operating system.
+
+The \XeTeX\ documentation files \path{aat-info.tex} and
+\path{opentype-info.tex} provide per-font lists of supported features.
 
 \subsubsection{Arbitrary OpenType, Graphite, or AAT features}
 
@@ -291,6 +297,10 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 \part{New commands}
 
 \section{Font primitives}
+
+\cmd|\XeTeXtracingfonts|
+\desc{If nonzero, reports where fonts are found in the log file.}
+\endcmd
 
 \cmd|\XeTeXfonttype|
 \xarg{font}
@@ -1015,8 +1025,8 @@ Also note that catcodes are ignored: \strcmp{b}{\b}
 \cmd|\suppressfontnotfounderror|
 \xarg{integer}
 \desc{When set to zero (default) if a font is loaded that cannot be
-located by \XeTeX, an error message will result and typesetting will
-halt under normal circumstances. When set to one, this error message is
+located by \XeTeX, an error message results and typesetting is
+halted. When set to one, this error message is
 suppressed and the font control sequence being defined is set to
 \cs{nullfont}.}
 \begin{example}

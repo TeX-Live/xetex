@@ -1,0 +1,47 @@
+% Copyright 2011 Karl Berry.
+% You may freely use, modify, and/or distribute this file, without limitation.
+% Experimentally determine what XeTeX finds with different syntaxes.
+
+% fc-list : family style file spacing
+% reports files et al.
+
+\XeTeXtracingfonts = \maxdimen
+
+% with quotes and no brackets, first looked up as otf/ttf, then as tfm.
+
+% fc-list reports /usr/share/X11/fonts,
+% XeTeX finds /usr/share/fonts/default/ghostscript/putr.pfa.  Why?
+\font\1 = "Utopia" \1 utopia
+
+% fc-list reports /usr/share/X11/fonts/Type1/cursor.pfa,
+% XeTeX finds it there.  But it doesn't work, xdvipdfmx reports:
+% ** ERROR ** Invalid font: -1 (0). Why?
+\font\1 = "Cursor" \1 cursor
+
+% this fails, presumably because it is only available as pcf:
+%\font\1 = "Console" \1 console
+
+% tfm ok:
+\font\1 = "cmr10" \1 hello.
+
+
+% with quotes and square brackets, looked up as otf/ttf/pfb.  This works:
+\font\1 =  "[lmroman10-regular.otf]" at 16pt \1  lmotf
+
+% This works, finds cmr10.pfb in tree (for output):
+\font\1 =  "[cmr10]" at 16pt \1  lmtfm
+
+
+% without quotes, always looked up as tfm.  Thus, this fails:
+%\font\1 = lmroman10-regular.otf at 16pt \1  lm
+\end
+
+% From XeTeXFontMgr.h:
+	PlatformFontRef					findFont(const char* name, char* variant, double ptSize);
+		// 1st arg is name as specified by user (C string, UTF-8)
+		// 2nd is /B/I/AAT/ICU[/USP]/S=## qualifiers
+		// 1. try name given as "full name"
+		// 2. if there's a hyphen, split and try "family-style"
+		// 3. try as PostScript name
+		// 4. try name as family with "Regular/Plain/Normal" style
+		// apply style qualifiers and optical sizing if present
