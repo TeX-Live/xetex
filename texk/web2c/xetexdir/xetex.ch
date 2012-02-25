@@ -4374,17 +4374,17 @@ begin
   end;
 end;
 
-function build_opentype_assembly(@!f:internal_font_number;@!a:void_pointer;@!h:scaled;@!horiz:boolean):pointer;
-  {return a box with height at least |h|, using font |f|, with glyph assembly info from |a|}
+function build_opentype_assembly(@!f:internal_font_number;@!a:void_pointer;@!s:scaled;@!horiz:boolean):pointer;
+  {return a box with height/width at least |s|, using font |f|, with glyph assembly info from |a|}
 var
   b:pointer; {the box we're constructing}
   n:integer; {the number of repetitions of each extender}
   i,j:integer; {indexes}
   g:integer; {glyph code}
   p:pointer; {temp pointer}
-  h_max,o,oo,prev_o,min_o:scaled;
+  s_max,o,oo,prev_o,min_o:scaled;
   no_extenders: boolean;
-  nat,str:scaled; {natural height, stretch}
+  nat,str:scaled; {natural size, stretch}
 begin
   b:=new_null_box;
   if horiz then type(b):=hlist_node
@@ -4396,8 +4396,8 @@ begin
   min_o:=ot_min_connector_overlap(f);
   repeat
     n:=n+1;
-    {calc max possible height with this number of extenders}
-    h_max:=0;
+    {calc max possible size with this number of extenders}
+    s_max:=0;
     prev_o:=0;
     for i:=0 to ot_part_count(a)-1 do begin
       if ot_part_is_extender(a, i) then begin
@@ -4406,18 +4406,18 @@ begin
           o:=ot_part_start_connector(f, a, i);
           if min_o<o then o:=min_o;
           if prev_o<o then o:=prev_o;
-          h_max:=h_max-o+ot_part_full_advance(f, a, i);
+          s_max:=s_max-o+ot_part_full_advance(f, a, i);
           prev_o:=ot_part_end_connector(f, a, i);
         end
       end else begin
         o:=ot_part_start_connector(f, a, i);
         if min_o<o then o:=min_o;
         if prev_o<o then o:=prev_o;
-        h_max:=h_max-o+ot_part_full_advance(f, a, i);
+        s_max:=s_max-o+ot_part_full_advance(f, a, i);
         prev_o:=ot_part_end_connector(f, a, i);
       end;
     end;
-  until (h_max>=h) or no_extenders;
+  until (s_max>=s) or no_extenders;
 
   {assemble box using |n| copies of each extender,
    with appropriate glue wherever an overlap occurs}
@@ -4446,7 +4446,7 @@ begin
     end;
   end;
 
-  {find natural height and total stretch of the box}
+  {find natural size and total stretch of the box}
   p:=list_ptr(b); nat:=0; str:=0;
   while p<>null do begin
     if type(p)=whatsit_node then begin
@@ -4461,9 +4461,9 @@ begin
 
   {set glue so as to stretch the connections if needed}
   depth(b):=0;
-  if (h>nat) and (str>0) then begin
+  if (s>nat) and (str>0) then begin
     glue_order(b):=normal; glue_sign(b):=stretching;
-    glue_set(b):=unfloat((h-nat)/str);
+    glue_set(b):=unfloat((s-nat)/str);
     if horiz then width(b):= nat+round(str*float(glue_set(b)))
     else height(b):=nat+round(str*float(glue_set(b)));
   end else
