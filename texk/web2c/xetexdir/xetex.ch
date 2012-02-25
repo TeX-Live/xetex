@@ -4728,17 +4728,16 @@ if x<>null then begin
 @ @<Switch to a larger accent if available and appropriate@>=
 @y
 @ @<Switch to a larger native-font accent if available and appropriate@>=
-  wa:=width(x);
   c:=native_glyph(p);
   a:=0;
   repeat
     g:=get_ot_math_variant(f, c, a, addressof(w2), 1);
-    if (w2>0) and (w2<=wa) then begin
+    if (w2>0) and (w2<=w) then begin
       native_glyph(p):=g;
       set_native_glyph_metrics(p, 1);
       incr(a);
     end;
-  until (w2<0) or (w2>=wa);
+  until (w2<0) or (w2>=w);
 {
   |if (w2<0) then begin
     ot_assembly_ptr:=get_ot_assembly_ptr(f, c, 1);
