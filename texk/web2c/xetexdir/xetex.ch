@@ -4864,7 +4864,10 @@ if math_type(nucleus(q))=math_char then
         n:=0;
         repeat
           g:=get_ot_math_variant(cur_f, c, n, addressof(h2), 0);
-          if h2>0 then native_glyph(p):=g;
+          if h2>0 then begin
+            native_glyph(p):=g;
+            set_native_glyph_metrics(p, 1);
+          end;
           incr(n);
         until (h2<0) or (h2>=h1);
         if (h2<0) then begin
