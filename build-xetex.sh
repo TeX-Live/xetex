@@ -19,7 +19,6 @@ CFG_OPTS="\
     --disable-largefile \
     --without-x \
     --disable-all-pkgs \
-    --disable-ptex \
     --enable-xetex \
 "
 
@@ -36,6 +35,7 @@ DISABLE_SYSTEM_LIBS="\
     --without-system-t1lib \
     --without-system-teckit \
     --without-system-xpdf \
+    --without-system-poppler \
     --without-system-zlib \
 "
 CFG_OPTS="$CFG_OPTS $DISABLE_SYSTEM_LIBS"
