@@ -4341,8 +4341,18 @@ begin
   type(p):=whatsit_node; subtype(p):=glyph_node;
   native_font(p):=f; native_glyph(p):=g;
   set_native_glyph_metrics(p, 1);
-  link(p):=list_ptr(b); list_ptr(b):=p;
-  height(b):=height(p); width(b):=width(p);
+  if type(b)=hlist_node then begin
+    q:=list_ptr(b);
+    if q=null then list_ptr(b):=p else begin
+      while link(q)<>null do q:=link(q);
+      link(q):=p;
+      if (height(b) < height(p)) then height(b):=height(p);
+      if (depth(b) < depth(p)) then depth(b):=depth(p);
+    end;
+  end else begin
+    link(p):=list_ptr(b); list_ptr(b):=p;
+    height(b):=height(p); width(b):=width(p);
+  end;
 end;
 
 procedure stack_glue_into_box(@!b:pointer;@!min,max:scaled);
@@ -4352,11 +4362,19 @@ begin
   width(q):=min;
   stretch(q):=max-min;
   p:=new_glue(q);
-  link(p):=list_ptr(b); list_ptr(b):=p;
-  height(b):=height(p); width(b):=width(p);
+  if type(b)=hlist_node then begin
+    q:=list_ptr(b);
+    if q=null then list_ptr(b):=p else begin
+      while link(q)<>null do q:=link(q);
+      link(q):=p;
+    end;
+  end else begin
+    link(p):=list_ptr(b); list_ptr(b):=p;
+    height(b):=height(p); width(b):=width(p);
+  end;
 end;
 
-function build_opentype_assembly(@!f:internal_font_number;@!a:void_pointer;@!h:scaled):pointer;
+function build_opentype_assembly(@!f:internal_font_number;@!a:void_pointer;@!h:scaled;@!horiz:boolean):pointer;
   {return a box with height at least |h|, using font |f|, with glyph assembly info from |a|}
 var
   b:pointer; {the box we're constructing}
@@ -4369,7 +4387,8 @@ var
   nat,str:scaled; {natural height, stretch}
 begin
   b:=new_null_box;
-  type(b):=vlist_node;
+  if horiz then type(b):=hlist_node
+  else type(b):=vlist_node;
 
   {figure out how many repeats of each extender to use}
   n:=-1;
@@ -4430,8 +4449,10 @@ begin
   {find natural height and total stretch of the box}
   p:=list_ptr(b); nat:=0; str:=0;
   while p<>null do begin
-    if type(p)=whatsit_node then nat:=nat+height(p)+depth(p)
-    else if type(p)=glue_node then begin
+    if type(p)=whatsit_node then begin
+      if horiz then nat:=nat+width(p)
+      else nat:=nat+height(p)+depth(p);
+    end else if type(p)=glue_node then begin
       nat:=nat+width(glue_ptr(p));
       str:=str+stretch(glue_ptr(p));
     end;
@@ -4443,8 +4464,11 @@ begin
   if (h>nat) and (str>0) then begin
     glue_order(b):=normal; glue_sign(b):=stretching;
     glue_set(b):=unfloat((h-nat)/str);
-    height(b):=nat+round(str*float(glue_set(b)));
-  end else height(b):=nat;
+    if horiz then width(b):= nat+round(str*float(glue_set(b)))
+    else height(b):=nat+round(str*float(glue_set(b)));
+  end else
+    if horiz then width(b):=nat
+    else height(b):=nat;
 
   build_opentype_assembly:=b;
 end;
@@ -4487,7 +4511,7 @@ found: if f<>null_font then begin
   else begin
     {for OT fonts, c is the glyph ID to use}
     if ot_assembly_ptr<>nil then
-      b:=build_opentype_assembly(f, ot_assembly_ptr, v)
+      b:=build_opentype_assembly(f, ot_assembly_ptr, v, 0)
     else begin
       b:=new_null_box; type(b):=vlist_node; list_ptr(b):=get_node(glyph_node_size);
       type(list_ptr(b)):=whatsit_node; subtype(list_ptr(b)):=glyph_node;
@@ -4678,6 +4702,7 @@ var p,@!x,@!y:pointer; {temporary registers for box construction}
 @!h:scaled; {height of character being accented}
 @!delta:scaled; {space to remove between accent and accentee}
 @!w,@!wa,@!w2:scaled; {width of the accentee, not including sub/superscripts}
+@!ot_assembly_ptr:void_pointer;
 begin fetch(accent_chr(q));
 x:=null;
 if is_native_font(cur_f) then
@@ -4738,19 +4763,17 @@ if x<>null then begin
       incr(a);
     end;
   until (w2<0) or (w2>=w);
-{
-  |if (w2<0) then begin
+  if (w2<0) then begin
     ot_assembly_ptr:=get_ot_assembly_ptr(f, c, 1);
     if ot_assembly_ptr<>nil then begin
       free_node(p,glyph_node_size);
-      p:=build_opentype_assembly(cur_f, ot_assembly_ptr, w1);
+      p:=build_opentype_assembly(cur_f, ot_assembly_ptr, w, 1);
       list_ptr(y):=p;
       goto found;
     end;
-  end else|
-}
+  end else
     set_native_glyph_metrics(p, 1);
-{found:}
+found:
   width(y):=width(p); height(y):=height(p); depth(y):=depth(p);
   if depth(y)<0 then depth(y):=0;
 
@@ -4874,7 +4897,7 @@ if math_type(nucleus(q))=math_char then
           ot_assembly_ptr:=get_ot_assembly_ptr(cur_f, c, 0);
           if ot_assembly_ptr<>nil then begin
             free_node(p,glyph_node_size);
-            p:=build_opentype_assembly(cur_f, ot_assembly_ptr, h1);
+            p:=build_opentype_assembly(cur_f, ot_assembly_ptr, h1, 0);
             list_ptr(x):=p;
             delta:=0;
             goto found;
