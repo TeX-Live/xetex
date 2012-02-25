@@ -1,9 +1,6 @@
 #!/bin/bash
 # script to build xetex from a subset of TeX Live sources
 
-set -e
-set -x
-
 topDir=$(cd $(dirname $0) && pwd)
 
 xetexDir=$topDir/texk/web2c/xetexdir
@@ -80,7 +77,9 @@ case "$0" in
     buildDir=$(pwd)/build-xetex-debug
     ;;
 esac
-rm -rf $buildDir && mkdir $buildDir && cd $buildDir
+
+#rm -rf $buildDir
+mkdir -p $buildDir && cd $buildDir
 
 export CONFIG_SHELL=/bin/bash
 $topDir/configure $CFG_OPTS "$@" 2>&1 | tee configure.log
