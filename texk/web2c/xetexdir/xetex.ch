@@ -4988,6 +4988,61 @@ if is_char_node(p) or (p<>null and is_native_word_node(p)) then
 @z
 
 @x
+clr:=height(x)-(abs(math_x_height(cur_size)*4) div 5);
+@y
+if is_ot_font(cur_f) then
+  clr:=height(x)-get_ot_math_constant(cur_f, subscriptTopMax)
+else
+  clr:=height(x)-(abs(math_x_height(cur_size)*4) div 5);
+@z
+
+@x
+clr:=depth(x)+(abs(math_x_height(cur_size)) div 4);
+@y
+if is_ot_font(cur_f) then
+  clr:=depth(x)+get_ot_math_constant(cur_f, superscriptBottomMin)
+else
+  clr:=depth(x)+(abs(math_x_height(cur_size)) div 4);
+@z
+
+@x
+@<Construct a sub/superscript combination box |x|...@>=
+begin y:=clean_box(subscr(q),sub_style(cur_style));
+width(y):=width(y)+script_space;
+if shift_down<sub2(cur_size) then shift_down:=sub2(cur_size);
+clr:=4*default_rule_thickness-
+  ((shift_up-depth(x))-(height(y)-shift_down));
+if clr>0 then
+  begin shift_down:=shift_down+clr;
+  clr:=(abs(math_x_height(cur_size)*4) div 5)-(shift_up-depth(x));
+  if clr>0 then
+    begin shift_up:=shift_up+clr;
+    shift_down:=shift_down-clr;
+    end;
+  end;
+@y
+@<Construct a sub/superscript combination box |x|...@>=
+begin y:=clean_box(subscr(q),sub_style(cur_style));
+width(y):=width(y)+script_space;
+if shift_down<sub2(cur_size) then shift_down:=sub2(cur_size);
+if is_ot_font(cur_f) then
+  clr:=get_ot_math_constant(cur_f, subSuperscriptGapMin)-((shift_up-depth(x))-(height(y)-shift_down))
+else
+  clr:=4*default_rule_thickness-((shift_up-depth(x))-(height(y)-shift_down));
+if clr>0 then
+  begin shift_down:=shift_down+clr;
+  if is_ot_font(cur_f) then
+    clr:=get_ot_math_constant(cur_f, superscriptBottomMaxWithSubscript)-(shift_up-depth(x))
+  else
+    clr:=(abs(math_x_height(cur_size)*4) div 5)-(shift_up-depth(x));
+  if clr>0 then
+    begin shift_up:=shift_up+clr;
+    shift_down:=shift_down-clr;
+    end;
+  end;
+@z
+
+@x
 magic_offset:=str_start[math_spacing]-9*ord_noad
 @y
 magic_offset:=str_start_macro(math_spacing)-9*ord_noad
