@@ -4260,7 +4260,7 @@ macro capabilities. This seems a bit ugly, but it works.
   begin
     f := fam_fnt(2 + size_code);
     if is_ot_font(f) then
-      rval := get_native_mathsy_param(f, #)
+      rval := get_native_mathsy_param(cur_f, #)
     else
       rval := mathsy(#);
     define_mathsy_end
@@ -4309,7 +4309,7 @@ define_mathsy_accessor(axis_height)(22)(axis_height);
   begin
     f := fam_fnt(3 + cur_size);
     if is_ot_font(f) then
-      rval := get_native_mathex_param(f, #)
+      rval := get_native_mathex_param(cur_f, #)
     else
       rval := mathex(#);
   define_mathex_end
@@ -4786,9 +4786,9 @@ begin if cur_style<text_style then clr:=7*default_rule_thickness
 else clr:=3*default_rule_thickness;
 @y
 @<Adjust \(s)|shift_up| and |shift_down| for the case of no fraction line@>=
-begin if is_ot_font(fam_fnt(3+cur_size)) then begin
-  if cur_style<text_style then clr:=get_ot_math_constant(fam_fnt(3+cur_size), stackDisplayStyleGapMin)
-  else clr:=get_ot_math_constant(fam_fnt(3+cur_size), stackGapMin);
+begin if is_ot_font(cur_f) then begin
+  if cur_style<text_style then clr:=get_ot_math_constant(cur_f, stackDisplayStyleGapMin)
+  else clr:=get_ot_math_constant(cur_f, stackGapMin);
 end else begin
   if cur_style<text_style then clr:=7*default_rule_thickness
   else clr:=3*default_rule_thickness;
@@ -4804,13 +4804,13 @@ delta1:=clr-((shift_up-depth(x))-(axis_height(cur_size)+delta));
 delta2:=clr-((axis_height(cur_size)-delta)-(height(z)-shift_down));
 @y
 @<Adjust \(s)|shift_up| and |shift_down| for the case of a fraction line@>=
-begin if is_ot_font(fam_fnt(3+cur_size)) then begin
+begin if is_ot_font(cur_f) then begin
   delta:=half(thickness(q));
-  if cur_style<text_style then clr:=get_ot_math_constant(fam_fnt(3+cur_size), fractionNumDisplayStyleGapMin)
-  else clr:=get_ot_math_constant(fam_fnt(3+cur_size), fractionNumeratorGapMin);
+  if cur_style<text_style then clr:=get_ot_math_constant(cur_f, fractionNumDisplayStyleGapMin)
+  else clr:=get_ot_math_constant(cur_f, fractionNumeratorGapMin);
   delta1:=clr-((shift_up-depth(x))-(axis_height(cur_size)+delta));
-  if cur_style<text_style then clr:=get_ot_math_constant(fam_fnt(3+cur_size), fractionDenomDisplayStyleGapMin)
-  else clr:=get_ot_math_constant(fam_fnt(3+cur_size), fractionDenominatorGapMin);
+  if cur_style<text_style then clr:=get_ot_math_constant(cur_f, fractionDenomDisplayStyleGapMin)
+  else clr:=get_ot_math_constant(cur_f, fractionDenominatorGapMin);
   delta2:=clr-((axis_height(cur_size)-delta)-(height(z)-shift_down));
 end else begin
   if cur_style<text_style then clr:=3*thickness(q)
