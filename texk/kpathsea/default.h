@@ -1,6 +1,6 @@
 /* default.h: declare default path expander.
 
-   Copyright 1993, 1994, 2008 Karl Berry.
+   Copyright 1993, 1994, 2008, 2011 Karl Berry.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,8 @@
 #ifndef KPATHSEA_DEFAULT_H
 #define KPATHSEA_DEFAULT_H
 
+#ifdef MAKE_KPSE_DLL /* libkpathsea internal only */
+
 #include <kpathsea/types.h>
 #include <kpathsea/c-proto.h>
 
@@ -26,11 +28,9 @@
    no extra colons, return PATH.  Only one extra colon is replaced.
    DFLT may not be NULL.  The result is always in new memory.  */
 
-extern string kpathsea_expand_default (kpathsea kpse, const_string path, 
+extern string kpathsea_expand_default (kpathsea kpse, const_string path,
                                        const_string dflt);
 
-#if defined(KPSE_COMPAT_API)
-extern string kpse_expand_default (const_string path, const_string dflt);
-#endif
+#endif /* MAKE_KPSE_DLL */
 
 #endif /* not KPATHSEA_DEFAULT_H */

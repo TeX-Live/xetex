@@ -1,10 +1,14 @@
 ## texk/web2c/am/web.am: Makefile fragment for normal web programs (except tangle).
 ##
-## Copyright (C) 2009 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2009-2011 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 
 web_programs = bibtex dvicopy dvitype gftodvi gftopk gftype mft \
 	patgen pktogf pktype pltotf pooltype tftopl vftovp vptovf weave
+
+## Basic tests, one for each program.
+##
+web_tests = $(web_programs:=.test)
 
 if WEB
 bin_PROGRAMS += $(web_programs)
@@ -22,6 +26,8 @@ bibtex-web2c: bibtex.p $(web2c_depend) web2c/cvtbib.sed
 	@$(web2c) bibtex
 bibtex.p: tangle$(EXEEXT) bibtex.web bibtex.ch
 	$(tangle) bibtex bibtex
+web_tests += tests/bibtex-openout-test.pl tests/bibtex-longline-test.pl
+web_tests += tests/bibtex-mem.test
 
 nodist_dvicopy_SOURCES = dvicopy.c dvicopy.h
 dvicopy.c dvicopy.h: dvicopy-web2c
@@ -144,18 +150,20 @@ weave-web2c: weave.p $(web2c_depend)
 weave.p: tangle$(EXEEXT) weave.web weave.ch
 	$(tangle) weave weave
 
-## Tests
+## Tests.
 ##
-web_tests = $(web_programs:=.test)
-
-EXTRA_DIST += $(web_tests)
-
 if WEB
 TESTS += $(web_tests)
 endif WEB
+EXTRA_DIST += $(web_tests)
 
 ## bibtex.test
 DISTCLEANFILES += tests/xexampl.aux tests/xexampl.bbl tests/xexampl.blg
+## tests/bibtex-longline-test.pl
+DISTCLEANFILES += longline.aux longline.bbl longline.bib longline.blg
+## tests/bibtex-mem.test
+EXTRA_DIST += tests/memdata1.bst tests/memdata2.bst tests/memdata3.bst
+DISTCLEANFILES += tests/memtest.bib tests/memtest?.*
 ## dvicopy.test
 DISTCLEANFILES += tests/xstory.dvi tests/xpplr.dvi
 ## dvitype.test
@@ -216,6 +224,9 @@ EXTRA_DIST += \
 	tests/label.mp \
 	tests/label.mpx \
 	tests/logo8.tfm \
+	tests/longline.aux \
+	tests/longline.bib \
+	tests/longline.tex \
 	tests/longtfm.tex \
 	tests/magic.tex \
 	tests/memtest.tex \
@@ -247,6 +258,5 @@ EXTRA_DIST += \
 	tests/testex.tex \
 	tests/translate \
 	tests/uno.dos \
-	tests/write18.tex \
 	tests/xampl.bib
 

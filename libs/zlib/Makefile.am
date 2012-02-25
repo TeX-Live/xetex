@@ -1,6 +1,6 @@
 ## Proxy Makefile.am to build zlib for TeX Live.
 ##
-##   Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+##   Copyright (C) 2009-2012 Peter Breitenlohner <tex-live@tug.org>
 ##
 ##   This file is free software; the copyright holder
 ##   gives unlimited permission to copy and/or distribute it,
@@ -23,9 +23,6 @@ EXTRA_DIST = $(ZLIB_TREE)
 ##
 EXTRA_DIST += $(ZLIB_TREE)-PATCHES
 
-## Prepare for switch zlib-1.2.3 -> zlib-1.2.4
-EXTRA_DIST += $(OTHER_TREE) $(OTHER_TREE)-PATCHES
-
 # in case of an SVN repository
 dist-hook:
 	rm -rf `find $(distdir) -name .svn`
@@ -46,6 +43,11 @@ nodist_libz_a_SOURCES = \
 	$(ZLIB_TREE)/deflate.c \
 	$(ZLIB_TREE)/deflate.h \
 	$(ZLIB_TREE)/infback.c \
+	$(ZLIB_TREE)/gzclose.c \
+	$(ZLIB_TREE)/gzguts.h \
+	$(ZLIB_TREE)/gzlib.c \
+	$(ZLIB_TREE)/gzread.c \
+	$(ZLIB_TREE)/gzwrite.c \
 	$(ZLIB_TREE)/inffast.c \
 	$(ZLIB_TREE)/inffast.h \
 	$(ZLIB_TREE)/inffixed.h \
@@ -59,20 +61,6 @@ nodist_libz_a_SOURCES = \
 	$(ZLIB_TREE)/zutil.h \
 	$(ZLIB_TREE)/zutil.c
 
-if ZLIB123
-nodist_libz_a_SOURCES += \
-	$(ZLIB_TREE)/gzio.c
-ZCONF_SRC = zconf.in.h
-else
-nodist_libz_a_SOURCES += \
-	$(ZLIB_TREE)/gzclose.c \
-	$(ZLIB_TREE)/gzguts.h \
-	$(ZLIB_TREE)/gzlib.c \
-	$(ZLIB_TREE)/gzread.c \
-	$(ZLIB_TREE)/gzwrite.c
-ZCONF_SRC = zconf.h.in
-endif
-
 $(libz_a_OBJECTS): zconf.h
 
 if build
@@ -83,10 +71,10 @@ endif build
 
 LDADD = libz.a
 
-nodist_example_SOURCES = $(ZLIB_TREE)/example.c
-nodist_minigzip_SOURCES = $(ZLIB_TREE)/minigzip.c
+nodist_example_SOURCES = $(ZLIB_TREE)/test/example.c
+nodist_minigzip_SOURCES = $(ZLIB_TREE)/test/minigzip.c
 
-zconf.h: $(ZLIB_TREE)/$(ZCONF_SRC) config.status
+zconf.h: $(ZLIB_TREE)/zconf.h.in config.status
 	echo '$(SHELL) ./config.status $@'
 	$(SHELL) ./config.status $@
 

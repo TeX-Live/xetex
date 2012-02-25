@@ -1,3 +1,19 @@
+2012-02-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* include/Makefile.am, include/{layout,unicode/}/Makefile.am:
+	Use ../am/hdr_links.am.
+	* hdrs.am (removed): Obsolete.
+
+2011-08-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Adapted to the ICU 4.8.1 distribution.
+	* version.ac: New file defining the ICU version.
+	* configure.ac: Adapt.
+
+2010-12-02  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Adapted to the ICU 4.6 distribution.
+
 2010-04-08  Karl Berry  <karl@tug.org>
 
 	* configure.ac: Pass new option --disable-utf16-string-check.

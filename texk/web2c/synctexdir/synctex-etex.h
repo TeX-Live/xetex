@@ -48,6 +48,4 @@ Thu Jun 19 09:39:21 UTC 2008
 
 */
 
-#    warning SyncTeX for eTeX
-
-#    include "etexd.h"
+#include "etexd.h"

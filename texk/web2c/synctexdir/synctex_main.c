@@ -1,9 +1,11 @@
 /* 
-Copyright (c) 2008, 2009 jerome DOT laurens AT u-bourgogne DOT fr
+Copyright (c) 2008, 2009, 2010, 2011 jerome DOT laurens AT u-bourgogne DOT fr
 
 This file is part of the SyncTeX package.
 
-Latest Revision: Wed Jul  1 11:18:13 UTC 2009
+Latest Revision: Tue Jun 14 08:23:30 UTC 2011
+
+Version: 1.17
 
 License:
 --------
@@ -61,7 +63,7 @@ This is the command line interface to the synctex_parser.c.
 #define _ISOC99_SOURCE /* to get the fmax() prototype */
 #endif
 
-#   include "web2c/c-auto.h" /* for inline && HAVE_xxx */
+#   include <w2c/c-auto.h> /* for inline && HAVE_xxx */
 
 #   include <stdlib.h>
 #   include <stdio.h>
@@ -144,7 +146,7 @@ static void synctex_usage(const char * error,va_list ap) {
 	}
 	fprintf((error?stderr:stdout),
 		"usage: synctex <subcommand> [options] [args]\n"
-		"Synchronize TeXnology command-line client, version 1.2\n\n"
+		"Synchronize TeXnology command-line client, version 1.15\n\n"
 		"The Synchronization TeXnology by Jérôme Laurens is a new feature of recent TeX engines.\n"
 		"It allows to synchronize between input and output, which means to\n"
 		"navigate from the source document to the typeset material and vice versa.\n\n"

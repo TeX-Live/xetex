@@ -1,6 +1,6 @@
 ## Proxy Makefile.am to build xpdf for TeX Live.
 ##
-##   Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+##   Copyright (C) 2009-2011 Peter Breitenlohner <tex-live@tug.org>
 ##
 ##   This file is free software; the copyright holder
 ##   gives unlimited permission to copy and/or distribute it,
@@ -31,6 +31,7 @@ rebuild: all
 EXTRA_DIST = $(XPDF_TREE)
 
 ## Official patches as obtained from ftp://ftp.foolabs.com/pub/xpdf
+## (if any)
 ##
 EXTRA_DIST += $(XPDF_TREE)-foolabs
 
@@ -43,14 +44,17 @@ dist-hook:
 	rm -rf `find $(distdir) -name .svn`
 	rm -f $(distdir)/$(XPDF_TREE)/install-sh
 
-SUBDIRS = goo fofi xpdf
+SUBDIRS = goo fofi splash xpdf
 
 GOO_SRC = $(top_srcdir)/$(XPDF_TREE)/goo
 FOFI_SRC = $(top_srcdir)/$(XPDF_TREE)/fofi
+SPLAHS_SRC = $(top_srcdir)/$(XPDF_TREE)/splash
 XPDF_SRC = $(top_srcdir)/$(XPDF_TREE)/xpdf
 
-INCLUDES = -Igoo -Ifofi -Ixpdf -I$(GOO_SRC) -I$(FOFI_SRC) -I$(XPDF_SRC)
+INCLUDES = -Igoo -Ifofi -Isplash -Ixpdf -I$(GOO_SRC) -I$(FOFI_SRC) -I$(SPLAHS_SRC) -I$(XPDF_SRC)
 AM_CPPFLAGS = -DPDF_PARSER_ONLY
+AM_CFLAGS = $(WARNING_CFLAGS)
+AM_CXXFLAGS = $(NO_WARN_CXXFLAGS)
 
 noinst_LIBRARIES = libxpdf.a
 
@@ -66,12 +70,12 @@ goo_libGoo_a_sources = \
 	$(GOO_SRC)/GString.cc \
 	$(GOO_SRC)/gmem.cc \
 	$(GOO_SRC)/gmempp.cc \
-	$(GOO_SRC)/gfile.cc \
-	$(GOO_SRC)/parseargs.c
+	$(GOO_SRC)/gfile.cc
 
 fofi_libfofi_a_sources = \
 	$(FOFI_SRC)/FoFiBase.cc \
 	$(FOFI_SRC)/FoFiEncodings.cc \
+	$(FOFI_SRC)/FoFiIdentifier.cc \
 	$(FOFI_SRC)/FoFiTrueType.cc \
 	$(FOFI_SRC)/FoFiType1.cc \
 	$(FOFI_SRC)/FoFiType1C.cc
@@ -98,6 +102,7 @@ xpdf_libxpdf_a_sources = \
 	$(XPDF_SRC)/Link.cc \
 	$(XPDF_SRC)/NameToCharCode.cc \
 	$(XPDF_SRC)/Object.cc \
+	$(XPDF_SRC)/OptionalContent.cc \
 	$(XPDF_SRC)/Outline.cc \
 	$(XPDF_SRC)/OutputDev.cc \
 	$(XPDF_SRC)/PDFDoc.cc \

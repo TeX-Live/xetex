@@ -1,7 +1,7 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
- copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2009, 2011 by Jonathan Kew
 
  Written by Jonathan Kew
 
@@ -39,14 +39,7 @@ authorization from the copyright holders.
 #include <kpathsea/config.h>
 
 #ifdef XETEX_OTHER
-#ifdef POPPLER_VERSION
-#define xpdfVersion POPPLER_VERSION
-#define xpdfString "poppler"
 #include "poppler-config.h"
-#else
-#define xpdfString "xpdf"
-#include "xpdf/config.h"
-#endif
 #include "png.h"
 #endif
 
@@ -64,9 +57,6 @@ authorization from the copyright holders.
 #endif
 
 #include "XeTeX_ext.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include <teckit/TECkit_Engine.h>
 
@@ -193,7 +183,6 @@ void initversionstring(char **versions)
 #ifdef XETEX_OTHER
 	int	fc_version = FcGetVersion();
 #endif
-	extern FT_Library	gFreeTypeLibrary; /* in XeTeXFontInst_FT2 */
 	FT_Int	ftMajor, ftMinor, ftPatch;
 
 	const_string fmt =
@@ -205,7 +194,7 @@ void initversionstring(char **versions)
 #else
 		"Compiled with fontconfig version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with libpng version %s; using %s\n"
-		"Compiled with %s version %s\n"
+		"Compiled with poppler version %s\n"
 #endif
 		;
 
@@ -216,8 +205,7 @@ void initversionstring(char **versions)
 #ifdef XETEX_OTHER
 			+ strlen(PNG_LIBPNG_VER_STRING)
 			+ strlen(png_libpng_ver)
-			+ strlen(xpdfString)
-			+ strlen(xpdfVersion)
+			+ strlen(POPPLER_VERSION)
 			+ 6 * 3 /* for fontconfig version #s (won't really need 3 digits per field!) */
 #endif
 			+ 6 * 3; /* for freetype version #s (ditto) */
@@ -241,8 +229,7 @@ void initversionstring(char **versions)
 		,
 		FC_VERSION / 10000, (FC_VERSION % 10000) / 100, FC_VERSION % 100,
 		fc_version / 10000, (fc_version % 10000) / 100, fc_version % 100,
-		PNG_LIBPNG_VER_STRING, png_libpng_ver,
-		xpdfString, xpdfVersion
+		PNG_LIBPNG_VER_STRING, png_libpng_ver, POPPLER_VERSION
 #endif
 		);
 }
@@ -1232,6 +1219,7 @@ splitFontName(char* name, char** var, char** feat, char** end, int* index)
 					&& !((name - start == 1) && isalpha(*start))
 #endif
 					) {
+					*var = name;
 					++name;
 					while (*name >= '0' && *name <= '9')
 						*index = *index * 10 + *name++ - '0';
@@ -1777,12 +1765,12 @@ makefontdef(integer f)
 
 		engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		fontRef = getFontRef(engine);
-		if (fontRef != 0)
-			getNames(fontRef, &psName, &famName, &styName);
-		else {
-			psName = getFontFilename(engine);
+		psName = getFontFilename(engine);
+		if (psName) {
 			famName = "";
 			styName = "";
+		} else {
+			getNames(getFontRef(engine), &psName, &famName, &styName);
 		}
 
 		rgba = getRgbValue(engine);

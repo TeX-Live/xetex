@@ -53,21 +53,14 @@ procedure initialize; {this procedure gets things started properly}
     kpse_init_prog ('OFM2OPL', 0, nil, nil);
     {We |xrealloc| when we know how big the file is.  The 1000 comes
      from the negative lower bound.}
-    tfm_file_array := cast_to_byte_pointer (xmalloc (2000000));
+    tfm_file_array := cast_to_byte_pointer (xmalloc (1009));
     parse_arguments;
 @z
 
-%@x [5] Increase sizes to match vptovf.
-%@!tfm_size=30000; {maximum length of |tfm| data, in bytes}
-%@!lig_size=5000; {maximum length of |lig_kern| program, in words}
-%@!hash_size=5003; {preferably a prime number, a bit larger than the number
-%  of character pairs in lig/kern steps}
-%@y
-%@!tfm_size=40000; {maximum length of |tfm| data, in bytes}
-%@!lig_size=8000; {maximum length of |lig_kern| program, in words ($<2^{15}$)}
-%@!hash_size=8009; {preferably a prime number, a bit larger than the number
-%  of character pairs in lig/kern steps}
-%@z
+@x [4] Drop unused constant.
+@!tfm_size=2000000; {maximum length of |tfm| data, in bytes}
+@y
+@z
 
 @x [7] Open the TFM file.
 @ On some systems you may have to do something special to read a
@@ -153,8 +146,8 @@ end;
 if 4*lf-1>tfm_size then abort('The file is bigger than I can handle!');
 @.The file is bigger...@>
 @y
-{|tfm_file_array
-  := cast_to_byte_pointer (xrealloc (tfm_file_array, 4 * lf - 1 + 1108));|}
+tfm_file_array
+  := cast_to_byte_pointer (xrealloc (tfm_file_array, 4 * lf - 1 + 1002));
 @z
 
 % [27, 28] Change strings to C char pointers. The Pascal strings are

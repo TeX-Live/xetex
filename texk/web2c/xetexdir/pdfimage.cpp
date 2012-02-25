@@ -1,7 +1,7 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
- copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2009, 2011 by Jonathan Kew
 
  Written by Jonathan Kew
 
@@ -32,16 +32,11 @@ authorization from the copyright holders.
 
 #include "pdfimage.h"
 
-#ifdef POPPLER_VERSION
 #include <dirent.h>
 #include <poppler-config.h>
 #include <goo/GooString.h>
 #include <goo/gmem.h>
 #include <goo/gfile.h>
-#define GString GooString
-#else
-#include "goo/GString.h"
-#endif
 
 #include "PDFDoc.h"
 #include "Catalog.h"
@@ -60,7 +55,7 @@ int
 pdf_get_rect(char* filename, int page_num, int pdf_box, realrect* box)
 	/* return the box converted to TeX points */
 {
-	GString*	name = new GString(filename);
+	GooString*	name = new GooString(filename);
 	PDFDoc*		doc = new PDFDoc(name);
 	
 	if (!doc) {
@@ -119,7 +114,7 @@ int
 pdf_count_pages(char* filename)
 {
 	int			pages = 0;
-	GString*	name = new GString(filename);
+	GooString*	name = new GooString(filename);
 	PDFDoc*		doc = new PDFDoc(name);
 	
 	if (!doc) {

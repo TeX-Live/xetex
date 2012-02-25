@@ -1,6 +1,6 @@
 dnl Process this file with Autoconf to produce a configure script for Web2c.
 dnl
-dnl   Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+dnl   Copyright (C) 2009-2012 Peter Breitenlohner <tex-live@tug.org>
 dnl
 dnl   This file is free software; the copyright holder
 dnl   gives unlimited permission to copy and/or distribute it,
@@ -19,8 +19,8 @@ dnl get these features if you are willing to hack the sources. If not,
 dnl it'll take a good argument to convince me to invest the time to make
 dnl them configurable.
 dnl
-m4_define([web2_version], [2010/dev])
-AC_INIT([Web2C], web2_version(), [tex-k@tug.org])
+m4_include([../../version.ac])[] dnl define tex_live_version
+AC_INIT([Web2C], tex_live_version(), [tex-k@tug.org])
 AC_PREREQ([2.65])
 dnl 
 dnl We don't use (for example) tex/tex.web because people who only want
@@ -30,12 +30,14 @@ AC_CONFIG_SRCDIR([cpascal.h])
 AC_CONFIG_AUX_DIR([../../build-aux])
 AC_CONFIG_MACRO_DIR([../../m4])
 
-WEB2CVERSION=web2_version()
+WEB2CVERSION=tex_live_version()
 AC_SUBST([WEB2CVERSION])
 
 dnl Common code for all programs using libkpathsea.
 KPSE_COMMON([web2c programs])
 KPSE_CANONICAL_HOST
+
+AM_CONDITIONAL([cross], [test "x$cross_compiling" = xyes])
 
 AC_PROG_CXX
 AC_PROG_OBJCXX
@@ -46,19 +48,22 @@ dnl Include additional code for web2c.
 KPSE_WEB2C_PREPARE
 m4_include([ac/web2c.ac])
 
-AS_CASE([$with_tex_banner],
-        [''|yes|no], [with_tex_banner="Web2C $WEB2CVERSION"],
-        [AS_IF([echo "$with_tex_banner" | grep -v "$WEB2CVERSION" >/dev/null],
-               [AC_MSG_ERROR([Bad `--with-tex-banner=$with_tex_banner' version string (must contain ` $WEB2CVERSION')])])])
-AC_DEFINE_UNQUOTED([WEB2CVERSION], [" ($with_tex_banner)"])
+AS_IF([test "x$enable_texlive_build" = xyes],
+      [banner_pre='TeX Live'],
+      [banner_pre='Web2C'])
+AC_DEFINE_UNQUOTED([WEB2CVERSION],
+                   [" ($banner_pre $WEB2CVERSION$with_banner_add)"])
 
 dnl For tests
 AC_CHECK_PROGS([KPSEWHICH], [kpsewhich], [false])
 
 KPSE_ASM_UNDERSCORE
+KPSE_CHECK_WIN32
 
 AS_CASE([$with_editor],
-        [''|yes|no], [with_editor='vi +%d %s'])
+        [''|yes|no], [AS_IF([test "x$kpse_cv_have_win32" = xno],
+                            [with_editor="vi +%d '%s'"],
+                            [with_editor='texworks --position=%d \"%s\"'])])
 AC_DEFINE_UNQUOTED([EDITOR], ["$with_editor"],
                    [web2c: Default editor for interactive `e' option.])
 
@@ -75,7 +80,6 @@ AS_CASE([$enable_ipc],
         [yes|no], [],
             [enable_ipc=yes])
 
-KPSE_CHECK_WIN32
 AM_CONDITIONAL([WIN32], [test "x$kpse_cv_have_win32" != xno])
 AM_CONDITIONAL([MINGW32], [test "x$kpse_cv_have_win32" = xmingw32])
 
@@ -138,7 +142,9 @@ m4_foreach([Kpse_Prog], [kpse_tex_progs],
            [m4_ifset([Kpse_Prog],
                      [KPSE_XTEX_COND(Kpse_Prog)])])[]dnl
 
-AS_IF([test "x$enable_aleph:$enable_xetex" = xno:no],
+test "x$enable_omfonts" = xno || enable_omfonts=yes
+
+AS_IF([test "x$enable_aleph:$enable_xetex:$enable_omfonts" = xno:no:yes],
       [enable_otangle=no],
       [enable_otangle=yes])
 AM_CONDITIONAL([OTANGLE],
@@ -192,6 +198,16 @@ AM_CONDITIONAL([MP], [test "x$enable_mp" != xno])
 
 AM_CONDITIONAL([WEB], [test "x$enable_web_progs" != xno])
 
+AS_IF([test "x$enable_ptex:$enable_eptex" = xno:no],
+      [enable_pweb_progs=no],
+      [enable_pweb_progs=$enable_web_progs])
+AM_CONDITIONAL([PWEB], [test "x$enable_pweb_progs" != xno])
+
+AS_IF([test "x$enable_uptex:$enable_euptex" = xno:no],
+      [enable_upweb_progs=no],
+      [enable_upweb_progs=$enable_web_progs])
+AM_CONDITIONAL([UPWEB], [test "x$enable_upweb_progs" != xno])
+
 dnl Although quite unusual, it is possible to build Web2C (TeX & Co)
 dnl using installed (system) kpathsea headers and library.
 dnl In that case we need the location of <kpathsea/paths.h>.
@@ -227,10 +243,14 @@ if test `(uname) 2>/dev/null` = aux; then
   AC_CHECK_LIB([posix], [sigemptyset])
 fi
 
+AC_C_CHAR_UNSIGNED
 AC_CHECK_SIZEOF([int])
+if test $ac_cv_sizeof_int -lt 4; then
+  AC_MSG_ERROR([Sorry, need `int' with at least 4 bytes.])
+fi
 AC_CHECK_SIZEOF([long])
 AC_SEARCH_LIBS([pow], [m])
-AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale snprintf stat64 strerror strlcat strlcpy])
+AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale snprintf strerror strlcat strlcpy])
 AC_CHECK_HEADERS([errno.h langinfo.h locale.h sys/time.h sys/timeb.h sys/wait.h time.h])
 AC_TYPE_LONG_DOUBLE
 AC_TYPE_LONG_LONG_INT
@@ -246,6 +266,8 @@ KPSE_PTEXENC_FLAGS
 KPSE_ZLIB_FLAGS
 KPSE_LIBPNG_FLAGS
 KPSE_XPDF_FLAGS
+KPSE_POPPLER_FLAGS
+test "x$kpse_cv_have_win32" = xno || POPPLER_LIBS="$POPPLER_LIBS -lgdi32"
 KPSE_ZZIPLIB_FLAGS
 KPSE_GRAPHITE_FLAGS
 KPSE_FREETYPE2_FLAGS
@@ -253,29 +275,62 @@ KPSE_TECKIT_FLAGS
 KPSE_ICU_XETEX_FLAGS([icule])
 KPSE_OBSDCOMPAT_FLAGS
 
-# Checks for xpdf (libpoppler) features.
-KPSE_ADD_FLAGS([xpdf])
+# Check size of off_t (using <kpathsea/config.h>)
+KPSE_ADD_FLAGS([kpathsea])
+AC_CHECK_SIZEOF([off_t], , AC_INCLUDES_DEFAULT
+[#include <kpathsea/config.h>])
+
+# Checks for xpdf poppler features.
+KPSE_ADD_FLAGS([poppler])
 AC_LANG_PUSH([C++])
-AC_CACHE_CHECK([for PDFDoc::getPDFMajorVersion],
-               [kpse_cv_have_getPDFMajorVersion],
-               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <PDFDoc.h>]],
-                                                   [[PDFDoc *pdfDoc; pdfDoc->getPDFMajorVersion();]])],
-                                  [kpse_cv_have_getPDFMajorVersion=yes],
-                                  [kpse_cv_have_getPDFMajorVersion=no])])
-AS_IF([test "x$kpse_cv_have_getPDFMajorVersion" = xyes],
-      [AC_DEFINE([HAVE_GETPDFMAJORVERSION], 1,
-                 [Define to 1 if class `PDFDoc' has the `getPDFMajorVersion' member.])])
+AC_CACHE_CHECK([for Annot::decRefCnt],
+               [kpse_cv_have_Annot_decRefCnt],
+               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <goo/GooString.h>
+#include <Object.h>
+#include <Array.h>
+#include <Annot.h>]],
+                                                   [[Annot *an; an->decRefCnt();]])],
+                                  [kpse_cv_have_Annot_decRefCnt=yes],
+                                  [kpse_cv_have_Annot_decRefCnt=no])])
+AS_IF([test "x$kpse_cv_have_Annot_decRefCnt" = xyes],
+      [AC_DEFINE([HAVE_ANNOTDECREFCNT], 1,
+                 [Define to 1 if class `Annot' has the `decRefCnt' member.])])
+AC_CACHE_CHECK([for class AnnotBorderStyle],
+               [kpse_cv_have_AnnotBorderStyle],
+               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <goo/GooString.h>
+#include <Object.h>
+#include <Array.h>
+#include <Annot.h>]],
+                                                   [[AnnotBorderStyle *an;]])],
+                                  [kpse_cv_have_AnnotBorderStyle=yes],
+                                  [kpse_cv_have_AnnotBorderStyle=no])])
+AS_IF([test "x$kpse_cv_have_AnnotBorderStyle" = xyes],
+      [AC_DEFINE([HAVE_ANNOTBORDERSTYLE], 1,
+                 [Define to 1 if we have the class `AnnotBorderStyle'.])])
+AC_CACHE_CHECK([for class EmbFile in Catalog.h],
+               [kpse_cv_have_EmbFile_in_Catalog_h],
+               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <goo/GooString.h>
+#include <Object.h>
+#include <Array.h>
+#include <Catalog.h>]],
+                                                   [[EmbFile *ef;]])],
+                                  [kpse_cv_have_EmbFile_in_Catalog_h=yes],
+                                  [kpse_cv_have_EmbFile_in_Catalog_h=no])])
+AS_IF([test "x$kpse_cv_have_EmbFile_in_Catalog_h" = xyes],
+      [AC_DEFINE([EMBFILE_IN_CATALOG_H], 1,
+                 [Define to 1 for the class `EmbFile' in <Catalog.h>.])])
 AC_LANG_POP([C++])
 KPSE_RESTORE_FLAGS
 
 dnl Write output here, instead of putting a zillion -D's on the command line.
-AC_CONFIG_HEADERS([c-auto.h:c-auto.in],
+AC_CONFIG_HEADERS([w2c/c-auto.h:c-auto.in],
  [sed -e 's/^#define PACKAGE/#define WEB2C_PACKAGE/' \
-      -e 's/^#define VERSION/#define WEB2C_VERSION/' c-auto.h >c-auto.tmp && mv -f c-auto.tmp c-auto.h])
+      -e 's/^#define VERSION/#define WEB2C_VERSION/' w2c/c-auto.h >c-auto.tmp \
+    && mv -f c-auto.tmp w2c/c-auto.h])
 
-AH_TOP([/* c-auto.h: defines for web2c, as determined by configure.
+AH_TOP([/* w2c/c-auto.h: defines for web2c, as determined by configure.
 
-   Copyright 1994-97, 2008, 2009 Karl Berry.
+   Copyright 1994-97, 2008, 2009, 2010 Karl Berry.
    Copyright 1997-99, 2002, 2005 Olaf Weber.
 
    This program is free software: you can redistribute it and/or modify
@@ -353,7 +408,7 @@ fi
 AC_CONFIG_SUBDIRS([web2c])
 
 AC_CONFIG_FILES([Makefile doc/Makefile lib/Makefile man/Makefile
-                 omegafonts/Makefile otps/Makefile
+                 omegafonts/Makefile otps/Makefile otps/win32/Makefile
                  window/Makefile])
 AC_CONFIG_FILES([web2c-sh], [chmod +x web2c-sh])
 AC_CONFIG_FILES([tangle-sh], [chmod +x tangle-sh])

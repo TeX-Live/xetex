@@ -2,7 +2,7 @@
 
    Written in 1996 by Karl Berry.  Public domain.  */
 
-#include "config.h"
+#include <w2c/config.h>
 #include "lib.h"
 #include <kpathsea/version.h>
 #ifdef PTEX
@@ -24,7 +24,7 @@ void
 printversionandexit (const_string banner,
                      const_string copyright_holder,  
                      const_string author,
-                     char *extra_info)
+                     const_string extra_info)
 {
   string prog_name;
   unsigned len;
@@ -51,7 +51,7 @@ printversionandexit (const_string banner,
 #endif
 
   if (copyright_holder) {
-    printf ("Copyright 2009 %s.\n", copyright_holder);
+    printf ("Copyright 2011 %s.\n", copyright_holder);
     if (!author)
       author = copyright_holder;
   }
@@ -64,9 +64,8 @@ printversionandexit (const_string banner,
   printf ("named COPYING and the %s source.\n", prog_name);
   printf ("Primary author of %s: %s.\n", prog_name, author);
 
-  if (extra_info) {
-    puts (extra_info);
-  }
+  if (extra_info)
+    fputs (extra_info, stdout);
 
   uexit (0);
 }

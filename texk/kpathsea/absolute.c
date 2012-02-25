@@ -1,6 +1,6 @@
 /* absolute.c: test if a filename is absolute or explicitly relative.
 
-   Copyright 1993, 1994, 1995, 2008, 2009, 2010 Karl Berry.
+   Copyright 1993, 1994, 1995, 2008, 2009, 2010, 2011 Karl Berry.
    Copyright 1997, 2002, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -32,17 +32,25 @@ kpathsea_absolute_p (kpathsea kpse, const_string filename, boolean relative_ok)
   (void)kpse; /* currenty not used */
   return strcspn (filename, "]>:") != strlen (filename);
 #else /* not VMS */
-  boolean absolute = IS_DIR_SEP (*filename)
+  boolean absolute;
+  boolean explicit_relative;
+
+  absolute = IS_DIR_SEP (*filename)
 #ifdef DOSISH
                      /* Novell allows non-alphanumeric drive letters. */
                      || (*filename && IS_DEVICE_SEP (filename[1]))
 #endif /* DOSISH */
+#ifdef WIN32
+                     /* UNC names */
+                     || (*filename == '\\' && filename[1] == '\\')
+                     || (*filename == '/' && filename[1] == '/')
+#endif /* WIN32 */
 #ifdef AMIGA
-		     /* Colon anywhere means a device.  */
-		     || strchr (filename, ':')
+                     /* Colon anywhere means a device.  */
+                     || strchr (filename, ':')
 #endif /* AMIGA */
-		      ;
-  boolean explicit_relative
+                      ;
+  explicit_relative
     = relative_ok
 #ifdef AMIGA
       /* Leading / is like `../' on Unix and DOS.  Allow Unix syntax,
@@ -61,7 +69,7 @@ kpathsea_absolute_p (kpathsea kpse, const_string filename, boolean relative_ok)
 }
 
 #if defined (KPSE_COMPAT_API)
-boolean 
+boolean
 kpse_absolute_p (const_string filename, boolean relative_ok)
 {
     return kpathsea_absolute_p (kpse_def, filename, relative_ok);

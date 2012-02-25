@@ -1,8 +1,8 @@
 /* c-auto.in.  Generated from configure.ac by autoheader.  */
 
-/* c-auto.h: defines for web2c, as determined by configure.
+/* w2c/c-auto.h: defines for web2c, as determined by configure.
 
-   Copyright 1994-97, 2008, 2009 Karl Berry.
+   Copyright 1994-97, 2008, 2009, 2010 Karl Berry.
    Copyright 1997-99, 2002, 2005 Olaf Weber.
 
    This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,9 @@
 /* web2c: Default editor for interactive `e' option. */
 #undef EDITOR
 
+/* Define to 1 for the class `EmbFile' in <Catalog.h>. */
+#undef EMBFILE_IN_CATALOG_H
+
 /* metafont: Define to include EPSF pseudo window support. */
 #undef EPSFWIN
 
@@ -45,6 +48,12 @@
 
 /* Define to 1 if you have the `access' function. */
 #undef HAVE_ACCESS
+
+/* Define to 1 if we have the class `AnnotBorderStyle'. */
+#undef HAVE_ANNOTBORDERSTYLE
+
+/* Define to 1 if class `Annot' has the `decRefCnt' member. */
+#undef HAVE_ANNOTDECREFCNT
 
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
@@ -88,9 +97,6 @@
 
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
-
-/* Define to 1 if class `PDFDoc' has the `getPDFMajorVersion' member. */
-#undef HAVE_GETPDFMAJORVERSION
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
@@ -149,10 +155,6 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
-/* Define to 1 if you are using GNU libc or otherwise have global variables
-   `program_invocation_name' and `program_invocation_short_name'. */
-#undef HAVE_PROGRAM_INVOCATION_NAME
-
 /* Define to 1 if you have the `putenv' function. */
 #undef HAVE_PUTENV
 
@@ -167,9 +169,6 @@
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
-
-/* Define to 1 if you have the `stat64' function. */
-#undef HAVE_STAT64
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -295,6 +294,9 @@
 /* The size of `long', as computed by sizeof. */
 #undef SIZEOF_LONG
 
+/* The size of `off_t', as computed by sizeof. */
+#undef SIZEOF_OFF_T
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
@@ -340,6 +342,11 @@
 
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
+
+/* Define to 1 if type `char' is unsigned and you are not using gcc.  */
+#ifndef __CHAR_UNSIGNED__
+# undef __CHAR_UNSIGNED__
+#endif
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

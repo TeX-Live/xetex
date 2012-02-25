@@ -1,16 +1,27 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl   Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+dnl   Copyright (C) 2009-2012 Peter Breitenlohner <tex-live@tug.org>
 dnl
 dnl   This file is free software; the copyright holder
 dnl   gives unlimited permission to copy and/or distribute it,
 dnl   with or without modifications, as long as this notice is preserved.
 dnl
-AC_INIT([TeX Live], [2010-04-15], [tex-k@tug.org])
+m4_include([tardate.ac])[] dnl define tex_live_tardate
+m4_include([version.ac])[] dnl define tex_live_version
+AC_INIT([TeX Live], tex_live_tardate, [tex-k@tug.org])
 AC_PREREQ([2.65])
 AC_CONFIG_SRCDIR([m4/kpse-pkgs.m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
+
+dnl Prevent to configure the source tree by mistake.
+if test "x$srcdir" = x. && test "x$enable_build_in_source_tree" != xyes; then
+  rm -rf config.log
+  AC_MSG_ERROR([Configuring and building TeX Live in the source tree
+is strongly discouraged.  If you really want to do that, you must
+specify the configure option `--enable-build-in-source-tree', but
+then do not ask for help -- you have been warned.])
+fi
 
 dnl ## ------------------------------------------- ##
 dnl ## Setup of the TeX Live (TL) infrastructure   ##
@@ -62,14 +73,19 @@ if test "x$LN_S" != "xln -s" && test "x$with_ln_s" != xno; then
   AC_MSG_ERROR([You could use `--without-ln-s' to build without working `ln -s'])
 fi
 
-if test "x$mandir" = 'x${datarootdir}/man'; then
-  mandir='${prefix}/texmf/doc/man'
-  ac_configure_args="$ac_configure_args '--mandir=$mandir'"  
-fi
-
-if test "x$infodir" = 'x${datarootdir}/info'; then
-  infodir='${prefix}/texmf/doc/info'
-  ac_configure_args="$ac_configure_args '--infodir=$infodir'"  
+if test "x$enable_native_texlive_build" = xyes; then
+  if test "x$datarootdir" = 'x${prefix}/share'; then
+    datarootdir='${prefix}'
+    ac_configure_args="$ac_configure_args '--datarootdir=$datarootdir'"  
+  fi
+  if test "x$mandir" = 'x${datarootdir}/man'; then
+    mandir='${prefix}/texmf/doc/man'
+    ac_configure_args="$ac_configure_args '--mandir=$mandir'"  
+  fi
+  if test "x$infodir" = 'x${datarootdir}/info'; then
+    infodir='${prefix}/texmf/doc/info'
+    ac_configure_args="$ac_configure_args '--infodir=$infodir'"  
+  fi
 fi
 
 dnl Although quite unusual, it is possible to build Web2C (TeX & Co)
@@ -134,10 +150,7 @@ if test "x$syslib_used:$enable_native_texlive_build" = xyes:yes; then
 fi
 KPSE_RESTORE_FLAGS
 
-dnl AM_CONDITIONAL([build_kpathsea],
-dnl                [test "x$need_kpathsea" = xyes && test "x$with_system_kpathsea" != xyes])
-
-AM_CONDITIONAL([cross_compiling], [test "x$cross_compiling" = xyes])
+AM_CONDITIONAL([cross], [test "x$cross_compiling" = xyes])
 
 AC_CONFIG_SUBDIRS([auxdir/auxsub libs utils texk])
 
@@ -164,20 +177,29 @@ msg_compiling="$msg_compiling
 test "x$srcdir" = x. || msg_compiling="$msg_compiling
       from sources in $kpse_src"
 AC_MSG_RESULT([
-** Configuration summary for $PACKAGE_STRING:
+** Configuration summary for $PACKAGE_STRING (tex_live_version$with_banner_add):
 
    $msg_compiling])
 case $kpse_src$kpse_bld in
   *' '*) AC_MSG_ERROR([Absolute source and/or build path with embedded spaces]);;
 esac
 AC_MSG_RESULT([
-   prefix:                       $prefix
    enable_native_texlive_build:  $enable_native_texlive_build
+   enable_largefile:             $enable_largefile
    enable_shared:                $enable_shared
    enable_multiplatform:         $enable_multiplatform
    enable_cxx_runtime_hack:      $enable_cxx_runtime_hack
    enable_libtool_hack:          $enable_libtool_hack
    enable_compiler_warnings:     $enable_compiler_warnings
+
+   prefix:                       $prefix
+   includedir:                   $includedir
+   datarootdir:                  $datarootdir
+   mandir:                       $mandir
+   infodir:                      $infodir
+   exec_prefix:                  $exec_prefix
+   bindir:                       $bindir
+   libdir:                       $libdir
 
 ** Next run `make' to configure and build each library and program.
 ])

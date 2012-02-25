@@ -1,14 +1,12 @@
 ## Makefile.am for the TeX Live subdirectory texk/web2c/
 ##
-## Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2009-2011 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 ##
 ACLOCAL_AMFLAGS = -I ../../m4 -I m4
 
-# First $(KPATHSEA_INCLUDES), then -I$(top_srcdir)/..
-# for the case of installed (system) kpathsea headers.
-INCLUDES = -I$(top_builddir)/.. $(KPATHSEA_INCLUDES) -I$(top_srcdir)/..
-AM_CPPFLAGS =
+INCLUDES =
+AM_CPPFLAGS = $(KPATHSEA_INCLUDES)
 ## Not yet for C, C++, and ObjC++ (too many warnings or not yet implemented)
 AM_CFLAGS = $(WARNING_CFLAGS)
 AM_CXXFLAGS = ## $(WARNING_CXXFLAGS)
@@ -30,10 +28,14 @@ nodist_man_MANS =
 check_PROGRAMS =
 TESTS =
 EXTRA_LIBRARIES =
-EXTRA_DIST = PROJECTS cftests config.h cpascal.h help.h
-DISTCLEANFILES = $(EXTRA_LIBRARIES)
+EXTRA_DIST = PROJECTS cftests cpascal.h help.h w2c/config.h
+DISTCLEANFILES = $(EXTRA_LIBRARIES) CXXLD.sh
 CLEANFILES =
+TRIPTRAP_CLEAN =
 TRIPTRAP =
+bin_links =
+install_exe_links =
+uninstall_exe_links =
 
 # in case of an SVN repository
 dist-hook:
@@ -78,7 +80,7 @@ web2c/stamp-makecpool: $(web2c_common) ${srcdir}/web2c/makecpool.c
 
 # Rebuild $(proglib)
 $(proglib): ${srcdir}/lib/*.c
-	cd lib && $(MAKE) $(AM_MAKEFLAGS)
+	cd lib && $(MAKE) $(AM_MAKEFLAGS) lib.a
 ## Rebuild libkpathsea
 @KPATHSEA_RULE@
 ## Rebuild libz
@@ -87,6 +89,8 @@ $(proglib): ${srcdir}/lib/*.c
 @LIBPNG_RULE@
 ## Rebuild libxpdf & Co
 @XPDF_RULE@
+## Rebuild poppler
+@POPPLER_RULE@
 ## Rebuild libopenbsd-compat
 @OBSDCOMPAT_RULE@
 ## Rebuild libzzip
@@ -118,12 +122,16 @@ o_tangle = WEBINPUTS=.:$(srcdir) $(SHELL) ./tangle-sh $@ $(OTANGLE)
 DIFF = diff
 DIFFFLAGS =
 TESTS_ENVIRONMENT = DIFF='$(DIFF)' DIFFFLAGS='$(DIFFFLAGS)' LN_S='$(LN_S)' KPSEWHICH='$(KPSEWHICH)'
+triptrap_diffs = srcdir=$(srcdir) MAKE=$(MAKE) $(SHELL) $(srcdir)/triptrap-sh
 
 .PHONY: triptrap
 triptrap:
-	srcdir=$(srcdir) MAKE=$(MAKE) \
-	  $(SHELL) $(srcdir)/triptrap-sh $(TRIPTRAP)
+	$(triptrap_diffs) $(TRIPTRAP)
 EXTRA_DIST += triptrap-sh
+
+clean-local: triptrap-clean
+.PHONY: triptrap-clean
+triptrap-clean: $(TRIPTRAP_CLEAN)
 
 # The environment for making dumps.
 # No need to specify TEXMF, as ../kpathsea/texmf.cnf should contain
@@ -162,6 +170,15 @@ include $(srcdir)/etexdir/am/etex.am
 ## pTeX
 include $(srcdir)/ptexdir/am/ptex.am
 
+## e-pTeX
+include $(srcdir)/eptexdir/am/eptex.am
+
+## upTeX
+include $(srcdir)/uptexdir/am/uptex.am
+
+## e-upTeX
+include $(srcdir)/euptexdir/am/euptex.am
+
 ## pdfTeX
 include $(srcdir)/pdftexdir/am/pdftex.am
 include $(srcdir)/pdftexdir/am/libpdftex.am
@@ -175,6 +192,7 @@ include $(srcdir)/luatexdir/am/luasocket.am
 include $(srcdir)/luatexdir/am/luamisc.am
 include $(srcdir)/luatexdir/am/luafontforge.am
 include $(srcdir)/luatexdir/am/libluatex.am
+include $(srcdir)/luatexdir/am/txt2zlib.am
 
 ## XeTeX
 include $(srcdir)/xetexdir/am/xetex.am
@@ -196,7 +214,8 @@ include $(srcdir)/synctexdir/am/synctex.am
 ## libmd5
 include $(srcdir)/libmd5/am/md5.am
 
-## Eventually delete these files
-##
-EXTRA_DIST += Makefile.in.orig configure.in.orig metapost.mk
+## Symlinks within $(bindir)
+include $(srcdir)/../am/bin_links.am
+install-exec-hook: install-bin-links $(install_exe_links)
+uninstall-hook: uninstall-bin-links $(uninstall_exe_links)
 

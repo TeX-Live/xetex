@@ -1,7 +1,7 @@
 /* fixwrites -- convert Pascal write/writeln's into fprintf's or putc's.
    Originally by Tim Morgan, October 10, 1987.  */
 
-#include "config.h"
+#include <w2c/config.h>
 #include <kpathsea/c-pathmx.h>
 
 char buf[BUFSIZ], filename[PATH_MAX], args[100];
@@ -402,7 +402,8 @@ main (int argc,  string *argv)
             }
 
 	  /* And yet another kludge, to handle stringcast (<whatever>) */
-          else if (strncmp (cp, "stringcast", 10) == 0)
+          else if (strncmp (cp, "stringcast", 10) == 0
+                   || strncmp (cp, "conststringcast", 10) == 0)
 	    {
 	      *as++ = '%';
 	      *as++ = 's';
@@ -436,6 +437,14 @@ main (int argc,  string *argv)
 	  while (*--as != ')') ;
 	  *as = '\0';
 	  printf ("putc (%s, %s);\n", argp, filename);
+	}
+      else if (strcmp (args, "%c\\n") == 0)
+	{
+	  for (as = argp; *as; ++as) ;
+	  while (*--as != ')') ;
+	  *as = '\0';
+	  printf ("{ putc (%s, %s);  ", argp, filename);
+	  printf ("putc ( '\\n', %s); }\n", filename);
 	}
       else if (strcmp (args, "%s") == 0)
         printf ("Fputs (%s, %s\n", filename, argp);

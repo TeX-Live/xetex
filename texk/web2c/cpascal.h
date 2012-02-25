@@ -13,7 +13,7 @@
 #endif
 
 /* We must include this first, to resolve many C issues.  */
-#include "config.h"
+#include <w2c/config.h>
 
 /* We only use getopt in the applications, not in web2c itself.  */
 #include <kpathsea/getopt.h>
@@ -122,6 +122,7 @@ typedef FILE *text;
         FATAL1 ("putbyte(%ld) failed", (long) x); } while (0)
 
 /* To work around casting problems.  */
+#define ucharcast(x) ((unsigned char) (x))
 #define intcast(x) ((integer) (x))
 #define stringcast(x) ((string) (x))
 #define conststringcast(x) ((const_string) (x))
@@ -143,9 +144,18 @@ typedef FILE *text;
 typedef unsigned char *pointertobyte;
 #define casttobytepointer(e) ((pointertobyte) e)
 
-/* Write out elements START through END of BUF to the file F.  For gftodvi.  */
-#define writechunk(f, buf, start, end) \
-  (void) fwrite (&buf[start], sizeof (buf[start]), end - start + 1, f)
+/* How to output to the GF or DVI file.  */
+#define WRITE_OUT(a, b)							\
+  if ((size_t) fwrite ((char *) &OUT_BUF[a], sizeof (OUT_BUF[a]),       \
+                    (size_t) ((size_t)(b) - (size_t)(a) + 1), OUT_FILE) \
+      != (size_t) ((size_t) (b) - (size_t) (a) + 1))                    \
+    FATAL_PERROR ("fwrite");
+
+#ifdef GFTODVI
+#define writedvi WRITE_OUT 
+#define OUT_FILE dvifile
+#define OUT_BUF dvibuf
+#endif
 
 /* PatGen 2 uses this.  */
 #define input2ints(a,b) zinput2ints (&a, &b)
@@ -167,8 +177,8 @@ typedef unsigned char *pointertobyte;
    Actually allocate one more than requests, so we can index the last
    entry, as Pascal wants to do.  */
 #define BIBXRETALLOCNOSET(array_name, array_var, type, size_var, new_size) \
-  fprintf (logfile, "Reallocated %s (elt_size=%d) to %ld items from %ld.\n", \
-           array_name, (int) sizeof (type), new_size, size_var); \
+  fprintf (logfile, "Reallocated %s (elt_size=%ld) to %ld items from %ld.\n", \
+           array_name, (long) sizeof (type), (long) new_size, (long) size_var); \
   XRETALLOC (array_var, new_size + 1, type)
 /* Same as above, but also increase SIZE_VAR when no more arrays
    with the same size parameter will be resized.  */
@@ -178,9 +188,9 @@ typedef unsigned char *pointertobyte;
 } while (0)
 /* Same as above, but for the pseudo-TYPE ASCII_code[LENGTH+1].  */
 #define BIBXRETALLOCSTRING(array_name, array_var, length, size_var, new_size) \
-  fprintf (logfile, "Reallocated %s (elt_size=%d) to %ld items from %ld.\n", \
-           array_name, (int) (length + 1), new_size, size_var); \
-  XRETALLOC (array_var, new_size * (length + 1), ASCIIcode)
+  fprintf (logfile, "Reallocated %s (elt_size=%ld) to %ld items from %ld.\n", \
+           array_name, (long) (length + 1), (long) new_size, (long) size_var); \
+  XRETALLOC (array_var, (new_size) * (length + 1), ASCIIcode)
   
 /* Need precisely int for getopt, etc. */
 #define cinttype int

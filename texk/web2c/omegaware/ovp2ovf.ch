@@ -33,25 +33,6 @@ procedure initialize; {this procedure gets things started properly}
 @y
 @!buf_size=3000; {max input line length, output error line length}
 @z
-%@x
-%@!vf_size=10000; {maximum length of |vf| data, in bytes}
-%@!max_stack=100; {maximum depth of simulated \.{DVI} stack}
-%@!max_param_words=30; {the maximum number of \.{fontdimen} parameters allowed}
-%@!max_lig_steps=5000;
-%  {maximum length of ligature program, must be at most $32767-257=32510$}
-%@!max_kerns=500; {the maximum number of distinct kern values}
-%@!hash_size=5003; {preferably a prime number, a bit larger than the number
-%  of character pairs in lig/kern steps}
-%@y
-%@!vf_size=50000; {maximum length of |vf| data, in bytes}
-%@!max_stack=100; {maximum depth of simulated \.{DVI} stack}
-%@!max_param_words=30; {the maximum number of \.{fontdimen} parameters allowed}
-%@!max_lig_steps=10000;
-%  {maximum length of ligature program, must be at most $32767-257=32510$}
-%@!max_kerns=10000; {the maximum number of distinct kern values}
-%@!hash_size=10007; {preferably a prime number, a bit larger than the number
-%  of character pairs in lig/kern steps}
-%@z
 
 @x [6] Open VPL file.
 reset(vpl_file);
@@ -82,11 +63,42 @@ rewritebin (vf_file, vf_name);
 rewritebin (tfm_file, tfm_name);
 @z
 
+@x [23] Avoid name conflict; MinGW defines `byte' in <rpcndr.h>.
+correspond to one-character constants like \.{"A"} in \.{WEB} language.
+@y
+correspond to one-character constants like \.{"A"} in \.{WEB} language.
+
+@d byte == byte_type
+@z
+
 @x [24] Pascal Web's char
 @d first_ord=0 {ordinal number of the smallest element of |char|}
 @y
 @d char == 0..255
 @d first_ord=0 {ordinal number of the smallest element of |char|}
+@z
+
+@x [34] (fill_buffer) end-of-line counts as a delimiter. Possibly a bug.
+  while (limit<buf_size-1)and(not eoln(vpl_file)) do begin
+    incr(limit); read(vpl_file,buffer[limit]);
+    end;
+  buffer[limit+1]:=' '; right_ln:=eoln(vpl_file);
+@y
+  while (limit<buf_size-1)and(not eoln(vpl_file)) do begin
+    incr(limit); read(vpl_file,buffer[limit]);
+    end;
+  buffer[limit+1]:=' '; right_ln:=eoln(vpl_file);
+  if right_ln then begin incr(limit); buffer[limit+1]:=' ';
+    end;
+@z
+
+@x [37] (get_keyword_char) Unnecessary due to previous change.
+begin while (loc=limit)and(not right_ln) do fill_buffer;
+if loc=limit then cur_char:=" " {end-of-line counts as a delimiter}
+else begin
+@y
+begin while loc=limit do fill_buffer;
+begin
 @z
 
 % [89] `index' is not a good choice for an identifier on Unix systems.

@@ -26,16 +26,6 @@
 /* The hash function.  We go for simplicity here.  */
 
 /* All our hash tables are related to filenames.  */
-#ifdef MONOCASE_FILENAMES
-#if defined(WIN32) && !defined(__i386_pc_gnu__)
-/* This is way faster under Win32. */
-#define TRANSFORM(x) ((unsigned)CharLower((LPTSTR)(BYTE)(x)))
-#else
-#define TRANSFORM(x) (tolower(x))
-#endif
-#else
-#define TRANSFORM(x) (x)
-#endif
 
 static unsigned
 hash (hash_table_type table,  const_string key)
@@ -45,6 +35,12 @@ hash (hash_table_type table,  const_string key)
   /* Our keys aren't often anagrams of each other, so no point in
      weighting the characters.  */
   while (*key != 0)
+#if defined(WIN32)
+    if (IS_KANJI(key)) {
+      n = (n + n + (unsigned)(*key++)) % table.size;
+      n = (n + n + (unsigned)(*key++)) % table.size;
+    } else
+#endif
     n = (n + n + TRANSFORM (*key++)) % table.size;
 
   return n;
@@ -105,9 +101,9 @@ hash_insert (hash_table_type *table,
   else
     {
       hash_element_type *loc = table->buckets[n];
-      while (loc->next)		/* Find the last element.  */
+      while (loc->next)         /* Find the last element.  */
         loc = loc->next;
-      loc->next = new_elt;	/* Insert the new one after.  */
+      loc->next = new_elt;      /* Insert the new one after.  */
     }
 }
 
@@ -131,9 +127,9 @@ hash_insert_normalized (hash_table_type *table,
   else
     {
       hash_element_type *loc = table->buckets[n];
-      while (loc->next)		/* Find the last element.  */
+      while (loc->next)         /* Find the last element.  */
         loc = loc->next;
-      loc->next = new_elt;	/* Insert the new one after.  */
+      loc->next = new_elt;      /* Insert the new one after.  */
     }
 }
 

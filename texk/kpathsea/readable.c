@@ -1,6 +1,6 @@
 /* readable.c: check if a filename is a readable non-directory file.
 
-   Copyright 1993, 1995, 1996, 2008 Karl Berry.
+   Copyright 1993, 1995, 1996, 2008, 2011 Karl Berry.
    Copyright 1998, 1999, 2000, 2001, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@
 /* `stat' is way too expensive for such a simple job.  */
 #define READABLE(fn, st) \
   (access (fn, R_OK) == 0 && access (fn, D_OK) == -1)
-#elif WIN32
+#elif defined (WIN32)
 /* Warning: st must be an unsigned int under Win32 */
 static boolean
 READABLE(const_string fn, unsigned int st)
@@ -44,18 +44,18 @@ READABLE(const_string fn, unsigned int st)
   } else {
       switch(GetLastError()) {
       case ERROR_BUFFER_OVERFLOW:
-	  errno = ENAMETOOLONG;
-	  break;
+          errno = ENAMETOOLONG;
+          break;
       case ERROR_ACCESS_DENIED:
-	  errno = EACCES;
-	  break;
+          errno = EACCES;
+          break;
       default :
-          errno = EIO;		/* meaningless, will make ret=NULL later */
-	  break;
+          errno = EIO;          /* meaningless, will make ret=NULL later */
+          break;
       }
   }
   return ((st != 0xFFFFFFFF) &&
-		  !(st & FILE_ATTRIBUTE_DIRECTORY));
+                  !(st & FILE_ATTRIBUTE_DIRECTORY));
 }
 #else
 #define READABLE(fn, st) \
@@ -65,8 +65,10 @@ READABLE(const_string fn, unsigned int st)
 /* POSIX invented the brain-damage of not necessarily truncating
    filename components; the system's behavior is defined by the value of
    the symbol _POSIX_NO_TRUNC, but you can't change it dynamically!
-   
-   Generic const return warning.  See extend-fname.c.  */
+
+   We may or may not return NAME.  It's up to the caller not to assume
+   the return value is modifiable.  */
+
 
 string
 kpathsea_readable_file (kpathsea kpse, const_string name)
@@ -106,9 +108,8 @@ kpathsea_readable_file (kpathsea kpse, const_string name)
 
 #if defined (KPSE_COMPAT_API)
 string
-kpse_readable_file (const_string name) 
+kpse_readable_file (const_string name)
 {
     return kpathsea_readable_file (kpse_def, name);
 }
 #endif
-

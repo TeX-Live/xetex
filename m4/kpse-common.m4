@@ -111,7 +111,7 @@ m4_define([_KPSE_LIB_FLAGS_TL],
 m4_if(m4_index([ $3 ], [ tree ]), [-1],
 [KPSE_]AS_TR_CPP([$1])[_OPTIONS([with-system])[]dnl
 if test "x$with_system_[]AS_TR_SH($1)" = xyes; then
-  AS_TR_CPP([kpse-$1-system-flags])[]dnl
+  ]AS_TR_CPP([kpse-$1-system-flags])[[]dnl
 else
 ])[]dnl m4_if
   AS_TR_CPP($1)[_INCLUDES=`echo '$4' | sed \
@@ -255,20 +255,6 @@ AC_CACHE_CHECK([whether the compiler accepts prototypes],
                                [kb_cv_c_prototypes=no])])
 if test "x$kb_cv_c_prototypes" = xno; then
   AC_MSG_ERROR([Sorry, your compiler does not understand prototypes.])
-fi
-dnl
-dnl This is a GNU libc invention.
-AC_CACHE_CHECK([whether program_invocation_name is predefined],
-               [kb_cv_var_program_inv_name],
-               [AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
-                                                [[extern char *program_invocation_name;
-                                                  program_invocation_name = "love";]])],
-                               [kb_cv_var_program_inv_name=yes],
-                               [kb_cv_var_program_inv_name=no])])
-if test "x$kb_cv_var_program_inv_name" = xyes; then
-  AC_DEFINE([HAVE_PROGRAM_INVOCATION_NAME], 1,
-            [Define to 1 if you are using GNU libc or otherwise have global variables
-             `program_invocation_name' and `program_invocation_short_name'.])
 fi
 dnl
 dnl Enable flags for compiler warnings

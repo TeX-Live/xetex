@@ -1,7 +1,7 @@
 /* config.h: master configuration file, included first by all compilable
    source files (not headers).
 
-   Copyright 1993, 1995, 1996, 1997, 2008, 2010 Karl Berry.
+   Copyright 1993, 1995, 1996, 1997, 2008, 2010, 2011 Karl Berry.
    Copyright 2000, 2003, 2004, 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -62,9 +62,9 @@
 #include <kpathsea/c-auto.h>
 
 #ifdef __DJGPP__
-#include <fcntl.h>	/* for long filenames' stuff */
-#include <dir.h>	/* for `getdisk' */
-#include <io.h>		/* for `setmode' */
+#include <fcntl.h>      /* for long filenames' stuff */
+#include <dir.h>        /* for `getdisk' */
+#include <io.h>         /* for `setmode' */
 #endif
 
 /* Some drivers have partially integrated kpathsea changes.  */
@@ -95,6 +95,7 @@
   but before "lib.h". FP.
 */
 #if defined (WIN32) || defined (_WIN32)
+#include <kpathsea/knj.h>
 #ifdef __MINGW32__
 #include <kpathsea/mingw32.h>
 #else
@@ -102,12 +103,24 @@
 #endif
 #endif
 
+/* Transform filename characters for use in hash tables.  */
+#if defined(MONOCASE_FILENAMES)
+#if defined(WIN32) && !defined(__i386_pc_gnu__)
+/* This is way faster under Win32. */
+#define TRANSFORM(x) ((unsigned)CharLower((LPTSTR)(BYTE)(x)))
+#else
+#define TRANSFORM(x) (tolower(x))
+#endif
+#else
+#define TRANSFORM(x) (x)
+#endif
+
 #include <kpathsea/debug.h>    /* Runtime tracing.  */
 #include <kpathsea/lib.h>      /* STREQ, etc. */
 #include <kpathsea/types.h>    /* <sys/types.h>, boolean, string, etc. */
-#include <kpathsea/progname.h> /* for program_invocation_*name */
+#include <kpathsea/progname.h> /* for kpse_invocation_*name */
 
-   
+
 /* If you want to find subdirectories in a directory with non-Unix
    semantics (specifically, if a directory with no subdirectories does
    not have exactly two links), define this.  */

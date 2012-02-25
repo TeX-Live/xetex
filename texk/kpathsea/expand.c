@@ -1,6 +1,6 @@
 /* expand.c: general expansion.
 
-   Copyright 1993, 1994, 1995, 1996, 1997, 1998, 2005, 2008, 2009
+   Copyright 1993, 1994, 1995, 1996, 1997, 1998, 2005, 2008, 2009, 2011
    Karl Berry & Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -35,23 +35,15 @@ kpathsea_expand (kpathsea kpse, const_string s)
 {
   string var_expansion = kpathsea_var_expand (kpse, s);
   string tilde_expansion = kpathsea_tilde_expand (kpse, var_expansion);
-  
+
   /* `kpse_var_expand' always gives us new memory; `kpse_tilde_expand'
      doesn't, necessarily.  So be careful that we don't free what we are
      about to return.  */
   if (tilde_expansion != var_expansion)
     free (var_expansion);
-  
+
   return tilde_expansion;
 }
-
-#if defined(KPSE_COMPAT_API)
-string
-kpse_expand (const_string s)
-{
-    return kpathsea_expand (kpse_def, s);
-}
-#endif
 
 /* Forward declarations of functions from the original expand.c  */
 static str_list_type brace_expand (kpathsea, const_string*);
@@ -67,7 +59,7 @@ kpathsea_expand_kpse_dot (kpathsea kpse, string path)
 #ifdef MSDOS
   boolean malloced_kpse_dot = false;
 #endif
-  
+
   if (kpse_dot == NULL)
     return path;
   ret = (string)xmalloc(1);
@@ -87,7 +79,7 @@ kpathsea_expand_kpse_dot (kpathsea kpse, string path)
   }
 #endif
 
-  for (elt = kpathsea_path_element (kpse, path); elt; 
+  for (elt = kpathsea_path_element (kpse, path); elt;
        elt = kpathsea_path_element (kpse, NULL)) {
     string save_ret = ret;
     boolean ret_copied = true;
@@ -177,7 +169,7 @@ kpathsea_brace_expand (kpathsea kpse, const_string path)
   string ret = (string)xmalloc (1);
   *ret = 0;
 
-  for (elt = kpathsea_path_element (kpse, xpath); elt; 
+  for (elt = kpathsea_path_element (kpse, xpath); elt;
        elt = kpathsea_path_element (kpse, NULL)) {
     string save_ret = ret;
     /* Do brace expansion first, so tilde expansion happens in {~ka,~kb}.  */
@@ -217,17 +209,39 @@ kpathsea_path_expand (kpathsea kpse, const_string path)
   string xpath;
   string elt;
   unsigned len;
+  const_string ypath;
+#if defined(WIN32)
+  string zpath, p;
+#endif
 
   /* Initialise ret to the empty string. */
   ret = (string)xmalloc (1);
   *ret = 0;
   len = 0;
-  
+
+#if defined(WIN32)
+  zpath = xstrdup (path);
+
+  for (p = zpath; *p; p++)
+    if (*p == '\\')
+      *p = '/';
+    else if (IS_KANJI(p))
+      p++;
+
+  ypath = zpath;
+#else
+  ypath = path;
+#endif
+
   /* Expand variables and braces first.  */
-  xpath = kpathsea_brace_expand (kpse, path);
+  xpath = kpathsea_brace_expand (kpse, ypath);
+
+#if defined(WIN32)
+  free (zpath);
+#endif
 
   /* Now expand each of the path elements, printing the results */
-  for (elt = kpathsea_path_element (kpse, xpath); elt; 
+  for (elt = kpathsea_path_element (kpse, xpath); elt;
        elt = kpathsea_path_element (kpse, NULL)) {
     str_llist_type *dirs;
 
@@ -237,7 +251,7 @@ kpathsea_path_expand (kpathsea kpse, const_string path)
 
     /* Search the disk for all dirs in the component specified.
        Be faster to check the database, but this is more reliable.  */
-    dirs = kpathsea_element_dirs (kpse, elt); 
+    dirs = kpathsea_element_dirs (kpse, elt);
     if (dirs && *dirs) {
       str_llist_elt_type *dir;
 
@@ -294,7 +308,6 @@ static void expand_append (str_list_type* partial,
     str_list_add(&tmp, new_string);
     str_list_concat_elements(partial, tmp);
 }
-                              
 
 
 static str_list_type
@@ -328,6 +341,10 @@ brace_expand (kpathsea kpse, const_string *text)
             if (*(p+1) == '{')
                 for (p+=2; *p!='}';++p);
         }
+#if defined(WIN32)
+        else if (IS_KANJI(p))
+            p++;
+#endif
     }
     expand_append(&partial, *text, p);
     str_list_concat(&result, partial);
@@ -368,15 +385,15 @@ main (int argc, char **argv)
       fprintf (stderr, "brace_expand> ");
 
       if ((!fgets (example, 256, stdin)) ||
-	  (strncmp (example, "quit", 4) == 0))
-	break;
+          (strncmp (example, "quit", 4) == 0))
+        break;
 
       if (strlen (example))
-	example[strlen (example) - 1] = 0;
+        example[strlen (example) - 1] = 0;
 
       result = kpse_brace_expand (example);
 
-     	printf ("%s\n", result);
+        printf ("%s\n", result);
 
     }
 }

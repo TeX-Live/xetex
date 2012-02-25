@@ -1,5 +1,5 @@
 # Private macros for the TeX Live (TL) tree.
-# Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+# Copyright (C) 2009, 2010, 2011 Peter Breitenlohner <tex-live@tug.org>
 #
 # This file is free software; the copyright holder
 # gives unlimited permission to copy and/or distribute it,
@@ -31,6 +31,7 @@ teckit
 graphite
 zziplib
 xpdf
+poppler
 gd
 freetype2
 freetype
@@ -60,6 +61,7 @@ AC_REQUIRE([KPSE_FREETYPE_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_FREETYPE2_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_GD_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_XPDF_SYSTEM_FLAGS])[]dnl
+AC_REQUIRE([KPSE_POPPLER_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_ZZIPLIB_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_GRAPHITE_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_TECKIT_SYSTEM_FLAGS])[]dnl
@@ -71,15 +73,15 @@ AC_REQUIRE([KPSE_ICU_SYSTEM_FLAGS])[]dnl
 # Define the list of utility sub-packages, i.e., subdirs 'utils/*'.
 AC_DEFUN([KPSE_UTILS_PKGS],
 [m4_define([kpse_utils_pkgs], [
-dialog
-pdfopen
+biber
+chktex
 ps2eps
 psutils
 t1utils
 tpic2pdftex
 vlna
-xindy-new
 xindy
+xpdfopen
 ])]) # KPSE_UTILS_PKGS
 
 # KPSE_TEXK_PKGS()
@@ -110,11 +112,11 @@ lcdf-typetools
 makeindexk
 makejvf
 mendexk
-musixflx
 ps2pkm
 seetexk
 tex4htk
 ttf2pk
+ttf2pk2
 ttfdump
 xdv2pdf
 xdvik

@@ -1,6 +1,6 @@
 /* tex-make.c: run external programs to make TeX-related files.
 
-   Copyright 1993, 1994, 1995, 1996, 1997, 2008, 2009, 2010 Karl Berry.
+   Copyright 1993, 1994, 1995, 1996, 1997, 2008, 2009, 2010, 2011 Karl Berry.
    Copyright 1997, 1998, 2001-05 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -47,11 +47,11 @@ set_maketex_mag (kpathsea kpse)
 
   /* If the environment variables aren't set, it's a bug.  */
   assert (dpi != 0 && bdpi != 0);
-  
+
   /* Fix up for roundoff error.  Hopefully the driver has already fixed
      up DPI, but may as well be safe, and also get the magstep number.  */
   (void) kpathsea_magstep_fix (kpse, dpi, bdpi, &m);
-  
+
   if (m == 0) {
       if (bdpi <= 4000) {
           sprintf(q, "%u+%u/%u", dpi / bdpi, dpi % bdpi, bdpi);
@@ -93,7 +93,7 @@ static void
 misstex (kpathsea kpse, kpse_file_format_type format,  string *args)
 {
   string *s;
-  
+
   /* If we weren't trying to make a font, do nothing.  Maybe should
      allow people to specify what they want recorded?  */
   if (format != kpse_gf_format
@@ -115,7 +115,7 @@ misstex (kpathsea kpse, kpse_file_format_type format,  string *args)
     } /* else use user's name */
 
     kpse->missfont
-      = missfont_name ? fopen (missfont_name, FOPEN_A_MODE) : NULL; 
+      = missfont_name ? fopen (missfont_name, FOPEN_A_MODE) : NULL;
     if (!kpse->missfont && kpathsea_var_value (kpse, "TEXMFOUTPUT")) {
       missfont_name = concat3 (kpathsea_var_value (kpse, "TEXMFOUTPUT"),
                                DIR_SEP_STRING, missfont_name);
@@ -126,7 +126,7 @@ misstex (kpathsea kpse, kpse_file_format_type format,  string *args)
       fprintf (stderr, "kpathsea: Appending font creation commands to %s.\n",
                missfont_name);
   }
-  
+
   /* Write the command if we have a log file.  */
   if (kpse->missfont) {
     fputs (args[0], kpse->missfont);
@@ -136,7 +136,7 @@ misstex (kpathsea kpse, kpse_file_format_type format,  string *args)
     }
     putc ('\n', kpse->missfont);
   }
-}  
+}
 
 
 /* Assume the script outputs the filename it creates (and nothing
@@ -152,7 +152,23 @@ maketex (kpathsea kpse, kpse_file_format_type format, string* args)
   string *s;
   string ret = NULL;
   string fn;
-  
+#if defined(WIN32)
+  char   fullbin[256], *wrp;
+
+  wrp = kpathsea_var_value(kpse, "SELFAUTOLOC");
+  if(wrp == NULL) {
+     fprintf(stderr, "I cannot get SELFAUTOLOC\n");
+     exit(100);
+  }
+
+  strcpy(fullbin, wrp);
+  free(wrp);
+  for(wrp=fullbin; *wrp; wrp++) {
+     if(*wrp == '/') *wrp = '\\';
+  }
+  strcat(fullbin, "\\");
+  strcat(fullbin, args[0]);
+#endif
   if (!kpse->make_tex_discard_errors) {
     fprintf (stderr, "\nkpathsea: Running");
     for (s = &args[0]; *s != NULL; s++)
@@ -176,166 +192,85 @@ maketex (kpathsea kpse, kpse_file_format_type format, string* args)
   }
 #elif defined (MSDOS) && !defined(__DJGPP__)
 #error Implement new MSDOS mktex call interface here
-#elif defined (WIN32)
-
-  /* We would vastly prefer to link directly with mktex.c here.
-     Unfortunately, it is not quite possible because kpathsea
-     is not reentrant. The progname is expected to be set in mktex.c
-     and various initialisations occur. So to be safe, we implement
-     a call sequence equivalent to the Unix one. */
+#else /* WIN32 or Unix */
   {
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
+#if defined (WIN32)
+    /* spawnvp(_P_NOWAIT, ...) and pipe --ak 2002/12/15 */
 
-    HANDLE child_in, child_out, child_err;
-    HANDLE father_in, father_out_dup;
-    HANDLE current_pid;
-    SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
-    string new_cmd = NULL, app_name = NULL;
+    unsigned long nexitcode = STILL_ACTIVE;
+    HANDLE hchild;
+    int hstdout, childpipe[2];
+    int hstderr = -1;
+    FILE *Hnul = NULL;
 
-    char buf[1024+1];
-#ifdef __MINGW32__
-    DWORD num;
-#else
-    int num;
-#endif
+    fn = NULL;
 
-    if (look_for_cmd(args[0], &app_name) == FALSE) {
-      goto error_exit;
+    if(_pipe(childpipe, 1024, O_TEXT | _O_NOINHERIT) == -1) {
+      perror("kpathsea: pipe()");
+      goto labeldone;
     }
 
-    /* Compute the command line */
-    new_cmd = quote_args(args);
-
-    /* We need this handle to duplicate other handles */
-    current_pid = GetCurrentProcess();
-
-    ZeroMemory( &si, sizeof(STARTUPINFO) );
-    si.cb = sizeof(STARTUPINFO);
-    si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW ;
-    si.wShowWindow = /* 0 */ SW_HIDE ;
-
-    /* Child stdin */
-    child_in = CreateFile("nul",
-                          GENERIC_READ,
-                          FILE_SHARE_READ | FILE_SHARE_WRITE,
-                          &sa,  /* non inheritable */
-                          OPEN_EXISTING,
-                          FILE_ATTRIBUTE_NORMAL,
-                          NULL);
-    si.hStdInput = child_in;
-
-    if (CreatePipe(&father_in, &child_out, NULL, 0) == FALSE) {
-      fprintf(stderr, "popen: error CreatePipe\n");
-      goto error_exit;
-    }
-    if (DuplicateHandle(current_pid, child_out,
-                        current_pid, &father_out_dup,
-                        0, TRUE, DUPLICATE_SAME_ACCESS) == FALSE) {
-      fprintf(stderr, "popen: error DuplicateHandle father_in\n");
-      CloseHandle(father_in);
-      CloseHandle(child_out);
-      goto error_exit;
-    }
-    CloseHandle(child_out);
-    si.hStdOutput = father_out_dup;
-
-    /* Child stderr */
-    if (kpse->make_tex_discard_errors) {
-      child_err = CreateFile("nul",
-                             GENERIC_WRITE,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             &sa,       /* non inheritable */
-                             OPEN_EXISTING,
-                             FILE_ATTRIBUTE_NORMAL,
-                             NULL);
-    }
-    else {
-      DuplicateHandle(current_pid, GetStdHandle(STD_ERROR_HANDLE),
-                      current_pid, &child_err,
-                      0, TRUE,
-                      DUPLICATE_SAME_ACCESS);
-    }
-    si.hStdError = child_err;
-
-    /* creating child process */
-    if (CreateProcess(app_name, /* pointer to name of executable module */
-                      new_cmd,  /* pointer to command line string */
-                      NULL,     /* pointer to process security attributes */
-                      NULL,     /* pointer to thread security attributes */
-                      TRUE,     /* handle inheritance flag */
-                      0,                /* creation flags */
-                      NULL,     /* pointer to environment */
-                      NULL,     /* pointer to current directory */
-                      &si,      /* pointer to STARTUPINFO */
-                      &pi               /* pointer to PROCESS_INFORMATION */
-                      ) == 0) {
-      LIB_FATAL2 ("kpathsea: CreateProcess() failed for `%s' (Error %d)\n",
-                  new_cmd, (int)(GetLastError())); 
+    hstdout = _dup(fileno(stdout));
+    if(_dup2(childpipe[1], fileno(stdout)) != 0) {
+      close(hstdout);
+      close(childpipe[0]);
+      close(childpipe[1]);
+      goto labeldone;
     }
 
-    CloseHandle(child_in);
-    CloseHandle(father_out_dup);
-    CloseHandle(child_err);
+    close(childpipe[1]);
 
-    /* Only the process handle is needed */
-    CloseHandle(pi.hThread);
+    if(kpse->make_tex_discard_errors) {
+      Hnul = fopen("nul", "w");
+      if(!Hnul) {
+        perror("kpathsea: fopen(\"nul\")");
+      }
+      else {
+        hstderr = _dup(fileno(stderr));
+        _dup2(fileno(Hnul), fileno(stderr));
+      }
+    }
+    fprintf(stderr, "\nThe command name is %s\n", fullbin);
+    hchild = (HANDLE)spawnvp(_P_NOWAIT, fullbin, (const char * const *) args);
 
-    /* Get stdout of child from the pipe. */
-    fn = xstrdup("");
-    while (ReadFile(father_in,buf,sizeof(buf)-1, &num, NULL) != 0
-           && num > 0) {
-      if (num <= 0) {
-        if (GetLastError() != ERROR_BROKEN_PIPE) {
-          LIB_FATAL2 ("kpathsea: read() error code for `%s' (Error %d)",
-                      new_cmd, (int)(GetLastError())); 
-          break;
+    _dup2(hstdout, fileno(stdout));
+    close(hstdout);
+
+    if((int)hchild == -1) {
+      close(childpipe[0]);
+      goto labeldone;
+    }
+
+    if(hchild) {
+      char buf[1024+1];
+      int num;
+
+      fn = xstrdup("");
+      while(nexitcode == STILL_ACTIVE) {
+        num = read(childpipe[0], buf, sizeof(buf)-1);
+        if(num) {
+          string newfn;
+          buf[num] = '\0';
+          newfn = concat(fn, buf);
+          free(fn);
+          fn = newfn;
         }
-      } else {
-        string newfn;
-        buf[num] = '\0';
-        newfn = concat(fn, buf);
-        free(fn);
-        fn = newfn;
+        if(!GetExitCodeProcess(hchild, &nexitcode)) {
+          fn = NULL;
+          close(childpipe[0]);
+          goto labeldone;
+        }
       }
-    }
-    /* End of file on pipe, child should have exited at this point. */
-    CloseHandle(father_in);
-
-    if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
-      WARNING2 ("kpathsea: process termination wait failed: %s (Error %d)\n",
-                new_cmd, (int)(GetLastError()));
+      close(childpipe[0]);
     }
 
-    CloseHandle(pi.hProcess);
-
-    if (new_cmd) free(new_cmd);
-    if (app_name) free(app_name);
-
-    if (fn) {
-      len = strlen(fn);
-
-      /* Remove trailing newlines and returns.  */
-      while (len && (fn[len - 1] == '\n' || fn[len - 1] == '\r')) {
-        fn[len - 1] = '\0';
-        len--;
-      }
-
-      ret = len == 0 ? NULL : kpathsea_readable_file (kpse, fn);
-      if (!ret && len > 1) {
-        WARNING2 ("kpathsea: %s output `%s' instead of a filename",
-                  new_cmd, fn);
-      }
-
-      /* Free the name if we're not returning it.  */
-      if (fn != ret)
-        free (fn);
+ labeldone:
+    if(kpse->make_tex_discard_errors && Hnul) {
+       _dup2(hstderr, fileno(stderr));
+       close(hstderr);
+       fclose(Hnul);
     }
-  error_exit:
-    ;
-  }
-#else
-  {
+#else /* !WIN32 */
     /* Standard input for the child.  Set to /dev/null */
     int childin;
     /* Standard output for the child, what we're interested in. */
@@ -435,6 +370,7 @@ maketex (kpathsea kpse, kpse_file_format_type format, string* args)
       /* We don't really care about the exit status at this point. */
       wait(NULL);
     }
+#endif /* !WIN32 */
 
     if (fn) {
       len = strlen(fn);
@@ -456,13 +392,13 @@ maketex (kpathsea kpse, kpse_file_format_type format, string* args)
         free (fn);
     }
   }
-#endif
+#endif /* WIN32 or Unix */
 
   if (ret == NULL)
       misstex (kpse, format, args);
   else
       kpathsea_db_insert (kpse, ret);
-  
+
   return ret;
 }
 
@@ -476,7 +412,7 @@ kpathsea_make_tex (kpathsea kpse, kpse_file_format_type format,
 {
   kpse_format_info_type spec; /* some compilers lack struct initialization */
   string ret = NULL;
-  
+
   spec = kpse->format_info[format];
   if (!spec.type) { /* Not initialized yet? */
     kpathsea_init_format (kpse, format);
@@ -490,7 +426,7 @@ kpathsea_make_tex (kpathsea kpse, kpse_file_format_type format,
     /* Helpers */
     int argnum;
     int i;
-    
+
     /* FIXME
      * Check whether the name we were given is likely to be a problem.
      * Right now we err on the side of strictness:
@@ -566,7 +502,7 @@ void
 test_make_tex (kpathsea kpse, kpse_file_format_type fmt, const_string base)
 {
   string answer;
-  
+
   printf ("\nAttempting %s in format %d:\n", base, fmt);
 
   answer = kpathsea_make_tex (kpse, fmt, base);
@@ -587,10 +523,10 @@ main (int argc, char **argv)
   /* Fail with mktextfm.  */
   kpathsea_set_program_enabled(kpse, kpse_tfm_format, 1, kpse_src_env);
   test_make_tex (kpse, kpse_tfm_format, "foozler99");
-  
+
   /* Call something disabled.  */
   test_make_tex (kpse, kpse_bst_format, "no-way");
-  
+
   return 0;
 }
 

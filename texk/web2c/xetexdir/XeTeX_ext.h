@@ -1,7 +1,7 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
- copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2009, 2011 by Jonathan Kew
 
  Written by Jonathan Kew
 
@@ -33,6 +33,7 @@ authorization from the copyright holders.
 #ifndef __XETEXEXT_H
 #define __XETEXEXT_H
 
+#include <w2c/c-auto.h>  /* needed for SIZEOF_LONG and NO_DUMP_SHARE */
 /***** copied from TeX/texk/web2c/config.h -- difficult to include in C++ source files ******/
 #ifndef INTEGER_TYPE
 
@@ -211,6 +212,12 @@ extern const UInt32 byteMark;
 extern const char *papersize;
 extern const char *outputdriver;
 
+/* gFreeTypeLibrary is defined in XeTeXFontInst_FT2.cpp,
+ * also used in XeTeXFontMgr_FC.cpp and XeTeX_ext.c.  */
+#include <ft2build.h>
+#include FT_FREETYPE_H
+extern FT_Library gFreeTypeLibrary;
+
 #include <stdio.h> /* for FILE */
 
 #include "trans.h"
@@ -327,8 +334,6 @@ typedef void* ATSUStyle; /* dummy declaration just so the stubs can compile */
 #ifdef __cplusplus
 };
 #endif
-
-#include "XeTeXOTMath.h"
 
 /* some Mac OS X functions that we provide ourselves for other platforms */
 #ifndef XETEX_MAC

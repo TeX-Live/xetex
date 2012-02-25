@@ -37,27 +37,31 @@ element (kpathsea kpse, const_string passed_path,  boolean env_p)
   string ret;
   int brace_level;
   unsigned len;
-  
+
   if (passed_path)
     kpse->path = passed_path;
   /* Check if called with NULL, and no previous path (perhaps we reached
      the end).  */
   else if (!kpse->path)
     return NULL;
-  
+
   /* OK, we have a non-null `path' if we get here.  */
   assert (kpse->path);
   p = kpse->path;
-  
+
   /* Find the next colon not enclosed by braces (or the end of the path).  */
   brace_level = 0;
   while (*p != 0  && !(brace_level == 0
                        && (env_p ? IS_ENV_SEP (*p) : IS_DIR_SEP (*p)))) {
     if (*p == '{') ++brace_level;
     else if (*p == '}') --brace_level;
-    ++p;
+#if defined(WIN32)
+    else if (IS_KANJI(p))
+        p++;
+#endif
+    p++;
   }
-   
+
   /* Return the substring starting at `path'.  */
   len = p - kpse->path;
 
@@ -87,15 +91,6 @@ kpathsea_path_element (kpathsea kpse, const_string p)
     return element (kpse, p, true);
 }
 
-#if defined (KPSE_COMPAT_API)
-string
-kpse_path_element (const_string p)
-{
-    return kpathsea_path_element (kpse_def, p);
-}
-#endif
-
-
 string
 kpathsea_filename_component (kpathsea kpse, const_string p)
 {
@@ -109,13 +104,13 @@ print_path_elements (const_string path)
 {
   string elt;
   printf ("Elements of `%s':", path ? path : "(null)");
-  
-  for (elt = kpse_path_element (path); elt != NULL;
-       elt = kpse_path_element (NULL))
+
+  for (elt = kpathsea_path_element (kpse_def, path); elt != NULL;
+       elt = kpathsea_path_element (kpse_def, NULL))
     {
       printf (" %s", *elt ? elt : "`'");
     }
-  
+
   puts (".");
 }
 
@@ -123,15 +118,15 @@ int
 main ()
 {
   /* All lists end with NULL.  */
-  print_path_elements (NULL);	/* */
-  print_path_elements ("");	/* "" */
-  print_path_elements ("a");	/* a */
-  print_path_elements (ENV_SEP_STRING);	/* "", "" */
-  print_path_elements (ENV_SEP_STRING ENV_SEP_STRING);	/* "", "", "" */
-  print_path_elements ("a" ENV_SEP_STRING);	/* a, "" */ 
-  print_path_elements (ENV_SEP_STRING "b");	/* "", b */ 
-  print_path_elements ("a" ENV_SEP_STRING "b");	/* a, b */ 
-  
+  print_path_elements (NULL);   /* */
+  print_path_elements ("");     /* "" */
+  print_path_elements ("a");    /* a */
+  print_path_elements (ENV_SEP_STRING); /* "", "" */
+  print_path_elements (ENV_SEP_STRING ENV_SEP_STRING);  /* "", "", "" */
+  print_path_elements ("a" ENV_SEP_STRING);     /* a, "" */
+  print_path_elements (ENV_SEP_STRING "b");     /* "", b */
+  print_path_elements ("a" ENV_SEP_STRING "b"); /* a, b */
+
   return 0;
 }
 

@@ -105,7 +105,56 @@ Note that version 1.7 was delivered privately.
 1.11: Sun Jan  17 09:12:31 UTC 2010
 - Bug fix in synctex_parser.c, function synctex_node_box_visible_v: 'x' replaced by 'y'.
   Only 3rd party tools are concerned.
-
+1.12: Mon Jul 19 21:52:10 UTC 2010
+- Bug fix in synctex_parser.c, function __synctex_open: the io_mode was modified even in case of a non zero return,
+causing a void .synctex.gz file to be created even if it was not expected. Reported by Marek Kasik concerning a bug on evince.
+1.13: Fri Mar 11 07:39:12 UTC 2011
+- Bug fix in synctex_parser.c, better synchronization as suggested by Jan Sundermeyer (near line 3388).
+- Stronger code design in synctex_parser_utils.c, function _synctex_get_name (really neutral behavior).
+  Only 3rd party tools are concerned.
+1.14: Fri Apr 15 19:10:57 UTC 2011
+- taking output_directory into account
+- Replaced FOPEN_WBIN_MODE by FOPEN_W_MODE when opening the text version of the .synctex file.
+- Merging with LuaTeX's version of synctex.c
+1.15: Fri Jun 10 14:10:17 UTC 2011
+This concerns the synctex command line tool and 3rd party developers.
+TeX and friends are not concerned by these changes.
+- Bug fixed in _synctex_get_io_mode_name, sometimes the wrong mode was returned
+- Support for LuaTeX convention of './' file prefixing
+1.16: Tue Jun 14 08:23:30 UTC 2011
+This concerns the synctex command line tool and 3rd party developers.
+TeX and friends are not concerned by these changes.
+- Better forward search (thanks Jose Alliste)
+- Support for LuaTeX convention of './' file prefixing now for everyone, not only for Windows
+1.17: Fri Oct 14 08:15:16 UTC 2011
+This concerns the synctex command line tool and 3rd party developers.
+TeX and friends are not concerned by these changes.
+- synctex_parser.c: cosmetic changes to enhance code readability 
+- Better forward synchronization.
+  The problem occurs for example with LaTeX \item command.
+  The fact is that this command creates nodes at parse time but these nodes are used only
+  after the text material of the \item is displayed on the page. The consequence is that sometimes,
+  forward synchronization spots an irrelevant point from the point of view of the editing process.
+  This was due to some very basic filtering policy, where a somehow arbitrary choice was made when
+  many different possibilities where offered for synchronisation.
+  Now, forward synchronization prefers nodes inside an hbox with as many acceptable spots as possible.
+  This is achieved with the notion of mean line and node weight.
+- Adding support for the new file naming convention with './'
+    + function synctex_ignore_leading_dot_slash_in_path replaces synctex_ignore_leading_dot_slash
+    + function _synctex_is_equivalent_file_name is more permissive
+  Previously, the function synctex_scanner_get_tag would give an answer only when
+  the given file name was EXACTLY one of the file names listed in the synctex file.
+  The we added some changes accepting for example 'foo.tex' instead of './foo.tex'.
+  Now we have an even looser policy for dealing with file names.
+  If the given file name does not match exactly one the file names of the synctex file,
+  then we try to match the base names. If there is only one match of the base names,
+  then it is taken as a match for the whole names.
+  The base name is defined as following:
+      ./foo => foo
+      /my///.////foo => foo
+      /foo => /foo
+      /my//.foo => /my//.foo
+      
 Acknowledgments:
 ----------------
 The author received useful remarks from the pdfTeX developers, especially Hahn The Thanh,
@@ -116,5 +165,5 @@ Nota Bene:
 If you include or use a significant part of the synctex package into a software,
 I would appreciate to be listed as contributor and see "SyncTeX" highlighted.
 
-Copyright (c) 2008-2009 jerome DOT laurens AT u-bourgogne DOT fr
+Copyright (c) 2008-2011 jerome DOT laurens AT u-bourgogne DOT fr
 

@@ -1,3 +1,32 @@
+2012-02-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* {fofi,goo,splash,xpdf}/Makefile.am: Use ../am/hdr_links.am.
+	* hdrs.am (removed): Obsolete.
+
+2011-08-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Adapted to the xpdf 3.03 distribution.
+	* version.ac: New file defining the xpdf version.
+	* Makefile.am (fofi_libfofi_a_sources): Add FoFiIdentifier.cc.
+	(xpdf_libxpdf_a_sources): Add OptionalContent.cc.
+	(SUBDIRS): Add splash for headers.
+	* configure.ac: Adapt.
+
+2011-04-23  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am (goo_libGoo_a_sources): Omit parsearg.c.
+
+2011-04-23  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Suppress "deprecated conversion from string constant to 'char*'"
+	warnings from g++-4.4.
+	Unfortunately xpdf declares lots of function parameters as
+	'char *' that should actually be 'const char *'.
+	Compiling with the g++-4.4 default '-Wwrite-strings' would yield
+	>10000 such warnings.
+
+	* Makefile.am, configure.ac: Define and use NO_WARN_CXXFLAGS.
+
 2009-01-28  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	Adapt to TL2009 build system.

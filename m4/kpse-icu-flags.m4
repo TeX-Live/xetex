@@ -1,5 +1,5 @@
 # Public macros for the TeX Live (TL) tree.
-# Copyright (C) 2009, 2010 Peter Breitenlohner <tex-live@tug.org>
+# Copyright (C) 2009 - 2011 Peter Breitenlohner <tex-live@tug.org>
 #
 # This file is free software; the copyright holder
 # gives unlimited permission to copy and/or distribute it,
@@ -34,13 +34,13 @@ AC_DEFUN([KPSE_ICU_XETEX_FLAGS],
 # Internal subroutine.
 #
 # LIBNAME and OPTIONS as for _KPSE_LIB_FLAGS().
-# MORE-ICU-LIBS: icu libraries from the TL in addition to icuuc and icudata.
+# MORE-ICU-LIBS: icu libraries from the TL tree in addition to icuuc and icudata.
 m4_define([_KPSE_ICU_FLAGS],
 [_KPSE_LIB_FLAGS([icu], [$1], [$2],
                  [-DU_STATIC_IMPLEMENTATION -IBLD/libs/icu/include],
                  m4_bpatsubst([$3 icuuc icudata],
                               [icu\([18a-z]*\)],
-                              [BLD/libs/icu/icu-build/lib/libsicu\1.a]),
+                              [BLD/libs/icu/icu-build/lib/libicu\1.a]),
                  [],
                  [], [${top_builddir}/../../libs/icu/include/unicode/uversion.h])[]dnl
 ]) # _KPSE_ICU_FLAGS

@@ -63,6 +63,18 @@ typedef void* voidpointer;
 #define TEXMFPOOLNAME "ptex.pool"
 #define TEXMFENGINENAME "ptex"
 #include "ptexdir/kanji.h"
+#elif defined (epTeX)
+#define TEXMFPOOLNAME "eptex.pool"
+#define TEXMFENGINENAME "eptex"
+#include "ptexdir/kanji.h"
+#elif defined (upTeX)
+#define TEXMFPOOLNAME "uptex.pool"
+#define TEXMFENGINENAME "uptex"
+#include "uptexdir/kanji.h"
+#elif defined (eupTeX)
+#define TEXMFPOOLNAME "euptex.pool"
+#define TEXMFENGINENAME "euptex"
+#include "uptexdir/kanji.h"
 #else
 #define TEXMFPOOLNAME "tex.pool"
 #define TEXMFENGINENAME "tex"
@@ -107,6 +119,9 @@ extern int tfmtemp, texinputtype;
 extern boolean open_in_or_pipe (FILE **, int, const_string fopen_mode);
 extern boolean open_out_or_pipe (FILE **, const_string fopen_mode);
 extern void close_file_or_pipe (FILE *);
+#define ENABLE_PIPES 1
+#else
+#define ENABLE_PIPES 0
 #endif
 
 /* Executing shell commands.  */
@@ -116,7 +131,10 @@ extern int shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname
 extern int runsystem (const char *cmd);
 
 /* The entry point.  */
-extern void TEXDLL maininit (int ac, string *av);
+extern void maininit (int ac, string *av);
+#if defined(WIN32) && defined(DLLPROC)
+extern __declspec(dllexport) int DLLPROC (int ac, string *av);
+#endif
 
 /* All but the Omega family use this. */
 #if !defined(Aleph)
@@ -156,13 +174,7 @@ extern void ipcpage (int);
 #endif /* IPC */
 #endif /* TeX */
 
-/* How to output to the GF or DVI file.  */
-#define WRITE_OUT(a, b)							\
-  if ((size_t) fwrite ((char *) &OUT_BUF[a], sizeof (OUT_BUF[a]),       \
-                    (size_t) ((size_t)(b) - (size_t)(a) + 1), OUT_FILE) \
-      != (size_t) ((size_t) (b) - (size_t) (a) + 1))                    \
-    FATAL_PERROR ("fwrite");
-
+/* How to flush the DVI file.  */
 #define flush_out() fflush (OUT_FILE)
 
 /* Used to write to a TFM file.  */
@@ -206,7 +218,7 @@ extern void topenin (void);
 /* These defines reroute the file i/o calls to the new pipe-enabled 
    functions in texmfmp.c*/
 
-#if defined(pdfTeX)
+#if ENABLE_PIPES
 #undef aopenin
 #undef aopenout
 #undef aclose
@@ -225,15 +237,14 @@ extern void topenin (void);
 #define bopenout(f)	open_output (&(f), FOPEN_WBIN_MODE)
 #define bclose		aclose
 #ifdef XeTeX
-/* f is declared as gzFile (typedef'd as void *), but we temporarily
-   use it for a FILE * so that we can use the standard open calls */
+/* f is declared as gzFile, but we temporarily use it for a FILE *
+   so that we can use the standard open calls */
 #define wopenin(f)	(open_input ((FILE**)&(f), DUMP_FORMAT, FOPEN_RBIN_MODE) \
 						&& (f = gzdopen(fileno((FILE*)f), FOPEN_RBIN_MODE)))
 #define wopenout(f)	(open_output ((FILE**)&(f), FOPEN_WBIN_MODE) \
 						&& (f = gzdopen(fileno((FILE*)f), FOPEN_WBIN_MODE)) \
 						&& (gzsetparams(f, 1, Z_DEFAULT_STRATEGY) == Z_OK))
 #define wclose(f)	gzclose(f)
-#define weof(f)		gzeof(f)
 #else
 #define wopenin(f)	open_input (&(f), DUMP_FORMAT, FOPEN_RBIN_MODE)
 #define wopenout	bopenout
@@ -285,7 +296,7 @@ extern void paintrow (/*screenrow, pixelcolor, transspec, screencol*/);
       if ((&(base))[i] < (low) || (&(base))[i] > (high)) {              \
         FATAL5 ("Item %u (=%ld) of .fmt array at %lx <%ld or >%ld",     \
                 i, (unsigned long) (&(base))[i], (unsigned long) &(base),\
-                (unsigned long) low, (integer) high);                   \
+                (unsigned long) low, (unsigned long) high);                   \
       }                                                                 \
     }									\
   } while (0)
@@ -301,7 +312,7 @@ extern void paintrow (/*screenrow, pixelcolor, transspec, screencol*/);
       if ((&(base))[i] > (high)) {              			\
         FATAL4 ("Item %u (=%ld) of .fmt array at %lx >%ld",     	\
                 i, (unsigned long) (&(base))[i], (unsigned long) &(base),\
-                (integer) high);                         		\
+                (unsigned long) high);                         		\
       }                                                                 \
     }									\
   } while (0)
@@ -353,9 +364,10 @@ extern void do_undump (char *, int, int, FILE *);
 #endif
 
 /* Handle SyncTeX, if requested */
-#if defined(TeX) || defined(eTeX) || defined(pdfTeX) || defined(XeTeX)
+#if defined(TeX)
 # if defined(__SyncTeX__)
 #  include "synctexdir/synctex-common.h"
+extern char *generic_synctex_get_current_name(void);
 # endif
 #endif
 

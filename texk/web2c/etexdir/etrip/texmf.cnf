@@ -1,4 +1,4 @@
-% triptrap/texmf.cnf -- configuration for the trip and trap tests.
+% etexdir/etrip/texmf.cnf -- configuration for the e-trip test.
 
 % These values apply to all the programs, and they are necessary for any
 % kind of reasonable diff.
@@ -7,14 +7,9 @@ half_error_line = 32
 max_print_line = 72
 		
 % e-TeX.
-main_memory.etex     = 3999 % can't change mem_bot, it stays 0
-max_strings.etex     = 3300
-pool_size.etex       = 34000
-
-% In case you happen to run an ini* link by hand.
-main_memory.einitex  = 3999 % can't change mem_bot, it stays 0
-max_strings.einitex  = 3300
-pool_size.einitex    = 34000
+main_memory     = 3999 % can't change mem_bot, it stays 0
+max_strings     = 3300
+pool_size       = 34000
 
 string_vacancies = 8000
 pool_size = 32000
@@ -40,7 +35,7 @@ MAKETEXMF = 0
 TEXINPUTS = .
 % (e)trip.tfm:
 TFMFONTS = .
-% (e)trip.efmt:
+% (e)trip.fmt:
 TEXFORMATS = .
 % etex.pool:
 TEXPOOL = .

@@ -1,7 +1,7 @@
 /* eofeoln.c: implement Pascal's ideas for end-of-file and end-of-line
    testing.  Public domain. */
 
-#include "config.h"
+#include <w2c/config.h>
 #include "lib.h"
 
 /* Return true if we're at the end of FILE, else false.  This implements
@@ -12,8 +12,8 @@ eof (FILE *file)
 {
   register int c;
 
-  /* If FILE doesn't exist, return false. This happens when, for
-     example, when a user does `mft foo.mf' -- there's no change file,
+  /* If FILE doesn't exist, return true. This happens, for example,
+     when a user does `mft foo.mf' -- there's no change file,
      so we never open it, so we end up calling this with a null pointer. */
   if (!file)
     return true;

@@ -1,7 +1,7 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
- copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2009, 2011 by Jonathan Kew
 
  Written by Jonathan Kew
 
@@ -37,7 +37,7 @@ authorization from the copyright holders.
 @d adjust_node=5 {|type| of an adjust node}
 @y
 @d adjust_node=5 {|type| of an adjust node}
-@d adjust_pre == subtype  {pre-adjustment?}
+@d adjust_pre == subtype  {<>0 => pre-adjustment}
 @#{|append_list| is used to append a list to |tail|}
 @d append_list(#) == begin link(tail) := link(#); append_list_end
 @d append_list_end(#) == tail := #; end
@@ -272,6 +272,14 @@ no_expand: if chr_code=0 then print_esc("noexpand")
 @z
 
 % \ifincsname
+@x
+var t:halfword; {token that is being ``expanded after''}
+@y
+var t:halfword; {token that is being ``expanded after''}
+@!b:boolean; {keep track of nested csnames}
+@z
+
+% \ifincsname
 @x l.8348
 @ @<Expand a nonmacro@>=
 @y
@@ -337,18 +345,19 @@ end
 @z
 
 % \ifincsname
-@x l.8415
-repeat get_x_token;
-if cur_cs=0 then store_new_token(cur_tok);
-until cur_cs<>0;
+@x
+begin r:=get_avail; p:=r; {head of the list of characters}
+@y
+begin r:=get_avail; p:=r; {head of the list of characters}
+b := is_in_csname; is_in_csname := true;
+@z
+
+% \ifincsname
+@x
 if (cur_cmd<>end_cs_name) or (cur_chr<>0) then @<Complain about missing \.{\\endcsname}@>;
 @y
-is_in_csname := true;
-repeat get_x_token;
-if cur_cs=0 then store_new_token(cur_tok);
-until cur_cs<>0;
 if (cur_cmd<>end_cs_name) or (cur_chr<>0) then @<Complain about missing \.{\\endcsname}@>;
-is_in_csname := false;
+is_in_csname := b;
 @z
 
 % \strcmp
@@ -446,6 +455,14 @@ primitive("ifprimitive",if_test,if_primitive_code);
   if_primitive_code:print_esc("ifprimitive");
 @z
 
+% \ifincsname
+@x
+var b:boolean; {is the condition true?}
+@y
+var b:boolean; {is the condition true?}
+@!e:boolean; {keep track of nested csnames}
+@z
+
 % \ifprimitive
 @x l.10723
 if_case_code: @<Select the appropriate case
@@ -478,6 +495,14 @@ if pre_adjust_tail<>null then link(pre_adjust_tail):=null;
 @z
 
 % \vadjust
+@x
+  ins_node,mark_node,adjust_node: if adjust_tail<>null then
+@y
+  ins_node,mark_node,adjust_node: if (adjust_tail<>null) or (pre_adjust_tail<> null) then
+@z
+
+
+% \vadjust
 @x l.14607
 @<Transfer node |p| to the adjustment list@>=
 begin while link(q)<>p do q:=link(q);
@@ -501,6 +526,8 @@ pre_adjust_tail := null;
 |pre_adjust_tail| instead of |adjust_tail|.
 
 @d update_adjust_list(#) == begin
+    if # = null then
+        confusion("pre vadjust");
     link(#) := adjust_ptr(p);
     while link(#) <> null do
         # := link(#);
@@ -547,17 +574,35 @@ cur_pre_head:=null; cur_pre_tail:=null;
 % \vadjust
 @x l.17607
 info(p+4):=cur_head; link(p+4):=cur_tail;
+align_ptr:=p;
+cur_head:=get_avail;
 @y
 info(p+4):=cur_head; link(p+4):=cur_tail;
 info(p+5):=cur_pre_head; link(p+5):=cur_pre_tail;
+align_ptr:=p;
+cur_head:=get_avail;
+cur_pre_head:=get_avail;
 @z
 
 % \vadjust
 @x l.17616
+begin free_avail(cur_head);
+p:=align_ptr;
 cur_tail:=link(p+4); cur_head:=info(p+4);
 @y
-cur_pre_tail:=link(p+5); cur_pre_head:=info(p+5);
+begin free_avail(cur_head);
+free_avail(cur_pre_head);
+p:=align_ptr;
 cur_tail:=link(p+4); cur_head:=info(p+4);
+cur_pre_tail:=link(p+5); cur_pre_head:=info(p+5);
+@z
+
+% \vadjust
+@x
+cur_align:=link(preamble); cur_tail:=cur_head; init_span(cur_align);
+@y
+cur_align:=link(preamble); cur_tail:=cur_head; cur_pre_tail:=cur_pre_head;
+init_span(cur_align);
 @z
 
 % \vadjust
@@ -570,6 +615,23 @@ cur_tail:=link(p+4); cur_head:=info(p+4);
   u:=hpack(link(head),natural); w:=width(u);
   cur_tail:=adjust_tail; adjust_tail:=null;
   cur_pre_tail:=pre_adjust_tail; pre_adjust_tail:=null;
+  end
+@z
+
+% \vadjust
+@x
+  pop_nest; append_to_vlist(p);
+  if cur_head<>cur_tail then
+    begin link(tail):=link(cur_head); tail:=cur_tail;
+    end;
+  end
+@y
+  pop_nest;
+  if cur_pre_head <> cur_pre_tail then
+      append_list(cur_pre_head)(cur_pre_tail);
+  append_to_vlist(p);
+  if cur_head <> cur_tail then
+      append_list(cur_head)(cur_tail);
   end
 @z
 
@@ -884,6 +946,22 @@ if_font_char_code:print_esc("iffontchar");
 @y
 if_font_char_code:print_esc("iffontchar");
 if_in_csname_code:print_esc("ifincsname");
+@z
+
+% \ifincsname
+@x
+if_cs_code:begin n:=get_avail; p:=n; {head of the list of characters}
+@y
+if_cs_code:begin n:=get_avail; p:=n; {head of the list of characters}
+  e := is_in_csname; is_in_csname := true;
+@z
+
+% \ifincsname
+@x
+  b:=(eq_type(cur_cs)<>undefined_cs);
+@y
+  b:=(eq_type(cur_cs)<>undefined_cs);
+  is_in_csname := e;
 @z
 
 % \ifincsname

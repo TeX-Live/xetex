@@ -1,7 +1,7 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
- copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2009, 2011 by Jonathan Kew
 
  Written by Jonathan Kew
 
@@ -51,8 +51,6 @@ authorization from the copyright holders.
 static UConverter*	macRomanConv = NULL;
 static UConverter*	utf16beConv = NULL;
 static UConverter*	utf8Conv = NULL;
-
-extern FT_Library	gFreeTypeLibrary; /* shared with XeTeXFontInst_FT2 */
 
 static char*
 convertToUtf8(UConverter* conv, const unsigned char* name, int len)

@@ -1,4 +1,4 @@
-$Id: README 17641 2010-03-31 11:36:18Z peter $
+$Id: README 25482 2012-02-23 10:27:56Z peter $
 Public domain.  Originally created by Karl Berry, 2005.
 
 Libraries we compile for TeX Live.
@@ -11,27 +11,42 @@ See also comments in ../texk/README.
 
 freetype 1.5 - ?
 
-freetype2 2.3.11 - http://savannah.nongnu.org/download/freetype/
+freetype2 2.4.8 - checked 23feb12
+  http://savannah.nongnu.org/download/freetype/
 
-gd 2.0.35 - http://www.libgd.org/releases/
+gd 2.0.35 - unchecked 25apr11, site down
+  http://www.libgd.org/releases/
+  http://www.boutell.com/gd/
+  https://bitbucket.org/pierrejoye/gd-libgd/overview
 
-graphite 2.3.1 - the directory silgraphite-2.3.1/engine/ from
-  http://sourceforge.net/projects/silgraphite/
+graphite 2.3.1 - checked 25apr11
+  the directory silgraphite-2.3.1/engine/ from
+  http://sourceforge.net/projects/silgraphite/files/silgraphite/
 
-icu 4.4 - http://download.icu-project.org/files/icu4c/
+icu 4.8.1 - http://download.icu-project.org/files/icu4c/
   with modifications required for xetex, also used by bibtexu
 
-libpng 1.2.40 - http://www.libpng.org/ - used by many
+libpng 1.5.9 - checked 23feb12
+  http://www.libpng.org/ - used by many
+  http://www.libpng.org/pub/png/pngcode.html
 
 obsdcompat - used by pdftex and luatex
 
-t1lib 5.1.2 - ftp://sunsite.unc.edu/pub/Linux/libs/graphics/
+poppler 0.18.4 - checked 23feb12
+  http://poppler.freedesktop.org/ - used by luatex and xetex
 
-teckit 2.5.1 - http://scripts.sil.org/svn-view/teckit/
+t1lib 5.1.2 - checked 25apr11
+  (apparently unmaintained)
+  ftp://sunsite.unc.edu/pub/Linux/libs/graphics/
 
-xpdf 3.02pl4 - http://www.foolabs.com/xpdf/
-  with modifications for pdftex, luatex, and xetex
+teckit 2.5.1 - checked 25apr11
+  http://scripts.sil.org/svn-view/teckit/
 
-zlib 1.2.3 - http://www.zlib.net/ - used by many
+xpdf 3.03 - ftp://ftp.foolabs.com/pub/xpdf/
+  with modifications for pdftex
 
-zziplib 0.13.58 - http://zziplib.sourceforge.net/ - used by luatex
+zlib 1.2.6 - checked 10feb12
+  http://www.zlib.net/ - used by many
+
+zziplib 0.13.60 - checked 25apr11
+  http://zziplib.sourceforge.net/ - used by luatex

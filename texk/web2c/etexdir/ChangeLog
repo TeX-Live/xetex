@@ -1,3 +1,121 @@
+2011-09-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* wprob.test: New shell script to test for uninitialized line.
+	* am/etex.am: Add the new test.	
+
+2011-09-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Slightly reformulate printing of current line.
+
+2011-04-07  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Version 2.3, dated April 7, 2011.
+	* etrip/etrip.tex, etrip/etripin.log, etrip/etrip.log,
+	etrip/etrip.fot, etrip/etrip.typ, etrip/etrip.diffs: Adapted.
+
+2011-04-03  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Remove  remove_end_M and insert_end_M (now unused).
+
+2011-03-31  Hironori Kitagawa  <h_kitagawa2001@yahoo.co.jp>
+
+	* etex.ch: TeX formatting.
+
+2011-03-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Further reduce e-pTeX interferences.
+
+2011-03-29  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Rename box_lrstat into box_lr and define to also work
+	for min_quarterword<0.
+
+2011-03-28  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am: Use AM_CFLAGS instead of etex_CFLAGS.
+
+2011-03-27  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Reformulate @<Fetch an item in the current node...@>,
+	begin_box, and delete_last to fix a bug in \lastpenalty & Co;
+	further reduce e-pTeX interferences.
+
+2011-03-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Reformulate begin_box and delete_last to reduce
+	interferences between e-TeX and pTeX.
+
+2011-03-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Reformulate @<Fetch an item in the current node...@>
+	to reduce interferences between e-TeX and pTeX.
+
+2011-03-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Define and use the Web macros box_lrstat and
+	set_box_lrstat to reduce interferences between e-TeX and pTeX.
+
+2011-01-17  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am (etrip.diffs): Use $(triptrap_diffs).
+
+2011-01-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etrip/etrip.tex: Fixed 'wrong last node type' diagnostic.
+
+2011-01-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am (etrip-clean): Use TRIPTRAP_CLEAN.
+
+2011-01-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Mention \protected in error and help messages only
+	when in extended mode.
+	* etrip/etrip.tex: Fixed a typo currentgroup{type => level}.
+
+2011-01-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.mak, etex.mk (removed): Obsolete.
+
+2011-01-08  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am (etex_web_srcs): Removed etex.fix.
+	(etex_ch_srcs): Added enctex.ch.
+	* etex.fix: Deleted.
+
+2011-01-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etexextra.in: Renamed ...
+	* etexextra.h: ... into this; #include etex_version.h
+	for ETEX_VERSION.
+
+	* etexextra.c (new): #include <etexd.h> and <lib/texmfmp.c>.
+
+	* am/etex.am: etexextra.[ch] are now distributed;
+	create etex_version.h instead of etex.version. 
+
+2010-06-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am (etex_CPPFLAGS): Add $(AM_CPPFLAGS).
+
+2010-05-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am (EXTRA_DIST): Remove tmf-pool.h.
+
+2010-05-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: More error message with \protected, from Heiko.
+
+2010-04-28  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Checked and adjusted tex.web line numbers.
+	Fixed the error message for improper use of \protected,
+	reported by Heiko Oberdiek <heiko.oberdiek@googlemail.com>.
+
+2010-04-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am (etex_ch_srcs): Use tex-binpool.ch as for TeX.
+
 2010-03-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* am/etex.am (TRIPTRAP): Add etrip.diffs.

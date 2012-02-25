@@ -1,6 +1,6 @@
 /* cnf.c: read config files.
 
-   Copyright 1994, 1995, 1996, 1997, 2008, 2009 Karl Berry.
+   Copyright 1994, 1995, 1996, 1997, 2008, 2009, 2011 Karl Berry.
    Copyright 1997-2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@
 #include <kpathsea/paths.h>
 #include <kpathsea/pathsearch.h>
 #include <kpathsea/progname.h>
-#include <kpathsea/recorder.h>
 #include <kpathsea/tex-file.h>
 #include <kpathsea/variable.h>
 
@@ -55,15 +54,30 @@ do_line (kpathsea kpse, string line)
   string start;
   string value, var;
   string prog = NULL;
-  
+
   /* Skip leading whitespace.  */
   while (ISSPACE (*line))
     line++;
-  
+
   /* More to do only if we have non-comment material left.  */
   if (*line == 0 || *line == '%' || *line == '#')
     return;
-  
+
+  /* Remove trailing comment: a % or # preceded by whitespace.  Also
+     remove any whitespace before that.  For example, the value for
+       foo = a#b %something
+     is a#b.  */
+  value = line + strlen (line) - 1; /* start at end of line */
+  while (value > line) {            
+    if (*value == '%' || *value == '#') {
+      value--;                      /* move before comment char */
+      while (ISSPACE (*value))
+        *value-- = 0;               /* wipe out as much preceding whitespace
+      continue;                        (and comment) as we find */
+    }
+    value--;                        /* move before the new null byte */
+  }
+
   /* The variable name is everything up to the next space or = or `.'.  */
   start = line;
   while (!ISSPACE (*line) && *line != '=' && *line != '.')
@@ -74,7 +88,7 @@ do_line (kpathsea kpse, string line)
   var = (string)xmalloc (len + 1);
   strncpy (var, start, len);
   var[len] = 0;
-  
+
   /* If the variable is qualified with a program name, find out which. */
   while (ISSPACE (*line))
     line++;
@@ -103,13 +117,13 @@ do_line (kpathsea kpse, string line)
     while (ISSPACE (*line))
       line++;
   }
-  
+
   /* The value is whatever remains.  Remove trailing whitespace.  */
   start = line;
   len = strlen (start);
   while (len > 0 && ISSPACE (start[len - 1]))
     len--;
-  
+
   value = (string)xmalloc (len + 1);
   strncpy (value, start, len);
   value[len] = 0;
@@ -119,11 +133,11 @@ do_line (kpathsea kpse, string line)
      : on Unix, ; on NT.  We can't switch NT to allowing :'s, since :
      is the drive separator.  So we switch Unix to allowing ;'s.  On the
      other hand, we don't want to change IS_ENV_SEP and all the rest.
-     
+
      So, simply translate all ;'s in the path
      values to :'s if we are a Unix binary.  (Fortunately we don't use ;
      in other kinds of texmf.cnf values.)  */
-     
+
   if (IS_ENV_SEP(':')) {
       string loc;
       for (loc = value; *loc; loc++) {
@@ -143,7 +157,7 @@ do_line (kpathsea kpse, string line)
     var = lhs;
   }
   hash_insert (&(kpse->cnf_hash), var, value);
-  
+
   /* We could check that anything remaining is preceded by a comment
      character, but let's not bother.  */
 }
@@ -201,7 +215,7 @@ read_all_cnf (kpathsea kpse)
     string warn = getenv ("KPATHSEA_WARNING");
     if (!(warn && STREQ (warn, "0"))) {
       WARNING1
- ("kpathsea: configuration file texmf.cnf not found in these directories: %s", 
+ ("kpathsea: configuration file texmf.cnf not found in these directories: %s",
         cnf_path);
     }
   }
@@ -224,19 +238,19 @@ kpathsea_cnf_get (kpathsea kpse, const_string name)
      compile-time path does not contain variable references.  */
   if (kpse->doing_cnf_init)
     return NULL;
-    
+
   if (kpse->cnf_hash.size == 0) {
     /* Read configuration files and initialize databases.  */
     kpse->doing_cnf_init = true;
     read_all_cnf (kpse);
     kpse->doing_cnf_init = false;
-    
+
     /* Since `kpse_init_db' recursively calls us, we must call it from
        outside a `kpse_path_element' loop (namely, the one in
        `read_all_cnf' above): `kpse_path_element' is not reentrant.  */
     kpathsea_init_db (kpse);
   }
-  
+
   /* First look up NAME.`kpse->program_name', then NAME.  */
   assert (kpse->program_name);
   ctry = concat3 (name, ".", kpse->program_name);
@@ -254,7 +268,7 @@ kpathsea_cnf_get (kpathsea kpse, const_string name)
       ret = NULL;
     }
   }
-  
+
   return ret;
 }
 

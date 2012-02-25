@@ -2,11 +2,11 @@
    and it produces several .c and .h files in the current directory
    as its output.
 
-   $Id: splitup.c 17953 2010-04-21 10:54:29Z peter $
+   $Id: splitup.c 23549 2011-08-14 14:23:26Z peter $
 
    Tim Morgan  September 19, 1987.  */
 
-#include "config.h"
+#include <w2c/config.h>
 #include <kpathsea/getopt.h>
 
 #if defined (FATAL)
@@ -112,7 +112,7 @@ main (int argc, string *argv)
     fputs ("#define INIMF\n#define MF\n", out);
     coerce = "mfcoerce.h";
   } else if (STREQ (output_name, "tex")) {
-    fputs ("#define INITEX\n#define TeX\n", out);
+    fputs ("#define INITEX\n#define TeX\n#define onlyTeX\n", out);
     coerce = "texcoerce.h";
   } else if (STREQ (output_name, "aleph")) {
     fputs ("#define INITEX\n#define TeX\n#define Aleph\n", out);
@@ -126,11 +126,20 @@ main (int argc, string *argv)
   } else if (STREQ (output_name, "ptex")) {
     fputs ("#define INITEX\n#define TeX\n#define pTeX\n", out);
     coerce = "ptexcoerce.h";
+  } else if (STREQ (output_name, "eptex")) {
+    fputs ("#define INITEX\n#define TeX\n#define epTeX\n", out);
+    coerce = "eptexcoerce.h";
+  } else if (STREQ (output_name, "euptex")) {
+    fputs ("#define INITEX\n#define TeX\n#define eupTeX\n", out);
+    coerce = "euptexcoerce.h";
+  } else if (STREQ (output_name, "uptex")) {
+    fputs ("#define INITEX\n#define TeX\n#define upTeX\n", out);
+    coerce = "uptexcoerce.h";
   } else if (STREQ (output_name, "xetex")) {
     fputs ("#define INITEX\n#define TeX\n#define XeTeX\n", out);
     coerce = "xetexcoerce.h";
   } else
-    FATAL1 ("Can only split mf, tex, aleph, etex, pdftex, ptex, or xetex,\n not %s", output_name);
+    FATAL1 ("Can only split mf, tex, aleph, eptex, euptex, etex, pdftex, ptex, uptex, or xetex,\n not %s", output_name);
   
   coerce_len = strlen (coerce);
   

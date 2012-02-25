@@ -44,19 +44,6 @@ begin
 @y
 @!buf_size=3000; {max input line length, output error line length}
 @z
-%@x
-%@!max_lig_steps=5000;
-%  {maximum length of ligature program, must be at most $32767-257=32510$}
-%@!max_kerns=500; {the maximum number of distinct kern values}
-%@!hash_size=5003; {preferably a prime number, a bit larger than the number
-%  of character pairs in lig/kern steps}
-%@y
-%@!max_lig_steps=32500;
-%  {maximum length of ligature program, must be at most $32767-257=32510$}
-%@!max_kerns=15000; {the maximum number of distinct kern values}
-%@!hash_size=15077; {preferably a prime number, a bit larger than the number
-%  of character pairs in lig/kern steps}
-%@z
 
 @x [6] Open PL file.
 reset(pl_file);
@@ -86,11 +73,42 @@ packed file of bytes.  It's no problem in C.
 rewritebin (tfm_file, tfm_name);
 @z
 
+@x [17] Avoid name conflict; MinGW defines `byte' in <rpcndr.h>.
+correspond to one-character constants like \.{"A"} in \.{WEB} language.
+@y
+correspond to one-character constants like \.{"A"} in \.{WEB} language.
+
+@d byte == byte_type
+@z
+
 @x [18] Pascal Web's char
 @d first_ord=0 {ordinal number of the smallest element of |char|}
 @y
 @d char == 0..255
 @d first_ord=0 {ordinal number of the smallest element of |char|}
+@z
+
+@x [28] (fill_buffer) end-of-line counts as a delimiter. Possibly a bug.
+  while (limit<buf_size-1)and(not eoln(pl_file)) do begin
+    incr(limit); read(pl_file,buffer[limit]);
+    end;
+  buffer[limit+1]:=' '; right_ln:=eoln(pl_file);
+@y
+  while (limit<buf_size-2)and(not eoln(pl_file)) do begin
+    incr(limit); read(pl_file,buffer[limit]);
+    end;
+  buffer[limit+1]:=' '; right_ln:=eoln(pl_file);
+  if right_ln then begin incr(limit); buffer[limit+1]:=' ';
+    end;
+@z
+
+@x [31] (get_keyword_char) Unnecessary due to previous change.
+begin while (loc=limit)and(not right_ln) do fill_buffer;
+if loc=limit then cur_char:=" " {end-of-line counts as a delimiter}
+else begin
+@y
+begin while loc=limit do fill_buffer;
+begin
 @z
 
 @x [79] `index' might be a library routine.
