@@ -4387,8 +4387,10 @@ var
   nat,str:scaled; {natural size, stretch}
 begin
   b:=new_null_box;
-  if horiz then type(b):=hlist_node
-  else type(b):=vlist_node;
+  if horiz then
+    type(b):=hlist_node
+  else
+    type(b):=vlist_node;
 
   {figure out how many repeats of each extender to use}
   n:=-1;
@@ -4450,8 +4452,10 @@ begin
   p:=list_ptr(b); nat:=0; str:=0;
   while p<>null do begin
     if type(p)=whatsit_node then begin
-      if horiz then nat:=nat+width(p)
-      else nat:=nat+height(p)+depth(p);
+      if horiz then
+        nat:=nat+width(p)
+      else
+        nat:=nat+height(p)+depth(p);
     end else if type(p)=glue_node then begin
       nat:=nat+width(glue_ptr(p));
       str:=str+stretch(glue_ptr(p));
@@ -4464,11 +4468,15 @@ begin
   if (s>nat) and (str>0) then begin
     glue_order(b):=normal; glue_sign(b):=stretching;
     glue_set(b):=unfloat((s-nat)/str);
-    if horiz then width(b):= nat+round(str*float(glue_set(b)))
-    else height(b):=nat+round(str*float(glue_set(b)));
+    if horiz then
+      width(b):= nat+round(str*float(glue_set(b)))
+    else
+      height(b):=nat+round(str*float(glue_set(b)));
   end else
-    if horiz then width(b):=nat
-    else height(b):=nat;
+    if horiz then
+      width(b):=nat
+    else
+      height(b):=nat;
 
   build_opentype_assembly:=b;
 end;
