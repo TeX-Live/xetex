@@ -4690,6 +4690,7 @@ if char_exists(cur_i) then
   @<Compute the amount of skew@>;
   x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
   @<Switch to a larger accent if available and appropriate@>;
+  if h<x_height(f) then delta:=h@+else delta:=x_height(f);
 @y
 procedure make_math_accent(@!q:pointer);
 label done,done1;
@@ -4717,6 +4718,10 @@ else if char_exists(cur_i) then
   @<Switch to a larger accent if available and appropriate@>;
   end;
 if x<>null then begin
+  if is_ot_font(f) then
+    if h<get_ot_math_constant(f, accentBaseHeight) then delta:=h@+else delta:=get_ot_math_constant(f, accentBaseHeight)
+  else
+    if h<x_height(f) then delta:=h@+else delta:=x_height(f);
 @z
 
 @x
