@@ -4351,7 +4351,8 @@ begin
     end;
   end else begin
     link(p):=list_ptr(b); list_ptr(b):=p;
-    height(b):=height(p); width(b):=width(p);
+    height(b):=height(p);
+    if (width(b) < width(p)) then width(b):=width(p);
   end;
 end;
 
