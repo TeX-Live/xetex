@@ -4464,10 +4464,14 @@ begin
   end;
 
   {set glue so as to stretch the connections if needed}
+  o:=0;
   depth(b):=0;
   if (s>nat) and (str>0) then begin
+    o:=(s-nat);
+    {don't stretch more than |str|}
+    if (o>str) then o:=str;
     glue_order(b):=normal; glue_sign(b):=stretching;
-    glue_set(b):=unfloat((s-nat)/str);
+    glue_set(b):=unfloat(o/str);
     if horiz then
       width(b):= nat+round(str*float(glue_set(b)))
     else
