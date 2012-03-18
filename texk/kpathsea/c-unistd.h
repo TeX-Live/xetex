@@ -1,7 +1,7 @@
 /* c-unistd.h: ensure we have constants from <unistd.h>.  Included from
    c-std.h.
 
-   Copyright 1992, 1993, 2008 Karl Berry.
+   Copyright 1992, 1993, 2008, 2012 Karl Berry.
    Copyright 2005 Olaf Weber.
 
    This library is free software; you can redistribute it and/or
@@ -24,6 +24,8 @@
 #include <kpathsea/systypes.h>
 
 #if HAVE_UNISTD_H
+# define __need_getopt
+#include <kpathsea/getopt.h>
 #include <unistd.h>
 #endif
 

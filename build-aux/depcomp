@@ -1,7 +1,7 @@
 #! /bin/sh
 # depcomp - compile a program generating dependencies as side-effects
 
-scriptversion=2012-02-03.15; # UTC
+scriptversion=2012-03-12.15; # UTC
 
 # Copyright (C) 1999-2012 Free Software Foundation, Inc.
 
@@ -105,6 +105,12 @@ if test "$depmode" = msvc7msys; then
    # slashes to satisfy depend.m4
    cygpath_u='sed s,\\\\,/,g'
    depmode=msvc7
+fi
+
+if test "$depmode" = xlc; then
+   # IBM C/C++ Compilers xlc/xlC can output gcc-like dependency informations.
+   gccflag=-qmakedep=gcc,-MF
+   depmode=gcc
 fi
 
 case "$depmode" in
@@ -225,6 +231,13 @@ sgi)
     echo "#dummy" > "$depfile"
   fi
   rm -f "$tmpdepfile"
+  ;;
+
+xlc)
+  # This case exists only to let depend.m4 do its work.  It works by
+  # looking at the text of this script.  This case will never be run,
+  # since it is checked for above.
+  exit 1
   ;;
 
 aix)

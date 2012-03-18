@@ -1,6 +1,6 @@
 /* Declarations for getopt.
 
-   Copyright 2008, 2010, 2011 Karl Berry.
+   Copyright 2008, 2010-2012 Karl Berry.
    Copyright 1989,90,91,92,93,94,96,97,2000,05 Free Software Foundation, Inc.
 
    The original version of this file was part of the GNU C Library.
@@ -22,7 +22,10 @@
    along with this library; if not, see <http://www.gnu.org/licenses/>.  */
 
 #ifndef _GETOPT_H
+
+#ifndef __need_getopt
 #define _GETOPT_H 1
+#endif
 
 #if defined (WIN32) && !defined (__MINGW32__) && !defined (NO_KPSE_DLL)
 #define KPSE_DLL 1
@@ -75,6 +78,7 @@ extern KPSEDLL int opterr;
 
 extern KPSEDLL int optopt;
 
+#ifndef __need_getopt
 /* Describe the long-named options requested by the application.
    The LONG_OPTIONS argument to getopt_long or getopt_long_only is a vector
    of `struct option' terminated by an element containing a name which is
@@ -111,18 +115,21 @@ struct option
 #define no_argument             0
 #define required_argument       1
 #define optional_argument       2
+#endif	/* need getopt */
 
-#if defined (__STDC__) && __STDC__
-#ifdef __GNU_LIBRARY__
+#if defined(__GNU_LIBRARY__) || defined (WIN32) || defined (__CYGWIN__)
 /* Many other libraries have conflicting prototypes for getopt, with
    differences in the consts, in stdlib.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
 extern KPSEDLL int getopt (int argc, char *const *argv, const char *shortopts);
-#else /* not __GNU_LIBRARY__ */
-#ifndef __cplusplus
+#if defined (__MINGW32__) || defined (__CYGWIN__)
+#define __GETOPT_H__ /* Avoid that <unistd.h> redeclares the getopt API.  */
+#endif
+#elif !defined (__cplusplus)
 extern KPSEDLL int getopt ();
-#endif /* not __cplusplus */
-#endif /* __GNU_LIBRARY__ */
+#endif
+
+#ifndef __need_getopt
 extern KPSEDLL int getopt_long (int argc, char *const *argv, const char *shortopts,
                         const struct option *longopts, int *longind);
 extern KPSEDLL int getopt_long_only (int argc, char *const *argv,
@@ -138,20 +145,13 @@ extern int _getopt_internal (int argc, char *const *argv,
                              int long_only);
 
 #endif /* MAKE_KPSE_DLL || NO_KPSE_DLL */
-#else /* not __STDC__ */
-extern KPSEDLL int getopt ();
-extern KPSEDLL int getopt_long ();
-extern KPSEDLL int getopt_long_only ();
-
-#if defined (MAKE_KPSE_DLL) || defined (NO_KPSE_DLL) /* libkpathsea internal only */
-
-extern int _getopt_internal ();
-
-#endif /* MAKE_KPSE_DLL || NO_KPSE_DLL */
-#endif /* __STDC__ */
+#endif	/* need getopt */
 
 #ifdef  __cplusplus
 }
 #endif
+
+/* Make sure we later can get all the definitions and declarations.  */
+#undef __need_getopt
 
 #endif /* _GETOPT_H */
