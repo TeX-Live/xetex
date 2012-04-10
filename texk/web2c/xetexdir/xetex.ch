@@ -4132,6 +4132,15 @@ end;
 @z
 
 @x
+@d accent_noad=over_noad+1 {|type| of a noad for accented subformulas}
+@y
+@d accent_noad=over_noad+1 {|type| of a noad for accented subformulas}
+@d fixed_acc=1 {|subtype| for non growing math accents}
+@d bottom_acc=2 {|subtype| for bottom math accents}
+@d is_bottom_acc(#)==(subtype(#)=bottom_acc) or (subtype(#)=bottom_acc+fixed_acc)
+@z
+
+@x
 procedure print_fam_and_char(@!p:pointer); {prints family and character}
 begin print_esc("fam"); print_int(fam(p)); print_char(" ");
 print_ASCII(qo(character(p)));
@@ -4732,7 +4741,8 @@ else if char_exists(cur_i) then
   end;
 if x<>null then begin
   if is_ot_font(f) then
-    if h<get_ot_math_constant(f, accentBaseHeight) then delta:=h@+else delta:=get_ot_math_constant(f, accentBaseHeight)
+    if is_bottom_acc(q) then delta:=0
+    else if h<get_ot_math_constant(f, accentBaseHeight) then delta:=h@+else delta:=get_ot_math_constant(f, accentBaseHeight)
   else
     if h<x_height(f) then delta:=h@+else delta:=x_height(f);
 @z
@@ -4740,6 +4750,9 @@ if x<>null then begin
 @x
   y:=char_box(f,c);
   shift_amount(y):=s+half(w-width(y));
+  width(y):=0; p:=new_kern(-delta); link(p):=x; link(y):=p;
+  y:=vpack(y,natural); width(y):=width(x);
+  if height(y)<h then @<Make the height of box |y| equal to |h|@>;
 @y
   y:=char_box(f,c);
   if is_native_font(f) then begin
@@ -4765,13 +4778,23 @@ if x<>null then begin
     shift_amount(y):=s+w-wa;
   end else
     shift_amount(y):=s+half(w-width(y));
+  width(y):=0;
+  if is_bottom_acc(q) then begin
+    link(x):=y; y:=vpack(x,natural); shift_amount(y):=-(h - height(y));
+  end else begin
+    p:=new_kern(-delta); link(p):=x; link(y):=p; y:=vpack(y,natural);
+    if height(y)<h then @<Make the height of box |y| equal to |h|@>;
+  end;
+  width(y):=width(x);
 @z
 
 @x
 @ @<Switch to a larger accent if available and appropriate@>=
 @y
 @ @<Switch to a larger native-font accent if available and appropriate@>=
-  if subtype(q)<>1 then begin
+  if odd(subtype(q)) then {non growing accent}
+    set_native_glyph_metrics(p, 1)
+  else begin
     c:=native_glyph(p);
     a:=0;
     repeat
@@ -4792,11 +4815,12 @@ if x<>null then begin
       end;
     end else
       set_native_glyph_metrics(p, 1);
-  end else
-    set_native_glyph_metrics(p, 1);
+  end;
 found:
   width(y):=width(p); height(y):=height(p); depth(y):=depth(p);
-  if depth(y)<0 then depth(y):=0;
+  if is_bottom_acc(q) then begin
+    if height(y)<0 then height(y):=0
+  end else if depth(y)<0 then depth(y):=0;
 
 @ @<Switch to a larger accent if available and appropriate@>=
 @z
@@ -6354,7 +6378,14 @@ if (cur_val>=var_code)and fam_in_range then fam(accent_chr(tail)):=cur_fam
 else fam(accent_chr(tail)):=(cur_val div 256) mod 16;
 @y
 if cur_chr=1 then begin
-  if scan_keyword("fixed") then subtype(tail):=1;
+  if scan_keyword("fixed") then
+    subtype(tail):=fixed_acc
+  else if scan_keyword("bottom") then begin
+    if scan_keyword("fixed") then
+      subtype(tail):=bottom_acc+fixed_acc
+    else
+      subtype(tail):=bottom_acc;
+  end;
   scan_math_class_int; c := set_class_field(cur_val);
   scan_math_fam_int;   c := c + set_family_field(cur_val);
   scan_usv_num;        cur_val := cur_val + c;
