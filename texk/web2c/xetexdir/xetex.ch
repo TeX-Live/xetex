@@ -4771,24 +4771,27 @@ if x<>null then begin
 @ @<Switch to a larger accent if available and appropriate@>=
 @y
 @ @<Switch to a larger native-font accent if available and appropriate@>=
-  c:=native_glyph(p);
-  a:=0;
-  repeat
-    g:=get_ot_math_variant(f, c, a, addressof(w2), 1);
-    if (w2>0) and (w2<=w) then begin
-      native_glyph(p):=g;
+  if subtype(q)<>1 then begin
+    c:=native_glyph(p);
+    a:=0;
+    repeat
+      g:=get_ot_math_variant(f, c, a, addressof(w2), 1);
+      if (w2>0) and (w2<=w) then begin
+        native_glyph(p):=g;
+        set_native_glyph_metrics(p, 1);
+        incr(a);
+      end;
+    until (w2<0) or (w2>=w);
+    if (w2<0) then begin
+      ot_assembly_ptr:=get_ot_assembly_ptr(f, c, 1);
+      if ot_assembly_ptr<>nil then begin
+        free_node(p,glyph_node_size);
+        p:=build_opentype_assembly(cur_f, ot_assembly_ptr, w, 1);
+        list_ptr(y):=p;
+        goto found;
+      end;
+    end else
       set_native_glyph_metrics(p, 1);
-      incr(a);
-    end;
-  until (w2<0) or (w2>=w);
-  if (w2<0) then begin
-    ot_assembly_ptr:=get_ot_assembly_ptr(f, c, 1);
-    if ot_assembly_ptr<>nil then begin
-      free_node(p,glyph_node_size);
-      p:=build_opentype_assembly(cur_f, ot_assembly_ptr, w, 1);
-      list_ptr(y):=p;
-      goto found;
-    end;
   end else
     set_native_glyph_metrics(p, 1);
 found:
@@ -6351,6 +6354,7 @@ if (cur_val>=var_code)and fam_in_range then fam(accent_chr(tail)):=cur_fam
 else fam(accent_chr(tail)):=(cur_val div 256) mod 16;
 @y
 if cur_chr=1 then begin
+  if scan_keyword("fixed") then subtype(tail):=1;
   scan_math_class_int; c := set_class_field(cur_val);
   scan_math_fam_int;   c := c + set_family_field(cur_val);
   scan_usv_num;        cur_val := cur_val + c;
