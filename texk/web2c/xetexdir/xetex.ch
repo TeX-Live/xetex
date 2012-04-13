@@ -4770,7 +4770,7 @@ if x<>null then begin
     wa:=get_ot_math_accent_pos(f,native_glyph(p));
     if wa=@"7FFFFFFF then wa:=half(width(y));
     p:=list_ptr(x);
-    if (p<>null) and (type(p)=whatsit_node) and (subtype(p)=glyph_node) and (link(p)=null) then begin
+    if (p<>null) and (type(p)=whatsit_node) and (subtype(p)=glyph_node) and (math_type(nucleus(q))=math_char) then begin
       w2:=get_ot_math_accent_pos(native_font(p), native_glyph(p));
       if w2=@"7FFFFFFF then w:=half(w) else w:=w2;
     end else
