@@ -4268,7 +4268,7 @@ macro capabilities. This seems a bit ugly, but it works.
     rval: scaled;
   begin
     f := fam_fnt(2 + size_code);
-    if is_ot_font(f) then
+    if is_ot_font(cur_f) then
       rval := get_native_mathsy_param(cur_f, #)
     else
       rval := mathsy(#);
@@ -4317,7 +4317,7 @@ define_mathsy_accessor(axis_height)(22)(axis_height);
     rval: scaled;
   begin
     f := fam_fnt(3 + cur_size);
-    if is_ot_font(f) then
+    if is_ot_font(cur_f) then
       rval := get_native_mathex_param(cur_f, #)
     else
       rval := mathex(#);
