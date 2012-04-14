@@ -5132,6 +5132,7 @@ should not exceed the baseline plus four-fifths of the x-height.
 @<Construct a subscript box |x| when there is no superscript@>=
 begin x:=clean_box(subscr(q),sub_style(cur_style));
 width(x):=width(x)+script_space;
+if is_ot_font(cur_f) then cur_f:=native_font(p);
 if shift_down<sub1(cur_size) then shift_down:=sub1(cur_size);
 if is_ot_font(cur_f) then
   clr:=height(x)-get_ot_math_constant(cur_f, subscriptTopMax)
@@ -5147,6 +5148,7 @@ one-fourth of the x-height.
 @<Construct a superscript box |x|@>=
 begin x:=clean_box(supscr(q),sup_style(cur_style));
 width(x):=width(x)+script_space;
+if is_ot_font(cur_f) then cur_f:=native_font(p);
 if odd(cur_style) then clr:=sup3(cur_size)
 else if cur_style<text_style then clr:=sup1(cur_size)
 else clr:=sup2(cur_size);
@@ -5167,6 +5169,7 @@ is at least as high as the baseline plus four-fifths of the x-height.
 @<Construct a sub/superscript combination box |x|...@>=
 begin y:=clean_box(subscr(q),sub_style(cur_style));
 width(y):=width(y)+script_space;
+if is_ot_font(cur_f) then cur_f:=native_font(p);
 if shift_down<sub2(cur_size) then shift_down:=sub2(cur_size);
 if is_ot_font(cur_f) then
   clr:=get_ot_math_constant(cur_f, subSuperscriptGapMin)-((shift_up-depth(x))-(height(y)-shift_down))
