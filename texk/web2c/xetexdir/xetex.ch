@@ -3779,6 +3779,7 @@ p:=list_ptr(this_box);
 @ Extra stuff for justifiable AAT text; need to merge runs of words and normal spaces.
 
 @d is_native_word_node(#) == ((not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = native_word_node))
+@d is_glyph_node(#) == ((not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = glyph_node))
 
 @<Merge sequences of words using AAT fonts and inter-word spaces into single nodes@>=
 p := list_ptr(this_box);
@@ -4771,7 +4772,7 @@ if x<>null then begin
     wa:=get_ot_math_accent_pos(f,native_glyph(p));
     if wa=@"7FFFFFFF then wa:=half(width(y));
     p:=list_ptr(x);
-    if (p<>null) and (type(p)=whatsit_node) and (subtype(p)=glyph_node) and (math_type(nucleus(q))=math_char) then begin
+    if (p<>null) and is_glyph_node(p) and (math_type(nucleus(q))=math_char) then begin
       w2:=get_ot_math_accent_pos(native_font(p), native_glyph(p));
       if w2=@"7FFFFFFF then w:=half(w) else w:=w2;
     end else
@@ -4922,7 +4923,7 @@ if math_type(nucleus(q))=math_char then
   x:=clean_box(nucleus(q),cur_style);
   if is_ot_font(cur_f) then begin
     p:=list_ptr(x);
-    if (type(p)=whatsit_node) and (subtype(p)=glyph_node) then begin
+    if is_glyph_node(p) then begin
       if cur_style<text_style then begin
         {try to replace the operator glyph with a display-size variant,
          ensuring it is larger than the text size}
@@ -5271,7 +5272,7 @@ max_hyph_char:=too_big_lang;
 @x
   @<Skip to node |hb|, putting letters into |hu| and |hc|@>;
 @y
-if (not is_char_node(ha)) and (type(ha) = whatsit_node) and (subtype(ha) = native_word_node) then begin
+if is_native_word_node(ha) then begin
   @<Check that nodes after |native_word| permit hyphenation; if not, |goto done1|@>;
   @<Prepare a |native_word_node| for hyphenation@>;
 end else begin
@@ -5407,7 +5408,7 @@ if hyf_char>biggest_char then goto done1;
 @<Replace nodes |ha..hb| by a sequence of nodes...@>=
 @y
 @<Replace nodes |ha..hb| by a sequence of nodes...@>=
-if (not is_char_node(ha)) and (type(ha) = whatsit_node) and (subtype(ha) = native_word_node) then begin
+if is_native_word_node(ha) then begin
  @<Hyphenate the |native_word_node| at |ha|@>;
 end else begin
 @z
@@ -5893,9 +5894,7 @@ collected:
 		repeat
 			if main_h = 0 then main_h := main_k;
 
-			if      (not is_char_node(main_pp))
-				and (type(main_pp)=whatsit_node)
-				and (subtype(main_pp)=native_word_node)
+			if      is_native_word_node(main_pp)
 				and (native_font(main_pp)=main_f)
 				and (main_ppp<>main_pp)
 				and (not is_char_node(main_ppp))
@@ -5968,9 +5967,7 @@ collected:
 				end;
 				if main_ppp<>main_pp then main_ppp:=link(main_ppp);
 			end;
-		if      (not is_char_node(main_pp))
-			and (type(main_pp)=whatsit_node)
-			and (subtype(main_pp)=native_word_node)
+		if      is_native_word_node(main_pp)
 			and (native_font(main_pp)=main_f)
 			and (main_ppp<>main_pp)
 			and (not is_char_node(main_ppp))
@@ -7409,9 +7406,7 @@ begin
 				end
 				else if (type(pp) = disc_node) then begin
 					ppp := link(pp);
-					if (ppp <> null) and (not is_char_node(ppp))
-							and (type(ppp) = whatsit_node)
-							and (subtype(ppp) = native_word_node)
+					if (ppp <> null) and is_native_word_node(ppp)
 							and (native_font(ppp) = native_font(p)) then begin
 						pp := link(ppp);
 						goto restart;
