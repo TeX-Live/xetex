@@ -5030,7 +5030,7 @@ var p,@!x,@!y,@!z:pointer; {temporary registers for box construction}
 @!shift_up,@!shift_down,@!clr:scaled; {dimensions in the calculation}
 @!t:integer; {subsidiary size code}
 begin p:=new_hlist(q);
-if is_char_node(p) or (p<>null and is_native_word_node(p)) then
+if is_char_node(p) or (p<>null and is_glyph_node(p)) then
 @z
 
 @x
