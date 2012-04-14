@@ -5016,6 +5016,78 @@ var p,@!x,@!y,@!z:pointer; {temporary registers for box construction}
 @!t:small_number; {subsidiary size code}
 begin p:=new_hlist(q);
 if is_char_node(p) then
+  begin shift_up:=0; shift_down:=0;
+  end
+else  begin z:=hpack(p,natural);
+  if cur_style<script_style then t:=script_size@+else t:=script_script_size;
+  shift_up:=height(z)-sup_drop(t);
+  shift_down:=depth(z)+sub_drop(t);
+  free_node(z,box_node_size);
+  end;
+if math_type(supscr(q))=empty then
+  @<Construct a subscript box |x| when there is no superscript@>
+else  begin @<Construct a superscript box |x|@>;
+  if math_type(subscr(q))=empty then shift_amount(x):=-shift_up
+  else @<Construct a sub/superscript combination box |x|, with the
+    superscript offset by |delta|@>;
+  end;
+if new_hlist(q)=null then new_hlist(q):=x
+else  begin p:=new_hlist(q);
+  while link(p)<>null do p:=link(p);
+  link(p):=x;
+  end;
+end;
+
+@ When there is a subscript without a superscript, the top of the subscript
+should not exceed the baseline plus four-fifths of the x-height.
+
+@<Construct a subscript box |x| when there is no superscript@>=
+begin x:=clean_box(subscr(q),sub_style(cur_style));
+width(x):=width(x)+script_space;
+if shift_down<sub1(cur_size) then shift_down:=sub1(cur_size);
+clr:=height(x)-(abs(math_x_height(cur_size)*4) div 5);
+if shift_down<clr then shift_down:=clr;
+shift_amount(x):=shift_down;
+end
+
+@ The bottom of a superscript should never descend below the baseline plus
+one-fourth of the x-height.
+
+@<Construct a superscript box |x|@>=
+begin x:=clean_box(supscr(q),sup_style(cur_style));
+width(x):=width(x)+script_space;
+if odd(cur_style) then clr:=sup3(cur_size)
+else if cur_style<text_style then clr:=sup1(cur_size)
+else clr:=sup2(cur_size);
+if shift_up<clr then shift_up:=clr;
+clr:=depth(x)+(abs(math_x_height(cur_size)) div 4);
+if shift_up<clr then shift_up:=clr;
+end
+
+@ When both subscript and superscript are present, the subscript must be
+separated from the superscript by at least four times |default_rule_thickness|.
+If this condition would be violated, the subscript moves down, after which
+both subscript and superscript move up so that the bottom of the superscript
+is at least as high as the baseline plus four-fifths of the x-height.
+
+@<Construct a sub/superscript combination box |x|...@>=
+begin y:=clean_box(subscr(q),sub_style(cur_style));
+width(y):=width(y)+script_space;
+if shift_down<sub2(cur_size) then shift_down:=sub2(cur_size);
+clr:=4*default_rule_thickness-
+  ((shift_up-depth(x))-(height(y)-shift_down));
+if clr>0 then
+  begin shift_down:=shift_down+clr;
+  clr:=(abs(math_x_height(cur_size)*4) div 5)-(shift_up-depth(x));
+  if clr>0 then
+    begin shift_up:=shift_up+clr;
+    shift_down:=shift_down-clr;
+    end;
+  end;
+shift_amount(x):=delta; {superscript is |delta| to the right of the subscript}
+p:=new_kern((shift_up-depth(x))-(height(y)-shift_down)); link(x):=p; link(p):=y;
+x:=vpack(x,natural); shift_amount(x):=shift_down;
+end
 @y
 @ The purpose of |make_scripts(q,delta)| is to attach the subscript and/or
 superscript of noad |q| to the list that starts at |new_hlist(q)|,
@@ -5032,42 +5104,66 @@ var p,@!x,@!y,@!z:pointer; {temporary registers for box construction}
 @!t:integer; {subsidiary size code}
 begin p:=new_hlist(q);
 if is_char_node(p) or (p<>null and is_glyph_node(p)) then
-@z
+  begin shift_up:=0; shift_down:=0;
+  end
+else  begin z:=hpack(p,natural);
+  if cur_style<script_style then t:=script_size@+else t:=script_script_size;
+  shift_up:=height(z)-sup_drop(t);
+  shift_down:=depth(z)+sub_drop(t);
+  free_node(z,box_node_size);
+  end;
+if math_type(supscr(q))=empty then
+  @<Construct a subscript box |x| when there is no superscript@>
+else  begin @<Construct a superscript box |x|@>;
+  if math_type(subscr(q))=empty then shift_amount(x):=-shift_up
+  else @<Construct a sub/superscript combination box |x|, with the
+    superscript offset by |delta|@>;
+  end;
+if new_hlist(q)=null then new_hlist(q):=x
+else  begin p:=new_hlist(q);
+  while link(p)<>null do p:=link(p);
+  link(p):=x;
+  end;
+end;
 
-@x
-clr:=height(x)-(abs(math_x_height(cur_size)*4) div 5);
-@y
+@ When there is a subscript without a superscript, the top of the subscript
+should not exceed the baseline plus four-fifths of the x-height.
+
+@<Construct a subscript box |x| when there is no superscript@>=
+begin x:=clean_box(subscr(q),sub_style(cur_style));
+width(x):=width(x)+script_space;
+if shift_down<sub1(cur_size) then shift_down:=sub1(cur_size);
 if is_ot_font(cur_f) then
   clr:=height(x)-get_ot_math_constant(cur_f, subscriptTopMax)
 else
   clr:=height(x)-(abs(math_x_height(cur_size)*4) div 5);
-@z
+if shift_down<clr then shift_down:=clr;
+shift_amount(x):=shift_down;
+end
 
-@x
-clr:=depth(x)+(abs(math_x_height(cur_size)) div 4);
-@y
+@ The bottom of a superscript should never descend below the baseline plus
+one-fourth of the x-height.
+
+@<Construct a superscript box |x|@>=
+begin x:=clean_box(supscr(q),sup_style(cur_style));
+width(x):=width(x)+script_space;
+if odd(cur_style) then clr:=sup3(cur_size)
+else if cur_style<text_style then clr:=sup1(cur_size)
+else clr:=sup2(cur_size);
+if shift_up<clr then shift_up:=clr;
 if is_ot_font(cur_f) then
   clr:=depth(x)+get_ot_math_constant(cur_f, superscriptBottomMin)
 else
   clr:=depth(x)+(abs(math_x_height(cur_size)) div 4);
-@z
+if shift_up<clr then shift_up:=clr;
+end
 
-@x
-@<Construct a sub/superscript combination box |x|...@>=
-begin y:=clean_box(subscr(q),sub_style(cur_style));
-width(y):=width(y)+script_space;
-if shift_down<sub2(cur_size) then shift_down:=sub2(cur_size);
-clr:=4*default_rule_thickness-
-  ((shift_up-depth(x))-(height(y)-shift_down));
-if clr>0 then
-  begin shift_down:=shift_down+clr;
-  clr:=(abs(math_x_height(cur_size)*4) div 5)-(shift_up-depth(x));
-  if clr>0 then
-    begin shift_up:=shift_up+clr;
-    shift_down:=shift_down-clr;
-    end;
-  end;
-@y
+@ When both subscript and superscript are present, the subscript must be
+separated from the superscript by at least four times |default_rule_thickness|.
+If this condition would be violated, the subscript moves down, after which
+both subscript and superscript move up so that the bottom of the superscript
+is at least as high as the baseline plus four-fifths of the x-height.
+
 @<Construct a sub/superscript combination box |x|...@>=
 begin y:=clean_box(subscr(q),sub_style(cur_style));
 width(y):=width(y)+script_space;
@@ -5087,6 +5183,10 @@ if clr>0 then
     shift_down:=shift_down-clr;
     end;
   end;
+shift_amount(x):=delta; {superscript is |delta| to the right of the subscript}
+p:=new_kern((shift_up-depth(x))-(height(y)-shift_down)); link(x):=p; link(p):=y;
+x:=vpack(x,natural); shift_amount(x):=shift_down;
+end
 @z
 
 @x
