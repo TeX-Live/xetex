@@ -4970,6 +4970,13 @@ end;
 @z
 
 @x
+@<Attach the limits to |y| and adjust |height(v)|, |depth(v)|...@>=
+@y
+@<Attach the limits to |y| and adjust |height(v)|, |depth(v)|...@>=
+if is_ot_font(cur_f) then cur_f:=native_font(p);
+@z
+
+@x
       character(nucleus(r)):=rem_byte(cur_i);
       fam(nucleus(r)):=fam(nucleus(q));@/
 @y
