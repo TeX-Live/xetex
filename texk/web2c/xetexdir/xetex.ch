@@ -4906,6 +4906,7 @@ var delta:scaled; {offset between subscript and superscript}
 @!h1,@!h2:scaled; {height of original text-style symbol and possible replacement}
 @!n,@!g:integer; {potential variant index and glyph code}
 @!ot_assembly_ptr:void_pointer;
+@!save_f:internal_font_number;
 begin if (subtype(q)=normal)and(cur_style<text_style) then
   subtype(q):=limits;
 delta:=0;
@@ -4963,6 +4964,7 @@ found:
     {center vertically}
   math_type(nucleus(q)):=sub_box; info(nucleus(q)):=x;
   end;
+save_f:=cur_f;
 if subtype(q)=limits then
   @<Construct a box with limits above and below it, skewed by |delta|@>;
 make_op:=delta;
@@ -4973,7 +4975,7 @@ end;
 @<Attach the limits to |y| and adjust |height(v)|, |depth(v)|...@>=
 @y
 @<Attach the limits to |y| and adjust |height(v)|, |depth(v)|...@>=
-if is_ot_font(cur_f) then cur_f:=native_font(p);
+cur_f:=save_f;
 @z
 
 @x
@@ -5109,6 +5111,7 @@ procedure make_scripts(@!q:pointer;@!delta:scaled);
 var p,@!x,@!y,@!z:pointer; {temporary registers for box construction}
 @!shift_up,@!shift_down,@!clr:scaled; {dimensions in the calculation}
 @!t:integer; {subsidiary size code}
+@!save_f:internal_font_number;
 begin p:=new_hlist(q);
 if is_char_node(p) or (p<>null and is_glyph_node(p)) then
   begin shift_up:=0; shift_down:=0;
@@ -5137,9 +5140,11 @@ end;
 should not exceed the baseline plus four-fifths of the x-height.
 
 @<Construct a subscript box |x| when there is no superscript@>=
-begin x:=clean_box(subscr(q),sub_style(cur_style));
+begin
+save_f:=cur_f;
+x:=clean_box(subscr(q),sub_style(cur_style));
+cur_f:=save_f;
 width(x):=width(x)+script_space;
-if is_ot_font(cur_f) then cur_f:=native_font(p);
 if shift_down<sub1(cur_size) then shift_down:=sub1(cur_size);
 if is_ot_font(cur_f) then
   clr:=height(x)-get_ot_math_constant(cur_f, subscriptTopMax)
@@ -5153,9 +5158,11 @@ end
 one-fourth of the x-height.
 
 @<Construct a superscript box |x|@>=
-begin x:=clean_box(supscr(q),sup_style(cur_style));
+begin
+save_f:=cur_f;
+x:=clean_box(supscr(q),sup_style(cur_style));
+cur_f:=save_f;
 width(x):=width(x)+script_space;
-if is_ot_font(cur_f) then cur_f:=native_font(p);
 if odd(cur_style) then clr:=sup3(cur_size)
 else if cur_style<text_style then clr:=sup1(cur_size)
 else clr:=sup2(cur_size);
@@ -5174,9 +5181,11 @@ both subscript and superscript move up so that the bottom of the superscript
 is at least as high as the baseline plus four-fifths of the x-height.
 
 @<Construct a sub/superscript combination box |x|...@>=
-begin y:=clean_box(subscr(q),sub_style(cur_style));
+begin
+save_f:=cur_f;
+y:=clean_box(subscr(q),sub_style(cur_style));
+cur_f:=save_f;
 width(y):=width(y)+script_space;
-if is_ot_font(cur_f) then cur_f:=native_font(p);
 if shift_down<sub2(cur_size) then shift_down:=sub2(cur_size);
 if is_ot_font(cur_f) then
   clr:=get_ot_math_constant(cur_f, subSuperscriptGapMin)-((shift_up-depth(x))-(height(y)-shift_down))
