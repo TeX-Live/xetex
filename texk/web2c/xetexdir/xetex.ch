@@ -4477,7 +4477,6 @@ begin
 
   {set glue so as to stretch the connections if needed}
   o:=0;
-  depth(b):=0;
   if (s>nat) and (str>0) then begin
     o:=(s-nat);
     {don't stretch more than |str|}
