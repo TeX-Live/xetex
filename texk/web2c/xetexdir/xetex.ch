@@ -3384,6 +3384,7 @@ if translate_filename then begin
 @d is_native_font(#)==(is_atsu_font(#) or is_otgr_font(#))
 	{native fonts have |font_area| = 65534 or 65535,
 	 which would be a string containing an invalid Unicode character}
+@d is_new_mathfont(#)==(is_ot_font(#) and (isOpenTypeMathFont(font_layout_engine[#])))
 
 @d non_char==qi(too_big_char) {a |halfword| code that can't match a real character}
 @z
