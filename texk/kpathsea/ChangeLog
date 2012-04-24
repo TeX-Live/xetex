@@ -1,3 +1,53 @@
+2012-04-23  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am (rebuild): Touch libkpathsea.la to avoid an
+	infinite loop when only mingw32.h or win32lib.h is changed.
+
+2012-04-23  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* win32lib.h, win32lib.c: rewrite win32_system().
+
+2012-04-17  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* texmf.cnf: erase "ptexgeneric".
+
+2012-04-16  Karl Berry  <karl@tug.org>
+
+	* texmf.cnf (TEXMFCNF): spell out every directory explicitly,
+	so we can include $SELFAUTOPARENT/../texmf-local/web2c.
+
+2012-04-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* cnf.[ch]: Drop KPSEDLL from kpathsea_cnf_get(), and remove
+	kpse_cnf_get().
+	* db.h: Drop KPSEDLL from kpathsea_db_insert().
+	* Makefile.am: Do not install cnf.h.
+	* mingw32.h: Add a copyright statement.
+
+	* configure.ac: Subst tex_live_version from ../../version.ac
+	as WEB2CVERSION for WIN32 programs.
+
+2012-04-09  Karl Berry  <karl@tug.org>
+
+	* getopt.h (getopt) [!__cplusplus]: do not declare when compiling
+	with C++, since g++ 4.7.0 introduced an incompatible declaration.
+	http://bugs.debian.org/667392
+
+	* c-std.h (popen, pclose) [!VMS]: remove these decls to avoid
+	conflicts, hoping they are now always in the system libraries.
+	http://bugs.debian.org/64524
+
+2012-04-07  Karl Berry  <karl@tug.org>
+
+	* texmf.cnf (glob_str_size): increase from 5000 to 20000 per Akira,
+	06 Apr 2012 10:25:18.
+
+2012-04-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* c-unistd.h: Declare getopt() (via  <kpathsea/getopt.h>) only
+	for Mingw and Cygwin; for other systems using the GNU C library
+	g++-4.7 might choke on incompatible exception specifications.
+
 2012-03-11  Karl Berry  <karl@tug.org>
 
 	* *.c: prepend kpathsea: to warnings.

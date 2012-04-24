@@ -1,4 +1,4 @@
-$Id: README 25696 2012-03-19 08:34:43Z peter $
+$Id: README 25785 2012-03-30 08:19:39Z peter $
 Public domain.  Originally created by Karl Berry, 2005.
 
 Libraries we compile for TeX Live.
@@ -24,10 +24,10 @@ graphite 2.4 - checked 16mar12
   http://scripts.sil.org/svn-public/graphite/graphite/trunk
   (svn r1250 2012-03-1419:45:41 UTC).
 
-icu 49.1 (49_rc) - http://download.icu-project.org/files/icu4c/
+icu 49.1 (49.1 release) - http://download.icu-project.org/files/icu4c/
   with modifications required for xetex, also used by bibtexu
 
-libpng 1.5.9 - checked 23feb12
+libpng 1.5.10 - checked 30mar12
   http://www.libpng.org/ - used by many
   http://www.libpng.org/pub/png/pngcode.html
 

@@ -116,6 +116,8 @@ typedef size_t uintptr_t;
 #   define U_TIMEZONE __timezone
 #elif U_PLATFORM_USES_ONLY_WIN32_API
 #   define U_TIMEZONE _timezone
+#elif U_PLATFORM == U_PF_BSD && !defined(__FreeBSD_kernel__)
+   /* not defined */
 #elif U_PLATFORM == U_PF_OS400
    /* not defined */
 #else
@@ -513,11 +515,11 @@ U_INTERNAL void * U_EXPORT2 uprv_maximumPtr(void *base);
 #  endif
 #endif
 
-#if U_ENABLE_DYLOAD || 1
 /*  Dynamic Library Functions */
 
 typedef void (UVoidFunction)(void);
 
+#if U_ENABLE_DYLOAD
 /**
  * Load a library
  * @internal (ICU 4.4)
