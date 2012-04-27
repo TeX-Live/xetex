@@ -4140,7 +4140,7 @@ end;
 @d accent_noad=over_noad+1 {|type| of a noad for accented subformulas}
 @d fixed_acc=1 {|subtype| for non growing math accents}
 @d bottom_acc=2 {|subtype| for bottom math accents}
-@d is_bottom_acc(#)==(subtype(#)=bottom_acc) or (subtype(#)=bottom_acc+fixed_acc)
+@d is_bottom_acc(#)==((subtype(#)=bottom_acc) or (subtype(#)=bottom_acc+fixed_acc))
 @z
 
 @x
@@ -4767,7 +4767,7 @@ begin fetch(accent_chr(q));
 x:=null;
 if is_native_font(cur_f) then
   begin c:=cur_c; f:=cur_f;
-  s:=compute_ot_math_accent_pos(q);
+  if not is_bottom_acc(q) then s:=compute_ot_math_accent_pos(q);
   x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
   end
 else if char_exists(cur_i) then
@@ -4800,7 +4800,7 @@ if x<>null then begin
     {determine horiz positioning}
     sa:=get_ot_math_accent_pos(f,native_glyph(p));
     if sa=@"7FFFFFFF then sa:=half(width(y));
-    if s=@"7FFFFFFF then s:=half(w);
+    if is_bottom_acc(q) or (s=@"7FFFFFFF) then s:=half(w);
     shift_amount(y):=s-sa;
   end else
     shift_amount(y):=s+half(w-width(y));
