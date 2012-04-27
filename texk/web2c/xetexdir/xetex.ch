@@ -4728,6 +4728,29 @@ if char_exists(cur_i) then
   end;
 end;
 @y
+function compute_ot_math_accent_pos(@!p:pointer):scaled;
+var
+  @!q,@!r:pointer;
+  @!s,@!g:scaled;
+begin
+  if (math_type(nucleus(p))=math_char) then begin
+    fetch(nucleus(p));
+    q:=new_native_character(cur_f, qo(cur_c));
+    g:=get_native_glyph(q, 0);
+    s:=get_ot_math_accent_pos(cur_f, g);
+  end else begin
+    if (math_type(nucleus(p))=sub_mlist) then begin
+      r:=info(nucleus(p));
+      if (r<>null) and (type(r)=accent_noad) then
+        s:=compute_ot_math_accent_pos(r)
+      else
+        s:=@"7FFFFFFF;
+    end else
+      s:=@"7FFFFFFF;
+  end;
+  compute_ot_math_accent_pos:=s;
+end;
+
 procedure make_math_accent(@!q:pointer);
 label done,done1;
 var p,@!x,@!y:pointer; {temporary registers for box construction}
@@ -4735,16 +4758,16 @@ var p,@!x,@!y:pointer; {temporary registers for box construction}
 @!c,@!g:integer; {accent character}
 @!f:internal_font_number; {its font}
 @!i:four_quarters; {its |char_info|}
-@!s:scaled; {amount to skew the accent to the right}
+@!s,@!sa:scaled; {amount to skew the accent to the right}
 @!h:scaled; {height of character being accented}
 @!delta:scaled; {space to remove between accent and accentee}
-@!w,@!wa,@!w2:scaled; {width of the accentee, not including sub/superscripts}
+@!w,@!w2:scaled; {width of the accentee, not including sub/superscripts}
 @!ot_assembly_ptr:void_pointer;
 begin fetch(accent_chr(q));
 x:=null;
 if is_native_font(cur_f) then
   begin c:=cur_c; f:=cur_f;
-  s:=0; {@@<Compute the amount of skew@@>;}
+  s:=compute_ot_math_accent_pos(q);
   x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
   end
 else if char_exists(cur_i) then
@@ -4775,15 +4798,10 @@ if x<>null then begin
     @<Switch to a larger native-font accent if available and appropriate@>;
 
     {determine horiz positioning}
-    wa:=get_ot_math_accent_pos(f,native_glyph(p));
-    if wa=@"7FFFFFFF then wa:=half(width(y));
-    p:=list_ptr(x);
-    if (p<>null) and is_glyph_node(p) and (math_type(nucleus(q))=math_char) then begin
-      w2:=get_ot_math_accent_pos(native_font(p), native_glyph(p));
-      if w2=@"7FFFFFFF then w:=half(w) else w:=w2;
-    end else
-      w:=half(w);
-    shift_amount(y):=s+w-wa;
+    sa:=get_ot_math_accent_pos(f,native_glyph(p));
+    if sa=@"7FFFFFFF then sa:=half(width(y));
+    if s=@"7FFFFFFF then s:=half(w);
+    shift_amount(y):=s-sa;
   end else
     shift_amount(y):=s+half(w-width(y));
   width(y):=0;
