@@ -4715,6 +4715,18 @@ if char_exists(cur_i) then
   x:=clean_box(nucleus(q),cramped_style(cur_style)); w:=width(x); h:=height(x);
   @<Switch to a larger accent if available and appropriate@>;
   if h<x_height(f) then delta:=h@+else delta:=x_height(f);
+  if (math_type(supscr(q))<>empty)or(math_type(subscr(q))<>empty) then
+    if math_type(nucleus(q))=math_char then
+      @<Swap the subscript and superscript into box |x|@>;
+  y:=char_box(f,c);
+  shift_amount(y):=s+half(w-width(y));
+  width(y):=0; p:=new_kern(-delta); link(p):=x; link(y):=p;
+  y:=vpack(y,natural); width(y):=width(x);
+  if height(y)<h then @<Make the height of box |y| equal to |h|@>;
+  info(nucleus(q)):=y;
+  math_type(nucleus(q)):=sub_box;
+  end;
+end;
 @y
 procedure make_math_accent(@!q:pointer);
 label done,done1;
@@ -4747,15 +4759,9 @@ if x<>null then begin
     else if h<get_ot_math_constant(f, accentBaseHeight) then delta:=h@+else delta:=get_ot_math_constant(f, accentBaseHeight)
   else
     if h<x_height(f) then delta:=h@+else delta:=x_height(f);
-@z
-
-@x
-  y:=char_box(f,c);
-  shift_amount(y):=s+half(w-width(y));
-  width(y):=0; p:=new_kern(-delta); link(p):=x; link(y):=p;
-  y:=vpack(y,natural); width(y):=width(x);
-  if height(y)<h then @<Make the height of box |y| equal to |h|@>;
-@y
+  if (math_type(supscr(q))<>empty)or(math_type(subscr(q))<>empty) then
+    if math_type(nucleus(q))=math_char then
+      @<Swap the subscript and superscript into box |x|@>;
   y:=char_box(f,c);
   if is_native_font(f) then begin
     {turn the |native_word| node into a |native_glyph| one}
@@ -4788,6 +4794,10 @@ if x<>null then begin
     if height(y)<h then @<Make the height of box |y| equal to |h|@>;
   end;
   width(y):=width(x);
+  info(nucleus(q)):=y;
+  math_type(nucleus(q)):=sub_box;
+  end;
+end;
 @z
 
 @x
