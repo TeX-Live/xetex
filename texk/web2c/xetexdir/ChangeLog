@@ -1,3 +1,13 @@
+2012-05-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am (EXTRA_DIST): Drop pool2c.pl (is removed).
+
+2012-05-05  Khaled Hosny  <khaledhosny@eglug.org>
+
+	* xetex.ch, xetex.defines, XeTeX_ext.h, am/xetex.am: Use makecpool
+	instead of out pool2c.pl.
+	* pool2c.pl: Removed.
+
 2012-04-24  Khaled Hosny  <khaledhosny@eglug.org>
 
 	* xetex.ch: Merge changes from XeTeX repository.
