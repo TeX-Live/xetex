@@ -131,6 +131,13 @@ elif [ ! -r "$B"/Makefile ]
 then
     ONLY_MAKE=FALSE
 fi
+
+if [ ! -r configure ]
+then
+    ./autogen.sh
+    ONLY_MAKE=FALSE
+fi
+
 if [ ! -r "$B" ]
 then
   mkdir "$B"
