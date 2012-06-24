@@ -1,0 +1,9 @@
+build
+build-aux
+configure
+Makefile.in
+aclocal.m4
+autom4te.cache
+*~
+*.swp
+m4/libtool.m4
