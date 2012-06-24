@@ -5915,6 +5915,12 @@ whatsit_node: @<Let |d| be the width of the whatsit |p|, and |goto found| if ``v
 @z
 
 @x
+@d fam_in_range==((cur_fam>=0)and(cur_fam<16))
+@y
+@d fam_in_range==((cur_fam>=0)and(cur_fam<number_math_families))
+@z
+
+@x
 letter,other_char,char_given: begin c:=ho(math_code(cur_chr));
     if c=@'100000 then
 @y
