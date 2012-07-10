@@ -35,12 +35,8 @@ authorization from the copyright holders.
 
 #include "XeTeX_ext.h"
 
-#ifdef XETEX_OT_MATH_IMPLEMENTATION
 #include "MathTable.h"
 #include "layout/LEFontInstance.h"
-#else
-#define GlyphAssembly void /* used when we're just declaring the functions for xetex.ch */
-#endif
 
 /* public "C" APIs for calling from Web(-to-C) code */
 #ifdef __cplusplus

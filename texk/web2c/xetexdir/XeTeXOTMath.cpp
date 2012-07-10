@@ -30,7 +30,6 @@ use or other dealings in this Software without prior written
 authorization from the copyright holders.
 \****************************************************************************/
 
-#define XETEX_OT_MATH_IMPLEMENTATION 1
 #include "XeTeXOTMath.h"
 
 #include "XeTeX_ext.h"
