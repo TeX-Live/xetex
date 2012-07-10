@@ -86,6 +86,22 @@ void* getotassemblyptr(int f, int g, int horiz); /* function in XeTeXOTMath.cpp 
 #define setfamilyfield(x)   			(((unsigned)(x) & 0xFF) << 24)
 #define setclassfield(x)    			(((unsigned)(x) & 0x07) << 21)
 
+/* aliases */
+#define getnativemathsyparam			get_native_mathsy_param
+#define getnativemathexparam			get_native_mathex_param
+#define getotmathconstant			get_ot_math_constant
+#define getotmathvariant			get_ot_math_variant
+#define getotassemblyptr			get_ot_assembly_ptr
+#define getotmathitalcorr			get_ot_math_ital_corr
+#define getotmathaccentpos			get_ot_math_accent_pos
+#define otpartcount				ot_part_count
+#define otpartglyph				ot_part_glyph
+#define otpartisextender			ot_part_is_extender
+#define otpartstartconnector			ot_part_start_connector
+#define otpartendconnector			ot_part_end_connector
+#define otpartfulladvance			ot_part_full_advance
+#define otminconnectoroverlap			ot_min_connector_overlap
+
 /* Unicode file reading modes */
 #define AUTO					0	/* default: will become one of 1..3 at file open time, after sniffing */
 #define UTF8					1
