@@ -67,8 +67,8 @@ authorization from the copyright holders.
 @d TeX_banner=='This is TeX, Version 3.1415926' {printed when \TeX\ starts}
 @#
 @d XeTeX_version=0
-@d XeTeX_revision==".9998"
-@d XeTeX_version_string=='-0.9998' {current \XeTeX\ version}
+@d XeTeX_revision==".9999"
+@d XeTeX_version_string=='-0.9999' {current \XeTeX\ version}
 @#
 @d XeTeX_banner=='This is XeTeX, Version 3.1415926',eTeX_version_string,XeTeX_version_string
   {printed when \XeTeX\ starts}
