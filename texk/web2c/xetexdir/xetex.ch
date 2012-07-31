@@ -1685,6 +1685,17 @@ match: begin match_chr:=c; print_char(c); incr(n); print_char(n);
 @z
 
 @x
+@d chr_cmd(#)==begin print(#); print_ASCII(chr_code);
+  end
+@y
+@d chr_cmd(#)==begin print(#);
+   if chr_code < @"10000 then print_ASCII(chr_code)
+   {non-Plane 0 Unicodes can't be sent through |print_ASCII|}
+   else begin print("number "); print_hex(chr_code) end;
+  end
+@z
+
+@x
 procedure print_cmd_chr(@!cmd:quarterword;@!chr_code:halfword);
 var n:integer; {temp variable}
 @y
