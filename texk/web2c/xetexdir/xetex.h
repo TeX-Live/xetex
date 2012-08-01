@@ -61,7 +61,7 @@ authorization from the copyright holders.
 #define getnativewordcp(p,s)			get_native_word_cp(&(mem[p]), s)
 
 
-void* getotassemblyptr(int f, int g, int horiz); /* function in XeTeXOTMath.cpp */
+void* get_ot_assembly_ptr(int f, int g, int horiz); /* function in XeTeXOTMath.cpp */
 
 #define pic_node_size				8
 
