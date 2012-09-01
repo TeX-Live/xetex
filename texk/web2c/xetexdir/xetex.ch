@@ -4639,7 +4639,7 @@ if is_native_font(cur_f) then begin
   set_native_glyph_metrics(p, 1);
   free_node(z, native_size(z));
   delta:=get_ot_math_ital_corr(cur_f, native_glyph(p));
-  if (math_type(nucleus(q))=math_text_char)and(space(cur_f)<>0) then
+  if (math_type(nucleus(q))=math_text_char)and(not is_new_mathfont(cur_f)<>0) then
     delta:=0; {no italic correction in mid-word of text font}
   if (math_type(subscr(q))=empty)and(delta<>0) then
     begin link(p):=new_kern(delta); delta:=0;
