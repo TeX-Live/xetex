@@ -9,3 +9,8 @@ autom4te.cache
 m4/libtool.m4
 m4/ltoptions.m4
 m4/ltversion.m4
+libs/poppler/config.h.in
+libs/zlib/config.h.in
+texk/kpathsea/c-auto.in
+texk/web2c/c-auto.in
+texk/web2c/web2c/c-auto.in
