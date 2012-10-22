@@ -45,6 +45,13 @@ authorization from the copyright holders.
 
 #include "zlib.h"
 
+#include <time.h> /* For `struct tm'.  */
+#if defined (HAVE_SYS_TIME_H)
+#include <sys/time.h>
+#elif defined (HAVE_SYS_TIMEB_H)
+#include <sys/timeb.h>
+#endif
+
 #define EXTERN extern
 #include "xetexd.h"
 
@@ -63,15 +70,11 @@ authorization from the copyright holders.
 #include <kpathsea/readable.h>
 #include <kpathsea/variable.h>
 #include <kpathsea/absolute.h>
+#if defined(WIN32)
+#include <kpathsea/concatn.h>
+#endif
 
 #include <math.h> /* for fabs() */
-
-#include <time.h> /* For `struct tm'.  */
-#if defined (HAVE_SYS_TIME_H)
-#include <sys/time.h>
-#elif defined (HAVE_SYS_TIMEB_H)
-#include <sys/timeb.h>
-#endif
 
 #if defined(__STDC__)
 #include <locale.h>
@@ -465,7 +468,7 @@ static UInt32 *utf32Buf = NULL;
 	/* Trim trailing whitespace.  */
 	while (last > first && ISBLANK(buffer[last - 1]))
 		--last;
-	
+
 	return true;
 }
 
@@ -1125,7 +1128,7 @@ loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, con
 				}
 				goto next_option;
 			}
-			
+
 			if (strncmp(cp1, "rtl", 3) == 0) {
 				cp3 = cp2;
 				if (*cp3 == ';' || *cp3 == ':')
@@ -2152,7 +2155,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			void*	glyph_info = 0;
 			static	float*	positions = 0;
 			static	UInt32*	glyphs = 0;
-			static	int		maxGlyphs = 0;
+			static	int	maxGlyphs = 0;
 	
 			UBiDi*	pBiDi = ubidi_open();
 			
@@ -2941,11 +2944,11 @@ u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode
 				mode = UTF16LE;
 			else if (B1 == 0 && B2 != 0) {
 				mode = UTF16BE;
-				fseek((*f)->f, SEEK_SET, 0);
+				rewind((*f)->f);
 			}
 			else if (B2 == 0 && B1 != 0) {
 				mode = UTF16LE;
-				fseek((*f)->f, SEEK_SET, 0);
+				rewind((*f)->f);
 			}
 			else if (B1 == 0xef && B2 == 0xbb) {
 				int	B3 = getc((*f)->f);
@@ -2953,7 +2956,7 @@ u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode
 					mode = UTF8;
 			}
 			if (mode == AUTO) {
-				fseek((*f)->f, SEEK_SET, 0);
+				rewind((*f)->f);
 				mode = UTF8;
 			}
 		}
@@ -2962,6 +2965,14 @@ u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode
 	}
 	return rval;
 }
+
+#if defined(WIN32)
+static int
+Isspace(char c)
+{
+	return (c == ' ' || c == '\t');
+}
+#endif
 
 int
 open_dvi_output(FILE** fptr)
@@ -3014,7 +3025,31 @@ open_dvi_output(FILE** fptr)
 			strcpy((char*)nameoffile+1, fullname);
 			free(fullname);
 		}
+#if defined(WIN32)
+		{
+			char *p, *pp, *bindir, *fullcmd, *prgnam;
+			bindir = kpse_var_value("SELFAUTOLOC");
+			for(pp = bindir; *pp; pp++) {
+				if(*pp == '/') *pp = '\\';
+			}
+			pp = cmd;
+			while(Isspace(*pp))
+				pp++;
+			prgnam = xmalloc(strlen(cmd));
+			p = prgnam;
+			while(!Isspace(*pp)) {
+				*p++ = *pp++;
+			}
+			*p = '\0';
+			fullcmd = concatn("\"", bindir, "\\", prgnam, "\"", pp, NULL); 
+			*fptr = popen(fullcmd, "w");
+			free(bindir);
+			free(prgnam);
+			free(fullcmd);
+		}
+#else
 		*fptr = popen(cmd, "w");
+#endif
 		free(cmd);
 		return (*fptr != 0);
 	}

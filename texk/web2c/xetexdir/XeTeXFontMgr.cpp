@@ -1,7 +1,7 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
- copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2009-2012 by Jonathan Kew
 
  Written by Jonathan Kew
 
@@ -44,8 +44,14 @@ authorization from the copyright holders.
 #include "sfnt.h"
 
 #include <math.h>
+/* apparently M_PI isn't defined by <math.h> under VC++ */
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
+extern "C" {
 extern Fixed loadedfontdesignsize;
+}
 
 // functions from the Pascal/WEB side
 extern "C" {
