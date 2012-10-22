@@ -1,4 +1,4 @@
-$Id: README 26068 2012-04-20 08:01:57Z peter $
+$Id$
 Copyright 2006-2012 TeX Users Group.
 You may freely use, modify and/or distribute this file.
 
@@ -27,17 +27,21 @@ bibtex8 - ?
 bibtexu - ?
   http://omega.enstb.org/yannis/bibtexu/
 
-cjkutils 4.8.2 - checked 18dec10
-  http://cjk.ffii.org/cjk-4.8.2.tar.gz
+chktex 1.7.1 - checked 27sep12
+  http://mirror.ctan.org/support/chktex/
+  http://download.savannah.gnu.org/releases/chktex/
 
-detex 2.8 - checked 25apr11
+cjkutils 4.8.3 - checked 11may12
+  http://cjk.ffii.org/cjk-4.8.3.tar.gz
+
+detex 2.8 - checked 10may12
   http://www.cs.purdue.edu/homes/trinkle/detex/
 
 devnag - from devnag package installed in texmf-dist.
 
 dtl - ?
 
-dvi2tty 5.3.4 - checked 25apr11
+dvi2tty 5.3.4 - checked 10may12
   http://www.mesa.nl/pub/dvi2tty/
   ftp://ftp.mesa.nl/pub/dvi2tty/
 
@@ -45,53 +49,60 @@ dvidvi - ?
 
 dviljk - maintained here, by Joachim Schrod
 
-dvipdfmx 20120420 - checked 20apr12
-  ftp://ftpth.mppmu.mpg.de/pub/peb/TLtests/dvipdfmx-20120420.tar.xz
+dvipdfmx - maintained here, by Khaled Hosny, Jonathan Kew
 
-dvipng 1.14 - checked 25apr11
+dvipng 1.14 - checked 10may12
   http://mirror.ctan.org/dviware/dvipng/ (but maybe stale)
   http://savannah.nongnu.org/files/?group=dvipng
 
 dvipos - ?
 
-dvipsk - maintained here by Tom Rokicki, Karl Berry, Akira Kakuto, ...
+dvipsk - maintained here, by us
 
-dvisvgm 1.0.11 - checked 12mar12
-  http://downloads.sourceforge.net/dvisvgm/dvisvgm-1.0.11.tar.gz
+dvisvgm - checked 28sep12
+  http://downloads.sourceforge.net/dvisvgm/dvisvgm-1.0.12.tar.gz
 
 gsftopk - from Paul Vojta's xdvi?
 
-kpathsea - maintained here by Karl Berry, et al.
+kpathsea - maintained here, by us
 
 lacheck - checked 25apr11
   http://mirror.ctan.org/support/lacheck/lacheck-1.26.tar.gz
 
-lcdf-typetools 2.92 - checked 16aug11
+lcdf-typetools 2.95 - checked 25sep12
   http://www.lcdf.org/type/
-  http://www.lcdf.org/type/lcdf-typetools-2.92.tar.gz
+  http://www.lcdf.org/type/lcdf-typetools-2.95.tar.gz
 
 makeindexk - maintained here, by us
 
+makejvf - ?
+
+mendexk - ?
+
 ps2pkm - ?
 
+ptexenc - ?
+
 seetexk - ?
+
+tetex - scripts maintained here, by us
 
 tex4htk - checked 25apr11
   http://tug.org/tex4ht/
 
-texlive - maintained here, scripts
+texlive - scripts maintained here, by us
 
 ttf2pk - maintained here, by us
 
 ttfdump - ?
 
-web2c - maintained here by Karl Berry et al. - core web2c, plain tex, etc.
+web2c - maintained here, by us - core web2c, plain tex, etc.
         The TeX variant dirs (pdftexdir, xetexdir, etc.)
         updated here by their respective maintainers.
 
-xdv2pdf - Jonathan Kew
+xdv2pdf - maintained here, by Khaled Hosny, Jonathan Kew
 
-xdvik 22.85 - checked 2apr12
+xdvik 22.85 - checked 10may12
   http://sourceforge.net/projects/xdvi/files/xdvik/
 
-xdvipdfmx - Jonathan Kew
+xdvipdfmx - maintainered here, by Khaled Hosny, Jonathan Kew

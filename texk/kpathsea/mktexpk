@@ -8,7 +8,7 @@
 # Report bugs to tex-k@tug.org.
 # Public domain.
 
-version='$Id: mktexpk 18407 2010-05-21 18:16:31Z karl $'
+version='$Id$'
 progname=`echo $0 | sed 's%.*/%%'`
 usage="Usage: $progname [OPTIONS] NAME [REDIRECT],
   Create a PK font.

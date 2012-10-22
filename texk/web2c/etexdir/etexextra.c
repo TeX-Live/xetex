@@ -3,6 +3,7 @@
    This file is public domain.  */
 
 #define	EXTERN /* Instantiate data from etexd.h here.  */
+#define DLLPROC dlletexmain
 
 /* This file defines TeX and eTeX.  */
 #include <etexd.h>

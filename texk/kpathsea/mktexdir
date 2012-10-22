@@ -6,7 +6,7 @@
 # Modified for sticky directory creation, --help, --version, more,
 # by Thomas Esser, Karl Berry, Olaf Weber, et al.
 
-version='$Id: mktexdir 18383 2010-05-20 18:31:24Z karl $'
+version='$Id$'
 usage="Usage: $0 DIRS...
   Create each DIR, including any missing leading directories."
 mt_max_args=$#

@@ -1,3 +1,12 @@
+2012-07-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* odvicopy.ch, odvitype.ch, ofm2opl.ch, opl2ofm.ch, otangle.ch,
+	ovf2ovp.ch, ovp2ovf.ch: Define and use my_name.
+
+2012-05-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/omegaware.am: Add rule to build wovp2ovf.
+
 2012-02-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* ovf2ovp.ch: Allow arbitrarily large TFM files as in TFtoPL.

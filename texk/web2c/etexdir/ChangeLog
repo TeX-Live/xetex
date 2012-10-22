@@ -1,3 +1,28 @@
+2012-08-02  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch, etex_version.h: Version 2.5.
+	Better tracing of font definitions, reported by
+	Bruno Le Floch <blflatex@@gmail.com>, Jul 2012.
+	* etrip/etrip.tex: Test the additional tracing.
+
+2012-07-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am: Distribute etex_version.h.
+
+2012-07-15  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* etexextra.c: Must #define DLLPROC before reading etexd.h.
+
+2012-06-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etexextra.c [W32TeX]: #define DLLPROC for etex.dll.
+
+2012-05-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etex.ch: Version 2.4, dated May 11, 2012.
+	* etrip/etrip.tex, etrip/etripin.log, etrip/etrip.log,
+	etrip/etrip.fot, etrip/etrip.typ, etrip/etrip.diffs: Adapted.
+
 2012-04-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* etex.ch: Fixed a typo in TeX text.

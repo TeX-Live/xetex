@@ -2,7 +2,7 @@
 
 /* w2c/c-auto.h: defines for web2c, as determined by configure.
 
-   Copyright 1994-97, 2008, 2009, 2010 Karl Berry.
+   Copyright 1994-97, 2008-2012 Karl Berry.
    Copyright 1997-99, 2002, 2005 Olaf Weber.
 
    This program is free software: you can redistribute it and/or modify
@@ -37,9 +37,6 @@
 /* web2c: Default editor for interactive `e' option. */
 #undef EDITOR
 
-/* Define to 1 for the class `EmbFile' in <Catalog.h>. */
-#undef EMBFILE_IN_CATALOG_H
-
 /* metafont: Define to include EPSF pseudo window support. */
 #undef EPSFWIN
 
@@ -48,9 +45,6 @@
 
 /* Define to 1 if you have the `access' function. */
 #undef HAVE_ACCESS
-
-/* Define to 1 if we have the class `AnnotBorderStyle'. */
-#undef HAVE_ANNOTBORDERSTYLE
 
 /* Define to 1 if class `Annot' has the `decRefCnt' member. */
 #undef HAVE_ANNOTDECREFCNT
@@ -166,9 +160,6 @@
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
-
-/* Define to 1 if you have the `snprintf' function. */
-#undef HAVE_SNPRINTF
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -334,6 +325,11 @@
    `char[]'. */
 #undef YYTEXT_POINTER
 
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
+#endif
+
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
 
@@ -342,6 +338,11 @@
 
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
+
+/* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT64_T
 
 /* Define to 1 if type `char' is unsigned and you are not using gcc.  */
 #ifndef __CHAR_UNSIGNED__
@@ -357,7 +358,15 @@
 #undef inline
 #endif
 
+/* Define to the type of a signed integer type of width exactly 64 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int64_t
+
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to the type of an unsigned integer type of width exactly 64 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint64_t
 
 #endif /* !WEB2C_C_AUTO_H */

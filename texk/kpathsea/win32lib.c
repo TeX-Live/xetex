@@ -1,7 +1,7 @@
 /* win32lib.c: bits and pieces for win32 and msvc.
 
-   Copyright 1996, 1997. 1998 Fabrice Popineau.
-   Copyright 2006, 2011 Akira Kakuto.
+   Copyright 1996, 1997. 1998, 1999 Fabrice Popineau.
+   Copyright 2006, 2011, 2012 Akira Kakuto.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,11 @@
 #include <kpathsea/config.h>
 #include <kpathsea/concatn.h>
 #include <kpathsea/variable.h>
+#include <kpathsea/c-stat.h>
 
-FILE * __cdecl kpathsea_win32_popen (kpathsea kpse, const char *cmd, const char *mode)
+FILE * __cdecl kpathsea_win32_popen (kpathsea kpse, const char *cmd, const char *fmode)
 {
+  char mode[3];
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
   SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
@@ -41,6 +43,12 @@ FILE * __cdecl kpathsea_win32_popen (kpathsea kpse, const char *cmd, const char 
   char *suffixes[] = { ".bat", ".cmd", ".com", ".exe", NULL };
   char **s;
   BOOL go_on;
+
+  /* We always use binary mode */
+
+  mode[0] = fmode[0];
+  mode[1] = 'b';
+  mode[2] = '\0';
 
   /* We should look for the application name along the PATH,
      and decide to prepend "%COMSPEC% /c " or not to the command line.
@@ -106,10 +114,7 @@ FILE * __cdecl kpathsea_win32_popen (kpathsea kpse, const char *cmd, const char 
 #ifdef TRACE
     fprintf(stderr, "%s not found, concatenating comspec\n", app_name);
 #endif
-    if(_osver & 0x8000)
-      new_cmd = concatn("command.com", " /c ", cmd, NULL);
-    else
-      new_cmd = concatn("cmd.exe", " /c ", cmd, NULL);
+    new_cmd = concatn("cmd.exe", " /c ", cmd, NULL);
     free(app_name);
     app_name = NULL;
   }
@@ -281,42 +286,46 @@ int __cdecl kpathsea_win32_pclose (kpathsea kpse, FILE *f)
 
 /* large file support */
 
-void
-xfseek64 (FILE *f, __int64 offset, int wherefrom,  const char *filename)
-{
-    fflush(f);
-    if (_lseeki64(fileno(f), offset, wherefrom) < (__int64)0)
-        FATAL_PERROR(filename);
-}
-
 __int64
 xftell64 (FILE *f, const char *filename)
 {
-    __int64 where;
-    fflush(f);
-    where = _telli64(fileno(f));
-    if (where < (__int64)0)
-        FATAL_PERROR(filename);
+  __int64 where, filepos;
+  int fd;
 
-    return where;
+  fd = fileno(f);
+  if(f->_cnt < 0)
+    f->_cnt = 0;
+  if((filepos = _lseeki64(fd, (__int64)0, SEEK_CUR)) < (__int64)0) {
+    FATAL_PERROR(filename);
+    return (__int64)(-1);
+  }
+  if(filepos == (__int64)0)
+    where = (__int64)(f->_ptr - f->_base);
+  else
+    where = filepos - f->_cnt;
+  return where;
 }
+
+void
+xfseek64 (FILE *f, __int64 offset, int wherefrom,  const char *filename)
+{
+  if(wherefrom == SEEK_CUR) {
+    offset += xftell64(f, filename);
+    wherefrom = SEEK_SET;
+  }
+  fflush(f);
+  if (_lseeki64(fileno(f), offset, wherefrom) < (__int64)0)
+    FATAL_PERROR(filename);
+}
+
 
 /* special TeXLive Ghostscript */
 
 static int is_dir (char *buff)
 {
-  HANDLE h;
-  WIN32_FIND_DATA w32fd;
+  struct stat stats;
 
-  if (((h = FindFirstFile (buff, &w32fd))
-       != INVALID_HANDLE_VALUE) &&
-      (w32fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-    FindClose (h);
-    return (1);
-  } else {
-    FindClose (h);
-    return (0);
-  }
+  return stat (buff, &stats) == 0 && S_ISDIR (stats.st_mode);
 }
 
 /*
@@ -644,10 +653,7 @@ look_for_cmd(const char *cmd, char **app, char **new)
 #ifdef TRACE
     fprintf(stderr, "%s not found, concatenating comspec\n", app_name);
 #endif
-    if(_osver & 0x8000)
-      new_cmd = concatn("command.com", " /c ", cmd, NULL);
-    else
-      new_cmd = concatn("cmd.exe", " /c ", cmd, NULL);
+    new_cmd = concatn("cmd.exe", " /c ", cmd, NULL);
     free(app_name);
     app_name = NULL;
   }
@@ -1069,6 +1075,15 @@ build_cmdline(char ***cmd, char *input, char *output)
 }
 
 /* win32_system */
+static int is_include_space(const char *s)
+{
+  char *p;
+  p = strchr(s, ' ');
+  if(p) return 1;
+  p = strchr(s, '\t');
+  if(p) return 1;
+  return 0;
+}
 
 int __cdecl win32_system(const char *cmd)
 {
@@ -1076,21 +1091,28 @@ int __cdecl win32_system(const char *cmd)
   char  *q;
   char  *av[4];
   int   len, ret;
+  int   spacep = 0;
 
-  if(_osver & 0x8000)
-    av[0] = xstrdup("command.com");
-  else
-    av[0] = xstrdup("cmd.exe");
+  if(cmd == NULL)
+    return 1;
+
+  av[0] = xstrdup("cmd.exe");
   av[1] = xstrdup("/c");
 
-  len = strlen(cmd) + 1;
+  len = strlen(cmd) + 3;
+  spacep = is_include_space(cmd);
   av[2] = malloc(len);
-  for(p = cmd, q = av[2]; *p; p++, q++) {
+  q = av[2];
+  if(spacep)
+    *q++ = '"';
+  for(p = cmd; *p; p++, q++) {
     if(*p == '\'')
       *q = '"';
     else
       *q = *p;
   }
+  if(spacep)
+    *q++ = '"';
   *q = '\0';
   av[3] = NULL;
   ret = spawnvp(_P_WAIT, av[0], av);

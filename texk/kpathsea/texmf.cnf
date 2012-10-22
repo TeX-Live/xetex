@@ -4,8 +4,8 @@
 % If you modify this original file, YOUR CHANGES WILL BE LOST when it is
 % updated.  Instead, put your changes -- and only your changes, not an
 % entire copy of the full texmf.cnf! -- in ../../texmf.cnf.  That is, if
-% this file is installed in /some/path/to/texlive/2011/texmf/web2c/texmf.cnf,
-% add your custom settings to /some/path/to/texlive/2011/texmf.cnf.
+% this file is installed in /some/path/to/texlive/2012/texmf/web2c/texmf.cnf,
+% add your custom settings to /some/path/to/texlive/2012/texmf.cnf.
 % 
 % What follows is a super-summary of what this .cnf file can
 % contain. Please read the Kpathsea manual for more information.
@@ -76,10 +76,10 @@ TEXMFSYSCONFIG = $TEXMFROOT/texmf-config
 TEXMFHOME = ~/texmf
 
 % TEXMFVAR, where texconfig/updmap/fmtutil store cached runtime data.
-TEXMFVAR = ~/.texlive2011/texmf-var
+TEXMFVAR = ~/.texlive2012/texmf-var
 
 % TEXMFCONFIG, where texconfig/updmap/fmtutil store configuration data.
-TEXMFCONFIG = ~/.texlive2011/texmf-config
+TEXMFCONFIG = ~/.texlive2012/texmf-config
 
 % List all the texmf trees.
 %
@@ -429,7 +429,7 @@ DVIPDFMXINPUTS = $TEXMF/dvipdfmx
 % the /tex/ will not be found.
 % 
 % So, duplicate the TEXINPUTS.*lualatex values as LUAINPUTS.*lualatex.
-% The default LUAINPUTS sufficess for luatex and dviluatex.
+% The default LUAINPUTS suffices for luatex and dviluatex.
 %
 LUAINPUTS.lualatex = .;$TEXMF/scripts/{$progname,$engine,}/{lua,}//;$TEXMF/tex/{lualatex,latex,luatex,generic,}//
 LUAINPUTS.dvilualatex = .;$TEXMF/scripts/{$progname,$engine,}/{lua,}//;$TEXMF/tex/{lualatex,latex,luatex,generic,}//
@@ -473,12 +473,13 @@ RUBYINPUTS   = .;$TEXMF/scripts/{$progname,$engine,}/ruby//
 % However, we want to include one more directory: the
 % great-grandparent's texmf-local, because that is how TL is installed
 % by default.  That is, given a binary
-% /usr/local/texlive/YYYY/bin/PLATFORM/kpsewhich, it should be fine
-% /usr/local/texlive/texmf-local/web2c/texmf.cnf.  Not under YYYY.
+% /usr/local/texlive/YYYY/bin/PLATFORM/kpsewhich, it should find
+% /usr/local/texlive/texmf-local/web2c/texmf.cnf.  I.e., not under YYYY.
 % 
 % As a result, we cannot use actual brace expansion in the definition,
 % since we don't want to scatter ../'s throughout the value.  Hence we
-% explicitly list every directory.  Arguably more understandable anyway.
+% explicitly list every directory.  Arguably more understandable this
+% way anyway.
 %
 TEXMFCNF = {\
 $SELFAUTOLOC,\
@@ -542,6 +543,7 @@ shell_escape_commands = \
 bibtex,bibtex8,\
 kpsewhich,\
 makeindex,\
+mpost,\
 repstopdf,\
 
 % we'd like to allow:

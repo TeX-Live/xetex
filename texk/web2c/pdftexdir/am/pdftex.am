@@ -3,17 +3,14 @@
 ## Copyright (C) 2009-2012 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 
-pdftex_cppflags = $(AM_CPPFLAGS) $(ZLIB_INCLUDES) $(LIBPNG_INCLUDES)
-pdftex_cppflags += $(XPDF_INCLUDES) $(OBSDCOMPAT_INCLUDES)
+pdftex_cppflags = $(AM_CPPFLAGS) $(ZLIB_INCLUDES) $(LIBPNG_INCLUDES) $(XPDF_INCLUDES)
 pdftex_cppflags += -I$(srcdir)/libmd5 -I$(srcdir)/pdftexdir
 
 # used for both pdftex and pdftosrc.
-pdftex_ldadd = $(LIBPNG_LIBS) $(ZLIB_LIBS) $(XPDF_LIBS)
-pdftex_ldadd += $(OBSDCOMPAT_LIBS) libmd5.a
+pdftex_ldadd = $(LIBPNG_LIBS) $(ZLIB_LIBS) $(XPDF_LIBS) libmd5.a
 
 pdftex_dependencies = $(proglib) $(KPATHSEA_DEPEND)
-pdftex_dependencies += $(LIBPNG_DEPEND) $(ZLIB_DEPEND) $(XPDF_DEPEND)
-pdftex_dependencies += $(OBSDCOMPAT_DEPEND) libmd5.a
+pdftex_dependencies += $(LIBPNG_DEPEND) $(ZLIB_DEPEND) $(XPDF_DEPEND) libmd5.a
 
 ## pdfTeX
 ##
@@ -36,13 +33,12 @@ pdftex_LDADD = libpdftex.a $(pdftex_ldadd) $(LDADD) $(ipc_socketlibs)
 pdftex_DEPENDENCIES = $(pdftex_dependencies) libpdftex.a
 
 # We must create libpdftex.a etc before building the pdftex_OBJECTS.
-pdftex_prereq = libpdftex.a pdftexdir/etex_version.h pdftexdir/pdftex_version.h
+pdftex_prereq = libpdftex.a etexdir/etex_version.h pdftexdir/pdftex_version.h
 $(pdftex_OBJECTS): $(pdftex_prereq)
 
 pdftex_c_h = pdftexini.c pdftex0.c pdftexcoerce.h pdftexd.h
-nodist_pdftex_SOURCES = $(pdftex_c_h) pdftex-pool.c \
-	pdftexdir/etex_version.h pdftexdir/pdftex_version.h
-dist_pdftex_SOURCES = pdftexdir/pdftexextra.c pdftexdir/pdftexextra.h
+nodist_pdftex_SOURCES = $(pdftex_c_h) pdftex-pool.c
+dist_pdftex_SOURCES = pdftexdir/pdftexextra.c pdftexdir/pdftexextra.h pdftexdir/pdftex_version.h
 $(pdftex_c_h): pdftex-web2c
 	@$(web2c) pdftex
 pdftex-web2c: pdftex.p $(web2c_texmf) pdftexdir/pdftex.defines
@@ -53,16 +49,13 @@ pdftex-tangle: tangle$(EXEEXT) pdftexdir/pdftex.web pdftex.ch tangle-sh
 	@$(pdf_tangle) pdftex pdftex
 pdftex-pool.c: pdftex.pool pdftexd.h $(makecpool_stamp)
 	$(makecpool) pdftex >$@ || rm -f $@
-# Extract etex version
-pdftexdir/etex_version.h: pdftexdir/pdftex.web
-	$(MKDIR_P) pdftexdir
-	grep '^@d eTeX_version_string==' $(srcdir)/pdftexdir/pdftex.web \
-	  | sed "s/^.*'-/#define ETEX_VERSION \"/;s/'.*$$/\"/" >$@
+
 # Extract pdftex version
 pdftexdir/pdftex_version.h: pdftexdir/pdftex.web
 	$(MKDIR_P) pdftexdir
 	grep '^@d pdftex_version_string==' $(srcdir)/pdftexdir/pdftex.web \
 	  | sed "s/^.*'-/#define PDFTEX_VERSION \"/;s/'.*$$/\"/" >$@
+
 # Generate pdftex.ch
 pdftex.ch: tie$(EXEEXT) $(pdftex_ch_srcs)
 	$(tie) -c pdftex.ch $(pdftex_ch_srcs)

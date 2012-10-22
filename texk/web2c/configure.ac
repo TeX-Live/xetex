@@ -250,7 +250,7 @@ if test $ac_cv_sizeof_int -lt 4; then
 fi
 AC_CHECK_SIZEOF([long])
 AC_SEARCH_LIBS([pow], [m])
-AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale snprintf strerror strlcat strlcpy])
+AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale strerror strlcat strlcpy])
 AC_CHECK_HEADERS([errno.h langinfo.h locale.h sys/time.h sys/timeb.h sys/wait.h time.h])
 AC_TYPE_LONG_DOUBLE
 AC_TYPE_LONG_LONG_INT
@@ -267,13 +267,11 @@ KPSE_ZLIB_FLAGS
 KPSE_LIBPNG_FLAGS
 KPSE_XPDF_FLAGS
 KPSE_POPPLER_FLAGS
-test "x$kpse_cv_have_win32" = xno || POPPLER_LIBS="$POPPLER_LIBS -lgdi32"
 KPSE_ZZIPLIB_FLAGS
 KPSE_GRAPHITE_FLAGS
 KPSE_FREETYPE2_FLAGS
 KPSE_TECKIT_FLAGS
 KPSE_ICU_XETEX_FLAGS([icule])
-KPSE_OBSDCOMPAT_FLAGS
 
 # Check size of off_t (using <kpathsea/config.h>)
 KPSE_ADD_FLAGS([kpathsea])
@@ -295,30 +293,6 @@ AC_CACHE_CHECK([for Annot::decRefCnt],
 AS_IF([test "x$kpse_cv_have_Annot_decRefCnt" = xyes],
       [AC_DEFINE([HAVE_ANNOTDECREFCNT], 1,
                  [Define to 1 if class `Annot' has the `decRefCnt' member.])])
-AC_CACHE_CHECK([for class AnnotBorderStyle],
-               [kpse_cv_have_AnnotBorderStyle],
-               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <goo/GooString.h>
-#include <Object.h>
-#include <Array.h>
-#include <Annot.h>]],
-                                                   [[AnnotBorderStyle *an;]])],
-                                  [kpse_cv_have_AnnotBorderStyle=yes],
-                                  [kpse_cv_have_AnnotBorderStyle=no])])
-AS_IF([test "x$kpse_cv_have_AnnotBorderStyle" = xyes],
-      [AC_DEFINE([HAVE_ANNOTBORDERSTYLE], 1,
-                 [Define to 1 if we have the class `AnnotBorderStyle'.])])
-AC_CACHE_CHECK([for class EmbFile in Catalog.h],
-               [kpse_cv_have_EmbFile_in_Catalog_h],
-               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <goo/GooString.h>
-#include <Object.h>
-#include <Array.h>
-#include <Catalog.h>]],
-                                                   [[EmbFile *ef;]])],
-                                  [kpse_cv_have_EmbFile_in_Catalog_h=yes],
-                                  [kpse_cv_have_EmbFile_in_Catalog_h=no])])
-AS_IF([test "x$kpse_cv_have_EmbFile_in_Catalog_h" = xyes],
-      [AC_DEFINE([EMBFILE_IN_CATALOG_H], 1,
-                 [Define to 1 for the class `EmbFile' in <Catalog.h>.])])
 AC_LANG_POP([C++])
 KPSE_RESTORE_FLAGS
 
@@ -330,7 +304,7 @@ AC_CONFIG_HEADERS([w2c/c-auto.h:c-auto.in],
 
 AH_TOP([/* w2c/c-auto.h: defines for web2c, as determined by configure.
 
-   Copyright 1994-97, 2008, 2009, 2010 Karl Berry.
+   Copyright 1994-97, 2008-2012 Karl Berry.
    Copyright 1997-99, 2002, 2005 Olaf Weber.
 
    This program is free software: you can redistribute it and/or modify

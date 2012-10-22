@@ -1,7 +1,7 @@
 /* win32lib.h: bits and pieces for win32 and msvc.
 
-   Copyright 1996, 1997, 1998 Fabrice Popineau.
-   Copyright 2006, 2011 Akira Kakuto.
+   Copyright 1996, 1997, 1998, 1999 Fabrice Popineau.
+   Copyright 2006, 2010, 2011, 2012 Akira Kakuto.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -82,10 +82,8 @@
 #define link       _link
 #define lseek      _lseek
 #define memicmp    _memicmp
-#define mkdir      _mkdir
 #define mktemp     _mktemp
 #define open       _open
-#define pipe       _pipe
 
 #define putenv     _putenv
 #define read       _read
@@ -264,8 +262,6 @@ extern KPSEDLL int pclose(FILE * f);
 extern KPSEDLL int system(const char * cmd);
 #endif /* KPSE_COMPAT_API */
 
-extern KPSEDLL void xfseek64 (FILE *f, __int64 offset, int wherefrom,  const char *fname);
-extern KPSEDLL __int64 xftell64 (FILE *f, const char *fname);
 extern KPSEDLL void texlive_gs_init(void);
 extern KPSEDLL int getlongpath (char *output, char *input, int len);
 extern KPSEDLL char *get_home_directory (void);

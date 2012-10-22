@@ -11,7 +11,7 @@
 # <te@dbs.uni-hannover.de>, Okt., 1994.
 # Public domain.
 
-version='$Id: mktexlsr 23151 2011-06-27 22:27:02Z karl $'
+version='$Id$'
 progname=`echo $0 | sed 's%.*/%%'`
 usage="Usage: $progname [OPTION]... [DIR]...
 

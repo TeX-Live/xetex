@@ -1,4 +1,4 @@
-# $Id: cnf-to-paths.awk 23442 2011-08-07 22:50:24Z karl $
+# $Id$
 # cnf-to-paths.awk - convert texmf.cnf assignments to paths.h #define's.
 # Public domain.  Originally written 2011, Karl Berry.
 

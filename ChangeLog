@@ -1,3 +1,30 @@
+2012-08-08  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am: Running texlinks in texk/texlive/linked_scripts.
+
+2012-07-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Build: Add TL_COMPILER_GFLAGS also to OBJCXXFLAGS.
+
+2012-07-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tardate.ac: Switch to 2012-06-15.
+	* version.ac: Switch 2012 => 2013/dev.
+
+2012-06-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tardate.ac: Switch to 2012-06-15.
+
+2012-05-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: Test for GNU make before creating Makefile,
+	required for FreeBSD make and perhaps others.
+
+2012-05-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* README: Update the list of prerequisites.
+	* README.config: Mention configure options for biber.
+
 2012-04-12  Karl Berry  <karl@tug.org>
 
 	* Build (TL_COMPILER_GFLAGS): new envvar, used to override -g
