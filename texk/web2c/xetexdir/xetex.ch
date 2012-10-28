@@ -1097,7 +1097,7 @@ that might be expanded by `\.{\\the}'.
 @d set_shape=85 {specify fancy paragraph shape ( \.{\\parshape} )}
   {(or \.{\\interlinepenalties}, etc.~)}
 @d def_code=86 {define a character code ( \.{\\catcode}, etc.~)}
-@d XeTeX_def_code=87 {\.{\\XeTeXmathcode}, \.{\\XeTeXdelcode}}
+@d XeTeX_def_code=87 {\.{\\Umathcode}, \.{\\Udelcode}}
 @d def_family=88 {declare math fonts ( \.{\\textfont}, etc.~)}
 @d set_font=89 {set current font ( font identifiers )}
 @d def_font=90 {define a font file ( \.{\\font} )}
@@ -1502,6 +1502,7 @@ primitive("delimiter",delim_num,0);@/
 @y
 primitive("delimiter",delim_num,0);@/
 primitive("XeTeXdelimiter",delim_num,1);@/
+primitive("Udelimiter",delim_num,1);@/
 @z
 
 @x
@@ -1509,6 +1510,7 @@ primitive("mathaccent",math_accent,0);@/
 @y
 primitive("mathaccent",math_accent,0);@/
 primitive("XeTeXmathaccent",math_accent,1);@/
+primitive("Umathaccent",math_accent,1);@/
 @z
 
 @x
@@ -1518,6 +1520,8 @@ primitive("mathchar",math_char_num,0);@/
 primitive("mathchar",math_char_num,0);@/
 primitive("XeTeXmathcharnum",math_char_num,1);@/
 primitive("XeTeXmathchar",math_char_num,2);@/
+primitive("Umathcharnum",math_char_num,1);@/
+primitive("Umathchar",math_char_num,2);@/
 @!@:math_char_}{\.{\\mathchar} primitive@>
 @z
 
@@ -1526,6 +1530,7 @@ primitive("radical",radical,0);@/
 @y
 primitive("radical",radical,0);@/
 primitive("XeTeXradical",radical,1);@/
+primitive("Uradical",radical,1);@/
 @z
 
 @x
@@ -1537,29 +1542,29 @@ primitive("relax",relax,too_big_usv); {cf.\ |scan_file_name|}
 @x
 delim_num: print_esc("delimiter");
 @y
-delim_num: if chr_code=1 then print_esc("XeTeXdelimiter")
+delim_num: if chr_code=1 then print_esc("Udelimiter")
   else print_esc("delimiter");
 @z
 
 @x
 math_accent: print_esc("mathaccent");
 @y
-math_accent: if chr_code=1 then print_esc("XeTeXmathaccent")
+math_accent: if chr_code=1 then print_esc("Umathaccent")
   else print_esc("mathaccent");
 @z
 
 @x
 math_char_num: print_esc("mathchar");
 @y
-math_char_num: if chr_code=2 then print_esc("XeTeXmathchar")
-  else if chr_code=1 then print_esc("XeTeXmathcharnum")
+math_char_num: if chr_code=2 then print_esc("Umathchar")
+  else if chr_code=1 then print_esc("Umathcharnum")
   else print_esc("mathchar");
 @z
 
 @x
 radical: print_esc("radical");
 @y
-radical: if chr_code=1 then print_esc("XeTeXradical") else print_esc("radical");
+radical: if chr_code=1 then print_esc("Uradical") else print_esc("radical");
 @z
 
 @x
@@ -2095,17 +2100,17 @@ XeTeX_def_code:
       scanned_result(ho(math_code(cur_val)))(int_val)
     end
     else if m=math_code_base+1 then begin
-      print_err("Can't use \XeTeXmathcode as a number (try \XeTeXmathcodenum)");
-      help2("\XeTeXmathcode is for setting a mathcode from separate values;")@/
-      ("use \XeTeXmathcodenum to access them as single values."); error;
+      print_err("Can't use \Umathcode as a number (try \Umathcodenum)");
+      help2("\Umathcode is for setting a mathcode from separate values;")@/
+      ("use \Umathcodenum to access them as single values."); error;
       scanned_result(0)(int_val)
     end
     else if m=del_code_base then begin
       scanned_result(ho(del_code(cur_val)))(int_val)
     end else begin
-      print_err("Can't use \XeTeXdelcode as a number (try \XeTeXdelcodenum)");
-      help2("\XeTeXdelcode is for setting a delcode from separate values;")@/
-      ("use \XeTeXdelcodenum to access them as single values."); error;
+      print_err("Can't use \Udelcode as a number (try \Udelcodenum)");
+      help2("\Udelcode is for setting a delcode from separate values;")@/
+      ("use \Udelcodenum to access them as single values."); error;
       scanned_result(0)(int_val);
     end;
   end;
@@ -5944,11 +5949,11 @@ math_char_num: begin scan_fifteen_bit_int; c:=cur_val;
   end;
 @y
 math_char_num:
-  if cur_chr = 2 then begin { XeTeXmathchar }
+  if cur_chr = 2 then begin {\.{\\Umathchar}}
     scan_math_class_int; c := set_class_field(cur_val);
     scan_math_fam_int;   c := c + set_family_field(cur_val);
     scan_usv_num;        c := c + cur_val;
-  end else if cur_chr = 1 then begin { XeTeXmathcharnum }
+  end else if cur_chr = 1 then begin {\.{\\Umathcharnum}}
     scan_xetex_math_char_int; c := cur_val;
   end else begin scan_fifteen_bit_int;
     c := set_class_field(cur_val div @"1000) +
@@ -5968,7 +5973,7 @@ math_given: begin
   end;
 XeTeX_math_given: c:=cur_chr;
 delim_num: begin
-  if cur_chr=1 then begin {XeTeXdelimiter <cls> <fam> <usv>}
+  if cur_chr=1 then begin {\.{\\Udelimiter <cls> <fam> <usv>}}
     scan_math_class_int; c := set_class_field(cur_val);
     scan_math_fam_int;   c := c + set_family_field(cur_val);
     scan_usv_num;        c := c + cur_val;
@@ -5996,12 +6001,12 @@ plane_and_fam_field(p) := plane_and_fam_field(p) + (math_char_field(c) div @"100
 mmode+math_char_num: begin scan_fifteen_bit_int; set_math_char(cur_val);
   end;
 @y
-mmode+math_char_num: if cur_chr = 2 then begin { XeTeXmathchar }
+mmode+math_char_num: if cur_chr = 2 then begin {\.{\\Umathchar}}
     scan_math_class_int; t := set_class_field(cur_val);
     scan_math_fam_int; t := t + set_family_field(cur_val);
     scan_usv_num; t := t + cur_val;
     set_math_char(t);
-  end else if cur_chr = 1 then begin { XeTeXmathcharnum }
+  end else if cur_chr = 1 then begin {\.{\\Umathcharnum}}
     scan_xetex_math_char_int; set_math_char(cur_val);
   end else begin scan_fifteen_bit_int;
     set_math_char(set_class_field(cur_val div @"1000) +
@@ -6022,7 +6027,7 @@ mmode+math_given: begin
   end;
 mmode+XeTeX_math_given: set_math_char(cur_chr);
 mmode+delim_num: begin
-  if cur_chr=1 then begin {XeTeXdelimiter}
+  if cur_chr=1 then begin {\.{\\Udelimiter}}
     scan_math_class_int; t := set_class_field(cur_val);
     scan_math_fam_int; t := t + set_family_field(cur_val);
     scan_usv_num; t := t + cur_val;
@@ -6074,7 +6079,7 @@ begin if r then scan_twenty_seven_bit_int
 procedure scan_delimiter(@!p:pointer;@!r:boolean);
 begin
   if r then begin
-    if cur_chr=1 then begin {XeTeXradical}
+    if cur_chr=1 then begin {\.{\\Uradical}}
       cur_val1 := @"40000000; {extended delcode flag}
       scan_math_fam_int;   cur_val1 := cur_val1 + cur_val * @"200000;
       scan_usv_num;        cur_val := cur_val1 + cur_val;
@@ -6091,7 +6096,7 @@ begin
   letter,other_char: begin
     cur_val:=del_code(cur_chr);
     end;
-  delim_num: if cur_chr=1 then begin {XeTeXdelimiter}
+  delim_num: if cur_chr=1 then begin {\.{\\Udelimiter}}
     cur_val1 := @"40000000; {extended delcode flag}
     scan_math_class_int; {discarded}
     scan_math_fam_int;   cur_val1 := cur_val1 + cur_val * @"200000;
@@ -6241,6 +6246,8 @@ primitive("mathchardef",shorthand_def,math_char_def_code);@/
 primitive("mathchardef",shorthand_def,math_char_def_code);@/
 primitive("XeTeXmathcharnumdef",shorthand_def,XeTeX_math_char_num_def_code);@/
 primitive("XeTeXmathchardef",shorthand_def,XeTeX_math_char_def_code);@/
+primitive("Umathcharnumdef",shorthand_def,XeTeX_math_char_num_def_code);@/
+primitive("Umathchardef",shorthand_def,XeTeX_math_char_def_code);@/
 @!@:math_char_def_}{\.{\\mathchardef} primitive@>
 @z
 
@@ -6248,8 +6255,8 @@ primitive("XeTeXmathchardef",shorthand_def,XeTeX_math_char_def_code);@/
   math_char_def_code: print_esc("mathchardef");
 @y
   math_char_def_code: print_esc("mathchardef");
-  XeTeX_math_char_def_code: print_esc("XeTeXmathchardef");
-  XeTeX_math_char_num_def_code: print_esc("XeTeXmathcharnumdef");
+  XeTeX_math_char_def_code: print_esc("Umathchardef");
+  XeTeX_math_char_num_def_code: print_esc("Umathcharnumdef");
 @z
 
 @x
@@ -6258,7 +6265,7 @@ math_given: begin print_esc("mathchar"); print_hex(chr_code);
 @y
 math_given: begin print_esc("mathchar"); print_hex(chr_code);
   end;
-XeTeX_math_given: begin print_esc("XeTeXmathchar"); print_hex(chr_code);
+XeTeX_math_given: begin print_esc("Umathchar"); print_hex(chr_code);
   end;
 @z
 
@@ -6321,6 +6328,8 @@ primitive("mathcode",def_code,math_code_base);
 primitive("mathcode",def_code,math_code_base);
 primitive("XeTeXmathcodenum",XeTeX_def_code,math_code_base);
 primitive("XeTeXmathcode",XeTeX_def_code,math_code_base+1);
+primitive("Umathcodenum",XeTeX_def_code,math_code_base);
+primitive("Umathcode",XeTeX_def_code,math_code_base+1);
 @z
 
 @x
@@ -6334,6 +6343,8 @@ primitive("XeTeXcharclass",XeTeX_def_code,sf_code_base);
 primitive("delcode",def_code,del_code_base);
 primitive("XeTeXdelcodenum",XeTeX_def_code,del_code_base);
 primitive("XeTeXdelcode",XeTeX_def_code,del_code_base+1);
+primitive("Udelcodenum",XeTeX_def_code,del_code_base);
+primitive("Udelcode",XeTeX_def_code,del_code_base+1);
 @z
 
 @x
@@ -6341,10 +6352,10 @@ def_family: print_size(chr_code-math_font_base);
 @y
 XeTeX_def_code:
   if chr_code=sf_code_base then print_esc("XeTeXcharclass")
-  else if chr_code=math_code_base then print_esc("XeTeXmathcodenum")
-  else if chr_code=math_code_base+1 then print_esc("XeTeXmathcode")
-  else if chr_code=del_code_base then print_esc("XeTeXdelcodenum")
-  else print_esc("XeTeXdelcode");
+  else if chr_code=math_code_base then print_esc("Umathcodenum")
+  else if chr_code=math_code_base+1 then print_esc("Umathcode")
+  else if chr_code=del_code_base then print_esc("Udelcodenum")
+  else print_esc("Udelcode");
 def_family: print_size(chr_code-math_font_base);
 @z
 
