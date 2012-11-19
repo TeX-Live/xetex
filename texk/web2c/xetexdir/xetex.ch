@@ -527,12 +527,6 @@ if list_ptr(p)=null then begin
     end;
 @z
 
-@x [36.749] l.14638 - MLTeX: avoid substitution in |make_op|
-    begin c:=rem_byte(cur_i); i:=orig_char_info(cur_f)(c);
-@y
-      begin c:=rem_byte(cur_i); i:=orig_char_info(cur_f)(c);
-@z
-
 @x [43.943] l.18348 - bigtrie: Larger hyphenation tries.
 @!trie_used:array[ASCII_code] of trie_opcode;
 @y

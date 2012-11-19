@@ -318,9 +318,7 @@ known as `\eTeX'.
 @d XeTeX_banner=='This is XeTeX, Version 3.1415926',eTeX_version_string,XeTeX_version_string
   {printed when \XeTeX\ starts}
 @#
-@d TeX_banner=='This is TeX, Version 3.1415926' {printed when \TeX\ starts}
-@#
-@d banner==XeTeX_banner
+@d banner=='This is TeX, Version 3.1415926' {printed when \TeX\ starts}
 @#
 @d TEX==XETEX {change program name into |XETEX|}
 @#
