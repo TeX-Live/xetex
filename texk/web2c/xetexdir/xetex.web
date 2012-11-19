@@ -1447,9 +1447,6 @@ Thus, at least 81 printable characters are needed.
 @^character set dependencies@>
 @^system dependencies@>
 
-@<Character |k| cannot be printed@>=
-{ this module is not used }
-
 @ When the \.{WEB} system program called \.{TANGLE} processes the \.{TEX.WEB}
 description that you are now reading, it outputs the \PASCAL\ program
 \.{TEX.PAS} and also a string pool file called \.{TEX.POOL}. The \.{INITEX}
