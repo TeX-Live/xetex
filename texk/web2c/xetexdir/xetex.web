@@ -3854,7 +3854,6 @@ gubed
 
 @ Some stuff for character protrusion.
 
-@d pdf_debug_on == true {change to |false| to suppress debugging info}
 @p
 procedure pdf_error(t, p: str_number);
 begin
@@ -3867,27 +3866,6 @@ begin
     end;
     print(": "); print(p);
     succumb;
-end;
-
-procedure pdf_DEBUG(s: str_number);
-begin
-    if not pdf_debug_on then
-        return;
-    print_ln; print("DEBUG: "); print(s);
-end;
-
-procedure pdf_DEBUG_int(s: str_number; i: integer);
-begin
-    if not pdf_debug_on then
-        return;
-    print_ln; print("DEBUG: "); print(s); print_int(i);
-end;
-
-procedure pdf_DEBUG_str(s, s2: str_number);
-begin
-    if not pdf_debug_on then
-        return;
-    print_ln; print("DEBUG: "); print(s); print(s2);
 end;
 
 function prev_rightmost(s, e: pointer): pointer;
