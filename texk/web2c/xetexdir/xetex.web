@@ -3296,11 +3296,7 @@ discussion of extensions until the end of this program.
 
 @d whatsit_node=8 {|type| of special extension nodes}
 
-{ added stuff here for |native_word| and picture nodes }
-@d native_word_node=40 {|subtype| in whatsits that hold |native_font| words
-	(0-3 are used for open, write, close, special; 4 is language; pdfTeX uses up through 30-something)
-
-To support ``native'' fonts, we build |native_word_nodes|, which are variable size whatsits.
+@ To support ``native'' fonts, we build |native_word_nodes|, which are variable size whatsits.
 These have the same |width|, |depth|, and |height| fields as a |box_node|, at offsets 1-3,
 and then a word containing a size field for the node, a font number, a length, and a glyph count.
 Then there is a field containing a C pointer to a glyph info array;
@@ -3308,9 +3304,14 @@ this and the glyph count are set by |set_native_metrics|.
 Copying and freeing of these nodes needs to take account of this!
 This is followed by |2*length| bytes, for the actual characters of the string (in UTF-16).
 
-So |native_node_size|, which does not include any space for the actual text, is 6.}
+So |native_node_size|, which does not include any space for the actual text, is 6.
 
-@d native_node_size=6 {size of a |native_word| node (plus the actual chars) -- see also xetex.h}
+0-3 whatsits subtypes are used for open, write, close, special; 4 is language; pdf\TeX\ uses up
+through 30-something.
+
+@d native_word_node=40 {|subtype| of whatsits that hold |native_font| words}
+
+@d native_node_size=6 {size of a |native_word| node (plus the actual chars) -- see also \.{xetex.h}}
 @d native_size(#)==mem[#+4].qqqq.b0
 @d native_font(#)==mem[#+4].qqqq.b1
 @d native_length(#)==mem[#+4].qqqq.b2
@@ -3338,24 +3339,7 @@ begin
   end
 end;
 
-@ There are also |glyph_nodes|; these are like |native_word_nodes| in having |width|, |depth|, and |height| fields,
-but then they contain a glyph ID rather than size and length fields, and there's no subsidiary C pointer.
-
-@d glyph_node_size=5
-@d native_glyph==native_length {in |glyph_node|s, we store the glyph number here}
-
-@d pic_node=42 {|subtype| in whatsits that hold picture file references}
-@d pdf_node=43 {|subtype| in whatsits that hold PDF page references}
-@d glyph_node=44 {|subtype| in whatsits that hold glyph numbers}
-
-@d pdfbox_crop = 1 { |pic_box_type| values in PDF nodes }
-@d pdfbox_media = 2
-@d pdfbox_bleed = 3
-@d pdfbox_trim = 4
-@d pdfbox_art = 5
-
-
-{Picture files are handled with nodes that include fields for the transform associated
+@ Picture files are handled with nodes that include fields for the transform associated
 with the picture, and a pathname for the picture file itself.
 They also have
 the |width|, |depth|, and |height| fields of a |box_node| at offsets 1-3. (|depth| will
@@ -3363,12 +3347,28 @@ always be zero, as it happens.)
 
 So |pic_node_size|, which does not include any space for the picture file pathname, is 7.
 
-|pdf_nodes| are just like |pic_nodes|, but generate a different xdv file code.}
+A |pdf_node| is just like |pic_node|, but generate a different \.{XDV} file code.
 
-@d pic_node_size=8 { must sync with xetex.h }
+There are also |glyph_nodes|; these are like |native_word_nodes| in having |width|, |depth|, and |height| fields,
+but then they contain a glyph ID rather than size and length fields, and there's no subsidiary C pointer.
+
+@d glyph_node_size=5
+@d native_glyph==native_length {in |glyph_node|s, we store the glyph number here}
+@#
+@d pic_node=42 {|subtype| in whatsits that hold picture file references}
+@d pdf_node=43 {|subtype| in whatsits that hold PDF page references}
+@d glyph_node=44 {|subtype| in whatsits that hold glyph numbers}
+@#
+@d pdfbox_crop=1 {|pic_box_type| values in PDF nodes}
+@d pdfbox_media=2
+@d pdfbox_bleed=3
+@d pdfbox_trim=4
+@d pdfbox_art=5
+@#
+@d pic_node_size=8 {must sync with \.{xetex.h}}
 @d pic_path_length(#)==mem[#+4].hh.b0
 @d pic_page(#)==mem[#+4].hh.b1
-@d pic_box_type(#)==mem[#+4].hh.rh { for PDF, unused in picfile }
+@d pic_box_type(#)==mem[#+4].hh.rh {for PDF, unused in picfile}
 @d pic_transform1(#)==mem[#+5].hh.lh
 @d pic_transform2(#)==mem[#+5].hh.rh
 @d pic_transform3(#)==mem[#+6].hh.lh
@@ -4613,7 +4613,7 @@ expanded by `\.{\\the}'.
 @d min_internal=68 {the smallest code that can follow \.{\\the}}
 @d char_given=68 {character code defined by \.{\\chardef}}
 @d math_given=69 {math code defined by \.{\\mathchardef}}
-@d XeTeX_math_given=70
+@d XeTeX_math_given=70 {extended math code defined by \.{\\Umathchardef}}
 @d last_item=71 {most recent item ( \.{\\lastpenalty},
   \.{\\lastkern}, \.{\\lastskip} )}
 @d max_non_prefixed_command=71 {largest command code that can't be \.{\\global}}
@@ -5653,15 +5653,7 @@ language_code:print_esc("language");
 left_hyphen_min_code:print_esc("lefthyphenmin");
 right_hyphen_min_code:print_esc("righthyphenmin");
 holding_inserts_code:print_esc("holdinginserts");
-@{
-print_esc("errorcontextlines");
-print_esc("XeTeXlinebreakpenalty");
-print_esc("XeTeXlinebreakpenalty");
-print_esc("XeTeXprotrudechars");
-print_esc("XeTeXprotrudechars");
-@}
 error_context_lines_code:print_esc("errorcontextlines");
-{XeTeX\_linebreak\_locale\_code:print\_esc("XeTeXlinebreaklocale");}
 XeTeX_linebreak_penalty_code:print_esc("XeTeXlinebreakpenalty");
 XeTeX_protrude_chars_code:print_esc("XeTeXprotrudechars");
 @/@<Cases for |print_param|@>@/
@@ -5789,7 +5781,6 @@ primitive("XeTeXlinebreakpenalty",assign_int,int_base+XeTeX_linebreak_penalty_co
 @!@:XeTeX_linebreak_penalty_}{\.{\\XeTeXlinebreakpenalty} primitive@>
 primitive("XeTeXprotrudechars",assign_int,int_base+XeTeX_protrude_chars_code);@/
 @!@:XeTeX_protrude_chars_}{\.{\\XeTeXprotrudechars} primitive@>
-@{ @} @{ @} @{ @}
 
 @ @<Cases of |print_cmd_chr|...@>=
 assign_int: if chr_code<count_base then print_param(chr_code-int_base)
