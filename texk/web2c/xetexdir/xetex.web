@@ -3521,17 +3521,6 @@ inserted from \.{\\mkern} specifications in math formulas).
 @d explicit=1 {|subtype| of kern nodes from \.{\\kern} and \.{\\/}}
 @d acc_kern=2 {|subtype| of kern nodes from accents}
 
-@ The |new_kern| function creates a kern node having a given width.
-
-@p function new_kern(@!w:scaled):pointer;
-var p:pointer; {the new node}
-begin p:=get_node(small_node_size); type(p):=kern_node;
-subtype(p):=normal;
-width(p):=w;
-new_kern:=p;
-end;
-
-@ Some stuff for character protrusion.
 @# {memory structure for marginal kerns}
 @d margin_kern_node = 40
 @d margin_kern_node_size = 3
@@ -3550,7 +3539,17 @@ end;
 @d max_hlist_stack = 512 {maximum fill level for |hlist_stack|}
 {maybe good if larger than |2 * max_quarterword|, so that box nesting level would overflow first}
 
-@<Glob...@>=
+@ The |new_kern| function creates a kern node having a given width.
+
+@p function new_kern(@!w:scaled):pointer;
+var p:pointer; {the new node}
+begin p:=get_node(small_node_size); type(p):=kern_node;
+subtype(p):=normal;
+width(p):=w;
+new_kern:=p;
+end;
+
+@ @<Glob...@>=
 @!last_leftmost_char: pointer;
 @!last_rightmost_char: pointer;
 @!hlist_stack:array[0..max_hlist_stack] of pointer; {stack for |find_protchar_left()| and |find_protchar_right()|}
