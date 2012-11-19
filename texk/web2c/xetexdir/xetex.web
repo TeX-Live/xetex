@@ -4370,7 +4370,6 @@ begin while p<>null do
       end;
     kern_node,math_node,penalty_node: do_nothing;
     margin_kern_node: begin
-{         free_avail(margin_char(p)); }
         free_node(p, margin_kern_node_size);
         goto done;
       end;
@@ -4462,9 +4461,6 @@ kern_node,math_node,penalty_node: begin r:=get_node(small_node_size);
   end;
 margin_kern_node: begin
     r := get_node(margin_kern_node_size);
-{     fast_get_avail(margin_char(r)); }
-{     font(margin_char(r)) := font(margin_char(p)); }
-{     character(margin_char(r)) := character(margin_char(p)); }
     words := margin_kern_node_size;
   end;
 ligature_node: begin r:=get_node(small_node_size);
@@ -14018,11 +14014,7 @@ rule_node: begin rule_ht:=height(p); rule_dp:=depth(p); rule_wd:=width(p);
 whatsit_node: @<Output the whatsit node |p| in an hlist@>;
 glue_node: @<Move right or output leaders@>;
 margin_kern_node: begin
-{     if subtype(p) =  right_side then }
-{         pdf_DEBUG_int("right margin kern:", width(p)) }
-{     else }
-{         pdf_DEBUG_int("left margin kern:", width(p)); }
-    cur_h:=cur_h+width(p);
+  cur_h:=cur_h+width(p);
 end;
 kern_node:cur_h:=cur_h+width(p);
 math_node: @<Handle a math node in |hlist_out|@>;
@@ -14635,11 +14627,6 @@ begin
     type(k) := margin_kern_node;
     subtype(k) := side;
     width(k) := w;
-{     if p = null then }
-{         pdf_error("margin kerning", "invalid pointer to marginal char node"); }
-{     fast_get_avail(margin_char(k)); }
-{     character(margin_char(k)) := character(p); }
-{     font(margin_char(k)) := font(p); }
     new_margin_kern := k;
 end;
 
@@ -15968,8 +15955,7 @@ begin
 	height_base[font_ptr] := ascent;
 	depth_base[font_ptr] := -descent;
 
-	font_params[font_ptr] := num_font_dimens;	{ we add an extra fontdimen: \#8 -> |cap_height|;
-													then OT math fonts have a bunch more }
+	font_params[font_ptr] := num_font_dimens; { we add an extra fontdimen: |#8 := cap_height|; then OT math fonts have a bunch more }
 	font_bc[font_ptr] := 0;
 	font_ec[font_ptr] := 65535;
 	font_used[font_ptr] := false;
@@ -16004,7 +15990,7 @@ begin
 	incr(fmem_ptr);
 
 	if num_font_dimens = first_math_fontdimen + lastMathConstant then begin
-		font_info[fmem_ptr].int := num_font_dimens; { \fontdimen9 = number of assigned fontdimens }
+		font_info[fmem_ptr].int := num_font_dimens; { \.{\\fontdimen9} = number of assigned fontdimens }
 		incr(fmem_ptr);
 		for k := 0 to lastMathConstant do begin
 			font_info[fmem_ptr].sc := get_ot_math_constant(font_ptr, k);
@@ -20254,7 +20240,6 @@ done:
 of a discretionary break with non-empty |pre_break|, then |q| has been changed
 to the last node of the |pre_break| list}
 if XeTeX_protrude_chars > 0 then begin
-{     short_display_n(q, 5); }
     if disc_break and (is_char_node(q) or (type(q) <> disc_node))
     {|q| has been reset to the last node of |pre_break|}
     then begin
@@ -20265,11 +20250,9 @@ if XeTeX_protrude_chars > 0 then begin
         ptmp := p;
         p := find_protchar_right(link(temp_head), p);
     end;
-{     short_display_n(p, 5); }
     w := right_pw(p);
     if w <> 0 then {we have found a marginal kern, append it after |ptmp|}
     begin
-{         pdf_DEBUG_int("right margin:", w); }
         k := new_margin_kern(-w, last_rightmost_char, right_side);
         link(k) := link(ptmp);
         link(ptmp) := k;
@@ -24849,7 +24832,6 @@ while link(tail) <> null do begin
     r := link(tail);
     if not is_char_node(r) and (type(r) = margin_kern_node) then begin
         link(tail) := link(r);
-{         free_avail(margin_char(r)); }
         free_node(r, margin_kern_node_size);
     end;
     tail:=link(tail);
@@ -28702,10 +28684,6 @@ begin
     old_setting:=selector; selector:=new_string;
     show_token_list(link(p),null,pool_size-pool_ptr);
     selector:=old_setting;
-{
-    last_tokens_string := make_string;
-    tokens_to_string := last_tokens_string;
-}
     tokens_to_string := make_string;
 end;
 
