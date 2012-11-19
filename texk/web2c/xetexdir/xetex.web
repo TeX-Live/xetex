@@ -13450,6 +13450,10 @@ dvi_out(qo(font_check[f].b3));@/
 dvi_four(font_size[f]);
 dvi_four(font_dsize[f]);@/
 dvi_out(length(font_area[f]));
+@<Output the font name whose internal number is |f|@>;
+end;
+
+@ @<Output the font name whose internal number is |f|@>=
 l:=0; k:=str_start_macro(font_name[f]);
 {search for colon; we will truncate the name there}
 while (l=0) and (k<str_start_macro(font_name[f]+1)) do begin
@@ -13463,13 +13467,6 @@ for k:=str_start_macro(font_area[f]) to str_start_macro(font_area[f]+1)-1 do
 for k:=str_start_macro(font_name[f]) to str_start_macro(font_name[f])+l-1 do
   dvi_out(so(str_pool[k]));
 end;
-end;
-
-@ @<Output the font name whose internal number is |f|@>=
-for k:=str_start_macro(font_area[f]) to str_start_macro(font_area[f]+1)-1 do
-  dvi_out(so(str_pool[k]));
-for k:=str_start_macro(font_name[f]) to str_start_macro(font_name[f]+1)-1 do
-  dvi_out(so(str_pool[k]))
 
 @ Versions of \TeX\ intended for small computers might well choose to omit
 the ideas in the next few parts of this program, since it is not really
