@@ -782,12 +782,6 @@ if translate_filename then begin
 end;
 @z
 
-@x [5.71] encTeX - native buffer printing
-if last<>first then for k:=first to last-1 do print(buffer[k]);
-@y
-k:=first; while k < last do begin print_buffer(k) end;
-@z
-
 @x [6.73] l.1732 - Add unspecified_mode.
 @d error_stop_mode=3 {stops at every opportunity to interact}
 @y
@@ -936,16 +930,10 @@ noreturn procedure confusion(@!s:str_number);
 
 % [8.110] Make it easy to change constants.  Do not increase
 % max_quarterword without changing the memoryword structure in `texmfmem.h'.
-% If you set min_quarterword to a non-zero value, you have to remove the
-% definitions of qi/qo in this change file!
-@x [8.110] l.2405 - increase |max_halfword|
-@d min_quarterword=0 {smallest allowable value in a |quarterword|}
-@d max_quarterword=255 {largest allowable value in a |quarterword|}
+@x [8.110] l.2422 - increase |max_halfword|
 @d min_halfword==0 {smallest allowable value in a |halfword|}
 @d max_halfword==65535 {largest allowable value in a |halfword|}
-@y 2407
-@d min_quarterword=0 {smallest allowable value in a |quarterword|}
-@d max_quarterword=255 {largest allowable value in a |quarterword|}
+@y 2424
 @d min_halfword==-@"FFFFFFF {smallest allowable value in a |halfword|}
 @d max_halfword==@"FFFFFFF {largest allowable value in a |halfword|}
 @z
@@ -1195,12 +1183,10 @@ substitution definitions.
 
 @x [17.222] l.4523 - frozen_special, for source specials.
 @d frozen_null_font=frozen_control_sequence+10
-  {permanent `\.{\\nullfont}'}
 @y
 @d frozen_special=frozen_control_sequence+10
   {permanent `\.{\\special}'}
 @d frozen_null_font=frozen_control_sequence+11
-  {permanent `\.{\\nullfont}'}
 @z
 
 @x [17.222] l.4526 - max_font_max
@@ -1707,12 +1693,10 @@ if ext_delimiter<>0 then begin
 @z
 
 @x [29.517] l.10011 - end_name: string recycling
-  str_start[str_ptr+1]:=str_start[str_ptr]+area_delimiter; incr(str_ptr);
   end;
 if ext_delimiter=0 then
   begin cur_ext:=""; cur_name:=make_string;
 @y
-  str_start[str_ptr+1]:=str_start[str_ptr]+area_delimiter; incr(str_ptr);
   temp_str:=search_string(cur_area);
   if temp_str>0 then
     begin cur_area:=temp_str;
@@ -1728,12 +1712,8 @@ if ext_delimiter=0 then
 @z
 
 @x [29.517] l.10016 - end_name: string recycling
-else  begin cur_name:=str_ptr;
-  str_start[str_ptr+1]:=str_start[str_ptr]+ext_delimiter-area_delimiter-1;
   incr(str_ptr); cur_ext:=make_string;
 @y
-else  begin cur_name:=str_ptr;
-  str_start[str_ptr+1]:=str_start[str_ptr]+ext_delimiter-area_delimiter-1;
   incr(str_ptr); cur_ext:=make_string;
   decr(str_ptr); {undo extension string to look at name part}
   temp_str:=search_string(cur_name);
@@ -1749,30 +1729,35 @@ else  begin cur_name:=str_ptr;
 @z
 
 @x [29.518] l.10042 - print_file_name: quote if spaces in names.
+some operating systems put the file area last instead of first.)
+@^system dependencies@>
+@y
+some operating systems put the file area last instead of first.)
+@^system dependencies@>
+
+@d check_quoted(#) == {check if string |#| needs quoting}
+if #<>0 then begin
+  j:=str_start[#];
+  while (not must_quote) and (j<str_start[#+1]) do begin
+    must_quote:=str_pool[j]=" "; incr(j);
+  end;
+end
+@#
+@d print_quoted(#) == {print string |#|, omitting quotes}
+if #<>0 then
+  for j:=str_start[#] to str_start[#+1]-1 do
+    if so(str_pool[j])<>"""" then
+      print(so(str_pool[j]))
+@z
+
+@x [29.518] l.10042 - print_file_name: quote if spaces in names.
 begin slow_print(a); slow_print(n); slow_print(e);
 @y
 var must_quote: boolean; {whether to quote the filename}
 @!j:pool_pointer; {index into |str_pool|}
 begin
 must_quote:=false;
-if a<>0 then begin
-  j:=str_start[a];
-  while (not must_quote) and (j<str_start[a+1]) do begin
-    must_quote:=str_pool[j]=" "; incr(j);
-  end;
-end;
-if n<>0 then begin
-  j:=str_start[n];
-  while (not must_quote) and (j<str_start[n+1]) do begin
-    must_quote:=str_pool[j]=" "; incr(j);
-  end;
-end;
-if e<>0 then begin
-  j:=str_start[e];
-  while (not must_quote) and (j<str_start[e+1]) do begin
-    must_quote:=str_pool[j]=" "; incr(j);
-  end;
-end;
+check_quoted(a); check_quoted(n); check_quoted(e);
 {FIXME: Alternative is to assume that any filename that has to be quoted has
  at least one quoted component...if we pick this, a number of insertions
  of |print_file_name| should go away.
@@ -1780,18 +1765,7 @@ end;
               ((|n|<>0)and(|str_pool|[|str_start|[|n|]]=""""))or
               ((|e|<>0)and(|str_pool|[|str_start|[|e|]]=""""));}
 if must_quote then print_char("""");
-if a<>0 then
-  for j:=str_start[a] to str_start[a+1]-1 do
-    if so(str_pool[j])<>"""" then
-      print(so(str_pool[j]));
-if n<>0 then
-  for j:=str_start[n] to str_start[n+1]-1 do
-    if so(str_pool[j])<>"""" then
-      print(so(str_pool[j]));
-if e<>0 then
-  for j:=str_start[e] to str_start[e+1]-1 do
-    if so(str_pool[j])<>"""" then
-      print(so(str_pool[j]));
+print_quoted(a); print_quoted(n); print_quoted(e);
 if must_quote then print_char("""");
 @z
 
@@ -1808,11 +1782,11 @@ if must_quote then print_char("""");
 % [29.519] In pack_file_name, leave room for the extra null we append at
 % the end of a filename.
 @x [29.519] l.10047 - pack_file_name, leave room for the extra null
-for j:=str_start[a] to str_start[a+1]-1 do append_to_name(so(str_pool[j]));
+begin k:=0;
 @y
+begin k:=0;
 if name_of_file then libc_free (name_of_file);
 name_of_file:= xmalloc_array (ASCII_code, length(a)+length(n)+length(e)+1);
-for j:=str_start[a] to str_start[a+1]-1 do append_to_name(so(str_pool[j]));
 @z
 
 @x [29.519] l.10051 - pack_file_name, append the extra null
@@ -1897,24 +1871,17 @@ name_of_file[name_length+1]:=0;
 @.I can't find the format...@>
 @z
 
-@x [29.525] l.10163 - make_name_string
-@p function make_name_string:str_number;
-var k:1..file_name_size; {index into |name_of_file|}
+@x [29.525] l.10170 - make_name_string
 begin if (pool_ptr+name_length>pool_size)or(str_ptr=max_strings)or
- (cur_length>0) then
-  make_name_string:="?"
-else  begin for k:=1 to name_length do append_char(xord[name_of_file[k]]);
-  make_name_string:=make_string;
-  end;
 @y
-@p function make_name_string:str_number;
-var k:1..file_name_size; {index into |name_of_file|}
 save_area_delimiter, save_ext_delimiter: pool_pointer;
 save_name_in_progress, save_stop_at_space: boolean;
 begin if (pool_ptr+name_length>pool_size)or(str_ptr=max_strings)or
- (cur_length>0) then
-  make_name_string:="?"
-else  begin for k:=1 to name_length do append_char(xord[name_of_file[k]]);
+@z
+
+@x [29.525] l.10174 - make_name_string
+  make_name_string:=make_string;
+@y
   make_name_string:=make_string;
   {At this point we also set |cur_name|, |cur_ext|, and |cur_area| to
    match the contents of |name_of_file|.}
@@ -1930,7 +1897,6 @@ else  begin for k:=1 to name_length do append_char(xord[name_of_file[k]]);
   end_name;
   name_in_progress:=save_name_in_progress;
   area_delimiter:=save_area_delimiter; ext_delimiter:=save_ext_delimiter;
-  end;
 @z
 
 @x [29.526] l.10194 - stop scanning file name if we're at end-of-line.
@@ -2040,7 +2006,7 @@ months := ' JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC';
 
 % Print whether we're using src-specials and other such features.
 % Print TCX name if one's given.
-@x [29/536] l.10331
+@x [29.536] l.10331
 end
 @y
 if shellenabledp then begin
@@ -2360,18 +2326,12 @@ else if name_too_long then print(" not loadable: Metric (TFM) file name too long
 else print(" not loadable: Metric (TFM) file not found");
 @z
 
-@x [30.563] l.10960 - Check lengths
-file_opened:=false;
-@y
-file_opened:=false;
-name_too_long:=(length(nom)>255)or(length(aire)>255);
-if name_too_long then abort;
-@z
-
-@x [30.563] l.10961 - Don't use TEX_font_area.
+@x [30.563] l.10961 - Check lengths, don't use TEX_font_area.
 if aire="" then pack_file_name(nom,TEX_font_area,".tfm")
 else pack_file_name(nom,aire,".tfm");
 @y
+name_too_long:=(length(nom)>255)or(length(aire)>255);
+if name_too_long then abort;
 {|kpse_find_file| will append the |".tfm"|, and avoid searching the disk
  before the font alias files as well.}
 pack_file_name(nom,aire,"");
@@ -2401,10 +2361,10 @@ pack_file_name(nom,aire,"");
   qw:=orig_char_info(f)(#); {N.B.: not |qi(#)|}
 @z
 
-% [32.575] We only want `eof' on the TFM file to be true if we
+% [30.575] We only want `eof' on the TFM file to be true if we
 % previously had EOF, not if we're at EOF now.  This is like `feof', and
 % unlike our implementation of `eof' elsewhere.
-@x [32.575] l.11161 - Reading the tfm file, replace eof() by feof().
+@x [30.575] l.11180 - Reading the tfm file, replace eof() by feof().
 if eof(tfm_file) then abort;
 @y
 if feof(tfm_file) then abort;
@@ -2512,7 +2472,7 @@ else begin dvi_out(fnt_def1+1);
   end;
 @z
 
-@x [32.617] l.12261 - Use output_comment if the user set it. Assume it's short enough.
+@x [32.617] l.12280 - Use output_comment if the user set it. Assume it's short enough.
   old_setting:=selector; selector:=new_string;
 @y
 if output_comment then
@@ -2523,11 +2483,11 @@ else begin {the default code is unchanged}
   old_setting:=selector; selector:=new_string;
 @z
 
-@x [32.617] l.12268 - Use output_comment if the user set it.
-  pool_ptr:=str_start[str_ptr]; {flush the current string}
+@x [32.617] l.12288 - Use output_comment if the user set it.
+  end
 @y
-  pool_ptr:=str_start[str_ptr]; {flush the current string}
 end;
+  end
 @z
 
 @x [32.619] l.12294 - MLTeX: substitute character in |hlist_out|
@@ -2593,10 +2553,9 @@ else begin dvi_out(fnt1+1);
 
 % We output each portion of the page as we get to it, if we are using
 % IPC, so that the previewer (TeXView) can display it immediately. [SPM]
-@x [32.640] l.12690 - IPC
-dvi_out(eop); incr(total_pages); cur_s:=-1;
+@x [32.640] l.12723 - IPC
+done:
 @y
-dvi_out(eop); incr(total_pages); cur_s:=-1;
 ifdef ('IPC')
 if ipc_on>0 then
   begin if dvi_limit=half_buf then
@@ -2618,6 +2577,7 @@ if ipc_on>0 then
   ipc_page(dvi_gone);
   end;
 endif ('IPC');
+done:
 @z
 
 @x [32.645] l.12766 - check dvi file size
@@ -2667,11 +2627,9 @@ if (qo(y)>=font_bc[g])and(qo(y)<=font_ec[g]) then
   begin continue: q:=orig_char_info(g)(y);
 @z
 
-@x [36.722] l.14172 - MLTeX: avoid substitution in |fetch|
-else  begin if (qo(cur_c)>=font_bc[cur_f])and(qo(cur_c)<=font_ec[cur_f]) then
+@x [36.722] l.14207 - MLTeX: avoid substitution in |fetch|
     cur_i:=char_info(cur_f)(cur_c)
 @y
-else  begin if (qo(cur_c)>=font_bc[cur_f])and(qo(cur_c)<=font_ec[cur_f]) then
     cur_i:=orig_char_info(cur_f)(cur_c)
 @z
 
@@ -2869,36 +2827,23 @@ loop@+  begin @<If the string |hyph_word[h]| is less than \(hc)|hc[1..hn]|,
 not_found: decr(hn)
 @z
 
-%%%%%%%% dynamic hyph_size
-@x 18172 m.931
+@x [42.931] l.18206 - dynamic hyph_size
 @ @<If the string |hyph_word[h]| is less than \(hc)...@>=
 k:=hyph_word[h]; if k=0 then goto not_found;
 if length(k)<hn then goto not_found;
-if length(k)=hn then
-  begin j:=1; u:=str_start[k];
-  repeat if so(str_pool[u])<hc[j] then goto not_found;
-  if so(str_pool[u])>hc[j] then goto done;
-  incr(j); incr(u);
-  until j>hn;
-  @<Insert hyphens as specified in |hyph_list[h]|@>;
-  decr(hn); goto found;
-  end;
-done:
-@y  18184
+@y
 @ @<If the string |hyph_word[h]| is less than \(hc)...@>=
 {This is now a simple hash list, not an ordered one, so
 the module title is no longer descriptive.}
 k:=hyph_word[h]; if k=0 then goto not_found;
-if length(k)=hn then
-  begin j:=1; u:=str_start[k];
+@z
+
+@x [42.931] l.18211 - dynamic hyph_size
+  repeat if so(str_pool[u])<hc[j] then goto not_found;
+  if so(str_pool[u])>hc[j] then goto done;
+@y
   repeat
   if so(str_pool[u])<>hc[j] then goto done;
-  incr(j); incr(u);
-  until j>hn;
-  @<Insert hyphens as specified in |hyph_list[h]|@>;
-  decr(hn); goto found;
-  end;
-done:
 @z
 
 %%%%%%%% dynamic hyph_size
@@ -2950,30 +2895,31 @@ while hyph_word[h]<>0 do
 found: hyph_word[h]:=s; hyph_list[h]:=p
 @z
 
-%%%%%%%% dynamic hyph_size
-@x 18292 m.941
+@x [42.941] l.18326 - dynamic hyph_size
 @ @<If the string |hyph_word[h]| is less than \(or)...@>=
 k:=hyph_word[h];
 if length(k)<length(s) then goto found;
 if length(k)>length(s) then goto not_found;
-u:=str_start[k]; v:=str_start[s];
-repeat if str_pool[u]<str_pool[v] then goto found;
-if str_pool[u]>str_pool[v] then goto not_found;
-incr(u); incr(v);
-until u=str_start[k+1];
-found:q:=hyph_list[h]; hyph_list[h]:=p; p:=q;@/
-t:=hyph_word[h]; hyph_word[h]:=s; s:=t;
-not_found:
-@y  18303
+@y
 @ @<If the string |hyph_word[h]| is less than \(or)...@>=
 {This is now a simple hash list, not an ordered one, so
 the module title is no longer descriptive.}
 k:=hyph_word[h];
 if length(k)<>length(s) then goto not_found;
-u:=str_start[k]; v:=str_start[s];
+@z
+
+@x [42.941] l.18331 - dynamic hyph_size
+repeat if str_pool[u]<str_pool[v] then goto found;
+if str_pool[u]>str_pool[v] then goto not_found;
+@y
 repeat if str_pool[u]<>str_pool[v] then goto not_found;
-incr(u); incr(v);
-until u=str_start[k+1];
+@z
+
+@x [42.941] l.18335 - dynamic hyph_size
+found:q:=hyph_list[h]; hyph_list[h]:=p; p:=q;@/
+t:=hyph_word[h]; hyph_word[h]:=s; s:=t;
+not_found:
+@y
 {repeat hyphenation exception; flushing old data}
 flush_string; s:=hyph_word[h]; {avoid |slow_make_string|!}
 decr(hyph_count);
@@ -3232,13 +3178,11 @@ l:=k; v:=min_trie_op;
 
 @x [46.1034] l.20074 - source specials
 @<Append character |cur_chr|...@>=
-adjust_space_factor;@/
 @y
 @<Append character |cur_chr|...@>=
 if ((head=tail) and (mode>0)) then begin
   if (insert_src_special_auto) then append_src_special;
 end;
-adjust_space_factor;@/
 @z
 
 @x [46.1036] l.20138 - MLTeX: substitution in |main_control|
@@ -3298,25 +3242,7 @@ if indented then
   end;
  @z
 
-@x
-begin print_err("Extra "); print_esc("endcsname");
-@.Extra \\endcsname@>
-help1("I'm ignoring this, since I wasn't doing a \csname.");
-@y
-begin
-if cur_chr = 10 then
-begin
-  print_err("Extra "); print_esc("endmubyte");
-@.Extra \\endmubyte@>
-  help1("I'm ignoring this, since I wasn't doing a \mubyte.");
-end else begin
-  print_err("Extra "); print_esc("endcsname");
-@.Extra \\endcsname@>
-  help1("I'm ignoring this, since I wasn't doing a \csname.");
-end;
-@z
-
-@x [48.1139] l.21650 - source specials
+@x [48.1142] l.21697 - source specials
 if every_math<>null then begin_token_list(every_math,every_math_text);
 @y
 if (insert_src_special_every_math) then insert_src_special;
@@ -3403,11 +3329,11 @@ else begin n:=cur_chr; get_r_token; p:=cur_cs; define(p,relax,256);
 %   a) the string is already replaced in |scan_file_name| and therefore
 %   b) the wrong string will get flushed!!!
 %
-@x [49.1257] l.23318 unused variable
+@x [49.1257] l.23328 unused variable
 @!flushable_string:str_number; {string not yet referenced}
 @y
 @z
-@x [49.1260] l.23331 new_font: string recycling -- already done
+@x [49.1260] l.23383 new_font: string recycling -- already done
 flushable_string:=str_ptr-1;
 @y
 @z
@@ -3426,7 +3352,7 @@ flushable_string:=str_ptr-1;
 %
 % otherwise the wrong string will get removed by |flush_string|!!
 %
-@x [49.1260] l.23334 new_font: string recycling -- already done
+@x [49.1260] l.23386 new_font: string recycling -- already done
     begin if cur_name=flushable_string then
       begin flush_string; cur_name:=font_name[f];
       end;
@@ -3464,7 +3390,7 @@ if ini_version then format_ident:=" (INITEX)";
 
 % Eliminate now-unused variable `w' in `store_fmt_file'.
 % Add format_engine.
-@x [50.1302] l.23690
+@x [50.1302] l.23690 - store_fmt_file
 @!w: four_quarters; {four ASCII codes}
 @y
 @!format_engine: ^text_char;
@@ -3481,7 +3407,7 @@ if ini_version then format_ident:=" (INITEX)";
 % Eliminate now-unused variable `w' in `load_fmt_file'.
 % Add format_engine.
 % Add dummies for undumping |xord|, |xchr|, and |xprn| into the void.
-@x [50.1303] l.23722
+@x [50.1303] l.23722 - load_fmt_file
 @!w: four_quarters; {four ASCII codes}
 @y
 @!format_engine: ^text_char;
@@ -4010,17 +3936,19 @@ else print(" hyphenation exception");
 
 @x [50.1324] l.24066 - Make dumping/undumping more efficient - trie
 for k:=0 to trie_max do dump_hh(trie[k]);
-dump_int(trie_op_ptr);
+@y
+dump_things(trie_trl[0], trie_max+1);
+dump_things(trie_tro[0], trie_max+1);
+dump_things(trie_trc[0], trie_max+1);
+@z
+
+@x [50.1324] l.24068 - Make dumping/undumping more efficient - trie
 for k:=1 to trie_op_ptr do
   begin dump_int(hyf_distance[k]);
   dump_int(hyf_num[k]);
   dump_int(hyf_next[k]);
   end;
 @y
-dump_things(trie_trl[0], trie_max+1);
-dump_things(trie_tro[0], trie_max+1);
-dump_things(trie_trc[0], trie_max+1);
-dump_int(trie_op_ptr);
 dump_things(hyf_distance[1], trie_op_ptr);
 dump_things(hyf_num[1], trie_op_ptr);
 dump_things(hyf_next[1], trie_op_ptr);
@@ -4065,15 +3993,8 @@ for k:=1 to hyph_count do
   if hyph_next >= hyph_prime then incr(hyph_next);
 @z
 
-
 @x [50.1325] l.24094 - Make dumping/undumping more efficient - trie
 for k:=0 to j do undump_hh(trie[k]);
-undump_size(0)(trie_op_size)('trie op size')(j); @+init trie_op_ptr:=j;@+tini
-for k:=1 to j do
-  begin undump(0)(63)(hyf_distance[k]); {a |small_number|}
-  undump(0)(63)(hyf_num[k]);
-  undump(min_quarterword)(max_quarterword)(hyf_next[k]);
-  end;
 @y
 {These first three haven't been allocated yet unless we're \.{INITEX};
  we do that precisely so we don't allocate more space than necessary.}
@@ -4083,7 +4004,15 @@ if not trie_tro then trie_tro:=xmalloc_array(trie_pointer,j+1);
 undump_things(trie_tro[0], j+1);
 if not trie_trc then trie_trc:=xmalloc_array(quarterword, j+1);
 undump_things(trie_trc[0], j+1);
-undump_size(0)(trie_op_size)('trie op size')(j); @+init trie_op_ptr:=j;@+tini
+@z
+
+@x [50.1325] l.24096 - Make dumping/undumping more efficient - trie
+for k:=1 to j do
+  begin undump(0)(63)(hyf_distance[k]); {a |small_number|}
+  undump(0)(63)(hyf_num[k]);
+  undump(min_quarterword)(max_quarterword)(hyf_next[k]);
+  end;
+@y
 {I'm not sure we have such a strict limitation (64) on these values, so
  let's leave them unchecked.}
 undump_things(hyf_distance[1], j);
