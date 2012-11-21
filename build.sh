@@ -175,12 +175,6 @@ TL_MAKE=$MAKE ../configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS\
 fi
 
 $MAKE
-
-# the fact that these makes inside libs/ have to be done manually for the cross
-# compiler hints that something is wrong in the --enable/--disable switches above,
-# but I am too lazy to look up what is wrong exactly.
-# (perhaps more files needed to be copied from TL?)
-
 (cd texk/web2c; $MAKE $XETEXEXE )
 
 # go back
