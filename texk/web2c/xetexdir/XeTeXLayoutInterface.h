@@ -115,8 +115,6 @@ void getGlyphs(XeTeXLayoutEngine engine, UInt32* glyphs, SInt32* status);
 
 void getGlyphPositions(XeTeXLayoutEngine engine, float* positions, SInt32* status);
 
-void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, SInt32* status);
-
 UInt32 getScriptTag(XeTeXLayoutEngine engine);
 
 UInt32 getLanguageTag(XeTeXLayoutEngine engine);

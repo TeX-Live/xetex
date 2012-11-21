@@ -2234,12 +2234,6 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				OSStatus	status = 0;
 				float		maxRhs = 0.0;
 				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
-/* NO -- this is not valid in some Indic split-vowel situations
-   see http://sourceforge.net/tracker/index.php?func=detail&aid=1951292&group_id=194926&atid=951385 */
-#if 0
-				getGlyphPosition(engine, nGlyphs, &x, &y, &status);
-				node_width(node) = X2Fix(x);
-#endif
 
 				if (nGlyphs >= maxGlyphs) {
 					if (glyphs != 0) {

@@ -619,17 +619,6 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* stat
 	*status = success;
 }
 
-void getGlyphPosition(XeTeXLayoutEngine engine, SInt32 index, float* x, float* y, SInt32* status)
-{
-	LEErrorCode success = (LEErrorCode)*status;
-	engine->layoutEngine->getGlyphPosition(index, *x, *y, success);
-
-	if (engine->extend != 1.0 || engine->slant != 0.0)
-		*x = *x * engine->extend - *y * engine->slant;
-
-	*status = success;
-}
-
 UInt32 getScriptTag(XeTeXLayoutEngine engine)
 {
 	return engine->scriptTag;
