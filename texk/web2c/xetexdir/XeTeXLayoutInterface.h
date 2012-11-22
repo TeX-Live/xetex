@@ -48,6 +48,9 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
 #include "XeTeX_ext.h"
 #include "XeTeXFontMgr.h"
+#include <stdbool.h>
+#include <hb-ft.h>
+#include <hb-icu.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,7 +112,7 @@ float getSlantFactor(XeTeXLayoutEngine engine);
 float getEmboldenFactor(XeTeXLayoutEngine engine);
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16* chars, SInt32 offset, SInt32 count, SInt32 max,
-						char rightToLeft, float x, float y, SInt32* status);
+						bool rightToLeft, float x, float y, SInt32* status);
 
 void getGlyphs(XeTeXLayoutEngine engine, UInt32* glyphs, SInt32* status);
 

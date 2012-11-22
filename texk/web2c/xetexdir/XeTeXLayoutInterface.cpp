@@ -2,6 +2,7 @@
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
  copyright (c) 2009-2012 by Jonathan Kew
+ copyright (c) 2012 by Khaled Hosny
 
  Written by Jonathan Kew
 
@@ -34,7 +35,6 @@ authorization from the copyright holders.
 
 #include "XeTeXLayoutInterface.h"
 
-#include "XeTeXOTLayoutEngine.h"
 #include "XeTeXFontInst.h"
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
@@ -66,7 +66,6 @@ struct XeTeXLayoutEngine_rec
 	   however, it is not possible to call ICU-specific things like layoutChars for a
 	   Graphite-based engine, or Graphite functions for an ICU one! */
 {
-	LayoutEngine*	layoutEngine;
 	XeTeXFontInst*	font;
 	PlatformFontRef	fontRef;
 	UInt32			scriptTag;
@@ -77,6 +76,8 @@ struct XeTeXLayoutEngine_rec
 	float			extend;
 	float			slant;
 	float			embolden;
+	hb_font_t*		hbFont;
+	hb_buffer_t*	hbBuffer;
 #ifdef XETEX_GRAPHITE
 	gr::Segment*		grSegment;
 	XeTeXGrFont*		grFont;
@@ -569,19 +570,19 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UI
 	result->grFont = NULL;
 #endif
 
-	result->layoutEngine = XeTeXOTLayoutEngine::LayoutEngineFactory((XeTeXFontInst*)font, scriptTag, languageTag,
-						(LETag*)addFeatures, (le_int32*)addParams, (LETag*)removeFeatures, status);
-	if (LE_FAILURE(status) || result->layoutEngine == NULL) {
-		delete result;
-		return NULL;
-	}
+	FT_Set_Pixel_Sizes (((XeTeXFontInst_FT2*)(result->font))->face,
+			result->font->getXPixelsPerEm(), 0);
+
+	result->hbFont = hb_ft_font_create(((XeTeXFontInst_FT2*)(result->font))->face, NULL);
+	result->hbBuffer = hb_buffer_create();
 
 	return result;
 }
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
-	delete engine->layoutEngine;
+	hb_buffer_destroy(engine->hbBuffer);
+	hb_font_destroy(engine->hbFont);
 	delete engine->font;
 #ifdef XETEX_GRAPHITE
 	delete engine->grSegment;
@@ -591,32 +592,48 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 }
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
-						char rightToLeft, float x, float y, SInt32* status)
+						bool rightToLeft, float x, float y, SInt32* status)
 {
-	LEErrorCode success = (LEErrorCode)*status;
-	le_int32	glyphCount = engine->layoutEngine->layoutChars((const LEUnicode*)chars,
-										offset, count, max, rightToLeft, x, y, success);
-	*status = success;
+	hb_buffer_reset(engine->hbBuffer);
+	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
+	hb_buffer_set_direction(engine->hbBuffer, rightToLeft ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
+	hb_shape(engine->hbFont, engine->hbBuffer, NULL, 0);
+	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
+
 	return glyphCount;
 }
 
 void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[], SInt32* status)
 {
-	LEErrorCode success = (LEErrorCode)*status;
-	engine->layoutEngine->getGlyphs((LEGlyphID*)glyphs, success);
-	*status = success;
+	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
+	hb_glyph_info_t *hbGlyphs = hb_buffer_get_glyph_infos(engine->hbBuffer, NULL);
+	hb_glyph_position_t *hbPositions = hb_buffer_get_glyph_positions(engine->hbBuffer, NULL);
+
+	for (int i = 0; i < glyphCount; i++)
+		glyphs[i] = hbGlyphs[i].codepoint;
 }
 
 void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* status)
 {
-	LEErrorCode success = (LEErrorCode)*status;
-	engine->layoutEngine->getGlyphPositions(positions, success);
+	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
+	hb_glyph_position_t *hbPositions = hb_buffer_get_glyph_positions(engine->hbBuffer, NULL);
+
+	int i = 0;
+   	float x = 0, y = 0;
+
+	for (i = 0; i < glyphCount; i++) {
+		positions[2*i]   = x + hbPositions[i].x_offset / 64.0;
+		positions[2*i+1] = y + hbPositions[i].y_offset / 64.0;
+		x += hbPositions[i].x_advance / 64.0;
+		y += hbPositions[i].y_advance / 64.0;
+		printf ("%f\t%f:%d\t%d\n", x, y, hbPositions[i].x_offset, hbPositions[i].x_advance);
+	}
+	positions[2*i]   = x;
+	positions[2*i+1] = y;
 
 	if (engine->extend != 1.0 || engine->slant != 0.0)
-		for (int i = 0; i <= engine->layoutEngine->getGlyphCount(); ++i)
+		for (int i = 0; i <= glyphCount; ++i)
 			positions[2*i] = positions[2*i] * engine->extend - positions[2*i+1] * engine->slant;
-
-	*status = success;
 }
 
 UInt32 getScriptTag(XeTeXLayoutEngine engine)
@@ -929,7 +946,8 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	result->extend = extend;
 	result->slant = slant;
 	result->embolden = embolden;
-	result->layoutEngine = NULL;
+	result->hbFont = NULL;
+	result->hbBuffer = NULL;
 
 	result->grFont = new XeTeXGrFont(result->font, name);
 
@@ -1080,14 +1098,14 @@ int usingGraphite(XeTeXLayoutEngine engine)
 
 int usingOpenType(XeTeXLayoutEngine engine)
 {
-	return engine->layoutEngine != NULL;
+	return engine->hbFont != NULL;
 }
 
 #define kMATHTableTag	0x4D415448 /* 'MATH' */
 
 int isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
-	if (engine->layoutEngine != NULL) {
+	if (engine->hbFont != NULL) {
 		if (engine->font->getFontTable(kMATHTableTag) != NULL)
 			return 1;
 	}
