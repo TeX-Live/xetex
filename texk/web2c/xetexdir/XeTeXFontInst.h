@@ -60,7 +60,6 @@ extern "C" {
 	void *xmalloc(size_t);	// from kpathsea
 };
 
-// Abstract superclass that XeTeXOTLayoutEngine uses;
 // create specific subclasses for each supported platform
 
 class XeTeXFontInst : public LEFontInstance, protected FontTableCache

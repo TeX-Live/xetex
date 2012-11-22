@@ -183,8 +183,6 @@ libxetex_a_SOURCES = \
 	xetexdir/XeTeXFontMgr.h \
 	xetexdir/XeTeXLayoutInterface.cpp \
 	xetexdir/XeTeXLayoutInterface.h \
-	xetexdir/XeTeXOTLayoutEngine.cpp \
-	xetexdir/XeTeXOTLayoutEngine.h \
 	xetexdir/XeTeXOTMath.cpp \
 	xetexdir/XeTeXOTMath.h \
 	xetexdir/XeTeX_ext.c \

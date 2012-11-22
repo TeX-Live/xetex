@@ -35,6 +35,7 @@ authorization from the copyright holders.
 
 #include "XeTeXLayoutInterface.h"
 
+#include "layout/OpenTypeLayoutEngine.h"
 #include "XeTeXFontInst.h"
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
