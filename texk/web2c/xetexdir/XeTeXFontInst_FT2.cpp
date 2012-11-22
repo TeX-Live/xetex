@@ -91,6 +91,9 @@ XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float poin
 
 	if (LE_FAILURE(status))
 		return;
+
+	FT_Set_Pixel_Sizes(face, pointSize, 0);
+	hbFont = hb_ft_font_create(face, NULL);
 	
 	char	buf[20];
 	if (index > 0)
@@ -107,6 +110,7 @@ XeTeXFontInst_FT2::~XeTeXFontInst_FT2()
 		FT_Done_Face(face);
 		face = 0;
 	}
+	hb_font_destroy(hbFont);
 }
 
 void XeTeXFontInst_FT2::initialize(LEErrorCode &status)

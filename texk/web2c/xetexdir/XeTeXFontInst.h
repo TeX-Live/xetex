@@ -214,6 +214,8 @@ public:
     {
         return fItalicAngle;
     }
+
+	hb_font_t* hbFont;
 };
 
 #endif

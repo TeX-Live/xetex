@@ -52,10 +52,10 @@ protected:
 
     const void *	readTable(LETag tag, le_uint32 *length) const;
 
+	FT_Face			face;
 	bool			fFreeTypeOnly;
 	
 public:
-	FT_Face			face;
     				XeTeXFontInst_FT2(const char* filename, int index, float pointSize, LEErrorCode &status);
 
     virtual 		~XeTeXFontInst_FT2();

@@ -77,7 +77,6 @@ struct XeTeXLayoutEngine_rec
 	float			extend;
 	float			slant;
 	float			embolden;
-	hb_font_t*		hbFont;
 	hb_buffer_t*	hbBuffer;
 #ifdef XETEX_GRAPHITE
 	gr::Segment*		grSegment;
@@ -571,10 +570,6 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UI
 	result->grFont = NULL;
 #endif
 
-	FT_Set_Pixel_Sizes (((XeTeXFontInst_FT2*)(result->font))->face,
-			result->font->getXPixelsPerEm(), 0);
-
-	result->hbFont = hb_ft_font_create(((XeTeXFontInst_FT2*)(result->font))->face, NULL);
 	result->hbBuffer = hb_buffer_create();
 
 	return result;
@@ -583,7 +578,6 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UI
 void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
 	hb_buffer_destroy(engine->hbBuffer);
-	hb_font_destroy(engine->hbFont);
 	delete engine->font;
 #ifdef XETEX_GRAPHITE
 	delete engine->grSegment;
@@ -598,7 +592,7 @@ SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt
 	hb_buffer_reset(engine->hbBuffer);
 	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
 	hb_buffer_set_direction(engine->hbBuffer, rightToLeft ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
-	hb_shape(engine->hbFont, engine->hbBuffer, NULL, 0);
+	hb_shape(engine->font->hbFont, engine->hbBuffer, NULL, 0);
 	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
 	return glyphCount;
@@ -947,7 +941,6 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	result->extend = extend;
 	result->slant = slant;
 	result->embolden = embolden;
-	result->hbFont = NULL;
 	result->hbBuffer = NULL;
 
 	result->grFont = new XeTeXGrFont(result->font, name);
@@ -1099,14 +1092,14 @@ int usingGraphite(XeTeXLayoutEngine engine)
 
 int usingOpenType(XeTeXLayoutEngine engine)
 {
-	return engine->hbFont != NULL;
+	return engine->font->hbFont != NULL;
 }
 
 #define kMATHTableTag	0x4D415448 /* 'MATH' */
 
 int isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
-	if (engine->hbFont != NULL) {
+	if (engine->font->hbFont != NULL) {
 		if (engine->font->getFontTable(kMATHTableTag) != NULL)
 			return 1;
 	}

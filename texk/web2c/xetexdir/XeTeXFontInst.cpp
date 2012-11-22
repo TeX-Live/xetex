@@ -75,6 +75,7 @@ XeTeXFontInst::XeTeXFontInst(float pointSize, LEErrorCode &status)
     , fFilename(NULL)
     , fFirstCharCode(-1)
     , fLastCharCode(-1)
+    , hbFont(NULL)
 {
 	// the concrete subclass is responsible to call initialize()
 }
