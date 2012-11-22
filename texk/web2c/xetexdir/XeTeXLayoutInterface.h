@@ -49,6 +49,8 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 #include "XeTeX_ext.h"
 #include "XeTeXFontMgr.h"
 #include <stdbool.h>
+#include <hb.h>
+#include <hb-ot.h>
 #include <hb-ft.h>
 #include <hb-icu.h>
 

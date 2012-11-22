@@ -35,7 +35,6 @@ authorization from the copyright holders.
 
 #include "XeTeXLayoutInterface.h"
 
-#include "layout/OpenTypeLayoutEngine.h"
 #include "XeTeXFontInst.h"
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
@@ -49,9 +48,6 @@ authorization from the copyright holders.
 #ifdef XETEX_GRAPHITE
 #include "XeTeXGrLayout.h"
 #endif
-
-#include "layout/ICUFeatures.h"
-#include "layout/ScriptAndLanguage.h"
 
 #include "unicode/ubidi.h"
 #include "unicode/utext.h"
@@ -205,135 +201,136 @@ Fixed getSlant(XeTeXFont font)
 	return X2Fix(tan(-italAngle * M_PI / 180.0));
 }
 
-static const ScriptListTable*
-getLargerScriptListTable(XeTeXFont font)
+static UInt32
+getLargerScriptListTable(XeTeXFont font, hb_tag_t** scriptList, hb_tag_t* tableTag)
 {
-	const ScriptListTable* scriptListSub = NULL;
-	const ScriptListTable* scriptListPos = NULL;
-	
-    const GlyphSubstitutionTableHeader* gsubTable = (const GlyphSubstitutionTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGSUB);
-	UInt32	scriptCountSub = 0;
-	if (gsubTable != NULL) {
-		scriptListSub = (const ScriptListTable*)((const char*)gsubTable + SWAP(gsubTable->scriptListOffset));
-		scriptCountSub = SWAP(scriptListSub->scriptCount);
-	}
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
 
-    const GlyphPositioningTableHeader* gposTable = (const GlyphPositioningTableHeader*)((XeTeXFontInst*)font)->getFontTable(kGPOS);
-	UInt32	scriptCountPos = 0;
-	if (gposTable != NULL) {
-		scriptListPos = (const ScriptListTable*)((const char*)gposTable + SWAP(gposTable->scriptListOffset));
-		scriptCountPos = SWAP(scriptListPos->scriptCount);
-	}
+	hb_tag_t* scriptListSub = NULL;
+	hb_tag_t* scriptListPos = NULL;
 
-	return scriptCountPos > scriptCountSub ? scriptListPos : scriptListSub;
+	UInt32 scriptCountSub = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, NULL, NULL);
+	scriptListSub = (hb_tag_t*) xmalloc(scriptCountSub * sizeof(hb_tag_t*));
+	hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, &scriptCountSub, scriptListSub);
+
+	UInt32 scriptCountPos = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GPOS, 0, NULL, NULL);
+	scriptListPos = (hb_tag_t*) xmalloc(scriptCountPos * sizeof(hb_tag_t*));
+	hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, &scriptCountPos, scriptListPos);
+
+	if (scriptCountSub > scriptCountPos) {
+		if (scriptList != NULL)
+			*scriptList = scriptListSub;
+		if (tableTag != NULL)
+			*tableTag = HB_OT_TAG_GSUB;
+		return scriptCountSub;
+	} else {
+		if (scriptList != NULL)
+			*scriptList = scriptListPos;
+		if (tableTag != NULL)
+			*tableTag = HB_OT_TAG_GPOS;
+		return scriptCountPos;
+	}
 }
 
 UInt32 countScripts(XeTeXFont font)
 {
-	const ScriptListTable*	scriptList = getLargerScriptListTable(font);
-	if (scriptList == NULL)
-		return 0;
-
-	return SWAP(scriptList->scriptCount);
+	return getLargerScriptListTable(font, NULL, NULL);
 }
 
 UInt32 getIndScript(XeTeXFont font, UInt32 index)
 {
-	const ScriptListTable* scriptList = getLargerScriptListTable(font);
+	hb_tag_t* scriptList;
+
+	UInt32 scriptCount = getLargerScriptListTable(font, &scriptList, NULL);
 	if (scriptList == NULL)
 		return 0;
 
-	if (index < SWAP(scriptList->scriptCount))
-		return SWAPT(scriptList->scriptRecordArray[index].tag);
+	if (index < scriptCount)
+		return scriptList[index];
 
 	return 0;
 }
 
 UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 {
-	const ScriptListTable* scriptList = getLargerScriptListTable(font);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_tag_t* scriptList;
+	hb_tag_t tableTag;
+
+	UInt32 scriptCount = getLargerScriptListTable(font, &scriptList, &tableTag);
 	if (scriptList == NULL)
 		return 0;
 
-	const ScriptTable*  scriptTable = scriptList->findScript(script);
-	if (scriptTable == NULL)
-		return 0;
-	
-	UInt32  langCount = SWAP(scriptTable->langSysCount);
-	
-	return langCount;
+	for (int i = 0; i < scriptCount; i++) {
+		if (scriptList[i] == script) {
+			return hb_ot_layout_script_get_language_tags (face, tableTag, i, 0, NULL, NULL);
+		}
+	}
 }
 
 UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 {
-	const ScriptListTable* scriptList = getLargerScriptListTable(font);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_tag_t* scriptList;
+	hb_tag_t tableTag;
+
+	UInt32 scriptCount = getLargerScriptListTable(font, &scriptList, &tableTag);
 	if (scriptList == NULL)
 		return 0;
 
-	const ScriptTable*  scriptTable = scriptList->findScript(script);
-	if (scriptTable == NULL)
-		return 0;
+	for (int i = 0; i < scriptCount; i++) {
+		if (scriptList[i] == script) {
+			UInt32 langCount = hb_ot_layout_script_get_language_tags(face, tableTag, i, 0, NULL, NULL);
+			hb_tag_t* langList = (hb_tag_t*) xmalloc(langCount * sizeof(hb_tag_t*));
+			hb_ot_layout_script_get_language_tags(face, tableTag, i, 0, &langCount, langList);
 
-	if (index < SWAP(scriptTable->langSysCount))
-		return SWAPT(scriptTable->langSysRecordArray[index].tag);
+			if (index < langCount)
+				return langList[index];
 
-	return 0;
+			return 0;
+		}
+	}
 }
 
 UInt32 countFeatures(XeTeXFont font, UInt32 script, UInt32 language)
 {
-	UInt32  total = 0;
-    const GlyphLookupTableHeader* table;
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	UInt32 total = 0;
+
 	for (int i = 0; i < 2; ++i) {
-		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? kGSUB : kGPOS);
-		if (table != NULL) {
-			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + SWAP(table->scriptListOffset));
-			const ScriptTable*  scriptTable = scriptList->findScript(script);
-			if (scriptTable != NULL) {
-				const LangSysTable* langTable = scriptTable->findLanguage(language, (language != 0));
-				if (langTable != NULL) {
-					total += SWAP(langTable->featureCount);
-					if (langTable->reqFeatureIndex != 0xffff)
-						total += 1;
-				}
+		UInt32 scriptIndex, langIndex = 0;
+		hb_tag_t tableTag = i == 0 ? HB_OT_TAG_GSUB : HB_OT_TAG_GPOS;
+		if (hb_ot_layout_table_find_script(face, tableTag, script, &scriptIndex)) {
+			if (hb_ot_layout_script_find_language(face, tableTag, scriptIndex, language, &langIndex) || language == 0) {
+				total += hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, NULL, NULL);
 			}
 		}
 	}
-	
+
 	return total;
 }
 
 UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 index)
 {
-    const GlyphLookupTableHeader* table;
-	UInt16  featureIndex = 0xffff;
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+
 	for (int i = 0; i < 2; ++i) {
-		table = (const GlyphLookupTableHeader*)((XeTeXFontInst*)font)->getFontTable(i == 0 ? kGSUB : kGPOS);
-		if (table != NULL) {
-			const ScriptListTable* scriptList = (const ScriptListTable*)((const char*)table + SWAP(table->scriptListOffset));
-			const ScriptTable*  scriptTable = scriptList->findScript(script);
-			if (scriptTable != NULL) {
-				const LangSysTable* langTable = scriptTable->findLanguage(language, (language != 0));
-				if (langTable != NULL) {
-					if (SWAP(langTable->reqFeatureIndex) != 0xffff)
-						if (index == 0)
-							featureIndex = SWAP(langTable->reqFeatureIndex);
-						else
-							index -= 1;
-					if (index < SWAP(langTable->featureCount))
-						featureIndex = SWAP(langTable->featureIndexArray[index]);
-					index -= SWAP(langTable->featureCount);
-				}
-			}
-			if (featureIndex != 0xffff) {
-				LETag   featureTag;
-				const FeatureListTable* featureListTable = (const FeatureListTable*)((const char*)table + SWAP(table->featureListOffset));
-				(void)featureListTable->getFeatureTable(featureIndex, &featureTag);
-				return featureTag;
+		UInt32 scriptIndex, langIndex = 0;
+		hb_tag_t tableTag = i == 0 ? HB_OT_TAG_GSUB : HB_OT_TAG_GPOS;
+		if (hb_ot_layout_table_find_script(face, tableTag, script, &scriptIndex)) {
+			if (hb_ot_layout_script_find_language(face, tableTag, scriptIndex, language, &langIndex) || language == 0) {
+				UInt32 featCount = hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, NULL, NULL);
+				hb_tag_t* featList = (hb_tag_t*) xmalloc(featCount * sizeof(hb_tag_t*));
+				hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, &featCount, featList);
+
+				if (index < featCount)
+					return featList[index];
+
+				index -= featCount;
 			}
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -621,7 +618,6 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* stat
 		positions[2*i+1] = y + hbPositions[i].y_offset / 64.0;
 		x += hbPositions[i].x_advance / 64.0;
 		y += hbPositions[i].y_advance / 64.0;
-		printf ("%f\t%f:%d\t%d\n", x, y, hbPositions[i].x_offset, hbPositions[i].x_advance);
 	}
 	positions[2*i]   = x;
 	positions[2*i+1] = y;
