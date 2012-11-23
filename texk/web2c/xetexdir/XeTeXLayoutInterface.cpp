@@ -616,8 +616,8 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
    	float x = 0, y = 0;
 
 	for (i = 0; i < glyphCount; i++) {
-		positions[2*i]   = x + hbPositions[i].x_offset / 64.0;
-		positions[2*i+1] = y + hbPositions[i].y_offset / 64.0;
+		positions[2*i]   =   x + hbPositions[i].x_offset / 64.0;
+		positions[2*i+1] = -(y + hbPositions[i].y_offset / 64.0); /* negative is upwards */
 		x += hbPositions[i].x_advance / 64.0;
 		y += hbPositions[i].y_advance / 64.0;
 	}
