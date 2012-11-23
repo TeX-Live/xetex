@@ -24,7 +24,9 @@ xetex_cppflags += $(ICU_INCLUDES)
 ## freetype1/freetype2 confusion -- what a mess.
 xetex_cppflags += $(FREETYPE2_INCLUDES)
 xetex_cppflags += $(TECKIT_INCLUDES)
+xetex_cppflags += $(HARFBUZZ_CFLAGS)
 xetex_ldadd = $(libxetex) $(ICU_LIBS) $(TECKIT_LIBS)
+xetex_ldadd += $(HARFBUZZ_LIBS)
 xetex_dependencies = $(proglib) $(KPATHSEA_DEPEND)
 xetex_dependencies += $(ICU_DEPEND) $(TECKIT_DEPEND)
 

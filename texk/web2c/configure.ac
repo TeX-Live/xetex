@@ -272,6 +272,7 @@ KPSE_GRAPHITE_FLAGS
 KPSE_FREETYPE2_FLAGS
 KPSE_TECKIT_FLAGS
 KPSE_ICU_XETEX_FLAGS([icule])
+PKG_CHECK_MODULES([HARFBUZZ], [harfbuzz >= 0.9.7])
 
 # Check size of off_t (using <kpathsea/config.h>)
 KPSE_ADD_FLAGS([kpathsea])
