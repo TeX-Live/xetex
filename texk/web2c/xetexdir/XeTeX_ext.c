@@ -763,19 +763,18 @@ read_tag(const char* cp, char padChar)
 	return tag;
 }
 
-static UInt32
-read_tag_with_param(const char* cp, SInt32* param)
+static hb_tag_t
+read_tag_with_param(const char* cp, int* param)
 {
-	UInt32	tag = 0;
+	char tag[4];
 	int i;
 	for (i = 0; i < 4; ++i) {
-		tag <<= 8;
 		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag += *(unsigned char*)cp;
+			tag[i] = *cp;
 			++cp;
 		}
 		else
-			tag += ' ';
+			tag[i] = ' ';
 	}
 	if (*cp == '=') {
 		int	neg = 0;
@@ -791,7 +790,7 @@ read_tag_with_param(const char* cp, SInt32* param)
 		if (neg)
 			*param = -(*param);
 	}
-	return tag;
+	return HB_TAG(tag[0],tag[1],tag[2],tag[3]);
 }
 
 unsigned int
@@ -904,17 +903,13 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	hb_script_t		scriptTag = HB_SCRIPT_LATIN;
 	hb_language_t	languageTag = HB_LANGUAGE_INVALID;
 	
-	UInt32*	addFeatures = 0;
-	UInt32*	removeFeatures = 0;
-	SInt32* addParams = 0;
-	
-	int	nAdded = 0;
-	int nRemoved = 0;
+	hb_feature_t*	features = NULL;
+	int				nFeatures = 0;
 	
 	const char*	cp2;
 	const char*	cp3;
 
-	UInt32	tag;
+	hb_tag_t	tag;
 
 	UInt32	rgbValue = 0x000000FF;
 
@@ -962,30 +957,32 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				goto bad_option;
 			
 			if (*cp1 == '+') {
-				SInt32	param = 0;
+				int param = 0;
 				tag = read_tag_with_param(cp1 + 1, &param);
-				++nAdded;
-				if (nAdded == 1) {
-					addFeatures = xmalloc(sizeof(UInt32));
-					addParams = xmalloc(sizeof(SInt32));
-				}
-				else {
-					addFeatures = xrealloc(addFeatures, nAdded * sizeof(UInt32));
-					addParams = xrealloc(addParams, nAdded * sizeof(SInt32));
-				}
-				addFeatures[nAdded-1] = tag;
-				addParams[nAdded-1] = param;
+				++nFeatures;
+				if (nFeatures == 1)
+					features = xmalloc(sizeof(hb_feature_t));
+				else
+					features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
+				features[nFeatures-1].tag = tag;
+				features[nFeatures-1].start = 0;
+				features[nFeatures-1].end = (unsigned int) -1;
+				if (param == 0)
+					features[nFeatures-1].value = 1;
+				else
+					features[nFeatures-1].value = param;
 				goto next_option;
 			}
 			
 			if (*cp1 == '-') {
-				tag = read_tag(cp1 + 1, ' ');
-				++nRemoved;
-				if (nRemoved == 1)
-					removeFeatures = xmalloc(sizeof(UInt32));
+				tag = hb_tag_from_string(read_str_tag(cp1 + 1), -1);
+				++nFeatures;
+				if (nFeatures == 1)
+					features = xmalloc(sizeof(hb_feature_t));
 				else
-					removeFeatures = xrealloc(removeFeatures, nRemoved * sizeof(UInt32));
-				removeFeatures[nRemoved-1] = tag;
+					features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
+				features[nFeatures-1].tag = tag;
+				features[nFeatures-1].value = 0;
 				goto next_option;
 			}
 
@@ -1009,15 +1006,6 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		next_option:
 			cp1 = cp2;
 		}
-		
-		if (addFeatures != 0) {
-			addFeatures = realloc(addFeatures, (nAdded + 1) * sizeof(UInt32));
-			addFeatures[nAdded] = 0;
-		}
-		if (removeFeatures != 0) {
-			removeFeatures = realloc(removeFeatures, (nRemoved + 1) * sizeof(UInt32));
-			removeFeatures[nRemoved] = 0;
-		}
 	}
 	
 	if (embolden != 0.0)
@@ -1033,17 +1021,10 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		setFontLayoutDir(font, 1);
 
 	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag,
-					addFeatures, addParams, removeFeatures, rgbValue,
-					extend, slant, embolden);
-	if (engine == 0) {
+					features, nFeatures, rgbValue,	extend, slant, embolden);
+	if (engine == 0)
 		// only free these if creation failed, otherwise the engine now owns them
-		if (addFeatures)
-			free(addFeatures);
-		if (addParams)
-			free(addParams);
-		if (removeFeatures)
-			free(removeFeatures);
-	}
+		free(features);
 	else
 		nativefonttypeflag = OTGR_FONT_FLAG;
 

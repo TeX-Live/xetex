@@ -101,7 +101,7 @@ float getGlyphWidth(XeTeXFont font, UInt32 gid);
 UInt32 countGlyphs(XeTeXFont font);
 
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
-						UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue,
+						hb_feature_t* features, int nFeatures, UInt32 rgbValue,
 						float extend, float slant, float embolden);
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine);
@@ -123,10 +123,6 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float* positions, SInt32* statu
 float getPointSize(XeTeXLayoutEngine engine);
 
 void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent);
-
-UInt32* getAddedFeatures(XeTeXLayoutEngine engine);
-
-UInt32* getRemovedFeatures(XeTeXLayoutEngine engine);
 
 int getDefaultDirection(XeTeXLayoutEngine engine);
 

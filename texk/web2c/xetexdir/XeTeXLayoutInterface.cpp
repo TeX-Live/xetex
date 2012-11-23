@@ -67,8 +67,8 @@ struct XeTeXLayoutEngine_rec
 	PlatformFontRef	fontRef;
 	hb_script_t		scriptTag;
 	hb_language_t	languageTag;
-	UInt32*			addedFeatures;
-	UInt32*			removedFeatures;
+	hb_feature_t*	features;
+	int				nFeatures;
 	UInt32			rgbValue;
 	float			extend;
 	float			slant;
@@ -545,7 +545,7 @@ float getEmboldenFactor(XeTeXLayoutEngine engine)
 }
 
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
-										UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue,
+										hb_feature_t* features, int nFeatures, UInt32 rgbValue,
 										float extend, float slant, float embolden)
 {
 	LEErrorCode status = LE_NO_ERROR;
@@ -554,8 +554,8 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb
 	result->font = (XeTeXFontInst*)font;
 	result->scriptTag = scriptTag;
 	result->languageTag = languageTag;
-	result->addedFeatures = addFeatures;
-	result->removedFeatures = removeFeatures;
+	result->features = features;
+	result->nFeatures = nFeatures;
 	result->rgbValue = rgbValue;
 	result->extend = extend;
 	result->slant = slant;
@@ -592,7 +592,7 @@ SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt
 	hb_buffer_set_script(engine->hbBuffer, engine->scriptTag);
 	hb_buffer_set_language(engine->hbBuffer, engine->languageTag);
 
-	hb_shape(engine->font->hbFont, engine->hbBuffer, NULL, 0);
+	hb_shape(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
 	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
 	return glyphCount;
@@ -639,16 +639,6 @@ void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent
 {
 	*ascent = engine->font->getExactAscent();
 	*descent = engine->font->getExactDescent();
-}
-
-UInt32* getAddedFeatures(XeTeXLayoutEngine engine)
-{
-	return engine->addedFeatures;
-}
-
-UInt32* getRemovedFeatures(XeTeXLayoutEngine engine)
-{
-	return engine->removedFeatures;
 }
 
 int getDefaultDirection(XeTeXLayoutEngine engine)
@@ -920,8 +910,8 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	result->font = (XeTeXFontInst*)font;
 	result->scriptTag = HB_SCRIPT_INVALID;
 	result->languageTag = HB_LANGUAGE_INVALID;
-	result->addedFeatures = NULL;
-	result->removedFeatures = NULL;
+	result->features = NULL;
+	result->nFeatures = 0;
 	result->rgbValue = rgbValue;
 	result->extend = extend;
 	result->slant = slant;
