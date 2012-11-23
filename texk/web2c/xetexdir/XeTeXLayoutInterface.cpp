@@ -576,7 +576,7 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 #endif
 }
 
-SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
+int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
 						bool rightToLeft)
 {
 	hb_buffer_reset(engine->hbBuffer);
@@ -586,16 +586,15 @@ SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt
 	hb_buffer_set_language(engine->hbBuffer, engine->languageTag);
 
 	hb_shape(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
-	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
+	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
 	return glyphCount;
 }
 
 void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[])
 {
-	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
+	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 	hb_glyph_info_t *hbGlyphs = hb_buffer_get_glyph_infos(engine->hbBuffer, NULL);
-	hb_glyph_position_t *hbPositions = hb_buffer_get_glyph_positions(engine->hbBuffer, NULL);
 
 	for (int i = 0; i < glyphCount; i++)
 		glyphs[i] = hbGlyphs[i].codepoint;
@@ -603,7 +602,7 @@ void getGlyphs(XeTeXLayoutEngine engine, UInt32 glyphs[])
 
 void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 {
-	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
+	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 	hb_glyph_position_t *hbPositions = hb_buffer_get_glyph_positions(engine->hbBuffer, NULL);
 
 	int i = 0;
