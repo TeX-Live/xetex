@@ -583,7 +583,7 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 }
 
 SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
-						bool rightToLeft, float x, float y)
+						bool rightToLeft)
 {
 	hb_buffer_reset(engine->hbBuffer);
 	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);

@@ -2174,7 +2174,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				int32_t		logicalStart, length;
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL), 0.0, 0.0);
+					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 					totalGlyphs += nGlyphs;
 	
 					if (nGlyphs >= maxGlyphs) {
@@ -2204,7 +2204,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 						dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 						nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
-												(dir == UBIDI_RTL), 0, 0);
+												(dir == UBIDI_RTL));
 		
 						getGlyphs(engine, glyphs);
 						getGlyphPositions(engine, positions);
@@ -2230,7 +2230,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			else {
 				int i;
 				float		maxRhs = 0.0;
-				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0);
+				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
 				if (nGlyphs >= maxGlyphs) {
 					if (glyphs != 0) {
