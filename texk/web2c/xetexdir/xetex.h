@@ -123,3 +123,9 @@ void* get_ot_assembly_ptr(int f, int g, int horiz); /* function in XeTeXOTMath.c
 #include "trans.h"			/* functions for affine transform operations */
 #include <teckit/TECkit_Common.h>	/* include this before XeTeX_ext.h */
 #include "XeTeX_ext.h"			/* other extension functions */
+
+#include <math.h>
+/* apparently M_PI isn't defined by <math.h> under VC++ */
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif

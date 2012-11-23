@@ -52,12 +52,6 @@ authorization from the copyright holders.
 #include "unicode/ubidi.h"
 #include "unicode/utext.h"
 
-#include <math.h>
-/* apparently M_PI isn't defined by <math.h> under VC++ */
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 struct XeTeXLayoutEngine_rec
 	/* this is used for both ICU and Graphite, because so much of the font stuff is common;
 	   however, it is not possible to call ICU-specific things like layoutChars for a
