@@ -2172,10 +2172,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				long		totalGlyphs = 0;
 				int 		i, runIndex;
 				int32_t		logicalStart, length;
-				OSStatus	status = 0;
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
+					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL), 0.0, 0.0);
 					totalGlyphs += nGlyphs;
 	
 					if (nGlyphs >= maxGlyphs) {
@@ -2188,7 +2187,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 						positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
 					}
 	
-					getGlyphs(engine, glyphs, &status);
+					getGlyphs(engine, glyphs);
 					for (i = 0; i < nGlyphs; ++i)
 						if (glyphs[i] < 0xfffe)
 							++realGlyphCount;
@@ -2205,10 +2204,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 						dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 						nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
-												(dir == UBIDI_RTL), 0, 0, &status);
+												(dir == UBIDI_RTL), 0, 0);
 		
-						getGlyphs(engine, glyphs, &status);
-						getGlyphPositions(engine, positions, &status);
+						getGlyphs(engine, glyphs);
+						getGlyphPositions(engine, positions);
 					
 						for (i = 0; i < nGlyphs; ++i) {
 							if (glyphs[i] < 0xfffe) {
@@ -2230,9 +2229,8 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			}
 			else {
 				int i;
-				OSStatus	status = 0;
 				float		maxRhs = 0.0;
-				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0, &status);
+				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL), 0.0, 0.0);
 
 				if (nGlyphs >= maxGlyphs) {
 					if (glyphs != 0) {
@@ -2243,8 +2241,8 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
 					positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
 				}
-				getGlyphs(engine, glyphs, &status);
-				getGlyphPositions(engine, positions, &status);
+				getGlyphs(engine, glyphs);
+				getGlyphPositions(engine, positions);
 	
 				for (i = 0; i < nGlyphs; ++i)
 					if (glyphs[i] < 0xfffe)
