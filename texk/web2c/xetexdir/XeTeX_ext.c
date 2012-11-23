@@ -2148,7 +2148,6 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 	
 			/* need to find direction runs within the text, and call layoutChars separately for each */
 	
-			int		nGlyphs;
 			UBiDiDirection	dir;
 			float	x, y;
 			void*	glyph_info = 0;
@@ -2164,33 +2163,26 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			dir = ubidi_getDirection(pBiDi);
 			if (dir == UBIDI_MIXED) {
 				/* we actually do the layout twice here, once to count glyphs and then again to get them;
-				// which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
-				// bothered to deal with the memory reallocation headache of doing it differently
+				   which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
+				   bothered to deal with the memory reallocation headache of doing it differently
 				*/
 				int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
 				double		wid = 0;
-				long		totalGlyphs = 0;
 				int 		i, runIndex;
 				int32_t		logicalStart, length;
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
-					totalGlyphs += nGlyphs;
+					realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 	
-					if (nGlyphs >= maxGlyphs) {
+					if (realGlyphCount >= maxGlyphs) {
 						if (glyphs != 0) {
 							free(glyphs);
 							free(positions);
 						}
-						maxGlyphs = nGlyphs + 20;
+						maxGlyphs = realGlyphCount + 20;
 						glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
 						positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
 					}
-	
-					getGlyphs(engine, glyphs);
-					for (i = 0; i < nGlyphs; ++i)
-						if (glyphs[i] < 0xfffe)
-							++realGlyphCount;
 				}
 				
 				if (realGlyphCount > 0) {
@@ -2202,6 +2194,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					
 					x = y = 0.0;
 					for (runIndex = 0; runIndex < nRuns; ++runIndex) {
+						int nGlyphs;
 						dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 						nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
 												(dir == UBIDI_RTL));
@@ -2209,16 +2202,14 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 						getGlyphs(engine, glyphs);
 						getGlyphPositions(engine, positions);
 					
-						for (i = 0; i < nGlyphs; ++i) {
-							if (glyphs[i] < 0xfffe) {
-								glyphIDs[realGlyphCount] = glyphs[i];
-								locations[realGlyphCount].x = X2Fix(positions[2*i] + x);
-								locations[realGlyphCount].y = X2Fix(positions[2*i+1] + y);
-								++realGlyphCount;
-							}
+						for (i = realGlyphCount; i < realGlyphCount + nGlyphs; ++i) {
+							glyphIDs[i] = glyphs[i];
+							locations[i].x = X2Fix(positions[2*i] + x);
+							locations[i].y = X2Fix(positions[2*i+1] + y);
 						}
 						x += positions[2*i];
 						y += positions[2*i+1];
+						realGlyphCount += nGlyphs;
 					}
 					wid = x;
 				}
@@ -2230,39 +2221,31 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			else {
 				int i;
 				float		maxRhs = 0.0;
-				nGlyphs = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
+				realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
-				if (nGlyphs >= maxGlyphs) {
+				if (realGlyphCount >= maxGlyphs) {
 					if (glyphs != 0) {
 						free(glyphs);
 						free(positions);
 					}
-					maxGlyphs = nGlyphs + 20;
+					maxGlyphs = realGlyphCount + 20;
 					glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
 					positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
 				}
 				getGlyphs(engine, glyphs);
 				getGlyphPositions(engine, positions);
 	
-				for (i = 0; i < nGlyphs; ++i)
-					if (glyphs[i] < 0xfffe)
-						++realGlyphCount;
-	
 				if (realGlyphCount > 0) {
 					glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
 					locations = (FixedPoint*)glyph_info;
 					glyphIDs = (UInt16*)(locations + realGlyphCount);
-					realGlyphCount = 0;
-					for (i = 0; i < nGlyphs; ++i) {
-						if (glyphs[i] < 0xfffe) {
-							float rhs = positions[2*i] + getGlyphWidthFromEngine(engine, glyphs[i]);
-							if (rhs > maxRhs)
-								maxRhs = rhs;
-							glyphIDs[realGlyphCount] = glyphs[i];
-							locations[realGlyphCount].x = X2Fix(positions[2*i]);
-							locations[realGlyphCount].y = X2Fix(positions[2*i+1]);
-							++realGlyphCount;
-						}
+					for (i = 0; i < realGlyphCount; ++i) {
+						float rhs = positions[2*i] + getGlyphWidthFromEngine(engine, glyphs[i]);
+						if (rhs > maxRhs)
+							maxRhs = rhs;
+						glyphIDs[i] = glyphs[i];
+						locations[i].x = X2Fix(positions[2*i]);
+						locations[i].y = X2Fix(positions[2*i+1]);
 					}
 				}
 
