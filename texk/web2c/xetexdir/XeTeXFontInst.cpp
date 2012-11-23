@@ -66,7 +66,6 @@ XeTeXFontInst::XeTeXFontInst(float pointSize, LEErrorCode &status)
     , fLeading(0)
     , fXHeight(0)
     , fItalicAngle(0)
-    , fCMAPMapper(NULL)
     , fMetricsTable(NULL)
     , fNumLongMetrics(0)
     , fNumGlyphs(0)
@@ -84,9 +83,6 @@ XeTeXFontInst::~XeTeXFontInst()
 {
 	if (fMetricsTable != NULL)
 		deleteTable(fMetricsTable);
-
-	if (fCMAPMapper != NULL)
-		delete fCMAPMapper;
 }
 
 void XeTeXFontInst::initialize(LEErrorCode &status)
@@ -131,13 +127,6 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
     fNumLongMetrics = SWAPW(dirHeadTable->numOfLongHorMetrics);
 
     deleteTable(dirHeadTable);
-
-    fCMAPMapper = findUnicodeMapper();
-
-    if (fCMAPMapper == NULL) {
-        status = LE_MISSING_FONT_TABLE_ERROR;
-        goto error_exit;
-    }
 
     postTable = (const POSTTable *) readFontTable(postTag);
 
@@ -185,19 +174,6 @@ const void *XeTeXFontInst::readFontTable(LETag tableTag, le_uint32& len) const
 {
     return readTable(tableTag, &len);
 }
-
-CMAPMapper *XeTeXFontInst::findUnicodeMapper()
-{
-    LETag cmapTag = LE_CMAP_TABLE_TAG;
-    const CMAPTable *cmap = (CMAPTable *) readFontTable(cmapTag);
-
-    if (cmap == NULL) {
-        return NULL;
-    }
-
-    return CMAPMapper::createUnicodeMapper(cmap);
-}
-
 
 le_uint16 XeTeXFontInst::getNumGlyphs() const
 {

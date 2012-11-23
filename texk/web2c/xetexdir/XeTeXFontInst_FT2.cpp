@@ -51,7 +51,6 @@ FT_Library	gFreeTypeLibrary = 0;
 XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float pointSize, LEErrorCode &status)
     : XeTeXFontInst(pointSize, status)
     , face(0)
-    , fFreeTypeOnly(false)
 {
     if (LE_FAILURE(status)) {
         return;
@@ -84,7 +83,6 @@ XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float poin
 			strcpy(p, ".afm");		// else replace extension with .afm
 		FT_Attach_File(face, afm);	// ignore error code; AFM might not exist
 		delete[] afm;
-		fFreeTypeOnly = true;
 	}
 
 	initialize(status);
@@ -124,7 +122,6 @@ void XeTeXFontInst_FT2::initialize(LEErrorCode &status)
 
 	if (LE_FAILURE(status)) {
 		/* font can ONLY be used via FreeType APIs, not direct table access */
-		fFreeTypeOnly = true;
 		status = LE_NO_ERROR;
 		
 		/* fill in fields that XeTeXFontInst::initialize failed to get for us */
@@ -189,9 +186,6 @@ XeTeXFontInst_FT2::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
 LEGlyphID
 XeTeXFontInst_FT2::mapCharToGlyph(LEUnicode32 ch) const
 {
-	if (!fFreeTypeOnly)
-		return XeTeXFontInst::mapCharToGlyph(ch);
-
 	return FT_Get_Char_Index(face, ch);
 }
 
@@ -204,17 +198,13 @@ XeTeXFontInst_FT2::getNumGlyphs() const
 void
 XeTeXFontInst_FT2::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 {
-	if (!fFreeTypeOnly)
-		XeTeXFontInst::getGlyphAdvance(glyph, advance);
+	FT_Error	err = FT_Load_Glyph(face, glyph, FT_LOAD_NO_SCALE);
+	if (err != 0) {
+		advance.fX = advance.fY = 0;
+	}
 	else {
-		FT_Error	err = FT_Load_Glyph(face, glyph, FT_LOAD_NO_SCALE);
-		if (err != 0) {
-			advance.fX = advance.fY = 0;
-		}
-		else {
-			advance.fX = fVertical ? 0 : face->glyph->metrics.horiAdvance * fPointSize / fUnitsPerEM;
-			advance.fY = fVertical ? face->glyph->metrics.vertAdvance * fPointSize / fUnitsPerEM : 0;
-		}
+		advance.fX = fVertical ? 0 : face->glyph->metrics.horiAdvance * fPointSize / fUnitsPerEM;
+		advance.fY = fVertical ? face->glyph->metrics.vertAdvance * fPointSize / fUnitsPerEM : 0;
 	}
 }
 
@@ -242,9 +232,7 @@ XeTeXFontInst_FT2::getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoin
 const char*
 XeTeXFontInst_FT2::getGlyphName(LEGlyphID gid, int& nameLen)
 {
-	if (!fFreeTypeOnly)
-		return XeTeXFontInst::getGlyphName(gid, nameLen);
-	else if (FT_HAS_GLYPH_NAMES(face)) {
+	if (FT_HAS_GLYPH_NAMES(face)) {
 		static char	buffer[256];
 		FT_Get_Glyph_Name(face, gid, buffer, 256);
 		nameLen = strlen(buffer);
@@ -259,27 +247,19 @@ XeTeXFontInst_FT2::getGlyphName(LEGlyphID gid, int& nameLen)
 LEUnicode32
 XeTeXFontInst_FT2::getFirstCharCode()
 {
-	if (!fFreeTypeOnly)
-		return XeTeXFontInst::getFirstCharCode();
-	else {
-		FT_UInt  gindex;
-		return FT_Get_First_Char(face, &gindex);
-	}
+	FT_UInt  gindex;
+	return FT_Get_First_Char(face, &gindex);
 }
 
 LEUnicode32
 XeTeXFontInst_FT2::getLastCharCode()
 {
-	if (!fFreeTypeOnly)
-		return XeTeXFontInst::getLastCharCode();
-	else {
-		FT_UInt  gindex;
-		LEUnicode32	ch = FT_Get_First_Char(face, &gindex);
-		LEUnicode32	prev = ch;
-		while (gindex != 0) {
-			prev = ch;
-			ch = FT_Get_Next_Char(face, ch, &gindex);
-		}
-		return prev;
+	FT_UInt  gindex;
+	LEUnicode32	ch = FT_Get_First_Char(face, &gindex);
+	LEUnicode32	prev = ch;
+	while (gindex != 0) {
+		prev = ch;
+		ch = FT_Get_Next_Char(face, ch, &gindex);
 	}
+	return prev;
 }
