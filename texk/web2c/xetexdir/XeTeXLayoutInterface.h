@@ -100,7 +100,7 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
 float getGlyphWidth(XeTeXFont font, UInt32 gid);
 UInt32 countGlyphs(XeTeXFont font);
 
-XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
+XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
 						UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue,
 						float extend, float slant, float embolden);
 
@@ -119,10 +119,6 @@ SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16* chars, SInt32 offset, SInt3
 void getGlyphs(XeTeXLayoutEngine engine, UInt32* glyphs, SInt32* status);
 
 void getGlyphPositions(XeTeXLayoutEngine engine, float* positions, SInt32* status);
-
-UInt32 getScriptTag(XeTeXLayoutEngine engine);
-
-UInt32 getLanguageTag(XeTeXLayoutEngine engine);
 
 float getPointSize(XeTeXLayoutEngine engine);
 

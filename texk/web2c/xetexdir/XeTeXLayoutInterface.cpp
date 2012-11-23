@@ -65,8 +65,8 @@ struct XeTeXLayoutEngine_rec
 {
 	XeTeXFontInst*	font;
 	PlatformFontRef	fontRef;
-	UInt32			scriptTag;
-	UInt32			languageTag;
+	hb_script_t		scriptTag;
+	hb_language_t	languageTag;
 	UInt32*			addedFeatures;
 	UInt32*			removedFeatures;
 	UInt32			rgbValue;
@@ -544,7 +544,7 @@ float getEmboldenFactor(XeTeXLayoutEngine engine)
 	return engine->embolden;
 }
 
-XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, UInt32 scriptTag, UInt32 languageTag,
+XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
 										UInt32* addFeatures, SInt32* addParams, UInt32* removeFeatures, UInt32 rgbValue,
 										float extend, float slant, float embolden)
 {
@@ -589,6 +589,9 @@ SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt
 	hb_buffer_reset(engine->hbBuffer);
 	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
 	hb_buffer_set_direction(engine->hbBuffer, rightToLeft ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
+	hb_buffer_set_script(engine->hbBuffer, engine->scriptTag);
+	hb_buffer_set_language(engine->hbBuffer, engine->languageTag);
+
 	hb_shape(engine->font->hbFont, engine->hbBuffer, NULL, 0);
 	le_int32 glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
@@ -627,16 +630,6 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[], SInt32* stat
 			positions[2*i] = positions[2*i] * engine->extend - positions[2*i+1] * engine->slant;
 }
 
-UInt32 getScriptTag(XeTeXLayoutEngine engine)
-{
-	return engine->scriptTag;
-}
-
-UInt32 getLanguageTag(XeTeXLayoutEngine engine)
-{
-	return engine->languageTag;
-}
-
 float getPointSize(XeTeXLayoutEngine engine)
 {
 	return engine->font->getXPixelsPerEm();
@@ -660,14 +653,10 @@ UInt32* getRemovedFeatures(XeTeXLayoutEngine engine)
 
 int getDefaultDirection(XeTeXLayoutEngine engine)
 {
-	switch (engine->scriptTag) {
-		case kArabic:
-		case kSyriac:
-		case kThaana:
-		case kHebrew:
-			return UBIDI_DEFAULT_RTL;
-	}
-	return UBIDI_DEFAULT_LTR;
+	if (hb_script_get_horizontal_direction (engine->scriptTag) == HB_DIRECTION_RTL)
+		return UBIDI_DEFAULT_RTL;
+	else
+		return UBIDI_DEFAULT_LTR;
 }
 
 UInt32 getRgbValue(XeTeXLayoutEngine engine)
@@ -929,8 +918,8 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
 	result->fontRef = fontRef;
 	result->font = (XeTeXFontInst*)font;
-	result->scriptTag = 0;
-	result->languageTag = languageTag;
+	result->scriptTag = HB_SCRIPT_INVALID;
+	result->languageTag = HB_LANGUAGE_INVALID;
 	result->addedFeatures = NULL;
 	result->removedFeatures = NULL;
 	result->rgbValue = rgbValue;

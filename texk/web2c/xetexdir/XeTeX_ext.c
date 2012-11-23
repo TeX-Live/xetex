@@ -2,6 +2,7 @@
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
  copyright (c) 2009, 2011 by Jonathan Kew
+ copyright (c) 2012 by Khaled Hosny
 
  Written by Jonathan Kew
 
@@ -728,6 +729,23 @@ read_double(const char** s)
 	return neg ? -val : val;
 }
 
+static char*
+read_str_tag(const char* cp)
+{
+	char tag[5];
+	int i;
+	for (i = 0; i < 4; ++i) {
+		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
+			tag[i] = *cp;
+			++cp;
+		}
+		else
+			tag[i] = ' ';
+	}
+	tag[4] = '\0';
+	return strdup(tag);
+}
+
 static UInt32
 read_tag(const char* cp, char padChar)
 {
@@ -883,8 +901,8 @@ static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
 	XeTeXLayoutEngine   engine;
-	UInt32	scriptTag = kLatin;
-	UInt32	languageTag = 0;
+	hb_script_t		scriptTag = HB_SCRIPT_LATIN;
+	hb_language_t	languageTag = HB_LANGUAGE_INVALID;
 	
 	UInt32*	addFeatures = 0;
 	UInt32*	removeFeatures = 0;
@@ -925,7 +943,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				scriptTag = read_tag(cp3 + 1, ' ');
+				scriptTag = hb_script_from_string(read_str_tag(cp3 + 1), -1);
 				goto next_option;
 			}
 			
@@ -933,7 +951,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
 					goto bad_option;
-				languageTag = read_tag(cp3 + 1, ' ');
+				languageTag = hb_language_from_string(read_str_tag(cp3 + 1), -1);
 				goto next_option;
 			}
 			
