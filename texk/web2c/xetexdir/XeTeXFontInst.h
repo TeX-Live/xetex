@@ -51,7 +51,6 @@ authorization from the copyright holders.
 #include "FontTableCache.h"
 
 #include "sfnt.h"
-#include "cmaps.h"
 
 #include "XeTeXFontMgr.h"
 #include "XeTeX_ext.h"
@@ -80,8 +79,6 @@ protected:
 	float fXHeight;
 	float fItalicAngle;
 
-    CMAPMapper *fCMAPMapper;
-
     const HMTXTable *fMetricsTable;
     le_uint16 fNumLongMetrics;
     le_uint16 fNumGlyphs;
@@ -97,8 +94,6 @@ protected:
     virtual const void *readTable(LETag tag, le_uint32 *length) const = 0;
     void deleteTable(const void *table) const;
     void getMetrics();
-
-    CMAPMapper *findUnicodeMapper();
 
     const void *readFontTable(LETag tableTag) const;
     const void *readFontTable(LETag tableTag, le_uint32& len) const;
@@ -160,11 +155,7 @@ public:
         return fLeading;
     }
 
-    virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const
-    {
-        return fCMAPMapper->unicodeToGlyph(ch);
-    }
-    
+    virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const = 0; /* must be implemented by subclass */
     virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
 
 	virtual le_uint16 getNumGlyphs() const;
@@ -182,8 +173,8 @@ public:
 
 	virtual const char* getGlyphName(LEGlyphID gid, int& nameLen);
 	
-	virtual LEUnicode32 getFirstCharCode();
-	virtual LEUnicode32 getLastCharCode();
+	virtual LEUnicode32 getFirstCharCode() = 0; /* must be implemented by subclass */
+	virtual LEUnicode32 getLastCharCode() = 0; /* must be implemented by subclass */
 
     float getXPixelsPerEm() const
     {

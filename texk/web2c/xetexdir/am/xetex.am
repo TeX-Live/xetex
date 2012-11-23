@@ -188,8 +188,6 @@ libxetex_a_SOURCES = \
 	xetexdir/XeTeX_ext.c \
 	xetexdir/XeTeX_ext.h \
 	xetexdir/XeTeXswap.h \
-	xetexdir/cmaps.cpp \
-	xetexdir/cmaps.h \
 	xetexdir/sfnt.h \
 	xetexdir/trans.c \
 	xetexdir/trans.h \

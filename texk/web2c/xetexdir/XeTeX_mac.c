@@ -591,7 +591,6 @@ GetGlyphNameFromCGFont(ATSFontRef atsFontRef, UInt16 gid, int* len)
 	return &buffer[0];
 }
 
-/*
 int
 GetFontCharRange_AAT(ATSUStyle style, int reqFirst)
 {
@@ -608,7 +607,6 @@ GetFontCharRange_AAT(ATSUStyle style, int reqFirst)
 		return ch;
 	}
 }
-*/
 
 ATSUFontVariationAxis
 find_axis_by_name(ATSUFontID fontID, const char* name, int nameLength)

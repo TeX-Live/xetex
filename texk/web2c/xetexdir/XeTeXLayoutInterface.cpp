@@ -824,63 +824,6 @@ mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName)
 	return engine->font->mapGlyphToIndex(glyphName);
 }
 
-#ifdef XETEX_MAC
-/* this is here rather than XeTeX_mac.c because I want it in a .cpp file */
-int
-GetFontCharRange_AAT(ATSUStyle style, int reqFirst)
-{
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-
-	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
-
-	ByteCount	length;
-	OSStatus status = ATSFontGetTable(fontRef, kCmap, 0, 0, 0, &length);
-	if (status != noErr)
-		return 0;
-
-	void*	table = LE_NEW_ARRAY(char, length);
-	status = ATSFontGetTable(fontRef, kCmap, 0, length, table, &length);
-	if (status != noErr) {
-		free(table);
-		return 0;
-	}
-
-	CMAPMapper*	mapper = CMAPMapper::createUnicodeMapper((const CMAPTable *)table);
-
-	int	ch = 0;
-	if (mapper) {
-		if (reqFirst)
-			while (mapper->unicodeToGlyph(ch) == 0 && ch < 0x10ffff)
-				++ch;
-		else {
-			ch = 0x10ffff;
-			while (mapper->unicodeToGlyph(ch) == 0 && ch > 0)
-				--ch;
-		}
-		delete mapper;
-	}
-	else {
-		LE_DELETE_ARRAY(table);
-	}
-	
-	return ch;
-
-	if (reqFirst) {
-		int	ch = 0;
-		while (MapCharToGlyph_AAT(style, ch) == 0 && ch < 0x10ffff)
-			++ch;
-		return ch;
-	}
-	else {
-		int ch = 0x10ffff;
-		while (MapCharToGlyph_AAT(style, ch) == 0 && ch > 0)
-			--ch;
-		return ch;
-	}
-}
-#endif
-
 #ifdef XETEX_GRAPHITE
 
 /* Graphite interface */

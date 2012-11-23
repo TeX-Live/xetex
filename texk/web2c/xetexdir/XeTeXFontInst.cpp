@@ -297,27 +297,3 @@ XeTeXFontInst::getGlyphName(LEGlyphID gid, int& nameLen)
 	else
 		return NULL;
 }
-
-LEUnicode32
-XeTeXFontInst::getFirstCharCode()
-{
-	if (fFirstCharCode == -1) {
-		int ch = 0;
-		while (mapCharToGlyph(ch) == 0 && ch < 0x10ffff)
-			++ch;
-		fFirstCharCode = ch;
-	}
-	return fFirstCharCode;
-}
-
-LEUnicode32
-XeTeXFontInst::getLastCharCode()
-{
-	if (fLastCharCode == -1) {
-		int ch = 0x10ffff;
-		while (mapCharToGlyph(ch) == 0 && ch > 0)
-			--ch;
-		fLastCharCode = ch;
-	}
-	return fLastCharCode;
-}
