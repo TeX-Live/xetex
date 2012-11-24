@@ -9438,7 +9438,6 @@ the codes for its extensions: |eTeX_version_code|, \dots\ .
 @#
 @d XeTeX_version_code=XeTeX_int {code for \.{\\XeTeXversion}}
 
-{ these are also in xetexmac.c and must correspond! }
 @d XeTeX_count_glyphs_code=XeTeX_int+1
 
 @d XeTeX_count_variations_code=XeTeX_int+2
@@ -10467,7 +10466,7 @@ end;
 @d eTeX_revision_code=etex_convert_base {command code for \.{\\eTeXrevision}}
 
 @d XeTeX_revision_code=6
-@d XeTeX_variation_name_code=7	{ must match codes in xetexmac.c }
+@d XeTeX_variation_name_code=7
 @d XeTeX_feature_name_code=8
 @d XeTeX_selector_name_code=9
 @d XeTeX_glyph_name_code=10
