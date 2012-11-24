@@ -588,6 +588,16 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 	hb_shape(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
+#ifdef DEBUG
+	char buf[1024];
+	unsigned int consumed;
+	hb_buffer_serialize_flags_t flags = (hb_buffer_serialize_flags_t) (HB_BUFFER_SERIALIZE_FLAG_NO_CLUSTERS|HB_BUFFER_SERIALIZE_FLAG_NO_POSITIONS);
+
+	hb_buffer_serialize_glyphs (engine->hbBuffer, 0, glyphCount, buf, sizeof(buf), &consumed, engine->font->hbFont,	HB_BUFFER_SERIALIZE_FORMAT_TEXT, flags);
+	if (consumed)
+		printf ("buffer glyphs: %s\n", buf);
+#endif
+
 	return glyphCount;
 }
 
