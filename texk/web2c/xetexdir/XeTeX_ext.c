@@ -2214,7 +2214,6 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			}
 			else {
 				int i;
-				float		maxRhs = 0.0;
 				realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
 				if (realGlyphCount >= maxGlyphs) {
@@ -2234,16 +2233,13 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					locations = (FixedPoint*)glyph_info;
 					glyphIDs = (UInt16*)(locations + realGlyphCount);
 					for (i = 0; i < realGlyphCount; ++i) {
-						float rhs = positions[2*i] + getGlyphWidthFromEngine(engine, glyphs[i]);
-						if (rhs > maxRhs)
-							maxRhs = rhs;
 						glyphIDs[i] = glyphs[i];
 						locations[i].x = X2Fix(positions[2*i]);
 						locations[i].y = X2Fix(positions[2*i+1]);
 					}
 				}
 
-				node_width(node) = X2Fix(maxRhs);
+				node_width(node) = X2Fix(positions[2*i]);
 				native_glyph_count(node) = realGlyphCount;
 				native_glyph_info_ptr(node) = glyph_info;
 			}

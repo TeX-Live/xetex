@@ -579,9 +579,16 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
 						bool rightToLeft)
 {
+	hb_direction_t direction;
+
+	if (engine->font->getLayoutDirVertical())
+		direction = HB_DIRECTION_TTB;
+	else
+		direction = rightToLeft ? HB_DIRECTION_RTL : HB_DIRECTION_LTR;
+
 	hb_buffer_reset(engine->hbBuffer);
 	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
-	hb_buffer_set_direction(engine->hbBuffer, rightToLeft ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
+	hb_buffer_set_direction(engine->hbBuffer, direction);
 	hb_buffer_set_script(engine->hbBuffer, engine->scriptTag);
 	hb_buffer_set_language(engine->hbBuffer, engine->languageTag);
 
@@ -591,9 +598,9 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 #ifdef DEBUG
 	char buf[1024];
 	unsigned int consumed;
-	hb_buffer_serialize_flags_t flags = (hb_buffer_serialize_flags_t) (HB_BUFFER_SERIALIZE_FLAG_NO_CLUSTERS|HB_BUFFER_SERIALIZE_FLAG_NO_POSITIONS);
+	hb_buffer_serialize_flags_t flags = HB_BUFFER_SERIALIZE_FLAGS_DEFAULT;
 
-	hb_buffer_serialize_glyphs (engine->hbBuffer, 0, glyphCount, buf, sizeof(buf), &consumed, engine->font->hbFont,	HB_BUFFER_SERIALIZE_FORMAT_TEXT, flags);
+	hb_buffer_serialize_glyphs (engine->hbBuffer, 0, glyphCount, buf, sizeof(buf), &consumed, engine->font->hbFont,	HB_BUFFER_SERIALIZE_FORMAT_JSON, flags);
 	if (consumed)
 		printf ("buffer glyphs: %s\n", buf);
 #endif
@@ -618,14 +625,26 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 	int i = 0;
    	float x = 0, y = 0;
 
-	for (i = 0; i < glyphCount; i++) {
-		positions[2*i]   =   x + hbPositions[i].x_offset / 64.0;
-		positions[2*i+1] = -(y + hbPositions[i].y_offset / 64.0); /* negative is upwards */
-		x += hbPositions[i].x_advance / 64.0;
-		y += hbPositions[i].y_advance / 64.0;
+	if (engine->font->getLayoutDirVertical()) {
+		x -= hbPositions[0].y_offset / 64.0; // hack to compensate offset of 1st glyph
+		for (i = 0; i < glyphCount; i++) {
+			positions[2*i]   = -(x + hbPositions[i].y_offset / 64.0); /* negative is forwards */
+			positions[2*i+1] =  (y + hbPositions[i].x_offset / 64.0);
+			x += hbPositions[i].y_advance / 64.0;
+			y += hbPositions[i].x_advance / 64.0;
+		}
+		positions[2*i]   = -x;
+		positions[2*i+1] =  y;
+	} else {
+		for (i = 0; i < glyphCount; i++) {
+			positions[2*i]   =   x + hbPositions[i].x_offset / 64.0;
+			positions[2*i+1] = -(y + hbPositions[i].y_offset / 64.0); /* negative is upwards */
+			x += hbPositions[i].x_advance / 64.0;
+			y += hbPositions[i].y_advance / 64.0;
+		}
+		positions[2*i]   =  x;
+		positions[2*i+1] = -y;
 	}
-	positions[2*i]   = x;
-	positions[2*i+1] = y;
 
 	if (engine->extend != 1.0 || engine->slant != 0.0)
 		for (int i = 0; i <= glyphCount; ++i)
