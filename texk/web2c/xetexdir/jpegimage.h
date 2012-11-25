@@ -48,6 +48,8 @@
 #ifndef _JPEGIMAGE_H_
 #define _JPEGIMAGE_H_
 
+#include <stdio.h>
+
 /* JPEG Markers */
 typedef enum {
   JM_SOF0  = 0xc0,
