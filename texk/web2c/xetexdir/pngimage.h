@@ -53,8 +53,6 @@
 #include <w2c/config.h>
 #endif
 
-#include "mfileio.h"
-
 struct png_info {
 	int	width;
 	int height;
