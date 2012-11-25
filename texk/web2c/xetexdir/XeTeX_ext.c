@@ -960,10 +960,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				int param = 0;
 				tag = read_tag_with_param(cp1 + 1, &param);
 				++nFeatures;
-				if (nFeatures == 1)
-					features = xmalloc(sizeof(hb_feature_t));
-				else
-					features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
+				features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
 				features[nFeatures-1].tag = tag;
 				features[nFeatures-1].start = 0;
 				features[nFeatures-1].end = (unsigned int) -1;
@@ -977,10 +974,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			if (*cp1 == '-') {
 				tag = hb_tag_from_string(read_str_tag(cp1 + 1), -1);
 				++nFeatures;
-				if (nFeatures == 1)
-					features = xmalloc(sizeof(hb_feature_t));
-				else
-					features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
+				features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
 				features[nFeatures-1].tag = tag;
 				features[nFeatures-1].value = 0;
 				goto next_option;
