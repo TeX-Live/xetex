@@ -60,7 +60,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #define COPYRIGHT_HOLDER "SIL International and Jonathan Kew"
 #define AUTHOR "Jonathan Kew"
 #define PROGRAM_HELP XETEXHELP
-#define BUG_ADDRESS "jfkthame@gmail.com"
+#define BUG_ADDRESS "xetex@tug.org"
 #define DUMP_VAR TEXformatdefault
 #define DUMP_LENGTH_VAR formatdefaultlength
 #define DUMP_OPTION "fmt"
