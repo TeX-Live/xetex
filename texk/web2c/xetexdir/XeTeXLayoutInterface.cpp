@@ -1012,14 +1012,14 @@ int usingGraphite(XeTeXLayoutEngine engine)
 
 int usingOpenType(XeTeXLayoutEngine engine)
 {
-	return engine->font->hbFont != NULL;
+	return engine->hbBuffer != NULL;
 }
 
 #define kMATHTableTag	0x4D415448 /* 'MATH' */
 
 int isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
-	if (engine->font->hbFont != NULL) {
+	if (usingOpenType(engine)) {
 		if (engine->font->getFontTable(kMATHTableTag) != NULL)
 			return 1;
 	}
