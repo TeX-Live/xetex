@@ -35,6 +35,7 @@ authorization from the copyright holders.
 #include "XeTeX_ext.h"
 #include "XeTeXLayoutInterface.h"
 #include "XeTeXFontInst.h"
+#include "XeTeXswap.h"
 
 #include "layout/CoverageTables.h"
 
@@ -48,27 +49,25 @@ extern "C" {
 	extern integer*	fontsize;
 }
 
-#include "layout/LESwaps.h"
-
 static SInt16 getMathConstant(XeTeXFontInst* fontInst, mathConstantIndex whichConstant)
 {
 	const char* table = (const char*)fontInst->getFontTable(kMATHTableTag);
 	if (table == NULL)
 		return 0;
 
-	const UInt16* constants = (const UInt16*)(table + SWAPW(((const MathTableHeader*)table)->mathConstants));
+	const UInt16* constants = (const UInt16*)(table + SWAP(((const MathTableHeader*)table)->mathConstants));
 
 	if (whichConstant < firstMathValueRecord) {
 		/* it's a simple 16-bit value */
-		return SWAPW(constants[whichConstant]);
+		return SWAP(constants[whichConstant]);
 	}
 	else if (whichConstant <= lastMathValueRecord) {
 		const MathValueRecord* valueRecords = (const MathValueRecord*)
 			((char*)constants + firstMathValueRecord * sizeof(UInt16) - firstMathValueRecord * sizeof(MathValueRecord));
-		return SWAPW(valueRecords[whichConstant].value);
+		return SWAP(valueRecords[whichConstant].value);
 	}
 	else if (whichConstant <= lastMathConstant) {
-		return SWAPW(constants[whichConstant + (lastMathValueRecord - firstMathValueRecord + 1)]);
+		return SWAP(constants[whichConstant + (lastMathValueRecord - firstMathValueRecord + 1)]);
 	}
 	else
 		return 0; /* or abort, with "internal error" or something */
@@ -210,12 +209,12 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 		if (table == NULL)
 			return rval;
 
-		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
+		uint16_t	offset = SWAP(((const MathTableHeader*)table)->mathVariants);
 		if (offset == 0)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);
 
-		offset = horiz ? SWAPW(variants->horizGlyphCoverage) : SWAPW(variants->vertGlyphCoverage);
+		offset = horiz ? SWAP(variants->horizGlyphCoverage) : SWAP(variants->vertGlyphCoverage);
 		if (offset == 0)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)variants) + offset);
@@ -223,12 +222,12 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 		int32_t	index = coverage->getGlyphCoverage(g);
 		if (index >= 0) {
 			if (horiz)
-				index += SWAPW(variants->vertGlyphCount);
+				index += SWAP(variants->vertGlyphCount);
 			const MathGlyphConstruction*	construction = (const MathGlyphConstruction*)(((const char*)variants)
-															+ SWAPW(variants->vertGlyphConstruction[index]));
-			if (v < SWAPW(construction->variantCount)) {
-				rval = SWAPW(construction->mathGlyphVariantRecord[v].variantGlyph);
-				*adv = X2Fix(SWAPW(construction->mathGlyphVariantRecord[v].advanceMeasurement)
+															+ SWAP(variants->vertGlyphConstruction[index]));
+			if (v < SWAP(construction->variantCount)) {
+				rval = SWAP(construction->mathGlyphVariantRecord[v].variantGlyph);
+				*adv = X2Fix(SWAP(construction->mathGlyphVariantRecord[v].advanceMeasurement)
 								* Fix2X(fontsize[f]) / font->getUnitsPerEM());
 			}
 		}
@@ -249,12 +248,12 @@ get_ot_assembly_ptr(int f, int g, int horiz)
 		if (table == NULL)
 			return rval;
 
-		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
+		uint16_t	offset = SWAP(((const MathTableHeader*)table)->mathVariants);
 		if (offset == 0)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);
 
-		offset = horiz ? SWAPW(variants->horizGlyphCoverage) : SWAPW(variants->vertGlyphCoverage);
+		offset = horiz ? SWAP(variants->horizGlyphCoverage) : SWAP(variants->vertGlyphCoverage);
 		if (offset == 0)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)variants) + offset);
@@ -262,10 +261,10 @@ get_ot_assembly_ptr(int f, int g, int horiz)
 		int32_t	index = coverage->getGlyphCoverage(g);
 		if (index >= 0) {
 			if (horiz)
-				index += SWAPW(variants->vertGlyphCount);
+				index += SWAP(variants->vertGlyphCount);
 			const MathGlyphConstruction*	construction = (const MathGlyphConstruction*)(((const char*)variants)
-															+ SWAPW(variants->vertGlyphConstruction[index]));
-			offset = SWAPW(construction->glyphAssembly);
+															+ SWAP(variants->vertGlyphConstruction[index]));
+			offset = SWAP(construction->glyphAssembly);
 			if (offset != 0)
 				rval = (void*)(((const char*)construction) + offset);
 		}
@@ -286,24 +285,24 @@ get_ot_math_ital_corr(int f, int g)
 		if (table == NULL)
 			return rval;
 
-		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathGlyphInfo);
+		uint16_t	offset = SWAP(((const MathTableHeader*)table)->mathGlyphInfo);
 		if (offset == 0)
 			return rval;
 		const MathGlyphInfo* glyphInfo = (const MathGlyphInfo*)(table + offset);
 
-		offset = SWAPW(glyphInfo->mathItalicsCorrectionInfo);
+		offset = SWAP(glyphInfo->mathItalicsCorrectionInfo);
 		if (offset == 0)
 			return rval;
 		const MathItalicsCorrectionInfo* italCorrInfo = (const MathItalicsCorrectionInfo*)(((const char*)glyphInfo) + offset);
 
-		offset = SWAPW(italCorrInfo->coverage);
+		offset = SWAP(italCorrInfo->coverage);
 		if (offset == 0)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)italCorrInfo) + offset);
 
 		int32_t	index = coverage->getGlyphCoverage(g);
-		if (index >= 0 && index < SWAPW(italCorrInfo->italicsCorrectionCount))
-			rval = X2Fix(SWAPW(italCorrInfo->italicsCorrection[index].value) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
+		if (index >= 0 && index < SWAP(italCorrInfo->italicsCorrectionCount))
+			rval = X2Fix(SWAP(italCorrInfo->italicsCorrection[index].value) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
 	
 	return rval;
@@ -321,24 +320,24 @@ get_ot_math_accent_pos(int f, int g)
 		if (table == NULL)
 			return rval;
 
-		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathGlyphInfo);
+		uint16_t	offset = SWAP(((const MathTableHeader*)table)->mathGlyphInfo);
 		if (offset == 0)
 			return rval;
 		const MathGlyphInfo* glyphInfo = (const MathGlyphInfo*)(table + offset);
 
-		offset = SWAPW(glyphInfo->mathTopAccentAttachment);
+		offset = SWAP(glyphInfo->mathTopAccentAttachment);
 		if (offset == 0)
 			return rval;
 		const MathTopAccentAttachment* accentAttachment = (const MathTopAccentAttachment*)(((const char*)glyphInfo) + offset);
 
-		offset = SWAPW(accentAttachment->coverage);
+		offset = SWAP(accentAttachment->coverage);
 		if (offset == 0)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)accentAttachment) + offset);
 
 		int32_t	index = coverage->getGlyphCoverage(g);
-		if (index >= 0 && index < SWAPW(accentAttachment->topAccentAttachmentCount)) {
-			rval = (int16_t)SWAPW(accentAttachment->topAccentAttachment[index].value);
+		if (index >= 0 && index < SWAP(accentAttachment->topAccentAttachmentCount)) {
+			rval = (int16_t)SWAP(accentAttachment->topAccentAttachment[index].value);
 			rval = X2Fix(rval * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 		}
 	}
@@ -358,12 +357,12 @@ ot_min_connector_overlap(int f)
 		if (table == NULL)
 			return rval;
 
-		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
+		uint16_t	offset = SWAP(((const MathTableHeader*)table)->mathVariants);
 		if (offset == 0)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);
 
-		rval = X2Fix(SWAPW(variants->minConnectorOverlap) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
+		rval = X2Fix(SWAP(variants->minConnectorOverlap) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
 
 	return rval;
@@ -372,19 +371,19 @@ ot_min_connector_overlap(int f)
 int
 ot_part_count(const GlyphAssembly* a)
 {
-	return SWAPW(a->partCount);
+	return SWAP(a->partCount);
 }
 
 int
 ot_part_glyph(const GlyphAssembly* a, int i)
 {
-	return SWAPW(a->partRecords[i].glyph);
+	return SWAP(a->partRecords[i].glyph);
 }
 
 int
 ot_part_is_extender(const GlyphAssembly* a, int i)
 {
-	return (SWAPW(a->partRecords[i].partFlags) & fExtender) != 0;
+	return (SWAP(a->partRecords[i].partFlags) & fExtender) != 0;
 }
 
 int
@@ -394,7 +393,7 @@ ot_part_start_connector(int f, const GlyphAssembly* a, int i)
 	
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
-		rval = X2Fix(SWAPW(a->partRecords[i].startConnectorLength) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
+		rval = X2Fix(SWAP(a->partRecords[i].startConnectorLength) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
 	
 	return rval;
@@ -407,7 +406,7 @@ ot_part_end_connector(int f, const GlyphAssembly* a, int i)
 	
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
-		rval = X2Fix(SWAPW(a->partRecords[i].endConnectorLength) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
+		rval = X2Fix(SWAP(a->partRecords[i].endConnectorLength) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
 	
 	return rval;
@@ -420,7 +419,7 @@ ot_part_full_advance(int f, const GlyphAssembly* a, int i)
 	
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
-		rval = X2Fix(SWAPW(a->partRecords[i].fullAdvance) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
+		rval = X2Fix(SWAP(a->partRecords[i].fullAdvance) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
 	
 	return rval;

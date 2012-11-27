@@ -39,13 +39,9 @@ authorization from the copyright holders.
  *	originally based on PortableFontInstance.cpp from ICU
  */
 
-
-#include "layout/LETypes.h"
-#include "layout/LEFontInstance.h"
-#include "layout/LESwaps.h"
-
 #include "XeTeXFontInst.h"
 #include "XeTeXLayoutInterface.h"
+#include "XeTeXswap.h"
 
 #ifdef XETEX_MAC
 #include <Carbon/Carbon.h>
@@ -107,7 +103,7 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
         goto error_exit;
     }
 
-    fUnitsPerEM = SWAPW(headTable->unitsPerEm);
+    fUnitsPerEM = SWAP(headTable->unitsPerEm);
     deleteTable(headTable);
 
 	// we use the fact that 'hhea' and 'vhea' have the same format!
@@ -118,17 +114,17 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
         goto error_exit;
     }
 
-    fAscent  = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->ascent));
-    fDescent = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->descent));
+    fAscent  = unitsToPoints((float)(int16_t)SWAP(dirHeadTable->ascent));
+    fDescent = unitsToPoints((float)(int16_t)SWAP(dirHeadTable->descent));
 
-    fNumLongMetrics = SWAPW(dirHeadTable->numOfLongHorMetrics);
+    fNumLongMetrics = SWAP(dirHeadTable->numOfLongHorMetrics);
 
     deleteTable(dirHeadTable);
 
     postTable = (const POSTTable *) readFontTable(postTag);
 
     if (postTable != NULL) {
-		fItalicAngle = Fix2X(SWAPL(postTable->italicAngle));
+		fItalicAngle = Fix2X(SWAP(postTable->italicAngle));
 		deleteTable(postTable);
     }
 
@@ -180,7 +176,7 @@ uint16_t XeTeXFontInst::getNumGlyphs() const
 
         if (maxpTable != NULL) {
 			XeTeXFontInst *realThis = (XeTeXFontInst *) this;
-            realThis->fNumGlyphs = SWAPW(maxpTable->numGlyphs);
+            realThis->fNumGlyphs = SWAP(maxpTable->numGlyphs);
             deleteTable(maxpTable);
 			realThis->fNumGlyphsInited = true;
 		}
@@ -211,7 +207,7 @@ void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
         index = fNumLongMetrics - 1;
     }
 
-    advance.fX = unitsToPoints(SWAPW(fMetricsTable->hMetrics[index].advanceWidth));
+    advance.fX = unitsToPoints(SWAP(fMetricsTable->hMetrics[index].advanceWidth));
     advance.fY = 0;
 }
 
