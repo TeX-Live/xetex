@@ -61,7 +61,7 @@ extern "C" {
 
 // create specific subclasses for each supported platform
 
-class XeTeXFontInst : public LEFontInstance, protected FontTableCache
+class XeTeXFontInst : protected FontTableCache
 {
 friend class XeTeXGrFont;
 
@@ -196,6 +196,10 @@ public:
         return 1.0;
     }
 
+	int32_t unitsToPoints(float units) const
+	{
+		return (units * fPointSize) / (float) fUnitsPerEM;
+	}
     float getXHeight() const
     {
         return fXHeight;

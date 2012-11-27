@@ -50,7 +50,7 @@ extern "C" {
 
 #include "layout/LESwaps.h"
 
-static SInt16 getMathConstant(LEFontInstance* fontInst, mathConstantIndex whichConstant)
+static SInt16 getMathConstant(XeTeXFontInst* fontInst, mathConstantIndex whichConstant)
 {
 	const char* table = (const char*)fontInst->getFontTable(kMATHTableTag);
 	if (table == NULL)

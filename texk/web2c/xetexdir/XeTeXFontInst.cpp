@@ -120,9 +120,9 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
         goto error_exit;
     }
 
-    fAscent  = yUnitsToPoints((float)(int16_t)SWAPW(dirHeadTable->ascent));
-    fDescent = yUnitsToPoints((float)(int16_t)SWAPW(dirHeadTable->descent));
-    fLeading = yUnitsToPoints((float)(int16_t)SWAPW(dirHeadTable->lineGap));
+    fAscent  = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->ascent));
+    fDescent = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->descent));
+    fLeading = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->lineGap));
 
     fNumLongMetrics = SWAPW(dirHeadTable->numOfLongHorMetrics);
 
@@ -214,7 +214,7 @@ void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
         index = fNumLongMetrics - 1;
     }
 
-    advance.fX = xUnitsToPoints(SWAPW(fMetricsTable->hMetrics[index].advanceWidth));
+    advance.fX = unitsToPoints(SWAPW(fMetricsTable->hMetrics[index].advanceWidth));
     advance.fY = 0;
 }
 

@@ -126,8 +126,8 @@ void XeTeXFontInst_FT2::initialize(LEErrorCode &status)
 		
 		/* fill in fields that XeTeXFontInst::initialize failed to get for us */
 		fUnitsPerEM = face->units_per_EM;
-		fAscent = yUnitsToPoints(face->ascender);
-		fDescent = yUnitsToPoints(face->descender);
+		fAscent = unitsToPoints(face->ascender);
+		fDescent = unitsToPoints(face->descender);
 //		fLeading = ;
 		fItalicAngle = 0;
 		PS_FontInfoRec	font_info;
