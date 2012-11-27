@@ -210,7 +210,7 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 		if (table == NULL)
 			return rval;
 
-		le_uint16	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
+		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
 		if (offset == 0)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);
@@ -220,7 +220,7 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)variants) + offset);
 
-		le_int32	index = coverage->getGlyphCoverage(g);
+		int32_t	index = coverage->getGlyphCoverage(g);
 		if (index >= 0) {
 			if (horiz)
 				index += SWAPW(variants->vertGlyphCount);
@@ -249,7 +249,7 @@ get_ot_assembly_ptr(int f, int g, int horiz)
 		if (table == NULL)
 			return rval;
 
-		le_uint16	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
+		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
 		if (offset == 0)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);
@@ -259,7 +259,7 @@ get_ot_assembly_ptr(int f, int g, int horiz)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)variants) + offset);
 
-		le_int32	index = coverage->getGlyphCoverage(g);
+		int32_t	index = coverage->getGlyphCoverage(g);
 		if (index >= 0) {
 			if (horiz)
 				index += SWAPW(variants->vertGlyphCount);
@@ -286,7 +286,7 @@ get_ot_math_ital_corr(int f, int g)
 		if (table == NULL)
 			return rval;
 
-		le_uint16	offset = SWAPW(((const MathTableHeader*)table)->mathGlyphInfo);
+		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathGlyphInfo);
 		if (offset == 0)
 			return rval;
 		const MathGlyphInfo* glyphInfo = (const MathGlyphInfo*)(table + offset);
@@ -301,7 +301,7 @@ get_ot_math_ital_corr(int f, int g)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)italCorrInfo) + offset);
 
-		le_int32	index = coverage->getGlyphCoverage(g);
+		int32_t	index = coverage->getGlyphCoverage(g);
 		if (index >= 0 && index < SWAPW(italCorrInfo->italicsCorrectionCount))
 			rval = X2Fix(SWAPW(italCorrInfo->italicsCorrection[index].value) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
@@ -321,7 +321,7 @@ get_ot_math_accent_pos(int f, int g)
 		if (table == NULL)
 			return rval;
 
-		le_uint16	offset = SWAPW(((const MathTableHeader*)table)->mathGlyphInfo);
+		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathGlyphInfo);
 		if (offset == 0)
 			return rval;
 		const MathGlyphInfo* glyphInfo = (const MathGlyphInfo*)(table + offset);
@@ -336,9 +336,9 @@ get_ot_math_accent_pos(int f, int g)
 			return rval;
 		const CoverageTable* coverage = (const CoverageTable*)(((const char*)accentAttachment) + offset);
 
-		le_int32	index = coverage->getGlyphCoverage(g);
+		int32_t	index = coverage->getGlyphCoverage(g);
 		if (index >= 0 && index < SWAPW(accentAttachment->topAccentAttachmentCount)) {
-			rval = (le_int16)SWAPW(accentAttachment->topAccentAttachment[index].value);
+			rval = (int16_t)SWAPW(accentAttachment->topAccentAttachment[index].value);
 			rval = X2Fix(rval * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 		}
 	}
@@ -358,7 +358,7 @@ ot_min_connector_overlap(int f)
 		if (table == NULL)
 			return rval;
 
-		le_uint16	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
+		uint16_t	offset = SWAPW(((const MathTableHeader*)table)->mathVariants);
 		if (offset == 0)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);

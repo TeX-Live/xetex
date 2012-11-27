@@ -50,7 +50,7 @@ class XeTeXFontInst_FT2 : public XeTeXFontInst
 {
 protected:
 
-    const void *	readTable(LETag tag, le_uint32 *length) const;
+    const void *	readTable(LETag tag, uint32_t *length) const;
 
 	FT_Face			face;
 	
@@ -64,7 +64,7 @@ public:
 	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
 
 	// overrides of XeTeXFontInst methods, in case it's not an sfnt
-	virtual le_uint16 getNumGlyphs() const;
+	virtual uint16_t getNumGlyphs() const;
     virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
     virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const;
     virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;

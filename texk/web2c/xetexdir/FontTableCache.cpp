@@ -50,7 +50,7 @@ struct FontTableCacheEntry
 {
     LETag tag;
     const void *table;
-    le_uint32 size;
+    uint32_t size;
 };
 
 FontTableCache::FontTableCache()
@@ -84,7 +84,7 @@ void FontTableCache::dispose()
     fTableCacheCurr = 0;
 }
 
-const void *FontTableCache::find(LETag tableTag, le_uint32 *tableSize) const
+const void *FontTableCache::find(LETag tableTag, uint32_t *tableSize) const
 {
 	int lo = 0, hi = fTableCacheCurr;
 	while (lo < hi) {
@@ -101,7 +101,7 @@ const void *FontTableCache::find(LETag tableTag, le_uint32 *tableSize) const
 		}
 	}
 
-    le_uint32  length;
+    uint32_t  length;
     const void *table = readFontTable(tableTag, length);
 
     ((FontTableCache *) this)->add(tableTag, table, length);
@@ -111,10 +111,10 @@ const void *FontTableCache::find(LETag tableTag, le_uint32 *tableSize) const
     return table;
 }
 
-void FontTableCache::add(LETag tableTag, const void *table, le_uint32 length)
+void FontTableCache::add(LETag tableTag, const void *table, uint32_t length)
 {
     if (fTableCacheCurr >= fTableCacheSize) {
-        le_int32 newSize = fTableCacheSize + TABLE_CACHE_GROW;
+        int32_t newSize = fTableCacheSize + TABLE_CACHE_GROW;
 
         fTableCache = (FontTableCacheEntry *) LE_GROW_ARRAY(fTableCache, newSize);
 

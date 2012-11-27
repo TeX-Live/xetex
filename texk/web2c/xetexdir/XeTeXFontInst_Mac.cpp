@@ -88,7 +88,7 @@ void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
     return;
 }
 
-const void *XeTeXFontInst_Mac::readTable(LETag tag, le_uint32 *length) const
+const void *XeTeXFontInst_Mac::readTable(LETag tag, uint32_t *length) const
 {
 	OSStatus status = ATSFontGetTable(fFontRef, tag, 0, 0, 0, (ByteCount*)length);
 	if (status != noErr) {

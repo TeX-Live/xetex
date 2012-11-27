@@ -42,130 +42,127 @@ authorization from the copyright holders.
 #ifndef __SFNT_H
 #define __SFNT_H
 
-#include "layout/LETypes.h"
-
-
 #ifndef ANY_NUMBER
 #define ANY_NUMBER 1
 #endif
 
-typedef le_int32 fixed;
+typedef int32_t fixed;
 
 struct BigDate
 {
-    le_uint32   bc;
-    le_uint32   ad;
+	uint32_t	bc;
+	uint32_t	ad;
 };
 
 struct HEADTable
 {
-    fixed       version;
-    fixed       fontRevision;
-    le_uint32   checksumAdjustment;
-    le_uint32   magicNumber;
-    le_uint16   flags;
-    le_uint16   unitsPerEm;
-    BigDate     created;
-    BigDate     modified;
-    le_int16    xMin;
-    le_int16    yMin;
-    le_int16    xMax;
-    le_int16    yMax;
-	le_uint16	macStyle;
-    le_uint16   lowestRecPPEM;
-    le_int16    fontDirectionHint;
-    le_int16    indexToLocFormat;
-    le_int16    glyphDataFormat;
+    fixed		version;
+    fixed		fontRevision;
+    uint32_t	checksumAdjustment;
+    uint32_t	magicNumber;
+    uint16_t	flags;
+    uint16_t	unitsPerEm;
+    BigDate		created;
+    BigDate		modified;
+    int16_t		xMin;
+    int16_t		yMin;
+    int16_t		xMax;
+    int16_t		yMax;
+	uint16_t	macStyle;
+    uint16_t	lowestRecPPEM;
+    int16_t		fontDirectionHint;
+    int16_t		indexToLocFormat;
+    int16_t		glyphDataFormat;
 };
 
 struct MAXPTable
 {
-    fixed       version;
-    le_uint16   numGlyphs;
-    le_uint16   maxPoints;
-    le_uint16   maxContours;
-    le_uint16   maxComponentPoints;
-    le_uint16   maxComponentContours;
-    le_uint16   maxZones;
-    le_uint16   maxTwilightPoints;
-    le_uint16   maxStorage;
-    le_uint16   maxFunctionDefs;
-    le_uint16   maxInstructionDefs;
-    le_uint16   maxStackElements;
-    le_uint16   maxSizeOfInstructions;
-    le_uint16   maxComponentElements;
-    le_uint16   maxComponentDepth;
+    fixed		version;
+    uint16_t	numGlyphs;
+    uint16_t	maxPoints;
+    uint16_t	maxContours;
+    uint16_t	maxComponentPoints;
+    uint16_t	maxComponentContours;
+    uint16_t	maxZones;
+    uint16_t	maxTwilightPoints;
+    uint16_t	maxStorage;
+    uint16_t	maxFunctionDefs;
+    uint16_t	maxInstructionDefs;
+    uint16_t	maxStackElements;
+    uint16_t	maxSizeOfInstructions;
+    uint16_t	maxComponentElements;
+    uint16_t	maxComponentDepth;
 };
 
 struct HHEATable
 {
-    fixed       version;
-    le_int16    ascent;
-    le_int16    descent;
-    le_int16    lineGap;
-    le_uint16   advanceWidthMax;
-    le_int16    minLeftSideBearing;
-    le_int16    minRightSideBearing;
-    le_int16    xMaxExtent;
-    le_int16    caretSlopeRise;
-    le_int16    caretSlopeRun;
-    le_int16    caretOffset;
-    le_int16    reserved1;
-    le_int16    reserved2;
-    le_int16    reserved3;
-    le_int16    reserved4;
-    le_int16    metricDataFormat;
-    le_uint16   numOfLongHorMetrics;
+    fixed		version;
+    int16_t		ascent;
+    int16_t		descent;
+    int16_t		lineGap;
+    uint16_t	advanceWidthMax;
+    int16_t		minLeftSideBearing;
+    int16_t		minRightSideBearing;
+    int16_t		xMaxExtent;
+    int16_t		caretSlopeRise;
+    int16_t		caretSlopeRun;
+    int16_t		caretOffset;
+    int16_t		reserved1;
+    int16_t		reserved2;
+    int16_t		reserved3;
+    int16_t		reserved4;
+    int16_t		metricDataFormat;
+    uint16_t	numOfLongHorMetrics;
 };
 
 struct LongHorMetric
 {
-    le_uint16   advanceWidth;
-    le_int16    leftSideBearing;
+	uint16_t	advanceWidth;
+	int16_t		leftSideBearing;
 };
 
 struct HMTXTable
 {
     LongHorMetric hMetrics[ANY_NUMBER];        // ANY_NUMBER = numOfLongHorMetrics from hhea table
-//  le_int16        leftSideBearing[ANY_NUMBER]; // ANY_NUMBER = numGlyphs - numOfLongHorMetrics
+//  int16_t        leftSideBearing[ANY_NUMBER]; // ANY_NUMBER = numGlyphs - numOfLongHorMetrics
 };
 
 struct POSTTable
 {
 	fixed		version;
 	fixed		italicAngle;
-	le_int16	underlinePosition;
-	le_uint16	underlineThickness;
-	le_uint32	isFixedPitch;
-	le_uint32	minMemType42;
-	le_uint32	maxMemType42;
-	le_uint32	minMemType1;
-	le_uint32	maxMemType1;
+	int16_t		underlinePosition;
+	uint16_t	underlineThickness;
+	uint32_t	isFixedPitch;
+	uint32_t	minMemType42;
+	uint32_t	maxMemType42;
+	uint32_t	minMemType1;
+	uint32_t	maxMemType1;
 };
 
 struct OS2TableHeader {
-	le_uint16	version;
-	le_int16	xAvgCharWidth;
-	le_uint16	usWeightClass;
-	le_uint16	usWidthClass;
-	le_int16	fsType;
-	le_int16	ySubscriptXSize;
-	le_int16	ySubscriptYSize;
-	le_int16	ySubscriptXOffset;
-	le_int16	ySubscriptYOffset;
-	le_int16	ySuperscriptXSize;
-	le_int16	ySuperscriptYSize;
-	le_int16	ySuperscriptXOffset;
-	le_int16	ySuperscriptYOffset;
-	le_int16	yStrikeoutSize;
-	le_int16	yStrikeoutPosition;
-	le_int16	sFamilyClass;
-	le_uint8	panose[10];
-	le_uint8	ulCharRange[16];	// spec'd as 4 longs, but do this to keep structure packed
-	le_int8	achVendID[4];
-	le_uint16	fsSelection;
-	le_uint16	fsFirstCharIndex;
-	le_uint16	fsLastCharIndex;
+	uint16_t	version;
+	int16_t		xAvgCharWidth;
+	uint16_t	usWeightClass;
+	uint16_t	usWidthClass;
+	int16_t		fsType;
+	int16_t		ySubscriptXSize;
+	int16_t		ySubscriptYSize;
+	int16_t		ySubscriptXOffset;
+	int16_t		ySubscriptYOffset;
+	int16_t		ySuperscriptXSize;
+	int16_t		ySuperscriptYSize;
+	int16_t		ySuperscriptXOffset;
+	int16_t		ySuperscriptYOffset;
+	int16_t		yStrikeoutSize;
+	int16_t		yStrikeoutPosition;
+	int16_t		sFamilyClass;
+	uint8_t		panose[10];
+	uint8_t		ulCharRange[16];	// spec'd as 4 longs, but do this to keep structure packed
+	int8_t		achVendID[4];
+	uint16_t	fsSelection;
+	uint16_t	fsFirstCharIndex;
+	uint16_t	fsLastCharIndex;
 };
 
 #endif

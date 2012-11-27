@@ -68,7 +68,7 @@ friend class XeTeXGrFont;
 protected:
     float    fPointSize;
 
-    le_int32 fUnitsPerEM;
+    int32_t fUnitsPerEM;
     float fAscent;
     float fDescent;
     float fLeading;
@@ -80,8 +80,8 @@ protected:
 	float fItalicAngle;
 
     const HMTXTable *fMetricsTable;
-    le_uint16 fNumLongMetrics;
-    le_uint16 fNumGlyphs;
+    uint16_t fNumLongMetrics;
+    uint16_t fNumGlyphs;
 	bool fNumGlyphsInited;
 	
 	bool fVertical; // false = horizontal, true = vertical
@@ -91,12 +91,12 @@ protected:
 	int fFirstCharCode;
 	int fLastCharCode;
 
-    virtual const void *readTable(LETag tag, le_uint32 *length) const = 0;
+    virtual const void *readTable(LETag tag, uint32_t *length) const = 0;
     void deleteTable(const void *table) const;
     void getMetrics();
 
     const void *readFontTable(LETag tableTag) const;
-    const void *readFontTable(LETag tableTag, le_uint32& len) const;
+    const void *readFontTable(LETag tableTag, uint32_t& len) const;
 
 public:
     XeTeXFontInst(float pointSize, LEErrorCode &status);
@@ -106,7 +106,7 @@ public:
 	virtual void initialize(LEErrorCode &status);
 
     virtual const void *getFontTable(LETag tableTag) const;
-    virtual const void *getFontTable(LETag tableTag, le_uint32* length) const;
+    virtual const void *getFontTable(LETag tableTag, uint32_t* length) const;
 
 	virtual const char *getFilename() const
 	{
@@ -120,24 +120,24 @@ public:
 		return fVertical;
 	};
 
-    virtual le_int32 getUnitsPerEM() const
+    virtual int32_t getUnitsPerEM() const
     {
         return fUnitsPerEM;
     };
 
-    virtual le_int32 getAscent() const
+    virtual int32_t getAscent() const
     {
-        return (le_int32)fAscent;
+        return (int32_t)fAscent;
     }
 
-    virtual le_int32 getDescent() const
+    virtual int32_t getDescent() const
     {
-        return (le_int32)fDescent;
+        return (int32_t)fDescent;
     }
 
-    virtual le_int32 getLeading() const
+    virtual int32_t getLeading() const
     {
-        return (le_int32)fLeading;
+        return (int32_t)fLeading;
     }
 
     virtual float getExactAscent() const
@@ -158,11 +158,11 @@ public:
     virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const = 0; /* must be implemented by subclass */
     virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
 
-	virtual le_uint16 getNumGlyphs() const;
+	virtual uint16_t getNumGlyphs() const;
 
     virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
 
-    virtual le_bool getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &point) const;
+    virtual le_bool getGlyphPoint(LEGlyphID glyph, int32_t pointNumber, LEPoint &point) const;
 
 	virtual void getGlyphBounds(LEGlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
 

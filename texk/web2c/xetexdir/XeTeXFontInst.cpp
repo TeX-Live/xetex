@@ -120,9 +120,9 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
         goto error_exit;
     }
 
-    fAscent  = yUnitsToPoints((float)(le_int16)SWAPW(dirHeadTable->ascent));
-    fDescent = yUnitsToPoints((float)(le_int16)SWAPW(dirHeadTable->descent));
-    fLeading = yUnitsToPoints((float)(le_int16)SWAPW(dirHeadTable->lineGap));
+    fAscent  = yUnitsToPoints((float)(int16_t)SWAPW(dirHeadTable->ascent));
+    fDescent = yUnitsToPoints((float)(int16_t)SWAPW(dirHeadTable->descent));
+    fLeading = yUnitsToPoints((float)(int16_t)SWAPW(dirHeadTable->lineGap));
 
     fNumLongMetrics = SWAPW(dirHeadTable->numOfLongHorMetrics);
 
@@ -158,24 +158,24 @@ const void *XeTeXFontInst::getFontTable(LETag tableTag) const
     return FontTableCache::find(tableTag);
 }
 
-const void *XeTeXFontInst::getFontTable(LETag tableTag, le_uint32 *length) const
+const void *XeTeXFontInst::getFontTable(LETag tableTag, uint32_t *length) const
 {
     return FontTableCache::find(tableTag, length);
 }
 
 const void *XeTeXFontInst::readFontTable(LETag tableTag) const
 {
-    le_uint32 len;
+    uint32_t len;
 
     return readTable(tableTag, &len);
 }
 
-const void *XeTeXFontInst::readFontTable(LETag tableTag, le_uint32& len) const
+const void *XeTeXFontInst::readFontTable(LETag tableTag, uint32_t& len) const
 {
     return readTable(tableTag, &len);
 }
 
-le_uint16 XeTeXFontInst::getNumGlyphs() const
+uint16_t XeTeXFontInst::getNumGlyphs() const
 {
     if (!fNumGlyphsInited) {
         LETag maxpTag = LE_MAXP_TABLE_TAG;
@@ -203,7 +203,7 @@ void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
         realThis->fMetricsTable = (const HMTXTable *) readFontTable(metricsTag);
     }
 
-    le_uint16 index = ttGlyph;
+    uint16_t index = ttGlyph;
 
     if (ttGlyph >= getNumGlyphs() || fMetricsTable == NULL) {
         advance.fX = advance.fY = 0;
@@ -218,7 +218,7 @@ void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
     advance.fY = 0;
 }
 
-le_bool XeTeXFontInst::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &point) const
+le_bool XeTeXFontInst::getGlyphPoint(LEGlyphID glyph, int32_t pointNumber, LEPoint &point) const
 {
     return FALSE;
 }
@@ -279,7 +279,7 @@ LEGlyphID
 XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
 	/* default implementation, may be overridden (e.g. by Freetype-based XeTeXFontInst_ */
 {
-    le_uint32	len;
+    uint32_t	len;
     const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
     if (p != NULL)
 		return findGlyphInPostTable(p, len, glyphName);
@@ -290,7 +290,7 @@ XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
 const char*
 XeTeXFontInst::getGlyphName(LEGlyphID gid, int& nameLen)
 {
-    le_uint32	len;
+    uint32_t	len;
     const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
     if (p != NULL)
 		return getGlyphNamePtr(p, len, gid, &nameLen);

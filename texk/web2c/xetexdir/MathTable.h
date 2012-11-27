@@ -36,22 +36,22 @@ authorization from the copyright holders.
 #include "layout/OpenTypeTables.h"
 
 typedef struct {
-	le_int16 value;
-	le_uint16 deviceTable;
+	int16_t		value;
+	uint16_t	deviceTable;
 } MathValueRecord;
 
 typedef struct {
-	le_uint32 version;
-	le_uint16 mathConstants;
-	le_uint16 mathGlyphInfo;
-	le_uint16 mathVariants;
+	uint32_t	version;
+	uint16_t	mathConstants;
+	uint16_t	mathGlyphInfo;
+	uint16_t	mathVariants;
 } MathTableHeader;
 
 typedef struct {
-	le_uint16 scriptPercentScaleDown;
-	le_uint16 scriptScriptPercentScaleDown;
-	le_uint16 delimitedSubFormulaMinHeight;
-	le_uint16 displayOperatorMinHeight;
+	uint16_t		scriptPercentScaleDown;
+	uint16_t		scriptScriptPercentScaleDown;
+	uint16_t		delimitedSubFormulaMinHeight;
+	uint16_t		displayOperatorMinHeight;
 	MathValueRecord mathLeading;
 	MathValueRecord axisHeight;
 	MathValueRecord accentBaseHeight;
@@ -103,7 +103,7 @@ typedef struct {
 	MathValueRecord radicalExtraAscender;
 	MathValueRecord radicalKernBeforeDegree;
 	MathValueRecord radicalKernAfterDegree;
-	le_uint16 radicalDegreeBottomRaisePercent;
+	uint16_t 		radicalDegreeBottomRaisePercent;
 } MathConstants;
 
 typedef enum {
@@ -170,57 +170,57 @@ typedef enum {
 } mathConstantIndex;
 
 typedef struct {
-	le_uint16 minConnectorOverlap;
-	Offset vertGlyphCoverage;
-	Offset horizGlyphCoverage;
-	le_uint16 vertGlyphCount;
-	le_uint16 horizGlyphCount;
-	Offset vertGlyphConstruction[ANY_NUMBER];
-	Offset horizGlyphConstruction[ANY_NUMBER];
+	uint16_t	minConnectorOverlap;
+	Offset		vertGlyphCoverage;
+	Offset		horizGlyphCoverage;
+	uint16_t	vertGlyphCount;
+	uint16_t	horizGlyphCount;
+	Offset		vertGlyphConstruction[ANY_NUMBER];
+	Offset		horizGlyphConstruction[ANY_NUMBER];
 } MathVariants;
 
 typedef struct {
-	TTGlyphID variantGlyph;
-	le_uint16 advanceMeasurement;
+	TTGlyphID	variantGlyph;
+	uint16_t	advanceMeasurement;
 } MathGlyphVariantRecord;
 
 typedef struct {
-	Offset glyphAssembly;
-	le_uint16 variantCount;
+	Offset		glyphAssembly;
+	uint16_t	variantCount;
 	MathGlyphVariantRecord mathGlyphVariantRecord[ANY_NUMBER];
 } MathGlyphConstruction;
 
 typedef struct {
-	TTGlyphID glyph;
-	le_uint16 startConnectorLength;
-	le_uint16 endConnectorLength;
-	le_uint16 fullAdvance;
-	le_uint16 partFlags;
+	TTGlyphID	glyph;
+	uint16_t	startConnectorLength;
+	uint16_t	endConnectorLength;
+	uint16_t	fullAdvance;
+	uint16_t	partFlags;
 } GlyphPartRecord;
 #define fExtender	0x0001
 
 typedef struct {
 	MathValueRecord italicsCorrection;
-	le_uint16 partCount;
+	uint16_t	partCount;
 	GlyphPartRecord partRecords[ANY_NUMBER];
 } GlyphAssembly;
 
 typedef struct {
-	le_uint16	mathItalicsCorrectionInfo;
-	le_uint16	mathTopAccentAttachment;
-	le_uint16	extendedShapeCoverage;
-	le_uint16	mathKernInfo;
+	uint16_t	mathItalicsCorrectionInfo;
+	uint16_t	mathTopAccentAttachment;
+	uint16_t	extendedShapeCoverage;
+	uint16_t	mathKernInfo;
 } MathGlyphInfo;
 
 typedef struct {
-	le_uint16	coverage;
-	le_uint16	italicsCorrectionCount;
+	uint16_t	coverage;
+	uint16_t	italicsCorrectionCount;
 	MathValueRecord	italicsCorrection[ANY_NUMBER];
 } MathItalicsCorrectionInfo;
 
 typedef struct {
-	le_uint16	coverage;
-	le_uint16	topAccentAttachmentCount;
+	uint16_t	coverage;
+	uint16_t	topAccentAttachmentCount;
 	MathValueRecord	topAccentAttachment[ANY_NUMBER];
 } MathTopAccentAttachment;
 

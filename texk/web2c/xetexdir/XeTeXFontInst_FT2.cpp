@@ -140,7 +140,7 @@ void XeTeXFontInst_FT2::initialize(LEErrorCode &status)
     return;
 }
 
-const void *XeTeXFontInst_FT2::readTable(LETag tag, le_uint32 *length) const
+const void *XeTeXFontInst_FT2::readTable(LETag tag, uint32_t *length) const
 {
 	*length = 0;
 	FT_ULong	tmpLength = 0;
@@ -189,7 +189,7 @@ XeTeXFontInst_FT2::mapCharToGlyph(LEUnicode32 ch) const
 	return FT_Get_Char_Index(face, ch);
 }
 
-le_uint16
+uint16_t
 XeTeXFontInst_FT2::getNumGlyphs() const
 {
 	return face->num_glyphs;

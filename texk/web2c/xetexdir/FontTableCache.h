@@ -54,24 +54,24 @@ public:
 
     virtual ~FontTableCache();
 
-    const void *find(LETag tableTag, le_uint32 *tableSize = NULL) const;
+    const void *find(LETag tableTag, uint32_t *tableSize = NULL) const;
 
 	void flush();
 
 protected:
     virtual const void *readFontTable(LETag tableTag) const = 0;
-    virtual const void *readFontTable(LETag tableTag, le_uint32 &length) const = 0;
+    virtual const void *readFontTable(LETag tableTag, uint32_t &length) const = 0;
 
 private:
 
 	void initialize();
 	void dispose();
 
-    void add(LETag tableTag, const void *table, le_uint32 length);
+    void add(LETag tableTag, const void *table, uint32_t length);
 
     FontTableCacheEntry *fTableCache;
-    le_int32 fTableCacheCurr;
-    le_int32 fTableCacheSize;
+    int32_t fTableCacheCurr;
+    int32_t fTableCacheSize;
 };
 
 #endif
