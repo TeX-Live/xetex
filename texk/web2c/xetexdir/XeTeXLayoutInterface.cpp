@@ -653,13 +653,13 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 
 float getPointSize(XeTeXLayoutEngine engine)
 {
-	return engine->font->getXPixelsPerEm();
+	return engine->font->getPointSize();
 }
 
 void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent)
 {
-	*ascent = engine->font->getExactAscent();
-	*descent = engine->font->getExactDescent();
+	*ascent = engine->font->getAscent();
+	*descent = engine->font->getDescent();
 }
 
 int getDefaultDirection(XeTeXLayoutEngine engine)

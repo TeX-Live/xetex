@@ -63,8 +63,6 @@ XeTeXFontInst::XeTeXFontInst(float pointSize, LEErrorCode &status)
     , fUnitsPerEM(0)
     , fAscent(0)
     , fDescent(0)
-    , fLeading(0)
-    , fXHeight(0)
     , fItalicAngle(0)
     , fMetricsTable(NULL)
     , fNumLongMetrics(0)
@@ -122,7 +120,6 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
 
     fAscent  = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->ascent));
     fDescent = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->descent));
-    fLeading = unitsToPoints((float)(int16_t)SWAPW(dirHeadTable->lineGap));
 
     fNumLongMetrics = SWAPW(dirHeadTable->numOfLongHorMetrics);
 
@@ -216,11 +213,6 @@ void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 
     advance.fX = unitsToPoints(SWAPW(fMetricsTable->hMetrics[index].advanceWidth));
     advance.fY = 0;
-}
-
-le_bool XeTeXFontInst::getGlyphPoint(LEGlyphID glyph, int32_t pointNumber, LEPoint &point) const
-{
-    return FALSE;
 }
 
 float

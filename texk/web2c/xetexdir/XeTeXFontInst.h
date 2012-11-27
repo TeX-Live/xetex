@@ -45,9 +45,6 @@ authorization from the copyright holders.
 
 #include <stdio.h>
 
-#include "layout/LETypes.h"
-#include "layout/LEFontInstance.h"
-
 #include "FontTableCache.h"
 
 #include "sfnt.h"
@@ -71,12 +68,10 @@ protected:
     int32_t fUnitsPerEM;
     float fAscent;
     float fDescent;
-    float fLeading;
 
     float fDeviceScaleX;
     float fDeviceScaleY;
 
-	float fXHeight;
 	float fItalicAngle;
 
     const HMTXTable *fMetricsTable;
@@ -106,7 +101,7 @@ public:
 	virtual void initialize(LEErrorCode &status);
 
     virtual const void *getFontTable(LETag tableTag) const;
-    virtual const void *getFontTable(LETag tableTag, uint32_t* length) const;
+	virtual const void *getFontTable(LETag tableTag, uint32_t* length) const;
 
 	virtual const char *getFilename() const
 	{
@@ -125,34 +120,14 @@ public:
         return fUnitsPerEM;
     };
 
-    virtual int32_t getAscent() const
-    {
-        return (int32_t)fAscent;
-    }
-
-    virtual int32_t getDescent() const
-    {
-        return (int32_t)fDescent;
-    }
-
-    virtual int32_t getLeading() const
-    {
-        return (int32_t)fLeading;
-    }
-
-    virtual float getExactAscent() const
+    virtual float getAscent() const
     {
         return fAscent;
     }
 
-    virtual float getExactDescent() const
+    virtual float getDescent() const
     {
         return fDescent;
-    }
-
-    virtual float getExactLeading() const
-    {
-        return fLeading;
     }
 
     virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const = 0; /* must be implemented by subclass */
@@ -161,8 +136,6 @@ public:
 	virtual uint16_t getNumGlyphs() const;
 
     virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
-
-    virtual le_bool getGlyphPoint(LEGlyphID glyph, int32_t pointNumber, LEPoint &point) const;
 
 	virtual void getGlyphBounds(LEGlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
 
@@ -176,34 +149,15 @@ public:
 	virtual LEUnicode32 getFirstCharCode() = 0; /* must be implemented by subclass */
 	virtual LEUnicode32 getLastCharCode() = 0; /* must be implemented by subclass */
 
-    float getXPixelsPerEm() const
+    float getPointSize() const
     {
         return fPointSize;
     };
-
-    float getYPixelsPerEm() const
-    {
-        return fPointSize;
-    };
-
-    float getScaleFactorX() const
-    {
-        return 1.0;
-    }
-
-    float getScaleFactorY() const
-    {
-        return 1.0;
-    }
 
 	int32_t unitsToPoints(float units) const
 	{
 		return (units * fPointSize) / (float) fUnitsPerEM;
 	}
-    float getXHeight() const
-    {
-        return fXHeight;
-    }
 
     float getItalicAngle() const
     {
