@@ -22,6 +22,7 @@
 #      --make      : only make, no make distclean; configure
 #      --parallel  : make -j 2 -l 3.0
 #      --nostrip   : do not strip binary
+#      --syslibs   : build with system libraries instead of TL tree ones
 #      --warnings= : enable compiler warnings
 #      --mingw     : crosscompile for mingw32 from i-386linux
 #      --host=     : target system for mingw32 cross-compilation
@@ -54,6 +55,7 @@ fi
 
 ONLY_MAKE=FALSE
 STRIP_XETEX=TRUE
+SYSTEM_LIBS=FALSE
 WARNINGS=yes
 MINGWCROSS=FALSE
 CONFHOST=
@@ -68,6 +70,7 @@ until [ -z "$1" ]; do
   case "$1" in
     --make      ) ONLY_MAKE=TRUE     ;;
     --nostrip   ) STRIP_XETEX=FALSE ;;
+    --syslibs   ) SYSTEM_LIBS=TRUE   ;;
     --warnings=*) WARNINGS=`echo $1 | sed 's/--warnings=\(.*\)/\1/' `        ;;
     --mingw     ) MINGWCROSS=TRUE    ;;
     --host=*    ) CONFHOST="$1"      ;;
@@ -145,10 +148,7 @@ fi
 
 cd "$B"
 
-if [ "$ONLY_MAKE" = "FALSE" ]
-then
-TL_MAKE=$MAKE ../configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS\
-    --enable-cxx-runtime-hack \
+CONF_OPTIONS="\
     --disable-all-pkgs \
     --disable-shared    \
     --disable-largefile \
@@ -157,20 +157,35 @@ TL_MAKE=$MAKE ../configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS\
     --enable-dump-share  \
     --enable-xetex  \
     --without-system-ptexenc \
-    --without-system-kpathsea \
+    --without-system-kpathsea "
+
+if [ "$SYSTEM_LIBS" = "TRUE" ] ;
+then
+  CONF_OPTIONS="$CONF_OPTIONS \
+    --with-system-poppler \
+    --with-system-freetype2 \
+    --with-system-libpng \
+    --with-system-teckit \
+    --with-system-zlib \
+    --with-system-icu \
+    --with-system-graphite \
+    --without-mf-x-toolkit --without-x "
+else
+  CONF_OPTIONS="$CONF_OPTIONS \
+    --enable-cxx-runtime-hack \
     --without-system-poppler \
-    --without-system-xpdf \
-    --without-system-freetype \
     --without-system-freetype2 \
-    --without-system-gd \
     --without-system-libpng \
     --without-system-teckit \
     --without-system-zlib \
-    --without-system-t1lib \
     --without-system-icu \
     --without-system-graphite \
-    --without-system-zziplib \
-    --without-mf-x-toolkit --without-x \
+    --without-mf-x-toolkit --without-x "
+fi
+
+if [ "$ONLY_MAKE" = "FALSE" ]
+then
+TL_MAKE=$MAKE ../configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS $CONF_OPTIONS\
    || exit 1 
 fi
 
