@@ -35,12 +35,8 @@ authorization from the copyright holders.
 #else
 #include "XeTeXFontMgr_FC.h"
 #endif
-
+#include "XeTeXFontInst.h"
 #include "XeTeXswap.h"
-
-#include "layout/ICUFeatures.h"
-#include "layout/GlyphPositioningTables.h"
-
 #include "sfnt.h"
 
 extern "C" {
@@ -489,47 +485,19 @@ XeTeXFontMgr::bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) 
 }
 
 const XeTeXFontMgr::OpSizeRec*
-XeTeXFontMgr::getOpSizePtr(XeTeXFont font)
+XeTeXFontMgr::getOpSize(XeTeXFont font)
 {
-	const GlyphPositioningTableHeader* gposTable = (const GlyphPositioningTableHeader*)getFontTablePtr(font, LE_GPOS_TABLE_TAG);
-	if (gposTable != NULL) {
-		const FeatureListTable*	featureListTable = (const FeatureListTable*)((const char*)gposTable + SWAP(gposTable->featureListOffset));
-		for (int i = 0; i < SWAP(featureListTable->featureCount); ++i) {
-			UInt32  tag = SWAPT(featureListTable->featureRecordArray[i].featureTag);
-			if (tag == LE_SIZE_FEATURE_TAG) {
-				const FeatureTable*	feature = (const FeatureTable*)((const char*)featureListTable
-												+ SWAP(featureListTable->featureRecordArray[i].featureTableOffset));
-				UInt16	offset = SWAP(feature->featureParamsOffset);
-				const OpSizeRec*	pSizeRec;
-				/* if featureParamsOffset < (offset of feature from featureListTable),
-				   then we have a correct size table;
-				   otherwise we (presumably) have a "broken" one from the old FDK */
-				for (int i = 0; i < 2; ++i) {
-					if (i == 0)
-						pSizeRec = (const OpSizeRec*)((char*)feature + offset);
-					else
-						pSizeRec = (const OpSizeRec*)((char*)featureListTable + offset);
-					if (SWAP(pSizeRec->designSize) == 0)
-						continue;	// incorrect 'size' feature format
-					if (SWAP(pSizeRec->subFamilyID) == 0
-						&& SWAP(pSizeRec->nameCode) == 0
-						&& SWAP(pSizeRec->minSize) == 0
-						&& SWAP(pSizeRec->maxSize) == 0)
-						return pSizeRec;	// feature is valid, but no 'size' range
-					if (SWAP(pSizeRec->designSize) < SWAP(pSizeRec->minSize))	// check values are valid
-						continue;												// else try different interpretation
-					if (SWAP(pSizeRec->designSize) > SWAP(pSizeRec->maxSize))
-						continue;
-					if (SWAP(pSizeRec->maxSize) < SWAP(pSizeRec->minSize))
-						continue;
-					if (SWAP(pSizeRec->nameCode) < 256)
-						continue;
-					if (SWAP(pSizeRec->nameCode) > 32767)
-						continue;
-					return pSizeRec;
-				}
-			}
-		}
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	uint16_t data[5];
+
+	if (hb_ot_layout_position_get_size(face, data)) {
+		OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
+		pSizeRec->designSize = data[0];
+		pSizeRec->subFamilyID = data[1];
+		pSizeRec->nameCode = data[2];
+		pSizeRec->minSize = data[3];
+		pSizeRec->maxSize = data[4];
+		return pSizeRec;
 	}
 
 	return NULL;
@@ -538,9 +506,9 @@ XeTeXFontMgr::getOpSizePtr(XeTeXFont font)
 double
 XeTeXFontMgr::getDesignSize(XeTeXFont font)
 {
-	const OpSizeRec* pSizeRec = getOpSizePtr(font);
+	const OpSizeRec* pSizeRec = getOpSize(font);
 	if (pSizeRec != NULL)
-		return SWAP(pSizeRec->designSize) / 10.0;
+		return pSizeRec->designSize / 10.0;
 	else
 		return 10.0;
 }
@@ -550,18 +518,18 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 {
 	XeTeXFont	font = createFont(theFont->fontRef, 655360);
 	if (font != 0) {
-		const OpSizeRec* pSizeRec = getOpSizePtr(font);
+		const OpSizeRec* pSizeRec = getOpSize(font);
 		if (pSizeRec != NULL) {
-			theFont->opSizeInfo.designSize = SWAP(pSizeRec->designSize);
-			if (SWAP(pSizeRec->subFamilyID) == 0
-				&& SWAP(pSizeRec->nameCode) == 0
-				&& SWAP(pSizeRec->minSize) == 0
-				&& SWAP(pSizeRec->maxSize) == 0)
+			theFont->opSizeInfo.designSize = pSizeRec->designSize;
+			if (pSizeRec->subFamilyID == 0
+				&& pSizeRec->nameCode == 0
+				&& pSizeRec->minSize == 0
+				&& pSizeRec->maxSize == 0)
 				goto done_size;	// feature is valid, but no 'size' range
-			theFont->opSizeInfo.subFamilyID = SWAP(pSizeRec->subFamilyID);
-			theFont->opSizeInfo.nameCode = SWAP(pSizeRec->nameCode);
-			theFont->opSizeInfo.minSize = SWAP(pSizeRec->minSize);
-			theFont->opSizeInfo.maxSize = SWAP(pSizeRec->maxSize);
+			theFont->opSizeInfo.subFamilyID = pSizeRec->subFamilyID;
+			theFont->opSizeInfo.nameCode = pSizeRec->nameCode;
+			theFont->opSizeInfo.minSize = pSizeRec->minSize;
+			theFont->opSizeInfo.maxSize = pSizeRec->maxSize;
 		}
 	done_size:
 
