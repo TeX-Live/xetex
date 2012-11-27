@@ -43,7 +43,7 @@ authorization from the copyright holders.
 
 #define __FONTTABLECACHE_H
 
-#include "layout/LETypes.h"
+#include "XeTeX_ext.h"
 
 struct FontTableCacheEntry;
 
@@ -54,20 +54,20 @@ public:
 
     virtual ~FontTableCache();
 
-    const void *find(LETag tableTag, uint32_t *tableSize = NULL) const;
+    const void *find(OTTag tableTag, uint32_t *tableSize = NULL) const;
 
 	void flush();
 
 protected:
-    virtual const void *readFontTable(LETag tableTag) const = 0;
-    virtual const void *readFontTable(LETag tableTag, uint32_t &length) const = 0;
+    virtual const void *readFontTable(OTTag tableTag) const = 0;
+    virtual const void *readFontTable(OTTag tableTag, uint32_t &length) const = 0;
 
 private:
 
 	void initialize();
 	void dispose();
 
-    void add(LETag tableTag, const void *table, uint32_t length);
+    void add(OTTag tableTag, const void *table, uint32_t length);
 
     FontTableCacheEntry *fTableCache;
     int32_t fTableCacheCurr;

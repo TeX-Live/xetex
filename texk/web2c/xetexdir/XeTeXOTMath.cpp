@@ -37,8 +37,6 @@ authorization from the copyright holders.
 #include "XeTeXFontInst.h"
 #include "XeTeXswap.h"
 
-#define kMATHTableTag	0x4D415448
-
 typedef void*	voidptr;
 
 extern "C" {
@@ -68,7 +66,7 @@ static int32_t getCoverage(const Coverage* coverage, GlyphID g)
 
 static SInt16 getMathConstant(XeTeXFontInst* fontInst, mathConstantIndex whichConstant)
 {
-	const char* table = (const char*)fontInst->getFontTable(kMATHTableTag);
+	const char* table = (const char*)fontInst->getFontTable(kMATH);
 	if (table == NULL)
 		return 0;
 
@@ -222,7 +220,7 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
-		const char* table = (const char*)font->getFontTable(kMATHTableTag);
+		const char* table = (const char*)font->getFontTable(kMATH);
 		if (table == NULL)
 			return rval;
 
@@ -261,7 +259,7 @@ get_ot_assembly_ptr(int f, int g, int horiz)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
-		const char* table = (const char*)font->getFontTable(kMATHTableTag);
+		const char* table = (const char*)font->getFontTable(kMATH);
 		if (table == NULL)
 			return rval;
 
@@ -298,7 +296,7 @@ get_ot_math_ital_corr(int f, int g)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
-		const char* table = (const char*)font->getFontTable(kMATHTableTag);
+		const char* table = (const char*)font->getFontTable(kMATH);
 		if (table == NULL)
 			return rval;
 
@@ -333,7 +331,7 @@ get_ot_math_accent_pos(int f, int g)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
-		const char* table = (const char*)font->getFontTable(kMATHTableTag);
+		const char* table = (const char*)font->getFontTable(kMATH);
 		if (table == NULL)
 			return rval;
 
@@ -370,7 +368,7 @@ ot_min_connector_overlap(int f)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
-		const char* table = (const char*)font->getFontTable(kMATHTableTag);
+		const char* table = (const char*)font->getFontTable(kMATH);
 		if (table == NULL)
 			return rval;
 

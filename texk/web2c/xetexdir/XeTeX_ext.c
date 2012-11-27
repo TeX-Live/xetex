@@ -2530,9 +2530,9 @@ atsugetfontmetrics(ATSUStyle style, integer* ascent, integer* descent, integer* 
 		/* try to get a (possibly synthetic) POST table, as ATSFontGetHorizontalMetrics
 		   doesn't seem to return this value for OT/CFF fonts */
 		ByteCount	tableSize;
-		if (ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+		if (ATSFontGetTable(fontRef, kPOST, 0, 0, 0, &tableSize) == noErr) {
 			POSTTable*      post = xmalloc(tableSize);
-			ATSFontGetTable(fontRef, LE_POST_TABLE_TAG, 0, tableSize, post, 0);
+			ATSFontGetTable(fontRef, kPOST, 0, tableSize, post, 0);
 			*slant = X2Fix(tan(Fix2X( - SWAP32(post->italicAngle)) * M_PI / 180.0));
 			free(post);
 		}
@@ -2586,9 +2586,9 @@ atsufontget(int what, ATSUStyle style)
 			{
 				ByteCount	tableSize;
 				ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
-				if (ATSFontGetTable(fontRef, LE_MAXP_TABLE_TAG, 0, 0, 0, &tableSize) == noErr) {
+				if (ATSFontGetTable(fontRef, kMAXP, 0, 0, 0, &tableSize) == noErr) {
 					MAXPTable*	table = xmalloc(tableSize);
-					ATSFontGetTable(fontRef, LE_MAXP_TABLE_TAG, 0, tableSize, table, 0);
+					ATSFontGetTable(fontRef, kMAXP, 0, tableSize, table, 0);
 					rval = SWAP16(table->numGlyphs);
 					free(table);
 				}

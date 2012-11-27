@@ -86,22 +86,22 @@ protected:
 	int fFirstCharCode;
 	int fLastCharCode;
 
-    virtual const void *readTable(LETag tag, uint32_t *length) const = 0;
+    virtual const void *readTable(OTTag tag, uint32_t *length) const = 0;
     void deleteTable(const void *table) const;
     void getMetrics();
 
-    const void *readFontTable(LETag tableTag) const;
-    const void *readFontTable(LETag tableTag, uint32_t& len) const;
+    const void *readFontTable(OTTag tableTag) const;
+    const void *readFontTable(OTTag tableTag, uint32_t& len) const;
 
 public:
-    XeTeXFontInst(float pointSize, LEErrorCode &status);
+    XeTeXFontInst(float pointSize, int &status);
 
     virtual ~XeTeXFontInst();
 
-	virtual void initialize(LEErrorCode &status);
+	virtual void initialize(int &status);
 
-    virtual const void *getFontTable(LETag tableTag) const;
-	virtual const void *getFontTable(LETag tableTag, uint32_t* length) const;
+    virtual const void *getFontTable(OTTag tableTag) const;
+	virtual const void *getFontTable(OTTag tableTag, uint32_t* length) const;
 
 	virtual const char *getFilename() const
 	{
@@ -130,24 +130,24 @@ public:
         return fDescent;
     }
 
-    virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const = 0; /* must be implemented by subclass */
-    virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
+    virtual GlyphID mapCharToGlyph(UChar32 ch) const = 0; /* must be implemented by subclass */
+    virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
 
 	virtual uint16_t getNumGlyphs() const;
 
-    virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
+    virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
 
-	virtual void getGlyphBounds(LEGlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
+	virtual void getGlyphBounds(GlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
 
-	float getGlyphWidth(LEGlyphID glyph);	
-	void getGlyphHeightDepth(LEGlyphID glyph, float *ht, float* dp);	
-	void getGlyphSidebearings(LEGlyphID glyph, float* lsb, float* rsb);
-	float getGlyphItalCorr(LEGlyphID glyph);
+	float getGlyphWidth(GlyphID glyph);
+	void getGlyphHeightDepth(GlyphID glyph, float *ht, float* dp);
+	void getGlyphSidebearings(GlyphID glyph, float* lsb, float* rsb);
+	float getGlyphItalCorr(GlyphID glyph);
 
-	virtual const char* getGlyphName(LEGlyphID gid, int& nameLen);
+	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
 	
-	virtual LEUnicode32 getFirstCharCode() = 0; /* must be implemented by subclass */
-	virtual LEUnicode32 getLastCharCode() = 0; /* must be implemented by subclass */
+	virtual UChar32 getFirstCharCode() = 0; /* must be implemented by subclass */
+	virtual UChar32 getLastCharCode() = 0; /* must be implemented by subclass */
 
     float getPointSize() const
     {

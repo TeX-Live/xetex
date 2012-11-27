@@ -48,7 +48,7 @@ authorization from the copyright holders.
 class XeTeXFontInst_Mac : public XeTeXFontInst
 {
 protected:
-    const void *readTable(LETag tag, uint32_t *length) const;
+    const void *readTable(OTTag tag, uint32_t *length) const;
 
 	ATSFontRef	fFontRef;
 	ATSUStyle	fStyle;

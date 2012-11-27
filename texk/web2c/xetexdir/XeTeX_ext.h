@@ -33,6 +33,7 @@ authorization from the copyright holders.
 #ifndef __XETEXEXT_H
 #define __XETEXEXT_H
 
+#include <unicode/utypes.h>
 #include <w2c/c-auto.h>  /* needed for SIZEOF_LONG and NO_DUMP_SHARE */
 /***** copied from TeX/texk/web2c/config.h -- difficult to include in C++ source files ******/
 #ifndef INTEGER_TYPE
@@ -94,6 +95,9 @@ typedef struct {
 	Fixed	y;
 } FixedPoint;
 #endif
+
+typedef uint32_t OTTag;
+typedef uint16_t GlyphID;
 
 
 /* these are also in xetex-new.ch and must correspond! */
@@ -161,13 +165,21 @@ typedef struct {
 /* OT-related constants we need */
 #define kGSUB	0x47535542
 #define kGPOS	0x47504f53
+#define kMATH	HB_TAG('M','A','T','H')
+#define kHEAD	HB_TAG('h','e','a','d')
+#define kHHEA	HB_TAG('h','h','e','a')
+#define kVHEA	HB_TAG('v','h','e','a')
+#define kPOST	HB_TAG('p','o','s','t')
+#define kHMTX	HB_TAG('h','m','t','x')
+#define kVMTX	HB_TAG('v','m','t','x')
+#define kMAXP	HB_TAG('m','a','x','p')
+#define kOS_2	HB_TAG('O','S','/','2')
 
 #define kLatin	0x6c61746e
 #define kSyriac	0x73797263
 #define kArabic	0x61726162
 #define kThaana	0x74686161
 #define kHebrew	0x68656272
-
 
 struct postTable {
 	Fixed	format;

@@ -111,7 +111,7 @@ void terminatefontmanager()
 
 XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 {
-	LEErrorCode status = LE_NO_ERROR;
+	int status = 0;
 #ifdef XETEX_MAC
 	XeTeXFontInst* font = new XeTeXFontInst_Mac((ATSFontRef)fontRef, Fix2X(pointSize), status);
 #else
@@ -121,7 +121,7 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 	FcPatternGetInteger(fontRef, FC_INDEX, 0, &index);
 	XeTeXFontInst* font = new XeTeXFontInst_FT2((const char*)pathname, index, Fix2X(pointSize), status);
 #endif
-	if (LE_FAILURE(status)) {
+	if (status != 0) {
 		delete font;
 		return NULL;
 	}
@@ -130,9 +130,9 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 
 XeTeXFont createFontFromFile(const char* filename, int index, Fixed pointSize)
 {
-	LEErrorCode status = LE_NO_ERROR;
+	int status = 0;
 	XeTeXFontInst* font = new XeTeXFontInst_FT2(filename, index, Fix2X(pointSize), status);
-	if (LE_FAILURE(status)) {
+	if (status != 0) {
 		delete font;
 		return NULL;
 	}
@@ -507,9 +507,9 @@ long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 feature, c
 
 float getGlyphWidth(XeTeXFont font, UInt32 gid)
 {
-	LEPoint	adv;
+	realpoint	adv;
 	((XeTeXFontInst*)font)->getGlyphAdvance(gid, adv);
-	return adv.fX;
+	return adv.x;
 }
 
 UInt32
@@ -1034,12 +1034,10 @@ int usingOpenType(XeTeXLayoutEngine engine)
 	return engine->hbBuffer != NULL;
 }
 
-#define kMATHTableTag	0x4D415448 /* 'MATH' */
-
 int isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
 	if (usingOpenType(engine)) {
-		if (engine->font->getFontTable(kMATHTableTag) != NULL)
+		if (engine->font->getFontTable(kMATH) != NULL)
 			return 1;
 	}
 	return 0;

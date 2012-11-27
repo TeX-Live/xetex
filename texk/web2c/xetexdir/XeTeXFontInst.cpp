@@ -54,7 +54,7 @@ authorization from the copyright holders.
 #include <string.h>
 
 
-XeTeXFontInst::XeTeXFontInst(float pointSize, LEErrorCode &status)
+XeTeXFontInst::XeTeXFontInst(float pointSize, int &status)
     : fPointSize(pointSize)
     , fUnitsPerEM(0)
     , fAscent(0)
@@ -79,12 +79,8 @@ XeTeXFontInst::~XeTeXFontInst()
 		deleteTable(fMetricsTable);
 }
 
-void XeTeXFontInst::initialize(LEErrorCode &status)
+void XeTeXFontInst::initialize(int &status)
 {
-    const LETag headTag = LE_HEAD_TABLE_TAG;
-    const LETag hheaTag = LE_HHEA_TABLE_TAG;
-    const LETag vheaTag = LE_VHEA_TABLE_TAG;
-    const LETag postTag = LE_POST_TABLE_TAG;
     const HEADTable *headTable = NULL;
     const HHEATable *dirHeadTable = NULL;
     const POSTTable *postTable = NULL;
@@ -96,10 +92,10 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
     }
     
     // read unitsPerEm from 'head' table
-    headTable = (const HEADTable *) readFontTable(headTag);
+    headTable = (const HEADTable *) readFontTable(kHEAD);
 
     if (headTable == NULL) {
-        status = LE_MISSING_FONT_TABLE_ERROR;
+        status = 1;
         goto error_exit;
     }
 
@@ -107,10 +103,10 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
     deleteTable(headTable);
 
 	// we use the fact that 'hhea' and 'vhea' have the same format!
-    dirHeadTable = (const HHEATable *) readFontTable(fVertical ? vheaTag : hheaTag);
+    dirHeadTable = (const HHEATable *) readFontTable(fVertical ? kVHEA : kHHEA);
 
     if (dirHeadTable == NULL) {
-        status = LE_MISSING_FONT_TABLE_ERROR;
+        status = 1;
         goto error_exit;
     }
 
@@ -121,7 +117,7 @@ void XeTeXFontInst::initialize(LEErrorCode &status)
 
     deleteTable(dirHeadTable);
 
-    postTable = (const POSTTable *) readFontTable(postTag);
+    postTable = (const POSTTable *) readFontTable(kPOST);
 
     if (postTable != NULL) {
 		fItalicAngle = Fix2X(SWAP(postTable->italicAngle));
@@ -137,33 +133,33 @@ error_exit:
 void XeTeXFontInst::setLayoutDirVertical(bool vertical)
 {
 	fVertical = vertical;
-	LEErrorCode	status = LE_NO_ERROR;
+	int	status = 0;
 	initialize(status);
 }
 
 void XeTeXFontInst::deleteTable(const void *table) const
 {
-    LE_DELETE_ARRAY(table);
+    free((void *) table);
 }
 
-const void *XeTeXFontInst::getFontTable(LETag tableTag) const
+const void *XeTeXFontInst::getFontTable(OTTag tableTag) const
 {
     return FontTableCache::find(tableTag);
 }
 
-const void *XeTeXFontInst::getFontTable(LETag tableTag, uint32_t *length) const
+const void *XeTeXFontInst::getFontTable(OTTag tableTag, uint32_t *length) const
 {
     return FontTableCache::find(tableTag, length);
 }
 
-const void *XeTeXFontInst::readFontTable(LETag tableTag) const
+const void *XeTeXFontInst::readFontTable(OTTag tableTag) const
 {
     uint32_t len;
 
     return readTable(tableTag, &len);
 }
 
-const void *XeTeXFontInst::readFontTable(LETag tableTag, uint32_t& len) const
+const void *XeTeXFontInst::readFontTable(OTTag tableTag, uint32_t& len) const
 {
     return readTable(tableTag, &len);
 }
@@ -171,8 +167,7 @@ const void *XeTeXFontInst::readFontTable(LETag tableTag, uint32_t& len) const
 uint16_t XeTeXFontInst::getNumGlyphs() const
 {
     if (!fNumGlyphsInited) {
-        LETag maxpTag = LE_MAXP_TABLE_TAG;
-        const MAXPTable *maxpTable = (MAXPTable *) readFontTable(maxpTag);
+        const MAXPTable *maxpTable = (MAXPTable *) readFontTable(kMAXP);
 
         if (maxpTable != NULL) {
 			XeTeXFontInst *realThis = (XeTeXFontInst *) this;
@@ -185,42 +180,39 @@ uint16_t XeTeXFontInst::getNumGlyphs() const
 	return fNumGlyphs;
 }
 
-void XeTeXFontInst::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
+void XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
 {
-    TTGlyphID ttGlyph = (TTGlyphID) LE_GET_GLYPH(glyph);
-
     if (fMetricsTable == NULL) {
-    	// we use the fact that 'hmtx' and 'vmtx' have the same format
-        LETag metricsTag = fVertical ? LE_VMTX_TABLE_TAG : LE_HMTX_TABLE_TAG;
         XeTeXFontInst *realThis = (XeTeXFontInst *) this;
-        realThis->fMetricsTable = (const HMTXTable *) readFontTable(metricsTag);
+        // we use the fact that 'hmtx' and 'vmtx' have the same format
+        realThis->fMetricsTable = (const HMTXTable *) readFontTable(fVertical ? kVMTX : kHMTX);
     }
 
-    uint16_t index = ttGlyph;
+    uint16_t index = glyph;
 
-    if (ttGlyph >= getNumGlyphs() || fMetricsTable == NULL) {
-        advance.fX = advance.fY = 0;
+    if (glyph >= getNumGlyphs() || fMetricsTable == NULL) {
+        advance.x = advance.y = 0;
         return;
     }
 
-    if (ttGlyph >= fNumLongMetrics) {
+    if (glyph >= fNumLongMetrics) {
         index = fNumLongMetrics - 1;
     }
 
-    advance.fX = unitsToPoints(SWAP(fMetricsTable->hMetrics[index].advanceWidth));
-    advance.fY = 0;
+    advance.x = unitsToPoints(SWAP(fMetricsTable->hMetrics[index].advanceWidth));
+    advance.x = 0;
 }
 
 float
-XeTeXFontInst::getGlyphWidth(LEGlyphID gid)
+XeTeXFontInst::getGlyphWidth(GlyphID gid)
 {
-	LEPoint	advance;
+	realpoint	advance;
 	getGlyphAdvance(gid, advance);
-	return advance.fX;
+	return advance.x;
 }
 
 void
-XeTeXFontInst::getGlyphHeightDepth(LEGlyphID gid, float* ht, float* dp)
+XeTeXFontInst::getGlyphHeightDepth(GlyphID gid, float* ht, float* dp)
 {
 	GlyphBBox	bbox;
 	getGlyphBounds(gid, &bbox);
@@ -232,9 +224,9 @@ XeTeXFontInst::getGlyphHeightDepth(LEGlyphID gid, float* ht, float* dp)
 }
 
 void
-XeTeXFontInst::getGlyphSidebearings(LEGlyphID gid, float* lsb, float* rsb)
+XeTeXFontInst::getGlyphSidebearings(GlyphID gid, float* lsb, float* rsb)
 {
-	LEPoint	adv;
+	realpoint	adv;
 	getGlyphAdvance(gid, adv);
 
 	GlyphBBox	bbox;
@@ -243,32 +235,32 @@ XeTeXFontInst::getGlyphSidebearings(LEGlyphID gid, float* lsb, float* rsb)
 	if (lsb)
 		*lsb = bbox.xMin;
 	if (rsb)
-		*rsb = adv.fX - bbox.xMax;
+		*rsb = adv.x - bbox.xMax;
 }
 
 float
-XeTeXFontInst::getGlyphItalCorr(LEGlyphID gid)
+XeTeXFontInst::getGlyphItalCorr(GlyphID gid)
 {
 	float	rval = 0.0;
 
-	LEPoint	adv;
+	realpoint	adv;
 	getGlyphAdvance(gid, adv);
 
 	GlyphBBox	bbox;
 	getGlyphBounds(gid, &bbox);
 	
-	if (bbox.xMax > adv.fX)
-		rval = bbox.xMax - adv.fX;
+	if (bbox.xMax > adv.x)
+		rval = bbox.xMax - adv.x;
 	
 	return rval;
 }
 
-LEGlyphID
+GlyphID
 XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
 	/* default implementation, may be overridden (e.g. by Freetype-based XeTeXFontInst_ */
 {
     uint32_t	len;
-    const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
+    const char *p = (const char*)readFontTable(kPOST, len);
     if (p != NULL)
 		return findGlyphInPostTable(p, len, glyphName);
 	else
@@ -276,10 +268,10 @@ XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
 }
 
 const char*
-XeTeXFontInst::getGlyphName(LEGlyphID gid, int& nameLen)
+XeTeXFontInst::getGlyphName(GlyphID gid, int& nameLen)
 {
     uint32_t	len;
-    const char *p = (const char*)readFontTable(LE_POST_TABLE_TAG, len);
+    const char *p = (const char*)readFontTable(kPOST, len);
     if (p != NULL)
 		return getGlyphNamePtr(p, len, gid, &nameLen);
 	else

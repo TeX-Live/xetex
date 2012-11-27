@@ -50,28 +50,28 @@ class XeTeXFontInst_FT2 : public XeTeXFontInst
 {
 protected:
 
-    const void *	readTable(LETag tag, uint32_t *length) const;
+    const void *	readTable(OTTag tag, uint32_t *length) const;
 
 	FT_Face			face;
 	
 public:
-    				XeTeXFontInst_FT2(const char* filename, int index, float pointSize, LEErrorCode &status);
+					XeTeXFontInst_FT2(const char* filename, int index, float pointSize, int &status);
 
     virtual 		~XeTeXFontInst_FT2();
 
-	virtual void	initialize(LEErrorCode &status);
+	virtual void	initialize(int &status);
 
-	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
+	virtual void	getGlyphBounds(GlyphID gid, GlyphBBox* bbox);
 
 	// overrides of XeTeXFontInst methods, in case it's not an sfnt
 	virtual uint16_t getNumGlyphs() const;
-    virtual void getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const;
-    virtual LEGlyphID mapCharToGlyph(LEUnicode32 ch) const;
-    virtual LEGlyphID mapGlyphToIndex(const char* glyphName) const;
-    virtual void getKernPair(LEGlyphID leftGlyph, LEGlyphID rightGlyph, LEPoint &kern) const;
-	virtual const char* getGlyphName(LEGlyphID gid, int& nameLen);
-	virtual LEUnicode32 getFirstCharCode();
-	virtual LEUnicode32 getLastCharCode();
+    virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
+    virtual GlyphID mapCharToGlyph(UChar32 ch) const;
+    virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
+    virtual void getKernPair(GlyphID leftGlyph, GlyphID rightGlyph, realpoint &kern) const;
+	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
+	virtual UChar32 getFirstCharCode();
+	virtual UChar32 getLastCharCode();
 };
 
 #endif

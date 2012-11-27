@@ -39,8 +39,6 @@ authorization from the copyright holders.
  **********************************************************************
  */
 
-#include "layout/LETypes.h"
-
 #include "FontTableCache.h"
 
 #define TABLE_CACHE_INIT 5
@@ -48,7 +46,7 @@ authorization from the copyright holders.
 
 struct FontTableCacheEntry
 {
-    LETag tag;
+    OTTag tag;
     const void *table;
     uint32_t size;
 };
@@ -62,7 +60,7 @@ FontTableCache::FontTableCache()
 void
 FontTableCache::initialize()
 {
-    fTableCache = LE_NEW_ARRAY(FontTableCacheEntry, fTableCacheSize);
+    fTableCache = (FontTableCacheEntry *) malloc((fTableCacheSize) * sizeof(FontTableCacheEntry));
 
     if (fTableCache == NULL) {
         fTableCacheSize = 0;
@@ -78,13 +76,13 @@ FontTableCache::~FontTableCache()
 void FontTableCache::dispose()
 {
     for (int i = fTableCacheCurr - 1; i >= 0; i -= 1) {
-        LE_DELETE_ARRAY(fTableCache[i].table);
+        free((void *) (fTableCache[i].table));
     }
 
     fTableCacheCurr = 0;
 }
 
-const void *FontTableCache::find(LETag tableTag, uint32_t *tableSize) const
+const void *FontTableCache::find(OTTag tableTag, uint32_t *tableSize) const
 {
 	int lo = 0, hi = fTableCacheCurr;
 	while (lo < hi) {
@@ -111,13 +109,12 @@ const void *FontTableCache::find(LETag tableTag, uint32_t *tableSize) const
     return table;
 }
 
-void FontTableCache::add(LETag tableTag, const void *table, uint32_t length)
+void FontTableCache::add(OTTag tableTag, const void *table, uint32_t length)
 {
     if (fTableCacheCurr >= fTableCacheSize) {
         int32_t newSize = fTableCacheSize + TABLE_CACHE_GROW;
 
-        fTableCache = (FontTableCacheEntry *) LE_GROW_ARRAY(fTableCache, newSize);
-
+        fTableCache = (FontTableCacheEntry *) realloc(fTableCache, newSize * sizeof(FontTableCacheEntry));
         fTableCacheSize = newSize;
     }
 

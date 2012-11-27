@@ -37,7 +37,6 @@ authorization from the copyright holders.
 #define ANY_NUMBER 1
 #endif
 
-typedef uint16_t GlyphID;
 typedef uint16_t Offset;
 
 typedef struct {

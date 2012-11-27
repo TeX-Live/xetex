@@ -84,7 +84,7 @@ const void *
 XeTeXGrFont::getTable(gr::fontTableId32 tableID, size_t * pcbSize)
 {
 	uint32_t	length;
-	LETag		tag = tableID;
+	OTTag		tag = tableID;
 	const void *rval = fXeTeXFont->getFontTable(tag, &length);
 	*pcbSize = length;
 	return rval;

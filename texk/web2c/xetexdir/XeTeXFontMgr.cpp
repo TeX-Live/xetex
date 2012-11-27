@@ -533,7 +533,7 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 		}
 	done_size:
 
-		const OS2TableHeader* os2Table = (const OS2TableHeader*)getFontTablePtr(font, LE_OS_2_TABLE_TAG);
+		const OS2TableHeader* os2Table = (const OS2TableHeader*)getFontTablePtr(font, kOS_2);
 		if (os2Table != NULL) {
 			theFont->weight = SWAP(os2Table->usWeightClass);
 			theFont->width = SWAP(os2Table->usWidthClass);
@@ -543,7 +543,7 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 			theFont->isItalic = (sel & (1 << 0)) != 0;
 		}
 
-		const HEADTable* headTable = (const HEADTable*)getFontTablePtr(font, LE_HEAD_TABLE_TAG);
+		const HEADTable* headTable = (const HEADTable*)getFontTablePtr(font, kHEAD);
 		if (headTable != NULL) {
 			UInt16	ms = SWAP(headTable->macStyle);
 			if ((ms & (1 << 0)) != 0)
@@ -552,7 +552,7 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 				theFont->isItalic = true;
 		}
 
-		const POSTTable* postTable = (const POSTTable*)getFontTablePtr(font, LE_POST_TABLE_TAG);
+		const POSTTable* postTable = (const POSTTable*)getFontTablePtr(font, kPOST);
 		if (postTable != NULL) {
 			theFont->slant = (int)(1000 * (tan(Fix2X(-SWAP(UInt32(postTable->italicAngle))) * M_PI / 180.0)));
 		}
