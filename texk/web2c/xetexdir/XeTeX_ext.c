@@ -183,9 +183,10 @@ void initversionstring(char **versions)
 	FT_Int	ftMajor, ftMinor, ftPatch;
 
 	const_string fmt =
-		"Compiled with ICU version %s [with modifications for XeTeX]\n"
+		"Compiled with ICU version %s\n"
 		"Compiled with zlib version %s; using %s\n"
 		"Compiled with FreeType2 version %d.%d.%d; using %d.%d.%d\n"
+		"Compiled with HarfBuzz version %s; using %s\n"
 #ifdef XETEX_MAC
 		"Using Mac OS X Carbon, Cocoa & QuickTime frameworks\n"
 #else
@@ -199,6 +200,8 @@ void initversionstring(char **versions)
 			+ strlen(U_ICU_VERSION)
 			+ strlen(ZLIB_VERSION)
 			+ strlen(zlib_version)
+			+ strlen(HB_VERSION_STRING)
+			+ strlen(hb_version_string())
 #ifdef XETEX_OTHER
 			+ strlen(PNG_LIBPNG_VER_STRING)
 			+ strlen(png_libpng_ver)
@@ -221,7 +224,8 @@ void initversionstring(char **versions)
 		U_ICU_VERSION,
 		ZLIB_VERSION, zlib_version,
 		FREETYPE_MAJOR, FREETYPE_MINOR, FREETYPE_PATCH,
-		ftMajor, ftMinor, ftPatch
+		ftMajor, ftMinor, ftPatch,
+		HB_VERSION_STRING, hb_version_string()
 #ifdef XETEX_OTHER
 		,
 		FC_VERSION / 10000, (FC_VERSION % 10000) / 100, FC_VERSION % 100,
