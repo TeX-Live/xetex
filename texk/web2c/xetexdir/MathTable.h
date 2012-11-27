@@ -46,6 +46,12 @@ typedef struct {
 } MathValueRecord;
 
 typedef struct {
+	GlyphID		start;
+	GlyphID		end;
+	int16_t		startCoverageIndex;
+} RangeRecord;
+
+typedef struct {
 	uint32_t	version;
 	uint16_t	mathConstants;
 	uint16_t	mathGlyphInfo;
@@ -229,4 +235,19 @@ typedef struct {
 	MathValueRecord	topAccentAttachment[ANY_NUMBER];
 } MathTopAccentAttachment;
 
+typedef struct {
+    uint16_t	format;
+} Coverage;
+
+typedef struct {
+    uint16_t	format;
+    uint16_t	glyphCount;
+    GlyphID		glyphArray[ANY_NUMBER];
+} CoverageFormat1;
+
+typedef struct {
+    uint16_t	format;
+    uint16_t	rangeCount;
+    RangeRecord	rangeArray[ANY_NUMBER];
+} CoverageFormat2;
 #endif

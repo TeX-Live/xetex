@@ -37,8 +37,6 @@ authorization from the copyright holders.
 #include "XeTeXFontInst.h"
 #include "XeTeXswap.h"
 
-#include "layout/CoverageTables.h"
-
 #define kMATHTableTag	0x4D415448
 
 typedef void*	voidptr;
@@ -47,6 +45,25 @@ extern "C" {
 	extern voidptr*	fontlayoutengine;
 	extern integer*	fontarea;
 	extern integer*	fontsize;
+}
+
+static int32_t getCoverage(const Coverage* coverage, GlyphID g)
+{
+	if (SWAP(coverage->format) == 1) {
+		const CoverageFormat1 *table = (const CoverageFormat1 *) coverage;
+		for (int i = 0; i < SWAP(table->glyphCount); i++) {
+			if (SWAP(table->glyphArray[i]) == g)
+				return i;
+		}
+	} else if (SWAP(coverage->format) == 2) {
+		const CoverageFormat2 *table = (const CoverageFormat2 *) coverage;
+		for (int i = 0; i < SWAP(table->rangeCount); i++) {
+			if (SWAP(table->rangeArray[i].start) <= g && SWAP(table->rangeArray[i].start) >= g)
+				return SWAP(table->rangeArray[i].startCoverageIndex) + (g - SWAP(table->rangeArray[i].start));
+		}
+	}
+
+	return -1;
 }
 
 static SInt16 getMathConstant(XeTeXFontInst* fontInst, mathConstantIndex whichConstant)
@@ -217,9 +234,9 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 		offset = horiz ? SWAP(variants->horizGlyphCoverage) : SWAP(variants->vertGlyphCoverage);
 		if (offset == 0)
 			return rval;
-		const CoverageTable* coverage = (const CoverageTable*)(((const char*)variants) + offset);
+		const Coverage* coverage = (const Coverage*)(((const char*)variants) + offset);
 
-		int32_t	index = coverage->getGlyphCoverage(g);
+		int32_t	index = getCoverage(coverage, g);
 		if (index >= 0) {
 			if (horiz)
 				index += SWAP(variants->vertGlyphCount);
@@ -256,9 +273,9 @@ get_ot_assembly_ptr(int f, int g, int horiz)
 		offset = horiz ? SWAP(variants->horizGlyphCoverage) : SWAP(variants->vertGlyphCoverage);
 		if (offset == 0)
 			return rval;
-		const CoverageTable* coverage = (const CoverageTable*)(((const char*)variants) + offset);
+		const Coverage* coverage = (const Coverage*)(((const char*)variants) + offset);
 
-		int32_t	index = coverage->getGlyphCoverage(g);
+		int32_t	index = getCoverage(coverage, g);
 		if (index >= 0) {
 			if (horiz)
 				index += SWAP(variants->vertGlyphCount);
@@ -298,9 +315,9 @@ get_ot_math_ital_corr(int f, int g)
 		offset = SWAP(italCorrInfo->coverage);
 		if (offset == 0)
 			return rval;
-		const CoverageTable* coverage = (const CoverageTable*)(((const char*)italCorrInfo) + offset);
+		const Coverage* coverage = (const Coverage*)(((const char*)italCorrInfo) + offset);
 
-		int32_t	index = coverage->getGlyphCoverage(g);
+		int32_t	index = getCoverage(coverage, g);
 		if (index >= 0 && index < SWAP(italCorrInfo->italicsCorrectionCount))
 			rval = X2Fix(SWAP(italCorrInfo->italicsCorrection[index].value) * Fix2X(fontsize[f]) / font->getUnitsPerEM());
 	}
@@ -333,9 +350,9 @@ get_ot_math_accent_pos(int f, int g)
 		offset = SWAP(accentAttachment->coverage);
 		if (offset == 0)
 			return rval;
-		const CoverageTable* coverage = (const CoverageTable*)(((const char*)accentAttachment) + offset);
+		const Coverage* coverage = (const Coverage*)(((const char*)accentAttachment) + offset);
 
-		int32_t	index = coverage->getGlyphCoverage(g);
+		int32_t	index = getCoverage(coverage, g);
 		if (index >= 0 && index < SWAP(accentAttachment->topAccentAttachmentCount)) {
 			rval = (int16_t)SWAP(accentAttachment->topAccentAttachment[index].value);
 			rval = X2Fix(rval * Fix2X(fontsize[f]) / font->getUnitsPerEM());
