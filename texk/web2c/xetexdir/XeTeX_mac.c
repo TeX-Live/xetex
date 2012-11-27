@@ -469,12 +469,12 @@ int MapGlyphToIndex_AAT(ATSUStyle style, const char* glyphName)
 	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
 
 	ByteCount	length;
-	OSStatus status = ATSFontGetTable(fontRef, kPost, 0, 0, 0, &length);
+	OSStatus status = ATSFontGetTable(fontRef, kPOST, 0, 0, 0, &length);
 	if (status != noErr)
 		goto ats_failed;
 
 	void*	table = xmalloc(length);
-	status = ATSFontGetTable(fontRef, kPost, 0, length, table, &length);
+	status = ATSFontGetTable(fontRef, kPOST, 0, length, table, &length);
 	if (status != noErr) {
 		free(table);
 		goto ats_failed;
@@ -530,12 +530,12 @@ GetGlyphName_AAT(ATSUStyle style, UInt16 gid, int* len)
 	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
 
 	ByteCount	length;
-	OSStatus status = ATSFontGetTable(fontRef, kPost, 0, 0, 0, &length);
+	OSStatus status = ATSFontGetTable(fontRef, kPOST, 0, 0, 0, &length);
 	if (status != noErr)
 		goto ats_failed;
 
 	void*	table = xmalloc(length);
-	status = ATSFontGetTable(fontRef, kPost, 0, length, table, &length);
+	status = ATSFontGetTable(fontRef, kPOST, 0, length, table, &length);
 	if (status != noErr) {
 		free(table);
 		goto ats_failed;

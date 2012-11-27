@@ -163,8 +163,8 @@ typedef uint16_t GlyphID;
 #define	XDV_GLYPH_ARRAY		253
 
 /* OT-related constants we need */
-#define kGSUB	0x47535542
-#define kGPOS	0x47504f53
+#define kGSUB	HB_TAG('G','S','U','B')
+#define kGPOS	HB_TAG('G','P','O','S')
 #define kMATH	HB_TAG('M','A','T','H')
 #define kHEAD	HB_TAG('h','e','a','d')
 #define kHHEA	HB_TAG('h','h','e','a')
@@ -174,12 +174,6 @@ typedef uint16_t GlyphID;
 #define kVMTX	HB_TAG('v','m','t','x')
 #define kMAXP	HB_TAG('m','a','x','p')
 #define kOS_2	HB_TAG('O','S','/','2')
-
-#define kLatin	0x6c61746e
-#define kSyriac	0x73797263
-#define kArabic	0x61726162
-#define kThaana	0x74686161
-#define kHebrew	0x68656272
 
 struct postTable {
 	Fixed	format;
@@ -193,9 +187,6 @@ struct postTable {
 	UInt32	minMemType1;
 	UInt32	maxMemType1;
 };
-
-#define kPost	0x706f7374
-#define kCmap	0x636d6170
 
 typedef struct
 {
