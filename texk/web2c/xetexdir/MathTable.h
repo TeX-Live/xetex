@@ -33,7 +33,12 @@ authorization from the copyright holders.
 #ifndef __MATHTABLE_H__
 #define __MATHTABLE_H__
 
-#include "layout/OpenTypeTables.h"
+#ifndef ANY_NUMBER
+#define ANY_NUMBER 1
+#endif
+
+typedef uint16_t GlyphID;
+typedef uint16_t Offset;
 
 typedef struct {
 	int16_t		value;
@@ -180,7 +185,7 @@ typedef struct {
 } MathVariants;
 
 typedef struct {
-	TTGlyphID	variantGlyph;
+	GlyphID		variantGlyph;
 	uint16_t	advanceMeasurement;
 } MathGlyphVariantRecord;
 
@@ -191,7 +196,7 @@ typedef struct {
 } MathGlyphConstruction;
 
 typedef struct {
-	TTGlyphID	glyph;
+	GlyphID		glyph;
 	uint16_t	startConnectorLength;
 	uint16_t	endConnectorLength;
 	uint16_t	fullAdvance;
