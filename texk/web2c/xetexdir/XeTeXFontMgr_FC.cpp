@@ -327,7 +327,7 @@ XeTeXFontMgr_FC::initialize()
 
 	FcPattern*		pat = FcNameParse((const FcChar8*)":outline=true");
 	FcObjectSet*	os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, FC_INDEX,
-											FC_FULLNAME, FC_WEIGHT, FC_WIDTH, FC_SLANT, NULL);
+											FC_FULLNAME, FC_WEIGHT, FC_WIDTH, FC_SLANT, FC_FONTFORMAT, NULL);
 	allFonts = FcFontList(FcConfigGetCurrent(), pat, os);
 	FcObjectSetDestroy(os);
 	FcPatternDestroy(pat);
