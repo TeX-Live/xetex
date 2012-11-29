@@ -539,3 +539,30 @@ hb_ot_layout_position_finish (hb_font_t *font, hb_buffer_t *buffer, hb_bool_t ze
 {
   OT::GPOS::position_finish (font, buffer, zero_width_attached_marks);
 }
+
+hb_bool_t
+hb_ot_layout_position_get_size (hb_face_t *face,
+				uint16_t  *data /* OUT, 5 items */)
+{
+  const OT::GPOS &gpos = _get_gpos (face);
+
+  unsigned int num_features = gpos.get_feature_count ();
+  for (unsigned int i = 0; i < num_features; i++) {
+
+    if (HB_TAG ('s','i','z','e') == gpos.get_feature_tag (i))
+    {
+      const OT::Feature &f = gpos.get_feature (i);
+      const OT::FeatureParams &params = f.get_feature_params ();
+
+      for (unsigned int i = 0; i < 5; i++)
+	data[i] = params.u.size.params[i];
+
+      return true;
+    }
+  }
+
+  for (unsigned int i = 0; i < 5; i++)
+    data[i] = 0;
+
+  return false;
+}
