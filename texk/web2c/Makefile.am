@@ -101,6 +101,8 @@ $(proglib): ${srcdir}/lib/*.c
 @TECKIT_RULE@
 ## Rebuild libsicuxxx
 @ICU_RULE@
+## Rebuild libharfbuzz
+@HARFBUZZ_RULE@
 
 # The environment for building.
 buildenv = TEXMFCNF=$(srcdir)/../kpathsea

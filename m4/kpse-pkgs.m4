@@ -36,6 +36,7 @@ freetype
 t1lib
 libpng
 zlib
+harfbuzz
 ])[]dnl
 dnl TeX specific libraries
 m4_define([kpse_texlibs_pkgs], [
@@ -63,6 +64,7 @@ AC_REQUIRE([KPSE_ZZIPLIB_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_GRAPHITE_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_TECKIT_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_ICU_SYSTEM_FLAGS])[]dnl
+AC_REQUIRE([KPSE_HARFBUZZ_SYSTEM_FLAGS])[]dnl
 ]) # KPSE_ALL_SYSTEM_FLAGS
 
 # KPSE_UTILS_PKGS()
