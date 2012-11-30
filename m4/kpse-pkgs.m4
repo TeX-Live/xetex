@@ -24,19 +24,21 @@
 AC_DEFUN([KPSE_LIBS_PKGS],
 [dnl generic libraries 'libs/*'
 m4_define([kpse_libs_pkgs], [
+harfbuzz
 icu
 teckit
 graphite
 zziplib
 xpdf
 poppler
+cairo
+pixman
 gd
 freetype2
 freetype
 t1lib
 libpng
 zlib
-harfbuzz
 ])[]dnl
 dnl TeX specific libraries
 m4_define([kpse_texlibs_pkgs], [
@@ -58,6 +60,8 @@ AC_REQUIRE([KPSE_T1LIB_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_FREETYPE_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_FREETYPE2_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_GD_SYSTEM_FLAGS])[]dnl
+AC_REQUIRE([KPSE_PIXMAN_SYSTEM_FLAGS])[]dnl
+AC_REQUIRE([KPSE_CAIRO_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_XPDF_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_POPPLER_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_ZZIPLIB_SYSTEM_FLAGS])[]dnl

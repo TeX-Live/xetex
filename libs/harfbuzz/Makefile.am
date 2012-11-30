@@ -10,7 +10,7 @@ ACLOCAL_AMFLAGS = -I ../../m4
 
 # Rebuild
 .PHONY: rebuild
-rebuild: config.force all
+rebuild: all
 
 ## We want to re-distribute the whole original harfbuzz source tree.
 ##
@@ -32,7 +32,8 @@ SUBDIRS = . include
 noinst_LIBRARIES = libharfbuzz.a
 
 ## common
-AM_CPPFLAGS = -I$(top_srcdir)/$(HARFBUZZ_SRC)
+AM_CPPFLAGS = -DHB_NO_MT -I$(top_srcdir)/$(HARFBUZZ_SRC)
+libharfbuzz_dependencies =
 libharfbuzz_a_SOURCES =  \
 	$(HARFBUZZ_SRC)/hb-atomic-private.hh \
 	$(HARFBUZZ_SRC)/hb-blob.cc \
@@ -99,26 +100,33 @@ libharfbuzz_a_SOURCES += \
 
 ## ICU library
 AM_CPPFLAGS += $(ICU_INCLUDES)
+libharfbuzz_dependencies += $(ICU_DEPEND)
 libharfbuzz_a_SOURCES += $(HARFBUZZ_SRC)/hb-icu.cc
 
 ## Graphite library
 ## not yet AM_CPPFLAGS += $(GRAPHITE2_INCLUDES)
+## not yet libharfbuzz_dependencies += $(GRAPHITE2_DEPEND)
 ## not yet libharfbuzz_a_SOURCES += $(HARFBUZZ_SRC)/hb-graphite2.cc
 
 ## FreeType 2 library
 AM_CPPFLAGS += $(FREETYPE2_INCLUDES)
+libharfbuzz_dependencies += $(FREETYPE2_DEPEND)
 libharfbuzz_a_SOURCES += $(HARFBUZZ_SRC)/hb-ft.cc
 
-config.force: $(FREETYPE2_DEPEND) $(ICU_DEPEND)
+$(libharfbuzz_a_OBJECTS): config.force
+
+config.force: $(libharfbuzz_dependencies)
 	echo timestamp >config.force
 	$(SHELL) ./config.status --recheck
 
 DISTCLEANFILES = config.force
 
-## Rebuild libfreetype
-@FREETYPE2_RULE@
 ## Rebuild libsicuxxx
 @ICU_RULE@
+## Rebuild libgraphite2
+## not yet @GRAPHITE2_RULE@
+## Rebuild libfreetype
+@FREETYPE2_RULE@
 
 ##if build
 ## check_PROGRAMS = 

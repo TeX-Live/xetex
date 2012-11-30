@@ -6,4 +6,4 @@ dnl
 ## basic check of system harfbuzz
 KPSE_TRY_LIB([harfbuzz],
              [#include <hb.h>],
-             [const char *s = hb_version_string();])
+             [const char *v = hb_version_string();])
