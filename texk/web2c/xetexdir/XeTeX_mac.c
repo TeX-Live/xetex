@@ -84,13 +84,13 @@ PStoTeXPoints(double pts)
 static inline Fixed
 FixedTeXtoPSPoints(Fixed pts)
 {
-	return X2Fix(TeXtoPSPoints(Fix2X(pts)));
+	return D2Fix(TeXtoPSPoints(Fix2D(pts)));
 }
 
 static inline Fixed
 FixedPStoTeXPoints(Fixed pts)
 {
-	return X2Fix(PStoTeXPoints(Fix2X(pts)));
+	return D2Fix(PStoTeXPoints(Fix2D(pts)));
 }
 
 void
@@ -860,7 +860,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 						values = xrealloc(values, allocVars * sizeof(SInt32));
 					}
 					axes[numVariations] = axis;
-					values[numVariations] = value * 65536.0;	//	X2Fix(value);
+					values[numVariations] = value * 65536.0;	//	D2Fix(value);
 					++numVariations;
 					
 					goto next_option;
@@ -880,7 +880,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 						goto bad_option;
 					++cp3;
 					double	val = read_double(&cp3);
-					tracking = X2Fix(val);
+					tracking = D2Fix(val);
 					goto next_option;
 				}
 				
@@ -946,7 +946,7 @@ loadAATfont(ATSFontRef fontRef, long scaled_size, const char* cp1)
 			}
 			
 			if (embolden != 0.0) {
-				embolden = embolden * Fix2X(scaled_size) / 100.0;
+				embolden = embolden * Fix2D(scaled_size) / 100.0;
 				tags[0] = kXeTeXEmboldenTag;
 				sizes[0] = sizeof(float);
 				attrs[0] = &embolden;
@@ -1088,8 +1088,8 @@ find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 						result = GraphicsImportGetImageDescription(ci, &desc);
 						bounds->x = 0;
 						bounds->y = 0;
-						bounds->wd = (*desc)->width * 72.27 / Fix2X((*desc)->hRes);
-						bounds->ht = (*desc)->height * 72.27 / Fix2X((*desc)->vRes);
+						bounds->wd = (*desc)->width * 72.27 / Fix2D((*desc)->hRes);
+						bounds->ht = (*desc)->height * 72.27 / Fix2D((*desc)->vRes);
 						DisposeHandle((Handle)desc);
 						(void)CloseComponent(ci);
 					}

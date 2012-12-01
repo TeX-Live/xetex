@@ -120,7 +120,7 @@ void XeTeXFontInst::initialize(int &status)
     postTable = (const POSTTable *) readFontTable(kPOST);
 
     if (postTable != NULL) {
-		fItalicAngle = Fix2X(SWAP(postTable->italicAngle));
+		fItalicAngle = Fix2D(SWAP(postTable->italicAngle));
 		deleteTable(postTable);
     }
 

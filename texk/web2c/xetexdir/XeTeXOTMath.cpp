@@ -99,7 +99,7 @@ get_ot_math_constant(int f, int n)
 		rval = getMathConstant(font, (mathConstantIndex)n);
 		/* scale according to font size, except the ones that are percentages */
 		if (n > scriptScriptPercentScaleDown && n < radicalDegreeBottomRaisePercent)
-			rval = X2Fix(font->unitsToPoints(rval));
+			rval = D2Fix(font->unitsToPoints(rval));
 	}
 	return rval;
 }
@@ -163,7 +163,7 @@ get_native_mathsy_param(int f, int n)
 				rval = get_ot_math_constant(f, (int)ot_index);
 		}
 	}
-//	fprintf(stderr, " math_sy(%d, %d) returns %.3f\n", f, n, Fix2X(rval));
+//	fprintf(stderr, " math_sy(%d, %d) returns %.3f\n", f, n, Fix2D(rval));
 	
 	return rval;
 }
@@ -207,7 +207,7 @@ get_native_mathex_param(int f, int n)
 				rval = get_ot_math_constant(f, (int)ot_index);
 		}
 	}
-//	fprintf(stderr, " math_ex(%d, %d) returns %.3f\n", f, n, Fix2X(rval));
+//	fprintf(stderr, " math_ex(%d, %d) returns %.3f\n", f, n, Fix2D(rval));
 	
 	return rval;
 }
@@ -243,7 +243,7 @@ get_ot_math_variant(int f, int g, int v, integer* adv, int horiz)
 															+ SWAP(variants->vertGlyphConstruction[index]));
 			if (v < SWAP(construction->variantCount)) {
 				rval = SWAP(construction->mathGlyphVariantRecord[v].variantGlyph);
-				*adv = X2Fix(font->unitsToPoints(SWAP(construction->mathGlyphVariantRecord[v].advanceMeasurement)));
+				*adv = D2Fix(font->unitsToPoints(SWAP(construction->mathGlyphVariantRecord[v].advanceMeasurement)));
 			}
 		}
 	}
@@ -317,7 +317,7 @@ get_ot_math_ital_corr(int f, int g)
 
 		int32_t	index = getCoverage(coverage, g);
 		if (index >= 0 && index < SWAP(italCorrInfo->italicsCorrectionCount))
-			rval = X2Fix(font->unitsToPoints(SWAP(italCorrInfo->italicsCorrection[index].value)));
+			rval = D2Fix(font->unitsToPoints(SWAP(italCorrInfo->italicsCorrection[index].value)));
 	}
 	
 	return rval;
@@ -353,7 +353,7 @@ get_ot_math_accent_pos(int f, int g)
 		int32_t	index = getCoverage(coverage, g);
 		if (index >= 0 && index < SWAP(accentAttachment->topAccentAttachmentCount)) {
 			rval = (int16_t)SWAP(accentAttachment->topAccentAttachment[index].value);
-			rval = X2Fix(font->unitsToPoints(rval));
+			rval = D2Fix(font->unitsToPoints(rval));
 		}
 	}
 	
@@ -377,7 +377,7 @@ ot_min_connector_overlap(int f)
 			return rval;
 		const MathVariants* variants = (const MathVariants*)(table + offset);
 
-		rval = X2Fix(font->unitsToPoints(SWAP(variants->minConnectorOverlap)));
+		rval = D2Fix(font->unitsToPoints(SWAP(variants->minConnectorOverlap)));
 	}
 
 	return rval;
@@ -408,7 +408,7 @@ ot_part_start_connector(int f, const GlyphAssembly* a, int i)
 	
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
-		rval = X2Fix(font->unitsToPoints(SWAP(a->partRecords[i].startConnectorLength)));
+		rval = D2Fix(font->unitsToPoints(SWAP(a->partRecords[i].startConnectorLength)));
 	}
 	
 	return rval;
@@ -421,7 +421,7 @@ ot_part_end_connector(int f, const GlyphAssembly* a, int i)
 	
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
-		rval = X2Fix(font->unitsToPoints(SWAP(a->partRecords[i].endConnectorLength)));
+		rval = D2Fix(font->unitsToPoints(SWAP(a->partRecords[i].endConnectorLength)));
 	}
 	
 	return rval;
@@ -434,7 +434,7 @@ ot_part_full_advance(int f, const GlyphAssembly* a, int i)
 	
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst*	font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
-		rval = X2Fix(font->unitsToPoints(SWAP(a->partRecords[i].fullAdvance)));
+		rval = D2Fix(font->unitsToPoints(SWAP(a->partRecords[i].fullAdvance)));
 	}
 	
 	return rval;

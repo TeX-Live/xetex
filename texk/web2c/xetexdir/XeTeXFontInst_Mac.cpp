@@ -73,7 +73,7 @@ void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
 
 	if (ATSUCreateStyle(&fStyle) == noErr) {
 		ATSUFontID	font = FMGetFontFromATSFontRef(fFontRef);
-		Fixed		size = X2Fix(fPointSize * 72.0 / 72.27); /* convert TeX to Quartz points */
+		Fixed		size = D2Fix(fPointSize * 72.0 / 72.27); /* convert TeX to Quartz points */
 		ATSStyleRenderingOptions	options = kATSStyleNoHinting;
 		ATSUAttributeTag		tags[3] = { kATSUFontTag, kATSUSizeTag, kATSUStyleRenderingOptionsTag };
 		ByteCount				valueSizes[3] = { sizeof(ATSUFontID), sizeof(Fixed), sizeof(ATSStyleRenderingOptions) };

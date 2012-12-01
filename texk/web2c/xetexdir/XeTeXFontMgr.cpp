@@ -554,7 +554,7 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 
 		const POSTTable* postTable = (const POSTTable*)getFontTablePtr(font, kPOST);
 		if (postTable != NULL) {
-			theFont->slant = (int)(1000 * (tan(Fix2X(-SWAP(UInt32(postTable->italicAngle))) * M_PI / 180.0)));
+			theFont->slant = (int)(1000 * (tan(Fix2D(-SWAP(UInt32(postTable->italicAngle))) * M_PI / 180.0)));
 		}
 		deleteFont(font);
 	}

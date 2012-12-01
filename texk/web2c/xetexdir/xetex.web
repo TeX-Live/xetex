@@ -29449,7 +29449,7 @@ begin
 					 ("so I'm ignoring this.");
 				error;
 			end else
-				x_size_req := Fix2X(cur_val);
+				x_size_req := Fix2D(cur_val);
 		end else if scan_keyword("height") then begin
 			scan_normal_dimen;
 			if cur_val <= 0 then begin
@@ -29461,11 +29461,11 @@ begin
 					 ("so I'm ignoring this.");
 				error;
 			end else
-				y_size_req := Fix2X(cur_val);
+				y_size_req := Fix2D(cur_val);
 		end else if scan_keyword("rotated") then begin
 			scan_decimal;
 			if (x_size_req <> 0.0) or (y_size_req <> 0.0) then do_size_requests;
-			make_rotation(addressof(t2), Fix2X(cur_val) * 3.141592653589793 / 180.0);
+			make_rotation(addressof(t2), Fix2D(cur_val) * 3.141592653589793 / 180.0);
 			update_corners;
 			calc_min_and_max;
 			setPoint(corners[0], xmin, ymin);
@@ -29493,16 +29493,16 @@ begin
 		pic_path_length(tail) := strlen(pic_path);
 		pic_page(tail) := page;
 
-		width(tail) := X2Fix(xmax - xmin);
-		height(tail) := X2Fix(ymax - ymin);
+		width(tail) := D2Fix(xmax - xmin);
+		height(tail) := D2Fix(ymax - ymin);
 		depth(tail) := 0;
 
-		pic_transform1(tail) := X2Fix(aField(t));
-		pic_transform2(tail) := X2Fix(bField(t));
-		pic_transform3(tail) := X2Fix(cField(t));
-		pic_transform4(tail) := X2Fix(dField(t));
-		pic_transform5(tail) := X2Fix(txField(t));
-		pic_transform6(tail) := X2Fix(tyField(t));
+		pic_transform1(tail) := D2Fix(aField(t));
+		pic_transform2(tail) := D2Fix(bField(t));
+		pic_transform3(tail) := D2Fix(cField(t));
+		pic_transform4(tail) := D2Fix(dField(t));
+		pic_transform5(tail) := D2Fix(txField(t));
+		pic_transform6(tail) := D2Fix(tyField(t));
 
 		memcpy(addressof(mem[tail + pic_node_size]), pic_path, strlen(pic_path));
 		libc_free(pic_path);

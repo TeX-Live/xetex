@@ -145,8 +145,8 @@ authorization from the copyright holders.
 
 @define function deref();
 
-@define function X2Fix();
-@define function Fix2X();
+@define function D2Fix();
+@define function Fix2D();
 
 @define function findpicfile();
 @define function picpathbyte();
