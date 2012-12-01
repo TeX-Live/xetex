@@ -62,6 +62,7 @@ struct XeTeXLayoutEngine_rec
 	hb_script_t		scriptTag;
 	hb_language_t	languageTag;
 	hb_feature_t*	features;
+	char**			shapers;
 	int				nFeatures;
 	UInt32			rgbValue;
 	float			extend;
@@ -539,7 +540,7 @@ float getEmboldenFactor(XeTeXLayoutEngine engine)
 }
 
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
-										hb_feature_t* features, int nFeatures, UInt32 rgbValue,
+										hb_feature_t* features, int nFeatures, char **shapers, UInt32 rgbValue,
 										float extend, float slant, float embolden)
 {
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
@@ -548,6 +549,7 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb
 	result->scriptTag = scriptTag;
 	result->languageTag = languageTag;
 	result->features = features;
+	result->shapers = shapers;
 	result->nFeatures = nFeatures;
 	result->rgbValue = rgbValue;
 	result->extend = extend;
@@ -592,7 +594,7 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 	hb_buffer_set_script(engine->hbBuffer, engine->scriptTag);
 	hb_buffer_set_language(engine->hbBuffer, engine->languageTag);
 
-	hb_shape(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
+	hb_shape_full(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures, engine->shapers);
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
 #ifdef DEBUG
@@ -875,6 +877,7 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	result->scriptTag = HB_SCRIPT_INVALID;
 	result->languageTag = HB_LANGUAGE_INVALID;
 	result->features = NULL;
+	result->shapers = NULL;
 	result->nFeatures = 0;
 	result->rgbValue = rgbValue;
 	result->extend = extend;

@@ -2,6 +2,7 @@
  Part of the XeTeX typesetting system
  copyright (c) 1994-2008 by SIL International
  copyright (c) 2009 by Jonathan Kew
+ copyright (c) 2012 by Khaled Hosny
 
  Written by Jonathan Kew
 
@@ -101,7 +102,7 @@ float getGlyphWidth(XeTeXFont font, UInt32 gid);
 UInt32 countGlyphs(XeTeXFont font);
 
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
-						hb_feature_t* features, int nFeatures, UInt32 rgbValue,
+						hb_feature_t* features, int nFeatures, char **shapers, UInt32 rgbValue,
 						float extend, float slant, float embolden);
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine);

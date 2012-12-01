@@ -908,7 +908,9 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	hb_language_t	languageTag = HB_LANGUAGE_INVALID;
 	
 	hb_feature_t*	features = NULL;
+	char**			shapers = NULL;
 	int				nFeatures = 0;
+	int				nShapers = 0;
 	
 	const char*	cp2;
 	const char*	cp3;
@@ -954,6 +956,16 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				goto next_option;
 			}
 			
+			if (strncmp(cp1, "shaper", 6) == 0) {
+				cp3 = cp1 + 6;
+				if (*cp3 != '=')
+					goto bad_option;
+				cp3 = cp1 + 7;
+				shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
+				shapers[nShapers++] = strndup(cp3, cp2 - cp3);
+				goto next_option;
+			}
+
 			i = readCommonFeatures(cp1, cp2, &extend, &slant, &embolden, &letterspace, &rgbValue);
 			if (i == 1)
 				goto next_option;
@@ -963,24 +975,24 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			if (*cp1 == '+') {
 				int param = 0;
 				tag = read_tag_with_param(cp1 + 1, &param);
-				++nFeatures;
-				features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
-				features[nFeatures-1].tag = tag;
-				features[nFeatures-1].start = 0;
-				features[nFeatures-1].end = (unsigned int) -1;
+				features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+				features[nFeatures].tag = tag;
+				features[nFeatures].start = 0;
+				features[nFeatures].end = (unsigned int) -1;
 				if (param == 0)
-					features[nFeatures-1].value = 1;
+					features[nFeatures].value = 1;
 				else
-					features[nFeatures-1].value = param;
+					features[nFeatures].value = param;
+				nFeatures++;
 				goto next_option;
 			}
 			
 			if (*cp1 == '-') {
 				tag = hb_tag_from_string(read_str_tag(cp1 + 1), -1);
-				++nFeatures;
-				features = xrealloc(features, nFeatures * sizeof(hb_feature_t));
-				features[nFeatures-1].tag = tag;
-				features[nFeatures-1].value = 0;
+				features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+				features[nFeatures].tag = tag;
+				features[nFeatures].value = 0;
+				nFeatures++;
 				goto next_option;
 			}
 
@@ -1006,6 +1018,9 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		}
 	}
 	
+	if (shapers != NULL)
+		shapers[nShapers] = NULL;
+
 	if (embolden != 0.0)
 		embolden = embolden * Fix2X(scaled_size) / 100.0;
 
@@ -1019,10 +1034,13 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		setFontLayoutDir(font, 1);
 
 	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag,
-					features, nFeatures, rgbValue,	extend, slant, embolden);
-	if (engine == 0)
+					features, nFeatures, shapers, rgbValue, extend, slant, embolden);
+
+	if (engine == 0) {
 		// only free these if creation failed, otherwise the engine now owns them
 		free(features);
+		free(shapers);
+	}
 	else
 		nativefonttypeflag = OTGR_FONT_FLAG;
 
