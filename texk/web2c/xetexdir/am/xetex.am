@@ -250,5 +250,5 @@ endif XETEX
 
 ## Not used
 ##
-EXTRA_DIST += xetexdir/LICENSE.txt
+EXTRA_DIST += xetexdir/COPYING
 

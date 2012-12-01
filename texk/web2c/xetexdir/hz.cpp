@@ -1,6 +1,6 @@
 /****************************************************************************\
  Part of the XeTeX typesetting system
- copyright (c) 2010-2012 by Han The Thanh
+ Copyright (c) 2010-2012 by Han The Thanh
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
