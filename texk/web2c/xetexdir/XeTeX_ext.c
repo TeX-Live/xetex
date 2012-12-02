@@ -2464,7 +2464,7 @@ atsugetfontmetrics(CFDictionaryRef attributes, integer* ascent, integer* descent
 }
 
 int
-atsufontget(int what, ATSUStyle style)
+atsufontget(int what, CFDictionaryRef attributes)
 {
 	int	rval = -1;
 

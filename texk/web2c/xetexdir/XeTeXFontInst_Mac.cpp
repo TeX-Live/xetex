@@ -120,7 +120,7 @@ void XeTeXFontInst_Mac::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 GlyphID
 XeTeXFontInst_Mac::mapCharToGlyph(UChar32 ch) const
 {
-	return MapCharToGlyph_AAT(fFontRef, ch);
+	return mapCharToGlyphFromCTFont(fFontRef, ch);
 }
 
 GlyphID

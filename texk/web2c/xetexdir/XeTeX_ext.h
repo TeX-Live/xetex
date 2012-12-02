@@ -344,6 +344,7 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 	CTFontRef fontFromAttributes(CFDictionaryRef fontAttrs);
 	CTFontRef fontFromInteger(integer font);
 	void getGlyphBBoxFromCTFont(CTFontRef ctFontRef, UInt16 gid, GlyphBBox* bbox);
+	int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch);
 #endif
 #ifdef __cplusplus
 };
