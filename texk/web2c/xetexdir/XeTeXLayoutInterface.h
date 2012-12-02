@@ -114,7 +114,7 @@ float getExtendFactor(XeTeXLayoutEngine engine);
 float getSlantFactor(XeTeXLayoutEngine engine);
 float getEmboldenFactor(XeTeXLayoutEngine engine);
 
-SInt32 layoutChars(XeTeXLayoutEngine engine, UInt16* chars, SInt32 offset, SInt32 count, SInt32 max,
+int layoutChars(XeTeXLayoutEngine engine, UInt16* chars, SInt32 offset, SInt32 count, SInt32 max,
 						bool rightToLeft);
 
 void getGlyphs(XeTeXLayoutEngine engine, UInt32* glyphs);

@@ -66,8 +66,6 @@ XeTeXFontInst::XeTeXFontInst(float pointSize, int &status)
     , fNumGlyphsInited(false)
     , fVertical(false)
     , fFilename(NULL)
-    , fFirstCharCode(-1)
-    , fLastCharCode(-1)
     , hbFont(NULL)
 {
 	// the concrete subclass is responsible to call initialize()
@@ -120,7 +118,7 @@ void XeTeXFontInst::initialize(int &status)
     postTable = (const POSTTable *) readFontTable(kPOST);
 
     if (postTable != NULL) {
-		fItalicAngle = Fix2D(SWAP(postTable->italicAngle));
+		fItalicAngle = Fix2D(SWAP(UInt32(postTable->italicAngle)));
 		deleteTable(postTable);
     }
 

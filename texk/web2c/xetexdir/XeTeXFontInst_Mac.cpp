@@ -45,6 +45,8 @@ XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, int &s
     : XeTeXFontInst(pointSize, status)
     , fFontRef(atsFont)
     , fStyle(0)
+    , fFirstCharCode(-1)
+    , fLastCharCode(-1)
 {
     if (status != 0) {
         return;
@@ -114,6 +116,12 @@ void XeTeXFontInst_Mac::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 }
 
 GlyphID
+XeTeXFontInst_Mac::mapCharToGlyph(UChar32 ch) const
+{
+	return MapCharToGlyph_AAT(fStyle, ch);
+}
+
+GlyphID
 XeTeXFontInst_Mac::mapGlyphToIndex(const char* glyphName) const
 {
 	GlyphID rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
@@ -129,4 +137,28 @@ XeTeXFontInst_Mac::getGlyphName(GlyphID gid, int& nameLen)
 	if (rval)
 		return rval;
 	return GetGlyphNameFromCGFont(fFontRef, gid, &nameLen);
+}
+
+UChar32
+XeTeXFontInst_Mac::getFirstCharCode()
+{
+	if (fFirstCharCode == -1) {
+		int ch = 0;
+		while (mapCharToGlyph(ch) == 0 && ch < 0x10ffff)
+			++ch;
+		fFirstCharCode = ch;
+	}
+	return fFirstCharCode;
+}
+
+UChar32
+XeTeXFontInst_Mac::getLastCharCode()
+{
+	if (fLastCharCode == -1) {
+		int ch = 0x10ffff;
+		while (mapCharToGlyph(ch) == 0 && ch > 0)
+			--ch;
+		fLastCharCode = ch;
+	}
+	return fLastCharCode;
 }

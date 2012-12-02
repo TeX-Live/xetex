@@ -83,9 +83,6 @@ protected:
 
 	char *fFilename; // actually holds [filename:index], as used in xetex
 
-	int fFirstCharCode;
-	int fLastCharCode;
-
     virtual const void *readTable(OTTag tag, uint32_t *length) const = 0;
     void deleteTable(const void *table) const;
     void getMetrics();

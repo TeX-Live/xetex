@@ -53,6 +53,9 @@ protected:
 	ATSFontRef	fFontRef;
 	ATSUStyle	fStyle;
 
+	int fFirstCharCode;
+	int fLastCharCode;
+
 public:
     			XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, int &status);
 
@@ -62,8 +65,13 @@ public:
 	
 	virtual void	getGlyphBounds(GlyphID gid, GlyphBBox* bbox);
 
+	virtual GlyphID mapCharToGlyph(UChar32 ch) const;
 	virtual GlyphID	mapGlyphToIndex(const char* glyphName) const;
+
 	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
+
+	virtual UChar32 getFirstCharCode();
+	virtual UChar32 getLastCharCode();
 };
 
 #endif
