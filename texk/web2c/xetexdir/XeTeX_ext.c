@@ -1384,7 +1384,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 #endif
 				if (rval == NULL) {
 #ifdef XETEX_MAC
-					if (getReqEngine() == 'I' || getReqEngine() == 'G' ||
+					if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
 						getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
 #endif
 						rval = loadOTfont(fontRef, font, scaled_size, featString);

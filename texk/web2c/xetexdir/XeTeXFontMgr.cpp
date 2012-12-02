@@ -219,32 +219,14 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				varString.append("AAT");
 				goto skip_to_slash;
 			}
-			if (strncmp(cp, "ICU", 3) == 0) {
-				sReqEngine = 'I';
+			if ((strncmp(cp, "OTF", 3) == 0) || (strncmp(cp, "ICU", 3) == 0)) {
+				sReqEngine = 'O';
 				cp += 3;
 				if (varString.length() > 0 && *(varString.end() - 1) != '/')
 					varString.append("/");
-				varString.append("ICU");
+				varString.append("OTF");
 				goto skip_to_slash;
 			}
-/*
-			if (strncmp(cp, "USP", 3) == 0) {
-				sReqEngine = 'U';
-				cp += 3;
-				if (varString.length() > 0 && *(varString.end() - 1) != '/')
-					varString.append("/");
-				varString.append("USP");
-				goto skip_to_slash;
-			}
-			if (strncmp(cp, "PAN", 3) == 0) {
-				sReqEngine = 'P';
-				cp += 3;
-				if (varString.length() > 0 && *(varString.end() - 1) != '/')
-					varString.append("/");
-				varString.append("PAN");
-				goto skip_to_slash;
-			}
-*/
 			if (strncmp(cp, "GR", 2) == 0) {
 				sReqEngine = 'G';
 				cp += 2;
