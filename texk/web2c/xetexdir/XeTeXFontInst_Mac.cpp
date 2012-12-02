@@ -41,7 +41,7 @@ authorization from the copyright holders.
 #include "XeTeXFontInst_Mac.h"
 #include "XeTeX_ext.h"
 
-XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, LEErrorCode &status)
+XeTeXFontInst_Mac::XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, int &status)
     : XeTeXFontInst(pointSize, status)
     , fFontRef(atsFont)
     , fStyle(0)
@@ -59,7 +59,7 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 		ATSUDisposeStyle(fStyle);
 }
 
-void XeTeXFontInst_Mac::initialize(LEErrorCode &status)
+void XeTeXFontInst_Mac::initialize(int &status)
 {
     if (fFontRef == 0) {
         status = 1;
@@ -108,22 +108,22 @@ const void *XeTeXFontInst_Mac::readTable(OTTag tag, uint32_t *length) const
     return table;
 }
 
-void XeTeXFontInst_Mac::getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox)
+void XeTeXFontInst_Mac::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 {
 	GetGlyphBBox_AAT(fStyle, gid, bbox);
 }
 
-LEGlyphID
+GlyphID
 XeTeXFontInst_Mac::mapGlyphToIndex(const char* glyphName) const
 {
-	LEGlyphID rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
+	GlyphID rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
 	if (rval)
 		return rval;
 	return GetGlyphIDFromCGFont(fFontRef, glyphName);
 }
 
 const char*
-XeTeXFontInst_Mac::getGlyphName(LEGlyphID gid, int& nameLen)
+XeTeXFontInst_Mac::getGlyphName(GlyphID gid, int& nameLen)
 {
 	const char* rval = XeTeXFontInst::getGlyphName(gid, nameLen);
 	if (rval)

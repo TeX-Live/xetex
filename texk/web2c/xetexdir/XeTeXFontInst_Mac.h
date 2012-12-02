@@ -54,16 +54,16 @@ protected:
 	ATSUStyle	fStyle;
 
 public:
-    			XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, LEErrorCode &status);
+    			XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, int &status);
 
     virtual 	~XeTeXFontInst_Mac();
 
-	virtual void initialize(LEErrorCode &status);
+	virtual void initialize(int &status);
 	
-	virtual void	getGlyphBounds(LEGlyphID gid, GlyphBBox* bbox);
+	virtual void	getGlyphBounds(GlyphID gid, GlyphBBox* bbox);
 
-	virtual LEGlyphID	mapGlyphToIndex(const char* glyphName) const;
-	virtual const char* getGlyphName(LEGlyphID gid, int& nameLen);
+	virtual GlyphID	mapGlyphToIndex(const char* glyphName) const;
+	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
 };
 
 #endif
