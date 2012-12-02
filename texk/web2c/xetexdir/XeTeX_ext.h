@@ -234,7 +234,9 @@ extern FT_Library gFreeTypeLibrary;
 
 #include "XeTeXLayoutInterface.h"
 
+#ifdef XETEX_MAC
 extern const CFStringRef kXeTeXEmboldenAttributeName;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
