@@ -75,7 +75,8 @@ typedef struct UFILE* unicodefile;
    but otherwise we'll need these substitute definitions */
 
 #ifdef XETEX_MAC
-#include <Carbon/Carbon.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <ApplicationServices/ApplicationServices.h>
 #else
 #ifndef __TECkit_Common_H__
 typedef unsigned char	UInt8;
@@ -233,6 +234,8 @@ extern FT_Library gFreeTypeLibrary;
 
 #include "XeTeXLayoutInterface.h"
 
+extern const CFStringRef kXeTeXEmboldenAttributeName;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -307,45 +310,40 @@ extern "C" {
 	int applytfmfontmapping(void* mapping, int c);
 
 #ifndef XETEX_MAC
-typedef void* ATSUStyle; /* dummy declaration just so the stubs can compile */
+typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compile */
 #endif
 
-	int atsufontget(int what, ATSUStyle style);
-	int atsufontget1(int what, ATSUStyle style, int param);
-	int atsufontget2(int what, ATSUStyle style, int param1, int param2);
-	int atsufontgetnamed(int what, ATSUStyle style);
-	int atsufontgetnamed1(int what, ATSUStyle style, int param);
-	void atsuprintfontname(int what, ATSUStyle style, int param1, int param2);
+	int atsufontget(int what, CFDictionaryRef attrs);
+	int atsufontget1(int what, CFDictionaryRef attrs, int param);
+	int atsufontget2(int what, CFDictionaryRef attrs, int param1, int param2);
+	int atsufontgetnamed(int what, CFDictionaryRef attrs);
+	int atsufontgetnamed1(int what, CFDictionaryRef attrs, int param);
+	void atsuprintfontname(int what, CFDictionaryRef attrs, int param1, int param2);
 	/* the metrics params here are really TeX 'scaled' (or MacOS 'Fixed') values, but that typedef isn't available every place this is included */
-	void atsugetfontmetrics(ATSUStyle style, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant);
+	void atsugetfontmetrics(CFDictionaryRef attrs, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant);
 
 #ifdef XETEX_MAC
 
-#if defined(MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
-	#include <ApplicationServices/ApplicationServices.h>
-	/* These functions have been removed on 10.7; as a workaround, just do
-	 * a cast as the ATSFontRef and ATSUFontID should have the same value... */
-	#define FMGetFontFromATSFontRef(x) ((ATSUFontID) x)
-	#define FMGetATSFontRefFromFont(x) ((ATSFontRef) x)
-#endif
-
 /* functions in XeTeX_mac.c */
-	void* loadAATfont(ATSFontRef fontRef, integer scaled_size, const char* cp1);
+	void* loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1);
 	void DoAtsuiLayout(void* node, int justify);
-	void GetGlyphBBox_AAT(ATSUStyle style, UInt16 gid, GlyphBBox* bbox);
-	float GetGlyphWidth_AAT(ATSUStyle style, UInt16 gid);
-	void GetGlyphHeightDepth_AAT(ATSUStyle style, UInt16 gid, float* ht, float* dp);
-	void GetGlyphSidebearings_AAT(ATSUStyle style, UInt16 gid, float* lsb, float* rsb);
-	int MapCharToGlyph_AAT(ATSUStyle style, UInt32 ch);
-	int MapGlyphToIndex_AAT(ATSUStyle style, const char* glyphName);
-	int GetGlyphIDFromCGFont(ATSFontRef atsFontRef, const char* glyphName);
-	float GetGlyphItalCorr_AAT(ATSUStyle style, UInt16 gid);
-	char* GetGlyphName_AAT(ATSUStyle style, UInt16 gid, int* len);
-	char* GetGlyphNameFromCGFont(ATSFontRef atsFontRef, UInt16 gid, int* len);
-	int GetFontCharRange_AAT(ATSUStyle style, int reqFirst);
-	ATSUFontVariationAxis find_axis_by_name(ATSUFontID fontID, const char* name, int nameLength);
-	ATSUFontFeatureType find_feature_by_name(ATSUFontID fontID, const char* name, int nameLength);
-	ATSUFontFeatureSelector find_selector_by_name(ATSUFontID fontID, ATSUFontFeatureType featureType, const char* name, int nameLength);
+	void GetGlyphBBox_AAT(CFDictionaryRef fontAttrs, UInt16 gid, GlyphBBox* bbox);
+	double GetGlyphWidth_AAT(CFDictionaryRef fontAttrs, UInt16 gid);
+	void GetGlyphHeightDepth_AAT(CFDictionaryRef fontAttrs, UInt16 gid, float* ht, float* dp);
+	void GetGlyphSidebearings_AAT(CFDictionaryRef fontAttrs, UInt16 gid, float* lsb, float* rsb);
+	double GetGlyphItalCorr_AAT(CFDictionaryRef fontAttrs, UInt16 gid);
+	int MapCharToGlyph_AAT(CFDictionaryRef fontAttrs, UInt32 ch);
+	int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName);
+	char* GetGlyphNameFromCTFont(CTFontRef ctFontRef, UInt16 gid, int* len);
+	int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName);
+	CFDictionaryRef findDictionaryInArray(CFArrayRef array, const void* nameKey, const char* name, int nameLength);
+	CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array, const void* identifierKey, int identifier);
+	CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int nameLength);
+	char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey);
+	int GetFontCharRange_AAT(CFDictionaryRef fontAttrs, int reqFirst);
+	CTFontRef fontFromAttributes(CFDictionaryRef fontAttrs);
+	CTFontRef fontFromInteger(integer font);
+	void getGlyphBBoxFromCTFont(CTFontRef ctFontRef, UInt16 gid, GlyphBBox* bbox);
 #endif
 #ifdef __cplusplus
 };

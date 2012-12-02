@@ -56,12 +56,6 @@ authorization from the copyright holders.
 #define EXTERN extern
 #include "xetexd.h"
 
-#ifdef XETEX_MAC
-#undef input /* this is defined in texmfmp.h, but we don't need it and it confuses the carbon headers */
-#undef output
-#include <Carbon/Carbon.h>
-#endif
-
 #include "XeTeX_ext.h"
 
 #include <teckit/TECkit_Engine.h>
@@ -188,7 +182,7 @@ void initversionstring(char **versions)
 		"Compiled with FreeType2 version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with HarfBuzz version %s; using %s\n"
 #ifdef XETEX_MAC
-		"Using Mac OS X Carbon, Cocoa & QuickTime frameworks\n"
+		"Using Mac OS X Core Text, Cocoa & ImageIO frameworks\n"
 #else
 		"Compiled with fontconfig version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with libpng version %s; using %s\n"
@@ -1356,7 +1350,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			strcpy((char*)nameoffile + 1, fullName);
 
 			if (scaled_size < 0) {
-				font = createFont(fontRef, scaled_size);
+				font = createFont(fontRef, 655360);
 				if (font != NULL) {
 					Fixed dsize = D2Fix(getDesignSize(font));
 					if (scaled_size == -1000)
@@ -1366,13 +1360,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 					deleteFont(font);
 				}
 			}
-	
-#ifdef XETEX_MAC
-			/* decide whether to use AAT or OpenType rendering with this font */
-			if (getReqEngine() == 'A')
-				goto load_aat;
-#endif
-	
+
 			font = createFont(fontRef, scaled_size);
 			if (font != 0) {
 #ifdef XETEX_GRAPHITE
@@ -1382,23 +1370,12 @@ findnativefont(unsigned char* uname, integer scaled_size)
 						graphitewarning();
 				}
 #endif
-				if (rval == NULL) {
-#ifdef XETEX_MAC
-					if (getReqEngine() == 'I' || getReqEngine() == 'G' ||
-						getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
-#endif
-						rval = loadOTfont(fontRef, font, scaled_size, featString);
-				}
+				if (rval == NULL)
+					rval = loadOTfont(fontRef, font, scaled_size, featString);
 				if (rval == NULL)
 					deleteFont(font);
 			}
 	
-#ifdef XETEX_MAC
-			if (rval == NULL) {
-			load_aat:
-				rval = loadAATfont(fontRef, scaled_size, featString);
-			}
-#endif
 			/* append the style and feature strings, so that \show\fontID will give a full result */
 			if (varString != NULL && *varString != 0) {
 				strcat((char*)nameoffile + 1, "/");
@@ -1428,9 +1405,8 @@ releasefontengine(void* engine, int type_flag)
 {
 #ifdef XETEX_MAC
 	if (type_flag == AAT_FONT_FLAG) {
-		ATSUDisposeStyle((ATSUStyle)engine);
+		CFRelease((CFDictionaryRef)engine);
 	}
-	else
 #endif
 	if (type_flag == OTGR_FONT_FLAG) {
 		deleteLayoutEngine((XeTeXLayoutEngine)engine);
@@ -1631,15 +1607,17 @@ grfontgetnamed1(integer what, void* pEngine, integer param)
 
 #ifdef XETEX_MAC
 static UInt32
-atsuColorToRGBA32(ATSURGBAlphaColor a)
+cgColorToRGBA32(CGColorRef color)
 {
-	UInt32	rval = (UInt8)(a.red * 255.0 + 0.5);
+	const CGFloat *components = CGColorGetComponents(color);
+
+	UInt32 rval = (UInt8)(components[0] * 255.0 + 0.5);
 	rval <<= 8;
-	rval += (UInt8)(a.green * 255.0 + 0.5);
+	rval += (UInt8)(components[1] * 255.0 + 0.5);
 	rval <<= 8;
-	rval += (UInt8)(a.blue * 255.0 + 0.5);
+	rval += (UInt8)(components[2] * 255.0 + 0.5);
 	rval <<= 8;
-	rval += (UInt8)(a.alpha * 255.0 + 0.5);
+	rval += (UInt8)(components[3] * 255.0 + 0.5);
 	return rval;
 }
 #endif
@@ -1734,41 +1712,39 @@ makefontdef(integer f)
 	float	embolden = 0.0;
 
 #ifdef XETEX_MAC
-	ATSUStyle	style = NULL;
+	CFDictionaryRef attributes = NULL;
+	CFDictionaryRef variation = NULL;
+
 	if (fontarea[f] == AAT_FONT_FLAG) {
 		flags = XDV_FLAG_FONTTYPE_ATSUI;
+		attributes = (CFDictionaryRef) fontlayoutengine[f];
+		CTFontRef font = CFDictionaryGetValue(attributes, kCTFontAttributeName);
+		variation = CTFontCopyVariation(font);
+		variationCount = CFDictionaryGetCount(variation);
+		CFRelease(variation);
 
-		style = (ATSUStyle)fontlayoutengine[f];
-		ATSUGetAllFontVariations(style, 0, 0, 0, &variationCount);
-		
-		ATSUFontID	fontID;
-		ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
+		psName  = getNameFromCTFont(font, kCTFontPostScriptNameKey);
+		famName = getNameFromCTFont(font, kCTFontFamilyNameKey);
+		styName = getNameFromCTFont(font, kCTFontStyleNameKey);
 
-		fontRef = FMGetATSFontRefFromFont(fontID);
-		getNames(fontRef, &psName, &famName, &styName);
-			/* returns ptrs to strings that belong to the font - do not free! */
-
-		ATSUVerticalCharacterType	vert;
-		ATSUGetAttribute(style, kATSUVerticalCharacterTag, sizeof(ATSUVerticalCharacterType), &vert, 0);
-		if (vert == kATSUStronglyVertical)
+		if (CFDictionaryGetValue(attributes, kCTVerticalFormsAttributeName))
 			flags |= XDV_FLAG_VERTICAL;
-		
-		ATSURGBAlphaColor	atsuColor;
-		ATSUGetAttribute(style, kATSURGBAlphaColorTag, sizeof(ATSURGBAlphaColor), &atsuColor, 0);
-		rgba = atsuColorToRGBA32(atsuColor);
 
-		CGAffineTransform	t;
-		ATSUGetAttribute(style, kATSUFontMatrixTag, sizeof(CGAffineTransform), &t, 0);
+		CGColorRef color = (CGColorRef) CFDictionaryGetValue(attributes, kCTForegroundColorAttributeName);
+		if (color)
+			rgba = cgColorToRGBA32(color);
+
+		CGAffineTransform t = CTFontGetMatrix(font);
 		extend = t.a;
 		slant = t.b;
 
-		float tmp = 0.0;
-		if (ATSUGetAttribute(style, kXeTeXEmboldenTag, sizeof(float), &tmp, 0) != kATSUNotSetErr)
-			embolden = tmp;
+		CFNumberRef emboldenNumber = CFDictionaryGetValue(attributes, kXeTeXEmboldenAttributeName);
+		if (emboldenNumber)
+			CFNumberGetValue(emboldenNumber, kCFNumberFloatType, &embolden);
 
-		ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
+		CGFloat fSize = CTFontGetSize(font);
+		size = D2Fix(fSize);
 	}
-	else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine;
@@ -1826,16 +1802,6 @@ makefontdef(integer f)
 		flags |= XDV_FLAG_COLORED;
 	}
 
-#ifdef XETEX_MAC
-	if (variationCount > 0) {
-		fontDefLength +=
-			  2	/* number of variations */
-			+ 4 * variationCount
-			+ 4 * variationCount;	/* axes and values */
-		flags |= XDV_FLAG_VARIATIONS;
-	}
-#endif
-
 	if (extend != 1.0) {
 		fontDefLength += 4;
 		flags |= XDV_FLAG_EXTEND;
@@ -1876,33 +1842,17 @@ makefontdef(integer f)
 	memcpy(cp, styName, styLen);
 	cp += styLen;
 
+#ifdef XETEX_MAC
+	free((char*) psName); psName = 0;
+	free((char*) famName); famName = 0;
+	free((char*) styName); styName = 0;
+#endif
+
 	if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
 		*(UInt32*)cp = SWAP32(rgba);
 		cp += 4;
 	}
 	
-#ifdef XETEX_MAC
-	if (variationCount > 0) {
-		*(UInt16*)cp = SWAP16(variationCount);
-		cp += 2;
-		if (variationCount > 0) {
-			ATSUGetAllFontVariations(style, variationCount,
-									(UInt32*)(cp),
-									(SInt32*)(cp + 4 * variationCount),
-									0);
-			while (variationCount > 0) {
-				/* (potentially) swap two 32-bit values per variation setting,
-				   and advance cp past them all */
-				*(UInt32*)(cp) = SWAP32(*(UInt32*)(cp));
-				cp += 4;
-				*(UInt32*)(cp) = SWAP32(*(UInt32*)(cp));
-				cp += 4;
-				--variationCount;
-			}
-		}
-	}
-#endif
-
 	if (flags & XDV_FLAG_EXTEND) {
 		Fixed	f = D2Fix(extend);
 		*(UInt32*)(cp) = SWAP32(f);
@@ -1981,9 +1931,9 @@ getnativecharheightdepth(integer font, integer ch, scaled* height, scaled* depth
 
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
-		int	gid = MapCharToGlyph_AAT(style, ch);
-		GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
+		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[font]);
+		int gid = MapCharToGlyph_AAT(attributes, ch);
+		GetGlyphHeightDepth_AAT(attributes, gid, &ht, &dp);
 	}
 	else
 #endif
@@ -2031,9 +1981,9 @@ getnativecharsidebearings(integer font, integer ch, scaled* lsb, scaled* rsb)
 
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
-		int	gid = MapCharToGlyph_AAT(style, ch);
-		GetGlyphSidebearings_AAT(style, gid, &l, &r);
+		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[font]);
+		int gid = MapCharToGlyph_AAT(attributes, ch);
+		GetGlyphSidebearings_AAT(attributes, gid, &l, &r);
 	}
 	else
 #endif
@@ -2059,11 +2009,11 @@ getglyphbounds(integer font, integer edge, integer gid)
 	
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
+		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[font]);
 		if (edge & 1)
-			GetGlyphSidebearings_AAT(style, gid, &a, &b);
+			GetGlyphSidebearings_AAT(attributes, gid, &a, &b);
 		else
-			GetGlyphHeightDepth_AAT(style, gid, &a, &b);
+			GetGlyphHeightDepth_AAT(attributes, gid, &a, &b);
 	}
 	else
 #endif
@@ -2098,9 +2048,9 @@ getnativecharwd(integer f, integer c)
 	scaled wd = 0;
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[f]);
-		int	gid = MapCharToGlyph_AAT(style, c);
-		wd = D2Fix(GetGlyphWidth_AAT(style, gid));
+		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[f]);
+		int gid = MapCharToGlyph_AAT(attributes, c);
+		wd = D2Fix(GetGlyphWidth_AAT(attributes, gid));
 	}
 	else
 #endif
@@ -2147,7 +2097,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
-		/* we're using this font in AAT mode, so fontlayoutengine[f] is actually an ATSUStyle */
+		/* we're using this font in AAT mode, so fontlayoutengine[f] is actually a CFDictionaryRef */
 		DoAtsuiLayout(node, 0);
 	}
 	else
@@ -2340,7 +2290,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			if (getCachedGlyphBBox(f, glyphIDs[i], &bbox) == 0) {
 #ifdef XETEX_MAC
 				if (fontarea[f] == AAT_FONT_FLAG)
-					GetGlyphBBox_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[i], &bbox);
+					GetGlyphBBox_AAT((CFDictionaryRef)(fontlayoutengine[f]), glyphIDs[i], &bbox);
 				else
 #endif
 				if (fontarea[f] == OTGR_FONT_FLAG)
@@ -2374,7 +2324,7 @@ get_native_ital_corr(void* pNode)
 
 #ifdef XETEX_MAC
 		if (fontarea[f] == AAT_FONT_FLAG)
-			return D2Fix(GetGlyphItalCorr_AAT((ATSUStyle)(fontlayoutengine[f]), glyphIDs[n-1]))
+			return D2Fix(GetGlyphItalCorr_AAT((CFDictionaryRef)(fontlayoutengine[f]), glyphIDs[n-1]))
 					+ fontletterspace[f];
 #endif
 		if (fontarea[f] == OTGR_FONT_FLAG)
@@ -2395,7 +2345,7 @@ get_native_glyph_ital_corr(void* pNode)
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG)
-		return D2Fix(GetGlyphItalCorr_AAT((ATSUStyle)(fontlayoutengine[f]), gid));
+		return D2Fix(GetGlyphItalCorr_AAT((CFDictionaryRef)(fontlayoutengine[f]), gid));
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG)
 		return D2Fix(getGlyphItalCorr((XeTeXLayoutEngine)(fontlayoutengine[f]), gid));
@@ -2415,15 +2365,10 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[f]);
-		ATSGlyphIdealMetrics	metrics;
-		OSStatus	status = ATSUGlyphGetIdealMetrics(style, 1, &gid, 0, &metrics);
-			/* returns values in Quartz points, so we need to convert to TeX points */
-		if (status == noErr) {
-			node_width(node) = D2Fix(metrics.advance.x * 72.27 / 72.0);
-			if (use_glyph_metrics)
-				GetGlyphHeightDepth_AAT(style, gid, &ht, &dp);
-		}
+		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[f]);
+		node_width(node) = D2Fix(GetGlyphWidth_AAT(attributes, gid));
+		if (use_glyph_metrics)
+			GetGlyphHeightDepth_AAT(attributes, gid, &ht, &dp);
 	}
 	else
 #endif
@@ -2456,7 +2401,7 @@ mapchartoglyph(integer font, integer ch)
 		return 0;
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG)
-		return MapCharToGlyph_AAT((ATSUStyle)(fontlayoutengine[font]), ch);
+		return MapCharToGlyph_AAT((CFDictionaryRef)(fontlayoutengine[font]), ch);
 	else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG)
@@ -2473,7 +2418,7 @@ mapglyphtoindex(integer font)
 {
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG)
-		return MapGlyphToIndex_AAT((ATSUStyle)(fontlayoutengine[font]), (const char*)nameoffile + 1);
+		return MapGlyphToIndex_AAT((CFDictionaryRef)(fontlayoutengine[font]), (const char*)nameoffile + 1);
 	else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG)
@@ -2489,7 +2434,7 @@ getfontcharrange(integer font, int first)
 {
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG)
-		return GetFontCharRange_AAT((ATSUStyle)(fontlayoutengine[font]), first);
+		return GetFontCharRange_AAT((CFDictionaryRef)(fontlayoutengine[font]), first);
 	else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG)
@@ -2514,81 +2459,8 @@ double Fix2D(Fixed f)
 
 /* these are here, not XeTeX_mac.c, because we need stubs on other platforms */
 void
-atsugetfontmetrics(ATSUStyle style, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant)
+atsugetfontmetrics(CFDictionaryRef attributes, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant)
 {
-#ifdef XETEX_MAC
-	*ascent = *descent = *xheight = *capheight = *slant = 0;
-
-	ATSUFontID	fontID;
-	OSStatus	status = ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-	if (status != noErr)
-		return;
-
-	ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
-
-	Fixed		size;
-	status = ATSUGetAttribute(style, kATSUSizeTag, sizeof(Fixed), &size, 0);
-	if (status != noErr)
-		return;
-	/* size from the ATSUStyle is in Quartz points; convert to TeX points here */
-	double		floatSize = Fix2D(size) * 72.27 / 72.0;
-
-	ATSFontMetrics	metrics;
-	status = ATSFontGetHorizontalMetrics(fontRef, kATSOptionFlagsDefault, &metrics);
-	if (status != noErr)
-		return;
-
-	*ascent = D2Fix(metrics.ascent * floatSize);
-	*descent = D2Fix(metrics.descent * floatSize);
-
-	if (metrics.italicAngle != 0.0) {
-		if (fabs(metrics.italicAngle) < 0.090)
-			metrics.italicAngle *= 1000.0;	/* hack around apparent ATS bug */
-		*slant = D2Fix(tan(-metrics.italicAngle * M_PI / 180.0));
-	}
-	else {
-		/* try to get a (possibly synthetic) POST table, as ATSFontGetHorizontalMetrics
-		   doesn't seem to return this value for OT/CFF fonts */
-		ByteCount	tableSize;
-		if (ATSFontGetTable(fontRef, kPOST, 0, 0, 0, &tableSize) == noErr) {
-			POSTTable*      post = xmalloc(tableSize);
-			ATSFontGetTable(fontRef, kPOST, 0, tableSize, post, 0);
-			*slant = D2Fix(tan(Fix2D( - SWAP32(post->italicAngle)) * M_PI / 180.0));
-			free(post);
-		}
-	}
-
-	CGAffineTransform	t;
-	ATSUGetAttribute(style, kATSUFontMatrixTag, sizeof(CGAffineTransform), &t, 0);
-	if (t.a != 1.0)
-		*slant = D2Fix(Fix2D(*slant) * t.a);
-	if (t.b != 0.0)
-		*slant += D2Fix(t.b);
-
-	if (0 && metrics.xHeight != 0.0) {
-		/* currently not using this, as the values from ATS don't seem quite what I'd expect */
-		*xheight = D2Fix(metrics.xHeight * floatSize);
-		*capheight = D2Fix(metrics.capHeight * floatSize);
-	}
-	else {
-		int	glyphID = MapCharToGlyph_AAT(style, 'x');
-		float	ht, dp;
-		if (glyphID != 0) {
-			GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
-			*xheight = D2Fix(ht);
-		}
-		else
-			*xheight = *ascent / 2; /* arbitrary figure if there's no 'x' in the font */
-		
-		glyphID = MapCharToGlyph_AAT(style, 'X');
-		if (glyphID != 0) {
-			GetGlyphHeightDepth_AAT(style, glyphID, &ht, &dp);
-			*capheight = D2Fix(ht);
-		}
-		else
-			*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
-	}
-#endif
 }
 
 int
@@ -2597,32 +2469,22 @@ atsufontget(int what, ATSUStyle style)
 	int	rval = -1;
 
 #ifdef XETEX_MAC
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-	ItemCount	count;
+	CTFontRef font = fontFromAttributes(attributes);
+	CFArrayRef list;
 
 	switch (what) {
 		case XeTeX_count_glyphs:
-			{
-				ByteCount	tableSize;
-				ATSFontRef	fontRef = FMGetATSFontRefFromFont(fontID);
-				if (ATSFontGetTable(fontRef, kMAXP, 0, 0, 0, &tableSize) == noErr) {
-					MAXPTable*	table = xmalloc(tableSize);
-					ATSFontGetTable(fontRef, kMAXP, 0, tableSize, table, 0);
-					rval = SWAP16(table->numGlyphs);
-					free(table);
-				}
-			}
+			rval = CTFontGetGlyphCount(font);
 			break;
 
 		case XeTeX_count_variations:
-			if (ATSUCountFontVariations(fontID, &count) == noErr)
-				rval = count;
-			break;
-
 		case XeTeX_count_features:
-			if (ATSUCountFontFeatureTypes(fontID, &count) == noErr)
-				rval = count;
+			list = (what == XeTeX_count_variations ? CTFontCopyVariationAxes(font)
+												   : CTFontCopyFeatures(font));
+			if (list) {
+				rval = CFArrayGetCount(list);
+				CFRelease(list);
+			}
 			break;
 	}
 #endif
@@ -2630,59 +2492,86 @@ atsufontget(int what, ATSUStyle style)
 }
 
 int
-atsufontget1(int what, ATSUStyle style, int param)
+atsufontget1(int what, CFDictionaryRef attributes, int param)
 {
 	int	rval = -1;
 
 #ifdef XETEX_MAC
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-	
-	ATSUFontVariationAxis	axis;
-	ATSUFontVariationValue	value;
-	ItemCount	count;
-	Boolean		exclusive;
+	CTFontRef font = fontFromAttributes(attributes);
+
 	switch (what) {
 		case XeTeX_variation:
-			if (ATSUGetIndFontVariation(fontID, param, &axis, 0, 0, 0) == noErr)
-				rval = axis;
+		{
+			CFArrayRef axes = CTFontCopyVariationAxes(font);
+			if (!axes)
+				break;
+			if (CFArrayGetCount(axes) > param) {
+				CFDictionaryRef variation = CFArrayGetValueAtIndex(axes, param);
+				CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
+				CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+			}
+			CFRelease(axes);
 			break;
+		}
 
 		case XeTeX_variation_min:
 		case XeTeX_variation_max:
 		case XeTeX_variation_default:
-			if (ATSUCountFontVariations(fontID, &count) == noErr)
-				while (count-- > 0)
-					if (ATSUGetIndFontVariation(fontID, count, &axis,
-							(what == XeTeX_variation_min) ? &value : 0,
-							(what == XeTeX_variation_max) ? &value : 0,
-							(what == XeTeX_variation_default) ? &value : 0) == noErr)
-						if (axis == param) {
-							rval = value;
-							break;
-						}
+		{
+			CFArrayRef axes = CTFontCopyVariationAxes(font);
+			if (!axes)
+				break;
+			CFDictionaryRef variation = findDictionaryInArrayWithIdentifier(axes, kCTFontVariationAxisIdentifierKey, param);
+			CFStringRef key = (what == XeTeX_variation_min ? kCTFontVariationAxisMinimumValueKey :
+							   (what == XeTeX_variation_max ? kCTFontVariationAxisMaximumValueKey :
+								kCTFontVariationAxisDefaultValueKey));
+			CFNumberRef value = CFDictionaryGetValue(variation, key);
+			if (value)
+				CFNumberGetValue(value, kCFNumberIntType, &rval);
+			CFRelease(axes);
 			break;
+		}
 
 		case XeTeX_feature_code:
-			if (ATSUCountFontFeatureTypes(fontID, &count) == noErr) {
-				if (param < count) {
-					ATSUFontFeatureType*	types = xmalloc(count * sizeof(ATSUFontFeatureType));
-					if (ATSUGetFontFeatureTypes(fontID, count, types, 0) == noErr)
-						rval = types[param];
-					free(types);
-				}
+		{
+			CFArrayRef features = CTFontCopyFeatures(font);
+			if (!features)
+				break;
+			if (CFArrayGetCount(features) > param) {
+				CFDictionaryRef feature = CFArrayGetValueAtIndex(features, param);
+				CFNumberRef identifier = CFDictionaryGetValue(feature, kCTFontFeatureTypeIdentifierKey);
+				CFNumberGetValue(identifier, kCFNumberIntType, &rval);
 			}
+			CFRelease(features);
 			break;
+		}
 
 		case XeTeX_is_exclusive_feature:
-			if (ATSUGetFontFeatureSelectors(fontID, param, 0, 0, 0, 0, &exclusive) == noErr)
-				rval = exclusive ? 1 : 0;
+		{
+			CFArrayRef features = CTFontCopyFeatures(font);
+			if (!features)
+				break;
+			CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
+			CFBooleanRef value = CFDictionaryGetValue(feature, kCTFontFeatureTypeExclusiveKey);
+			rval = CFBooleanGetValue(value);
+			CFRelease(features);
 			break;
+		}
 
 		case XeTeX_count_selectors:
-			if (ATSUCountFontFeatureSelectors(fontID, param, &count) == noErr)
-				rval = count;
+		{
+			CFArrayRef features = CTFontCopyFeatures(font);
+			if (!features)
+				break;
+			if (CFArrayGetCount(features) > param) {
+				CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
+				CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
+				if (selectors)
+					rval = CFArrayGetCount(selectors);
+			}
+			CFRelease(features);
 			break;
+		}
 	}
 #endif
 	
@@ -2690,36 +2579,32 @@ atsufontget1(int what, ATSUStyle style, int param)
 }
 
 int
-atsufontget2(int what, ATSUStyle style, int param1, int param2)
+atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 {
 	int	rval = -1;
 
 #ifdef XETEX_MAC
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-
-	ItemCount	count;
-	if (ATSUCountFontFeatureSelectors(fontID, param1, &count) == noErr) {
-		ATSUFontFeatureSelector*	selectors = xmalloc(count * sizeof(ATSUFontFeatureSelector));
-		Boolean*					isDefault = xmalloc(count * sizeof(Boolean));
-		if (ATSUGetFontFeatureSelectors(fontID, param1, count, selectors, isDefault, 0, 0) == noErr) {
-			switch (what) {
-				case XeTeX_selector_code:
-					if (param2 < count)
-							rval = selectors[param2];
-					break;
-					
-				case XeTeX_is_default_selector:
-					while (count-- > 0)
-						if (selectors[count] == param2) {
-							rval = isDefault[count] ? 1 : 0;
-							break;
-						}
-					break;
+	CTFontRef font = fontFromAttributes(attributes);
+	CFArrayRef features = CTFontCopyFeatures(font);
+	if (features) {
+		if (CFArrayGetCount(features) > param1) {
+			CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param1);
+			CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
+			if (selectors) {
+				if (CFArrayGetCount(selectors) > param2) {
+					CFDictionaryRef selector = CFArrayGetValueAtIndex(selectors, param2);
+					if (what == XeTeX_selector_code) {
+						CFNumberRef identifier = CFDictionaryGetValue(selector, kCTFontFeatureSelectorIdentifierKey);
+						CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+					}
+					else if (what == XeTeX_is_default_selector) {
+						CFBooleanRef isDefault = CFDictionaryGetValue(selector, kCTFontFeatureSelectorDefaultKey);
+						rval = CFBooleanGetValue(isDefault);
+					}
+				}
 			}
 		}
-		free(isDefault);
-		free(selectors);
+		CFRelease(features);
 	}
 #endif
 	
@@ -2727,26 +2612,41 @@ atsufontget2(int what, ATSUStyle style, int param1, int param2)
 }
 
 int
-atsufontgetnamed(int what, ATSUStyle style)
+atsufontgetnamed(int what, CFDictionaryRef attributes)
 {
 	int	rval = -1;
 
 #ifdef XETEX_MAC
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-	
+	CTFontRef font = fontFromAttributes(attributes);
+
 	switch (what) {
 		case XeTeX_find_variation_by_name:
-			rval = find_axis_by_name(fontID, (const char*)nameoffile + 1, namelength);
-			if (rval == 0)
+		{
+			CFArrayRef axes = CTFontCopyVariationAxes(font);
+			CFDictionaryRef variation = findDictionaryInArray(axes, kCTFontVariationAxisNameKey,
+															  (const char*)nameoffile + 1, namelength);
+			if (variation) {
+				CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
+				CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+			} else
 				rval = -1;
+			CFRelease(axes);
 			break;
+		}
 		
 		case XeTeX_find_feature_by_name:
-			rval = find_feature_by_name(fontID, (const char*)nameoffile + 1, namelength);
-			if (rval == 0x0000FFFF)
+		{
+			CFArrayRef features = CTFontCopyFeatures(font);
+			CFDictionaryRef feature = findDictionaryInArray(features, kCTFontFeatureTypeNameKey,
+															(const char*)nameoffile + 1, namelength);
+			if (feature) {
+				CFNumberRef identifier = CFDictionaryGetValue(feature, kCTFontFeatureTypeIdentifierKey);
+				CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+			} else
 				rval = -1;
+			CFRelease(features);
 			break;
+		}
 	}
 #endif
 	
@@ -2754,20 +2654,22 @@ atsufontgetnamed(int what, ATSUStyle style)
 }
 
 int
-atsufontgetnamed1(int what, ATSUStyle style, int param)
+atsufontgetnamed1(int what, CFDictionaryRef attributes, int param)
 {
 	int	rval = -1;
 
 #ifdef XETEX_MAC
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-	
-	switch (what) {
-		case XeTeX_find_selector_by_name:
-			rval = find_selector_by_name(fontID, param, (const char*)nameoffile + 1, namelength);
-			if (rval == 0x0000FFFF)
-				rval = -1;
-			break;
+	CTFontRef font = fontFromAttributes(attributes);
+
+	if (what == XeTeX_find_selector_by_name) {
+		CFArrayRef features = CTFontCopyFeatures(font);
+		CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
+		if (feature) {
+			CFNumberRef selector = findSelectorByName(feature, (const char*)nameoffile + 1, namelength);
+			if (selector)
+				CFNumberGetValue(selector, kCFNumberIntType, &rval);
+		}
+		CFRelease(features);
 	}
 #endif
 	
@@ -2775,109 +2677,46 @@ atsufontgetnamed1(int what, ATSUStyle style, int param)
 }
 
 void
-atsuprintfontname(int what, ATSUStyle style, int param1, int param2)
+atsuprintfontname(int what, CFDictionaryRef attributes, int param1, int param2)
 {
 #ifdef XETEX_MAC
-	ATSUFontID	fontID;
-	ATSUGetAttribute(style, kATSUFontTag, sizeof(ATSUFontID), &fontID, 0);
-
-	FontNameCode	code;
-	OSStatus		status = -1;
-	ItemCount		count, i;
-	Boolean			found = 0;
-
-	switch (what) {
-		case XeTeX_variation_name:
-			status = ATSUCountFontVariations(fontID, &count);
-			if (status == noErr) {
-				for (i = 0; i < count; ++i) {
-					ATSUFontVariationAxis	axis;
-					ATSUFontVariationValue	min, max, def;
-					status = ATSUGetIndFontVariation(fontID, i, &axis, &min, &max, &def);
-					if (status == noErr && axis == param1) {
-						status = ATSUGetFontVariationNameCode(fontID, param1, &code);
-						found = 1;
-						break;
-					}
-				}
+	CTFontRef font = fontFromAttributes(attributes);
+	CFStringRef name = NULL;
+	if (what == XeTeX_variation_name) {
+		CFArrayRef axes = CTFontCopyVariationAxes(font);
+		CFDictionaryRef variation = findDictionaryInArrayWithIdentifier(axes,
+																		kCTFontVariationAxisIdentifierKey,
+																		param1);
+		if (variation)
+			name = CFDictionaryGetValue(variation, kCTFontVariationAxisNameKey);
+		CFRelease(axes);
+	}
+	else if (what == XeTeX_feature_name || XeTeX_selector_name) {
+		CFArrayRef features = CTFontCopyFeatures(font);
+		CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features,
+																	  kCTFontFeatureTypeIdentifierKey,
+																	  param1);
+		if (feature) {
+			if (what == XeTeX_feature_name)
+				name = CFDictionaryGetValue(feature, kCTFontFeatureTypeNameKey);
+			else {
+				CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
+				CFDictionaryRef selector = findDictionaryInArrayWithIdentifier(selectors,
+																			   kCTFontFeatureSelectorIdentifierKey,
+																			   param2);
+				if (selector)
+					name = CFDictionaryGetValue(selector, kCTFontFeatureSelectorNameKey);
 			}
-			break;
-			
-		case XeTeX_feature_name:
-		case XeTeX_selector_name:
-			status = ATSUCountFontFeatureTypes(fontID, &count);
-			if (status == noErr) {
-				ATSUFontFeatureType*	features = xmalloc(count * sizeof(ATSUFontFeatureType));
-				status = ATSUGetFontFeatureTypes(fontID, count, features, &count);
-				if (status == noErr) {
-					for (i = 0; i < count; ++i) {
-						if (features[i] == param1) {
-							/* the requested feature code is valid */
-							if (what == XeTeX_feature_name) {
-								status = ATSUGetFontFeatureNameCode(fontID, param1, kATSUNoSelector, &code);
-								found = 1;
-							}
-							else {
-								status = ATSUCountFontFeatureSelectors(fontID, param1, &count);
-								if (status == noErr) {
-									ATSUFontFeatureSelector*	selectors = xmalloc(count * sizeof(ATSUFontFeatureSelector));
-									Boolean*					onByDefault = xmalloc(count * sizeof(Boolean));
-									Boolean						exclusive;
-									status = ATSUGetFontFeatureSelectors(fontID, param1, count, selectors, onByDefault, &count, &exclusive);
-									if (status == noErr) {
-										for (i = 0; i < count; ++i) {
-											if (selectors[i] == param2) {
-												/* feature/selector combination is valid */
-												status = ATSUGetFontFeatureNameCode(fontID, param1, param2, &code);
-												found = 1;
-												break;
-											}
-										}
-									}
-									free(onByDefault);
-									free(selectors);
-								}
-							}
-							break;
-						}
-					}
-				}
-				free(features);
-			}
-			break;
+		}
+		CFRelease(features);
 	}
 
-	if (found && status == noErr) {
-#define NAME_BUF_SIZE	1024
-		ByteCount	len = 0;
-		char		name[NAME_BUF_SIZE]; /* should be more than enough for any sensible font name */
-		do {
-			if (ATSUFindFontName(fontID, code, kFontMacintoshPlatform, kFontRomanScript, kFontEnglishLanguage, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
-			if (ATSUFindFontName(fontID, code, kFontMacintoshPlatform, kFontRomanScript, kFontNoLanguageCode, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
-		} while (0);
-		if (len > 0) {
-			/* need to convert MacRoman name to Unicode */
-			CFStringRef	str = CFStringCreateWithBytes(kCFAllocatorDefault, (UInt8*)name, len, kCFStringEncodingMacRoman, false);
-			if (str != NULL) {
-				len = CFStringGetLength(str);
-				UniChar*	buf = xmalloc(len * sizeof(UniChar));
-				CFStringGetCharacters(str, CFRangeMake(0, len), buf);
-				printchars(buf, len);
-				free(buf);
-				CFRelease(str);
-			}
-		}
-		else {
-			do {
-				if (ATSUFindFontName(fontID, code, kFontUnicodePlatform, kFontNoScriptCode, kFontEnglishLanguage, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
-				if (ATSUFindFontName(fontID, code, kFontMicrosoftPlatform, kFontNoScriptCode, kFontEnglishLanguage, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
-				if (ATSUFindFontName(fontID, code, kFontUnicodePlatform, kFontNoScriptCode, kFontNoLanguageCode, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
-				if (ATSUFindFontName(fontID, code, kFontMicrosoftPlatform, kFontNoScriptCode, kFontNoLanguageCode, NAME_BUF_SIZE, name, &len, 0) == noErr) break;
-			} while (0);
-			if (len > 0) {
-				printchars((unsigned short*)(&name[0]), len / 2);
-			}
-		}
+	if (name) {
+		CFIndex len = CFStringGetLength(name);
+		UniChar* buf = xmalloc(len * sizeof(UniChar));
+		CFStringGetCharacters(name, CFRangeMake(0, len), buf);
+		printchars(buf, len);
+		free(buf);
 	}
 #endif
 }
@@ -2889,8 +2728,7 @@ printglyphname(integer font, integer gid)
 	int   len = 0;
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
-		ATSUStyle	style = (ATSUStyle)(fontlayoutengine[font]);
-		s = GetGlyphName_AAT(style, gid, &len);
+		s = GetGlyphNameFromCTFont(fontFromInteger(font), gid, &len);
 	}
 	else
 #endif

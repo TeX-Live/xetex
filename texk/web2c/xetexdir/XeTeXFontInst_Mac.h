@@ -50,14 +50,14 @@ class XeTeXFontInst_Mac : public XeTeXFontInst
 protected:
     const void *readTable(OTTag tag, uint32_t *length) const;
 
-	ATSFontRef	fFontRef;
-	ATSUStyle	fStyle;
+	CTFontDescriptorRef fDescriptor;
+	CTFontRef           fFontRef;
 
 	int fFirstCharCode;
 	int fLastCharCode;
 
 public:
-    			XeTeXFontInst_Mac(ATSFontRef atsFont, float pointSize, int &status);
+    			XeTeXFontInst_Mac(CTFontDescriptorRef descriptor, float pointSize, int &status);
 
     virtual 	~XeTeXFontInst_Mac();
 

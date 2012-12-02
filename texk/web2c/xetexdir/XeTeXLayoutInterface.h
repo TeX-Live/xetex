@@ -34,10 +34,6 @@ authorization from the copyright holders.
 #ifndef XETEX_LAYOUT_INTERFACE_H
 #define XETEX_LAYOUT_INTERFACE_H 1
 
-#ifdef XETEX_MAC
-#include <Carbon/Carbon.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -66,12 +62,7 @@ void cacheGlyphBBox(UInt16 fontID, UInt16 glyphID, const GlyphBBox* bbox);
 
 void terminatefontmanager();
 
-#ifdef XETEX_MAC
-XeTeXFont createFont(ATSFontRef atsFont, Fixed pointSize);
-#else
-// appropriate functions for other platforms
 XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize);
-#endif
 XeTeXFont createFontFromFile(const char* filename, int index, Fixed pointSize);
 
 void setFontLayoutDir(XeTeXFont font, int vertical);

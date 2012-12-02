@@ -43,10 +43,6 @@ authorization from the copyright holders.
 #include "XeTeXLayoutInterface.h"
 #include "XeTeXswap.h"
 
-#ifdef XETEX_MAC
-#include <Carbon/Carbon.h>
-#endif
-
 #include "XeTeX_ext.h"
 
 #include "sfnt.h"

@@ -34,8 +34,8 @@ authorization from the copyright holders.
 #define __XETEX_FONT_MANAGER_H
 
 #ifdef XETEX_MAC
-#include <Carbon/Carbon.h>
-typedef ATSFontRef	PlatformFontRef;
+#include <ApplicationServices/ApplicationServices.h>
+typedef CTFontDescriptorRef PlatformFontRef;
 #else
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
@@ -194,11 +194,7 @@ protected:
 	virtual void	getOpSizeRecAndStyleFlags(Font* theFont);
 	virtual void	searchForHostPlatformFonts(const std::string& name) = 0;
 	
-#ifdef XETEX_MAC
-	virtual NameCollection*		readNames(ATSUFontID fontID) = 0;
-#else
 	virtual NameCollection*		readNames(PlatformFontRef fontRef) = 0;
-#endif
 
 	void	die(const char*s, int i) const;	/* for fatal internal errors! */
 };

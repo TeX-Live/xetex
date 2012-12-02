@@ -130,7 +130,7 @@ fi
 AC_SUBST([lua_socketlibs])
 AC_SUBST([ipc_socketlibs])
 
-KPSE_CHECK_FRAMEWORK([Carbon], [ATSUStyle style])
+KPSE_CHECK_FRAMEWORK([Carbon], [CTFontRef font])
 KPSE_FONTCONFIG_FLAGS
 AS_IF([test "x$kpse_cv_have_Carbon:$kpse_cv_have_fontconfig" = xno:no],
       [WEB2C_DISABLE([xetex], [neither Carbon framework nor fontconfig library])])
