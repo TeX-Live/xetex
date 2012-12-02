@@ -64,7 +64,7 @@ diff -ur harfbuzz-0.9.7.orig/src/hb-ot-layout.cc harfbuzz-0.9.7/src/hb-ot-layout
  }
 +
 +hb_bool_t
-+hb_ot_layout_position_get_size (hb_face_t *face,
++hb_ot_layout_get_size_params (hb_face_t *face,
 +				uint16_t  *data /* OUT, 5 items */)
 +{
 +  const OT::GPOS &gpos = _get_gpos (face);
@@ -98,7 +98,7 @@ diff -ur harfbuzz-0.9.7.orig/src/hb-ot-layout.h harfbuzz-0.9.7/src/hb-ot-layout.
  
 +/* Optical 'size' feature info.  Returns true if found. */
 +hb_bool_t
-+hb_ot_layout_position_get_size (hb_face_t *face,
++hb_ot_layout_get_size_params (hb_face_t *face,
 +				uint16_t  *data /* OUT, 5 items */);
 +
  

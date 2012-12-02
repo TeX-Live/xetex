@@ -490,7 +490,7 @@ XeTeXFontMgr::getOpSize(XeTeXFont font)
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
 	uint16_t data[5];
 
-	if (hb_ot_layout_position_get_size(face, data)) {
+	if (hb_ot_layout_get_size_params(face, data)) {
 		OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
 		pSizeRec->designSize = data[0];
 		pSizeRec->subFamilyID = data[1];

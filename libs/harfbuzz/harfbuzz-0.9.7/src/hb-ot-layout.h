@@ -281,7 +281,7 @@ Xhb_ot_layout_lookup_position (hb_font_t            *font,
 
 /* Optical 'size' feature info.  Returns true if found. */
 hb_bool_t
-hb_ot_layout_position_get_size (hb_face_t *face,
+hb_ot_layout_get_size_params (hb_face_t *face,
 				uint16_t  *data /* OUT, 5 items */);
 
 
