@@ -469,17 +469,20 @@ XeTeXFontMgr::bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) 
 const XeTeXFontMgr::OpSizeRec*
 XeTeXFontMgr::getOpSize(XeTeXFont font)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
-	uint16_t data[5];
+	hb_font_t* hbFont = ((XeTeXFontInst*)font)->hbFont;
+	if (hbFont != NULL) {
+		hb_face_t* face = hb_font_get_face(hbFont);
+		uint16_t data[5];
 
-	if (hb_ot_layout_get_size_params(face, data)) {
-		OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
-		pSizeRec->designSize = data[0];
-		pSizeRec->subFamilyID = data[1];
-		pSizeRec->nameCode = data[2];
-		pSizeRec->minSize = data[3];
-		pSizeRec->maxSize = data[4];
-		return pSizeRec;
+		if (hb_ot_layout_get_size_params(face, data)) {
+			OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
+			pSizeRec->designSize = data[0];
+			pSizeRec->subFamilyID = data[1];
+			pSizeRec->nameCode = data[2];
+			pSizeRec->minSize = data[3];
+			pSizeRec->maxSize = data[4];
+			return pSizeRec;
+		}
 	}
 
 	return NULL;
