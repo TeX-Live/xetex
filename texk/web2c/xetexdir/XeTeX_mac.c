@@ -180,12 +180,17 @@ void GetGlyphBBox_AAT(CFDictionaryRef attributes, UInt16 gid, GlyphBBox* bbox)
 	return getGlyphBBoxFromCTFont(font, gid, bbox);
 }
 
+double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid)
+{
+	CGSize advances[1] = { CGSizeMake(0, 0) };
+	return PStoTeXPoints(CTFontGetAdvancesForGlyphs(font, 0, &gid, advances, 1));
+}
+
 double GetGlyphWidth_AAT(CFDictionaryRef attributes, UInt16 gid)
 	/* returns TeX points */
 {
 	CTFontRef font = fontFromAttributes(attributes);
-	CGSize advances[1] = { CGSizeMake(0, 0) };
-	return PStoTeXPoints(CTFontGetAdvancesForGlyphs(font, 0, &gid, advances, 1));
+	return getGlyphWidthFromCTFont(font, gid);
 }
 
 void GetGlyphHeightDepth_AAT(CFDictionaryRef attributes, UInt16 gid, float* ht, float* dp)

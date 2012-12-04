@@ -65,20 +65,20 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 
 static hb_bool_t _get_glyph(hb_font_t* hbFont, void* fontData, hb_codepoint_t unicode, hb_codepoint_t variationSelector, hb_codepoint_t* glyph, void* userData)
 {
-	*glyph = MapCharToGlyph_AAT((CFDictionaryRef) fontData, unicode);
+	*glyph = mapCharToGlyphFromCTFont((CTFontRef) fontData, unicode);
 	return !!glyph;
 }
 
 static hb_position_t _get_glyph_h_advance(hb_font_t* hbFont, void* fontData, hb_codepoint_t glyph, void* userData)
 {
-	float width = GetGlyphWidth_AAT((CFDictionaryRef) fontData, glyph);
+	float width = getGlyphWidthFromCTFont((CTFontRef) fontData, glyph);
 	return width * 64;
 }
 
 static hb_bool_t _get_glyph_extents(hb_font_t* hbFont, void* fontData, hb_codepoint_t glyph, hb_glyph_extents_t* extents, void* userData)
 {
 	GlyphBBox bbox;
-	GetGlyphBBox_AAT((CFDictionaryRef) fontData, glyph, &bbox);
+	getGlyphBBoxFromCTFont((CTFontRef) fontData, glyph, &bbox);
 	extents->x_bearing = bbox.xMin;
 	extents->y_bearing = bbox.yMax;
 	extents->width = bbox.xMax - bbox.xMin;
