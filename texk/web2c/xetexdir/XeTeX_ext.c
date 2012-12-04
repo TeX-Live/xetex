@@ -1847,12 +1847,6 @@ makefontdef(integer f)
 	memcpy(cp, styName, styLen);
 	cp += styLen;
 
-#ifdef XETEX_MAC
-	free((char*) psName); psName = 0;
-	free((char*) famName); famName = 0;
-	free((char*) styName); styName = 0;
-#endif
-
 	if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
 		*(UInt32*)cp = SWAP32(rgba);
 		cp += 4;
