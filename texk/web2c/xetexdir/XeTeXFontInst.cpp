@@ -194,7 +194,7 @@ void XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
     }
 
     advance.x = unitsToPoints(SWAP(fMetricsTable->hMetrics[index].advanceWidth));
-    advance.x = 0;
+    advance.y = 0;
 }
 
 float

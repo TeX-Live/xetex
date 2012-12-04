@@ -1370,8 +1370,13 @@ findnativefont(unsigned char* uname, integer scaled_size)
 						graphitewarning();
 				}
 #endif
-				if (rval == NULL)
-					rval = loadOTfont(fontRef, font, scaled_size, featString);
+				if (rval == NULL) {
+#ifdef XETEX_MAC
+					if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
+						getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
+#endif
+						rval = loadOTfont(fontRef, font, scaled_size, featString);
+				}
 				if (rval == NULL)
 					deleteFont(font);
 			}

@@ -219,32 +219,14 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				varString.append("AAT");
 				goto skip_to_slash;
 			}
-			if (strncmp(cp, "ICU", 3) == 0) {
-				sReqEngine = 'I';
+			if ((strncmp(cp, "OTF", 3) == 0) || (strncmp(cp, "ICU", 3) == 0)) {
+				sReqEngine = 'O';
 				cp += 3;
 				if (varString.length() > 0 && *(varString.end() - 1) != '/')
 					varString.append("/");
-				varString.append("ICU");
+				varString.append("OTF");
 				goto skip_to_slash;
 			}
-/*
-			if (strncmp(cp, "USP", 3) == 0) {
-				sReqEngine = 'U';
-				cp += 3;
-				if (varString.length() > 0 && *(varString.end() - 1) != '/')
-					varString.append("/");
-				varString.append("USP");
-				goto skip_to_slash;
-			}
-			if (strncmp(cp, "PAN", 3) == 0) {
-				sReqEngine = 'P';
-				cp += 3;
-				if (varString.length() > 0 && *(varString.end() - 1) != '/')
-					varString.append("/");
-				varString.append("PAN");
-				goto skip_to_slash;
-			}
-*/
 			if (strncmp(cp, "GR", 2) == 0) {
 				sReqEngine = 'G';
 				cp += 2;
@@ -487,17 +469,20 @@ XeTeXFontMgr::bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) 
 const XeTeXFontMgr::OpSizeRec*
 XeTeXFontMgr::getOpSize(XeTeXFont font)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
-	uint16_t data[5];
+	hb_font_t* hbFont = ((XeTeXFontInst*)font)->hbFont;
+	if (hbFont != NULL) {
+		hb_face_t* face = hb_font_get_face(hbFont);
+		uint16_t data[5];
 
-	if (hb_ot_layout_position_get_size(face, data)) {
-		OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
-		pSizeRec->designSize = data[0];
-		pSizeRec->subFamilyID = data[1];
-		pSizeRec->nameCode = data[2];
-		pSizeRec->minSize = data[3];
-		pSizeRec->maxSize = data[4];
-		return pSizeRec;
+		if (hb_ot_layout_get_size_params(face, data)) {
+			OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
+			pSizeRec->designSize = data[0];
+			pSizeRec->subFamilyID = data[1];
+			pSizeRec->nameCode = data[2];
+			pSizeRec->minSize = data[3];
+			pSizeRec->maxSize = data[4];
+			return pSizeRec;
+		}
 	}
 
 	return NULL;
