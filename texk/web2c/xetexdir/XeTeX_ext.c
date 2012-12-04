@@ -1350,7 +1350,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			strcpy((char*)nameoffile + 1, fullName);
 
 			if (scaled_size < 0) {
-				font = createFont(fontRef, 655360);
+				font = createFont(fontRef, scaled_size);
 				if (font != NULL) {
 					Fixed dsize = D2Fix(getDesignSize(font));
 					if (scaled_size == -1000)
@@ -1360,6 +1360,12 @@ findnativefont(unsigned char* uname, integer scaled_size)
 					deleteFont(font);
 				}
 			}
+
+#ifdef XETEX_MAC
+			/* decide whether to use AAT or OpenType rendering with this font */
+			if (getReqEngine() == 'A')
+				goto load_aat;
+#endif
 
 			font = createFont(fontRef, scaled_size);
 			if (font != 0) {
@@ -1381,6 +1387,13 @@ findnativefont(unsigned char* uname, integer scaled_size)
 					deleteFont(font);
 			}
 	
+#ifdef XETEX_MAC
+			if (rval == NULL) {
+			load_aat:
+				rval = loadAATfont(fontRef, scaled_size, featString);
+			}
+#endif
+
 			/* append the style and feature strings, so that \show\fontID will give a full result */
 			if (varString != NULL && *varString != 0) {
 				strcat((char*)nameoffile + 1, "/");
@@ -1411,7 +1424,7 @@ releasefontengine(void* engine, int type_flag)
 #ifdef XETEX_MAC
 	if (type_flag == AAT_FONT_FLAG) {
 		CFRelease((CFDictionaryRef)engine);
-	}
+	} else
 #endif
 	if (type_flag == OTGR_FONT_FLAG) {
 		deleteLayoutEngine((XeTeXLayoutEngine)engine);
@@ -1725,8 +1738,10 @@ makefontdef(integer f)
 		attributes = (CFDictionaryRef) fontlayoutengine[f];
 		CTFontRef font = CFDictionaryGetValue(attributes, kCTFontAttributeName);
 		variation = CTFontCopyVariation(font);
-		variationCount = CFDictionaryGetCount(variation);
-		CFRelease(variation);
+		if (variation) {
+			variationCount = CFDictionaryGetCount(variation);
+			CFRelease(variation);
+		}
 
 		psName  = getNameFromCTFont(font, kCTFontPostScriptNameKey);
 		famName = getNameFromCTFont(font, kCTFontFamilyNameKey);
@@ -1750,6 +1765,7 @@ makefontdef(integer f)
 		CGFloat fSize = CTFontGetSize(font);
 		size = D2Fix(fSize);
 	}
+	else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine;
