@@ -11575,7 +11575,7 @@ and |cur_ext|.
 
 @d pack_cur_name==pack_file_name(cur_name,cur_area,cur_ext)
 
-@p procedure pack_job_name(@!s:str_number); {|s = ".log"|, |".dvi"|, or
+@p procedure pack_job_name(@!s:str_number); {|s = ".log"|, |output_file_extension|, or
   |format_extension|}
 begin cur_area:=""; cur_ext:=s;
 cur_name:=job_name; pack_cur_name;
@@ -13844,7 +13844,7 @@ var base_line: scaled; {the baseline coordinate for this box}
 @!outer_doing_leaders:boolean; {were we doing leaders?}
 @!edge:scaled; {right edge of sub-box or leader space}
 @!prev_p:pointer; {one step behind |p|}
-@!len: integer; { length of scratch string for native word output }
+@!len: integer; {length of scratch string for native word output}
 @!q,@!r: pointer;
 @!k,@!j: integer;
 @!glue_temp:real; {glue value before rounding}
@@ -15706,10 +15706,11 @@ define_mathex_accessor(big_op_spacing5)(13)(big_op_spacing5);
 
 @ Native font support requires these additional subroutines.
 
+|new_native_word_node| creates the node, but does not actually set its metrics;
+call |set_native_metrics(node)| if that is required.
+
 @<Declare subroutines for |new_character|@>=
 function new_native_word_node(@!f:internal_font_number;@!n:integer):pointer;
-	{ note that this function creates the node, but does not actually set its metrics;
-		call |set_native_metrics(node)| if that is required! }
 var
 	l:	integer;
 	q:	pointer;
@@ -29445,7 +29446,7 @@ begin
 				print("size (");
 				print_scaled(cur_val);
 				print("pt) will be ignored");
-				help2("I can't scale images to zero or negative sizes, ")
+				help2("I can't scale images to zero or negative sizes,")@/
 					 ("so I'm ignoring this.");
 				error;
 			end else
@@ -29457,7 +29458,7 @@ begin
 				print("size (");
 				print_scaled(cur_val);
 				print("pt) will be ignored");
-				help2("I can't scale images to zero or negative sizes, ")
+				help2("I can't scale images to zero or negative sizes,")@/
 					 ("so I'm ignoring this.");
 				error;
 			end else
@@ -29512,11 +29513,11 @@ begin
 		print_err("Unable to load picture or PDF file '");
 		print_file_name(cur_name,cur_area,cur_ext); print("'");
 		if result = -43 then begin { Mac OS file not found error }
-			help2("The requested image couldn't be read because ")
+			help2("The requested image couldn't be read because")@/
 				 ("the file was not found.");
 		end
 		else begin { otherwise assume GraphicImport failed }
-			help2("The requested image couldn't be read because ")
+			help2("The requested image couldn't be read because")@/
 				 ("it was not a recognized image format.");
 		end;
 		error;
@@ -29527,35 +29528,31 @@ end;
 
 @ @<Implement \.{\\XeTeXinputencoding}@>=
 begin
-	{ scan a filename-like arg for the input encoding }
-	scan_and_pack_name;
+	scan_and_pack_name; {scan a filename-like arg for the input encoding}
 
-	{ convert it to "mode" and "encoding" values, and apply to the current input file }
-	i := get_encoding_mode_and_info(addressof(j));
+	i := get_encoding_mode_and_info(addressof(j)); {convert it to |mode| and |encoding| values}
 	if i = XeTeX_input_mode_auto then begin
-	  print_err("Encoding mode `auto' is not valid for \XeTeXinputencoding.");
-      help2("You can't use `auto' encoding here, only for \XeTeXdefaultencoding. ")
-           ("I'll ignore this and leave the current encoding unchanged.");
+	  print_err("Encoding mode `auto' is not valid for \XeTeXinputencoding");
+      help2("You can't use `auto' encoding here, only for \XeTeXdefaultencoding.")@/
+           ("I'll ignore this and leave the current encoding unchanged.");@/
 	  error;
-	end	else set_input_file_encoding(input_file[in_open], i, j);
+	end	else set_input_file_encoding(input_file[in_open], i, j); {apply them to the current input file}
 end
 
 @ @<Implement \.{\\XeTeXdefaultencoding}@>=
 begin
-	{ scan a filename-like arg for the input encoding }
-	scan_and_pack_name;
+	scan_and_pack_name; {scan a filename-like arg for the input encoding}
 
-	{ convert it to "mode" and "encoding" values, and store them as defaults for new input files }
-	XeTeX_default_input_mode := get_encoding_mode_and_info(addressof(j));
+	i := get_encoding_mode_and_info(addressof(j)); {convert it to |mode| and |encoding| values}
+	XeTeX_default_input_mode := i; {store them as defaults for new input files}
 	XeTeX_default_input_encoding := j;
 end
 
 @ @<Implement \.{\\XeTeXlinebreaklocale}@>=
 begin
-	{ scan a filename-like arg for the locale name }
-	scan_file_name;
+	scan_file_name; {scan a filename-like arg for the locale name}
 	if length(cur_name) = 0 then XeTeX_linebreak_locale := 0
-	else XeTeX_linebreak_locale := cur_name; { we ignore the area and extension! }
+	else XeTeX_linebreak_locale := cur_name; {we ignore the area and extension!}
 end
 
 @ @<Glob...@>=
