@@ -2218,14 +2218,14 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 						getGlyphs(engine, glyphs);
 						getGlyphPositions(engine, positions);
 					
-						for (i = realGlyphCount; i < realGlyphCount + nGlyphs; ++i) {
-							glyphIDs[i] = glyphs[i];
-							locations[i].x = D2Fix(positions[2*i] + x);
-							locations[i].y = D2Fix(positions[2*i+1] + y);
+						for (i = 0; i < nGlyphs; ++i) {
+							glyphIDs[realGlyphCount] = glyphs[i];
+							locations[realGlyphCount].x = D2Fix(positions[2*i] + x);
+							locations[realGlyphCount].y = D2Fix(positions[2*i+1] + y);
+							++realGlyphCount;
 						}
 						x += positions[2*i];
 						y += positions[2*i+1];
-						realGlyphCount += nGlyphs;
 					}
 					wid = x;
 				}
