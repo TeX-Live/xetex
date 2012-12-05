@@ -2169,7 +2169,6 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			void*	glyph_info = 0;
 			static	float*	positions = 0;
 			static	UInt32*	glyphs = 0;
-			static	int	maxGlyphs = 0;
 	
 			UBiDi*	pBiDi = ubidi_open();
 			
@@ -2189,16 +2188,6 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 					realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
-	
-					if (realGlyphCount >= maxGlyphs) {
-						if (glyphs != 0) {
-							free(glyphs);
-							free(positions);
-						}
-						maxGlyphs = realGlyphCount + 20;
-						glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
-						positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
-					}
 				}
 				
 				if (realGlyphCount > 0) {
@@ -2214,6 +2203,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 						dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 						nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
 												(dir == UBIDI_RTL));
+
+						glyphs = xmalloc(nGlyphs * sizeof(UInt32));
+						positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
 		
 						getGlyphs(engine, glyphs);
 						getGlyphPositions(engine, positions);
@@ -2238,15 +2230,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				int i;
 				realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
-				if (realGlyphCount >= maxGlyphs) {
-					if (glyphs != 0) {
-						free(glyphs);
-						free(positions);
-					}
-					maxGlyphs = realGlyphCount + 20;
-					glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
-					positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
-				}
+				glyphs = xmalloc(realGlyphCount * sizeof(UInt32));
+				positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
+
 				getGlyphs(engine, glyphs);
 				getGlyphPositions(engine, positions);
 	
