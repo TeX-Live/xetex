@@ -147,7 +147,10 @@
 \def\textindent#1{\hangindent2.5em\noindent\hbox to2.5em{\hss#1 }\ignorespaces}
 \font\ninerm=cmr9
 \let\mc=\ninerm % medium caps for names like SAIL
-\def\XeTeX{Xe\TeX}
+
+\input graphicx % \relectbox for XeTeX logo
+\def\XeTeX{X\kern-.125em\lower.5ex\hbox{\reflectbox{E}}\kern-.1667em\TeX}
+
 \def\eTeX{$\varepsilon$-\TeX}
 \font\revrm=xbmc10 % for right-to-left text
 % to generate xbmc10 (i.e., reflected cmbx10) use a file
@@ -895,7 +898,7 @@ implement \TeX\ can open a file whose external name is specified by
 @!name_of_file:packed array[1..file_name_size] of char;@;@/
   {on some systems this may be a \&{record} variable}
 @!name_of_file16:array[1..file_name_size] of UTF16_code;@;@/
-  {but sometimes we need a utf16 version of the name}
+  {but sometimes we need a UTF16 version of the name}
 @!name_length:0..file_name_size;@/{this many characters are actually
   relevant in |name_of_file| (the rest are blank)}
 @!name_length16:0..file_name_size;
@@ -1660,7 +1663,7 @@ procedure print_char(@!s:integer); {prints a single character}
 label exit;
 var l: small_number;
 begin if (selector>pseudo) and (not doing_special) then
-  {"printing" to a new string, encode as UTF-16 rather than UTF-8}
+  {``printing'' to a new string, encode as UTF-16 rather than UTF-8}
   begin if s>=@"10000 then begin
       print_visible_char(@"D800 + (s - @"10000) div @"400);
       print_visible_char(@"DC00 + (s - @"10000) mod @"400);
@@ -6116,7 +6119,7 @@ var h:integer; {hash code}
 @!d:integer; {number of characters in incomplete current string}
 @!p:pointer; {index in |hash| array}
 @!k:pointer; {index in |buffer| array}
-@!ll:integer; {length in utf16 code units}
+@!ll:integer; {length in UTF16 code units}
 begin @<Compute the hash code |h|@>;
 p:=h+hash_base; {we start searching here; note that |0<=h<hash_prime|}
 ll:=l; for d:=0 to l-1 do if buffer[j+d]>=@"10000 then incr(ll);
@@ -20458,7 +20461,7 @@ nodes $p_{a-1}$ and~$p_b$ in the description above are placed into variables
 @<Glob...@>=
 @!hc:array[0..66] of 0..number_usvs; {word to be hyphenated}
 { note that element 0 needs to be a full UnicodeScalar, even though we
-  basically work in utf16 }
+  basically work in UTF16 }
 @!hn:small_number; {the number of positions occupied in |hc|}
 @!ha,@!hb:pointer; {nodes |ha..hb| should be replaced by the hyphenated result}
 @!hf:internal_font_number; {font number of the letters in |hc|}
@@ -25423,7 +25426,7 @@ math_given: begin
   end;
 XeTeX_math_given: c:=cur_chr;
 delim_num: begin
-  if cur_chr=1 then begin {\.{\\Udelimiter <cls> <fam> <usv>}}
+  if cur_chr=1 then begin {\.{\\Udelimiter <class> <fam> <usv>}}
     scan_math_class_int; c := set_class_field(cur_val);
     scan_math_fam_int;   c := c + set_family_field(cur_val);
     scan_usv_num;        c := c + cur_val;
