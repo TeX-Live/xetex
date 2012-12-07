@@ -57,7 +57,7 @@ static int32_t getCoverage(const Coverage* coverage, GlyphID g)
 	} else if (SWAP(coverage->format) == 2) {
 		const CoverageFormat2 *table = (const CoverageFormat2 *) coverage;
 		for (int i = 0; i < SWAP(table->rangeCount); i++) {
-			if (SWAP(table->rangeArray[i].start) <= g && SWAP(table->rangeArray[i].start) >= g)
+			if (SWAP(table->rangeArray[i].start) <= g && SWAP(table->rangeArray[i].end) >= g)
 				return SWAP(table->rangeArray[i].startCoverageIndex) + (g - SWAP(table->rangeArray[i].start));
 		}
 	}
