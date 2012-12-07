@@ -68,7 +68,6 @@ public:
     virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
     virtual GlyphID mapCharToGlyph(UChar32 ch) const;
     virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
-    virtual void getKernPair(GlyphID leftGlyph, GlyphID rightGlyph, realpoint &kern) const;
 	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
 	virtual UChar32 getFirstCharCode();
 	virtual UChar32 getLastCharCode();

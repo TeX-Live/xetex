@@ -216,18 +216,6 @@ XeTeXFontInst_FT2::mapGlyphToIndex(const char* glyphName) const
 	return rval;
 }
 
-void
-XeTeXFontInst_FT2::getKernPair(GlyphID leftGlyph, GlyphID rightGlyph, realpoint &kern) const
-{
-	FT_Vector	kerning;
-	if (FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_UNSCALED, &kerning) == 0) {
-		kern.x = kerning.x;
-		kern.y = kerning.y;
-	}
-	else
-		kern.x = kern.y = 0;
-}
-
 const char*
 XeTeXFontInst_FT2::getGlyphName(GlyphID gid, int& nameLen)
 {
