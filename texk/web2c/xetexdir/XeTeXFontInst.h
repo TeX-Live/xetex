@@ -151,7 +151,7 @@ public:
         return fPointSize;
     };
 
-	int32_t unitsToPoints(float units) const
+	float unitsToPoints(float units) const
 	{
 		return (units * fPointSize) / (float) fUnitsPerEM;
 	}
