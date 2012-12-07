@@ -236,6 +236,25 @@ typedef struct {
 } MathTopAccentAttachment;
 
 typedef struct {
+	Offset	topRight;
+	Offset	topLeft;
+	Offset	bottomRight;
+	Offset	bottomLeft;
+} MathKernInfoRecord;
+
+typedef struct {
+	Offset		coverage;
+	uint16_t	kernInfoCount;
+	MathKernInfoRecord kernInfo[ANY_NUMBER];
+} MathKernInfo;
+
+typedef struct {
+	uint16_t		heightCount;
+	MathValueRecord	height[ANY_NUMBER];
+	MathValueRecord	kern[ANY_NUMBER];
+} MathKernTable;
+
+typedef struct {
     uint16_t	format;
 } Coverage;
 
