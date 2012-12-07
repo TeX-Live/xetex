@@ -92,42 +92,7 @@ authorization from the copyright holders.
 #include "unicode/ucnv.h"
 
 #include <assert.h>
-/* 
 #include "sfnt.h"
-	doesn't work in plain C files :(
-*/
-
-typedef struct
-{
-    Fixed    version;
-    UInt16   numGlyphs;
-    UInt16   maxPoints;
-    UInt16   maxContours;
-    UInt16   maxComponentPoints;
-    UInt16   maxComponentContours;
-    UInt16   maxZones;
-    UInt16   maxTwilightPoints;
-    UInt16   maxStorage;
-    UInt16   maxFunctionDefs;
-    UInt16   maxInstructionDefs;
-    UInt16   maxStackElements;
-    UInt16   maxSizeOfInstructions;
-    UInt16   maxComponentElements;
-    UInt16   maxComponentDepth;
-} MAXPTable;
-
-typedef struct
-{
-	Fixed	version;
-	Fixed	italicAngle;
-	SInt16	underlinePosition;
-	UInt16	underlineThickness;
-	UInt32	isFixedPitch;
-	UInt32	minMemType42;
-	UInt32	maxMemType42;
-	UInt32	minMemType1;
-	UInt32	maxMemType1;
-} POSTTable;
 
 /* tables/values used in UTF-8 interpretation - 
    code is based on ConvertUTF.[ch] sample code

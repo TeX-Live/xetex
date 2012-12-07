@@ -48,11 +48,11 @@ authorization from the copyright holders.
 
 typedef int32_t fixed;
 
-struct BigDate
+typedef struct
 {
 	uint32_t	bc;
 	uint32_t	ad;
-};
+} BigDate;
 
 struct HEADTable
 {
@@ -115,11 +115,11 @@ struct HHEATable
     uint16_t	numOfLongHorMetrics;
 };
 
-struct LongHorMetric
+typedef struct
 {
 	uint16_t	advanceWidth;
 	int16_t		leftSideBearing;
-};
+} LongHorMetric;
 
 struct HMTXTable
 {
