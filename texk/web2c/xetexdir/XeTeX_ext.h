@@ -272,14 +272,14 @@ extern "C" {
 	int applymapping(void* cnv, const UniChar* txtPtr, int txtLen);
 	void store_justified_native_glyphs(void* node);
 	void measure_native_node(void* node, int use_glyph_metrics);
-	Fixed get_native_ital_corr(void* node);
-	Fixed get_native_glyph_ital_corr(void* node);
+	Fixed get_native_italic_correction(void* node);
+	Fixed get_native_glyph_italic_correection(void* node);
 	void measure_native_glyph(void* node, int use_glyph_metrics);
 	integer mapchartoglyph(integer font, integer ch);
 	integer mapglyphtoindex(integer font);
 	integer getfontcharrange(integer font, int first);
 	void printglyphname(integer font, integer gid);
-	UInt16 get_native_glyph_id(void* pNode, unsigned index);
+	UInt16 get_native_glyph(void* pNode, unsigned index);
 
 	void grprintfontname(integer what, void* pEngine, integer param1, integer param2);
 	integer grfontgetnamed(integer what, void* pEngine);

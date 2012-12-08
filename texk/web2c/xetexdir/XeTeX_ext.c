@@ -2082,7 +2082,7 @@ getnativecharwd(integer f, integer c)
 }
 
 UInt16
-get_native_glyph_id(void* pNode, unsigned index)
+get_native_glyph(void* pNode, unsigned index)
 {
 	memoryword*	node = (memoryword*)pNode;
 	FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
@@ -2314,7 +2314,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 }
 
 Fixed
-get_native_ital_corr(void* pNode)
+get_native_italic_correction(void* pNode)
 {
 	memoryword*	node = pNode;
 	unsigned	f = native_font(node);
@@ -2338,7 +2338,7 @@ get_native_ital_corr(void* pNode)
 
 
 Fixed
-get_native_glyph_ital_corr(void* pNode)
+get_native_glyph_italic_correction(void* pNode)
 {
 	memoryword* node = pNode;
 	UInt16		gid = native_glyph(node);

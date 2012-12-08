@@ -50,10 +50,10 @@ authorization from the copyright holders.
 
 #define setjustifiednativeglyphs(p)		store_justified_native_glyphs(&(mem[p]))
 
-#define getnativeitaliccorrection(p)		get_native_ital_corr(&(mem[p]))
-#define getnativeglyphitaliccorrection(p)	get_native_glyph_ital_corr(&(mem[p]))
+#define getnativeitaliccorrection(p)		get_native_italic_correction(&(mem[p]))
+#define getnativeglyphitaliccorrection(p)	get_native_glyph_italic_correction(&(mem[p]))
 
-#define getnativeglyph(p,i)			get_native_glyph_id(&(mem[p]), i)
+#define getnativeglyph(p,i)			get_native_glyph(&(mem[p]), i)
 
 #define makexdvglypharraydata(p)		makeXDVGlyphArrayData(&(mem[p]))
 #define xdvbufferbyte(i)			xdvbuffer[i]
