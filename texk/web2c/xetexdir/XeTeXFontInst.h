@@ -156,6 +156,11 @@ public:
 		return (units * fPointSize) / (float) fUnitsPerEM;
 	}
 
+	float pointsToUnits(float points) const
+	{
+		return (points * (float) fUnitsPerEM) / fPointSize;
+	}
+
     float getItalicAngle() const
     {
         return fItalicAngle;

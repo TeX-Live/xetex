@@ -94,6 +94,7 @@ void* get_ot_assembly_ptr(int f, int g, int horiz); /* function in XeTeXOTMath.c
 #define getotassemblyptr			get_ot_assembly_ptr
 #define getotmathitalcorr			get_ot_math_ital_corr
 #define getotmathaccentpos			get_ot_math_accent_pos
+#define getotmathkern				get_ot_math_kern
 #define otpartcount				ot_part_count
 #define otpartglyph				ot_part_glyph
 #define otpartisextender			ot_part_is_extender

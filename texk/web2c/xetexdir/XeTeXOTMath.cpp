@@ -396,7 +396,6 @@ static int
 getMathKernAt(int f, int g, MathKernSide side, int height)
 {
 	int rval = 0;
-
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXFontInst* font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
 
@@ -442,7 +441,11 @@ getMathKernAt(int f, int g, MathKernSide side, int height)
 
 			uint16_t count = SWAP(kernTable->heightCount);
 
-			if (height < SWAP(kernTable->height[0].value))
+			// XXX: the following makes no sense WRT my understanding of the
+			// spec! it is just how things worked for me.
+			if (count == 0)
+				rval = SWAP(kernTable->kern[-1].value);
+			else if (height < SWAP(kernTable->height[0].value))
 				rval = SWAP(kernTable->kern[1].value);
 			else if (height > SWAP(kernTable->height[count].value))
 				rval = SWAP(kernTable->kern[count+1].value);
@@ -455,8 +458,7 @@ getMathKernAt(int f, int g, MathKernSide side, int height)
 				}
 			}
 
-			rval = D2Fix(font->unitsToPoints(rval));
-
+			//fprintf(stderr, "   kern: %f %f\n", font->unitsToPoints(height), font->unitsToPoints(rval));
 		}
 	}
 
@@ -471,7 +473,6 @@ glyph_height(int f, int g)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		getGlyphHeightDepth(engine, g, &rval, NULL);
-		rval = Fix2D(rval);
 	}
 
 	return rval;
@@ -485,48 +486,58 @@ glyph_depth(int f, int g)
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		getGlyphHeightDepth(engine, g, NULL, &rval);
-		rval = Fix2D(rval);
 	}
 
 	return rval;
 }
+
+// keep in sync with xetex.web
+#define sup_cmd 0
+#define sub_cmd 1
 
 int
 get_ot_math_kern(int f, int g, int sf, int sg, int cmd, int shift)
 {
 	int rval = 0;
 
-	int kern = 0, skern = 0;
-	float corr_height_top = 0.0, corr_height_bot = 0.0;
+	if (fontarea[f] == OTGR_FONT_FLAG) {
+		XeTeXFontInst* font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
+		int kern = 0, skern = 0;
+		float corr_height_top = 0.0, corr_height_bot = 0.0;
 
-	shift = Fix2D(shift);
+		shift = Fix2D(shift);
 
-	if (cmd == 0) { // suprscript
-		corr_height_top =  glyph_height(f, g);
-		corr_height_bot = -glyph_depth(sf, sg) + shift;
+		if (cmd == sup_cmd) { // superscript
+			corr_height_top =  font->pointsToUnits(glyph_height(f, g));
+			corr_height_bot = -font->pointsToUnits(glyph_depth(sf, sg) + shift);
 
-		kern = getMathKernAt(f, g, topRight, corr_height_top);
-		skern = getMathKernAt(sf, sg, bottomLeft, corr_height_top);
-		rval = kern + skern;
-
-		kern = getMathKernAt(f, g, topRight, corr_height_bot);
-		skern = getMathKernAt(sf, sg, bottomLeft, corr_height_bot);
-		if ((kern + skern) < rval)
+			kern = getMathKernAt(f, g, topRight, corr_height_top);
+			skern = getMathKernAt(sf, sg, bottomLeft, corr_height_top);
 			rval = kern + skern;
-	} else if (cmd == 1) { // subscript
-		corr_height_top =  glyph_height(sf, sg) - shift;
-		corr_height_bot = -glyph_depth(f, g);
 
-		kern = getMathKernAt(f, g, topRight, corr_height_top);
-		skern = getMathKernAt(sf, sg, bottomLeft, corr_height_top);
-		rval = kern + skern;
+			kern = getMathKernAt(f, g, topRight, corr_height_bot);
+			skern = getMathKernAt(sf, sg, bottomLeft, corr_height_bot);
+			if ((kern + skern) < rval)
+				rval = kern + skern;
 
-		kern = getMathKernAt(f, g, topRight, corr_height_bot);
-		skern = getMathKernAt(sf, sg, bottomLeft, corr_height_bot);
-		if ((kern + skern) < rval)
+		} else if (cmd == sub_cmd) { // subscript
+			corr_height_top =  font->pointsToUnits(glyph_height(sf, sg) - shift);
+			corr_height_bot = -font->pointsToUnits(glyph_depth(f, g));
+
+			kern = getMathKernAt(f, g, bottomRight, corr_height_top);
+			skern = getMathKernAt(sf, sg, topLeft, corr_height_top);
 			rval = kern + skern;
-	} else {
-		assert(0); // we should not reach here
+
+			kern = getMathKernAt(f, g, bottomRight, corr_height_bot);
+			skern = getMathKernAt(sf, sg, topLeft, corr_height_bot);
+			if ((kern + skern) < rval)
+				rval = kern + skern;
+
+		} else {
+			assert(0); // we should not reach here
+		}
+
+		rval = D2Fix(font->unitsToPoints(rval));
 	}
 
 	return rval;
