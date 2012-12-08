@@ -17624,7 +17624,7 @@ The following definitions should be kept in sync with \.{XeTeXOTMath.cpp}.
 @<Attach subscript OpenType math kerning@>=
 begin save_f:=cur_f;@/
 fetch(subscr(q));
-s:=new_native_character(cur_f, qo(cur_c));
+if is_new_mathfont(cur_f) then s:=new_native_character(cur_f, qo(cur_c));
 sub_kern:=get_ot_math_kern(native_font(p), native_glyph(p), cur_f, get_native_glyph(s, 0), sub_cmd, shift_down);
 if sub_kern<>0 then p:=attach_hkern_to_new_hlist(q, sub_kern);
 cur_f:=save_f;
@@ -17633,7 +17633,7 @@ end;
 @ @<Attach superscript OpenType math kerning@>=
 begin save_f:=cur_f;@/
 fetch(subscr(q));
-s:=new_native_character(cur_f, qo(cur_c));
+if is_new_mathfont(cur_f) then s:=new_native_character(cur_f, qo(cur_c));
 sup_kern:=get_ot_math_kern(native_font(p), native_glyph(p), cur_f, get_native_glyph(s, 0), sup_cmd, shift_up);
 if (sup_kern<>0) and (math_type(subscr(q))=empty) then
   {if there is a superscript the kern will be added to |shift_amount(x)|}
