@@ -1760,7 +1760,7 @@ makefontdef(integer f)
 		size = D2Fix(getPointSize(engine));
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `make_font_def'\n");
 		exit(3);
 	}
 
@@ -1958,7 +1958,7 @@ getnativecharheightdepth(integer font, integer ch, scaled* height, scaled* depth
 		getGlyphHeightDepth(engine, gid, &ht, &dp);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_height_depth`\n");
 		exit(3);
 	}
 
@@ -2008,7 +2008,7 @@ getnativecharsidebearings(integer font, integer ch, scaled* lsb, scaled* rsb)
 		getGlyphSidebearings(engine, gid, &l, &r);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_side_bearings'\n");
 		exit(3);
 	}
 
@@ -2040,7 +2040,7 @@ getglyphbounds(integer font, integer edge, integer gid)
 			getGlyphHeightDepth(engine, gid, &a, &b);		
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_glyph_bounds'\n");
 		exit(3);
 	}
 	return D2Fix((edge <= 2) ? a : b);
@@ -2075,7 +2075,7 @@ getnativecharwd(integer f, integer c)
 		wd = D2Fix(getGlyphWidthFromEngine(engine, gid));
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_wd'\n");
 		exit(3);
 	}
 	return wd;
@@ -2265,7 +2265,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		}
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_node'\n");
 		exit(3);
 	}
 	
@@ -2386,7 +2386,7 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 			getGlyphHeightDepth(engine, gid, &ht, &dp);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_glyph'\n");
 		exit(3);
 	}
 
@@ -2413,7 +2413,7 @@ mapchartoglyph(integer font, integer ch)
 	if (fontarea[font] == OTGR_FONT_FLAG)
 		return mapCharToGlyph((XeTeXLayoutEngine)(fontlayoutengine[font]), ch);
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `map_char_to_glyph'\n");
 		exit(3);
 	}
 }
@@ -2430,7 +2430,7 @@ mapglyphtoindex(integer font)
 	if (fontarea[font] == OTGR_FONT_FLAG)
 		return mapGlyphToIndex((XeTeXLayoutEngine)(fontlayoutengine[font]), (const char*)nameoffile + 1);
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `map_glyph_to_index'\n");
 		exit(3);
 	}
 }
@@ -2446,7 +2446,7 @@ getfontcharrange(integer font, int first)
 	if (fontarea[font] == OTGR_FONT_FLAG)
 		return getFontCharRange((XeTeXLayoutEngine)(fontlayoutengine[font]), first);
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_font_char_range'\n");
 		exit(3);
 	}
 }
@@ -2850,7 +2850,7 @@ printglyphname(integer font, integer gid)
 		s = (char*)getGlyphName(getFont(engine), gid, &len);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `print_glyph_name'\n");
 		exit(3);
 	}
 	while (len-- > 0)
