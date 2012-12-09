@@ -276,6 +276,7 @@ KPSE_GRAPHITE_FLAGS
 KPSE_TECKIT_FLAGS
 KPSE_ICU_FLAGS[]dnl required by KPSE_HARFBUZZ_FLAGS
 KPSE_HARFBUZZ_FLAGS
+PKG_CHECK_MODULES([GRAPHITE2], [graphite2])
 
 # Check size of off_t (using <kpathsea/config.h>)
 KPSE_ADD_FLAGS([kpathsea])

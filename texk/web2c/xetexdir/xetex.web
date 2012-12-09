@@ -16035,7 +16035,7 @@ begin
 			until offs < 0;
 		end
 		else begin
-			linebreak_start(XeTeX_linebreak_locale, native_text + s, len);
+			linebreak_start(main_f, XeTeX_linebreak_locale, native_text + s, len);
 			offs := 0;
 			repeat
 				prevOffs := offs;

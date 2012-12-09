@@ -55,6 +55,10 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 #include <hb-ft.h>
 #include <hb-icu.h>
 
+#include <graphite2/Font.h>
+#include <graphite2/Segment.h>
+#include <hb-graphite2.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -159,7 +163,9 @@ int makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txt
 void getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y);
 float graphiteSegmentWidth(XeTeXLayoutEngine engine);
 void initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
+bool initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
 int findNextGraphiteBreak(int iOffset, int iBrkVal);
+int findNextGraphite2Break(void);
 
 int usingOpenType(XeTeXLayoutEngine engine);
 int usingGraphite(XeTeXLayoutEngine engine);

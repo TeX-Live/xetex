@@ -966,6 +966,70 @@ static XeTeXLayoutEngine	lbEngine = NULL;
 
 #endif /* XETEX_GRAPHITE */
 
+static gr_segment* grSegment = NULL;
+static const gr_slot* grPrevSlot = NULL;
+
+bool
+initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
+{
+	XeTeXFontInst* font = engine->font;
+	gr_face* grFace = hb_graphite2_font_get_face(engine->font->hbFont);
+	gr_font* grFont = hb_graphite2_font_get_font(engine->font->hbFont);
+	if (grFace && grFont) {
+		if (grSegment != NULL) {
+			gr_seg_destroy(grSegment);
+			grSegment = NULL;
+			grPrevSlot = NULL;
+		}
+
+		hb_tag_t script_tag[2];
+		hb_ot_tags_from_script (engine->scriptTag, &script_tag[0], &script_tag[1]);
+
+		grSegment = gr_make_seg(grFont, grFace,
+				script_tag[1] == HB_TAG_NONE ? script_tag[0] : script_tag[1],
+				0, // XXX: pass font features
+				gr_utf16, txtPtr, txtLen, 0);
+		grPrevSlot = gr_seg_first_slot(grSegment);
+
+		return true;
+	}
+
+	return false;
+}
+
+int
+findNextGraphite2Break(void)
+{
+	if (grSegment == NULL)
+		return -1;
+
+	if (grPrevSlot && grPrevSlot != gr_seg_last_slot(grSegment)) {
+		const gr_slot* s;
+		const gr_char_info* ci = NULL;
+		for (s = gr_slot_next_in_segment(grPrevSlot); s != NULL; s = gr_slot_next_in_segment(s)) {
+			int bw;
+
+			ci = gr_seg_cinfo(grSegment, gr_slot_index(s));
+			bw = gr_cinfo_break_weight(ci);
+			if (bw < gr_breakNone && bw >= gr_breakBeforeWord) {
+				grPrevSlot = s;
+				return gr_cinfo_base(ci);
+			}
+
+			if (bw > gr_breakNone && bw <= gr_breakWord) {
+				grPrevSlot = gr_slot_next_in_segment(s);
+				return gr_cinfo_base(ci) + 1;
+			}
+		}
+
+		grPrevSlot = gr_seg_last_slot(grSegment);
+		ci = gr_seg_cinfo(grSegment, gr_slot_after(grPrevSlot));
+		return gr_cinfo_base(ci) + 1;
+	} else {
+		return -1;
+	}
+}
+
 void
 initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 {

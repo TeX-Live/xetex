@@ -453,8 +453,17 @@ static UBreakIterator*	brkIter = NULL;
 static int				brkLocaleStrNum = 0;
 
 void
-linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
+linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength)
 {
+	char* locale = (char*)gettexstring(localeStrNum);
+
+	if (fontarea[f] == OTGR_FONT_FLAG && strcmp(locale, "G") == 0) {
+		XeTeXLayoutEngine engine = (XeTeXLayoutEngine) fontlayoutengine[f];
+		if (initGraphite2Breaking(engine, text, textLength))
+			/* user asked for Graphite line breaking and the font supports it */
+			return;
+	}
+
 	UErrorCode	status = 0;
 
 	if ((localeStrNum != brkLocaleStrNum) && (brkIter != NULL)) {
@@ -463,7 +472,6 @@ linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
 	}
 	
 	if (brkIter == NULL) {
-		char* locale = (char*)gettexstring(localeStrNum);
 		brkIter = ubrk_open(UBRK_LINE, locale, NULL, 0, &status);
 		if (U_FAILURE(status)) {
 			begindiagnostic();
@@ -493,7 +501,10 @@ linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
 int
 linebreaknext()
 {
-	return ubrk_next((UBreakIterator*)brkIter);
+	if (brkIter != NULL)
+		return ubrk_next((UBreakIterator*)brkIter);
+	else
+		return findNextGraphite2Break();
 }
 
 int

@@ -240,7 +240,7 @@ extern "C" {
 
 	void setinputfileencoding(unicodefile f, integer mode, integer encodingData);
 	void uclose(unicodefile f);
-	void linebreakstart(integer localeStrNum, const UniChar* text, integer textLength);
+	void linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength);
 	int linebreaknext();
 	int getencodingmodeandinfo(integer* info);
 	void printutf8str(const unsigned char* str, int len);
