@@ -24,10 +24,11 @@ xetex_cppflags += $(ICU_INCLUDES)
 ## freetype1/freetype2 confusion -- what a mess.
 xetex_cppflags += $(FREETYPE2_INCLUDES)
 xetex_cppflags += $(TECKIT_INCLUDES)
-xetex_cppflags += $(HARFBUZZ_INCLUDES) $(GRAPHITE2_CFLAGS)
-xetex_ldadd = $(libxetex) $(HARFBUZZ_LIBS) $(GRAPHITE2__LIBS) $(ICU_LIBS) $(TECKIT_LIBS)
+xetex_cppflags += $(HARFBUZZ_INCLUDES)
+xetex_cppflags += $(GRAPHITE2_INCLUDES)
+xetex_ldadd = $(libxetex) $(HARFBUZZ_LIBS) $(GRAPHITE2_LIBS) $(ICU_LIBS) $(TECKIT_LIBS)
 xetex_dependencies = $(proglib) $(KPATHSEA_DEPEND)
-xetex_dependencies += $(ICU_DEPEND) $(TECKIT_DEPEND) $(HARFBUZZ_DEPEND)
+xetex_dependencies += $(ICU_DEPEND) $(TECKIT_DEPEND) $(HARFBUZZ_DEPEND) $(GRAPHITE2_DEPEND)
 
 if XETEX_MACOSX
 

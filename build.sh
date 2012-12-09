@@ -170,6 +170,7 @@ then
     --with-system-zlib \
     --with-system-icu \
     --with-system-graphite \
+    --with-system-graphite2 \
     --with-system-harfbuzz \
     --without-mf-x-toolkit --without-x "
 else
@@ -182,6 +183,7 @@ else
     --without-system-zlib \
     --without-system-icu \
     --without-system-graphite \
+    --without-system-graphite2 \
     --without-system-harfbuzz \
     --without-mf-x-toolkit --without-x "
 fi
