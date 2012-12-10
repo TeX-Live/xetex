@@ -581,7 +581,7 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
 						bool rightToLeft)
 {
-	hb_script_t script = HB_SCRIPT_LATIN;
+	hb_script_t script = HB_SCRIPT_INVALID;
 	hb_language_t language = HB_LANGUAGE_INVALID;
 	hb_direction_t direction = HB_DIRECTION_LTR;
 
