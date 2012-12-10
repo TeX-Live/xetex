@@ -880,9 +880,8 @@ static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
 	XeTeXLayoutEngine   engine;
-	hb_script_t		scriptTag = HB_SCRIPT_LATIN;
-	hb_language_t	languageTag = HB_LANGUAGE_INVALID;
-	
+	char*			script = NULL;
+	char*			language = NULL;
 	hb_feature_t*	features = NULL;
 	char**			shapers = NULL;
 	int				nFeatures = 0;
@@ -920,7 +919,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				scriptTag = hb_script_from_string(read_str_tag(cp3 + 1), -1);
+				script = read_str_tag(cp3 + 1);
 				goto next_option;
 			}
 			
@@ -928,7 +927,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
 					goto bad_option;
-				languageTag = hb_language_from_string(read_str_tag(cp3 + 1), -1);
+				language = read_str_tag(cp3 + 1);
 				goto next_option;
 			}
 			
@@ -1009,7 +1008,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	if ((loadedfontflags & FONT_FLAGS_VERTICAL) != 0)
 		setFontLayoutDir(font, 1);
 
-	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag,
+	engine = createLayoutEngine(fontRef, font, script, language,
 					features, nFeatures, shapers, rgbValue, extend, slant, embolden);
 
 	if (engine == 0) {

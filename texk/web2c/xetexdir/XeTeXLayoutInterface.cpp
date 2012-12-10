@@ -59,8 +59,8 @@ struct XeTeXLayoutEngine_rec
 {
 	XeTeXFontInst*	font;
 	PlatformFontRef	fontRef;
-	hb_script_t		scriptTag;
-	hb_language_t	languageTag;
+	char*			script;
+	char*			language;
 	hb_feature_t*	features;
 	char**			shapers;
 	int				nFeatures;
@@ -539,15 +539,15 @@ float getEmboldenFactor(XeTeXLayoutEngine engine)
 	return engine->embolden;
 }
 
-XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
+XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, char* script, char* language,
 										hb_feature_t* features, int nFeatures, char **shapers, UInt32 rgbValue,
 										float extend, float slant, float embolden)
 {
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
 	result->fontRef = fontRef;
 	result->font = (XeTeXFontInst*)font;
-	result->scriptTag = scriptTag;
-	result->languageTag = languageTag;
+	result->script = script;
+	result->language = language;
 	result->features = features;
 	result->shapers = shapers;
 	result->nFeatures = nFeatures;
@@ -581,18 +581,26 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
 						bool rightToLeft)
 {
-	hb_direction_t direction;
+	hb_script_t script = HB_SCRIPT_LATIN;
+	hb_language_t language = HB_LANGUAGE_INVALID;
+	hb_direction_t direction = HB_DIRECTION_LTR;
 
 	if (engine->font->getLayoutDirVertical())
 		direction = HB_DIRECTION_TTB;
-	else
-		direction = rightToLeft ? HB_DIRECTION_RTL : HB_DIRECTION_LTR;
+	else if (rightToLeft)
+		direction = HB_DIRECTION_RTL;
+
+	if (engine->script != NULL)
+		script = hb_script_from_string(engine->script, -1);
+
+	if (engine->language != NULL)
+		language = hb_language_from_string(engine->language, -1);
 
 	hb_buffer_reset(engine->hbBuffer);
 	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
 	hb_buffer_set_direction(engine->hbBuffer, direction);
-	hb_buffer_set_script(engine->hbBuffer, engine->scriptTag);
-	hb_buffer_set_language(engine->hbBuffer, engine->languageTag);
+	hb_buffer_set_script(engine->hbBuffer, script);
+	hb_buffer_set_language(engine->hbBuffer, language);
 
 	hb_shape_full(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures, engine->shapers);
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
@@ -666,7 +674,8 @@ void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent
 
 int getDefaultDirection(XeTeXLayoutEngine engine)
 {
-	if (hb_script_get_horizontal_direction (engine->scriptTag) == HB_DIRECTION_RTL)
+	hb_script_t script = hb_buffer_get_script(engine->hbBuffer);
+	if (hb_script_get_horizontal_direction (script) == HB_DIRECTION_RTL)
 		return UBIDI_DEFAULT_RTL;
 	else
 		return UBIDI_DEFAULT_LTR;
@@ -874,8 +883,8 @@ XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
 	result->fontRef = fontRef;
 	result->font = (XeTeXFontInst*)font;
-	result->scriptTag = HB_SCRIPT_INVALID;
-	result->languageTag = HB_LANGUAGE_INVALID;
+	result->script = NULL;
+	result->language = NULL;
 	result->features = NULL;
 	result->shapers = NULL;
 	result->nFeatures = 0;
@@ -982,13 +991,13 @@ initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLe
 			grPrevSlot = NULL;
 		}
 
-		hb_tag_t script_tag[2], lang;
-		hb_ot_tags_from_script (engine->scriptTag, &script_tag[0], &script_tag[1]);
+		hb_tag_t script = HB_TAG_NONE, lang = HB_TAG_NONE;
 
-		if (engine->languageTag != HB_LANGUAGE_INVALID)
-			lang = hb_tag_from_string(hb_language_to_string(engine->languageTag), -1);
-		else
-			lang = HB_TAG_NONE;
+		if (engine->script != NULL)
+			script = hb_tag_from_string(engine->script, -1);
+
+		if (engine->language != NULL)
+			lang = hb_tag_from_string(engine->language, -1);
 
 		gr_feature_val *grFeatures = gr_face_featureval_for_lang (grFace, lang);
 
@@ -1001,10 +1010,7 @@ initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLe
 			features++;
 		}
 
-		grSegment = gr_make_seg(grFont, grFace,
-				script_tag[1] == HB_TAG_NONE ? script_tag[0] : script_tag[1],
-				grFeatures,
-				gr_utf16, txtPtr, txtLen, 0);
+		grSegment = gr_make_seg(grFont, grFace, script, grFeatures, gr_utf16, txtPtr, txtLen, 0);
 		grPrevSlot = gr_seg_first_slot(grSegment);
 
 		return true;
