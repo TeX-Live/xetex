@@ -972,10 +972,10 @@ static const gr_slot* grPrevSlot = NULL;
 bool
 initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 {
-	XeTeXFontInst* font = engine->font;
-	gr_face* grFace = hb_graphite2_font_get_face(engine->font->hbFont);
-	gr_font* grFont = hb_graphite2_font_get_font(engine->font->hbFont);
-	if (grFace && grFont) {
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+	gr_font* grFont = hb_graphite2_font_get_gr_font(engine->font->hbFont);
+	if (grFace != NULL && grFont != NULL) {
 		if (grSegment != NULL) {
 			gr_seg_destroy(grSegment);
 			grSegment = NULL;
