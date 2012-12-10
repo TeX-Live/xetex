@@ -508,9 +508,7 @@ long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 feature, c
 
 float getGlyphWidth(XeTeXFont font, UInt32 gid)
 {
-	realpoint	adv;
-	((XeTeXFontInst*)font)->getGlyphAdvance(gid, adv);
-	return adv.x;
+	return ((XeTeXFontInst*)font)->getGlyphWidth(gid);
 }
 
 UInt32
