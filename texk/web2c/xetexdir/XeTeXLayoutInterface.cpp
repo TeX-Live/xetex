@@ -982,12 +982,28 @@ initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLe
 			grPrevSlot = NULL;
 		}
 
-		hb_tag_t script_tag[2];
+		hb_tag_t script_tag[2], lang;
 		hb_ot_tags_from_script (engine->scriptTag, &script_tag[0], &script_tag[1]);
+
+		if (engine->languageTag != HB_LANGUAGE_INVALID)
+			lang = hb_tag_from_string(hb_language_to_string(engine->languageTag), -1);
+		else
+			lang = HB_TAG_NONE;
+
+		gr_feature_val *grFeatures = gr_face_featureval_for_lang (grFace, lang);
+
+		int nFeatures = engine->nFeatures;
+		hb_feature_t *features =  engine->features;
+		while (nFeatures--) {
+			const gr_feature_ref *fref = gr_face_find_fref (grFace, features->tag);
+			if (fref)
+				gr_fref_set_feature_value (fref, features->value, grFeatures);
+			features++;
+		}
 
 		grSegment = gr_make_seg(grFont, grFace,
 				script_tag[1] == HB_TAG_NONE ? script_tag[0] : script_tag[1],
-				0, // XXX: pass font features
+				grFeatures,
 				gr_utf16, txtPtr, txtLen, 0);
 		grPrevSlot = gr_seg_first_slot(grSegment);
 
