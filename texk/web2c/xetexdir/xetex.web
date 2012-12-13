@@ -17638,7 +17638,7 @@ end;
 
 @ @<Attach superscript OpenType math kerning@>=
 begin save_f:=cur_f;@/
-fetch(subscr(q));
+fetch(supscr(q));
 if is_new_mathfont(cur_f) then begin
   s:=new_native_character(cur_f, qo(cur_c));
   g:=get_native_glyph(s, 0);
