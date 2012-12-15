@@ -178,9 +178,8 @@ UInt32 countGraphiteFeatures(XeTeXLayoutEngine engine);
 UInt32 getGraphiteFeatureCode(XeTeXLayoutEngine engine, UInt32 index);
 UInt32 countGraphiteFeatureSettings(XeTeXLayoutEngine engine, UInt32 feature);
 UInt32 getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, UInt32 feature, UInt32 index);
-UInt32 getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, UInt32 feature);
-void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 feature, unsigned short* buf);
-void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UInt32 setting, unsigned short* buf);
+void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 feature, char* buf);
+void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UInt32 setting, char* buf);
 long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int namelength);
 long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 feature, const char* name, int namelength);
 

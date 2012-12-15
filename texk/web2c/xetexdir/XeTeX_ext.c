@@ -1342,11 +1342,9 @@ otfontget(integer what, void* pEngine)
 			return countGlyphs(fontInst);
 			break;
 		
-#ifdef XETEX_GRAPHITE
 		case XeTeX_count_features: /* ie Graphite features */
 			return countGraphiteFeatures(engine);
 			break;
-#endif
 
 		case XeTeX_OT_count_scripts:
 			return countScripts(fontInst);
@@ -1370,7 +1368,6 @@ otfontget1(integer what, void* pEngine, integer param)
 			return getIndScript(fontInst, param);
 			break;
 		
-#ifdef XETEX_GRAPHITE
 		/* for graphite fonts...*/
 		case XeTeX_feature_code:
 			return getGraphiteFeatureCode(engine, param);
@@ -1381,7 +1378,6 @@ otfontget1(integer what, void* pEngine, integer param)
 		case XeTeX_count_selectors:
 			return countGraphiteFeatureSettings(engine, param);
 			break;
-#endif
 	}
 	return 0;
 }
@@ -1401,15 +1397,13 @@ otfontget2(integer what, void* pEngine, integer param1, integer param2)
 			return countFeatures(fontInst, param1, param2);
 			break;
 
-#ifdef XETEX_GRAPHITE
 		/* for graphite fonts */
 		case XeTeX_selector_code:
 			return getGraphiteFeatureSettingCode(engine, param1, param2);
 			break;
 		case XeTeX_is_default_selector:
-			return getGraphiteFeatureDefaultSetting(engine, param1) == param2;
+			return getGraphiteFeatureSettingCode(engine, param1, 1) == param2;
 			break;
-#endif
 	}
 	
 	return 0;
@@ -1433,9 +1427,8 @@ otfontget3(integer what, void* pEngine, integer param1, integer param2, integer 
 void
 grprintfontname(integer what, void* pEngine, integer param1, integer param2)
 {
-#ifdef XETEX_GRAPHITE
-	unsigned short	name[128];	/* graphite API specifies size 128 */
-	int				n = 0;
+	char name[128];
+	int n = 0;
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_feature_name:
@@ -1445,24 +1438,21 @@ grprintfontname(integer what, void* pEngine, integer param1, integer param2)
 			getGraphiteFeatureSettingLabel(engine, param1, param2, &name[0]);
 			break;
 	}
-	while (name[n] != 0 && n < 128)
+	while (name[n] != '\0')
 		++n;
-	printchars(&name[0], n);
-#endif
+	printchars((unsigned short*) &name[0], n);
 }
 
 integer
 grfontgetnamed(integer what, void* pEngine)
 {
 	long	rval = -1;
-#ifdef XETEX_GRAPHITE
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_find_feature_by_name:
 			rval = findGraphiteFeatureNamed(engine, (const char*)nameoffile + 1, namelength);
 			break;
 	}
-#endif
 	return rval;
 }
 
@@ -1470,14 +1460,12 @@ integer
 grfontgetnamed1(integer what, void* pEngine, integer param)
 {
 	long	rval = -1;
-#ifdef XETEX_GRAPHITE
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_find_selector_by_name:
 			rval = findGraphiteFeatureSettingNamed(engine, param, (const char*)nameoffile + 1, namelength);
 			break;
 	}
-#endif
 	return rval;
 }
 

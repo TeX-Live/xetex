@@ -334,106 +334,114 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
 	return 0;
 }
 
-#ifdef XETEX_GRAPHITE
 UInt32 countGraphiteFeatures(XeTeXLayoutEngine engine)
 {
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	UInt32	rval = 0;
-	while (fi.first != fi.second) {
-		++rval;
-		++fi.first;
-	}
+	uint32_t rval = 0;
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL)
+		rval = gr_face_n_fref(grFace);
+
 	return rval;
 }
 
 UInt32 getGraphiteFeatureCode(XeTeXLayoutEngine engine, UInt32 index)
 {
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	while (index > 0 && fi.first != fi.second) {
-		--index;
-		++fi.first;
+	uint32_t rval = 0;
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL) {
+		const gr_feature_ref* feature = gr_face_fref(grFace, index);
+		rval = gr_fref_id(feature);
 	}
-	if (fi.first != fi.second)
-		return *fi.first;
-	return 0;
+
+	return rval;
 }
 
-UInt32 countGraphiteFeatureSettings(XeTeXLayoutEngine engine, UInt32 feature)
+UInt32 countGraphiteFeatureSettings(XeTeXLayoutEngine engine, UInt32 featureID)
 {
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	while (fi.first != fi.second && *fi.first != feature)
-		++fi.first;
-	if (fi.first != fi.second) {
-		std::pair<gr::FeatureSettingIterator, gr::FeatureSettingIterator>
-				si = engine->grFont->getFeatureSettings(fi.first);
-		UInt32	rval = 0;
-		while (si.first != si.second) {
-			++rval;
-			++si.first;
+	uint32_t rval = 0;
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL) {
+		const gr_feature_ref* feature = gr_face_find_fref(grFace, featureID);
+		rval = gr_fref_n_values(feature);
+	}
+
+	return rval;
+}
+
+UInt32 getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, UInt32 featureID, UInt32 index)
+{
+	uint32_t rval = 0;
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL) {
+		const gr_feature_ref* feature = gr_face_find_fref(grFace, featureID);
+		rval = gr_fref_value(feature, index);
+	}
+
+	return rval;
+}
+
+void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 featureID, char* buf)
+{
+	buf[0] = '\0';
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL) {
+		const gr_feature_ref* feature = gr_face_find_fref(grFace, featureID);
+		uint32_t len = 0;
+		uint16_t langID = 0x409;
+
+		buf = (char*) gr_fref_label(feature, &langID, gr_utf8, &len);
+
+		if (len > 128 + 1) { // 128 is set in XeTeX_ext.c
+			buf = (char*) realloc(buf, len + 1);
+			buf = (char*) gr_fref_label(feature, &langID, gr_utf8, &len);
 		}
-		return rval;
-	}
-	return 0;
-}
 
-UInt32 getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, UInt32 feature, UInt32 index)
-{
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	while (fi.first != fi.second && *fi.first != feature)
-		++fi.first;
-	if (fi.first != fi.second) {
-		std::pair<gr::FeatureSettingIterator, gr::FeatureSettingIterator>
-				si = engine->grFont->getFeatureSettings(fi.first);
-		while (index > 0 && si.first != si.second) {
-			--index;
-			++si.first;
-		}
-		if (si.first != si.second)
-			return *si.first;
-	}
-	return 0;
-}
-
-UInt32 getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, UInt32 feature)
-{
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	while (fi.first != fi.second && *fi.first != feature)
-		++fi.first;
-	if (fi.first != fi.second) {
-		gr::FeatureSettingIterator	si = engine->grFont->getDefaultFeatureValue(fi.first);
-		return *si;
-	}
-	return 0;
-}
-
-void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 feature, unsigned short* buf)
-{
-	buf[0] = 0;
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	while (fi.first != fi.second && *fi.first != feature)
-		++fi.first;
-	if (fi.first != fi.second) {
-		engine->grFont->getFeatureLabel(fi.first, 0x0409, buf);
+		buf[len + 1] = '\0';
 	}
 }
 
-void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UInt32 setting, unsigned short* buf)
+void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 featureID, UInt32 settingID, char* buf)
 {
-	buf[0] = 0;
-	std::pair<gr::FeatureIterator, gr::FeatureIterator>	fi = engine->grFont->getFeatures();
-	while (fi.first != fi.second && *fi.first != feature)
-		++fi.first;
-	if (fi.first != fi.second) {
-		std::pair<gr::FeatureSettingIterator, gr::FeatureSettingIterator>
-				si = engine->grFont->getFeatureSettings(fi.first);
-		while (si.first != si.second && *si.first != setting)
-			++si.first;
-		if (si.first != si.second) {
-			engine->grFont->getFeatureSettingLabel(si.first, 0x0409, buf);
+	buf[0] = '\0';
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL) {
+		const gr_feature_ref* feature = gr_face_find_fref(grFace, featureID);
+		for (int i = 0; i < gr_fref_n_values(feature); i++) {
+			if (settingID == gr_fref_value(feature, i)) {
+				uint32_t len = 0;
+				uint16_t langID = 0x409;
+
+				buf = (char*) gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
+
+				if (len > 128 + 1) { // 128 is set in XeTeX_ext.c
+					buf = (char*) realloc(buf, len + 1);
+					buf = (char*) gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
+				}
+
+				buf[len + 1] = '\0';
+				break;
+			}
 		}
 	}
 }
-#endif /* XETEX_GRAPHITE */
 
 bool
 findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v)
