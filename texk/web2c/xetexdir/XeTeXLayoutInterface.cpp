@@ -155,6 +155,11 @@ char getReqEngine()
 	return XeTeXFontMgr::GetFontManager()->getReqEngine();
 }
 
+void setReqEngine(char reqEngine)
+{
+	XeTeXFontMgr::GetFontManager()->setReqEngine(reqEngine);
+}
+
 const char* getFullName(PlatformFontRef fontRef)
 {
 	return XeTeXFontMgr::GetFontManager()->getFullName(fontRef);

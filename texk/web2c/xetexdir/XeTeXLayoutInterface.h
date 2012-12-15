@@ -83,6 +83,7 @@ void setFontLayoutDir(XeTeXFont font, int vertical);
 PlatformFontRef findFontByName(const char* name, char* var, double size);
 
 char getReqEngine();
+void setReqEngine(char reqEngine);
 const char* getFullName(PlatformFontRef fontRef);
 
 const char* getFontFilename(XeTeXLayoutEngine engine);

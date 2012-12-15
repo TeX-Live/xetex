@@ -422,12 +422,6 @@ XeTeXFontMgr::getNames(PlatformFontRef font, const char** psName,
 	*styName = i->second->styleName->c_str();
 }
 
-char
-XeTeXFontMgr::getReqEngine() const
-{
-	return sReqEngine;
-}
-
 int
 XeTeXFontMgr::weightAndWidthDiff(const Font* a, const Font* b) const
 {

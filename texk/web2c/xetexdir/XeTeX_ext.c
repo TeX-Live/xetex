@@ -1327,15 +1327,13 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			font = createFontFromFile(path, index, scaled_size);
 			if (font != NULL) {
 				loadedfontdesignsize = D2Fix(getDesignSize(font));
-#if XETEX_GRAPHITE
-				if (varString && strncmp(varString, "/GR", 3) == 0) {
-					rval = loadGraphiteFont(0, font, scaled_size, featString, nameString);
-					if (rval == NULL)
-						graphitewarning();
-				}
-#endif
-				if (rval == NULL) /* graphite wasn't requested, or failed to initialize */
-					rval = loadOTfont(0, font, scaled_size, featString);
+
+				if (varString && strncmp(varString, "/GR", 3) == 0)
+					setReqEngine('G');
+				else
+					setReqEngine(0);
+
+				rval = loadOTfont(0, font, scaled_size, featString);
 				if (rval == NULL)
 					deleteFont(font);
 				if (rval != NULL && gettracingfontsstate() > 0) {

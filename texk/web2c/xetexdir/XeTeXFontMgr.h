@@ -89,7 +89,10 @@ public:
 
 	double							getDesignSize(XeTeXFont font);
 
-	char							getReqEngine() const;
+	char							getReqEngine() const { return sReqEngine; };
+
+	void							setReqEngine(char reqEngine) const { sReqEngine = reqEngine; };
+
 		// return the requested rendering technology for the most recent findFont
 		// or 0 if no specific technology was requested
 
