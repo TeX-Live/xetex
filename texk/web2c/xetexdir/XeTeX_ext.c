@@ -925,6 +925,16 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	
 	int i;
 
+	if (getReqEngine() == 'G') {
+		/* create a default engine so we can query the font for Graphite features;
+		 * because of font caching, it's cheap to discard this and create the real one later */
+		engine = createLayoutEngine(fontRef, font, script, language,
+				features, nFeatures, shapers, rgbValue, extend, slant, embolden);
+
+		if (engine == NULL)
+			return NULL;
+	}
+
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
 		while (*cp1) {
@@ -973,7 +983,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 
 			if (getReqEngine() == 'G') {
 				int value = 0;
-				if (readFeatureNumber(cp1, cp2, &tag, &value)) {
+				if (readFeatureNumber(cp1, cp2, &tag, &value)
+				 || findGraphiteFeature(engine, cp1, cp2, &tag, &value)) {
 					features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
 					features[nFeatures].tag = tag;
 					features[nFeatures].start = 0;

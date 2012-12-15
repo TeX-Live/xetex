@@ -171,7 +171,7 @@ int usingOpenType(XeTeXLayoutEngine engine);
 int usingGraphite(XeTeXLayoutEngine engine);
 int isOpenTypeMathFont(XeTeXLayoutEngine engine);
 
-int findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v);
+bool findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v);
 
 UInt32 countGraphiteFeatures(XeTeXLayoutEngine engine);
 UInt32 getGraphiteFeatureCode(XeTeXLayoutEngine engine, UInt32 index);

@@ -430,78 +430,95 @@ void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UI
 }
 #endif /* XETEX_GRAPHITE */
 
+bool
+findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v)
+	/* s...e is a "feature[=setting]" string; look for this in the font */
+{
+	*f = 0;
+	*v = 0;
+	while (*s == ' ' || *s == '\t')
+		++s;
+	const char* cp = s;
+	while (cp < e && *cp != '=')
+		++cp;
+
+	*f = findGraphiteFeatureNamed(engine, s, cp - s);
+	if (*f == -1)
+		return false;
+
+	++cp;
+	while (cp < e && (*cp == ' ' || *cp == '\t'))
+		++cp;
+	if (cp >= e)
+		// no setting was specified, so we just use the first
+		// XXX the default is not always the first?
+		return true;
+
+	*v = findGraphiteFeatureSettingNamed(engine, *f, cp, e - cp);
+	if (*v == -1)
+		return false;
+
+	return true;
+}
+
 long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int namelength)
 {
 	long		rval = -1;
 
-#ifdef XETEX_GRAPHITE
-	UErrorCode	status = (UErrorCode)0;
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
-	std::pair<gr::FeatureIterator,gr::FeatureIterator>	features = engine->grFont->getFeatures();
-	while (features.first != features.second) {
-		gr::utf16	label[128];
-		if (engine->grFont->getFeatureLabel(features.first, 0x409, &label[0])) {
-			UText* ut1 = utext_openUTF8(NULL, name, namelength, &status);
-			UText* ut2 = utext_openUChars(NULL, (const UChar*)&label[0], -1, &status);
-			UChar32	ch1 = 0, ch2 = 0;
-			while (ch1 != U_SENTINEL) {
-				ch1 = utext_next32(ut1);
-				ch2 = utext_next32(ut2);
-				if (ch1 != ch2)
-					break;
-			}
-			ut1 = utext_close(ut1);
-			ut2 = utext_close(ut2);
-			if (ch1 == ch2) {
-				rval = *features.first;
+	if (grFace != NULL) {
+		for (int i = 0; i < gr_face_n_fref(grFace); i++) {
+			const gr_feature_ref* feature = gr_face_fref(grFace, i);
+			uint32_t len = 0;
+			uint16_t langID = 0x409;
+
+			// the first call is to get the length of the string
+			gr_fref_label(feature, &langID, gr_utf8, &len);
+			char* label = (char*) xmalloc(len);
+			label = (char*) gr_fref_label(feature, &langID, gr_utf8, &len);
+
+			if (strncmp(label, name, namelength) == 0) {
+				rval = gr_fref_id(feature);
+				gr_label_destroy(label);
 				break;
 			}
+
+			gr_label_destroy(label);
 		}
-		++features.first;
 	}
-#endif
 
 	return rval;
 }
 
-long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 feature, const char* name, int namelength)
+long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 id, const char* name, int namelength)
 {
 	long		rval = -1;
 
-#ifdef XETEX_GRAPHITE
-	UErrorCode	status = (UErrorCode)0;
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
-	std::pair<gr::FeatureIterator,gr::FeatureIterator>	features = engine->grFont->getFeatures();
-	while (features.first != features.second) {
-		if (*features.first == feature) {
-			std::pair<gr::FeatureSettingIterator,gr::FeatureSettingIterator>
-					settings = engine->grFont->getFeatureSettings(features.first);
-			while (settings.first != settings.second) {
-				gr::utf16	label[128];
-				if (engine->grFont->getFeatureSettingLabel(settings.first, 0x409, &label[0])) {
-					UText* ut1 = utext_openUTF8(NULL, name, namelength, &status);
-					UText* ut2 = utext_openUChars(NULL, (const UChar*)&label[0], -1, &status);
-					UChar32	ch1 = 0, ch2 = 0;
-					while (ch1 != U_SENTINEL) {
-						ch1 = utext_next32(ut1);
-						ch2 = utext_next32(ut2);
-						if (ch1 != ch2)
-							break;
-					}
-					ut1 = utext_close(ut1);
-					ut2 = utext_close(ut2);
-					if (ch1 == ch2) {
-						rval = *settings.first;
-						break;
-					}
-				}
-				++settings.first;
+	if (grFace != NULL) {
+		const gr_feature_ref* feature = gr_face_find_fref(grFace, id);
+		for (int i = 0; i < gr_fref_n_values(feature); i++) {
+			uint32_t len = 0;
+			uint16_t langID = 0x409;
+
+			// the first call is to get the length of the string
+			gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
+			char* label = (char*) xmalloc(len);
+			label = (char*) gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
+
+			if (strncmp(label, name, namelength) == 0) {
+				rval = gr_fref_value(feature, i);
+				gr_label_destroy(label);
+				break;
 			}
-			break;
+
+			gr_label_destroy(label);
 		}
-		++features.first;
 	}
-#endif
 
 	return rval;
 }
@@ -1130,34 +1147,5 @@ int isOpenTypeMathFont(XeTeXLayoutEngine engine)
 			return 1;
 	}
 	return 0;
-}
-
-int
-findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v)
-	/* s...e is a "feature=setting" string; look for this in the font */
-{
-	while (*s == ' ' || *s == '\t')
-		++s;
-	const char* cp = s;
-	while (cp < e && *cp != '=')
-		++cp;
-	if (cp == e)
-		return 0;
-
-	*f = findGraphiteFeatureNamed(engine, s, cp - s);
-	if (*f == -1)
-		return 0;
-
-	++cp;
-	while (cp < e && (*cp == ' ' || *cp == '\t'))
-		++cp;
-	if (cp == e)
-		return 0;
-
-	*v = findGraphiteFeatureSettingNamed(engine, *f, cp, e - cp);
-	if (*v == -1)
-		return 0;
-	
-	return 1;
 }
 
