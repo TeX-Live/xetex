@@ -16015,48 +16015,25 @@ begin
 	end else begin
 		use_skip := XeTeX_linebreak_skip <> zero_glue;
 		use_penalty := XeTeX_linebreak_penalty <> 0 or not use_skip;
-		if (is_gr_font(main_f)) and (str_eq_str(XeTeX_linebreak_locale, "G")) then begin
-			initGraphiteBreaking(font_layout_engine[main_f], native_text + s, len);
-			offs := 0;
-			repeat
-				prevOffs := offs;
-				offs := findNextGraphiteBreak(offs, 15); {klbWordBreak = 15}
-				if offs > 0 then begin
-					if prevOffs <> 0 then begin
-						if use_penalty then
-							tail_append(new_penalty(XeTeX_linebreak_penalty));
-						if use_skip then
-							tail_append(new_param_glue(XeTeX_linebreak_skip_code));
-					end;
-					link(tail) := new_native_word_node(main_f, offs - prevOffs);
-					tail := link(tail);
-					for i := prevOffs to offs - 1 do
-						set_native_char(tail, i - prevOffs, native_text[s + i]);
-					set_native_metrics(tail, XeTeX_use_glyph_metrics);
+		linebreak_start(main_f, XeTeX_linebreak_locale, native_text + s, len);
+		offs := 0;
+		repeat
+			prevOffs := offs;
+			offs := linebreak_next;
+			if offs > 0 then begin
+				if prevOffs <> 0 then begin
+					if use_penalty then
+						tail_append(new_penalty(XeTeX_linebreak_penalty));
+					if use_skip then
+						tail_append(new_param_glue(XeTeX_linebreak_skip_code));
 				end;
-			until offs < 0;
-		end
-		else begin
-			linebreak_start(main_f, XeTeX_linebreak_locale, native_text + s, len);
-			offs := 0;
-			repeat
-				prevOffs := offs;
-				offs := linebreak_next;
-				if offs > 0 then begin
-					if prevOffs <> 0 then begin
-						if use_penalty then
-							tail_append(new_penalty(XeTeX_linebreak_penalty));
-						if use_skip then
-							tail_append(new_param_glue(XeTeX_linebreak_skip_code));
-					end;
-					link(tail) := new_native_word_node(main_f, offs - prevOffs);
-					tail := link(tail);
-					for i := prevOffs to offs - 1 do
-						set_native_char(tail, i - prevOffs, native_text[s + i]);
-					set_native_metrics(tail, XeTeX_use_glyph_metrics);
-				end;
-			until offs < 0;
-		end
+				link(tail) := new_native_word_node(main_f, offs - prevOffs);
+				tail := link(tail);
+				for i := prevOffs to offs - 1 do
+					set_native_char(tail, i - prevOffs, native_text[s + i]);
+				set_native_metrics(tail, XeTeX_use_glyph_metrics);
+			end;
+		until offs < 0;
 	end
 end;
 

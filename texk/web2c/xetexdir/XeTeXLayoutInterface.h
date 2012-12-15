@@ -155,18 +155,8 @@ const char* getGlyphName(XeTeXFont font, UInt16 gid, int* len);
 int getFontCharRange(XeTeXLayoutEngine engine, int reqFirst);
 
 /* graphite interface functions... */
-XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
-										const char* name,
-										UInt32 rgbValue, int rtl, UInt32 languageTag,
-										float extend, float slant, float embolden,
-										int nFeatures, const int* featureIDs, const int* featureValues);
-int makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
-void getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y);
-float graphiteSegmentWidth(XeTeXLayoutEngine engine);
-void initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
-bool initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
-int findNextGraphiteBreak(int iOffset, int iBrkVal);
-int findNextGraphite2Break(void);
+bool initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
+int findNextGraphiteBreak(void);
 
 int usingOpenType(XeTeXLayoutEngine engine);
 int usingGraphite(XeTeXLayoutEngine engine);

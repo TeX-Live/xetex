@@ -45,17 +45,10 @@ authorization from the copyright holders.
 
 #include "XeTeXswap.h"
 
-#ifdef XETEX_GRAPHITE
-#include "XeTeXGrLayout.h"
-#endif
-
 #include "unicode/ubidi.h"
 #include "unicode/utext.h"
 
 struct XeTeXLayoutEngine_rec
-	/* this is used for both ICU and Graphite, because so much of the font stuff is common;
-	   however, it is not possible to call ICU-specific things like layoutChars for a
-	   Graphite-based engine, or Graphite functions for an ICU one! */
 {
 	XeTeXFontInst*	font;
 	PlatformFontRef	fontRef;
@@ -69,11 +62,6 @@ struct XeTeXLayoutEngine_rec
 	float			slant;
 	float			embolden;
 	hb_buffer_t*	hbBuffer;
-#ifdef XETEX_GRAPHITE
-	gr::Segment*		grSegment;
-	XeTeXGrFont*		grFont;
-	XeTeXGrTextSource*	grSource;
-#endif
 };
 
 /*******************************************************************/
@@ -583,13 +571,6 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, ch
 	result->extend = extend;
 	result->slant = slant;
 	result->embolden = embolden;
-
-#ifdef XETEX_GRAPHITE
-	result->grSegment = NULL;
-	result->grSource = NULL;
-	result->grFont = NULL;
-#endif
-
 	result->hbBuffer = hb_buffer_create();
 
 	return result;
@@ -599,11 +580,6 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
 	hb_buffer_destroy(engine->hbBuffer);
 	delete engine->font;
-#ifdef XETEX_GRAPHITE
-	delete engine->grSegment;
-	delete engine->grSource;
-	delete engine->grFont;
-#endif
 }
 
 int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
@@ -891,123 +867,11 @@ mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName)
 	return engine->font->mapGlyphToIndex(glyphName);
 }
 
-#ifdef XETEX_GRAPHITE
-
-/* Graphite interface */
-
-gr::LayoutEnvironment	layoutEnv;
-
-XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
-										const char* name,
-										UInt32 rgbValue, int rtl, UInt32 languageTag,
-										float extend, float slant, float embolden,
-										int nFeatures, const int* featureIDs, const int* featureValues)
-{
-	// check if the font supports graphite, and return NULL if not
-	const UInt32	kttiSilf = 0x53696C66;	// from GrConstants.h
-	if (getFontTablePtr(font, kttiSilf) == NULL)
-		return NULL;
-
-	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
-	result->fontRef = fontRef;
-	result->font = (XeTeXFontInst*)font;
-	result->script = NULL;
-	result->language = NULL;
-	result->features = NULL;
-	result->shapers = NULL;
-	result->nFeatures = 0;
-	result->rgbValue = rgbValue;
-	result->extend = extend;
-	result->slant = slant;
-	result->embolden = embolden;
-	result->hbBuffer = NULL;
-
-	result->grFont = new XeTeXGrFont(result->font, name);
-
-	result->grSource = new XeTeXGrTextSource(rtl);
-	result->grSource->setFeatures(nFeatures, featureIDs, featureValues);
-	if (languageTag != 0)
-		result->grSource->setLanguage(languageTag);
-
-	result->grSegment = NULL;
-	
-	layoutEnv.setDumbFallback(true);
-
-	return result;
-}
-
-int
-makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
-{
-	if (engine->grSegment) {
-		delete engine->grSegment;
-		engine->grSegment = NULL;
-	}
-
-	engine->grSource->setText(txtPtr, txtLen);
-	try {
-		engine->grSegment = new gr::RangeSegment(engine->grFont, engine->grSource, &layoutEnv);
-	}
-	catch (gr::FontException f) {
-		fprintf(stderr, "*** makeGraphiteSegment: font error %d, returning 0\n", (int)f.errorCode);
-		return 0;
-	}
-	catch (...) {
-		fprintf(stderr, "*** makeGraphiteSegment: segment creation failed, returning 0\n");
-		return 0;
-	}
-
-	return engine->grSegment->glyphs().second - engine->grSegment->glyphs().first;
-}
-
-void
-getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y)
-{
-	if (engine->grSegment == NULL) {
-		*glyphID = 0;
-		*x = *y = 0.0;
-		return;
-	}
-	gr::GlyphIterator	i = engine->grSegment->glyphs().first + index;
-	*glyphID = i->glyphID();
-	if (engine->extend != 1.0 || engine->slant != 0.0)
-		*x = i->origin() * engine->extend + i->yOffset() * engine->slant;
-	else
-		*x = i->origin();
-	*y = - i->yOffset();
-}
-
-float
-graphiteSegmentWidth(XeTeXLayoutEngine engine)
-{
-	if (engine->grSegment == NULL)
-		return 0.0;
-	//return engine->grSegment->advanceWidth(); // can't use this because it ignores trailing WS
-	try {
-		return engine->extend * engine->grSegment->getRangeWidth(0, engine->grSource->getLength(), false, false, false);
-	}
-	catch (gr::FontException f) {
-		fprintf(stderr, "*** graphiteSegmentWidth: font error %d, returning 0.0\n", (int)f.errorCode);
-		return 0.0;
-	}
-	catch (...) {
-		fprintf(stderr, "*** graphiteSegmentWidth: getRangeWidth failed, returning 0.0\n");
-		return 0.0;
-	}
-}
-
-/* line-breaking uses its own private textsource and segment, not the engine's ones */
-static XeTeXGrTextSource*	lbSource = NULL;
-static gr::Segment*			lbSegment = NULL;
-static XeTeXLayoutEngine	lbEngine = NULL;
-
-#endif /* XETEX_GRAPHITE */
-
 static gr_segment* grSegment = NULL;
 static const gr_slot* grPrevSlot = NULL;
 
 bool
-initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
+initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
 {
 	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
@@ -1048,7 +912,7 @@ initGraphite2Breaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLe
 }
 
 int
-findNextGraphite2Break(void)
+findNextGraphiteBreak(void)
 {
 	if (grSegment == NULL)
 		return -1;
@@ -1082,70 +946,9 @@ findNextGraphite2Break(void)
 	}
 }
 
-void
-initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen)
-{
-#ifdef XETEX_GRAPHITE
-	if (lbSource == NULL)
-		lbSource = new XeTeXGrTextSource(0);
-
-	if (lbSegment != NULL) {
-		delete lbSegment;
-		lbSegment = NULL;
-	}
-
-	lbSource->setText(txtPtr, txtLen);
-	
-	if (lbEngine != engine) {
-		gr::FeatureSetting	features[64];
-		size_t	nFeatures = engine->grSource->getFontFeatures(0, features);
-		lbSource->setFeatures(nFeatures, &features[0]);
-		lbEngine = engine;
-	}
-	
-	try {
-		lbSegment = new gr::RangeSegment(engine->grFont, lbSource, &layoutEnv);
-	}
-	catch (gr::FontException f) {
-		fprintf(stderr, "*** initGraphiteBreaking: font error %d\n", (int)f.errorCode);
-	}
-	catch (...) {
-		fprintf(stderr, "*** initGraphiteBreaking: segment creation failed\n");
-	}
-#endif
-}
-
-int
-findNextGraphiteBreak(int iOffset, int iBrkVal)
-{
-#ifdef XETEX_GRAPHITE
-	if (lbSegment == NULL)
-		return -1;
-	if (iOffset < lbSource->getLength()) {
-		while (++iOffset < lbSource->getLength()) {
-			const std::pair<gr::GlyphSetIterator,gr::GlyphSetIterator> gsiPair = lbSegment->charToGlyphs(iOffset);
-			const gr::GlyphSetIterator&	gsi = gsiPair.first;
-			if (gsi == gsiPair.second)
-				continue;
-			if (gsi->breakweight() < gr::klbNoBreak && gsi->breakweight() >= -(gr::LineBrk)iBrkVal)
-				return iOffset;
-			if (gsi->breakweight() > gr::klbNoBreak && gsi->breakweight() <= (gr::LineBrk)iBrkVal)
-				return iOffset + 1;
-		}
-		return lbSource->getLength();
-	}
-	else
-#endif
-		return -1;
-}
-
 int usingGraphite(XeTeXLayoutEngine engine)
 {
-#ifdef XETEX_GRAPHITE
-	return engine->grFont != NULL;
-#else
 	return 0;
-#endif
 }
 
 int usingOpenType(XeTeXLayoutEngine engine)

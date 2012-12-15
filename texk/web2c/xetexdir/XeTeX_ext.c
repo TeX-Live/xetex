@@ -459,7 +459,7 @@ linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLen
 
 	if (fontarea[f] == OTGR_FONT_FLAG && strcmp(locale, "G") == 0) {
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine) fontlayoutengine[f];
-		if (initGraphite2Breaking(engine, text, textLength))
+		if (initGraphiteBreaking(engine, text, textLength))
 			/* user asked for Graphite line breaking and the font supports it */
 			return;
 	}
@@ -504,7 +504,7 @@ linebreaknext()
 	if (brkIter != NULL)
 		return ubrk_next((UBreakIterator*)brkIter);
 	else
-		return findNextGraphite2Break();
+		return findNextGraphiteBreak();
 }
 
 int
