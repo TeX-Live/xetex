@@ -2016,108 +2016,106 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 	else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
+		/* using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine */
+
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)(fontlayoutengine[f]);
 
 		FixedPoint*	locations;
 		UInt16*		glyphIDs;
 		int			realGlyphCount = 0;
 
-		if (usingOpenType(engine)) {
-			/* using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine */
-	
-			/* need to find direction runs within the text, and call layoutChars separately for each */
-	
-			UBiDiDirection	dir;
-			float	x, y;
-			void*	glyph_info = 0;
-			static	float*	positions = 0;
-			static	UInt32*	glyphs = 0;
-	
-			UBiDi*	pBiDi = ubidi_open();
-			
-			UErrorCode	errorCode = (UErrorCode)0;
-			ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
-			
-			dir = ubidi_getDirection(pBiDi);
-			if (dir == UBIDI_MIXED) {
-				/* we actually do the layout twice here, once to count glyphs and then again to get them;
-				   which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
-				   bothered to deal with the memory reallocation headache of doing it differently
-				*/
-				int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
-				double		wid = 0;
-				int 		i, runIndex;
-				int32_t		logicalStart, length;
-				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
-					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-					realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
-				}
-				
-				if (realGlyphCount > 0) {
-					double	x, y;
-					glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
-					locations = (FixedPoint*)glyph_info;
-					glyphIDs = (UInt16*)(locations + realGlyphCount);
-					realGlyphCount = 0;
-					
-					x = y = 0.0;
-					for (runIndex = 0; runIndex < nRuns; ++runIndex) {
-						int nGlyphs;
-						dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-						nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
-												(dir == UBIDI_RTL));
+		/* need to find direction runs within the text, and call layoutChars separately for each */
 
-						glyphs = xmalloc(nGlyphs * sizeof(UInt32));
-						positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
+		UBiDiDirection	dir;
+		float	x, y;
+		void*	glyph_info = 0;
+		static	float*	positions = 0;
+		static	UInt32*	glyphs = 0;
+
+		UBiDi*	pBiDi = ubidi_open();
 		
-						getGlyphs(engine, glyphs);
-						getGlyphPositions(engine, positions);
-					
-						for (i = 0; i < nGlyphs; ++i) {
-							glyphIDs[realGlyphCount] = glyphs[i];
-							locations[realGlyphCount].x = D2Fix(positions[2*i] + x);
-							locations[realGlyphCount].y = D2Fix(positions[2*i+1] + y);
-							++realGlyphCount;
-						}
-						x += positions[2*i];
-						y += positions[2*i+1];
-					}
-					wid = x;
-				}
-	
-				node_width(node) = D2Fix(wid);
-				native_glyph_count(node) = realGlyphCount;
-				native_glyph_info_ptr(node) = glyph_info;
+		UErrorCode	errorCode = (UErrorCode)0;
+		ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
+		
+		dir = ubidi_getDirection(pBiDi);
+		if (dir == UBIDI_MIXED) {
+			/* we actually do the layout twice here, once to count glyphs and then again to get them;
+			   which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
+			   bothered to deal with the memory reallocation headache of doing it differently
+			*/
+			int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
+			double		wid = 0;
+			int 		i, runIndex;
+			int32_t		logicalStart, length;
+			for (runIndex = 0; runIndex < nRuns; ++runIndex) {
+				dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
+				realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 			}
-			else {
-				int i;
-				realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
-
-				glyphs = xmalloc(realGlyphCount * sizeof(UInt32));
-				positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
-
-				getGlyphs(engine, glyphs);
-				getGlyphPositions(engine, positions);
-	
-				if (realGlyphCount > 0) {
-					glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
-					locations = (FixedPoint*)glyph_info;
-					glyphIDs = (UInt16*)(locations + realGlyphCount);
-					for (i = 0; i < realGlyphCount; ++i) {
-						glyphIDs[i] = glyphs[i];
-						locations[i].x = D2Fix(positions[2*i]);
-						locations[i].y = D2Fix(positions[2*i+1]);
-					}
-				}
-
-				node_width(node) = D2Fix(positions[2*i]);
-				native_glyph_count(node) = realGlyphCount;
-				native_glyph_info_ptr(node) = glyph_info;
-			}
-	
-			ubidi_close(pBiDi);
 			
+			if (realGlyphCount > 0) {
+				double	x, y;
+				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
+				locations = (FixedPoint*)glyph_info;
+				glyphIDs = (UInt16*)(locations + realGlyphCount);
+				realGlyphCount = 0;
+				
+				x = y = 0.0;
+				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
+					int nGlyphs;
+					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
+					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
+											(dir == UBIDI_RTL));
+
+					glyphs = xmalloc(nGlyphs * sizeof(UInt32));
+					positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
+	
+					getGlyphs(engine, glyphs);
+					getGlyphPositions(engine, positions);
+				
+					for (i = 0; i < nGlyphs; ++i) {
+						glyphIDs[realGlyphCount] = glyphs[i];
+						locations[realGlyphCount].x = D2Fix(positions[2*i] + x);
+						locations[realGlyphCount].y = D2Fix(positions[2*i+1] + y);
+						++realGlyphCount;
+					}
+					x += positions[2*i];
+					y += positions[2*i+1];
+				}
+				wid = x;
+			}
+
+			node_width(node) = D2Fix(wid);
+			native_glyph_count(node) = realGlyphCount;
+			native_glyph_info_ptr(node) = glyph_info;
 		}
+		else {
+			int i;
+			realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
+
+			glyphs = xmalloc(realGlyphCount * sizeof(UInt32));
+			positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
+
+			getGlyphs(engine, glyphs);
+			getGlyphPositions(engine, positions);
+
+			if (realGlyphCount > 0) {
+				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
+				locations = (FixedPoint*)glyph_info;
+				glyphIDs = (UInt16*)(locations + realGlyphCount);
+				for (i = 0; i < realGlyphCount; ++i) {
+					glyphIDs[i] = glyphs[i];
+					locations[i].x = D2Fix(positions[2*i]);
+					locations[i].y = D2Fix(positions[2*i+1]);
+				}
+			}
+
+			node_width(node) = D2Fix(positions[2*i]);
+			native_glyph_count(node) = realGlyphCount;
+			native_glyph_info_ptr(node) = glyph_info;
+		}
+
+		ubidi_close(pBiDi);
+			
 
 		if (fontletterspace[f] != 0) {
 			Fixed	lsDelta = 0;
