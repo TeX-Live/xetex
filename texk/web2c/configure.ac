@@ -135,7 +135,6 @@ KPSE_FONTCONFIG_FLAGS
 AS_IF([test "x$kpse_cv_have_Carbon:$kpse_cv_have_fontconfig" = xno:no],
       [WEB2C_DISABLE([xetex], [neither Carbon framework nor fontconfig library])])
 AM_CONDITIONAL([XETEX_MACOSX], [test "x$kpse_cv_have_Carbon" = xyes])
-AM_CONDITIONAL([XETEX_GRAPHITE], [test "x$with_graphite" != xno])
 
 dnl Generate *TEX and ALEPH conditionals.
 m4_foreach([Kpse_Prog], [kpse_tex_progs],

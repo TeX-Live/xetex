@@ -44,14 +44,6 @@ xetex_dependencies += $(POPPLER_DEPEND) $(LIBPNG_DEPEND)
 
 endif !XETEX_MACOSX
 
-if XETEX_GRAPHITE
-
-xetex_cppflags += -DXETEX_GRAPHITE $(GRAPHITE_INCLUDES)
-xetex_ldadd += $(GRAPHITE_LIBS)
-xetex_dependencies += $(GRAPHITE_DEPEND)
-
-endif XETEX_GRAPHITE
-
 xetex_cppflags += $(ZLIB_INCLUDES)
 xetex_ldadd += $(FREETYPE2_LIBS) $(ZLIB_LIBS)
 xetex_dependencies += $(FREETYPE2_DEPEND) $(ZLIB_DEPEND)
@@ -224,14 +216,6 @@ libxetex_a_SOURCES += \
 	xetexdir/pngimage.h
 
 endif !XETEX_MACOSX
-
-if XETEX_GRAPHITE
-
-libxetex_a_SOURCES += \
-	xetexdir/XeTeXGrLayout.cpp \
-	xetexdir/XeTeXGrLayout.h
-
-endif XETEX_GRAPHITE
 
 # We must create xetexd.h etc. before building the libxetex_a_OBJECTS.
 libxetex_prereq = xetexd.h $(xetex_dependencies)
