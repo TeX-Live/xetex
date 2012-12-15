@@ -33,7 +33,7 @@ authorization from the copyright holders.
 #ifndef __XeTeXswap_H
 #define __XeTeXswap_H
 
-#include "unicode/platform.h"	// ICU's platform.h defines U_IS_BIG_ENDIAN for us
+#include <unicode/platform.h>	// ICU's platform.h defines U_IS_BIG_ENDIAN for us
 
 static inline UInt16
 SWAP16(const UInt16 p)

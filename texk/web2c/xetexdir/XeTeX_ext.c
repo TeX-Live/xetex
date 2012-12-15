@@ -87,9 +87,9 @@ authorization from the copyright holders.
 
 #include "XeTeXswap.h"
 
-#include "unicode/ubidi.h"
-#include "unicode/ubrk.h"
-#include "unicode/ucnv.h"
+#include <unicode/ubidi.h>
+#include <unicode/ubrk.h>
+#include <unicode/ucnv.h>
 
 #include <assert.h>
 #include "sfnt.h"

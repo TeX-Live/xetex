@@ -40,7 +40,7 @@ authorization from the copyright holders.
 #include FT_SFNT_NAMES_H
 #include FT_TRUETYPE_IDS_H
 
-#include "unicode/ucnv.h"
+#include <unicode/ucnv.h>
 
 #define kFontFamilyName	1
 #define kFontStyleName	2

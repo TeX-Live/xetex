@@ -31,22 +31,18 @@ use or other dealings in this Software without prior written
 authorization from the copyright holders.
 \****************************************************************************/
 
-#include "unicode/platform.h"	// We need this first
+#include <unicode/platform.h>	// We need this first
+#include <unicode/ubidi.h>
+#include <unicode/utext.h>
 
 #include "XeTeXLayoutInterface.h"
-
 #include "XeTeXFontInst.h"
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
 #endif
 #include "XeTeXFontInst_FT2.h"
-
 #include "XeTeXFontMgr.h"
-
 #include "XeTeXswap.h"
-
-#include "unicode/ubidi.h"
-#include "unicode/utext.h"
 
 struct XeTeXLayoutEngine_rec
 {
