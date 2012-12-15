@@ -876,6 +876,30 @@ readCommonFeatures(const char* feat, const char* end, float* extend, float* slan
 	return 0;
 }
 
+static bool
+readFeatureNumber(const char* s, const char* e, int* f, int* v)
+{
+	*f = 0;
+	*v = 0;
+	if (*s < '0' || *s > '9')
+		return false;
+	while (*s >= '0' && *s <= '9')
+		*f = *f * 10 + *s++ - '0';
+	while ((*s == ' ') || (*s == '\t'))
+		++s;
+	if (*s++ != '=')
+		return false;
+	if (*s < '0' || *s > '9')
+		return false;
+	while (*s >= '0' && *s <= '9')
+		*v = *v * 10 + *s++ - '0';
+	while ((*s == ' ') || (*s == '\t'))
+		++s;
+	if (s != e)
+		return false;
+	return true;
+}
+
 static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
@@ -946,6 +970,22 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				goto next_option;
 			else if (i == -1)
 				goto bad_option;
+
+			if (getReqEngine() == 'G') {
+				int value = 0;
+				if (readFeatureNumber(cp1, cp2, &tag, &value)) {
+					features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+					features[nFeatures].tag = tag;
+					features[nFeatures].start = 0;
+					features[nFeatures].end = (unsigned int) -1;
+					if (value == 0)
+						features[nFeatures].value = 1;
+					else
+						features[nFeatures].value = value;
+					nFeatures++;
+					goto next_option;
+				}
+			}
 			
 			if (*cp1 == '+') {
 				int param = 0;
@@ -1020,30 +1060,6 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		nativefonttypeflag = OTGR_FONT_FLAG;
 
 	return engine;
-}
-
-static int
-readFeatureNumber(const char* s, const char* e, int* f, int* v)
-{
-	*f = 0;
-	*v = 0;
-	if (*s < '0' || *s > '9')
-		return 0;
-	while (*s >= '0' && *s <= '9')
-		*f = *f * 10 + *s++ - '0';
-	while ((*s == ' ') || (*s == '\t'))
-		++s;
-	if (*s++ != '=')
-		return 0;
-	if (*s < '0' || *s > '9')
-		return 0;
-	while (*s >= '0' && *s <= '9')
-		*v = *v * 10 + *s++ - '0';
-	while ((*s == ' ') || (*s == '\t'))
-		++s;
-	if (s != e)
-		return 0;
-	return 1;
 }
 
 #ifdef XETEX_GRAPHITE
