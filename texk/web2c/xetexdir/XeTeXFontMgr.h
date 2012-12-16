@@ -114,11 +114,11 @@ protected:
 	class Family;
 
 	struct OpSizeRec {
-		unsigned short	designSize;
-		unsigned short	subFamilyID;
-		unsigned short	nameCode;
-		unsigned short	minSize;
-		unsigned short	maxSize;
+		unsigned int	designSize;
+		unsigned int	subFamilyID;
+		unsigned int	nameCode;
+		unsigned int	minSize;
+		unsigned int	maxSize;
 	};
 
 	class Font {
