@@ -723,7 +723,7 @@ read_str_tag(const char* cp)
 			tag[i] = ' ';
 	}
 	tag[4] = '\0';
-	return strdup(tag);
+	return tag;
 }
 
 static UInt32
@@ -2068,6 +2068,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					}
 					x += positions[2*i];
 					y += positions[2*i+1];
+
+					free(glyphs);
+					free(positions);
 				}
 				wid = x;
 			}
@@ -2100,6 +2103,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			node_width(node) = D2Fix(positions[2*i]);
 			native_glyph_count(node) = realGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
+
+			free(glyphs);
+			free(positions);
 		}
 
 		ubidi_close(pBiDi);

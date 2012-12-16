@@ -79,6 +79,8 @@ void FontTableCache::dispose()
         free((void *) (fTableCache[i].table));
     }
 
+	free(fTableCache);
+
     fTableCacheCurr = 0;
 }
 
