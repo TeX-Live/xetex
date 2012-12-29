@@ -186,9 +186,8 @@ else if stop_at_space and (file_name_quote_char<>0) and (c=file_name_quote_char)
   file_name_quote_char:=0;
   more_name:=true;
   end
-else if stop_at_space and (file_name_quote_char=0) and ((c="""") or (c="'") or (c="(")) then begin
-  if c="(" then file_name_quote_char:=")"
-  else file_name_quote_char:=c;
+else if stop_at_space and (file_name_quote_char=0) and ((c="""") or (c="'")) then begin
+  file_name_quote_char:=c;
   quoted_filename:=true;
 @z
 

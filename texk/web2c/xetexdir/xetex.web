@@ -12337,8 +12337,7 @@ precise details about why it rejects a particular \.{TFM} file.
 
 @d start_font_error_message==print_err("Font "); sprint_cs(u);
   print_char("=");
-  if file_name_quote_char=")" then print_char("(")
-  else if file_name_quote_char<>0 then print_char(file_name_quote_char);
+  if file_name_quote_char<>0 then print_char(file_name_quote_char);
   print_file_name(nom,aire,cur_ext);
   if file_name_quote_char<>0 then print_char(file_name_quote_char);
   if s>=0 then
