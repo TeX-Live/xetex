@@ -723,7 +723,7 @@ read_str_tag(const char* cp)
 			tag[i] = ' ';
 	}
 	tag[4] = '\0';
-	return tag;
+	return strdup(tag);
 }
 
 static UInt32
