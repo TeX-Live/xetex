@@ -455,6 +455,7 @@ static int				brkLocaleStrNum = 0;
 void
 linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength)
 {
+	UErrorCode	status;
 	char* locale = (char*)gettexstring(localeStrNum);
 
 	if (fontarea[f] == OTGR_FONT_FLAG && strcmp(locale, "G") == 0) {
@@ -464,7 +465,7 @@ linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLen
 			return;
 	}
 
-	UErrorCode	status = 0;
+	status = 0;
 
 	if ((localeStrNum != brkLocaleStrNum) && (brkIter != NULL)) {
 		ubrk_close(brkIter);
@@ -712,8 +713,14 @@ read_double(const char** s)
 static char*
 read_str_tag(const char* cp)
 {
+#ifdef _MSC_VER
+	int i;
+	char *tag;
+	tag = (char *) malloc (5);
+#else
 	char tag[5];
 	int i;
+#endif
 	for (i = 0; i < 4; ++i) {
 		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
 			tag[i] = *cp;
@@ -906,6 +913,22 @@ readFeatureNumber(const char* s, const char* e, int* f, int* v)
 		return false;
 	return true;
 }
+
+#ifdef _MSC_VER
+static char *strndup (const char *str, size_t n)
+{
+	char *ret;
+	size_t len = strlen (str);
+
+	if (n < len)
+		len = n;
+	ret = (char *) malloc (len + 1);
+	if (!ret)
+		return NULL;
+	ret[len] = '\0';
+	return (char *) memcpy (ret, str, len);
+}
+#endif
 
 static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)

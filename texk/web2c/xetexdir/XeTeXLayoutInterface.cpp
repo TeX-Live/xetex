@@ -44,6 +44,12 @@ authorization from the copyright holders.
 #include "XeTeXFontMgr.h"
 #include "XeTeXswap.h"
 
+#ifdef _MSC_VER
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#endif
+
 struct XeTeXLayoutEngine_rec
 {
 	XeTeXFontInst*	font;
@@ -250,6 +256,7 @@ UInt32 countScriptLanguages(XeTeXFont font, UInt32 script)
 			return hb_ot_layout_script_get_language_tags (face, tableTag, i, 0, NULL, NULL);
 		}
 	}
+	return 0;
 }
 
 UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
@@ -274,6 +281,7 @@ UInt32 getIndScriptLanguage(XeTeXFont font, UInt32 script, UInt32 index)
 			return 0;
 		}
 	}
+	return 0;
 }
 
 UInt32 countFeatures(XeTeXFont font, UInt32 script, UInt32 language)
