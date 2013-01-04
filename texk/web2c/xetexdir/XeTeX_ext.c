@@ -2,7 +2,7 @@
  Part of the XeTeX typesetting system
  Copyright (c) 1994-2008 by SIL International
  Copyright (c) 2009, 2011 by Jonathan Kew
- Copyright (c) 2012 by Khaled Hosny
+ Copyright (c) 2012, 2013 by Khaled Hosny
 
  SIL Author(s): Jonathan Kew
 
@@ -710,29 +710,6 @@ read_double(const char** s)
 	return neg ? -val : val;
 }
 
-static char*
-read_str_tag(const char* cp)
-{
-#ifdef _MSC_VER
-	int i;
-	char *tag;
-	tag = (char *) malloc (5);
-#else
-	char tag[5];
-	int i;
-#endif
-	for (i = 0; i < 4; ++i) {
-		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag[i] = *cp;
-			++cp;
-		}
-		else
-			tag[i] = ' ';
-	}
-	tag[4] = '\0';
-	return strdup(tag);
-}
-
 static UInt32
 read_tag(const char* cp, char padChar)
 {
@@ -983,7 +960,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				script = read_str_tag(cp3 + 1);
+				++cp3;
+				script = strndup(cp3, cp2 - cp3);
 				goto next_option;
 			}
 			
@@ -991,7 +969,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
 					goto bad_option;
-				language = read_str_tag(cp3 + 1);
+				++cp3;
+				language = strndup(cp3, cp2 - cp3);
 				goto next_option;
 			}
 			
@@ -999,7 +978,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				cp3 = cp1 + 7;
+				++cp3;
 				shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
 				shapers[nShapers++] = strndup(cp3, cp2 - cp3);
 				goto next_option;
@@ -1044,7 +1023,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			}
 			
 			if (*cp1 == '-') {
-				tag = hb_tag_from_string(read_str_tag(cp1 + 1), -1);
+				++cp1;
+				tag = hb_tag_from_string(cp1, cp2 - cp1);
 				features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
 				features[nFeatures].tag = tag;
 				features[nFeatures].value = 0;
