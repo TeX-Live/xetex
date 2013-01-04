@@ -2,7 +2,7 @@
  Part of the XeTeX typesetting system
  Copyright (c) 1994-2008 by SIL International
  Copyright (c) 2009-2012 by Jonathan Kew
- Copyright (c) 2012 by Khaled Hosny
+ Copyright (c) 2012, 2013 by Khaled Hosny
 
  SIL Author(s): Jonathan Kew
 
@@ -987,22 +987,27 @@ findNextGraphiteBreak(void)
 	}
 }
 
-int usingGraphite(XeTeXLayoutEngine engine)
+bool usingGraphite(XeTeXLayoutEngine engine)
 {
-	return 0;
+	if (strcmp("graphite2", engine->shaper) == 0)
+		return true;
+	else
+		return false;
 }
 
-int usingOpenType(XeTeXLayoutEngine engine)
+bool usingOpenType(XeTeXLayoutEngine engine)
 {
-	return engine->hbBuffer != NULL;
+	if (strcmp("ot", engine->shaper) == 0)
+		return true;
+	else
+		return false;
 }
 
-int isOpenTypeMathFont(XeTeXLayoutEngine engine)
+bool isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
-	if (usingOpenType(engine)) {
-		if (engine->font->getFontTable(kMATH) != NULL)
-			return 1;
-	}
-	return 0;
+	if (engine->font->getFontTable(kMATH) != NULL)
+		return true;
+	else
+		return false;
 }
 
