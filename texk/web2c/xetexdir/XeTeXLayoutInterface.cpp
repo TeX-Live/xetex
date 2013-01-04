@@ -57,7 +57,7 @@ struct XeTeXLayoutEngine_rec
 	char*			script;
 	char*			language;
 	hb_feature_t*	features;
-	char**			shapers;
+	char**			ShaperList;
 	int				nFeatures;
 	UInt32			rgbValue;
 	float			extend;
@@ -569,7 +569,7 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, ch
 	result->script = script;
 	result->language = language;
 	result->features = features;
-	result->shapers = shapers;
+	result->ShaperList = shapers;
 	result->nFeatures = nFeatures;
 	result->rgbValue = rgbValue;
 	result->extend = extend;
@@ -618,7 +618,7 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 	hb_buffer_guess_segment_properties(engine->hbBuffer);
 	hb_buffer_get_segment_properties(engine->hbBuffer, &segment_props);
 
-	shape_plan = hb_shape_plan_create_cached(hbFace, &segment_props, engine->features, engine->nFeatures, engine->shapers);
+	shape_plan = hb_shape_plan_create_cached(hbFace, &segment_props, engine->features, engine->nFeatures, engine->ShaperList);
 	res = hb_shape_plan_execute(shape_plan, hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
 	hb_shape_plan_destroy(shape_plan);
 
