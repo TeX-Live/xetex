@@ -589,9 +589,14 @@ void deleteLayoutEngine(XeTeXLayoutEngine engine)
 int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 count, SInt32 max,
 						bool rightToLeft)
 {
+	bool res;
 	hb_script_t script = HB_SCRIPT_INVALID;
 	hb_language_t language = HB_LANGUAGE_INVALID;
 	hb_direction_t direction = HB_DIRECTION_LTR;
+	hb_segment_properties_t segment_props;
+	hb_shape_plan_t *shape_plan;
+	hb_font_t* hbFont = engine->font->hbFont;
+	hb_face_t* hbFace = hb_font_get_face(hbFont);
 
 	if (engine->font->getLayoutDirVertical())
 		direction = HB_DIRECTION_TTB;
@@ -610,15 +615,39 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 	hb_buffer_set_script(engine->hbBuffer, script);
 	hb_buffer_set_language(engine->hbBuffer, language);
 
-	hb_shape_full(engine->font->hbFont, engine->hbBuffer, engine->features, engine->nFeatures, engine->shapers);
+	hb_buffer_guess_segment_properties(engine->hbBuffer);
+	hb_buffer_get_segment_properties(engine->hbBuffer, &segment_props);
+
+	shape_plan = hb_shape_plan_create_cached(hbFace, &segment_props, engine->features, engine->nFeatures, engine->shapers);
+	res = hb_shape_plan_execute(shape_plan, hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
+	hb_shape_plan_destroy(shape_plan);
+
+	if (res) {
+		hb_buffer_set_content_type(engine->hbBuffer, HB_BUFFER_CONTENT_TYPE_GLYPHS);
+	} else {
+		// all selected shapers failed, retrying with default
+		// we don't use _cached here as the cached plain will always fail.
+		shape_plan = hb_shape_plan_create(hbFace, &segment_props, engine->features, engine->nFeatures, NULL);
+		res = hb_shape_plan_execute(shape_plan, hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
+		hb_shape_plan_destroy(shape_plan);
+
+		if (res) {
+			hb_buffer_set_content_type(engine->hbBuffer, HB_BUFFER_CONTENT_TYPE_GLYPHS);
+		} else {
+			fprintf(stderr, "\nERROR: all shapers failed\n");
+			exit(3);
+		}
+	}
+
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
 #ifdef DEBUG
 	char buf[1024];
 	unsigned int consumed;
 	hb_buffer_serialize_flags_t flags = HB_BUFFER_SERIALIZE_FLAGS_DEFAULT;
+	hb_buffer_serialize_format_t format = HB_BUFFER_SERIALIZE_FORMAT_TEXT;
 
-	hb_buffer_serialize_glyphs (engine->hbBuffer, 0, glyphCount, buf, sizeof(buf), &consumed, engine->font->hbFont,	HB_BUFFER_SERIALIZE_FORMAT_JSON, flags);
+	hb_buffer_serialize_glyphs (engine->hbBuffer, 0, glyphCount, buf, sizeof(buf), &consumed, hbFont, format, flags);
 	if (consumed)
 		printf ("buffer glyphs: %s\n", buf);
 #endif
