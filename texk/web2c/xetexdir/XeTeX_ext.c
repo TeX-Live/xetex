@@ -710,23 +710,6 @@ read_double(const char** s)
 	return neg ? -val : val;
 }
 
-static UInt32
-read_tag(const char* cp, char padChar)
-{
-	UInt32	tag = 0;
-	int i;
-	for (i = 0; i < 4; ++i) {
-		tag <<= 8;
-		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag += *(unsigned char*)cp;
-			++cp;
-		}
-		else
-			tag += padChar;
-	}
-	return tag;
-}
-
 static hb_tag_t
 read_tag_with_param(const char* cp, int* param)
 {
