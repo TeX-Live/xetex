@@ -57,7 +57,8 @@ struct XeTeXLayoutEngine_rec
 	char*			script;
 	char*			language;
 	hb_feature_t*	features;
-	char**			ShaperList;
+	char**			ShaperList;	// the requested shapers
+	char*			shaper;		// the actually used shaper
 	int				nFeatures;
 	UInt32			rgbValue;
 	float			extend;
@@ -570,6 +571,7 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, ch
 	result->language = language;
 	result->features = features;
 	result->ShaperList = shapers;
+	result->shaper = NULL;
 	result->nFeatures = nFeatures;
 	result->rgbValue = rgbValue;
 	result->extend = extend;
@@ -620,18 +622,19 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 
 	shape_plan = hb_shape_plan_create_cached(hbFace, &segment_props, engine->features, engine->nFeatures, engine->ShaperList);
 	res = hb_shape_plan_execute(shape_plan, hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
-	hb_shape_plan_destroy(shape_plan);
 
 	if (res) {
+		engine->shaper = strdup(hb_shape_plan_get_shaper(shape_plan));
 		hb_buffer_set_content_type(engine->hbBuffer, HB_BUFFER_CONTENT_TYPE_GLYPHS);
 	} else {
 		// all selected shapers failed, retrying with default
 		// we don't use _cached here as the cached plain will always fail.
+		hb_shape_plan_destroy(shape_plan);
 		shape_plan = hb_shape_plan_create(hbFace, &segment_props, engine->features, engine->nFeatures, NULL);
 		res = hb_shape_plan_execute(shape_plan, hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
-		hb_shape_plan_destroy(shape_plan);
 
 		if (res) {
+			engine->shaper = strdup(hb_shape_plan_get_shaper(shape_plan));
 			hb_buffer_set_content_type(engine->hbBuffer, HB_BUFFER_CONTENT_TYPE_GLYPHS);
 		} else {
 			fprintf(stderr, "\nERROR: all shapers failed\n");
@@ -639,11 +642,16 @@ int layoutChars(XeTeXLayoutEngine engine, UInt16 chars[], SInt32 offset, SInt32 
 		}
 	}
 
+	hb_shape_plan_destroy(shape_plan);
+
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 
 #ifdef DEBUG
 	char buf[1024];
 	unsigned int consumed;
+
+	printf ("shaper: %s\n", engine->shaper);
+
 	hb_buffer_serialize_flags_t flags = HB_BUFFER_SERIALIZE_FLAGS_DEFAULT;
 	hb_buffer_serialize_format_t format = HB_BUFFER_SERIALIZE_FORMAT_TEXT;
 
