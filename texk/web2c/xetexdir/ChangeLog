@@ -1,3 +1,18 @@
+2013-01-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c: Use xcalloc() and strncpy() instead of strndup()
+	because there are systems without it, e.g., MinGW.
+	* xetex.h: Include "XeTeXOTMath.h" (protos for xetex.web).
+	* am/xetex.am: Drop obsolete files from XeTeX change file merge.
+
+2013-01-03  Khaled Hosny  <khaledhosny@eglug.org>
+
+	Merge changes from XeTeX repository.
+
+2012-12-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am (xetex_version.h): Enable silent rules.
+
 2012-11-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	Merge the XeTeX change files.
