@@ -713,16 +713,17 @@ read_double(const char** s)
 static hb_tag_t
 read_tag_with_param(const char* cp, int* param)
 {
-	char tag[4];
+	const char* cp2;
+	hb_tag_t tag;
 	int i;
-	for (i = 0; i < 4; ++i) {
-		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag[i] = *cp;
-			++cp;
-		}
-		else
-			tag[i] = ' ';
-	}
+
+	cp2 = cp;
+	while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ',') && (*cp2 != '='))
+		++cp2;
+
+	tag = hb_tag_from_string(cp, cp2 - cp);
+
+	cp = cp2;
 	if (*cp == '=') {
 		int	neg = 0;
 		++cp;
@@ -737,7 +738,8 @@ read_tag_with_param(const char* cp, int* param)
 		if (neg)
 			*param = -(*param);
 	}
-	return HB_TAG(tag[0],tag[1],tag[2],tag[3]);
+
+	return tag;
 }
 
 unsigned int
