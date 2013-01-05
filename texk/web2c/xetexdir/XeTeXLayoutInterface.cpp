@@ -989,7 +989,7 @@ findNextGraphiteBreak(void)
 
 bool usingGraphite(XeTeXLayoutEngine engine)
 {
-	if (strcmp("graphite2", engine->shaper) == 0)
+	if (engine->shaper != NULL && (strcmp("graphite2", engine->shaper) == 0))
 		return true;
 	else
 		return false;
@@ -997,7 +997,7 @@ bool usingGraphite(XeTeXLayoutEngine engine)
 
 bool usingOpenType(XeTeXLayoutEngine engine)
 {
-	if (strcmp("ot", engine->shaper) == 0)
+	if (engine->shaper == NULL || (strcmp("ot", engine->shaper) == 0))
 		return true;
 	else
 		return false;
