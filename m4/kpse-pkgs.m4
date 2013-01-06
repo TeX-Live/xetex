@@ -28,7 +28,6 @@ harfbuzz
 icu
 teckit
 graphite2
-graphite
 zziplib
 xpdf
 poppler
@@ -66,7 +65,6 @@ AC_REQUIRE([KPSE_CAIRO_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_XPDF_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_POPPLER_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_ZZIPLIB_SYSTEM_FLAGS])[]dnl
-AC_REQUIRE([KPSE_GRAPHITE_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_GRAPHITE2_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_TECKIT_SYSTEM_FLAGS])[]dnl
 AC_REQUIRE([KPSE_ICU_SYSTEM_FLAGS])[]dnl
@@ -84,6 +82,7 @@ pmx
 ps2eps
 psutils
 t1utils
+texdoctk
 tpic2pdftex
 vlna
 xindy
@@ -128,7 +127,6 @@ ttfdump
 xdv2pdf
 xdvik
 xdvipdfmx
-tetex
 texlive
 ])]) # KPSE_TEXK_PKGS
 

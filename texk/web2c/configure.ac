@@ -1,6 +1,6 @@
 dnl Process this file with Autoconf to produce a configure script for Web2c.
 dnl
-dnl   Copyright (C) 2009-2012 Peter Breitenlohner <tex-live@tug.org>
+dnl   Copyright (C) 2009-2013 Peter Breitenlohner <tex-live@tug.org>
 dnl
 dnl   This file is free software; the copyright holder
 dnl   gives unlimited permission to copy and/or distribute it,
@@ -34,7 +34,7 @@ WEB2CVERSION=tex_live_version()
 AC_SUBST([WEB2CVERSION])
 
 dnl Common code for all programs using libkpathsea.
-KPSE_COMMON([web2c programs])
+KPSE_COMMON([web2c programs], [serial-tests])
 KPSE_CANONICAL_HOST
 
 AM_CONDITIONAL([cross], [test "x$cross_compiling" = xyes])
@@ -100,6 +100,7 @@ lua_socketlibs=$socketlibs
 if test "x$kpse_cv_have_win32" = xno; then
   kpse_save_LIBS=$LIBS
   AC_SEARCH_LIBS([gethostbyname], [nsl])
+  AC_SEARCH_LIBS([hstrerror], [resolv])
   AC_SEARCH_LIBS([inet_aton], [resolv])
   LIBS=$kpse_save_LIBS
   AC_SEARCH_LIBS([nanosleep], [rt])
@@ -114,6 +115,10 @@ if test "x$kpse_cv_have_win32" = xno; then
     fi
   fi
   LIBS=$kpse_save_LIBS
+  AS_CASE([$ac_cv_search_hstrerror],
+          ["none required"], [],
+          [no], [WEB2C_DISABLE([luatex], [no hstrerror()])],
+              [lua_socketlibs="$lua_socketlibs $ac_cv_search_hstrerror"])
   AS_CASE([$ac_cv_search_inet_aton],
           ["none required"], [],
           [no], [WEB2C_DISABLE([luatex], [no inet_aton()])],
@@ -249,7 +254,8 @@ if test $ac_cv_sizeof_int -lt 4; then
 fi
 AC_CHECK_SIZEOF([long])
 AC_SEARCH_LIBS([pow], [m])
-AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale strerror strlcat strlcpy])
+AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale strerror strlcat strlcpy strndup])
+AC_CHECK_DECLS([strndup])
 AC_CHECK_HEADERS([errno.h langinfo.h locale.h sys/time.h sys/timeb.h sys/wait.h time.h])
 AC_TYPE_LONG_DOUBLE
 AC_TYPE_LONG_LONG_INT
@@ -271,11 +277,10 @@ KPSE_XPDF_FLAGS
 KPSE_POPPLER_FLAGS
 KPSE_XPDF_FLAGS
 KPSE_ZZIPLIB_FLAGS
-KPSE_GRAPHITE_FLAGS
 KPSE_TECKIT_FLAGS
-KPSE_ICU_FLAGS[]dnl required by KPSE_HARFBUZZ_FLAGS
-KPSE_GRAPHITE2_FLAGS
+KPSE_ICU_FLAGS
 KPSE_HARFBUZZ_FLAGS
+KPSE_GRAPHITE2_FLAGS
 
 # Check size of off_t (using <kpathsea/config.h>)
 KPSE_ADD_FLAGS([kpathsea])
@@ -375,6 +380,7 @@ AC_CONFIG_FILES([Makefile doc/Makefile lib/Makefile man/Makefile
 AC_CONFIG_FILES([web2c-sh], [chmod +x web2c-sh])
 AC_CONFIG_FILES([tangle-sh], [chmod +x tangle-sh])
 AC_CONFIG_FILES([ctangleboot-sh], [chmod +x ctangleboot-sh])
+AC_CONFIG_FILES([silent-sh], [chmod +x silent-sh])
 
 dnl The subdirectory web2c must be configured for the build system.
 dnl When cross compiling, can not share the cache file with the subdirectory!
