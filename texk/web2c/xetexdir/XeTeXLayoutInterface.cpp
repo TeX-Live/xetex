@@ -436,10 +436,13 @@ findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int*
 	++cp;
 	while (cp < e && (*cp == ' ' || *cp == '\t'))
 		++cp;
-	if (cp >= e)
+
+	if (cp >= e) {
 		// no setting was specified, so we just use the first
 		// XXX the default is not always the first?
+		*v = 1;
 		return true;
+	}
 
 	*v = findGraphiteFeatureSettingNamed(engine, *f, cp, e - cp);
 	if (*v == -1)

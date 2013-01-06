@@ -871,12 +871,14 @@ readFeatureNumber(const char* s, const char* e, int* f, int* v)
 	while ((*s == ' ') || (*s == '\t'))
 		++s;
 	if (*s++ != '=') {
-		if (s >= e)
+		if (s >= e) {
 			// no setting was specified, so we just use the first
 			// XXX the default is not always the first?
+			*v = 1;
 			return true;
-		else
+		} else {
 			return false;
+		}
 	}
 	if (*s < '0' || *s > '9')
 		return false;
@@ -998,12 +1000,9 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				 || findGraphiteFeature(engine, cp1, cp2, &tag, &value)) {
 					features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
 					features[nFeatures].tag = tag;
+					features[nFeatures].value = value;
 					features[nFeatures].start = 0;
 					features[nFeatures].end = (unsigned int) -1;
-					if (value == 0)
-						features[nFeatures].value = 1;
-					else
-						features[nFeatures].value = value;
 					nFeatures++;
 					goto next_option;
 				}
