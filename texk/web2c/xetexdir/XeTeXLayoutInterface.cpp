@@ -379,10 +379,9 @@ UInt32 getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, UInt32 featureID,
 	return rval;
 }
 
-void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 featureID, char* buf)
+char *
+getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 featureID)
 {
-	buf[0] = '\0';
-
 	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
@@ -391,21 +390,15 @@ void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 featureID, char* b
 		uint32_t len = 0;
 		uint16_t langID = 0x409;
 
-		buf = (char*) gr_fref_label(feature, &langID, gr_utf8, &len);
-
-		if (len > 128 + 1) { // 128 is set in XeTeX_ext.c
-			buf = (char*) realloc(buf, len + 1);
-			buf = (char*) gr_fref_label(feature, &langID, gr_utf8, &len);
-		}
-
-		buf[len + 1] = '\0';
+		return (char *) gr_fref_label(feature, &langID, gr_utf8, &len);
 	}
+
+	return NULL;
 }
 
-void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 featureID, UInt32 settingID, char* buf)
+char *
+getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 featureID, UInt32 settingID)
 {
-	buf[0] = '\0';
-
 	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
@@ -416,18 +409,12 @@ void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 featureID, 
 				uint32_t len = 0;
 				uint16_t langID = 0x409;
 
-				buf = (char*) gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
-
-				if (len > 128 + 1) { // 128 is set in XeTeX_ext.c
-					buf = (char*) realloc(buf, len + 1);
-					buf = (char*) gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
-				}
-
-				buf[len + 1] = '\0';
-				break;
+				return (char *) gr_fref_value_label(feature, i, &langID, gr_utf8, &len);
 			}
 		}
 	}
+
+	return NULL;
 }
 
 bool

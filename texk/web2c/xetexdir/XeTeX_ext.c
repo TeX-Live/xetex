@@ -1432,20 +1432,21 @@ otfontget3(integer what, void* pEngine, integer param1, integer param2, integer 
 void
 grprintfontname(integer what, void* pEngine, integer param1, integer param2)
 {
-	char name[128];
-	int n = 0;
+	char* name = NULL;
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_feature_name:
-			getGraphiteFeatureLabel(engine, param1, &name[0]);
+			name = getGraphiteFeatureLabel(engine, param1);
 			break;
 		case XeTeX_selector_name:
-			getGraphiteFeatureSettingLabel(engine, param1, param2, &name[0]);
+			name = getGraphiteFeatureSettingLabel(engine, param1, param2);
 			break;
 	}
-	while (name[n] != '\0')
-		++n;
-	printchars((unsigned short*) &name[0], n);
+
+	if (name != NULL) {
+		printcstring(name);
+		gr_label_destroy(name);
+	}
 }
 
 integer
