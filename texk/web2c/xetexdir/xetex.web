@@ -26610,7 +26610,10 @@ char_given: begin print_esc("char"); print_hex(chr_code);
   end;
 math_given: begin print_esc("mathchar"); print_hex(chr_code);
   end;
-XeTeX_math_given: begin print_esc("Umathchar"); print_hex(chr_code);
+XeTeX_math_given: begin print_esc("Umathchar");
+  print_hex(math_class_field(chr_code));
+  print_hex(math_fam_field(chr_code));
+  print_hex(math_char_field(chr_code));
   end;
 
 @ We temporarily define |p| to be |relax|, so that an occurrence of |p|
