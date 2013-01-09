@@ -7135,8 +7135,7 @@ together with the corresponding |primitive| calls.
 
 @d chr_cmd(#)==begin print(#);
    if chr_code < @"10000 then print_ASCII(chr_code)
-   {non-Plane 0 Unicodes can't be sent through |print_ASCII|}
-   else begin print("number "); print_hex(chr_code) end;
+   else print_char(chr_code); {non-Plane 0 Unicodes can't be sent through |print_ASCII|}
   end
 
 @<Declare the procedure called |print_cmd_chr|@>=
@@ -12706,10 +12705,7 @@ begin if tracing_lost_chars>0 then
   print_nl("Missing character: There is no ");
 @.Missing character@>
   if c < @"10000 then print_ASCII(c)
-  else begin { non-Plane 0 Unicodes can't be sent through |print_ASCII| }
-    print("character number ");
-    print_hex(c);
-  end;
+  else print_char(c); {non-Plane 0 Unicodes can't be sent through |print_ASCII|}
   print(" in font ");
   slow_print(font_name[f]); print_char("!"); end_diagnostic(false);
   end;
@@ -15383,8 +15379,11 @@ fraction_noad:@<Display fraction noad |p|@>;
 
 @<Declare procedures needed for displaying the elements of mlists@>=
 procedure print_fam_and_char(@!p:pointer); {prints family and character}
+var c:integer;
 begin print_esc("fam"); print_int(fam(p) mod @"100); print_char(" ");
-print_ASCII(qo(character(p)) + (fam(p) div @"100) * @"10000);
+c:=(cast_to_ushort(character(p)) + ((plane_and_fam_field(p) div @"100) * @"10000));
+if c < @"10000 then print_ASCII(c)
+else print_char(c); {non-Plane 0 Unicodes can't be sent through |print_ASCII|}
 end;
 @#
 procedure print_delimiter(@!p:pointer); {prints a delimiter as 24-bit hex value}
