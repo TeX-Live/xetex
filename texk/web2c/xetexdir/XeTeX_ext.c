@@ -2729,7 +2729,7 @@ int
 u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode, integer encodingData)
 {
 	boolean	rval;
-	*f = malloc(sizeof(UFILE));
+	*f = xmalloc(sizeof(UFILE));
 	(*f)->encodingMode = 0;
 	(*f)->conversionData = 0;
 	(*f)->savedChar = -1;
