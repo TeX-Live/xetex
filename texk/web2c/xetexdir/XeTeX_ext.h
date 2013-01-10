@@ -245,7 +245,6 @@ extern "C" {
 	int getencodingmodeandinfo(integer* info);
 	void printutf8str(const unsigned char* str, int len);
 	void printchars(const unsigned short* str, int len);
-	void* load_mapping_file(const char* s, const char* e, char byteMapping);
 	void* findnativefont(unsigned char* name, integer scaled_size);
 	void releasefontengine(void* engine, int type_flag);
 	int readCommonFeatures(const char* feat, const char* end, float* extend, float* slant, float* embolden, float* letterspace, UInt32* rgbValue);

@@ -593,7 +593,7 @@ printchars(const unsigned short* str, int len)
 #define UTF16_NATIVE kForm_UTF16LE
 #endif
 
-void*
+static void*
 load_mapping_file(const char* s, const char* e, char byteMapping)
 {
 	char*	mapPath;
