@@ -35,28 +35,13 @@ authorization from the copyright holders.
 
 #include <unicode/utypes.h>
 #include <w2c/c-auto.h>  /* needed for SIZEOF_LONG and NO_DUMP_SHARE */
-/***** copied from TeX/texk/web2c/config.h -- difficult to include in C++ source files ******/
-#ifndef INTEGER_TYPE
-
-#if SIZEOF_LONG > 4 && !defined (NO_DUMP_SHARE)
-/* If we have 64-bit longs and want to share format files (with 32-bit
-   machines), use `int'.  */
-#define INTEGER_IS_INT
+#ifdef __cplusplus
+extern "C" {
 #endif
-
-#ifdef INTEGER_IS_INT
-#define INTEGER_TYPE int
-#define INTEGER_MAX INT_MAX
-#define INTEGER_MIN INT_MIN
-#else
-#define INTEGER_TYPE long
-#define INTEGER_MAX LONG_MAX
-#define INTEGER_MIN LONG_MIN
-#endif /* not INTEGER_IS_INT */
-
-typedef INTEGER_TYPE integer;
-#endif /* not INTEGER_TYPE */
-/***** end of config.h stuff *****/
+#include <w2c/config.h>
+#ifdef __cplusplus
+}
+#endif
 
 #ifndef XETEX_UNICODE_FILE_DEFINED
 typedef struct UFILE* unicodefile;
