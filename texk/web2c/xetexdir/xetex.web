@@ -308,6 +308,12 @@ helping to determine whether a particular implementation deserves to be
 known as `\TeX' [cf.~Stanford Computer Science report CS1027,
 November 1984].
 
+This program contains code for mixed left-to-right and right-to-left
+typesetting, based on \TeXeT\ as presented by Donald~E. Knuth and Pierre
+MacKay in {\sl TUGboat\/} {\bf 8}, 14--25, 1987.
+@^Knuth, Donald Ervin@>
+@^MacKay, Pierre@>
+
 A similar test suite called the ``\.{e-TRIP} test'' is available for
 helping to determine whether a particular implementation deserves to be
 known as `\eTeX'.
@@ -3621,6 +3627,7 @@ However, other references to the nodes are made symbolically in terms of
 the \.{WEB} macro definitions above, so that format changes will leave
 \TeX's other algorithms intact.
 @^system dependencies@>
+@p@<Declare functions needed for special kinds of nodes@>
 
 @* \[11] Memory layout.
 Some areas of |mem| are dedicated to fixed usage, since static allocation is
@@ -4566,52 +4573,53 @@ expanded by `\.{\\the}'.
 @d XeTeX_math_given=70 {extended math code defined by \.{\\Umathchardef}}
 @d last_item=71 {most recent item ( \.{\\lastpenalty},
   \.{\\lastkern}, \.{\\lastskip} )}
-@d max_non_prefixed_command=71 {largest command code that can't be \.{\\global}}
+@d LR=72 {text direction ( \.{\\beginL}, \.{\\beginR}, \.{\\endL}, \.{\\endR} )}
+@d max_non_prefixed_command=72 {largest command code that can't be \.{\\global}}
 
 @ The next codes are special; they all relate to mode-independent
 assignment of values to \TeX's internal registers or tables.
 Codes that are |max_internal| or less represent internal quantities
 that might be expanded by `\.{\\the}'.
 
-@d toks_register=72 {token list register ( \.{\\toks} )}
-@d assign_toks=73 {special token list ( \.{\\output}, \.{\\everypar}, etc.~)}
-@d assign_int=74 {user-defined integer ( \.{\\tolerance}, \.{\\day}, etc.~)}
-@d assign_dimen=75 {user-defined length ( \.{\\hsize}, etc.~)}
-@d assign_glue=76 {user-defined glue ( \.{\\baselineskip}, etc.~)}
-@d assign_mu_glue=77 {user-defined muglue ( \.{\\thinmuskip}, etc.~)}
-@d assign_font_dimen=78 {user-defined font dimension ( \.{\\fontdimen} )}
-@d assign_font_int=79 {user-defined font integer ( \.{\\hyphenchar},
+@d toks_register=73 {token list register ( \.{\\toks} )}
+@d assign_toks=74 {special token list ( \.{\\output}, \.{\\everypar}, etc.~)}
+@d assign_int=75 {user-defined integer ( \.{\\tolerance}, \.{\\day}, etc.~)}
+@d assign_dimen=76 {user-defined length ( \.{\\hsize}, etc.~)}
+@d assign_glue=77 {user-defined glue ( \.{\\baselineskip}, etc.~)}
+@d assign_mu_glue=78 {user-defined muglue ( \.{\\thinmuskip}, etc.~)}
+@d assign_font_dimen=79 {user-defined font dimension ( \.{\\fontdimen} )}
+@d assign_font_int=80 {user-defined font integer ( \.{\\hyphenchar},
   \.{\\skewchar} )}
-@d set_aux=80 {specify state info ( \.{\\spacefactor}, \.{\\prevdepth} )}
-@d set_prev_graf=81 {specify state info ( \.{\\prevgraf} )}
-@d set_page_dimen=82 {specify state info ( \.{\\pagegoal}, etc.~)}
-@d set_page_int=83 {specify state info ( \.{\\deadcycles},
+@d set_aux=81 {specify state info ( \.{\\spacefactor}, \.{\\prevdepth} )}
+@d set_prev_graf=82 {specify state info ( \.{\\prevgraf} )}
+@d set_page_dimen=83 {specify state info ( \.{\\pagegoal}, etc.~)}
+@d set_page_int=84 {specify state info ( \.{\\deadcycles},
   \.{\\insertpenalties} )}
   {( or \.{\\interactionmode} )}
-@d set_box_dimen=84 {change dimension of box ( \.{\\wd}, \.{\\ht}, \.{\\dp} )}
-@d set_shape=85 {specify fancy paragraph shape ( \.{\\parshape} )}
+@d set_box_dimen=85 {change dimension of box ( \.{\\wd}, \.{\\ht}, \.{\\dp} )}
+@d set_shape=86 {specify fancy paragraph shape ( \.{\\parshape} )}
   {(or \.{\\interlinepenalties}, etc.~)}
-@d def_code=86 {define a character code ( \.{\\catcode}, etc.~)}
-@d XeTeX_def_code=87 {\.{\\Umathcode}, \.{\\Udelcode}}
-@d def_family=88 {declare math fonts ( \.{\\textfont}, etc.~)}
-@d set_font=89 {set current font ( font identifiers )}
-@d def_font=90 {define a font file ( \.{\\font} )}
-@d register=91 {internal register ( \.{\\count}, \.{\\dimen}, etc.~)}
-@d max_internal=91 {the largest code that can follow \.{\\the}}
-@d advance=92 {advance a register or parameter ( \.{\\advance} )}
-@d multiply=93 {multiply a register or parameter ( \.{\\multiply} )}
-@d divide=94 {divide a register or parameter ( \.{\\divide} )}
-@d prefix=95 {qualify a definition ( \.{\\global}, \.{\\long}, \.{\\outer} )}
+@d def_code=87 {define a character code ( \.{\\catcode}, etc.~)}
+@d XeTeX_def_code=88 {\.{\\Umathcode}, \.{\\Udelcode}}
+@d def_family=89 {declare math fonts ( \.{\\textfont}, etc.~)}
+@d set_font=90 {set current font ( font identifiers )}
+@d def_font=91 {define a font file ( \.{\\font} )}
+@d register=92 {internal register ( \.{\\count}, \.{\\dimen}, etc.~)}
+@d max_internal=92 {the largest code that can follow \.{\\the}}
+@d advance=93 {advance a register or parameter ( \.{\\advance} )}
+@d multiply=94 {multiply a register or parameter ( \.{\\multiply} )}
+@d divide=95 {divide a register or parameter ( \.{\\divide} )}
+@d prefix=96 {qualify a definition ( \.{\\global}, \.{\\long}, \.{\\outer} )}
   {( or \.{\\protected} )}
-@d let=96 {assign a command code ( \.{\\let}, \.{\\futurelet} )}
-@d shorthand_def=97 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
-@d read_to_cs=98 {read into a control sequence ( \.{\\read} )}
+@d let=97 {assign a command code ( \.{\\let}, \.{\\futurelet} )}
+@d shorthand_def=98 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
+@d read_to_cs=99 {read into a control sequence ( \.{\\read} )}
   {( or \.{\\readline} )}
-@d def=99 {macro definition ( \.{\\def}, \.{\\gdef}, \.{\\xdef}, \.{\\edef} )}
-@d set_box=100 {set a box ( \.{\\setbox} )}
-@d hyph_data=101 {hyphenation data ( \.{\\hyphenation}, \.{\\patterns} )}
-@d set_interaction=102 {define level of interaction ( \.{\\batchmode}, etc.~)}
-@d max_command=102 {the largest command code seen at |big_switch|}
+@d def=100 {macro definition ( \.{\\def}, \.{\\gdef}, \.{\\xdef}, \.{\\edef} )}
+@d set_box=101 {set a box ( \.{\\setbox} )}
+@d hyph_data=102 {hyphenation data ( \.{\\hyphenation}, \.{\\patterns} )}
+@d set_interaction=103 {define level of interaction ( \.{\\batchmode}, etc.~)}
+@d max_command=103 {the largest command code seen at |big_switch|}
 
 @ The remaining command codes are extra special, since they cannot get through
 \TeX's scanner to the main control routine. They have been given values higher
@@ -12996,6 +13004,9 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 
 \yskip\hang|post_post| 249. Ending of the postamble, see below.
 
+\yskip\hang|reflect| 250 |b[1]|. Begin (|b==0|) or end (|b==1|) a (possibly
+recursive) reflected segment.
+
 \yskip\hang|set_glyph_string| 254 w[4] k[2] x[4k] g[2k].
 
 \yskip\hang|set_glyph_array| 253 w[4] k[2] xy[8k] g[2k]
@@ -13018,7 +13029,9 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 	len is length of pathname
 	path is pathname of graphic file
 
-\yskip\noindent Commands 250 and 255 are undefined at the present time (but 255 is used by pTeX).
+\yskip\noindent Commands 250--255 are undefined in normal \.{DVI} files,
+but 250--254 are permitted in the extended `\.{XDV}' files
+produced by \XeTeX. p\TeX\ uses 255.
 
 @ @d set_char_0=0 {typeset character 0 and move right}
 @d set1=128 {typeset a character and move right}
@@ -13052,6 +13065,8 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 @d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
 @d define_native_font=252 {define native font}
 @d pic_file=251 {embed picture or PDF}
+
+@d reflect=250 {begin or end a reflected segment}
 
 @ The preamble contains basic information about the file as a whole. As
 stated above, there are six parameters:
@@ -14215,6 +14230,7 @@ var page_loc:integer; {location of the current |bop|}
 @!old_setting:0..max_selector; {saved |selector| setting}
 begin
 if job_name=0 then open_log_file;
+LR_ptr:=get_avail; info(LR_ptr):=0; {|begin_L_code| at outer level}
 if tracing_output>0 then
   begin print_nl(""); print_ln;
   print("Completed box being shipped out");
@@ -14248,7 +14264,7 @@ end;
   print_int(dyn_used); print_char(";");
   end;
 tats@/
-flush_node_list(p);
+flush_node_list(p); @<Flush the LR stack@>;
 @!stat if tracing_stats>1 then
   begin print(" after: ");
   print_int(var_used); print_char("&");
@@ -14536,7 +14552,10 @@ var r:pointer; {the box node that will be returned}
 @!hd:eight_bits; {height and depth indices for a character}
 @!pp,@!ppp: pointer;
 @!total_chars, @!k: integer;
-begin last_badness:=0; r:=get_node(box_node_size); type(r):=hlist_node;
+@!LR_ptr,@!LR_tmp:pointer; {for LR stack maintenance}
+@!LR_problems:integer; {counts missing begins and ends}
+begin LR_ptr:=null; LR_problems:=0;
+last_badness:=0; r:=get_node(box_node_size); type(r):=hlist_node;
 subtype(r):=min_quarterword; shift_amount(r):=0;
 q:=r+list_offset; link(q):=p;@/
 h:=0; @<Clear dimensions to zero@>;
@@ -14550,7 +14569,8 @@ height(r):=h; depth(r):=d;@/
   then |return| or |goto common_ending|@>;
 common_ending: @<Finish issuing a diagnostic message
       for an overfull or underfull hbox@>;
-exit: hpack:=r;
+exit: @<Check for LR anomalies at the end of |hpack|@>;
+hpack:=r;
 end;
 
 @ @<Clear dimensions to zero@>=
@@ -20048,7 +20068,9 @@ var q,@!r,@!s:pointer; {temporary registers for list manipulation}
 @!t:quarterword; {used for replacement counts in discretionary nodes}
 @!pen:integer; {use when calculating penalties between lines}
 @!cur_line: halfword; {the current line number being justified}
-begin @<Reverse the links of the relevant passive nodes, setting |cur_p| to the
+@!LR_ptr,@!LR_tmp:pointer; {for LR stack maintenance}
+begin LR_ptr:=null;
+@<Reverse the links of the relevant passive nodes, setting |cur_p| to the
   first breakpoint@>;
 cur_line:=prev_graf+1;
 repeat @<Justify the line ending at breakpoint |cur_p|, and append it to the
@@ -20062,6 +20084,7 @@ if (cur_line<>best_line)or(link(temp_head)<>null) then
   confusion("line breaking");
 @:this can't happen line breaking}{\quad line breaking@>
 prev_graf:=best_line-1;
+@<Flush the LR stack@>;
 end;
 
 @ The job of reversing links in a list is conveniently regarded as the job
@@ -20108,8 +20131,11 @@ is compulsory, and we set |disc_break| to |true|. We also append
 the |left_skip| glue at the left of the line, unless it is zero.
 
 @<Justify the line ending at breakpoint |cur_p|, and append it...@>=
+@<Insert LR nodes at the beginning of the current line@>;
+@<Adjust the LR stack based on LR nodes in this line@>;
 @<Modify the end of the line to reflect the nature of the break and to include
   \.{\\rightskip}; also set the proper value of |disc_break|@>;
+@<Insert LR nodes at the end of the current line@>;
 @<Put the \(l)\.{\\leftskip} glue at the left and detach this line@>;
 @<Call the packaging subroutine, setting |just_box| to the justified box@>;
 @<Append the new box to the current vertical list, followed by the list of
@@ -24454,7 +24480,7 @@ vmode+start_par: new_graf(cur_chr>0);
 vmode+letter,vmode+other_char,vmode+char_num,vmode+char_given,
    vmode+math_shift,vmode+un_hbox,vmode+vrule,
    vmode+accent,vmode+discretionary,vmode+hskip,vmode+valign,
-   vmode+ex_space,vmode+no_boundary:@t@>@;@/
+   vmode+ex_space,vmode+no_boundary,vmode+LR:@t@>@;@/
   begin back_input; new_graf(true);
   end;
 
@@ -25979,9 +26005,11 @@ space above that display.
 
 @<Finish math in text@>=
 begin tail_append(new_math(math_surround,before));
+@<Append a |begin_L| to the tail of the current list@>;
 cur_mlist:=p; cur_style:=text_style; mlist_penalties:=(mode>0); mlist_to_hlist;
 link(tail):=link(temp_head);
 while link(tail)<>null do tail:=link(tail);
+@<Append an |end_L| to the tail of the current list@>;
 tail_append(new_math(math_surround,after));
 space_factor:=1000; unsave;
 end
@@ -28355,7 +28383,9 @@ to hold the string numbers for name, area, and extension.
 @d write_node=1 {|subtype| in whatsits that represent things to \.{\\write}}
 @d close_node=2 {|subtype| in whatsits that represent streams to \.{\\closeout}}
 @d special_node=3 {|subtype| in whatsits that represent \.{\\special} things}
-@d language_node=4 {|subtype| in whatsits that change the current language}
+@d LR_node=4 {|subtype| in whatsits that represent \.{\\beginL}, etc.}
+@d LR_type(#)==mem[#+1].int {the sub-subtype}
+@d language_node=5 {|subtype| in whatsits that change the current language}
 @d what_lang(#)==link(#+1) {language number, in the range |0..255|}
 @d what_lhm(#)==type(#+1) {minimum left fragment, in the range |1..63|}
 @d what_rhm(#)==subtype(#+1) {minimum right fragment, in the range |1..63|}
@@ -28385,6 +28415,13 @@ stays the same.
 @d immediate_code=4 {command modifier for \.{\\immediate}}
 @d set_language_code=5 {command modifier for \.{\\setlanguage}}
 
+@d begin_L_code=0 {command modifier for \.{\\beginL}}
+@d begin_R_code=1 {command modifier for \.{\\beginR}}
+@d end_L_code=2 {command modifier for \.{\\endL}}
+@d end_R_code=3 {command modifier for \.{\\endR}}
+@d begin_LR(#)==(LR_type(#)<end_L_code)
+@d begin_LR_type(#)==(LR_type(#)-end_L_code)
+
 @d pdftex_first_extension_code = 6
 @d pdf_save_pos_node           == pdftex_first_extension_code + 0
 
@@ -28397,6 +28434,14 @@ stays the same.
 @d XeTeX_linebreak_locale_extension_code=46
 
 @<Put each...@>=
+primitive("beginL",LR,begin_L_code);@/
+@!@:begin_L_}{\.{\\beginL} primitive@>
+primitive("beginR",LR,begin_R_code);@/
+@!@:begin_R_}{\.{\\beginR} primitive@>
+primitive("endL",LR,end_L_code);@/
+@!@:end_L_}{\.{\\endL} primitive@>
+primitive("endR",LR,end_R_code);@/
+@!@:end_R_}{\.{\\endR} primitive@>
 primitive("openout",extension,open_node);@/
 @!@:open_out_}{\.{\\openout} primitive@>
 primitive("write",extension,write_node); write_loc:=cur_val;@/
@@ -28434,6 +28479,12 @@ appropriate error message in case of ``runaway'' write texts.
 @!write_loc:pointer; {|eqtb| address of \.{\\write}}
 
 @ @<Cases of |print_cmd_chr|...@>=
+LR: case chr_code of
+begin_L_code: print_esc("beginL");
+begin_R_code: print_esc("beginR");
+end_L_code: print_esc("endL");
+othercases print_esc("endR")
+endcases;
 extension: case chr_code of
   open_node:print_esc("openout");
   write_node:print_esc("write");
@@ -28664,6 +28715,12 @@ pic_node,pdf_node: begin
 	print("""");
   end;
 pdf_save_pos_node: print_esc("pdfsavepos");
+LR_node: case LR_type(p) of
+begin_L_code: print_esc("beginL");
+begin_R_code: print_esc("beginR");
+end_L_code: print_esc("endL");
+othercases print_esc("endR")
+endcases;
 othercases print("whatsit?")
 endcases
 
@@ -28677,7 +28734,7 @@ open_node: begin r:=get_node(open_node_size); words:=open_node_size;
 write_node,special_node: begin r:=get_node(write_node_size);
   add_token_ref(write_tokens(p)); words:=write_node_size;
   end;
-close_node,language_node: begin r:=get_node(small_node_size);
+close_node,language_node,LR_node: begin r:=get_node(small_node_size);
   words:=small_node_size;
   end;
 native_word_node: begin words:=native_size(p);
@@ -28705,7 +28762,7 @@ open_node: free_node(p,open_node_size);
 write_node,special_node: begin delete_token_ref(write_tokens(p));
   free_node(p,write_node_size); goto done;
   end;
-close_node,language_node: free_node(p,small_node_size);
+close_node,language_node,LR_node: free_node(p,small_node_size);
 native_word_node: begin free_native_glyph_info(p); free_node(p,native_size(p)); end;
 glyph_node: free_node(p,glyph_node_size);
 pic_node,pdf_node: free_node(p,total_pic_node_size(p));
@@ -28816,6 +28873,7 @@ begin
 			x := x + width(p);
 		end;
 
+	LR_node: @<Adjust the LR stack for the |hpack| routine@>;
 	othercases
 		do_nothing
 
@@ -28908,6 +28966,8 @@ begin
 	pdf_save_pos_node:
 		@<Save current position to |pdf_last_x_pos|, |pdf_last_y_pos|@>;
 
+	LR_node: @<Output a reflection instruction if the direction has changed@>;
+
 	othercases
 		out_what(p)
 
@@ -28977,6 +29037,8 @@ begin
 
 	pdf_save_pos_node:
 		@<Save current position to |pdf_last_x_pos|, |pdf_last_y_pos|@>;
+
+	LR_node: @<Output a reflection instruction if the direction has changed@>;
 
 	othercases
 		out_what(p)
@@ -32412,6 +32474,125 @@ else  begin if cur_val>penalty(equiv(m)) then cur_val:=penalty(equiv(m));
   cur_val:=penalty(equiv(m)+cur_val);
   end;
 end
+
+@ Now we do the main work required for mixed-direction texts.
+
+@<Cases of |main_control| that build...@>=
+hmode+LR: begin new_whatsit(LR_node,small_node_size); LR_type(tail):=cur_chr;
+  end;
+mmode+LR: report_illegal_case;
+
+@ A number of routines are based on a stack of one-word nodes whose |info|
+fields contain either |begin_L_code| or |begin_R_code|. The top of the
+stack is pointed to by |LR_ptr|, and an auxiliary variable |LR_tmp| is
+available for stack manipulation.
+
+@<Glob...@>=
+@!LR_ptr,@!LR_tmp:pointer; {stack of LR codes and temp for manipulation}
+
+@ @<Declare functions needed for special kinds of nodes@>=
+function new_LR(@!s:small_number): pointer;
+var p: pointer; {the new node}
+begin p:=get_node(small_node_size); type(p):=whatsit_node; subtype(p):=LR_node;
+LR_type(p):=s; new_LR:=p;
+end;
+
+@ @<Declare functions needed for special kinds of nodes@>=
+function safe_info(@!p:pointer): integer;
+begin if p=null then safe_info:=-1@+else safe_info:=info(p);
+end;
+
+@ @<Append a |begin_L| to the tail of the current list@>=
+tail_append(new_LR(begin_L_code))
+
+@ @<Append an |end_L| to the tail of the current list@>=
+tail_append(new_LR(end_L_code))
+
+@ When the stack-manipulation macros of this section are used below, variables
+|LR_ptr| and |LR_tmp| might be the global variables declared above, or they
+might be local to |hpack| or |post_line_break|.
+
+@d push_LR(#)==begin LR_tmp:=get_avail; info(LR_tmp):=LR_type(#);
+  link(LR_tmp):=LR_ptr; LR_ptr:=LR_tmp;
+  end
+@d pop_LR==begin LR_tmp:=LR_ptr; LR_ptr:=link(LR_tmp); free_avail(LR_tmp);
+  end
+
+@<Flush the LR stack@>=while LR_ptr<>null do pop_LR
+
+@ @<Insert LR nodes at the beginning of the current line@>=
+while LR_ptr<>null do
+  begin LR_tmp:=new_LR(info(LR_ptr)); link(LR_tmp):=link(temp_head);
+  link(temp_head):=LR_tmp; pop_LR;
+  end
+
+@ @<Adjust the LR stack based on LR nodes in this line@>=
+q:=link(temp_head);
+while q<>cur_break(cur_p) do
+  begin if not is_char_node(q) then if type(q)=whatsit_node then
+   if subtype(q)=LR_node then
+    if begin_LR(q) then push_LR(q)
+    else if LR_ptr<>null then
+     if info(LR_ptr)=begin_LR_type(q) then pop_LR;
+  q:=link(q);
+  end
+
+@ We use the fact that |q| now points to the node with \.{\\rightskip} glue.
+
+@<Insert LR nodes at the end of the current line@>=
+if LR_ptr<>null then
+  begin s:=temp_head; r:=link(s);
+  while r<>q do
+    begin s:=r; r:=link(s);
+    end;
+  r:=LR_ptr;
+  while r<>null do
+    begin LR_tmp:=new_LR(info(r)+end_L_code);
+    link(s):=LR_tmp; s:=LR_tmp; r:=link(r);
+    end;
+  link(s):=q;
+  end
+
+@ @<Adjust the LR stack for the |hpack| routine@>=
+if begin_LR(p) then push_LR(p)
+else if safe_info(LR_ptr)=begin_LR_type(p) then pop_LR
+else  begin incr(LR_problems);
+  while link(q)<>p do q:=link(q);
+  link(q):=link(p); free_node(p,small_node_size); p:=q;
+  end
+
+@ @<Check for LR anomalies at the end of |hpack|@>=
+if LR_ptr<>null then
+  begin while link(q)<>null do q:=link(q);
+  repeat link(q):=new_LR(info(LR_ptr)+end_L_code); q:=link(q);
+  LR_problems:=LR_problems+10000; pop_LR;
+  until LR_ptr=null;
+  end;
+if LR_problems>0 then
+  begin print_ln; print_nl("\endL or \endR problem (");@/
+  print_int(LR_problems div 10000); print(" missing, ");@/
+  print_int(LR_problems mod 10000); print(" extra");@/
+  LR_problems:=0; goto common_ending;
+  end
+
+@ @d begin_reflect=0 {begin a reflcted segment value of |reflect| \.{XDV} command}
+@d end_reflect=1 {end a reflcted segment value of |reflect| \.{XDV} command}
+
+@<Output a reflection instruction if the direction has changed@>=
+if begin_LR(p) then
+  begin if safe_info(LR_ptr)<>LR_type(p) then
+    begin synch_h; synch_v; dvi_out(reflect); dvi_out(begin_reflect);
+    end;
+  push_LR(p);
+  end
+else if safe_info(LR_ptr)=begin_LR_type(p) then
+  begin pop_LR;
+  if info(LR_ptr)+end_L_code<>LR_type(p) then
+    begin synch_h; synch_v; dvi_out(reflect); dvi_out(end_reflect);
+    end;
+  end
+else confusion("LR")
+@:this can't happen LR}{\quad LR@>
 
 @* \[54] System-dependent changes.
 This section should be replaced, if necessary, by any special
