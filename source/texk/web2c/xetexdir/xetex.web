@@ -20098,7 +20098,7 @@ var q,@!r,@!s:pointer; {temporary registers for list manipulation}
 @!pen:integer; {use when calculating penalties between lines}
 @!cur_line: halfword; {the current line number being justified}
 @!LR_ptr,@!LR_tmp:pointer; {for LR stack maintenance}
-begin LR_ptr:=null;
+begin LR_ptr:=LR_save;
 @<Reverse the links of the relevant passive nodes, setting |cur_p| to the
   first breakpoint@>;
 cur_line:=prev_graf+1;
@@ -20113,7 +20113,7 @@ if (cur_line<>best_line)or(link(temp_head)<>null) then
   confusion("line breaking");
 @:this can't happen line breaking}{\quad line breaking@>
 prev_graf:=best_line-1;
-@<Flush the LR stack@>;
+LR_save:=LR_ptr;
 end;
 
 @ The job of reversing links in a list is conveniently regarded as the job
@@ -24587,6 +24587,9 @@ procedure end_graf;
 begin if mode=hmode then
   begin if head=tail then pop_nest {null paragraphs are ignored}
   else line_break(widow_penalty);
+  if LR_save<>null then
+    begin flush_list(LR_save); LR_save:=null;
+    end;
   normal_paragraph;
   error_count:=0;
   end;
