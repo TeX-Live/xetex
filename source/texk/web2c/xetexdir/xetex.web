@@ -340,6 +340,8 @@ known as `\eTeX'.
 @#
 @d TEX==XETEX {change program name into |XETEX|}
 @#
+@d TeXXeT_code=0 {for backward compatibility, ignored in \XeTeX}
+@#
 @d XeTeX_dash_break_code=1 {non-zero to enable breaks after en- and em-dashes}
 @#
 @d XeTeX_upwards_code=2 {non-zero if the main vertical list is being built upwards}
@@ -30649,7 +30651,8 @@ primitive("middle",left_right,middle_noad);
 @ @<Cases of |left_right| for |print_cmd_chr|@>=
 else if chr_code=middle_noad then print_esc("middle")
 
-@ @d XeTeX_upwards_state==eTeX_state(XeTeX_upwards_code)
+@ @d TeXXeT_state==eTeX_state(TeXXeT_code)
+@d XeTeX_upwards_state==eTeX_state(XeTeX_upwards_code)
 @d XeTeX_upwards==(XeTeX_upwards_state>0)
 
 @d XeTeX_use_glyph_metrics_state==eTeX_state(XeTeX_use_glyph_metrics_code)
@@ -30669,6 +30672,7 @@ else if chr_code=middle_noad then print_esc("middle")
 
 @<Cases for |print_param|@>=
 suppress_fontnotfound_error_code:print_esc("suppressfontnotfounderror");
+eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
 eTeX_state_code+XeTeX_upwards_code:print_esc("XeTeXupwardsmode");
 eTeX_state_code+XeTeX_use_glyph_metrics_code:print_esc("XeTeXuseglyphmetrics");
 eTeX_state_code+XeTeX_inter_char_tokens_code:print_esc("XeTeXinterchartokenstate");
@@ -30678,6 +30682,8 @@ eTeX_state_code+XeTeX_tracing_fonts_code:print_esc("XeTeXtracingfonts");
 
 @ @<Generate all \eTeX...@>=
 primitive("suppressfontnotfounderror",assign_int,int_base+suppress_fontnotfound_error_code);@/
+primitive("TeXXeTstate",assign_int,eTeX_state_base+TeXXeT_code);
+@!@:TeXXeT_state_}{\.{\\TeXXeT_state} primitive@>
 primitive("XeTeXupwardsmode",assign_int,eTeX_state_base+XeTeX_upwards_code);
 @!@:XeTeX_upwards_mode_}{\.{\\XeTeX_upwards_mode} primitive@>
 primitive("XeTeXuseglyphmetrics",assign_int,eTeX_state_base+XeTeX_use_glyph_metrics_code);
