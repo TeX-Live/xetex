@@ -209,7 +209,7 @@
 \def\gglob{20, 26} % this should be the next two sections of "<Global...>"
 
 @* \[1] Introduction.
-This is \eTeX, a program derived from and extending the capabilities of
+This is \XeTeX, a program derived from and extending the capabilities of
 \TeX, a document compiler intended to produce typesetting of high
 quality.
 The \PASCAL\ program that follows is the definition of \TeX82, a standard
@@ -300,7 +300,7 @@ undergoes any modifications, so that it will be clear which version of
 @^system dependencies@>
 
 This program contains code for various features extending \TeX,
-therefore this program is called `\eTeX' and not
+therefore this program is called `\XeTeX' and not
 `\TeX'; the official name `\TeX' by itself is reserved
 for software systems that are fully compatible with each other.
 A special test suite called the ``\.{TRIP} test'' is available for
@@ -322,8 +322,8 @@ known as `\eTeX'.
 @d eTeX_revision==".5" { \.{\\eTeXrevision} }
 @d eTeX_version_string=='-2.5' {current \eTeX\ version}
 @#
-@d XeTeX_version=0
-@d XeTeX_revision==".9999"
+@d XeTeX_version=0 { \.{\\XeTeXversion} }
+@d XeTeX_revision==".9999" { \.{\\XeTeXrevision} }
 @d XeTeX_version_string=='-0.9999' {current \XeTeX\ version}
 @#
 @d XeTeX_banner=='This is XeTeX, Version 3.1415926',eTeX_version_string,XeTeX_version_string
@@ -335,25 +335,25 @@ known as `\eTeX'.
 @#
 @d TeXXeT_code=0 {for backward compatibility, ignored in \XeTeX}
 @#
-@d XeTeX_dash_break_code = 1 {non-zero to enable breaks after en- and em-dashes}
+@d XeTeX_dash_break_code=1 {non-zero to enable breaks after en- and em-dashes}
 @#
-@d XeTeX_upwards_code = 2 {non-zero if the main vertical list is being built upwards}
-@d XeTeX_use_glyph_metrics_code = 3 {non-zero to use exact glyph height/depth}
-@d XeTeX_inter_char_tokens_code = 4 {non-zero to enable \\XeTeXinterchartokens insertion}
+@d XeTeX_upwards_code=2 {non-zero if the main vertical list is being built upwards}
+@d XeTeX_use_glyph_metrics_code=3 {non-zero to use exact glyph height/depth}
+@d XeTeX_inter_char_tokens_code=4 {non-zero to enable \.{\\XeTeXinterchartokens} insertion}
 @#
-@d XeTeX_input_normalization_code = 5 {normalization mode: 1 = NFC, 2 = NFD, else none}
+@d XeTeX_input_normalization_code=5 {normalization mode:, 1 for NFC, 2 for NFD, else none}
 @#
-@d XeTeX_default_input_mode_code    = 6 {input mode for newly opened files}
-@d XeTeX_input_mode_auto    = 0
-@d XeTeX_input_mode_utf8    = 1
-@d XeTeX_input_mode_utf16be = 2
-@d XeTeX_input_mode_utf16le = 3
-@d XeTeX_input_mode_raw     = 4
-@d XeTeX_input_mode_icu_mapping = 5
+@d XeTeX_default_input_mode_code=6 {input mode for newly opened files}
+@d XeTeX_input_mode_auto=0
+@d XeTeX_input_mode_utf8=1
+@d XeTeX_input_mode_utf16be=2
+@d XeTeX_input_mode_utf16le=3
+@d XeTeX_input_mode_raw=4
+@d XeTeX_input_mode_icu_mapping=5
 @#
-@d XeTeX_default_input_encoding_code = 7 {|str_number| of encoding name if mode = ICU}
+@d XeTeX_default_input_encoding_code=7 {|str_number| of encoding name if |mode =| ICU}
 @#
-@d XeTeX_tracing_fonts_code = 8 {non-zero to log native fonts used}
+@d XeTeX_tracing_fonts_code=8 {non-zero to log native fonts used}
 @d eTeX_states=9 {number of \eTeX\ state variables in |eqtb|}
 
 @ Different \PASCAL s have slightly different conventions, and the present
@@ -374,7 +374,6 @@ made here to avoid using several idiosyncratic features of standard
 into other high-level languages. For example, the `\&{with}' and `\\{new}'
 features are not used, nor are pointer types, set types, or enumerated
 scalar types; there are no `\&{var}' parameters, except in the case of files
---- \eTeX, however, does use `\&{var}' parameters for the |reverse| function;
 there are no tag fields on variant records; there are no assignments
 |real:=integer|; no procedures are declared local to other procedures.)
 
@@ -13006,30 +13005,26 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 
 \yskip\hang|post_post| 249. Ending of the postamble, see below.
 
-\yskip\hang|reflect| 250 |b[1]|. Begin (|b==0|) or end (|b==1|) a (possibly
+\yskip\hang|reflect| 250 |b[1]|. Begin (|b=0|) or end (|b=1|) a (possibly
 recursive) reflected segment.
 
-\yskip\hang|set_glyph_string| 254 w[4] k[2] x[4k] g[2k].
+\yskip\hang|pic_file| 251 |flags[1]| |t[4][6]| |p[2]| |len[2]| |path[l]|.
+	|flags=0| for raster image, and |1| for \.{PDF}.
+	|t| is transform matrix.
+	|p| is page number from the graphic file (0-based).
+	|len| is length of pathname.
+	|path| is pathname of graphic file.
 
-\yskip\hang|set_glyph_array| 253 w[4] k[2] xy[8k] g[2k]
+\yskip\hang\vbox{\halign{#&#\hfil\cr
+|define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |lenps[1]| |lenfam[1]| |lensty[1]| |ps[lenps]| |fam[lenfam]| |sty[lensty]|\cr
+& |if (flags and COLORED) then| |rgba[4]|\cr
+& |if (flags and VARIATIONS) then| |numvars[2]| |axes[4nv]| |values[4nv]|\cr
+& |if (flags and MATRIX) then| |ta[4]| |tb[4]| |tc[4]| |td[4]| |tx[4]| |ty[4]|\cr
+}}
 
-\yskip\hang|define_native_font| 252 k[4] s[4] flags[2]
-	lenps[1] lenfam[1] lensty[1] ps[lenps] fam[lenfam] sty[lensty]
-	if (flags AND COLORED):
-		rgba[4]
-	if (flags AND VARIATIONS):
-		numvars[2]
-		axes[4nv]
-		values[4nv]
-	if (flags AND MATRIX):
-		ta[4] tb[4] tc[4] td[4] tx[4] ty[4]
+\yskip\hang|set_glyph_array| 253 |w[4]| |k[2]| |xy[8k]| |g[2k]|.
 
-\yskip\hang|pic_file| 251 flags[1] t[4][6] p[2] len[2] path[l]
-	flags = 0 for raster image, 1 for PDF
-	t is transform matrix
-	p is page \# from the graphic file (0-based)
-	len is length of pathname
-	path is pathname of graphic file
+\yskip\hang|set_glyph_string| 254 |w[4]| |k[2]| |x[4k]| |g[2k]|.
 
 \yskip\noindent Commands 250--255 are undefined in normal \.{DVI} files,
 but 250--254 are permitted in the extended `\.{XDV}' files
