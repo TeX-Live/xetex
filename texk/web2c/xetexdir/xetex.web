@@ -13058,12 +13058,11 @@ produced by \XeTeX. p\TeX\ uses 255.
 @d post=248 {postamble beginning}
 @d post_post=249 {postamble ending}
 
-@d set_glyph_string=254 {sequence of glyphs, all at the current y-position}
-@d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
-@d define_native_font=252 {define native font}
-@d pic_file=251 {embed picture or PDF}
-
 @d reflect=250 {begin or end a reflected segment}
+@d pic_file=251 {embed picture or PDF}
+@d define_native_font=252 {define native font}
+@d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
+@d set_glyph_string=254 {sequence of glyphs, all at the current y-position}
 
 @ The preamble contains basic information about the file as a whole. As
 stated above, there are six parameters:
@@ -13879,7 +13878,7 @@ done:
         link(p) := null;
         flush_node_list(r);
         width(q) := k;
-		set_justified_native_glyphs(q);
+        set_justified_native_glyphs(q);
         p := q;
         pool_ptr := str_start_macro(str_ptr); {flush the temporary string data}
       end
