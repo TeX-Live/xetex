@@ -665,6 +665,7 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
    	float x = 0, y = 0;
 
 	if (engine->font->getLayoutDirVertical()) {
+		// XXX this does not seem to match the old behaviour
 		x -= hbPositions[0].y_offset / 64.0; // hack to compensate offset of 1st glyph
 		for (i = 0; i < glyphCount; i++) {
 			positions[2*i]   = -(x + hbPositions[i].y_offset / 64.0); /* negative is forwards */
