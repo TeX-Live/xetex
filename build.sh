@@ -155,6 +155,8 @@ CONF_OPTIONS="\
     --disable-largefile \
     --disable-ptex \
     --disable-ipc \
+    --disable-xetex-synctex \
+    --disable-native-texlive-build \
     --enable-silent-rules \
     --enable-dump-share  \
     --enable-xetex  \
