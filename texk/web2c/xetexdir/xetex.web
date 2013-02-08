@@ -16907,8 +16907,11 @@ if x<>null then begin
     @<Switch to a larger native-font accent if available and appropriate@>;
 
     {determine horiz positioning}
-    sa:=get_ot_math_accent_pos(f,native_glyph(p));
-    if sa=@"7FFFFFFF then sa:=half(width(y));
+    if is_glyph_node(p) then
+      begin sa:=get_ot_math_accent_pos(f,native_glyph(p));
+      if sa=@"7FFFFFFF then sa:=half(width(y));
+      end
+    else sa:=half(width(y));
     if is_bottom_acc(q) or (s=@"7FFFFFFF) then s:=half(w);
     shift_amount(y):=s-sa;
   end else
