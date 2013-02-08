@@ -13803,7 +13803,7 @@ end;
 
 @ Extra stuff for justifiable AAT text; need to merge runs of words and normal spaces.
 
-@d is_native_word_node(#) == ((not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = native_word_node))
+@d is_native_word_node(#) == (((#)<>null and (not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = native_word_node)))
 @d is_glyph_node(#) == (((#)<>null and (not is_char_node(#)) and (type(#) = whatsit_node) and (subtype(#) = glyph_node)))
 
 @<Merge sequences of words using AAT fonts and inter-word spaces into single nodes@>=
@@ -13824,7 +13824,7 @@ check_next:
           {found a normal space; if the next node is another word in the same font, we'll merge}
           q := link(q);
           @<Advance |q| past ignorable nodes@>;
-          if (q <> null) and is_native_word_node(q) and (native_font(q) = native_font(r)) then begin
+          if is_native_word_node(q) and (native_font(q) = native_font(r)) then begin
             p := q; {record new tail of run in |p|}
             k := k + 1 + native_length(q);
             q := link(q);
@@ -13832,7 +13832,7 @@ check_next:
           end;
           goto end_node_run;
         end;
-        if (q <> null) and is_native_word_node(q) and (native_font(q) = native_font(r)) then begin
+        if is_native_word_node(q) and (native_font(q) = native_font(r)) then begin
           p := q; {record new tail of run in |p|}
           q := link(q);
           goto check_next;
@@ -28818,7 +28818,7 @@ begin
 				end
 				else if (type(pp) = disc_node) then begin
 					ppp := link(pp);
-					if (ppp <> null) and is_native_word_node(ppp)
+					if is_native_word_node(ppp)
 							and (native_font(ppp) = native_font(p)) then begin
 						pp := link(ppp);
 						goto restart;
