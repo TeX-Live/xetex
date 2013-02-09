@@ -2567,8 +2567,10 @@ atsufontget1(int what, CFDictionaryRef attributes, int param)
 			if (!features)
 				break;
 			CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
-			CFBooleanRef value = CFDictionaryGetValue(feature, kCTFontFeatureTypeExclusiveKey);
-			rval = CFBooleanGetValue(value);
+			CFBooleanRef value;
+			Boolean found = CFDictionaryGetValueIfPresent(feature, kCTFontFeatureTypeExclusiveKey, &value);
+			if (found)
+				rval = CFBooleanGetValue(value);
 			CFRelease(features);
 			break;
 		}
