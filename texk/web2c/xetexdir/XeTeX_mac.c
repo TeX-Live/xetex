@@ -406,196 +406,202 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 	if (!font)
 		return NULL;
 
-	CFArrayRef features = CTFontCopyFeatures(font);
-	CFArrayRef axes = CTFontCopyVariationAxes(font);
-	CFMutableArrayRef featureSettings = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
-	CFMutableDictionaryRef variation = CFDictionaryCreateMutable(NULL, 0,
-																 &kCFTypeDictionaryKeyCallBacks,
-																 &kCFTypeDictionaryValueCallBacks);
+	CFMutableDictionaryRef stringAttributes =
+		CFDictionaryCreateMutable(NULL, 0,
+								  &kCFTypeDictionaryKeyCallBacks,
+								  &kCFTypeDictionaryValueCallBacks);
+	CFMutableDictionaryRef attributes =
+		CFDictionaryCreateMutable(NULL, 0,
+								  &kCFTypeDictionaryKeyCallBacks,
+								  &kCFTypeDictionaryValueCallBacks);
 	double  tracking	= 0.0;
 	float   extend	  = 1.0;
 	float   slant	   = 0.0;
 	float   embolden	= 0.0;
 	float   letterspace = 0.0;
 	UInt32  rgbValue;
+	if (cp1) {
+		CFArrayRef features = CTFontCopyFeatures(font);
+		CFArrayRef axes = CTFontCopyVariationAxes(font);
+		CFMutableArrayRef featureSettings =
+			CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+		CFMutableDictionaryRef variation =
+			CFDictionaryCreateMutable(NULL, 0,
+									  &kCFTypeDictionaryKeyCallBacks,
+									  &kCFTypeDictionaryValueCallBacks);
 
-	CFMutableDictionaryRef stringAttributes = CFDictionaryCreateMutable(NULL, 0,
-																 &kCFTypeDictionaryKeyCallBacks,
-																 &kCFTypeDictionaryValueCallBacks);
-	CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(NULL, 0,
-																 &kCFTypeDictionaryKeyCallBacks,
-																 &kCFTypeDictionaryValueCallBacks);
-	// interpret features & variations following ":"
-	while (*cp1) {
-		// locate beginning of name=value pair
-		if (*cp1 == ':' || *cp1 == ';')	// skip over separator
-			++cp1;
-		while (*cp1 == ' ' || *cp1 == '\t')	// skip leading whitespace
-			++cp1;
-		if (*cp1 == 0) // break if end of string
-			break;
+		// interpret features & variations following ":"
+		while (*cp1) {
+			// locate beginning of name=value pair
+			if (*cp1 == ':' || *cp1 == ';') // skip over separator
+				++cp1;
+			while (*cp1 == ' ' || *cp1 == '\t') // skip leading whitespace
+				++cp1;
+			if (*cp1 == 0) // break if end of string
+				break;
 
-		// scan to end of pair
-		const char*	cp2 = cp1;
-		while (*cp2 && *cp2 != ';' && *cp2 != ':')
-			++cp2;
+			// scan to end of pair
+			const char* cp2 = cp1;
+			while (*cp2 && *cp2 != ';' && *cp2 != ':')
+				++cp2;
 
-		// look for the '=' separator
-		const char*	cp3 = cp1;
-		while (cp3 < cp2 && *cp3 != '=')
-			++cp3;
-		if (cp3 == cp2)
-			goto bad_option;
-
-		// now cp1 points to option name, cp3 to '=', cp2 to ';' or null
-
-		// first try for a feature by this name
-		CFDictionaryRef feature = findDictionaryInArray(features, kCTFontFeatureTypeNameKey, cp1, cp3 - cp1);
-		if (feature) {
-			// look past the '=' separator for setting names
-			int featLen = cp3 - cp1;
-			++cp3;
-			while (cp3 < cp2) {
-				// skip leading whitespace
-				while (*cp3 == ' ' || *cp3 == '\t')
-					++cp3;
-
-				// possibly multiple settings...
-				int	disable = 0;
-				if (*cp3 == '!') { // check for negation
-					disable = 1;
-					++cp3;
-				}
-
-				// scan for end of setting name
-				const char*	cp4 = cp3;
-				while (cp4 < cp2 && *cp4 != ',')
-					++cp4;
-
-				// now cp3 points to name, cp4 to ',' or ';' or null
-				CFNumberRef selector = findSelectorByName(feature, cp3, cp4 - cp3);
-				if (selector >= 0) {
-					CFNumberRef featureType = CFDictionaryGetValue(feature, kCTFontFeatureTypeIdentifierKey);
-					CFDictionaryRef featureSetting = createFeatureSettingDictionary(featureType, selector);
-					CFArrayAppendValue(featureSettings, featureSetting);
-					CFRelease(featureSetting);
-				} else {
-					fontfeaturewarning(cp1, featLen, cp3, cp4 - cp3);
-				}
-
-				// point beyond setting name terminator
-				cp3 = cp4 + 1;
-			}
-
-			goto next_option;
-		}
-
-		// try to find a variation by this name
-		CFDictionaryRef axis = findDictionaryInArray(axes, kCTFontVariationAxisNameKey, cp1, cp3 - cp1);
-		if (axis) {
-			// look past the '=' separator for the value
-			++cp3;
-			double value = 0.0, decimal = 1.0;
-			bool	negate = false;
-			if (*cp3 == '-') {
+			// look for the '=' separator
+			const char* cp3 = cp1;
+			while (cp3 < cp2 && *cp3 != '=')
 				++cp3;
-				negate = true;
+			if (cp3 == cp2)
+				goto bad_option;
+
+			// now cp1 points to option name, cp3 to '=', cp2 to ';' or null
+
+			// first try for a feature by this name
+			CFDictionaryRef feature = findDictionaryInArray(features, kCTFontFeatureTypeNameKey, cp1, cp3 - cp1);
+			if (feature) {
+				// look past the '=' separator for setting names
+				int featLen = cp3 - cp1;
+				++cp3;
+				while (cp3 < cp2) {
+					// skip leading whitespace
+					while (*cp3 == ' ' || *cp3 == '\t')
+						++cp3;
+
+					// possibly multiple settings...
+					int disable = 0;
+					if (*cp3 == '!') { // check for negation
+						disable = 1;
+						++cp3;
+					}
+
+					// scan for end of setting name
+					const char* cp4 = cp3;
+					while (cp4 < cp2 && *cp4 != ',')
+						++cp4;
+
+					// now cp3 points to name, cp4 to ',' or ';' or null
+					CFNumberRef selector = findSelectorByName(feature, cp3, cp4 - cp3);
+					if (selector >= 0) {
+						CFNumberRef featureType = CFDictionaryGetValue(feature, kCTFontFeatureTypeIdentifierKey);
+						CFDictionaryRef featureSetting = createFeatureSettingDictionary(featureType, selector);
+						CFArrayAppendValue(featureSettings, featureSetting);
+						CFRelease(featureSetting);
+					} else {
+						fontfeaturewarning(cp1, featLen, cp3, cp4 - cp3);
+					}
+
+					// point beyond setting name terminator
+					cp3 = cp4 + 1;
+				}
+
+				goto next_option;
 			}
-			while (cp3 < cp2) {
-				int	v = *cp3 - '0';
-				if (v >= 0 && v <= 9) {
-					if (decimal != 1.0) {
-						value += v / decimal;
-						decimal *= 10.0;
+
+			// try to find a variation by this name
+			CFDictionaryRef axis = findDictionaryInArray(axes, kCTFontVariationAxisNameKey, cp1, cp3 - cp1);
+			if (axis) {
+				// look past the '=' separator for the value
+				++cp3;
+				double value = 0.0, decimal = 1.0;
+				bool	negate = false;
+				if (*cp3 == '-') {
+					++cp3;
+					negate = true;
+				}
+				while (cp3 < cp2) {
+					int v = *cp3 - '0';
+					if (v >= 0 && v <= 9) {
+						if (decimal != 1.0) {
+							value += v / decimal;
+							decimal *= 10.0;
+						}
+						else
+							value = value * 10.0 + v;
+					}
+					else if (*cp3 == '.') {
+						if (decimal != 1.0)
+							break;
+						decimal = 10.0;
 					}
 					else
-						value = value * 10.0 + v;
-				}
-				else if (*cp3 == '.') {
-					if (decimal != 1.0)
 						break;
-					decimal = 10.0;
-				}
-				else
-					break;
-				++cp3;
-			}
-			if (negate)
-				value = -value;
-
-			CFNumberRef axisIdentifier = CFDictionaryGetValue(axis, kCTFontVariationAxisIdentifierKey);
-			CFNumberRef axisValue = CFNumberCreate(NULL, kCFNumberDoubleType, &value);
-			CFDictionaryAddValue(variation, axisIdentifier, axisValue);
-			CFRelease(axisValue);
-
-			goto next_option;
-		}
-
-		// didn't find feature or variation, try other options...
-		int ret = readCommonFeatures(cp1, cp2, &extend, &slant, &embolden, &letterspace, &rgbValue);
-		if (ret == 1)
-			goto next_option;
-		else if (ret == -1)
-			goto bad_option;
-
-		if (strncmp(cp1, "tracking", 8) == 0) {
-			cp3 = cp1 + 8;
-			if (*cp3 != '=')
-				goto bad_option;
-			++cp3;
-			tracking = read_double(&cp3);
-			CFNumberRef trackingNumber = CFNumberCreate(NULL, kCFNumberDoubleType, &tracking);
-			CFDictionaryAddValue(stringAttributes, kCTKernAttributeName, trackingNumber);
-			CFRelease(trackingNumber);
-			goto next_option;
-		}
-
-		bad_option:
-			// not a name=value pair, or not recognized....
-			// check for plain "vertical" before complaining
-			if (strncmp(cp1, "vertical", 8) == 0) {
-				cp3 = cp2;
-				if (*cp3 == ';' || *cp3 == ':')
-					--cp3;
-				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
-					--cp3;
-				if (*cp3)
 					++cp3;
-				if (cp3 == cp1 + 8) {
-					int orientation = kCTFontVerticalOrientation;
-					CFNumberRef orientationNumber = CFNumberCreate(NULL, kCFNumberIntType, &orientation);
-					CFDictionaryAddValue(attributes, kCTFontOrientationAttribute, orientationNumber);
-					CFRelease(orientationNumber);
-					CFDictionaryAddValue(stringAttributes, kCTVerticalFormsAttributeName, kCFBooleanTrue);
-					goto next_option;
 				}
+				if (negate)
+					value = -value;
+
+				CFNumberRef axisIdentifier = CFDictionaryGetValue(axis, kCTFontVariationAxisIdentifierKey);
+				CFNumberRef axisValue = CFNumberCreate(NULL, kCFNumberDoubleType, &value);
+				CFDictionaryAddValue(variation, axisIdentifier, axisValue);
+				CFRelease(axisValue);
+
+				goto next_option;
 			}
 
-			fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
+			// didn't find feature or variation, try other options...
+			int ret = readCommonFeatures(cp1, cp2, &extend, &slant, &embolden, &letterspace, &rgbValue);
+			if (ret == 1)
+				goto next_option;
+			else if (ret == -1)
+				goto bad_option;
 
-		next_option:
-			// go to next name=value pair
-			cp1 = cp2;
+			if (strncmp(cp1, "tracking", 8) == 0) {
+				cp3 = cp1 + 8;
+				if (*cp3 != '=')
+					goto bad_option;
+				++cp3;
+				tracking = read_double(&cp3);
+				CFNumberRef trackingNumber = CFNumberCreate(NULL, kCFNumberDoubleType, &tracking);
+				CFDictionaryAddValue(stringAttributes, kCTKernAttributeName, trackingNumber);
+				CFRelease(trackingNumber);
+				goto next_option;
+			}
+
+			bad_option:
+				// not a name=value pair, or not recognized....
+				// check for plain "vertical" before complaining
+				if (strncmp(cp1, "vertical", 8) == 0) {
+					cp3 = cp2;
+					if (*cp3 == ';' || *cp3 == ':')
+						--cp3;
+					while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
+						--cp3;
+					if (*cp3)
+						++cp3;
+					if (cp3 == cp1 + 8) {
+						int orientation = kCTFontVerticalOrientation;
+						CFNumberRef orientationNumber = CFNumberCreate(NULL, kCFNumberIntType, &orientation);
+						CFDictionaryAddValue(attributes, kCTFontOrientationAttribute, orientationNumber);
+						CFRelease(orientationNumber);
+						CFDictionaryAddValue(stringAttributes, kCTVerticalFormsAttributeName, kCFBooleanTrue);
+						goto next_option;
+					}
+				}
+
+				fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
+
+			next_option:
+				// go to next name=value pair
+				cp1 = cp2;
+		}
+
+		if (features)
+			CFRelease(features);
+		if (axes)
+			CFRelease(axes);
+
+		if (CFArrayGetCount(featureSettings))
+			CFDictionaryAddValue(attributes, kCTFontFeatureSettingsAttribute, featureSettings);
+		CFRelease(featureSettings);
+
+		if (CFDictionaryGetCount(variation))
+			CFDictionaryAddValue(attributes, kCTFontVariationAttribute, variation);
+		CFRelease(variation);
 	}
 
-	if (features)
-		CFRelease(features);
-	if (axes)
-		CFRelease(axes);
-
-	if (CFArrayGetCount(featureSettings))
-		CFDictionaryAddValue(attributes, kCTFontFeatureSettingsAttribute, featureSettings);
-	CFRelease(featureSettings);
-
-	if (CFDictionaryGetCount(variation))
-		CFDictionaryAddValue(attributes, kCTFontVariationAttribute, variation);
-	CFRelease(variation);
-
 	if ((loadedfontflags & FONT_FLAGS_COLORED) != 0) {
-		CGFloat red	 = ((rgbValue & 0xFF000000) >> 24) / 255.0;
+		CGFloat red  = ((rgbValue & 0xFF000000) >> 24) / 255.0;
 		CGFloat green   = ((rgbValue & 0x00FF0000) >> 16) / 255.0;
 		CGFloat blue	= ((rgbValue & 0x0000FF00) >> 8 ) / 255.0;
-		CGFloat alpha   = ((rgbValue & 0x000000FF)	  ) / 255.0;
+		CGFloat alpha   = ((rgbValue & 0x000000FF)	) / 255.0;
 		CGColorRef color = CGColorCreateGenericRGB(red, green, blue, alpha);
 		CFDictionaryAddValue(stringAttributes, kCTForegroundColorAttributeName, color);
 		CGColorRelease(color);
