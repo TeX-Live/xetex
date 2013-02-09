@@ -380,7 +380,7 @@ CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int na
 	CFDictionaryRef s = findDictionaryInArray(selectors, kCTFontFeatureSelectorNameKey, name, nameLength);
 	CFNumberRef selector = NULL;
 	if (s)
-		CFDictionaryGetValue(s, kCTFontFeatureSelectorIdentifierKey);
+		selector = CFDictionaryGetValue(s, kCTFontFeatureSelectorIdentifierKey);
 	return selector;
 }
 
@@ -460,6 +460,8 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 				// look past the '=' separator for setting names
 				int featLen = cp3 - cp1;
 				++cp3;
+				int zeroInteger = 0;
+				CFNumberRef zero = CFNumberCreate(NULL, kCFNumberIntType, &zeroInteger);
 				while (cp3 < cp2) {
 					// skip leading whitespace
 					while (*cp3 == ' ' || *cp3 == '\t')
@@ -479,7 +481,7 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 
 					// now cp3 points to name, cp4 to ',' or ';' or null
 					CFNumberRef selector = findSelectorByName(feature, cp3, cp4 - cp3);
-					if (selector >= 0) {
+					if (selector && CFNumberCompare(selector, zero, NULL) >= 0) {
 						CFNumberRef featureType = CFDictionaryGetValue(feature, kCTFontFeatureTypeIdentifierKey);
 						CFDictionaryRef featureSetting = createFeatureSettingDictionary(featureType, selector);
 						CFArrayAppendValue(featureSettings, featureSetting);
@@ -491,6 +493,7 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 					// point beyond setting name terminator
 					cp3 = cp4 + 1;
 				}
+				CFRelease(zero);
 
 				goto next_option;
 			}
