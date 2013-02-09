@@ -52,10 +52,6 @@ authorization from the copyright holders.
 #include "XeTeXFontMgr.h"
 #include "XeTeX_ext.h"
 
-extern "C" {
-	void *xmalloc(size_t);	// from kpathsea
-};
-
 // create specific subclasses for each supported platform
 
 class XeTeXFontInst : protected FontTableCache
@@ -151,9 +147,14 @@ public:
         return fPointSize;
     };
 
-	int32_t unitsToPoints(float units) const
+	float unitsToPoints(float units) const
 	{
 		return (units * fPointSize) / (float) fUnitsPerEM;
+	}
+
+	float pointsToUnits(float points) const
+	{
+		return (points * (float) fUnitsPerEM) / fPointSize;
 	}
 
     float getItalicAngle() const

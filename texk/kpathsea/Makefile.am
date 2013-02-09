@@ -14,12 +14,12 @@ SUBDIRS = . doc man
 
 EXTRA_DIST = BUGS PROJECTS
 
-INCLUDES = -I$(top_builddir)/.. -I$(top_srcdir)/..
+AM_CPPFLAGS = -I$(top_builddir)/.. -I$(top_srcdir)/..
 AM_CFLAGS = $(WARNING_CFLAGS)
 
 lib_LTLIBRARIES = libkpathsea.la
 
-libkpathsea_la_CPPFLAGS = -DMAKE_KPSE_DLL
+libkpathsea_la_CPPFLAGS = $(AM_CPPFLAGS) -DMAKE_KPSE_DLL
 
 libkpathsea_la_LDFLAGS = -no-undefined -version-info $(KPSE_LT_VERSINFO)
 
@@ -67,7 +67,6 @@ libkpathsea_la_SOURCES = \
 	tex-hush.c \
 	tex-make.c \
 	tilde.c \
-	truncate.c \
 	uppercasify.c \
 	variable.c \
 	version.c \
@@ -175,7 +174,6 @@ noinst_HEADERS = \
 	fn.h \
 	fontmap.h \
 	tilde.h \
-	truncate.h \
 	xopendir.h \
 	xstat.h
 
@@ -207,12 +205,12 @@ stamp-paths: texmf.cnf bsnl.awk cnf-to-paths.awk
 	date >$@
 
 kpathsea.h: Makefile paths.h
-	rm -f $@
-	echo '/* This is a generated file */' >$@
-	echo '/* collecting all public kpathsea headers. */' >>$@
-	for f in config.h c-auto.h paths.h $(normal_headers); do \
-	  echo "#include <kpathsea/$$f>" >>$@; \
-	done
+	$(AM_V_GEN)rm -f $@; \
+	( echo '/* This is a generated file */'; \
+	  echo '/* collecting all public kpathsea headers. */'; \
+	  for f in config.h c-auto.h paths.h $(normal_headers); do \
+	    echo "#include <kpathsea/$$f>"; \
+	  done ) >$@
 
 EXTRA_DIST += bsnl.awk cnf-to-paths.awk
 
@@ -229,7 +227,7 @@ kpsewhich_LDADD = libkpathsea.la
 
 EXTRA_PROGRAMS = progname-test xdirtest
 
-progname_test_CPPFLAGS = -DMAKE_KPSE_DLL -DTEST
+progname_test_CPPFLAGS = $(AM_CPPFLAGS) -DMAKE_KPSE_DLL -DTEST
 progname_test_SOURCES = progname.c
 progname_test_LDADD = libkpathsea.la
 

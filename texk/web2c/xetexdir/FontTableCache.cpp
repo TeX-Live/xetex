@@ -60,7 +60,7 @@ FontTableCache::FontTableCache()
 void
 FontTableCache::initialize()
 {
-    fTableCache = (FontTableCacheEntry *) malloc((fTableCacheSize) * sizeof(FontTableCacheEntry));
+    fTableCache = (FontTableCacheEntry *) xmalloc((fTableCacheSize) * sizeof(FontTableCacheEntry));
 
     if (fTableCache == NULL) {
         fTableCacheSize = 0;
@@ -78,6 +78,8 @@ void FontTableCache::dispose()
     for (int i = fTableCacheCurr - 1; i >= 0; i -= 1) {
         free((void *) (fTableCache[i].table));
     }
+
+	free(fTableCache);
 
     fTableCacheCurr = 0;
 }

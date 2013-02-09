@@ -174,10 +174,10 @@ XeTeXFontInst_FT2::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 	if (err == 0) {	    
 		FT_BBox	ft_bbox;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_UNSCALED, &ft_bbox);
-		bbox->xMin = ft_bbox.xMin * fPointSize / fUnitsPerEM;
-		bbox->yMin = ft_bbox.yMin * fPointSize / fUnitsPerEM;
-		bbox->xMax = ft_bbox.xMax * fPointSize / fUnitsPerEM;
-		bbox->yMax = ft_bbox.yMax * fPointSize / fUnitsPerEM;
+		bbox->xMin = unitsToPoints(ft_bbox.xMin);
+		bbox->yMin = unitsToPoints(ft_bbox.yMin);
+		bbox->xMax = unitsToPoints(ft_bbox.xMax);
+		bbox->yMax = unitsToPoints(ft_bbox.yMax);
 		FT_Done_Glyph(glyph);
 	}
 }
@@ -202,8 +202,8 @@ XeTeXFontInst_FT2::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
 		advance.x = advance.y = 0;
 	}
 	else {
-		advance.x = fVertical ? 0 : face->glyph->metrics.horiAdvance * fPointSize / fUnitsPerEM;
-		advance.y = fVertical ? face->glyph->metrics.vertAdvance * fPointSize / fUnitsPerEM : 0;
+		advance.x = fVertical ? 0 : unitsToPoints(face->glyph->metrics.horiAdvance);
+		advance.y = fVertical ? unitsToPoints(face->glyph->metrics.vertAdvance) : 0;
 	}
 }
 
@@ -214,18 +214,6 @@ XeTeXFontInst_FT2::mapGlyphToIndex(const char* glyphName) const
 	if (rval == 0)
 		rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
 	return rval;
-}
-
-void
-XeTeXFontInst_FT2::getKernPair(GlyphID leftGlyph, GlyphID rightGlyph, realpoint &kern) const
-{
-	FT_Vector	kerning;
-	if (FT_Get_Kerning(face, leftGlyph, rightGlyph, FT_KERNING_UNSCALED, &kerning) == 0) {
-		kern.x = kerning.x;
-		kern.y = kerning.y;
-	}
-	else
-		kern.x = kern.y = 0;
 }
 
 const char*

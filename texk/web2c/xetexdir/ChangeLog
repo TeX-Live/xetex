@@ -1,3 +1,43 @@
+2013-01-11  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* XeTeX_ext.h: Add #ifndef __cplusplus ... #endif for
+	#define bool boolean to avoid compile error in cplusplus files.
+
+2013-01-06  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* XeTeX_ext.c: Move u_getVersion(icuVersion) etc. below variable
+	definitions, because Visual Studio 2005 does not know c99.
+
+2013-01-05  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c: If necessary define or declare strndup().
+
+	* XeTeXFontMgr.cpp, XeTeXLayoutInterface.cpp: Drop definition
+	of M_PI here ...
+	* trans.h: ... and '#define M_PI' here immediately after
+	'#include <math.h>'.
+
+	* XeTeX_ext.c: Print the Graphite2 version (from Akira).
+
+2013-01-04  Khaled Hosny  <khaledhosny@eglug.org>
+
+	Merge changes from XeTeX repository.
+
+2013-01-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* XeTeX_ext.c: Use xcalloc() and strncpy() instead of strndup()
+	because there are systems without it, e.g., MinGW.
+	* xetex.h: Include "XeTeXOTMath.h" (protos for xetex.web).
+	* am/xetex.am: Drop obsolete files from XeTeX change file merge.
+
+2013-01-03  Khaled Hosny  <khaledhosny@eglug.org>
+
+	Merge changes from XeTeX repository.
+
+2012-12-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am (xetex_version.h): Enable silent rules.
+
 2012-11-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	Merge the XeTeX change files.

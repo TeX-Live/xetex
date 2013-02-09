@@ -42,7 +42,7 @@ typedef uint16_t Offset;
 
 typedef struct {
 	int16_t		value;
-	uint16_t	deviceTable;
+	Offset		deviceTable;
 } MathValueRecord;
 
 typedef struct {
@@ -53,9 +53,9 @@ typedef struct {
 
 typedef struct {
 	uint32_t	version;
-	uint16_t	mathConstants;
-	uint16_t	mathGlyphInfo;
-	uint16_t	mathVariants;
+	Offset		mathConstants;
+	Offset		mathGlyphInfo;
+	Offset		mathVariants;
 } MathTableHeader;
 
 typedef struct {
@@ -212,28 +212,47 @@ typedef struct {
 
 typedef struct {
 	MathValueRecord italicsCorrection;
-	uint16_t	partCount;
+	uint16_t		partCount;
 	GlyphPartRecord partRecords[ANY_NUMBER];
 } GlyphAssembly;
 
 typedef struct {
-	uint16_t	mathItalicsCorrectionInfo;
-	uint16_t	mathTopAccentAttachment;
-	uint16_t	extendedShapeCoverage;
-	uint16_t	mathKernInfo;
+	Offset		mathItalicsCorrectionInfo;
+	Offset		mathTopAccentAttachment;
+	Offset		extendedShapeCoverage;
+	Offset		mathKernInfo;
 } MathGlyphInfo;
 
 typedef struct {
-	uint16_t	coverage;
+	Offset		coverage;
 	uint16_t	italicsCorrectionCount;
 	MathValueRecord	italicsCorrection[ANY_NUMBER];
 } MathItalicsCorrectionInfo;
 
 typedef struct {
-	uint16_t	coverage;
+	Offset		coverage;
 	uint16_t	topAccentAttachmentCount;
 	MathValueRecord	topAccentAttachment[ANY_NUMBER];
 } MathTopAccentAttachment;
+
+typedef struct {
+	Offset	topRight;
+	Offset	topLeft;
+	Offset	bottomRight;
+	Offset	bottomLeft;
+} MathKernInfoRecord;
+
+typedef struct {
+	Offset		coverage;
+	uint16_t	kernInfoCount;
+	MathKernInfoRecord kernInfo[ANY_NUMBER];
+} MathKernInfo;
+
+typedef struct {
+	uint16_t		heightCount;
+	MathValueRecord	height[ANY_NUMBER];
+	MathValueRecord	kern[ANY_NUMBER];
+} MathKernTable;
 
 typedef struct {
     uint16_t	format;

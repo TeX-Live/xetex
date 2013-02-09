@@ -141,7 +141,7 @@ if translate_filename then begin
 @x [15.209] l.4165
 @d shorthand_def=95 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
 @y
-@d shorthand_def=97 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
+@d shorthand_def=98 {code definition ( \.{\\chardef}, \.{\\countdef}, etc.~)}
 @z
 
 @x [17.222] l.4523 - frozen_special, for source specials.
@@ -186,9 +186,8 @@ else if stop_at_space and (file_name_quote_char<>0) and (c=file_name_quote_char)
   file_name_quote_char:=0;
   more_name:=true;
   end
-else if stop_at_space and (file_name_quote_char=0) and ((c="""") or (c="'") or (c="(")) then begin
-  if c="(" then file_name_quote_char:=")"
-  else file_name_quote_char:=c;
+else if stop_at_space and (file_name_quote_char=0) and ((c="""") or (c="'")) then begin
+  file_name_quote_char:=c;
   quoted_filename:=true;
 @z
 

@@ -2,7 +2,7 @@
  Part of the XeTeX typesetting system
  Copyright (c) 1994-2008 by SIL International
  Copyright (c) 2009 by Jonathan Kew
- Copyright (c) 2012 by Khaled Hosny
+ Copyright (c) 2012, 2013 by Khaled Hosny
 
  SIL Author(s): Jonathan Kew
 
@@ -45,11 +45,14 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
 #include "XeTeX_ext.h"
 #include "XeTeXFontMgr.h"
-#include <stdbool.h>
 #include <hb.h>
 #include <hb-ot.h>
 #include <hb-ft.h>
 #include <hb-icu.h>
+
+#include <graphite2/Font.h>
+#include <graphite2/Segment.h>
+#include <hb-graphite2.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,6 +73,7 @@ void setFontLayoutDir(XeTeXFont font, int vertical);
 PlatformFontRef findFontByName(const char* name, char* var, double size);
 
 char getReqEngine();
+void setReqEngine(char reqEngine);
 const char* getFullName(PlatformFontRef fontRef);
 
 const char* getFontFilename(XeTeXLayoutEngine engine);
@@ -92,7 +96,7 @@ UInt32 getIndFeature(XeTeXFont font, UInt32 script, UInt32 language, UInt32 inde
 float getGlyphWidth(XeTeXFont font, UInt32 gid);
 UInt32 countGlyphs(XeTeXFont font);
 
-XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_script_t scriptTag, hb_language_t languageTag,
+XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, char* script, char* language,
 						hb_feature_t* features, int nFeatures, char **shapers, UInt32 rgbValue,
 						float extend, float slant, float embolden);
 
@@ -141,30 +145,21 @@ const char* getGlyphName(XeTeXFont font, UInt16 gid, int* len);
 int getFontCharRange(XeTeXLayoutEngine engine, int reqFirst);
 
 /* graphite interface functions... */
-XeTeXLayoutEngine createGraphiteEngine(PlatformFontRef fontRef, XeTeXFont font,
-										const char* name,
-										UInt32 rgbValue, int rtl, UInt32 languageTag,
-										float extend, float slant, float embolden,
-										int nFeatures, const int* featureIDs, const int* featureValues);
-int makeGraphiteSegment(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
-void getGraphiteGlyphInfo(XeTeXLayoutEngine engine, int index, UInt16* glyphID, float* x, float* y);
-float graphiteSegmentWidth(XeTeXLayoutEngine engine);
-void initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
-int findNextGraphiteBreak(int iOffset, int iBrkVal);
+bool initGraphiteBreaking(XeTeXLayoutEngine engine, const UniChar* txtPtr, int txtLen);
+int findNextGraphiteBreak(void);
 
-int usingOpenType(XeTeXLayoutEngine engine);
-int usingGraphite(XeTeXLayoutEngine engine);
-int isOpenTypeMathFont(XeTeXLayoutEngine engine);
+bool usingOpenType(XeTeXLayoutEngine engine);
+bool usingGraphite(XeTeXLayoutEngine engine);
+bool isOpenTypeMathFont(XeTeXLayoutEngine engine);
 
-int findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v);
+bool findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, int* f, int* v);
 
 UInt32 countGraphiteFeatures(XeTeXLayoutEngine engine);
 UInt32 getGraphiteFeatureCode(XeTeXLayoutEngine engine, UInt32 index);
 UInt32 countGraphiteFeatureSettings(XeTeXLayoutEngine engine, UInt32 feature);
 UInt32 getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, UInt32 feature, UInt32 index);
-UInt32 getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, UInt32 feature);
-void getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 feature, unsigned short* buf);
-void getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UInt32 setting, unsigned short* buf);
+char* getGraphiteFeatureLabel(XeTeXLayoutEngine engine, UInt32 feature);
+char* getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, UInt32 feature, UInt32 setting);
 long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int namelength);
 long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, UInt32 feature, const char* name, int namelength);
 

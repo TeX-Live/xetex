@@ -31,6 +31,8 @@ use or other dealings in this Software without prior written
 authorization from the copyright holders.
 \****************************************************************************/
 
+#include <assert.h>
+
 #include "XeTeXOTMath.h"
 
 #include "XeTeX_ext.h"
@@ -57,7 +59,7 @@ static int32_t getCoverage(const Coverage* coverage, GlyphID g)
 	} else if (SWAP(coverage->format) == 2) {
 		const CoverageFormat2 *table = (const CoverageFormat2 *) coverage;
 		for (int i = 0; i < SWAP(table->rangeCount); i++) {
-			if (SWAP(table->rangeArray[i].start) <= g && SWAP(table->rangeArray[i].start) >= g)
+			if (SWAP(table->rangeArray[i].start) <= g && SWAP(table->rangeArray[i].end) >= g)
 				return SWAP(table->rangeArray[i].startCoverageIndex) + (g - SWAP(table->rangeArray[i].start));
 		}
 	}
@@ -378,6 +380,164 @@ ot_min_connector_overlap(int f)
 		const MathVariants* variants = (const MathVariants*)(table + offset);
 
 		rval = D2Fix(font->unitsToPoints(SWAP(variants->minConnectorOverlap)));
+	}
+
+	return rval;
+}
+
+typedef enum {
+	topRight,
+	topLeft,
+	bottomRight,
+	bottomLeft,
+} MathKernSide;
+
+static int
+getMathKernAt(int f, int g, MathKernSide side, int height)
+{
+	int rval = 0;
+	if (fontarea[f] == OTGR_FONT_FLAG) {
+		XeTeXFontInst* font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
+
+		const char* table = (const char*)font->getFontTable(kMATH);
+		if (table == NULL)
+			return rval;
+
+		uint16_t	offset = SWAP(((const MathTableHeader*)table)->mathGlyphInfo);
+		if (offset == 0)
+			return rval;
+
+		const MathGlyphInfo* glyphInfo = (const MathGlyphInfo*)(table + offset);
+
+		offset = SWAP(glyphInfo->mathKernInfo);
+		if (offset == 0)
+			return rval;
+
+		const MathKernInfo* mathKernInfo = (const MathKernInfo*)(((const char*)glyphInfo) + offset);
+
+		offset = SWAP(mathKernInfo->coverage);
+		if (offset == 0)
+			return rval;
+
+		const Coverage* coverage = (const Coverage*)(((const char*)mathKernInfo) + offset);
+
+		int32_t index = getCoverage(coverage, g);
+		if (index >= 0 && index < SWAP(mathKernInfo->kernInfoCount)) {
+			if (side == topRight)
+				offset = SWAP(mathKernInfo->kernInfo[index].topRight);
+			else if (side == bottomRight)
+				offset = SWAP(mathKernInfo->kernInfo[index].bottomRight);
+			else if (side == topLeft)
+				offset = SWAP(mathKernInfo->kernInfo[index].topLeft);
+			else if (side == bottomLeft)
+				offset = SWAP(mathKernInfo->kernInfo[index].bottomLeft);
+			else
+				assert(0); // we should not reach here
+
+			if (offset == 0)
+				return rval;
+
+			const MathKernTable* kernTable = (const MathKernTable*)(((const char*)mathKernInfo) + offset);
+
+			uint16_t count = SWAP(kernTable->heightCount);
+
+			// XXX: the following makes no sense WRT my understanding of the
+			// spec! it is just how things worked for me.
+			if (count == 0)
+				rval = SWAP(kernTable->kern[-1].value);
+			else if (height < SWAP(kernTable->height[0].value))
+				rval = SWAP(kernTable->kern[1].value);
+			else if (height > SWAP(kernTable->height[count].value))
+				rval = SWAP(kernTable->kern[count+1].value);
+			else {
+				for (int i = 0; i < count; i++) {
+					if (height > SWAP(kernTable->height[i].value)) {
+						rval = SWAP(kernTable->kern[i+1].value);
+						break;
+					}
+				}
+			}
+
+			//fprintf(stderr, "   kern: %f %f\n", font->unitsToPoints(height), font->unitsToPoints(rval));
+		}
+	}
+
+	return rval;
+}
+
+static float
+glyph_height(int f, int g)
+{
+	float rval = 0.0;
+
+	if (fontarea[f] == OTGR_FONT_FLAG) {
+		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)fontlayoutengine[f];
+		getGlyphHeightDepth(engine, g, &rval, NULL);
+	}
+
+	return rval;
+}
+
+static float
+glyph_depth(int f, int g)
+{
+	float rval = 0.0;
+
+	if (fontarea[f] == OTGR_FONT_FLAG) {
+		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)fontlayoutengine[f];
+		getGlyphHeightDepth(engine, g, NULL, &rval);
+	}
+
+	return rval;
+}
+
+// keep in sync with xetex.web
+#define sup_cmd 0
+#define sub_cmd 1
+
+int
+get_ot_math_kern(int f, int g, int sf, int sg, int cmd, int shift)
+{
+	int rval = 0;
+
+	if (fontarea[f] == OTGR_FONT_FLAG) {
+		XeTeXFontInst* font = (XeTeXFontInst*)getFont((XeTeXLayoutEngine)fontlayoutengine[f]);
+		int kern = 0, skern = 0;
+		float corr_height_top = 0.0, corr_height_bot = 0.0;
+
+		shift = Fix2D(shift);
+
+		if (cmd == sup_cmd) { // superscript
+			corr_height_top =  font->pointsToUnits(glyph_height(f, g));
+			corr_height_bot = -font->pointsToUnits(glyph_depth(sf, sg) + shift);
+
+			kern = getMathKernAt(f, g, topRight, corr_height_top);
+			skern = getMathKernAt(sf, sg, bottomLeft, corr_height_top);
+			rval = kern + skern;
+
+			kern = getMathKernAt(f, g, topRight, corr_height_bot);
+			skern = getMathKernAt(sf, sg, bottomLeft, corr_height_bot);
+			if ((kern + skern) < rval)
+				rval = kern + skern;
+
+		} else if (cmd == sub_cmd) { // subscript
+			corr_height_top =  font->pointsToUnits(glyph_height(sf, sg) - shift);
+			corr_height_bot = -font->pointsToUnits(glyph_depth(f, g));
+
+			kern = getMathKernAt(f, g, bottomRight, corr_height_top);
+			skern = getMathKernAt(sf, sg, topLeft, corr_height_top);
+			rval = kern + skern;
+
+			kern = getMathKernAt(f, g, bottomRight, corr_height_bot);
+			skern = getMathKernAt(sf, sg, topLeft, corr_height_bot);
+			if ((kern + skern) < rval)
+				rval = kern + skern;
+
+		} else {
+			assert(0); // we should not reach here
+		}
+
+		rval = D2Fix(font->unitsToPoints(rval));
 	}
 
 	return rval;

@@ -34,6 +34,10 @@ authorization from the copyright holders.
 #define _TRANS_H_
 
 #include <math.h>
+/* apparently M_PI isn't defined by <math.h> under VC++ */
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 typedef struct {
 	double	a;

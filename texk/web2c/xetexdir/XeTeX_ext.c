@@ -2,7 +2,7 @@
  Part of the XeTeX typesetting system
  Copyright (c) 1994-2008 by SIL International
  Copyright (c) 2009, 2011 by Jonathan Kew
- Copyright (c) 2012 by Khaled Hosny
+ Copyright (c) 2012, 2013 by Khaled Hosny
 
  SIL Author(s): Jonathan Kew
 
@@ -81,47 +81,12 @@ authorization from the copyright holders.
 
 #include "XeTeXswap.h"
 
-#include "unicode/ubidi.h"
-#include "unicode/ubrk.h"
-#include "unicode/ucnv.h"
+#include <unicode/ubidi.h>
+#include <unicode/ubrk.h>
+#include <unicode/ucnv.h>
 
 #include <assert.h>
-/* 
 #include "sfnt.h"
-	doesn't work in plain C files :(
-*/
-
-typedef struct
-{
-    Fixed    version;
-    UInt16   numGlyphs;
-    UInt16   maxPoints;
-    UInt16   maxContours;
-    UInt16   maxComponentPoints;
-    UInt16   maxComponentContours;
-    UInt16   maxZones;
-    UInt16   maxTwilightPoints;
-    UInt16   maxStorage;
-    UInt16   maxFunctionDefs;
-    UInt16   maxInstructionDefs;
-    UInt16   maxStackElements;
-    UInt16   maxSizeOfInstructions;
-    UInt16   maxComponentElements;
-    UInt16   maxComponentDepth;
-} MAXPTable;
-
-typedef struct
-{
-	Fixed	version;
-	Fixed	italicAngle;
-	SInt16	underlinePosition;
-	UInt16	underlineThickness;
-	UInt32	isFixedPitch;
-	UInt32	minMemType42;
-	UInt32	maxMemType42;
-	UInt32	minMemType1;
-	UInt32	maxMemType1;
-} POSTTable;
 
 /* tables/values used in UTF-8 interpretation - 
    code is based on ConvertUTF.[ch] sample code
@@ -175,11 +140,15 @@ void initversionstring(char **versions)
 	int	fc_version = FcGetVersion();
 #endif
 	FT_Int	ftMajor, ftMinor, ftPatch;
+	int	grMajor, grMinor, grBugfix;
+	UVersionInfo icuVersion;
+	char icu_version[U_MAX_VERSION_STRING_LENGTH] = "";
 
 	const_string fmt =
-		"Compiled with ICU version %s\n"
+		"Compiled with ICU version %s; using %s\n"
 		"Compiled with zlib version %s; using %s\n"
 		"Compiled with FreeType2 version %d.%d.%d; using %d.%d.%d\n"
+		"Compiled with Graphite2 version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with HarfBuzz version %s; using %s\n"
 #ifdef XETEX_MAC
 		"Using Mac OS X Core Text, Cocoa & ImageIO frameworks\n"
@@ -192,6 +161,7 @@ void initversionstring(char **versions)
 
 	int	len = strlen(fmt)
 			+ strlen(U_ICU_VERSION)
+			+ strlen(icu_version)
 			+ strlen(ZLIB_VERSION)
 			+ strlen(zlib_version)
 			+ strlen(HB_VERSION_STRING)
@@ -202,11 +172,15 @@ void initversionstring(char **versions)
 			+ strlen(POPPLER_VERSION)
 			+ 6 * 3 /* for fontconfig version #s (won't really need 3 digits per field!) */
 #endif
+			+ 6 * 3 /* for graphite2 version #s (ditto) */
 			+ 6 * 3; /* for freetype version #s (ditto) */
 
 	*versions = xmalloc(len + 1);
 		/* len will be more than enough, because of the placeholder chars in fmt
 			that get replaced by the arguments */
+
+	u_getVersion(icuVersion);
+	u_versionToString(icuVersion, icu_version);
 
 	if (gFreeTypeLibrary == 0 && FT_Init_FreeType(&gFreeTypeLibrary) != 0) {
 		fprintf(stderr, "FreeType initialization failed!\n");
@@ -214,11 +188,15 @@ void initversionstring(char **versions)
 	}
 	FT_Library_Version(gFreeTypeLibrary, &ftMajor, &ftMinor, &ftPatch);
 
+	gr_engine_version(&grMajor, &grMinor, &grBugfix);
+
     (void)sprintf(*versions, fmt,
-		U_ICU_VERSION,
+		U_ICU_VERSION, icu_version,
 		ZLIB_VERSION, zlib_version,
 		FREETYPE_MAJOR, FREETYPE_MINOR, FREETYPE_PATCH,
 		ftMajor, ftMinor, ftPatch,
+		GR2_VERSION_MAJOR, GR2_VERSION_MINOR, GR2_VERSION_BUGFIX,
+		grMajor, grMinor, grBugfix,
 		HB_VERSION_STRING, hb_version_string()
 #ifdef XETEX_OTHER
 		,
@@ -482,9 +460,19 @@ static UBreakIterator*	brkIter = NULL;
 static int				brkLocaleStrNum = 0;
 
 void
-linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
+linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength)
 {
-	UErrorCode	status = 0;
+	UErrorCode	status;
+	char* locale = (char*)gettexstring(localeStrNum);
+
+	if (fontarea[f] == OTGR_FONT_FLAG && strcmp(locale, "G") == 0) {
+		XeTeXLayoutEngine engine = (XeTeXLayoutEngine) fontlayoutengine[f];
+		if (initGraphiteBreaking(engine, text, textLength))
+			/* user asked for Graphite line breaking and the font supports it */
+			return;
+	}
+
+	status = 0;
 
 	if ((localeStrNum != brkLocaleStrNum) && (brkIter != NULL)) {
 		ubrk_close(brkIter);
@@ -492,7 +480,6 @@ linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
 	}
 	
 	if (brkIter == NULL) {
-		char* locale = (char*)gettexstring(localeStrNum);
 		brkIter = ubrk_open(UBRK_LINE, locale, NULL, 0, &status);
 		if (U_FAILURE(status)) {
 			begindiagnostic();
@@ -522,7 +509,10 @@ linebreakstart(integer localeStrNum, const UniChar* text, integer textLength)
 int
 linebreaknext()
 {
-	return ubrk_next((UBreakIterator*)brkIter);
+	if (brkIter != NULL)
+		return ubrk_next((UBreakIterator*)brkIter);
+	else
+		return findNextGraphiteBreak();
 }
 
 int
@@ -597,7 +587,7 @@ printchars(const unsigned short* str, int len)
 #define UTF16_NATIVE kForm_UTF16LE
 #endif
 
-void*
+static void*
 load_mapping_file(const char* s, const char* e, char byteMapping)
 {
 	char*	mapPath;
@@ -727,53 +717,20 @@ read_double(const char** s)
 	return neg ? -val : val;
 }
 
-static char*
-read_str_tag(const char* cp)
-{
-	char tag[5];
-	int i;
-	for (i = 0; i < 4; ++i) {
-		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag[i] = *cp;
-			++cp;
-		}
-		else
-			tag[i] = ' ';
-	}
-	tag[4] = '\0';
-	return strdup(tag);
-}
-
-static UInt32
-read_tag(const char* cp, char padChar)
-{
-	UInt32	tag = 0;
-	int i;
-	for (i = 0; i < 4; ++i) {
-		tag <<= 8;
-		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag += *(unsigned char*)cp;
-			++cp;
-		}
-		else
-			tag += padChar;
-	}
-	return tag;
-}
-
 static hb_tag_t
 read_tag_with_param(const char* cp, int* param)
 {
-	char tag[4];
+	const char* cp2;
+	hb_tag_t tag;
 	int i;
-	for (i = 0; i < 4; ++i) {
-		if (*cp && /* *cp < 128 && */ *cp != ',' && *cp != ';' && *cp != ':') {
-			tag[i] = *cp;
-			++cp;
-		}
-		else
-			tag[i] = ' ';
-	}
+
+	cp2 = cp;
+	while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ',') && (*cp2 != '='))
+		++cp2;
+
+	tag = hb_tag_from_string(cp, cp2 - cp);
+
+	cp = cp2;
 	if (*cp == '=') {
 		int	neg = 0;
 		++cp;
@@ -788,7 +745,8 @@ read_tag_with_param(const char* cp, int* param)
 		if (neg)
 			*param = -(*param);
 	}
-	return HB_TAG(tag[0],tag[1],tag[2],tag[3]);
+
+	return tag;
 }
 
 unsigned int
@@ -894,13 +852,65 @@ readCommonFeatures(const char* feat, const char* end, float* extend, float* slan
 	return 0;
 }
 
+static bool
+readFeatureNumber(const char* s, const char* e, int* f, int* v)
+	/* s...e is a "id[=setting]" string; */
+{
+	*f = 0;
+	*v = 0;
+	if (*s < '0' || *s > '9')
+		return false;
+	while (*s >= '0' && *s <= '9')
+		*f = *f * 10 + *s++ - '0';
+	while ((*s == ' ') || (*s == '\t'))
+		++s;
+	if (*s++ != '=') {
+		if (s >= e) {
+			// no setting was specified, so we just use the first
+			// XXX the default is not always the first?
+			*v = 1;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	if (*s < '0' || *s > '9')
+		return false;
+	while (*s >= '0' && *s <= '9')
+		*v = *v * 10 + *s++ - '0';
+	while ((*s == ' ') || (*s == '\t'))
+		++s;
+	if (s != e)
+		return false;
+	return true;
+}
+
+#if !defined(HAVE_STRNDUP)
+/* Inspired by the GNU C Library 2.3.6
+ * Copyright (C) 1996, 1997, 1998, 2001, 2002 Free Software Foundation, Inc.
+ */
+static char *strndup (const char *str, size_t n)
+{
+	const char *p = (const char *) memchr(str, 0, n);
+	size_t len = p ? p - str : n;	/* strnlen(str, n) */
+	char *ret = (char *) malloc (len + 1);
+
+	if (ret == NULL)
+		return NULL;
+
+	ret[len] = '\0';
+	return (char *) memcpy (ret, str, len);
+}
+#elif !(defined HAVE_DECL_STRNDUP && HAVE_DECL_STRNDUP)
+char *strndup (const char *str, size_t n);
+#endif
+
 static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
 	XeTeXLayoutEngine   engine;
-	hb_script_t		scriptTag = HB_SCRIPT_LATIN;
-	hb_language_t	languageTag = HB_LANGUAGE_INVALID;
-	
+	char*			script = NULL;
+	char*			language = NULL;
 	hb_feature_t*	features = NULL;
 	char**			shapers = NULL;
 	int				nFeatures = 0;
@@ -920,6 +930,16 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	
 	int i;
 
+	if (getReqEngine() == 'G') {
+		/* create a default engine so we can query the font for Graphite features;
+		 * because of font caching, it's cheap to discard this and create the real one later */
+		engine = createLayoutEngine(fontRef, font, script, language,
+				features, nFeatures, shapers, rgbValue, extend, slant, embolden);
+
+		if (engine == NULL)
+			return NULL;
+	}
+
 	/* scan the feature string (if any) */
 	if (cp1 != NULL) {
 		while (*cp1) {
@@ -938,7 +958,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				scriptTag = hb_script_from_string(read_str_tag(cp3 + 1), -1);
+				++cp3;
+				script = strndup(cp3, cp2 - cp3);
 				goto next_option;
 			}
 			
@@ -946,7 +967,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
 					goto bad_option;
-				languageTag = hb_language_from_string(read_str_tag(cp3 + 1), -1);
+				++cp3;
+				language = strndup(cp3, cp2 - cp3);
 				goto next_option;
 			}
 			
@@ -954,7 +976,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
 					goto bad_option;
-				cp3 = cp1 + 7;
+				++cp3;
 				shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
 				shapers[nShapers++] = strndup(cp3, cp2 - cp3);
 				goto next_option;
@@ -965,6 +987,20 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				goto next_option;
 			else if (i == -1)
 				goto bad_option;
+
+			if (getReqEngine() == 'G') {
+				int value = 0;
+				if (readFeatureNumber(cp1, cp2, &tag, &value)
+				 || findGraphiteFeature(engine, cp1, cp2, &tag, &value)) {
+					features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+					features[nFeatures].tag = tag;
+					features[nFeatures].value = value;
+					features[nFeatures].start = 0;
+					features[nFeatures].end = (unsigned int) -1;
+					nFeatures++;
+					goto next_option;
+				}
+			}
 			
 			if (*cp1 == '+') {
 				int param = 0;
@@ -982,7 +1018,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			}
 			
 			if (*cp1 == '-') {
-				tag = hb_tag_from_string(read_str_tag(cp1 + 1), -1);
+				++cp1;
+				tag = hb_tag_from_string(cp1, cp2 - cp1);
 				features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
 				features[nFeatures].tag = tag;
 				features[nFeatures].value = 0;
@@ -1027,7 +1064,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	if ((loadedfontflags & FONT_FLAGS_VERTICAL) != 0)
 		setFontLayoutDir(font, 1);
 
-	engine = createLayoutEngine(fontRef, font, scriptTag, languageTag,
+	engine = createLayoutEngine(fontRef, font, script, language,
 					features, nFeatures, shapers, rgbValue, extend, slant, embolden);
 
 	if (engine == 0) {
@@ -1040,165 +1077,6 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 
 	return engine;
 }
-
-static int
-readFeatureNumber(const char* s, const char* e, int* f, int* v)
-{
-	*f = 0;
-	*v = 0;
-	if (*s < '0' || *s > '9')
-		return 0;
-	while (*s >= '0' && *s <= '9')
-		*f = *f * 10 + *s++ - '0';
-	while ((*s == ' ') || (*s == '\t'))
-		++s;
-	if (*s++ != '=')
-		return 0;
-	if (*s < '0' || *s > '9')
-		return 0;
-	while (*s >= '0' && *s <= '9')
-		*v = *v * 10 + *s++ - '0';
-	while ((*s == ' ') || (*s == '\t'))
-		++s;
-	if (s != e)
-		return 0;
-	return 1;
-}
-
-#ifdef XETEX_GRAPHITE
-
-#define MAX_GRAPHITE_FEATURES	64
-
-static void*
-loadGraphiteFont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1, const char* faceName)
-{
-	XeTeXLayoutEngine   engine = NULL;
-	
-	const char*	cp2;
-	const char*	cp3;
-
-	UInt32	rgbValue = 0x000000FF;
-	UInt32	languageTag = 0;
-
-	float	extend = 1.0;
-	float	slant = 0.0;
-	float	embolden = 0.0;
-	float	letterspace = 0.0;
-	int		rtl = 0;
-
-	int		featureIDs[MAX_GRAPHITE_FEATURES];	
-	int		featureValues[MAX_GRAPHITE_FEATURES];
-	int		nFeatures = 0;
-	int		id, val;
-	
-	int i;
-
-	/* create a default engine so we can query the font for Graphite features;
-	   because of font caching, it's cheap to discard this and create the real one later */
-	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl, languageTag,
-									extend, slant, embolden, 0, NULL, NULL);
-	if (engine == NULL)
-		return NULL;
-
-	/* scan the feature string (if any) */
-	if (cp1 != NULL) {
-		while (*cp1) {
-			if ((*cp1 == ':') || (*cp1 == ';') || (*cp1 == ','))
-				++cp1;
-			while ((*cp1 == ' ') || (*cp1 == '\t'))	/* skip leading whitespace */
-				++cp1;
-			if (*cp1 == 0)	/* break if end of string */
-				break;
-	
-			cp2 = cp1;
-			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
-				++cp2;
-			
-			if (strncmp(cp1, "language", 8) == 0) {
-				cp3 = cp1 + 8;
-				if (*cp3 != '=')
-					goto bad_option;
-				languageTag = read_tag(cp3 + 1, '\0');
-				goto next_option;
-			}
-			
-			i = readCommonFeatures(cp1, cp2, &extend, &slant, &embolden, &letterspace, &rgbValue);
-			if (i == 1)
-				goto next_option;
-			else if (i == -1)
-				goto bad_option;
-			
-			if (readFeatureNumber(cp1, cp2, &id, &val)
-			 || findGraphiteFeature(engine, cp1, cp2, &id, &val)) {
-				if (nFeatures < MAX_GRAPHITE_FEATURES) {
-					featureIDs[nFeatures] = id;
-					featureValues[nFeatures] = val;
-					++nFeatures;
-				}
-				goto next_option;
-			}
-
-			if (strncmp(cp1, "rtl", 3) == 0) {
-				cp3 = cp2;
-				if (*cp3 == ';' || *cp3 == ':')
-					--cp3;
-				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
-					--cp3;
-				if (*cp3)
-					++cp3;
-				if (cp3 == cp1 + 3) {
-					rtl = 1;
-					goto next_option;
-				}
-			}
-			
-/*
-			if (strncmp(cp1, "vertical", 8) == 0) {
-				cp3 = cp2;
-				if (*cp3 == ';' || *cp3 == ':')
-					--cp3;
-				while (*cp3 == '\0' || *cp3 == ' ' || *cp3 == '\t')
-					--cp3;
-				if (*cp3)
-					++cp3;
-				if (cp3 == cp1 + 8) {
-					loadedfontflags |= FONT_FLAGS_VERTICAL;
-					goto next_option;
-				}
-			}
-*/
-
-		bad_option:
-			fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
-		
-		next_option:
-			cp1 = cp2;
-		}
-		
-	}
-	
-	if (embolden != 0.0)
-		embolden = embolden * Fix2D(scaled_size) / 100.0;
-
-	if (letterspace != 0.0)
-		loadedfontletterspace = (letterspace / 100.0) * scaled_size;
-
-	if ((loadedfontflags & FONT_FLAGS_COLORED) == 0)
-		rgbValue = 0x000000FF;
-
-	if ((loadedfontflags & FONT_FLAGS_VERTICAL) != 0)
-		setFontLayoutDir(font, 1);
-
-//	deleteLayoutEngine(engine);
-	engine = createGraphiteEngine(fontRef, font, faceName, rgbValue, rtl, languageTag,
-					extend, slant, embolden, nFeatures, &featureIDs[0], &featureValues[0]);
-	if (engine != NULL)
-		nativefonttypeflag = OTGR_FONT_FLAG;
-
-	return engine;
-}
-
-#endif /* XETEX_GRAPHITE */
 
 static void
 splitFontName(char* name, char** var, char** feat, char** end, int* index)
@@ -1312,15 +1190,13 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			font = createFontFromFile(path, index, scaled_size);
 			if (font != NULL) {
 				loadedfontdesignsize = D2Fix(getDesignSize(font));
-#if XETEX_GRAPHITE
-				if (varString && strncmp(varString, "/GR", 3) == 0) {
-					rval = loadGraphiteFont(0, font, scaled_size, featString, nameString);
-					if (rval == NULL)
-						graphitewarning();
-				}
-#endif
-				if (rval == NULL) /* graphite wasn't requested, or failed to initialize */
-					rval = loadOTfont(0, font, scaled_size, featString);
+
+				if (varString && strncmp(varString, "/GR", 3) == 0)
+					setReqEngine('G');
+				else
+					setReqEngine(0);
+
+				rval = loadOTfont(0, font, scaled_size, featString);
 				if (rval == NULL)
 					deleteFont(font);
 				if (rval != NULL && gettracingfontsstate() > 0) {
@@ -1369,20 +1245,11 @@ findnativefont(unsigned char* uname, integer scaled_size)
 
 			font = createFont(fontRef, scaled_size);
 			if (font != 0) {
-#ifdef XETEX_GRAPHITE
-				if (getReqEngine() == 'G') {
-					rval = loadGraphiteFont(fontRef, font, scaled_size, featString, nameString);
-					if (rval == NULL)
-						graphitewarning();
-				}
-#endif
-				if (rval == NULL) {
 #ifdef XETEX_MAC
-					if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
-						getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
+				if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
+					getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
 #endif
-						rval = loadOTfont(fontRef, font, scaled_size, featString);
-				}
+					rval = loadOTfont(fontRef, font, scaled_size, featString);
 				if (rval == NULL)
 					deleteFont(font);
 			}
@@ -1473,11 +1340,9 @@ otfontget(integer what, void* pEngine)
 			return countGlyphs(fontInst);
 			break;
 		
-#ifdef XETEX_GRAPHITE
 		case XeTeX_count_features: /* ie Graphite features */
 			return countGraphiteFeatures(engine);
 			break;
-#endif
 
 		case XeTeX_OT_count_scripts:
 			return countScripts(fontInst);
@@ -1501,7 +1366,6 @@ otfontget1(integer what, void* pEngine, integer param)
 			return getIndScript(fontInst, param);
 			break;
 		
-#ifdef XETEX_GRAPHITE
 		/* for graphite fonts...*/
 		case XeTeX_feature_code:
 			return getGraphiteFeatureCode(engine, param);
@@ -1512,7 +1376,6 @@ otfontget1(integer what, void* pEngine, integer param)
 		case XeTeX_count_selectors:
 			return countGraphiteFeatureSettings(engine, param);
 			break;
-#endif
 	}
 	return 0;
 }
@@ -1532,15 +1395,13 @@ otfontget2(integer what, void* pEngine, integer param1, integer param2)
 			return countFeatures(fontInst, param1, param2);
 			break;
 
-#ifdef XETEX_GRAPHITE
 		/* for graphite fonts */
 		case XeTeX_selector_code:
 			return getGraphiteFeatureSettingCode(engine, param1, param2);
 			break;
 		case XeTeX_is_default_selector:
-			return getGraphiteFeatureDefaultSetting(engine, param1) == param2;
+			return getGraphiteFeatureSettingCode(engine, param1, 1) == param2;
 			break;
-#endif
 	}
 	
 	return 0;
@@ -1564,36 +1425,33 @@ otfontget3(integer what, void* pEngine, integer param1, integer param2, integer 
 void
 grprintfontname(integer what, void* pEngine, integer param1, integer param2)
 {
-#ifdef XETEX_GRAPHITE
-	unsigned short	name[128];	/* graphite API specifies size 128 */
-	int				n = 0;
+	char* name = NULL;
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_feature_name:
-			getGraphiteFeatureLabel(engine, param1, &name[0]);
+			name = getGraphiteFeatureLabel(engine, param1);
 			break;
 		case XeTeX_selector_name:
-			getGraphiteFeatureSettingLabel(engine, param1, param2, &name[0]);
+			name = getGraphiteFeatureSettingLabel(engine, param1, param2);
 			break;
 	}
-	while (name[n] != 0 && n < 128)
-		++n;
-	printchars(&name[0], n);
-#endif
+
+	if (name != NULL) {
+		printcstring(name);
+		gr_label_destroy(name);
+	}
 }
 
 integer
 grfontgetnamed(integer what, void* pEngine)
 {
 	long	rval = -1;
-#ifdef XETEX_GRAPHITE
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_find_feature_by_name:
 			rval = findGraphiteFeatureNamed(engine, (const char*)nameoffile + 1, namelength);
 			break;
 	}
-#endif
 	return rval;
 }
 
@@ -1601,14 +1459,12 @@ integer
 grfontgetnamed1(integer what, void* pEngine, integer param)
 {
 	long	rval = -1;
-#ifdef XETEX_GRAPHITE
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	switch (what) {
 		case XeTeX_find_selector_by_name:
 			rval = findGraphiteFeatureSettingNamed(engine, param, (const char*)nameoffile + 1, namelength);
 			break;
 	}
-#endif
 	return rval;
 }
 
@@ -1792,7 +1648,7 @@ makefontdef(integer f)
 		size = D2Fix(getPointSize(engine));
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `make_font_def'\n");
 		exit(3);
 	}
 
@@ -1958,7 +1814,7 @@ getnativecharheightdepth(integer font, integer ch, scaled* height, scaled* depth
 		getGlyphHeightDepth(engine, gid, &ht, &dp);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_height_depth`\n");
 		exit(3);
 	}
 
@@ -2008,7 +1864,7 @@ getnativecharsidebearings(integer font, integer ch, scaled* lsb, scaled* rsb)
 		getGlyphSidebearings(engine, gid, &l, &r);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_side_bearings'\n");
 		exit(3);
 	}
 
@@ -2040,7 +1896,7 @@ getglyphbounds(integer font, integer edge, integer gid)
 			getGlyphHeightDepth(engine, gid, &a, &b);		
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_glyph_bounds'\n");
 		exit(3);
 	}
 	return D2Fix((edge <= 2) ? a : b);
@@ -2075,14 +1931,14 @@ getnativecharwd(integer f, integer c)
 		wd = D2Fix(getGlyphWidthFromEngine(engine, gid));
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_wd'\n");
 		exit(3);
 	}
 	return wd;
 }
 
 UInt16
-get_native_glyph_id(void* pNode, unsigned index)
+get_native_glyph(void* pNode, unsigned index)
 {
 	memoryword*	node = (memoryword*)pNode;
 	FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
@@ -2118,149 +1974,112 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 	else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
+		/* using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine */
+
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)(fontlayoutengine[f]);
 
 		FixedPoint*	locations;
 		UInt16*		glyphIDs;
 		int			realGlyphCount = 0;
 
-		if (usingOpenType(engine)) {
-			/* using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine */
-	
-			/* need to find direction runs within the text, and call layoutChars separately for each */
-	
-			UBiDiDirection	dir;
-			float	x, y;
-			void*	glyph_info = 0;
-			static	float*	positions = 0;
-			static	UInt32*	glyphs = 0;
-			static	int	maxGlyphs = 0;
-	
-			UBiDi*	pBiDi = ubidi_open();
-			
-			UErrorCode	errorCode = (UErrorCode)0;
-			ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
-			
-			dir = ubidi_getDirection(pBiDi);
-			if (dir == UBIDI_MIXED) {
-				/* we actually do the layout twice here, once to count glyphs and then again to get them;
-				   which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
-				   bothered to deal with the memory reallocation headache of doing it differently
-				*/
-				int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
-				double		wid = 0;
-				int 		i, runIndex;
-				int32_t		logicalStart, length;
-				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
-					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-					realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
-	
-					if (realGlyphCount >= maxGlyphs) {
-						if (glyphs != 0) {
-							free(glyphs);
-							free(positions);
-						}
-						maxGlyphs = realGlyphCount + 20;
-						glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
-						positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
-					}
-				}
-				
-				if (realGlyphCount > 0) {
-					double	x, y;
-					glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
-					locations = (FixedPoint*)glyph_info;
-					glyphIDs = (UInt16*)(locations + realGlyphCount);
-					realGlyphCount = 0;
-					
-					x = y = 0.0;
-					for (runIndex = 0; runIndex < nRuns; ++runIndex) {
-						int nGlyphs;
-						dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-						nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
-												(dir == UBIDI_RTL));
+		/* need to find direction runs within the text, and call layoutChars separately for each */
+
+		UBiDiDirection	dir;
+		float	x, y;
+		void*	glyph_info = 0;
+		static	float*	positions = 0;
+		static	UInt32*	glyphs = 0;
+
+		UBiDi*	pBiDi = ubidi_open();
 		
-						getGlyphs(engine, glyphs);
-						getGlyphPositions(engine, positions);
-					
-						for (i = realGlyphCount; i < realGlyphCount + nGlyphs; ++i) {
-							glyphIDs[i] = glyphs[i];
-							locations[i].x = D2Fix(positions[2*i] + x);
-							locations[i].y = D2Fix(positions[2*i+1] + y);
-						}
-						x += positions[2*i];
-						y += positions[2*i+1];
-						realGlyphCount += nGlyphs;
-					}
-					wid = x;
-				}
-	
-				node_width(node) = D2Fix(wid);
-				native_glyph_count(node) = realGlyphCount;
-				native_glyph_info_ptr(node) = glyph_info;
+		UErrorCode	errorCode = (UErrorCode)0;
+		ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
+		
+		dir = ubidi_getDirection(pBiDi);
+		if (dir == UBIDI_MIXED) {
+			/* we actually do the layout twice here, once to count glyphs and then again to get them;
+			   which is inefficient, but i figure that MIXED is a relatively rare occurrence, so i can't be
+			   bothered to deal with the memory reallocation headache of doing it differently
+			*/
+			int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
+			double		wid = 0;
+			int 		i, runIndex;
+			int32_t		logicalStart, length;
+			for (runIndex = 0; runIndex < nRuns; ++runIndex) {
+				dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
+				realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 			}
-			else {
-				int i;
-				realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
-
-				if (realGlyphCount >= maxGlyphs) {
-					if (glyphs != 0) {
-						free(glyphs);
-						free(positions);
-					}
-					maxGlyphs = realGlyphCount + 20;
-					glyphs = xmalloc(maxGlyphs * sizeof(UInt32));
-					positions = xmalloc((maxGlyphs * 2 + 2) * sizeof(float));
-				}
-				getGlyphs(engine, glyphs);
-				getGlyphPositions(engine, positions);
-	
-				if (realGlyphCount > 0) {
-					glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
-					locations = (FixedPoint*)glyph_info;
-					glyphIDs = (UInt16*)(locations + realGlyphCount);
-					for (i = 0; i < realGlyphCount; ++i) {
-						glyphIDs[i] = glyphs[i];
-						locations[i].x = D2Fix(positions[2*i]);
-						locations[i].y = D2Fix(positions[2*i+1]);
-					}
-				}
-
-				node_width(node) = D2Fix(positions[2*i]);
-				native_glyph_count(node) = realGlyphCount;
-				native_glyph_info_ptr(node) = glyph_info;
-			}
-	
-			ubidi_close(pBiDi);
 			
-		}
-		else { 
-			/* using Graphite */
-			void*	glyph_info = NULL;
-#ifdef XETEX_GRAPHITE
-			realGlyphCount = makeGraphiteSegment(engine, (UniChar*)txtPtr, txtLen);
-	
 			if (realGlyphCount > 0) {
-				int i;
+				double	x, y;
+				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
+				locations = (FixedPoint*)glyph_info;
+				glyphIDs = (UInt16*)(locations + realGlyphCount);
+				realGlyphCount = 0;
+				
+				x = y = 0.0;
+				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
+					int nGlyphs;
+					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
+					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
+											(dir == UBIDI_RTL));
+
+					glyphs = xmalloc(nGlyphs * sizeof(UInt32));
+					positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
+	
+					getGlyphs(engine, glyphs);
+					getGlyphPositions(engine, positions);
+				
+					for (i = 0; i < nGlyphs; ++i) {
+						glyphIDs[realGlyphCount] = glyphs[i];
+						locations[realGlyphCount].x = D2Fix(positions[2*i] + x);
+						locations[realGlyphCount].y = D2Fix(positions[2*i+1] + y);
+						++realGlyphCount;
+					}
+					x += positions[2*i];
+					y += positions[2*i+1];
+
+					free(glyphs);
+					free(positions);
+				}
+				wid = x;
+			}
+
+			node_width(node) = D2Fix(wid);
+			native_glyph_count(node) = realGlyphCount;
+			native_glyph_info_ptr(node) = glyph_info;
+		}
+		else {
+			int i;
+			realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
+
+			glyphs = xmalloc(realGlyphCount * sizeof(UInt32));
+			positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
+
+			getGlyphs(engine, glyphs);
+			getGlyphPositions(engine, positions);
+
+			if (realGlyphCount > 0) {
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
 				glyphIDs = (UInt16*)(locations + realGlyphCount);
 				for (i = 0; i < realGlyphCount; ++i) {
-					float	x, y;
-					getGraphiteGlyphInfo(engine, i, &(glyphIDs[i]), &x, &y);
-					locations[i].x = D2Fix(x);
-					locations[i].y = D2Fix(y);
+					glyphIDs[i] = glyphs[i];
+					locations[i].x = D2Fix(positions[2*i]);
+					locations[i].y = D2Fix(positions[2*i+1]);
 				}
 			}
-						
-			node_width(node) = D2Fix(graphiteSegmentWidth(engine));
-#else
-			node_width(node) = 0;
-#endif
 
+			node_width(node) = D2Fix(positions[2*i]);
 			native_glyph_count(node) = realGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
+
+			free(glyphs);
+			free(positions);
 		}
+
+		ubidi_close(pBiDi);
+			
 
 		if (fontletterspace[f] != 0) {
 			Fixed	lsDelta = 0;
@@ -2279,7 +2098,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		}
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_node'\n");
 		exit(3);
 	}
 	
@@ -2328,7 +2147,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 }
 
 Fixed
-get_native_ital_corr(void* pNode)
+get_native_italic_correction(void* pNode)
 {
 	memoryword*	node = pNode;
 	unsigned	f = native_font(node);
@@ -2352,7 +2171,7 @@ get_native_ital_corr(void* pNode)
 
 
 Fixed
-get_native_glyph_ital_corr(void* pNode)
+get_native_glyph_italic_correction(void* pNode)
 {
 	memoryword* node = pNode;
 	UInt16		gid = native_glyph(node);
@@ -2395,7 +2214,7 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 			getGlyphHeightDepth(engine, gid, &ht, &dp);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_glyph'\n");
 		exit(3);
 	}
 
@@ -2422,7 +2241,7 @@ mapchartoglyph(integer font, integer ch)
 	if (fontarea[font] == OTGR_FONT_FLAG)
 		return mapCharToGlyph((XeTeXLayoutEngine)(fontlayoutengine[font]), ch);
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `map_char_to_glyph'\n");
 		exit(3);
 	}
 }
@@ -2439,7 +2258,7 @@ mapglyphtoindex(integer font)
 	if (fontarea[font] == OTGR_FONT_FLAG)
 		return mapGlyphToIndex((XeTeXLayoutEngine)(fontlayoutengine[font]), (const char*)nameoffile + 1);
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `map_glyph_to_index'\n");
 		exit(3);
 	}
 }
@@ -2455,7 +2274,7 @@ getfontcharrange(integer font, int first)
 	if (fontarea[font] == OTGR_FONT_FLAG)
 		return getFontCharRange((XeTeXLayoutEngine)(fontlayoutengine[font]), first);
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `get_font_char_range'\n");
 		exit(3);
 	}
 }
@@ -2756,7 +2575,7 @@ printglyphname(integer font, integer gid)
 		s = (char*)getGlyphName(getFont(engine), gid, &len);
 	}
 	else {
-		fprintf(stderr, "\n! Internal error: bad native font flag\n");
+		fprintf(stderr, "\n! Internal error: bad native font flag in `print_glyph_name'\n");
 		exit(3);
 	}
 	while (len-- > 0)
@@ -2767,7 +2586,7 @@ int
 u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode, integer encodingData)
 {
 	boolean	rval;
-	*f = malloc(sizeof(UFILE));
+	*f = xmalloc(sizeof(UFILE));
 	(*f)->encodingMode = 0;
 	(*f)->conversionData = 0;
 	(*f)->savedChar = -1;

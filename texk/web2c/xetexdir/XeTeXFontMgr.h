@@ -89,7 +89,10 @@ public:
 
 	double							getDesignSize(XeTeXFont font);
 
-	char							getReqEngine() const;
+	char							getReqEngine() const { return sReqEngine; };
+
+	void							setReqEngine(char reqEngine) const { sReqEngine = reqEngine; };
+
 		// return the requested rendering technology for the most recent findFont
 		// or 0 if no specific technology was requested
 
@@ -111,11 +114,11 @@ protected:
 	class Family;
 
 	struct OpSizeRec {
-		unsigned short	designSize;
-		unsigned short	subFamilyID;
-		unsigned short	nameCode;
-		unsigned short	minSize;
-		unsigned short	maxSize;
+		unsigned int	designSize;
+		unsigned int	subFamilyID;
+		unsigned int	nameCode;
+		unsigned int	minSize;
+		unsigned int	maxSize;
 	};
 
 	class Font {

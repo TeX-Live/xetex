@@ -155,10 +155,14 @@ CONF_OPTIONS="\
     --disable-largefile \
     --disable-ptex \
     --disable-ipc \
+    --disable-xetex-synctex \
+    --disable-native-texlive-build \
+    --enable-silent-rules \
     --enable-dump-share  \
     --enable-xetex  \
     --without-system-ptexenc \
-    --without-system-kpathsea "
+    --without-system-kpathsea \
+    --without-mf-x-toolkit --without-x "
 
 if [ "$SYSTEM_LIBS" = "TRUE" ] ;
 then
@@ -169,9 +173,8 @@ then
     --with-system-teckit \
     --with-system-zlib \
     --with-system-icu \
-    --with-system-graphite \
-    --with-system-harfbuzz \
-    --without-mf-x-toolkit --without-x "
+    --with-system-graphite2 \
+    --with-system-harfbuzz "
 else
   CONF_OPTIONS="$CONF_OPTIONS \
     --enable-cxx-runtime-hack \
@@ -181,9 +184,8 @@ else
     --without-system-teckit \
     --without-system-zlib \
     --without-system-icu \
-    --without-system-graphite \
-    --without-system-harfbuzz \
-    --without-mf-x-toolkit --without-x "
+    --without-system-graphite2 \
+    --without-system-harfbuzz "
 fi
 
 if [ "$ONLY_MAKE" = "FALSE" ]

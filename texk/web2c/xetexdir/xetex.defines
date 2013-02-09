@@ -115,6 +115,7 @@ authorization from the copyright holders.
 @define function getotassemblyptr();
 @define function getotmathitalcorr();
 @define function getotmathaccentpos();
+@define function getotmathkern();
 
 @define function otpartcount();
 @define function otpartglyph();

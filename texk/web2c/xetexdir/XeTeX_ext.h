@@ -35,28 +35,13 @@ authorization from the copyright holders.
 
 #include <unicode/utypes.h>
 #include <w2c/c-auto.h>  /* needed for SIZEOF_LONG and NO_DUMP_SHARE */
-/***** copied from TeX/texk/web2c/config.h -- difficult to include in C++ source files ******/
-#ifndef INTEGER_TYPE
-
-#if SIZEOF_LONG > 4 && !defined (NO_DUMP_SHARE)
-/* If we have 64-bit longs and want to share format files (with 32-bit
-   machines), use `int'.  */
-#define INTEGER_IS_INT
+#ifdef __cplusplus
+extern "C" {
 #endif
-
-#ifdef INTEGER_IS_INT
-#define INTEGER_TYPE int
-#define INTEGER_MAX INT_MAX
-#define INTEGER_MIN INT_MIN
-#else
-#define INTEGER_TYPE long
-#define INTEGER_MAX LONG_MAX
-#define INTEGER_MIN LONG_MIN
-#endif /* not INTEGER_IS_INT */
-
-typedef INTEGER_TYPE integer;
-#endif /* not INTEGER_TYPE */
-/***** end of config.h stuff *****/
+#include <w2c/config.h>
+#ifdef __cplusplus
+}
+#endif
 
 #ifndef XETEX_UNICODE_FILE_DEFINED
 typedef struct UFILE* unicodefile;
@@ -232,6 +217,16 @@ extern FT_Library gFreeTypeLibrary;
 
 #include "trans.h"
 
+#ifdef HAVE_STDBOOL_H
+# include <stdbool.h>
+#else
+/* boolean is an enum type from kpathsea/types.h loaded in
+   kpathsea/kpathsea.h, use it as fallback */
+#ifndef __cplusplus
+# define bool boolean
+#endif
+#endif
+
 #include "XeTeXLayoutInterface.h"
 
 #ifdef XETEX_MAC
@@ -245,12 +240,11 @@ extern "C" {
 
 	void setinputfileencoding(unicodefile f, integer mode, integer encodingData);
 	void uclose(unicodefile f);
-	void linebreakstart(integer localeStrNum, const UniChar* text, integer textLength);
+	void linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength);
 	int linebreaknext();
 	int getencodingmodeandinfo(integer* info);
 	void printutf8str(const unsigned char* str, int len);
 	void printchars(const unsigned short* str, int len);
-	void* load_mapping_file(const char* s, const char* e, char byteMapping);
 	void* findnativefont(unsigned char* name, integer scaled_size);
 	void releasefontengine(void* engine, int type_flag);
 	int readCommonFeatures(const char* feat, const char* end, float* extend, float* slant, float* embolden, float* letterspace, UInt32* rgbValue);
@@ -277,14 +271,14 @@ extern "C" {
 	int applymapping(void* cnv, const UniChar* txtPtr, int txtLen);
 	void store_justified_native_glyphs(void* node);
 	void measure_native_node(void* node, int use_glyph_metrics);
-	Fixed get_native_ital_corr(void* node);
-	Fixed get_native_glyph_ital_corr(void* node);
+	Fixed get_native_italic_correction(void* node);
+	Fixed get_native_glyph_italic_correection(void* node);
 	void measure_native_glyph(void* node, int use_glyph_metrics);
 	integer mapchartoglyph(integer font, integer ch);
 	integer mapglyphtoindex(integer font);
 	integer getfontcharrange(integer font, int first);
 	void printglyphname(integer font, integer gid);
-	UInt16 get_native_glyph_id(void* pNode, unsigned index);
+	UInt16 get_native_glyph(void* pNode, unsigned index);
 
 	void grprintfontname(integer what, void* pEngine, integer param1, integer param2);
 	integer grfontgetnamed(integer what, void* pEngine);
