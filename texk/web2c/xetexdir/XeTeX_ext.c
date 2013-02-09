@@ -2615,8 +2615,10 @@ atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 						CFNumberGetValue(identifier, kCFNumberIntType, &rval);
 					}
 					else if (what == XeTeX_is_default_selector) {
-						CFBooleanRef isDefault = CFDictionaryGetValue(selector, kCTFontFeatureSelectorDefaultKey);
-						rval = CFBooleanGetValue(isDefault);
+						CFBooleanRef isDefault;
+						Boolean found = CFDictionaryGetValueIfPresent(selector, kCTFontFeatureSelectorDefaultKey, &isDefault);
+						if (found)
+							rval = CFBooleanGetValue(isDefault);
 					}
 				}
 			}
