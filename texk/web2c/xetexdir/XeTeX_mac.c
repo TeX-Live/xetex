@@ -127,8 +127,8 @@ DoAtsuiLayout(void* p, int justify)
 		for (j = 0; j < count; j++) {
 			if (glyphs[j] < 0xfffe) {
 				realGlyphIDs[realGlyphCount] = glyphs[j];
-				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[i].x);
-				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[i].y);
+				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
+				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
 				realGlyphCount++;
 			}
 		}
@@ -137,7 +137,7 @@ DoAtsuiLayout(void* p, int justify)
 	}
 
 	UInt16*		glyphIDs = (UInt16*)(locations + realGlyphCount);
-	memcpy(glyphIDs, realGlyphIDs, sizeof(realGlyphCount * sizeof(UInt16)));
+	memcpy(glyphIDs, realGlyphIDs, realGlyphCount * sizeof(UInt16));
 	free(realGlyphIDs);
 
 	native_glyph_count(node) = realGlyphCount;
