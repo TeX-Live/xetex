@@ -133,7 +133,7 @@ DoAtsuiLayout(void* p, int justify)
 		for (j = 0; j < count; j++) {
 			if (glyphs[j] < 0xfffe) {
 				realGlyphIDs[realGlyphCount] = glyphs[j];
-				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
+				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x) + lsDelta;
 				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
 				lsDelta += lsUnit;
 				realGlyphCount++;
@@ -142,6 +142,8 @@ DoAtsuiLayout(void* p, int justify)
 		free(glyphs);
 		free(positions);
 	}
+	if (lsDelta != 0)
+		lsDelta -= lsUnit;
 
 	UInt16*		glyphIDs = (UInt16*)(locations + realGlyphCount);
 	memcpy(glyphIDs, realGlyphIDs, realGlyphCount * sizeof(UInt16));
