@@ -138,7 +138,8 @@ DoAtsuiLayout(void* p, int justify)
 				realGlyphCount++;
 			}
 		}
-		width += FixedPStoTeXPoints(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL));
+		CGFloat runWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL);
+		width += FixedPStoTeXPoints(runWidth);
 		free(glyphs);
 		free(positions);
 	}
