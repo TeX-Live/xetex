@@ -122,23 +122,29 @@ DoAtsuiLayout(void* p, int justify)
 	Fixed       lsDelta = 0;
 
 	int	realGlyphCount = 0;
+	CGFloat lastGlyphAdvance = 0;
 	for (i = 0; i < runCount; i++) {
 		CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, i);
 		CFIndex count = CTRunGetGlyphCount(run);
+		// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
 		CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
 		CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
+		CGSize*  advances = (CGSize*) xmalloc(count * sizeof(CGSize));
 		CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
 		CTRunGetPositions(run, CFRangeMake(0, 0), positions);
+		CTRunGetAdvances(run, CFRangeMake(0, 0), advances);
 		CFIndex j;
 		for (j = 0; j < count; j++) {
 			if (glyphs[j] < 0xfffe) {
 				realGlyphIDs[realGlyphCount] = glyphs[j];
 				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x) + lsDelta;
+				lastGlyphAdvance = advances[j].width;
 				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
 				lsDelta += lsUnit;
 				realGlyphCount++;
 			}
 		}
+		free(advances);
 		free(glyphs);
 		free(positions);
 	}
@@ -152,8 +158,12 @@ DoAtsuiLayout(void* p, int justify)
 	native_glyph_count(node) = realGlyphCount;
 	native_glyph_info_ptr(node) = glyph_info;
 
-	if (!justify)
-		node_width(node) = (realGlyphCount > 0 ? locations[realGlyphCount - 1].x : 0) + lsDelta;
+	if (!justify) {
+		node_width(node) =
+			(realGlyphCount > 0 ? locations[realGlyphCount - 1].x : 0) +
+			FixedPStoTeXPoints(lastGlyphAdvance) +
+			lsDelta;
+	}
 
 	CFRelease(line);
 	CFRelease(typesetter);
