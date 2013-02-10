@@ -103,9 +103,13 @@ DoAtsuiLayout(void* p, int justify)
 	CTLineRef line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, txtLen));
 	if (justify) {
 		CGFloat lineWidth = TeXtoPSPoints(Fix2D(node_width(node)));
-		CTLineRef justifiedLine = CTLineCreateJustifiedLine(line, 1.0, lineWidth);
-		CFRelease(line);
-		line = justifiedLine;
+		CTLineRef justifiedLine = CTLineCreateJustifiedLine(line, TeXtoPSPoints(Fix2D(fract1)), lineWidth);
+		// TODO(jjgod): how to handle the case when justification failed? for
+		// now we just fallback to use the original line.
+		if (justifiedLine) {
+			CFRelease(line);
+			line = justifiedLine;
+		}
 	}
 
 	CFArrayRef glyphRuns	= CTLineGetGlyphRuns(line);
@@ -114,6 +118,8 @@ DoAtsuiLayout(void* p, int justify)
 	UInt16* realGlyphIDs	= xmalloc(totalGlyphCount * sizeof(UInt16));
 	void*   glyph_info	  = xmalloc(totalGlyphCount * native_glyph_info_size);
 	FixedPoint*	locations   = (FixedPoint*)glyph_info;
+	Fixed       lsUnit = justify ? 0 : fontletterspace[f];
+	Fixed       lsDelta = 0;
 
 	int	realGlyphCount = 0;
 	for (i = 0; i < runCount; i++) {
@@ -129,6 +135,7 @@ DoAtsuiLayout(void* p, int justify)
 				realGlyphIDs[realGlyphCount] = glyphs[j];
 				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
 				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
+				lsDelta += lsUnit;
 				realGlyphCount++;
 			}
 		}
@@ -144,7 +151,7 @@ DoAtsuiLayout(void* p, int justify)
 	native_glyph_info_ptr(node) = glyph_info;
 
 	if (!justify)
-		node_width(node) = locations[realGlyphCount].x;
+		node_width(node) = (realGlyphCount > 0 ? locations[realGlyphCount - 1].x : 0) + lsDelta;
 
 	CFRelease(line);
 	CFRelease(typesetter);
