@@ -70,8 +70,6 @@ typedef struct {
 #define bField(t)				(t).b
 #define cField(t)				(t).c
 #define dField(t)				(t).d
-#define txField(t)				(t).x
-#define tyField(t)				(t).y
 #define xField(t)				(t).x
 #define yField(t)				(t).y
 

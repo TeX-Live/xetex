@@ -29455,8 +29455,8 @@ begin
 		pic_transform2(tail) := D2Fix(bField(t));
 		pic_transform3(tail) := D2Fix(cField(t));
 		pic_transform4(tail) := D2Fix(dField(t));
-		pic_transform5(tail) := D2Fix(txField(t));
-		pic_transform6(tail) := D2Fix(tyField(t));
+		pic_transform5(tail) := D2Fix(xField(t));
+		pic_transform6(tail) := D2Fix(yField(t));
 
 		memcpy(addressof(mem[tail + pic_node_size]), pic_path, strlen(pic_path));
 		libc_free(pic_path);
