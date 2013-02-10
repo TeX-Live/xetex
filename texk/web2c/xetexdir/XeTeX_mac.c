@@ -127,21 +127,18 @@ DoAtsuiLayout(void* p, int justify)
 		// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
 		CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
 		CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
-		CGSize*  advances = (CGSize*) xmalloc(count * sizeof(CGSize));
 		CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
 		CTRunGetPositions(run, CFRangeMake(0, 0), positions);
-		CTRunGetAdvances(run, CFRangeMake(0, 0), advances);
 		CFIndex j;
 		for (j = 0; j < count; j++) {
 			if (glyphs[j] < 0xfffe) {
 				realGlyphIDs[realGlyphCount] = glyphs[j];
 				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
 				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
-				width = locations[realGlyphCount].x + FixedPStoTeXPoints(advances[j].width);
 				realGlyphCount++;
 			}
 		}
-		free(advances);
+		width += FixedPStoTeXPoints(CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL));
 		free(glyphs);
 		free(positions);
 	}
