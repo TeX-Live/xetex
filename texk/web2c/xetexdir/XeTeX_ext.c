@@ -2396,7 +2396,7 @@ atsufontget1(int what, CFDictionaryRef attributes, int param)
 				break;
 			CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
 			CFBooleanRef value;
-			Boolean found = CFDictionaryGetValueIfPresent(feature, kCTFontFeatureTypeExclusiveKey, &value);
+			Boolean found = CFDictionaryGetValueIfPresent(feature, kCTFontFeatureTypeExclusiveKey, (const void **)&value);
 			if (found)
 				rval = CFBooleanGetValue(value);
 			CFRelease(features);
@@ -2444,7 +2444,7 @@ atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 					}
 					else if (what == XeTeX_is_default_selector) {
 						CFBooleanRef isDefault;
-						Boolean found = CFDictionaryGetValueIfPresent(selector, kCTFontFeatureSelectorDefaultKey, &isDefault);
+						Boolean found = CFDictionaryGetValueIfPresent(selector, kCTFontFeatureSelectorDefaultKey, (const void **)&isDefault);
 						if (found)
 							rval = CFBooleanGetValue(isDefault);
 					}
