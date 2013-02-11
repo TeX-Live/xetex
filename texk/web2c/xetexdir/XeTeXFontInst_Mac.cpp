@@ -71,8 +71,16 @@ static hb_bool_t _get_glyph(hb_font_t*, void* font, hb_codepoint_t ch, hb_codepo
 
 static hb_position_t _get_glyph_h_advance(hb_font_t*, void* font, hb_codepoint_t glyph, void*)
 {
-	float width = getGlyphWidthFromCTFont((CTFontRef) font, glyph);
-	return width * 64;
+	CGGlyph cgGlyph = glyph;
+	float advance = CTFontGetAdvancesForGlyphs((CTFontRef) font, kCTFontHorizontalOrientation, &cgGlyph, 0, 1);
+	return advance * 64;
+}
+
+static hb_position_t _get_glyph_v_advance(hb_font_t*, void* font, hb_codepoint_t glyph, void*)
+{
+	CGGlyph cgGlyph = glyph;
+	float advance = CTFontGetAdvancesForGlyphs((CTFontRef) font, kCTFontVerticalOrientation, &cgGlyph, 0, 1);
+	return advance * 64;
 }
 
 static hb_bool_t _get_glyph_extents(hb_font_t*, void* font, hb_codepoint_t glyph, hb_glyph_extents_t* extents, void*)
@@ -93,6 +101,7 @@ static hb_font_funcs_t* _get_font_funcs()
 	_font_funcs = hb_font_funcs_create();
 	hb_font_funcs_set_glyph_func(_font_funcs, _get_glyph, 0, 0);
 	hb_font_funcs_set_glyph_h_advance_func(_font_funcs, _get_glyph_h_advance, 0, 0);
+	hb_font_funcs_set_glyph_v_advance_func(_font_funcs, _get_glyph_v_advance, 0, 0);
 	hb_font_funcs_set_glyph_extents_func(_font_funcs, _get_glyph_extents, 0, 0);
 	hb_font_funcs_make_immutable(_font_funcs);
 
