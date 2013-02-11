@@ -1599,9 +1599,15 @@ makefontdef(integer f)
 			CFRelease(variation);
 		}
 
-		psName  = getNameFromCTFont(font, kCTFontPostScriptNameKey);
-		famName = getNameFromCTFont(font, kCTFontFamilyNameKey);
-		styName = getNameFromCTFont(font, kCTFontStyleNameKey);
+		psName = getFileNameFromCTFont(font);
+		if (psName) {
+			famName = "";
+			styName = "";
+		} else {
+			psName  = getNameFromCTFont(font, kCTFontPostScriptNameKey);
+			famName = getNameFromCTFont(font, kCTFontFamilyNameKey);
+			styName = getNameFromCTFont(font, kCTFontStyleNameKey);
+		}
 
 		if (CFDictionaryGetValue(attributes, kCTVerticalFormsAttributeName))
 			flags |= XDV_FLAG_VERTICAL;

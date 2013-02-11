@@ -140,6 +140,8 @@ void XeTeXFontInst_Mac::initialize(int &status)
 	CFRelease(attributes);
 	fFontRef = CTFontCreateWithFontDescriptor(fDescriptor, fPointSize * 72.0 / 72.27, NULL);
 	if (fFontRef) {
+		fFilename = getFileNameFromCTFont(fFontRef);
+
 		/* for HarfBuzz */
 		hb_face_t* lFace = hb_face_create_for_tables(_get_font_table, this, 0);
 		hb_face_set_upem (lFace, fUnitsPerEM);

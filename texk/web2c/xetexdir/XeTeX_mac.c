@@ -359,6 +359,46 @@ char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 	return 0;
 }
 
+char* getFileNameFromCTFont(CTFontRef ctFontRef)
+{
+	char *ret = NULL;
+
+	CFURLRef url = (CFURLRef) CTFontCopyAttribute(ctFontRef, kCTFontURLAttribute);
+	if (url) {
+		UInt8 pathname[PATH_MAX];
+		if (CFURLGetFileSystemRepresentation(url, true, pathname, PATH_MAX)) {
+			int index = 0;
+
+			/* finding face index by searching for preceding font ids with the same FSRef */
+			/* logic copied from FreeType but without using ATS/FS APIs */
+			ATSFontRef id1 = CTFontGetPlatformFont(ctFontRef, NULL);
+			ATSFontRef id2 = id1 - 1;
+			while (id2 > 0) {
+				CTFontRef ctFontRef2 = CTFontCreateWithPlatformFont(id2, 0.0, NULL, NULL);
+				CFURLRef url2 = (CFURLRef) CTFontCopyAttribute(ctFontRef2, kCTFontURLAttribute);
+				if (!url2)
+					break;
+				if (!CFEqual(url, url2))
+					break;
+				id2--;
+			}
+			index = id1 - (id2 + 1);
+
+			char buf[20];
+			if (index > 0)
+				sprintf(buf, ":%d", index);
+			else
+				buf[0] = '\0';
+
+			ret = xmalloc(strlen((char*) pathname) + 2 + strlen(buf) + 1);
+			sprintf(ret, "[%s%s]", pathname, buf);
+		}
+		CFRelease(url);
+	}
+
+	return ret;
+}
+
 CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array,
 													const void* identifierKey,
 													int identifier)

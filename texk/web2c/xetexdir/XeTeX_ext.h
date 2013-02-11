@@ -336,6 +336,7 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 	CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array, const void* identifierKey, int identifier);
 	CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int nameLength);
 	char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey);
+	char* getFileNameFromCTFont(CTFontRef ctFontRef);
 	int GetFontCharRange_AAT(CFDictionaryRef fontAttrs, int reqFirst);
 	CTFontRef fontFromAttributes(CFDictionaryRef fontAttrs);
 	CTFontRef fontFromInteger(integer font);
