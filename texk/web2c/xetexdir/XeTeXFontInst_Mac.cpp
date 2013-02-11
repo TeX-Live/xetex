@@ -65,7 +65,7 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 
 static hb_bool_t _get_glyph(hb_font_t*, void* font, hb_codepoint_t ch, hb_codepoint_t vs, hb_codepoint_t* glyph, void*)
 {
-	*glyph = mapCharToGlyphFromCTFont((CTFontRef) font, ch);
+	*glyph = mapCharToGlyphFromCTFont((CTFontRef) font, ch, vs);
 	return !!glyph;
 }
 
@@ -174,7 +174,7 @@ void XeTeXFontInst_Mac::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 GlyphID
 XeTeXFontInst_Mac::mapCharToGlyph(UChar32 ch) const
 {
-	return mapCharToGlyphFromCTFont(fFontRef, ch);
+	return mapCharToGlyphFromCTFont(fFontRef, ch, 0);
 }
 
 GlyphID

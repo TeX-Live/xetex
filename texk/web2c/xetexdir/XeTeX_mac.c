@@ -249,9 +249,9 @@ double GetGlyphItalCorr_AAT(CFDictionaryRef attributes, UInt16 gid)
 	return 0;
 }
 
-int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
+int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch, UInt32 vs)
 {
-	UniChar	txt[2];
+	UniChar	txt[4];
 	int		len = 1;
 
 	if (ch > 0xffff) {
@@ -263,6 +263,18 @@ int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
 	else
 		txt[0] = ch;
 
+	if (vs) {
+		if (vs > 0xffff) {
+			vs -= 0x10000;
+			txt[len] = 0xd800 + vs / 1024;
+			txt[len + 1] = 0xdc00 + vs % 1024;
+			len += 2;
+		} else {
+			txt[len] = vs;
+			len += 1;
+		}
+	}
+
 	CGGlyph glyphs[2] = { 0 };
 	if (CTFontGetGlyphsForCharacters(font, txt, glyphs, len))
 		return glyphs[0];
@@ -273,7 +285,7 @@ int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
 int MapCharToGlyph_AAT(CFDictionaryRef attributes, UInt32 ch)
 {
 	CTFontRef font = fontFromAttributes(attributes);
-	return mapCharToGlyphFromCTFont(font, ch);
+	return mapCharToGlyphFromCTFont(font, ch, 0);
 }
 
 int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName)
