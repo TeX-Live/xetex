@@ -63,22 +63,22 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 		CFRelease(fFontRef);
 }
 
-static hb_bool_t _get_glyph(hb_font_t* hbFont, void* fontData, hb_codepoint_t unicode, hb_codepoint_t variationSelector, hb_codepoint_t* glyph, void* userData)
+static hb_bool_t _get_glyph(hb_font_t*, void* font, hb_codepoint_t ch, hb_codepoint_t vs, hb_codepoint_t* glyph, void*)
 {
-	*glyph = mapCharToGlyphFromCTFont((CTFontRef) fontData, unicode);
+	*glyph = mapCharToGlyphFromCTFont((CTFontRef) font, ch);
 	return !!glyph;
 }
 
-static hb_position_t _get_glyph_h_advance(hb_font_t* hbFont, void* fontData, hb_codepoint_t glyph, void* userData)
+static hb_position_t _get_glyph_h_advance(hb_font_t*, void* font, hb_codepoint_t glyph, void*)
 {
-	float width = getGlyphWidthFromCTFont((CTFontRef) fontData, glyph);
+	float width = getGlyphWidthFromCTFont((CTFontRef) font, glyph);
 	return width * 64;
 }
 
-static hb_bool_t _get_glyph_extents(hb_font_t* hbFont, void* fontData, hb_codepoint_t glyph, hb_glyph_extents_t* extents, void* userData)
+static hb_bool_t _get_glyph_extents(hb_font_t*, void* font, hb_codepoint_t glyph, hb_glyph_extents_t* extents, void*)
 {
 	GlyphBBox bbox;
-	getGlyphBBoxFromCTFont((CTFontRef) fontData, glyph, &bbox);
+	getGlyphBBoxFromCTFont((CTFontRef) font, glyph, &bbox);
 	extents->x_bearing = bbox.xMin;
 	extents->y_bearing = bbox.yMax;
 	extents->width = bbox.xMax - bbox.xMin;
@@ -99,7 +99,7 @@ static hb_font_funcs_t* _get_font_funcs()
 	return _font_funcs;
 }
 
-static hb_blob_t* _get_font_table(hb_face_t* face, hb_tag_t tag, void* userData)
+static hb_blob_t* _get_font_table(hb_face_t*, hb_tag_t tag, void* userData)
 {
 	XeTeXFontInst* font = (XeTeXFontInst*) userData;
 	uint32_t length;
