@@ -2295,6 +2295,15 @@ double Fix2D(Fixed f)
 void
 atsugetfontmetrics(CFDictionaryRef attributes, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant)
 {
+#ifdef XETEX_MAC
+	CTFontRef font = fontFromAttributes(attributes);
+
+	*ascent = D2Fix(CTFontGetAscent(font));
+	*descent = D2Fix(CTFontGetDescent(font));
+	*xheight = D2Fix(CTFontGetXHeight(font));
+	*capheight = D2Fix(CTFontGetCapHeight(font));
+	*slant = D2Fix(tan(-CTFontGetSlantAngle(font) * M_PI / 180.0));
+#endif
 }
 
 int
