@@ -374,6 +374,8 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 			ATSFontRef id1 = CTFontGetPlatformFont(ctFontRef, NULL);
 			ATSFontRef id2 = id1 - 1;
 			while (id2 > 0) {
+				if (noErr != ATSFontGetFileReference(id2, NULL)) /* check if id2 is valid, any better way? */
+					break;
 				CTFontRef ctFontRef2 = CTFontCreateWithPlatformFont(id2, 0.0, NULL, NULL);
 				CFURLRef url2 = (CFURLRef) CTFontCopyAttribute(ctFontRef2, kCTFontURLAttribute);
 				if (!url2)
