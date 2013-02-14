@@ -3,6 +3,7 @@
  Copyright (c) 1994-2008 by SIL International
  Copyright (c) 2009, 2011 by Jonathan Kew
  Copyright (c) 2012, 2013 by Khaled Hosny
+ Copyright (c) 2012, 2013 by Jiang Jiang
 
  SIL Author(s): Jonathan Kew
 
