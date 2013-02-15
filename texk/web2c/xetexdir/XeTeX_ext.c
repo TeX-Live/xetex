@@ -2415,8 +2415,8 @@ atsufontget1(int what, CFDictionaryRef attributes, int param)
 			CFArrayRef features = CTFontCopyFeatures(font);
 			if (!features)
 				break;
-			if (CFArrayGetCount(features) > param) {
-				CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
+			CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param);
+			if (feature) {
 				CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
 				if (selectors)
 					rval = CFArrayGetCount(selectors);
@@ -2439,22 +2439,28 @@ atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 	CTFontRef font = fontFromAttributes(attributes);
 	CFArrayRef features = CTFontCopyFeatures(font);
 	if (features) {
-		if (CFArrayGetCount(features) > param1) {
-			CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param1);
+		CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features, kCTFontFeatureTypeIdentifierKey, param1);
+		if (feature) {
 			CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
 			if (selectors) {
-				if (CFArrayGetCount(selectors) > param2) {
-					CFDictionaryRef selector = CFArrayGetValueAtIndex(selectors, param2);
-					if (what == XeTeX_selector_code) {
-						CFNumberRef identifier = CFDictionaryGetValue(selector, kCTFontFeatureSelectorIdentifierKey);
-						CFNumberGetValue(identifier, kCFNumberIntType, &rval);
-					}
-					else if (what == XeTeX_is_default_selector) {
-						CFBooleanRef isDefault;
-						Boolean found = CFDictionaryGetValueIfPresent(selector, kCTFontFeatureSelectorDefaultKey, (const void **)&isDefault);
-						if (found)
-							rval = CFBooleanGetValue(isDefault);
-					}
+				CFDictionaryRef selector;
+				switch (what) {
+					case XeTeX_selector_code:
+						if (CFArrayGetCount(selectors) > param2) {
+							selector = CFArrayGetValueAtIndex(selectors, param2);
+							CFNumberRef identifier = CFDictionaryGetValue(selector, kCTFontFeatureSelectorIdentifierKey);
+							CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+						}
+						break;
+					case XeTeX_is_default_selector:
+						selector = findDictionaryInArrayWithIdentifier(selectors, kCTFontFeatureSelectorIdentifierKey, param2);
+						if (selector) {
+							CFBooleanRef isDefault;
+							Boolean found = CFDictionaryGetValueIfPresent(selector, kCTFontFeatureSelectorDefaultKey, (const void **)&isDefault);
+							if (found)
+								rval = CFBooleanGetValue(isDefault);
+						}
+						break;
 				}
 			}
 		}
