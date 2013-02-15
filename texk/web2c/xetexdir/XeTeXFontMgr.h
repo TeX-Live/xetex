@@ -141,9 +141,9 @@ protected:
 			Family*			parent;
 			PlatformFontRef	fontRef;
 			OpSizeRec		opSizeInfo;
-			UInt16			weight;
-			UInt16			width;
-			SInt16			slant;
+			uint16_t		weight;
+			uint16_t		width;
+			int16_t			slant;
 			bool			isReg;
 			bool			isBold;
 			bool			isItalic;
@@ -164,12 +164,12 @@ protected:
 												}
 
 			std::map<std::string,Font*>*	styles;
-			UInt16							minWeight;
-			UInt16							maxWeight;
-			UInt16							minWidth;
-			UInt16							maxWidth;
-			SInt16							minSlant;
-			SInt16							maxSlant;
+			uint16_t						minWeight;
+			uint16_t						maxWeight;
+			uint16_t						minWidth;
+			uint16_t						maxWidth;
+			int16_t							minSlant;
+			int16_t							maxSlant;
 	};
 
 	class NameCollection {

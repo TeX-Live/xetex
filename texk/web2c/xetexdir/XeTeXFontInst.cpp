@@ -114,7 +114,7 @@ void XeTeXFontInst::initialize(int &status)
     postTable = (const POSTTable *) readFontTable(kPOST);
 
     if (postTable != NULL) {
-		fItalicAngle = Fix2D(SWAP(UInt32(postTable->italicAngle)));
+		fItalicAngle = Fix2D(SWAP(uint32_t(postTable->italicAngle)));
 		deleteTable(postTable);
     }
 

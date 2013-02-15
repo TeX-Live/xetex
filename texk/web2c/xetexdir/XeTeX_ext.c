@@ -92,7 +92,7 @@ authorization from the copyright holders.
 /* tables/values used in UTF-8 interpretation - 
    code is based on ConvertUTF.[ch] sample code
    published by the Unicode consortium */
-const UInt32
+const uint32_t
 offsetsFromUTF8[6] =	{
 	0x00000000UL,
 	0x00003080UL,
@@ -102,7 +102,7 @@ offsetsFromUTF8[6] =	{
 	0x82082080UL
 };
 
-const UInt8
+const uint8_t
 bytesFromUTF8[256] = {
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -114,20 +114,20 @@ bytesFromUTF8[256] = {
 	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
 };
 
-const UInt8
+const uint8_t
 firstByteMark[7] = {
 	0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
 
 const int halfShift					= 10;
-const UInt32 halfBase				= 0x0010000UL;
-const UInt32 halfMask				= 0x3FFUL;
-const UInt32 kSurrogateHighStart	= 0xD800UL;
-const UInt32 kSurrogateHighEnd		= 0xDBFFUL;
-const UInt32 kSurrogateLowStart		= 0xDC00UL;
-const UInt32 kSurrogateLowEnd		= 0xDFFFUL;
-const UInt32 byteMask				= 0x000000BFUL;
-const UInt32 byteMark				= 0x00000080UL;
+const uint32_t halfBase				= 0x0010000UL;
+const uint32_t halfMask				= 0x3FFUL;
+const uint32_t kSurrogateHighStart	= 0xD800UL;
+const uint32_t kSurrogateHighEnd		= 0xDBFFUL;
+const uint32_t kSurrogateLowStart		= 0xDC00UL;
+const uint32_t kSurrogateLowEnd		= 0xDFFFUL;
+const uint32_t byteMask				= 0x000000BFUL;
+const uint32_t byteMark				= 0x00000080UL;
 
 
 /* if the user specifies a paper size or output driver program */
@@ -288,12 +288,12 @@ conversion_error(int errcode)
 #endif
 
 static void
-apply_normalization(UInt32* buf, int len, int norm)
+apply_normalization(uint32_t* buf, int len, int norm)
 {
 	static TECkit_Converter normalizers[2] = { NULL, NULL };
 
 	TECkit_Status status;
-	UInt32 inUsed, outUsed;
+	uint32_t inUsed, outUsed;
 	TECkit_Converter *normPtr = &normalizers[norm - 1];
 	if (*normPtr == NULL) {
 		status = TECkit_CreateConverter(NULL, 0, 1,
@@ -305,7 +305,7 @@ apply_normalization(UInt32* buf, int len, int norm)
 		}
 	}
 
-	status = TECkit_ConvertBuffer(*normPtr, (Byte*)buf, len * sizeof(UInt32), &inUsed,
+	status = TECkit_ConvertBuffer(*normPtr, (Byte*)buf, len * sizeof(uint32_t), &inUsed,
 				(Byte*)&buffer[first], sizeof(*buffer) * (bufsize - first), &outUsed, 1);
 	if (status != kStatus_NoError)
 		buffer_overflow();
@@ -322,14 +322,14 @@ int
 input_line(UFILE* f)
 {
 static char* byteBuffer = NULL;
-static UInt32 *utf32Buf = NULL;
+static uint32_t *utf32Buf = NULL;
 	int	i, tmpLen;
 	int norm = getinputnormalizationstate();
 
 	last = first;
 
 	if (f->encodingMode == ICUMAPPING) {
-		UInt32		bytesRead = 0;
+		uint32_t		bytesRead = 0;
 		UConverter*	cnv;
 		int		outLen;
 		UErrorCode	errorCode = 0;
@@ -363,7 +363,7 @@ static UInt32 *utf32Buf = NULL;
 			case 1: // NFC
 			case 2: // NFD
 				if (utf32Buf == NULL)
-					utf32Buf = (UInt32*)xmalloc(bufsize * sizeof(*utf32Buf));
+					utf32Buf = (uint32_t*)xmalloc(bufsize * sizeof(*utf32Buf));
 				tmpLen = ucnv_toAlgorithmic(UCNV_UTF32_NativeEndian, cnv,
 											(char*)utf32Buf, bufsize * sizeof(*utf32Buf),
 											byteBuffer, bytesRead, &errorCode);
@@ -603,7 +603,7 @@ load_mapping_file(const char* s, const char* e, char byteMapping)
 		FILE*	mapFile = fopen(mapPath, FOPEN_RBIN_MODE);
 		free(mapPath);
 		if (mapFile) {
-			UInt32	mappingSize;
+			uint32_t	mappingSize;
 			Byte*	mapping;
 			TECkit_Status	status;
 			fseek(mapFile, 0, SEEK_END);
@@ -674,7 +674,7 @@ applytfmfontmapping(void* cnv, int c)
 {
 	UniChar in = c;
 	Byte	out[2];
-	UInt32	inUsed, outUsed;
+	uint32_t	inUsed, outUsed;
 	TECkit_Status status = TECkit_ConvertBuffer((TECkit_Converter)cnv,
 			(const Byte*)&in, sizeof(in), &inUsed, out, sizeof(out), &outUsed, 1);
 	if (outUsed < 1)
@@ -753,8 +753,8 @@ read_tag_with_param(const char* cp, int* param)
 unsigned int
 read_rgb_a(const char** cp)
 {
-	UInt32	rgbValue = 0;
-	UInt32	alpha = 0;
+	uint32_t	rgbValue = 0;
+	uint32_t	alpha = 0;
 	int		i;
 	for (i = 0; i < 6; ++i) {
 		if ((**cp >= '0') && (**cp <= '9'))
@@ -787,7 +787,7 @@ read_rgb_a(const char** cp)
 }
 
 int
-readCommonFeatures(const char* feat, const char* end, float* extend, float* slant, float* embolden, float* letterspace, UInt32* rgbValue)
+readCommonFeatures(const char* feat, const char* end, float* extend, float* slant, float* embolden, float* letterspace, uint32_t* rgbValue)
 	// returns 1 to go to next_option, -1 for bad_option, 0 to continue
 {
 	const char* sep;
@@ -922,7 +922,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 
 	hb_tag_t	tag;
 
-	UInt32	rgbValue = 0x000000FF;
+	uint32_t	rgbValue = 0x000000FF;
 
 	float	extend = 1.0;
 	float	slant = 0.0;
@@ -1503,13 +1503,13 @@ int
 makeXDVGlyphArrayData(void* pNode)
 {
 	unsigned char*	cp;
-	UInt16*		glyphIDs;
+	uint16_t*		glyphIDs;
 	memoryword* p = pNode;
 	void*		glyph_info;
 	FixedPoint*	locations;
 	int			opcode;
 	Fixed		wid;
-	UInt16		glyphCount = native_glyph_count(p);
+	uint16_t		glyphCount = native_glyph_count(p);
 	
 	int	i = glyphCount * native_glyph_info_size + 8; /* to guarantee enough space in the buffer */
 	if (i > xdvBufSize) {
@@ -1521,7 +1521,7 @@ makeXDVGlyphArrayData(void* pNode)
 
 	glyph_info = native_glyph_info_ptr(p);
 	locations = (FixedPoint*)glyph_info;
-	glyphIDs = (UInt16*)(locations + glyphCount);
+	glyphIDs = (uint16_t*)(locations + glyphCount);
 	
 	opcode = XDV_GLYPH_STRING;
 	for (i = 0; i < glyphCount; ++i)
@@ -1558,7 +1558,7 @@ makeXDVGlyphArrayData(void* pNode)
 	}
 
 	for (i = 0; i < glyphCount; ++i) {
-		UInt16	g = glyphIDs[i];
+		uint16_t	g = glyphIDs[i];
 		*cp++ = (g >> 8) & 0xff;
 		*cp++ = g & 0xff;
 	}
@@ -1569,16 +1569,16 @@ makeXDVGlyphArrayData(void* pNode)
 int
 makefontdef(integer f)
 {
-	UInt16	flags = 0;
-	UInt32	variationCount = 0;
-	UInt32	rgba;
+	uint16_t	flags = 0;
+	uint32_t	variationCount = 0;
+	uint32_t	rgba;
 	Fixed	size;
 	const	char* psName;
 	const	char* famName;
 	const	char* styName;
-	UInt8	psLen;
-	UInt8	famLen;
-	UInt8	styLen;
+	uint8_t	psLen;
+	uint8_t	famLen;
+	uint8_t	styLen;
 	int		fontDefLength;
 	char*	cp;
 	PlatformFontRef	fontRef = 0;
@@ -1710,14 +1710,14 @@ makefontdef(integer f)
 	*(Fixed*)cp = SWAP32(size);
 	cp += 4;
 	
-	*(UInt16*)cp = SWAP16(flags);
+	*(uint16_t*)cp = SWAP16(flags);
 	cp += 2;
 	
-	*(UInt8*)cp = psLen;
+	*(uint8_t*)cp = psLen;
 	cp += 1;
-	*(UInt8*)cp = famLen;
+	*(uint8_t*)cp = famLen;
 	cp += 1;
-	*(UInt8*)cp = styLen;
+	*(uint8_t*)cp = styLen;
 	cp += 1;
 	memcpy(cp, psName, psLen);
 	cp += psLen;
@@ -1727,23 +1727,23 @@ makefontdef(integer f)
 	cp += styLen;
 
 	if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
-		*(UInt32*)cp = SWAP32(rgba);
+		*(uint32_t*)cp = SWAP32(rgba);
 		cp += 4;
 	}
 	
 	if (flags & XDV_FLAG_EXTEND) {
 		Fixed	f = D2Fix(extend);
-		*(UInt32*)(cp) = SWAP32(f);
+		*(uint32_t*)(cp) = SWAP32(f);
 		cp += 4;
 	}
 	if (flags & XDV_FLAG_SLANT) {
 		Fixed	f = D2Fix(slant);
-		*(UInt32*)(cp) = SWAP32(f);
+		*(uint32_t*)(cp) = SWAP32(f);
 		cp += 4;
 	}
 	if (flags & XDV_FLAG_EMBOLDEN) {
 		Fixed	f = D2Fix(embolden);
-		*(UInt32*)(cp) = SWAP32(f);
+		*(uint32_t*)(cp) = SWAP32(f);
 		cp += 4;
 	}
 	
@@ -1754,9 +1754,9 @@ int
 applymapping(void* pCnv, const UniChar* txtPtr, int txtLen)
 {
 	TECkit_Converter cnv = (TECkit_Converter)pCnv;
-	UInt32	inUsed, outUsed;
+	uint32_t	inUsed, outUsed;
 	TECkit_Status	status;
-	static UInt32	outLength = 0;
+	static uint32_t	outLength = 0;
 
 	/* allocate outBuffer if not big enough */
 	if (outLength < txtLen * sizeof(UniChar) + 32) {
@@ -1944,12 +1944,12 @@ getnativecharwd(integer f, integer c)
 	return wd;
 }
 
-UInt16
+uint16_t
 get_native_glyph(void* pNode, unsigned index)
 {
 	memoryword*	node = (memoryword*)pNode;
 	FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
-	UInt16*		glyphIDs = (UInt16*)(locations + native_glyph_count(node));
+	uint16_t*		glyphIDs = (uint16_t*)(locations + native_glyph_count(node));
 	if (index >= native_glyph_count(node))
 		return 0;
 	else
@@ -1986,7 +1986,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		XeTeXLayoutEngine engine = (XeTeXLayoutEngine)(fontlayoutengine[f]);
 
 		FixedPoint*	locations;
-		UInt16*		glyphIDs;
+		uint16_t*		glyphIDs;
 		int			realGlyphCount = 0;
 
 		/* need to find direction runs within the text, and call layoutChars separately for each */
@@ -1995,7 +1995,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		float	x, y;
 		void*	glyph_info = 0;
 		static	float*	positions = 0;
-		static	UInt32*	glyphs = 0;
+		static	uint32_t*	glyphs = 0;
 
 		UBiDi*	pBiDi = ubidi_open();
 		
@@ -2021,7 +2021,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				double	x, y;
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
-				glyphIDs = (UInt16*)(locations + realGlyphCount);
+				glyphIDs = (uint16_t*)(locations + realGlyphCount);
 				realGlyphCount = 0;
 				
 				x = y = 0.0;
@@ -2031,7 +2031,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
 											(dir == UBIDI_RTL));
 
-					glyphs = xmalloc(nGlyphs * sizeof(UInt32));
+					glyphs = xmalloc(nGlyphs * sizeof(uint32_t));
 					positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
 	
 					getGlyphs(engine, glyphs);
@@ -2060,7 +2060,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			int i;
 			realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
-			glyphs = xmalloc(realGlyphCount * sizeof(UInt32));
+			glyphs = xmalloc(realGlyphCount * sizeof(uint32_t));
 			positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
 
 			getGlyphs(engine, glyphs);
@@ -2069,7 +2069,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			if (realGlyphCount > 0) {
 				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
-				glyphIDs = (UInt16*)(locations + realGlyphCount);
+				glyphIDs = (uint16_t*)(locations + realGlyphCount);
 				for (i = 0; i < realGlyphCount; ++i) {
 					glyphIDs[i] = glyphs[i];
 					locations[i].x = D2Fix(positions[2*i]);
@@ -2119,7 +2119,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 	else {
 		/* this iterates over the glyph data whether it comes from ATSUI or ICU layout */
 		FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
-		UInt16*		glyphIDs = (UInt16*)(locations + native_glyph_count(node));
+		uint16_t*		glyphIDs = (uint16_t*)(locations + native_glyph_count(node));
 		float	yMin = 65536.0;
 		float	yMax = -65536.0;
 		int	i;
@@ -2161,7 +2161,7 @@ get_native_italic_correction(void* pNode)
 	unsigned	n = native_glyph_count(node);
 	if (n > 0) {
 		FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
-		UInt16*		glyphIDs = (UInt16*)(locations + n);
+		uint16_t*		glyphIDs = (uint16_t*)(locations + n);
 
 #ifdef XETEX_MAC
 		if (fontarea[f] == AAT_FONT_FLAG)
@@ -2181,7 +2181,7 @@ Fixed
 get_native_glyph_italic_correction(void* pNode)
 {
 	memoryword* node = pNode;
-	UInt16		gid = native_glyph(node);
+	uint16_t		gid = native_glyph(node);
 	unsigned	f = native_font(node);
 
 #ifdef XETEX_MAC
@@ -2198,7 +2198,7 @@ void
 measure_native_glyph(void* pNode, int use_glyph_metrics)
 {
 	memoryword* node = pNode;
-	UInt16		gid = native_glyph(node);
+	uint16_t		gid = native_glyph(node);
 	unsigned	f = native_font(node);
 
 	float	ht = 0.0;
@@ -2765,7 +2765,7 @@ get_uni_c(UFILE* f)
 		case UTF8:
 			c = rval = getc(f->f);
 			if (rval != EOF) {
-				UInt16 extraBytes = bytesFromUTF8[rval];
+				uint16_t extraBytes = bytesFromUTF8[rval];
 				switch (extraBytes) {	/* note: code falls through cases! */
 					case 3: c = getc(f->f);
 						if (c < 0x80 || c >= 0xc0) goto bad_utf8;
@@ -2848,18 +2848,18 @@ void
 makeutf16name()
 {
 	unsigned char* s = nameoffile + 1;
-	UInt32	rval;
-	UInt16*	t;
+	uint32_t	rval;
+	uint16_t*	t;
 	static int name16len = 0;
 	if (name16len <= namelength) {
 		if (nameoffile16 != 0)
 			free(nameoffile16);
 		name16len = namelength + 10;
-		nameoffile16 = xmalloc(name16len * sizeof(UInt16));
+		nameoffile16 = xmalloc(name16len * sizeof(uint16_t));
 	}
 	t = nameoffile16;
 	while (s <= nameoffile + namelength) {
-		UInt16 extraBytes;
+		uint16_t extraBytes;
 		rval = *(s++);
 		extraBytes = bytesFromUTF8[rval];
 		switch (extraBytes) {	/* note: code falls through cases! */
@@ -2897,10 +2897,10 @@ integer get_native_word_cp(void* pNode, int side)
 {
 	memoryword*	node = (memoryword*)pNode;
 	FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
-	UInt16*		glyphIDs = (UInt16*)(locations + native_glyph_count(node));
-    UInt16      glyphCount = native_glyph_count(node);
+	uint16_t*		glyphIDs = (uint16_t*)(locations + native_glyph_count(node));
+    uint16_t      glyphCount = native_glyph_count(node);
     integer     f = native_font(node);
-    UInt16      actual_glyph;
+    uint16_t      actual_glyph;
 
     if (glyphCount == 0)
         return 0;

@@ -65,19 +65,8 @@ typedef struct UFILE* unicodefile;
 #include <CoreFoundation/CoreFoundation.h>
 #include <ApplicationServices/ApplicationServices.h>
 #else
-#ifndef __TECkit_Common_H__
-typedef unsigned char	UInt8;
-typedef unsigned short	UInt16;
-typedef unsigned int	UInt32;
-typedef UInt16			UniChar;
-#endif
-
-typedef signed char		SInt8;
-typedef short			SInt16;
-typedef int				SInt32;
-
-typedef SInt32			OSStatus;
-typedef SInt32			Fixed;
+typedef uint16_t		UniChar;
+typedef int32_t			Fixed;
 typedef struct {
 	Fixed	x;
 	Fixed	y;
@@ -143,7 +132,7 @@ typedef uint16_t GlyphID;
 #define native_font(node)			node[native_info_offset].qqqq.b1
 #define native_glyph_count(node)	node[native_info_offset].qqqq.b3
 #define native_glyph_info_ptr(node)	node[native_glyph_info_offset].ptr
-#define native_glyph_info_size		10	/* info for each glyph is location (FixedPoint) + glyph ID (UInt16) */
+#define native_glyph_info_size		10	/* info for each glyph is location (FixedPoint) + glyph ID (uint16_t) */
 
 #define native_glyph(p)		native_length(p)	/* glyph ID field in a glyph_node */
 
@@ -166,14 +155,14 @@ typedef uint16_t GlyphID;
 struct postTable {
 	Fixed	format;
 	Fixed	italicAngle;
-	SInt16	underlinePosition;
-	SInt16	underlineThickness;
-	UInt16	isFixedPitch;
-	UInt16	reserved;
-	UInt32	minMemType42;
-	UInt32	maxMemType42;
-	UInt32	minMemType1;
-	UInt32	maxMemType1;
+	int16_t	underlinePosition;
+	int16_t	underlineThickness;
+	uint16_t	isFixedPitch;
+	uint16_t	reserved;
+	uint32_t	minMemType42;
+	uint32_t	maxMemType42;
+	uint32_t	minMemType1;
+	uint32_t	maxMemType1;
 };
 
 typedef struct
@@ -186,19 +175,19 @@ typedef struct
 
 
 /* For Unicode encoding form interpretation... */
-extern const UInt32 offsetsFromUTF8[6];
-extern const UInt8 bytesFromUTF8[256];
-extern const UInt8 firstByteMark[7];
+extern const uint32_t offsetsFromUTF8[6];
+extern const uint8_t bytesFromUTF8[256];
+extern const uint8_t firstByteMark[7];
 
 extern const int halfShift;
-extern const UInt32 halfBase;
-extern const UInt32 halfMask;
-extern const UInt32 kSurrogateHighStart;
-extern const UInt32 kSurrogateHighEnd;
-extern const UInt32 kSurrogateLowStart;
-extern const UInt32 kSurrogateLowEnd;
-extern const UInt32 byteMask;
-extern const UInt32 byteMark;
+extern const uint32_t halfBase;
+extern const uint32_t halfMask;
+extern const uint32_t kSurrogateHighStart;
+extern const uint32_t kSurrogateHighEnd;
+extern const uint32_t kSurrogateLowStart;
+extern const uint32_t kSurrogateLowEnd;
+extern const uint32_t byteMask;
+extern const uint32_t byteMark;
 
 extern const char *papersize;
 extern const char *outputdriver;
@@ -249,7 +238,7 @@ extern "C" {
 	void printchars(const unsigned short* str, int len);
 	void* findnativefont(unsigned char* name, integer scaled_size);
 	void releasefontengine(void* engine, int type_flag);
-	int readCommonFeatures(const char* feat, const char* end, float* extend, float* slant, float* embolden, float* letterspace, UInt32* rgbValue);
+	int readCommonFeatures(const char* feat, const char* end, float* extend, float* slant, float* embolden, float* letterspace, uint32_t* rgbValue);
 
 	/* the metrics params here are really TeX 'scaled' values, but that typedef isn't available every place this is included */
 	void otgetfontmetrics(void* engine, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant);
@@ -280,7 +269,7 @@ extern "C" {
 	integer mapglyphtoindex(integer font);
 	integer getfontcharrange(integer font, int first);
 	void printglyphname(integer font, integer gid);
-	UInt16 get_native_glyph(void* pNode, unsigned index);
+	uint16_t get_native_glyph(void* pNode, unsigned index);
 
 	void grprintfontname(integer what, void* pEngine, integer param1, integer param2);
 	integer grfontgetnamed(integer what, void* pEngine);
@@ -289,7 +278,7 @@ extern "C" {
 	double read_double(const char** s);
 	unsigned int read_rgb_a(const char** cp);
 
-	const char* getGlyphNamePtr(const char* buffer, int tableSize, UInt16 gid, int* len);
+	const char* getGlyphNamePtr(const char* buffer, int tableSize, uint16_t gid, int* len);
 
 	int countpdffilepages();
 	int find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page);
@@ -325,14 +314,14 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 /* functions in XeTeX_mac.c */
 	void* loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1);
 	void DoAtsuiLayout(void* node, int justify);
-	void GetGlyphBBox_AAT(CFDictionaryRef fontAttrs, UInt16 gid, GlyphBBox* bbox);
-	double GetGlyphWidth_AAT(CFDictionaryRef fontAttrs, UInt16 gid);
-	void GetGlyphHeightDepth_AAT(CFDictionaryRef fontAttrs, UInt16 gid, float* ht, float* dp);
-	void GetGlyphSidebearings_AAT(CFDictionaryRef fontAttrs, UInt16 gid, float* lsb, float* rsb);
-	double GetGlyphItalCorr_AAT(CFDictionaryRef fontAttrs, UInt16 gid);
-	int MapCharToGlyph_AAT(CFDictionaryRef fontAttrs, UInt32 ch);
+	void GetGlyphBBox_AAT(CFDictionaryRef fontAttrs, uint16_t gid, GlyphBBox* bbox);
+	double GetGlyphWidth_AAT(CFDictionaryRef fontAttrs, uint16_t gid);
+	void GetGlyphHeightDepth_AAT(CFDictionaryRef fontAttrs, uint16_t gid, float* ht, float* dp);
+	void GetGlyphSidebearings_AAT(CFDictionaryRef fontAttrs, uint16_t gid, float* lsb, float* rsb);
+	double GetGlyphItalCorr_AAT(CFDictionaryRef fontAttrs, uint16_t gid);
+	int MapCharToGlyph_AAT(CFDictionaryRef fontAttrs, uint32_t ch);
 	int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName);
-	char* GetGlyphNameFromCTFont(CTFontRef ctFontRef, UInt16 gid, int* len);
+	char* GetGlyphNameFromCTFont(CTFontRef ctFontRef, uint16_t gid, int* len);
 	int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName);
 	CFDictionaryRef findDictionaryInArray(CFArrayRef array, const void* nameKey, const char* name, int nameLength);
 	CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array, const void* identifierKey, int identifier);
@@ -342,9 +331,9 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 	int GetFontCharRange_AAT(CFDictionaryRef fontAttrs, int reqFirst);
 	CTFontRef fontFromAttributes(CFDictionaryRef fontAttrs);
 	CTFontRef fontFromInteger(integer font);
-	void getGlyphBBoxFromCTFont(CTFontRef ctFontRef, UInt16 gid, GlyphBBox* bbox);
-	int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch, UInt32 vs);
-	double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid);
+	void getGlyphBBoxFromCTFont(CTFontRef ctFontRef, uint16_t gid, GlyphBBox* bbox);
+	int mapCharToGlyphFromCTFont(CTFontRef font, uint32_t ch, uint32_t vs);
+	double getGlyphWidthFromCTFont(CTFontRef font, uint16_t gid);
 #endif
 #ifdef __cplusplus
 };
