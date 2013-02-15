@@ -152,19 +152,6 @@ typedef uint16_t GlyphID;
 #define kMAXP	HB_TAG('m','a','x','p')
 #define kOS_2	HB_TAG('O','S','/','2')
 
-struct postTable {
-	Fixed	format;
-	Fixed	italicAngle;
-	int16_t	underlinePosition;
-	int16_t	underlineThickness;
-	uint16_t	isFixedPitch;
-	uint16_t	reserved;
-	uint32_t	minMemType42;
-	uint32_t	maxMemType42;
-	uint32_t	minMemType1;
-	uint32_t	maxMemType1;
-};
-
 typedef struct
 {
 	float	xMin;

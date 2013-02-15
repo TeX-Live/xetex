@@ -759,9 +759,9 @@ uint32_t mapCharToGlyph(XeTeXLayoutEngine engine, uint32_t charCode)
 int
 findGlyphInPostTable(const char* buffer, int tableSize, const char* glyphName)
 {
-	const postTable* p = (const postTable*)buffer;
+	const POSTTable* p = (const POSTTable*)buffer;
 	uint16_t	g = 0;
-	switch (SWAP(p->format)) {
+	switch (SWAP(p->version)) {
 		case 0x00010000:
 			{
 				const char*	cp;
@@ -817,8 +817,8 @@ findGlyphInPostTable(const char* buffer, int tableSize, const char* glyphName)
 const char*
 getGlyphNamePtr(const char* buffer, int tableSize, uint16_t gid, int* len)
 {
-	const postTable* p = (const postTable*)buffer;
-	switch (SWAP(p->format)) {
+	const POSTTable* p = (const POSTTable*)buffer;
+	switch (SWAP(p->version)) {
 		case 0x00010000:
 			{
 				if (gid < 258) {
