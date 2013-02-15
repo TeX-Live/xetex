@@ -65,7 +65,6 @@ typedef struct UFILE* unicodefile;
 #include <CoreFoundation/CoreFoundation.h>
 #include <ApplicationServices/ApplicationServices.h>
 #else
-typedef uint16_t		UniChar;
 typedef int32_t			Fixed;
 typedef struct {
 	Fixed	x;
@@ -218,7 +217,7 @@ extern "C" {
 
 	void setinputfileencoding(unicodefile f, integer mode, integer encodingData);
 	void uclose(unicodefile f);
-	void linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength);
+	void linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLength);
 	int linebreaknext();
 	int getencodingmodeandinfo(integer* info);
 	void printutf8str(const unsigned char* str, int len);
@@ -246,7 +245,7 @@ extern "C" {
 	integer otfontget3(integer what, void* engine, integer param1, integer param2, integer param3);
 	int makeXDVGlyphArrayData(void* p);
 	int makefontdef(integer f);
-	int applymapping(void* cnv, const UniChar* txtPtr, int txtLen);
+	int applymapping(void* cnv, const uint16_t* txtPtr, int txtLen);
 	void store_justified_native_glyphs(void* node);
 	void measure_native_node(void* node, int use_glyph_metrics);
 	Fixed get_native_italic_correction(void* node);

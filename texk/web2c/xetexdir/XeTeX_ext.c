@@ -461,7 +461,7 @@ static UBreakIterator*	brkIter = NULL;
 static int				brkLocaleStrNum = 0;
 
 void
-linebreakstart(int f, integer localeStrNum, const UniChar* text, integer textLength)
+linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLength)
 {
 	UErrorCode	status;
 	char* locale = (char*)gettexstring(localeStrNum);
@@ -1751,7 +1751,7 @@ makefontdef(integer f)
 }
 
 int
-applymapping(void* pCnv, const UniChar* txtPtr, int txtLen)
+applymapping(void* pCnv, const uint16_t* txtPtr, int txtLen)
 {
 	TECkit_Converter cnv = (TECkit_Converter)pCnv;
 	uint32_t	inUsed, outUsed;
@@ -1969,7 +1969,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 {
 	memoryword*		node = (memoryword*)pNode;
 	int				txtLen = native_length(node);
-	const UniChar*	txtPtr = (UniChar*)(node + native_node_size);
+	uint16_t*		txtPtr = (uint16_t*)(node + native_node_size);
 
 	unsigned		f = native_font(node);
 
@@ -2014,7 +2014,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			int32_t		logicalStart, length;
 			for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 				dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-				realGlyphCount += layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
+				realGlyphCount += layoutChars(engine, txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 			}
 			
 			if (realGlyphCount > 0) {
@@ -2028,7 +2028,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					int nGlyphs;
 					dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-					nGlyphs = layoutChars(engine, (UniChar*)txtPtr, logicalStart, length, txtLen,
+					nGlyphs = layoutChars(engine, txtPtr, logicalStart, length, txtLen,
 											(dir == UBIDI_RTL));
 
 					glyphs = xmalloc(nGlyphs * sizeof(uint32_t));
@@ -2058,7 +2058,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		}
 		else {
 			int i;
-			realGlyphCount = layoutChars(engine, (UniChar*)txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
+			realGlyphCount = layoutChars(engine, txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
 			glyphs = xmalloc(realGlyphCount * sizeof(uint32_t));
 			positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
