@@ -3,6 +3,7 @@
 /aclocal.m4
 /build
 /build-aux
+/build-windows
 /configure
 /Makefile.in
 /autom4te.cache/
