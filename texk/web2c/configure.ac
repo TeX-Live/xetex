@@ -34,7 +34,7 @@ WEB2CVERSION=tex_live_version()
 AC_SUBST([WEB2CVERSION])
 
 dnl Common code for all programs using libkpathsea.
-KPSE_COMMON([web2c programs], [serial-tests])
+KPSE_COMMON([web2c programs])
 KPSE_CANONICAL_HOST
 
 AM_CONDITIONAL([cross], [test "x$cross_compiling" = xyes])
@@ -58,7 +58,8 @@ dnl For tests
 AC_CHECK_PROGS([KPSEWHICH], [kpsewhich], [false])
 
 KPSE_ASM_UNDERSCORE
-KPSE_CHECK_WIN32
+KPSE_COND_MINGW32
+KPSE_WIN32_CALL
 
 AS_CASE([$with_editor],
         [''|yes|no], [AS_IF([test "x$kpse_cv_have_win32" = xno],
@@ -79,9 +80,6 @@ AS_IF([test "x$enable_dump_share" = xno],
 AS_CASE([$enable_ipc],
         [yes|no], [],
             [enable_ipc=yes])
-
-AM_CONDITIONAL([WIN32], [test "x$kpse_cv_have_win32" != xno])
-AM_CONDITIONAL([MINGW32], [test "x$kpse_cv_have_win32" = xmingw32])
 
 KPSE_CHECK_SOCKET_LIBS
 AS_CASE([$ac_cv_search_connect],
@@ -258,7 +256,6 @@ AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale strerror s
 AC_CHECK_DECLS([strndup])
 AC_CHECK_HEADERS([errno.h langinfo.h locale.h sys/time.h sys/timeb.h sys/wait.h time.h])
 AC_TYPE_LONG_DOUBLE
-AC_TYPE_LONG_LONG_INT
 AC_HEADER_STDBOOL
 
 dnl sharable format files.

@@ -1,3 +1,12 @@
+2013-01-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* wprob.test: Avoid spurious failure of parallel-tests.
+	* am/etex.am: Renamed wprob.{tex,log} => ewprob.{tex,log}.
+
+2013-01-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/etex.am, etrip.test: Enable parallel-tests.
+
 2012-12-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* am/etex.am (etex_version.h): Enable silent rules.
@@ -88,8 +97,8 @@
 
 2011-03-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
-	* etex.ch: Define and use the Web macros box_lrstat and
-	set_box_lrstat to reduce interferences between e-TeX and pTeX.
+	* etex.ch: Define and use the Web macros box_lr and set_box_lr
+	to reduce interferences between e-TeX and pTeX.
 
 2011-01-17  Peter Breitenlohner  <peb@mppmu.mpg.de>
 

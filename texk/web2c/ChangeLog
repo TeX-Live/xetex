@@ -1,6 +1,31 @@
+2013-02-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Avoid spurious failures of parallel tests.
+	* pbibtex-longline-test.pl: Use longline.bib from source tree.
+
+	* bibtex-openout-test.pl: Fix the input file location.
+
+2013-01-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/texmf.am: Allow subdir-objects.
+	* configure.ac: Use KPSE_COND_MINGW32 and KPSE_WIN32_CALL.
+
+2013-01-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: Drop useless AC_TYPE_LONG_LONG_INT.
+
+2013-01-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am, am/texmf.am, configure.ac, trap.test, trip.test,
+	triptrap-sh: Enable parallel-tests.
+
+2013-01-10  Khaled Hosny  <khaledhosny@eglug.org>
+
+	* configure.ac: Check if system has stdbool.h
+
 2013-01-06  Khaled Hosny  <khaledhosny@eglug.org>
 
-	* lib/texmfmp.c, texmfmp.h [XeTeX]: Support input pipes.
+	* texmfmp.h [XeTeX]: Support input pipes.
 
 2013-01-05  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
