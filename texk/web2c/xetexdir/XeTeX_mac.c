@@ -36,12 +36,6 @@ authorization from the copyright holders.
  * additional plain C extensions for XeTeX - MacOS-specific routines
  */
 
-#ifdef __POWERPC__
-#define MAC_OS_X_VERSION_MIN_REQUIRED	1030
-#else
-#define MAC_OS_X_VERSION_MIN_REQUIRED	1040
-#endif
-
 #define EXTERN extern
 #include "xetexd.h"
 
@@ -761,52 +755,27 @@ find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 						page = nPages;
 
 					CGRect	r;
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_3
-					if (&CGPDFDocumentGetPage == NULL) {
-						switch (pdfBoxType) {
-							case pdfbox_crop:
-							default:
-								r = CGPDFDocumentGetCropBox(document, page);
-								break;
-							case pdfbox_media:
-								r = CGPDFDocumentGetMediaBox(document, page);
-								break;
-							case pdfbox_bleed:
-								r = CGPDFDocumentGetBleedBox(document, page);
-								break;
-							case pdfbox_trim:
-								r = CGPDFDocumentGetTrimBox(document, page);
-								break;
-							case pdfbox_art:
-								r = CGPDFDocumentGetArtBox(document, page);
-								break;
-						}
+					CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, page);
+					CGPDFBox	boxType;
+					switch (pdfBoxType) {
+						case pdfbox_crop:
+						default:
+							boxType = kCGPDFCropBox;
+							break;
+						case pdfbox_media:
+							boxType = kCGPDFMediaBox;
+							break;
+						case pdfbox_bleed:
+							boxType = kCGPDFBleedBox;
+							break;
+						case pdfbox_trim:
+							boxType = kCGPDFTrimBox;
+							break;
+						case pdfbox_art:
+							boxType = kCGPDFArtBox;
+							break;
 					}
-					else
-#endif
-					{
-						CGPDFPageRef	pageRef = CGPDFDocumentGetPage(document, page);
-						CGPDFBox	boxType;
-						switch (pdfBoxType) {
-							case pdfbox_crop:
-							default:
-								boxType = kCGPDFCropBox;
-								break;
-							case pdfbox_media:
-								boxType = kCGPDFMediaBox;
-								break;
-							case pdfbox_bleed:
-								boxType = kCGPDFBleedBox;
-								break;
-							case pdfbox_trim:
-								boxType = kCGPDFTrimBox;
-								break;
-							case pdfbox_art:
-								boxType = kCGPDFArtBox;
-								break;
-						}
-						r = CGPDFPageGetBoxRect(pageRef, boxType);
-					}
+					r = CGPDFPageGetBoxRect(pageRef, boxType);
 
 					bounds->x = r.origin.x * 72.27 / 72.0;
 					bounds->y = r.origin.y * 72.27 / 72.0;
