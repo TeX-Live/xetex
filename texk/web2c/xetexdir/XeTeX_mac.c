@@ -180,9 +180,8 @@ void getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
 		bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0;
 	else {
 		// convert PS to TeX points and flip y-axis
-		// TODO: do we need to flip for bounding rect returned by Core Text?
-		bbox->yMin = -PStoTeXPoints(rect.origin.y + rect.size.height);
-		bbox->yMax = -PStoTeXPoints(rect.origin.y);
+		bbox->yMin = PStoTeXPoints(rect.origin.y);
+		bbox->yMax = PStoTeXPoints(rect.origin.y + rect.size.height);
 		bbox->xMin = PStoTeXPoints(rect.origin.x);
 		bbox->xMax = PStoTeXPoints(rect.origin.x + rect.size.width);
 	}
