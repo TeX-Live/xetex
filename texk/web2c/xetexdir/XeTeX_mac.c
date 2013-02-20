@@ -499,7 +499,7 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 	float   slant		= 0.0;
 	float   embolden	= 0.0;
 	float   letterspace	= 0.0;
-	UInt32  rgbValue;
+	uint32_t  rgbValue;
 
 	// create a base font instance for applying further attributes
 	ctSize = TeXtoPSPoints(Fix2D(scaled_size));
