@@ -375,8 +375,20 @@ char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 char* getFileNameFromCTFont(CTFontRef ctFontRef)
 {
 	char *ret = NULL;
+	CFURLRef url = NULL;
 
-	CFURLRef url = (CFURLRef) CTFontCopyAttribute(ctFontRef, kCTFontURLAttribute);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
+	/* kCTFontURLAttribute was not avialable before 10.6 */
+	ATSFontRef atsFont;
+	FSRef fsref;
+	OSStatus status;
+	atsFont = CTFontGetPlatformFont(ctFontRef, NULL);
+	status = ATSFontGetFileReference(atsFont, &fsref);
+	if (status == noErr)
+		url = CFURLCreateFromFSRef(NULL, &fsref);
+#else
+	url = (CFURLRef) CTFontCopyAttribute(ctFontRef, kCTFontURLAttribute);
+#endif
 	if (url) {
 		UInt8 pathname[PATH_MAX];
 		if (CFURLGetFileSystemRepresentation(url, true, pathname, PATH_MAX)) {
@@ -394,7 +406,13 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 				if (noErr != ATSFontGetFileReference(id2, &dummy)) /* check if id2 is valid, any better way? */
 					break;
 				ctFontRef2 = CTFontCreateWithPlatformFont(id2, 0.0, NULL, NULL);
+#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
+				status = ATSFontGetFileReference(id2, &fsref);
+				if (status == noErr)
+					url2 = CFURLCreateFromFSRef(NULL, &fsref);
+#else
 				url2 = (CFURLRef) CTFontCopyAttribute(ctFontRef2, kCTFontURLAttribute);
+#endif
 				if (!url2)
 					break;
 				if (!CFEqual(url, url2))
