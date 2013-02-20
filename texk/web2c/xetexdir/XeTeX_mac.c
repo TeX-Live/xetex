@@ -199,7 +199,6 @@ void getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
 	if (CGRectIsNull(rect))
 		bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0;
 	else {
-		// convert PS to TeX points and flip y-axis
 		bbox->yMin = PStoTeXPoints(rect.origin.y);
 		bbox->yMax = PStoTeXPoints(rect.origin.y + rect.size.height);
 		bbox->xMin = PStoTeXPoints(rect.origin.x);
