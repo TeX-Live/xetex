@@ -805,6 +805,7 @@ find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 					bounds->ht = h * 72.27 / vRes;
 					CFRelease(properties);
 					CFRelease(picFileSource);
+					result = noErr;
 				}
 			}
 			
