@@ -2359,14 +2359,15 @@ atsufontget1(int what, CFDictionaryRef attributes, int param)
 		case XeTeX_variation:
 		{
 			CFArrayRef axes = CTFontCopyVariationAxes(font);
-			if (!axes)
-				break;
-			if (CFArrayGetCount(axes) > param) {
-				CFDictionaryRef variation = CFArrayGetValueAtIndex(axes, param);
-				CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
-				CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+			if (axes) {
+				if (CFArrayGetCount(axes) > param) {
+					CFDictionaryRef variation = CFArrayGetValueAtIndex(axes, param);
+					CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
+					if (identifier)
+						CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+				}
+				CFRelease(axes);
 			}
-			CFRelease(axes);
 			break;
 		}
 
@@ -2395,7 +2396,8 @@ atsufontget1(int what, CFDictionaryRef attributes, int param)
 				if (CFArrayGetCount(features) > param) {
 					CFDictionaryRef feature = CFArrayGetValueAtIndex(features, param);
 					CFNumberRef identifier = CFDictionaryGetValue(feature, kCTFontFeatureTypeIdentifierKey);
-					CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+					if (identifier)
+						CFNumberGetValue(identifier, kCFNumberIntType, &rval);
 				}
 				CFRelease(features);
 			}
@@ -2456,7 +2458,8 @@ atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 							CFNumberRef identifier;
 							selector = CFArrayGetValueAtIndex(selectors, param2);
 							identifier = CFDictionaryGetValue(selector, kCTFontFeatureSelectorIdentifierKey);
-							CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+							if (identifier)
+								CFNumberGetValue(identifier, kCFNumberIntType, &rval);
 						}
 						break;
 					case XeTeX_is_default_selector:
@@ -2495,7 +2498,8 @@ atsufontgetnamed(int what, CFDictionaryRef attributes)
 																  (const char*)nameoffile + 1, namelength);
 				if (variation) {
 					CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
-					CFNumberGetValue(identifier, kCFNumberIntType, &rval);
+					if (identifier)
+						CFNumberGetValue(identifier, kCFNumberIntType, &rval);
 				}
 				CFRelease(axes);
 			}

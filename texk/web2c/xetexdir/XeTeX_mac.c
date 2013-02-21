@@ -484,11 +484,13 @@ CFDictionaryRef findDictionaryInArray(CFArrayRef array, const void* nameKey,
 
 CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int nameLength)
 {
-	CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
-	CFDictionaryRef s = findDictionaryInArray(selectors, kCTFontFeatureSelectorNameKey, name, nameLength);
 	CFNumberRef selector = NULL;
-	if (s)
-		selector = CFDictionaryGetValue(s, kCTFontFeatureSelectorIdentifierKey);
+	CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
+	if (selectors) {
+		CFDictionaryRef s = findDictionaryInArray(selectors, kCTFontFeatureSelectorNameKey, name, nameLength);
+		if (s)
+			selector = CFDictionaryGetValue(s, kCTFontFeatureSelectorIdentifierKey);
+	}
 	return selector;
 }
 
