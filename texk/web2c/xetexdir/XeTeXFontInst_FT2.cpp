@@ -90,7 +90,7 @@ XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float poin
 	if (status != 0)
 		return;
 
-	FT_Set_Pixel_Sizes(face, pointSize, 0);
+	FT_Set_Char_Size(face, pointSize * 64, 0, 0, 0);
 	hbFont = hb_ft_font_create(face, NULL);
 	
 	char	buf[20];
