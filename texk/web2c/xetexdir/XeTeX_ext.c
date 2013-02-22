@@ -931,7 +931,18 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	
 	int i;
 
-	if (getReqEngine() == 'G') {
+	char reqEngine = getReqEngine();
+
+	if (reqEngine) {
+		shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
+		if (reqEngine == 'O')
+			shapers[nShapers] = strdup("ot");
+		else if (reqEngine == 'G')
+			shapers[nShapers] = strdup("graphite2");
+		nShapers++;
+	}
+
+	if (reqEngine == 'G') {
 		/* create a default engine so we can query the font for Graphite features;
 		 * because of font caching, it's cheap to discard this and create the real one later */
 		engine = createLayoutEngine(fontRef, font, script, language,
@@ -989,7 +1000,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 			else if (i == -1)
 				goto bad_option;
 
-			if (getReqEngine() == 'G') {
+			if (reqEngine == 'G') {
 				int value = 0;
 				if (readFeatureNumber(cp1, cp2, &tag, &value)
 				 || findGraphiteFeature(engine, cp1, cp2, &tag, &value)) {
