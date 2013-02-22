@@ -219,12 +219,20 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				varString.append("AAT");
 				goto skip_to_slash;
 			}
-			if ((strncmp(cp, "OTF", 3) == 0) || (strncmp(cp, "ICU", 3) == 0)) {
+			if (strncmp(cp, "ICU", 3) == 0) { // for backword compatability
 				sReqEngine = 'O';
 				cp += 3;
 				if (varString.length() > 0 && *(varString.end() - 1) != '/')
 					varString.append("/");
-				varString.append("OTF");
+				varString.append("OT");
+				goto skip_to_slash;
+			}
+			if (strncmp(cp, "OT", 2) == 0) {
+				sReqEngine = 'O';
+				cp += 2;
+				if (varString.length() > 0 && *(varString.end() - 1) != '/')
+					varString.append("/");
+				varString.append("OT");
 				goto skip_to_slash;
 			}
 			if (strncmp(cp, "GR", 2) == 0) {
