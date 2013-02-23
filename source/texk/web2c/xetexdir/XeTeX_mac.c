@@ -394,34 +394,38 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 	if (url) {
 		UInt8 pathname[PATH_MAX];
 		if (CFURLGetFileSystemRepresentation(url, true, pathname, PATH_MAX)) {
+			FT_Error error;
+			FT_Face face;
 			int index = 0;
 			char buf[20];
 
-			/* finding face index by searching for preceding font ids with the same FSRef */
-			/* logic copied from FreeType but without using ATS/FS APIs */
-			ATSFontRef id1 = CTFontGetPlatformFont(ctFontRef, NULL);
-			ATSFontRef id2 = id1 - 1;
-			while (id2 > 0) {
-				FSRef dummy;
-				CTFontRef ctFontRef2;
-				CFURLRef url2;
-				if (noErr != ATSFontGetFileReference(id2, &dummy)) /* check if id2 is valid, any better way? */
-					break;
-				ctFontRef2 = CTFontCreateWithPlatformFont(id2, 0.0, NULL, NULL);
-#if !defined(MAC_OS_X_VERSION_10_6) || MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
-				status = ATSFontGetFileReference(id2, &fsref);
-				if (status == noErr)
-					url2 = CFURLCreateFromFSRef(NULL, &fsref);
-#else
-				url2 = (CFURLRef) CTFontCopyAttribute(ctFontRef2, kCTFontURLAttribute);
-#endif
-				if (!url2)
-					break;
-				if (!CFEqual(url, url2))
-					break;
-				id2--;
+			if (!gFreeTypeLibrary) {
+				error = FT_Init_FreeType(&gFreeTypeLibrary);
+				if (error) {
+					fprintf(stderr, "FreeType initialization failed! (%d)\n", error);
+					exit(1);
+				}
 			}
-			index = id1 - (id2 + 1);
+
+			error = FT_New_Face(gFreeTypeLibrary, pathname, 0, &face);
+			if (!error) {
+				if (face->num_faces > 1) {
+					int num_faces = face->num_faces;
+					char *ps_name1 = getNameFromCTFont(ctFontRef, kCTFontPostScriptNameKey);
+					int i;
+					FT_Done_Face (face);
+					for (i = 0; i < num_faces; i++) {
+						error = FT_New_Face (gFreeTypeLibrary, pathname, i, &face);
+						if (!error) {
+							const char *ps_name2 = FT_Get_Postscript_Name(face);
+							if (strcmp(ps_name1, ps_name2) == 0) {
+								index = i;
+								break;
+							}
+						}
+					}
+				}
+			}
 
 			if (index > 0)
 				sprintf(buf, ":%d", index);
