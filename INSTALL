@@ -1,0 +1,22 @@
+
+INSTALL for XeTeX Snapshots
+
+This distribution is essentially a stripped-down version of 
+the TeXlive distribution with some additional libraries.
+
+All source code is in the directory source; the build.sh
+scripts will generate and populate a directory build.
+ 
+The actual code of XeTeX is in source/texk/web2c/xetexdir
+and its subdirectories.
+
+* build.sh         builds a native xetex on your system
+* build.sh --ppc   crosscompiles for osx-ppx from osx-intel
+* build.sh --mingw crosscompiles xetex for mingw32 on i686-linux
+
+XeTeX does not need a run-time pool file, and it locates
+texmf.cnf based on its relative position in the TeX tree.
+
+Post-compilation installation should be a simple matter 
+of copying the executable to a normal place for web2c 
+binaries and generating the desired formats.

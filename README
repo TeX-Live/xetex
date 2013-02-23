@@ -1,0 +1,11 @@
+XeTeX is an extension of TeX that integrates TeX's typesetting capabilities
+with (a) the Unicode text encoding standard (supporting most of the world’s
+scripts) and (b) modern font technologies (TrueType and OpenType) and text
+layout services (AAT, OpenType layout, SIL Graphite) provided by the host
+operating system and available libraries.
+
+With XeTeX, the advanced typographic features provided by OpenType fonts become
+available for all TeX users, as well as support for complex non-roman scripts.
+XeTeX also eliminates the complex task of managing a TeX font installation.
+XeTeX is now part of the standard TeX distribution TeXLive and works well with
+TeX macro packages like LaTeX and ConTeXt. 
