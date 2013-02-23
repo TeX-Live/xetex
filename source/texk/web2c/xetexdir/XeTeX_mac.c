@@ -153,7 +153,9 @@ DoAtsuiLayout(void* p, int justify)
 				realGlyphIDs[realGlyphCount] = glyphs[j];
 				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x) + lsDelta;
 				lastGlyphAdvance = advances[j].width;
-				locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
+				// XXX trasformation matrix changes y positions!
+				//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
+				locations[realGlyphCount].y = 0;
 				lsDelta += lsUnit;
 				realGlyphCount++;
 			}
@@ -731,6 +733,7 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 	}
 
 	matrix = CGAffineTransformIdentity;
+	// XXX this breaks y glyph positioning
 	if (extend != 1.0 || slant != 0.0)
 		matrix = CGAffineTransformMake(extend, slant, 0, 1.0, 0, 0);
 
