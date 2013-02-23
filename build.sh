@@ -136,9 +136,9 @@ then
     ONLY_MAKE=FALSE
 fi
 
-if [ ! -r configure ]
+if [ ! -r ./source/configure ]
 then
-    ./autogen.sh
+    ./source/autogen.sh
     ONLY_MAKE=FALSE
 fi
 
@@ -190,7 +190,7 @@ fi
 
 if [ "$ONLY_MAKE" = "FALSE" ]
 then
-TL_MAKE=$MAKE ../configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS $CONF_OPTIONS\
+TL_MAKE=$MAKE ../source/configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS $CONF_OPTIONS\
    || exit 1 
 fi
 
