@@ -1205,6 +1205,8 @@ findnativefont(unsigned char* uname, integer scaled_size)
 
 				if (varString && strncmp(varString, "/GR", 3) == 0)
 					setReqEngine('G');
+				else if (varString && strncmp(varString, "/OT", 3) == 0)
+					setReqEngine('O');
 				else
 					setReqEngine(0);
 
