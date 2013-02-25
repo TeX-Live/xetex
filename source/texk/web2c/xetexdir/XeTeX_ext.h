@@ -264,8 +264,6 @@ extern "C" {
 	double read_double(const char** s);
 	unsigned int read_rgb_a(const char** cp);
 
-	const char* getGlyphNamePtr(const char* buffer, int tableSize, uint16_t gid, int* len);
-
 	int countpdffilepages();
 	int find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page);
 	int u_open_in(unicodefile* f, integer filefmt, const char* fopen_mode, integer mode, integer encodingData);

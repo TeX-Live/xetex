@@ -123,8 +123,9 @@ public:
         return fDescent;
     }
 
-    virtual GlyphID mapCharToGlyph(UChar32 ch) const = 0; /* must be implemented by subclass */
-    virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
+    /* must be implemented by subclass */
+    virtual GlyphID mapCharToGlyph(UChar32 ch) const = 0;
+    virtual GlyphID mapGlyphToIndex(const char* glyphName) const = 0;
 
 	virtual uint16_t getNumGlyphs() const;
 
@@ -137,10 +138,11 @@ public:
 	void getGlyphSidebearings(GlyphID glyph, float* lsb, float* rsb);
 	float getGlyphItalCorr(GlyphID glyph);
 
-	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
+    /* must be implemented by subclass */
+	virtual const char* getGlyphName(GlyphID gid, int& nameLen) = 0;
 	
-	virtual UChar32 getFirstCharCode() = 0; /* must be implemented by subclass */
-	virtual UChar32 getLastCharCode() = 0; /* must be implemented by subclass */
+	virtual UChar32 getFirstCharCode() = 0;
+	virtual UChar32 getLastCharCode() = 0;
 
     float getPointSize() const
     {

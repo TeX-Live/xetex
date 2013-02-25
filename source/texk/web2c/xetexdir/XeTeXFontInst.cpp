@@ -248,26 +248,3 @@ XeTeXFontInst::getGlyphItalCorr(GlyphID gid)
 	
 	return rval;
 }
-
-GlyphID
-XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
-	/* default implementation, may be overridden (e.g. by Freetype-based XeTeXFontInst_ */
-{
-    uint32_t	len;
-    const char *p = (const char*)readFontTable(kPOST, len);
-    if (p != NULL)
-		return findGlyphInPostTable(p, len, glyphName);
-	else
-		return 0;
-}
-
-const char*
-XeTeXFontInst::getGlyphName(GlyphID gid, int& nameLen)
-{
-    uint32_t	len;
-    const char *p = (const char*)readFontTable(kPOST, len);
-    if (p != NULL)
-		return getGlyphNamePtr(p, len, gid, &nameLen);
-	else
-		return NULL;
-}

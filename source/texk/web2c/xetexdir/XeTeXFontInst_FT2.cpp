@@ -210,10 +210,7 @@ XeTeXFontInst_FT2::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
 GlyphID
 XeTeXFontInst_FT2::mapGlyphToIndex(const char* glyphName) const
 {
-	GlyphID	rval = FT_Get_Name_Index(face, const_cast<char*>(glyphName));
-	if (rval == 0)
-		rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
-	return rval;
+	return FT_Get_Name_Index(face, const_cast<char*>(glyphName));
 }
 
 const char*

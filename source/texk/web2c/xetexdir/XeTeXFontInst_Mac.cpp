@@ -193,18 +193,12 @@ XeTeXFontInst_Mac::mapCharToGlyph(UChar32 ch) const
 GlyphID
 XeTeXFontInst_Mac::mapGlyphToIndex(const char* glyphName) const
 {
-	GlyphID rval = XeTeXFontInst::mapGlyphToIndex(glyphName);
-	if (rval)
-		return rval;
 	return GetGlyphIDFromCTFont(fFontRef, glyphName);
 }
 
 const char*
 XeTeXFontInst_Mac::getGlyphName(GlyphID gid, int& nameLen)
 {
-	const char* rval = XeTeXFontInst::getGlyphName(gid, nameLen);
-	if (rval)
-		return rval;
 	return GetGlyphNameFromCTFont(fFontRef, gid, &nameLen);
 }
 

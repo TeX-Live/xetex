@@ -138,9 +138,6 @@ libxetex_a_SOURCES = \
 	xetexdir/hz.cpp \
 	xetexdir/xetex.h
 
-## included by xetexdir/XeTeXLayoutInterface.cpp
-EXTRA_DIST += xetexdir/appleGlyphNames.c
-
 if XETEX_MACOSX
 
 libxetex_a_SOURCES += \
