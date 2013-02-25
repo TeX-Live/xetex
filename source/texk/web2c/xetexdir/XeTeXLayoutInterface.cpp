@@ -419,7 +419,7 @@ getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, uint32_t featureID, uin
 
 bool
 findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, hb_tag_t* f, int* v)
-	/* s...e is a "feature[=setting]" string; look for this in the font */
+	/* s...e is a "feature=setting" string; look for this in the font */
 {
 	*f = 0;
 	*v = 0;
@@ -437,12 +437,9 @@ findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, hb_t
 	while (cp < e && (*cp == ' ' || *cp == '\t'))
 		++cp;
 
-	if (cp >= e) {
-		// no setting was specified, so we just use the first
-		// XXX the default is not always the first?
-		*v = 1;
-		return true;
-	}
+	if (cp == e)
+		/* no setting was specified */
+		return false;
 
 	*v = findGraphiteFeatureSettingNamed(engine, *f, cp, e - cp);
 	if (*v == -1)

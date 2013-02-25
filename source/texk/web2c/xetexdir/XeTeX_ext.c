@@ -855,7 +855,7 @@ readCommonFeatures(const char* feat, const char* end, float* extend, float* slan
 
 static bool
 readFeatureNumber(const char* s, const char* e, hb_tag_t* f, int* v)
-	/* s...e is a "id[=setting]" string; */
+	/* s...e is a "id=setting" string; */
 {
 	*f = 0;
 	*v = 0;
@@ -865,16 +865,10 @@ readFeatureNumber(const char* s, const char* e, hb_tag_t* f, int* v)
 		*f = *f * 10 + *s++ - '0';
 	while ((*s == ' ') || (*s == '\t'))
 		++s;
-	if (*s++ != '=') {
-		if (s >= e) {
-			// no setting was specified, so we just use the first
-			// XXX the default is not always the first?
-			*v = 1;
-			return true;
-		} else {
-			return false;
-		}
-	}
+	if (*s++ != '=')
+		/* no setting was specified */
+		return false;
+
 	if (*s < '0' || *s > '9')
 		return false;
 	while (*s >= '0' && *s <= '9')
