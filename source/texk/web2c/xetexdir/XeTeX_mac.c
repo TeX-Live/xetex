@@ -428,6 +428,7 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 						error = FT_New_Face (gFreeTypeLibrary, pathname, i, &face);
 						if (!error) {
 							const char *ps_name2 = FT_Get_Postscript_Name(face);
+							FT_Done_Face (face);
 							if (strcmp(ps_name1, ps_name2) == 0) {
 								index = i;
 								break;
