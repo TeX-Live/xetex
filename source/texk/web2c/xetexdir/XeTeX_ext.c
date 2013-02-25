@@ -1412,7 +1412,7 @@ otfontget2(integer what, void* pEngine, integer param1, integer param2)
 			return getGraphiteFeatureSettingCode(engine, param1, param2);
 			break;
 		case XeTeX_is_default_selector:
-			return getGraphiteFeatureSettingCode(engine, param1, 1) == param2;
+			return getGraphiteFeatureDefaultSetting(engine, param1) == param2;
 			break;
 	}
 	

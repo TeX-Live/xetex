@@ -379,6 +379,29 @@ uint32_t getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, uint32_t featur
 	return rval;
 }
 
+uint32_t
+getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, uint32_t featureID)
+{
+	uint32_t rval = 0;
+
+	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
+
+	if (grFace != NULL) {
+		hb_tag_t lang = HB_TAG_NONE;
+
+		if (engine->language != NULL)
+			lang = hb_tag_from_string(engine->language, -1);
+
+		const gr_feature_ref* feature = gr_face_find_fref(grFace, featureID);
+		gr_feature_val *featureValues = gr_face_featureval_for_lang (grFace, lang);
+
+		rval = gr_fref_feature_value(feature, featureValues);
+	}
+
+	return rval;
+}
+
 char *
 getGraphiteFeatureLabel(XeTeXLayoutEngine engine, uint32_t featureID)
 {
@@ -914,18 +937,18 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const uint16_t* txtPtr, int txtLe
 		if (engine->language != NULL)
 			lang = hb_tag_from_string(engine->language, -1);
 
-		gr_feature_val *grFeatures = gr_face_featureval_for_lang (grFace, lang);
+		gr_feature_val *grFeatureValues = gr_face_featureval_for_lang (grFace, lang);
 
 		int nFeatures = engine->nFeatures;
 		hb_feature_t *features =  engine->features;
 		while (nFeatures--) {
 			const gr_feature_ref *fref = gr_face_find_fref (grFace, features->tag);
 			if (fref)
-				gr_fref_set_feature_value (fref, features->value, grFeatures);
+				gr_fref_set_feature_value (fref, features->value, grFeatureValues);
 			features++;
 		}
 
-		grSegment = gr_make_seg(grFont, grFace, script, grFeatures, gr_utf16, txtPtr, txtLen, 0);
+		grSegment = gr_make_seg(grFont, grFace, script, grFeatureValues, gr_utf16, txtPtr, txtLen, 0);
 		grPrevSlot = gr_seg_first_slot(grSegment);
 
 		return true;
