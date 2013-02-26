@@ -128,8 +128,6 @@ libxetex_a_SOURCES = \
 	xetexdir/FontTableCache.h \
 	xetexdir/XeTeXFontInst.cpp \
 	xetexdir/XeTeXFontInst.h \
-	xetexdir/XeTeXFontInst_FT2.cpp \
-	xetexdir/XeTeXFontInst_FT2.h \
 	xetexdir/XeTeXFontMgr.cpp \
 	xetexdir/XeTeXFontMgr.h \
 	xetexdir/XeTeXLayoutInterface.cpp \

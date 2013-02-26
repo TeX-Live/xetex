@@ -44,14 +44,10 @@ authorization from the copyright holders.
 #include "XeTeX_ext.h"
 
 XeTeXFontInst_Mac::XeTeXFontInst_Mac(CTFontDescriptorRef descriptor, float pointSize, int &status)
-    : XeTeXFontInst_FT2(pointSize, status)
+    : XeTeXFontInst(NULL, 0, pointSize, status)
     , fDescriptor(descriptor)
     , fFontRef(0)
 {
-    if (status != 0) {
-        return;
-    }
-
 	initialize(status);
 }
 
@@ -89,7 +85,7 @@ void XeTeXFontInst_Mac::initialize(int &status)
 		int index;
 		pathname = getFileNameFromCTFont(fFontRef, &index);
 
-		XeTeXFontInst_FT2::initialize(pathname, index, status);
+		XeTeXFontInst::initialize(pathname, index, status);
 	} else {
 		status = 1;
 		CFRelease(fDescriptor);

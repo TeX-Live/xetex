@@ -40,7 +40,7 @@ authorization from the copyright holders.
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
 #endif
-#include "XeTeXFontInst_FT2.h"
+#include "XeTeXFontInst.h"
 #include "XeTeXFontMgr.h"
 #include "XeTeXswap.h"
 
@@ -105,7 +105,7 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 	FcPatternGetString(fontRef, FC_FILE, 0, &pathname);
 	int			index;
 	FcPatternGetInteger(fontRef, FC_INDEX, 0, &index);
-	XeTeXFontInst* font = new XeTeXFontInst_FT2((const char*)pathname, index, Fix2D(pointSize), status);
+	XeTeXFontInst* font = new XeTeXFontInst((const char*)pathname, index, Fix2D(pointSize), status);
 #endif
 	if (status != 0) {
 		delete font;
@@ -117,7 +117,7 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 XeTeXFont createFontFromFile(const char* filename, int index, Fixed pointSize)
 {
 	int status = 0;
-	XeTeXFontInst* font = new XeTeXFontInst_FT2(filename, index, Fix2D(pointSize), status);
+	XeTeXFontInst* font = new XeTeXFontInst(filename, index, Fix2D(pointSize), status);
 	if (status != 0) {
 		delete font;
 		return NULL;

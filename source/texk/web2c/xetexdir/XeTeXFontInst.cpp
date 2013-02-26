@@ -48,68 +48,92 @@ authorization from the copyright holders.
 #include "sfnt.h"
 
 #include <string.h>
+#include FT_TRUETYPE_TABLES_H
+#include FT_TYPE1_TABLES_H
+#include FT_GLYPH_H
 
+FT_Library gFreeTypeLibrary = 0;
 
-XeTeXFontInst::XeTeXFontInst(float pointSize, int &status)
+XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, int &status)
     : fPointSize(pointSize)
     , fUnitsPerEM(0)
     , fAscent(0)
     , fDescent(0)
     , fItalicAngle(0)
-    , fMetricsTable(NULL)
-    , fNumLongMetrics(0)
     , fNumGlyphs(0)
     , fNumGlyphsInited(false)
     , fVertical(false)
     , fFilename(NULL)
+    , face(0)
     , hbFont(NULL)
 {
-	// the concrete subclass is responsible to call initialize()
+	if (pathname != NULL)
+		initialize(pathname, index, status);
 }
 
 XeTeXFontInst::~XeTeXFontInst()
 {
-	if (fMetricsTable != NULL)
-		deleteTable(fMetricsTable);
+	if (face != 0) {
+		FT_Done_Face(face);
+		face = 0;
+	}
+	hb_font_destroy(hbFont);
 }
 
-void XeTeXFontInst::initialize(int &status)
+void
+XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 {
-    const HEADTable *headTable = NULL;
-    const HHEATable *dirHeadTable = NULL;
+	FT_Error err;
+
+	if (!gFreeTypeLibrary) {
+		err = FT_Init_FreeType(&gFreeTypeLibrary);
+		if (err != 0) {
+			fprintf(stderr, "FreeType initialization failed! (%d)\n", err);
+			exit(1);
+		}
+	}
+
+	err = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &face);
+
+	if (err != 0) {
+        status = 1;
+        return;
+    }
+
+	/* for non-sfnt-packaged fonts (presumably Type 1), see if there is an AFM file we can attach */
+	if (index == 0 && !FT_IS_SFNT(face)) {
+		char* afm = new char[strlen((const char*)pathname) + 5]; // room to append ".afm"
+		strcpy(afm, (const char*)pathname);
+		char* p = strrchr(afm, '.');
+		if (p == NULL || strlen(p) != 4 || tolower(*(p+1)) != 'p' || tolower(*(p+2)) != 'f')
+			strcat(afm, ".afm");   // append .afm if the extension didn't seem to be .pf[ab]
+		else
+			strcpy(p, ".afm"); 	   // else replace extension with .afm
+		FT_Attach_File(face, afm); // ignore error code; AFM might not exist
+		delete[] afm;
+	}
+
+	if (face == 0) {
+		status = 1;
+		return;
+	}
+
+	FT_Set_Char_Size(face, fPointSize * 64, 0, 0, 0);
+	hbFont = hb_ft_font_create(face, NULL);
+
+	char buf[20];
+	if (index > 0)
+		sprintf(buf, ":%d", index);
+	else
+		buf[0] = 0;
+	fFilename = new char[strlen(pathname) + 2 + strlen(buf) + 1];
+	sprintf(fFilename, "[%s%s]", pathname, buf);
+	fUnitsPerEM = face->units_per_EM;
+	fAscent = unitsToPoints(face->ascender);
+	fDescent = unitsToPoints(face->descender);
+	fItalicAngle = 0;
+
     const POSTTable *postTable = NULL;
-
-    // dispose of any cached metrics table
-    if (fMetricsTable != NULL) {
-	    deleteTable(fMetricsTable);
-    	fMetricsTable = NULL;
-    }
-    
-    // read unitsPerEm from 'head' table
-    headTable = (const HEADTable *) readFontTable(kHEAD);
-
-    if (headTable == NULL) {
-        status = 1;
-        goto error_exit;
-    }
-
-    fUnitsPerEM = SWAP(headTable->unitsPerEm);
-    deleteTable(headTable);
-
-	// we use the fact that 'hhea' and 'vhea' have the same format!
-    dirHeadTable = (const HHEATable *) readFontTable(fVertical ? kVHEA : kHHEA);
-
-    if (dirHeadTable == NULL) {
-        status = 1;
-        goto error_exit;
-    }
-
-    fAscent  = unitsToPoints((float)(int16_t)SWAP(dirHeadTable->ascent));
-    fDescent = unitsToPoints((float)(int16_t)SWAP(dirHeadTable->descent));
-
-    fNumLongMetrics = SWAP(dirHeadTable->numOfLongHorMetrics);
-
-    deleteTable(dirHeadTable);
 
     postTable = (const POSTTable *) readFontTable(kPOST);
 
@@ -119,16 +143,11 @@ void XeTeXFontInst::initialize(int &status)
     }
 
     return;
-
-error_exit:
-    return;
 }
 
 void XeTeXFontInst::setLayoutDirVertical(bool vertical)
 {
 	fVertical = vertical;
-	int	status = 0;
-	initialize(status);
 }
 
 void XeTeXFontInst::deleteTable(const void *table) const
@@ -158,49 +177,79 @@ const void *XeTeXFontInst::readFontTable(OTTag tableTag, uint32_t& len) const
     return readTable(tableTag, &len);
 }
 
-uint16_t XeTeXFontInst::getNumGlyphs() const
+const void *
+XeTeXFontInst::readTable(OTTag tag, uint32_t *length) const
 {
-    if (!fNumGlyphsInited) {
-        const MAXPTable *maxpTable = (MAXPTable *) readFontTable(kMAXP);
+	*length = 0;
+	FT_ULong tmpLength = 0;
+	FT_Error err = FT_Load_Sfnt_Table(face, tag, 0, NULL, &tmpLength);
+	if (err != 0)
+		return NULL;
 
-        if (maxpTable != NULL) {
-			XeTeXFontInst *realThis = (XeTeXFontInst *) this;
-            realThis->fNumGlyphs = SWAP(maxpTable->numGlyphs);
-            deleteTable(maxpTable);
-			realThis->fNumGlyphsInited = true;
+	void* table = xmalloc(tmpLength * sizeof(char));
+	if (table != NULL) {
+		err = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, &tmpLength);
+		if (err != 0) {
+			free((void *) table);
+			return NULL;
 		}
-    }
+		*length = tmpLength;
+	}
 
-	return fNumGlyphs;
+    return table;
 }
 
-void XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
+void
+XeTeXFontInst::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 {
-    if (fMetricsTable == NULL) {
-        XeTeXFontInst *realThis = (XeTeXFontInst *) this;
-        // we use the fact that 'hmtx' and 'vmtx' have the same format
-        realThis->fMetricsTable = (const HMTXTable *) readFontTable(fVertical ? kVMTX : kHMTX);
-    }
+	bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0.0;
 
-    uint16_t index = glyph;
+	FT_Error err = FT_Load_Glyph(face, gid, FT_LOAD_NO_SCALE);
+	if (err != 0)
+		return;
 
-    if (glyph >= getNumGlyphs() || fMetricsTable == NULL) {
-        advance.x = advance.y = 0;
-        return;
-    }
+    FT_Glyph glyph;
+    err = FT_Get_Glyph(face->glyph, &glyph);
+	if (err == 0) {
+		FT_BBox ft_bbox;
+		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_UNSCALED, &ft_bbox);
+		bbox->xMin = unitsToPoints(ft_bbox.xMin);
+		bbox->yMin = unitsToPoints(ft_bbox.yMin);
+		bbox->xMax = unitsToPoints(ft_bbox.xMax);
+		bbox->yMax = unitsToPoints(ft_bbox.yMax);
+		FT_Done_Glyph(glyph);
+	}
+}
 
-    if (glyph >= fNumLongMetrics) {
-        index = fNumLongMetrics - 1;
-    }
+GlyphID
+XeTeXFontInst::mapCharToGlyph(UChar32 ch) const
+{
+	return FT_Get_Char_Index(face, ch);
+}
 
-    advance.x = unitsToPoints(SWAP(fMetricsTable->hMetrics[index].advanceWidth));
-    advance.y = 0;
+uint16_t
+XeTeXFontInst::getNumGlyphs() const
+{
+	return face->num_glyphs;
+}
+
+void
+XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
+{
+	FT_Error err = FT_Load_Glyph(face, glyph, FT_LOAD_NO_SCALE);
+	if (err != 0) {
+		advance.x = advance.y = 0;
+	}
+	else {
+		advance.x = fVertical ? 0 : unitsToPoints(face->glyph->metrics.horiAdvance);
+		advance.y = fVertical ? unitsToPoints(face->glyph->metrics.vertAdvance) : 0;
+	}
 }
 
 float
 XeTeXFontInst::getGlyphWidth(GlyphID gid)
 {
-	realpoint	advance;
+	realpoint advance;
 	getGlyphAdvance(gid, advance);
 	return advance.x;
 }
@@ -208,9 +257,9 @@ XeTeXFontInst::getGlyphWidth(GlyphID gid)
 void
 XeTeXFontInst::getGlyphHeightDepth(GlyphID gid, float* ht, float* dp)
 {
-	GlyphBBox	bbox;
+	GlyphBBox bbox;
 	getGlyphBounds(gid, &bbox);
-	
+
 	if (ht)
 		*ht = bbox.yMax;
 	if (dp)
@@ -220,10 +269,10 @@ XeTeXFontInst::getGlyphHeightDepth(GlyphID gid, float* ht, float* dp)
 void
 XeTeXFontInst::getGlyphSidebearings(GlyphID gid, float* lsb, float* rsb)
 {
-	realpoint	adv;
+	realpoint adv;
 	getGlyphAdvance(gid, adv);
 
-	GlyphBBox	bbox;
+	GlyphBBox bbox;
 	getGlyphBounds(gid, &bbox);
 
 	if (lsb)
@@ -235,16 +284,57 @@ XeTeXFontInst::getGlyphSidebearings(GlyphID gid, float* lsb, float* rsb)
 float
 XeTeXFontInst::getGlyphItalCorr(GlyphID gid)
 {
-	float	rval = 0.0;
+	float rval = 0.0;
 
-	realpoint	adv;
+	realpoint adv;
 	getGlyphAdvance(gid, adv);
 
-	GlyphBBox	bbox;
+	GlyphBBox bbox;
 	getGlyphBounds(gid, &bbox);
 	
 	if (bbox.xMax > adv.x)
 		rval = bbox.xMax - adv.x;
 	
 	return rval;
+}
+
+GlyphID
+XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
+{
+	return FT_Get_Name_Index(face, const_cast<char*>(glyphName));
+}
+
+const char*
+XeTeXFontInst::getGlyphName(GlyphID gid, int& nameLen)
+{
+	if (FT_HAS_GLYPH_NAMES(face)) {
+		static char buffer[256];
+		FT_Get_Glyph_Name(face, gid, buffer, 256);
+		nameLen = strlen(buffer);
+		return &buffer[0];
+	}
+	else {
+		nameLen = 0;
+		return NULL;
+	}
+}
+
+UChar32
+XeTeXFontInst::getFirstCharCode()
+{
+	FT_UInt  gindex;
+	return FT_Get_First_Char(face, &gindex);
+}
+
+UChar32
+XeTeXFontInst::getLastCharCode()
+{
+	FT_UInt  gindex;
+	UChar32	ch = FT_Get_First_Char(face, &gindex);
+	UChar32	prev = ch;
+	while (gindex != 0) {
+		prev = ch;
+		ch = FT_Get_Next_Char(face, ch, &gindex);
+	}
+	return prev;
 }

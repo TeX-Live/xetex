@@ -44,6 +44,8 @@ authorization from the copyright holders.
 #define __XeTeXFontInst_H
 
 #include <stdio.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include "FontTableCache.h"
 
@@ -56,8 +58,6 @@ authorization from the copyright holders.
 
 class XeTeXFontInst : protected FontTableCache
 {
-friend class XeTeXGrFont;
-
 protected:
     float    fPointSize;
 
@@ -70,8 +70,6 @@ protected:
 
 	float fItalicAngle;
 
-    const HMTXTable *fMetricsTable;
-    uint16_t fNumLongMetrics;
     uint16_t fNumGlyphs;
 	bool fNumGlyphsInited;
 	
@@ -79,19 +77,22 @@ protected:
 
 	char *fFilename; // actually holds [filename:index], as used in xetex
 
-    virtual const void *readTable(OTTag tag, uint32_t *length) const = 0;
+    virtual const void *readTable(OTTag tag, uint32_t *length) const;
     void deleteTable(const void *table) const;
     void getMetrics();
 
     const void *readFontTable(OTTag tableTag) const;
     const void *readFontTable(OTTag tableTag, uint32_t& len) const;
 
+	FT_Face			face;
+
 public:
     XeTeXFontInst(float pointSize, int &status);
+	XeTeXFontInst(const char* filename, int index, float pointSize, int &status);
 
     virtual ~XeTeXFontInst();
 
-	virtual void initialize(int &status);
+	virtual void initialize(const char* pathname, int index, int &status);
 
     virtual const void *getFontTable(OTTag tableTag) const;
 	virtual const void *getFontTable(OTTag tableTag, uint32_t* length) const;
@@ -123,26 +124,24 @@ public:
         return fDescent;
     }
 
-    /* must be implemented by subclass */
-    virtual GlyphID mapCharToGlyph(UChar32 ch) const = 0;
-    virtual GlyphID mapGlyphToIndex(const char* glyphName) const = 0;
+    virtual GlyphID mapCharToGlyph(UChar32 ch) const;
+    virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
 
 	virtual uint16_t getNumGlyphs() const;
 
     virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
 
-	virtual void getGlyphBounds(GlyphID glyph, GlyphBBox *bbox) = 0; /* must be implemented by subclass */
+	virtual void getGlyphBounds(GlyphID glyph, GlyphBBox* bbox);
 
 	float getGlyphWidth(GlyphID glyph);
 	void getGlyphHeightDepth(GlyphID glyph, float *ht, float* dp);
 	void getGlyphSidebearings(GlyphID glyph, float* lsb, float* rsb);
 	float getGlyphItalCorr(GlyphID glyph);
 
-    /* must be implemented by subclass */
-	virtual const char* getGlyphName(GlyphID gid, int& nameLen) = 0;
+	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
 	
-	virtual UChar32 getFirstCharCode() = 0;
-	virtual UChar32 getLastCharCode() = 0;
+	virtual UChar32 getFirstCharCode();
+	virtual UChar32 getLastCharCode();
 
     float getPointSize() const
     {

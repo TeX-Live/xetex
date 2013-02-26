@@ -42,11 +42,11 @@ authorization from the copyright holders.
 #ifndef __XeTeXFontInst_Mac_H
 #define __XeTeXFontInst_Mac_H
 
-#include "XeTeXFontInst_FT2.h"
+#include "XeTeXFontInst.h"
 
 #include <ApplicationServices/ApplicationServices.h>
 
-class XeTeXFontInst_Mac : public XeTeXFontInst_FT2
+class XeTeXFontInst_Mac : public XeTeXFontInst
 {
 protected:
     const void *readTable(OTTag tag, uint32_t *length) const;
