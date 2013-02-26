@@ -49,8 +49,6 @@ authorization from the copyright holders.
 
 #include "FontTableCache.h"
 
-#include "sfnt.h"
-
 #include "XeTeXFontMgr.h"
 #include "XeTeX_ext.h"
 
@@ -61,7 +59,7 @@ class XeTeXFontInst : protected FontTableCache
 protected:
     float    fPointSize;
 
-    int32_t fUnitsPerEM;
+    unsigned short fUnitsPerEM;
     float fAscent;
     float fDescent;
 
@@ -108,11 +106,6 @@ public:
 	{
 		return fVertical;
 	};
-
-    virtual int32_t getUnitsPerEM() const
-    {
-        return fUnitsPerEM;
-    };
 
     virtual float getAscent() const
     {

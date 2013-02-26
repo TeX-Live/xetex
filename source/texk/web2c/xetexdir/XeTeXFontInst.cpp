@@ -45,8 +45,6 @@ authorization from the copyright holders.
 
 #include "XeTeX_ext.h"
 
-#include "sfnt.h"
-
 #include <string.h>
 #include FT_TRUETYPE_TABLES_H
 #include FT_TYPE1_TABLES_H
@@ -83,6 +81,7 @@ XeTeXFontInst::~XeTeXFontInst()
 void
 XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 {
+	TT_Postscript *postTable;
 	FT_Error err;
 
 	if (!gFreeTypeLibrary) {
@@ -133,14 +132,11 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 	fDescent = unitsToPoints(face->descender);
 	fItalicAngle = 0;
 
-    const POSTTable *postTable = NULL;
+	postTable = (TT_Postscript *) FT_Get_Sfnt_Table(face, ft_sfnt_post);
 
-    postTable = (const POSTTable *) readFontTable(kPOST);
-
-    if (postTable != NULL) {
-		fItalicAngle = Fix2D(SWAP(uint32_t(postTable->italicAngle)));
-		deleteTable(postTable);
-    }
+	if (postTable != NULL) {
+		fItalicAngle = Fix2D(postTable->italicAngle);
+	}
 
     return;
 }
