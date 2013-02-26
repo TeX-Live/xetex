@@ -65,61 +65,6 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 		CFRelease(fFontRef);
 }
 
-static hb_bool_t _get_glyph(hb_font_t*, void* font, hb_codepoint_t ch, hb_codepoint_t vs, hb_codepoint_t* glyph, void*)
-{
-	*glyph = mapCharToGlyphFromCTFont((CTFontRef) font, ch, vs);
-	return !!glyph;
-}
-
-static hb_position_t _get_glyph_h_advance(hb_font_t*, void* font, hb_codepoint_t glyph, void*)
-{
-	CGGlyph cgGlyph = glyph;
-	float advance = CTFontGetAdvancesForGlyphs((CTFontRef) font, kCTFontHorizontalOrientation, &cgGlyph, 0, 1);
-	return advance * 64;
-}
-
-static hb_position_t _get_glyph_v_advance(hb_font_t*, void* font, hb_codepoint_t glyph, void*)
-{
-	CGGlyph cgGlyph = glyph;
-	float advance = CTFontGetAdvancesForGlyphs((CTFontRef) font, kCTFontVerticalOrientation, &cgGlyph, 0, 1);
-	return advance * 64;
-}
-
-static hb_bool_t _get_glyph_extents(hb_font_t*, void* font, hb_codepoint_t glyph, hb_glyph_extents_t* extents, void*)
-{
-	GlyphBBox bbox;
-	getGlyphBBoxFromCTFont((CTFontRef) font, glyph, &bbox);
-	extents->x_bearing = bbox.xMin;
-	extents->y_bearing = bbox.yMax;
-	extents->width = bbox.xMax - bbox.xMin;
-	extents->height = bbox.yMax - bbox.yMin;
-
-	return true;
-}
-
-static hb_font_funcs_t* _get_font_funcs()
-{
-	static hb_font_funcs_t* _font_funcs = 0;
-	_font_funcs = hb_font_funcs_create();
-	hb_font_funcs_set_glyph_func(_font_funcs, _get_glyph, 0, 0);
-	hb_font_funcs_set_glyph_h_advance_func(_font_funcs, _get_glyph_h_advance, 0, 0);
-	hb_font_funcs_set_glyph_v_advance_func(_font_funcs, _get_glyph_v_advance, 0, 0);
-	hb_font_funcs_set_glyph_extents_func(_font_funcs, _get_glyph_extents, 0, 0);
-	hb_font_funcs_make_immutable(_font_funcs);
-
-	return _font_funcs;
-}
-
-static hb_blob_t* _get_font_table(hb_face_t*, hb_tag_t tag, void* userData)
-{
-	XeTeXFontInst* font = (XeTeXFontInst*) userData;
-	uint32_t length;
-	const void *table = font->getFontTable((OTTag) tag, &length);
-	if (!table || !length)
-		return 0;
-	return hb_blob_create((const char*) table, length, HB_MEMORY_MODE_READONLY, NULL, NULL);
-}
-
 void XeTeXFontInst_Mac::initialize(int &status)
 {
     if (fDescriptor == 0) {
