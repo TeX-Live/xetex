@@ -75,58 +75,6 @@ struct HEADTable
     int16_t		glyphDataFormat;
 };
 
-struct MAXPTable
-{
-    fixed		version;
-    uint16_t	numGlyphs;
-    uint16_t	maxPoints;
-    uint16_t	maxContours;
-    uint16_t	maxComponentPoints;
-    uint16_t	maxComponentContours;
-    uint16_t	maxZones;
-    uint16_t	maxTwilightPoints;
-    uint16_t	maxStorage;
-    uint16_t	maxFunctionDefs;
-    uint16_t	maxInstructionDefs;
-    uint16_t	maxStackElements;
-    uint16_t	maxSizeOfInstructions;
-    uint16_t	maxComponentElements;
-    uint16_t	maxComponentDepth;
-};
-
-struct HHEATable
-{
-    fixed		version;
-    int16_t		ascent;
-    int16_t		descent;
-    int16_t		lineGap;
-    uint16_t	advanceWidthMax;
-    int16_t		minLeftSideBearing;
-    int16_t		minRightSideBearing;
-    int16_t		xMaxExtent;
-    int16_t		caretSlopeRise;
-    int16_t		caretSlopeRun;
-    int16_t		caretOffset;
-    int16_t		reserved1;
-    int16_t		reserved2;
-    int16_t		reserved3;
-    int16_t		reserved4;
-    int16_t		metricDataFormat;
-    uint16_t	numOfLongHorMetrics;
-};
-
-typedef struct
-{
-	uint16_t	advanceWidth;
-	int16_t		leftSideBearing;
-} LongHorMetric;
-
-struct HMTXTable
-{
-    LongHorMetric hMetrics[ANY_NUMBER];        // ANY_NUMBER = numOfLongHorMetrics from hhea table
-//  int16_t        leftSideBearing[ANY_NUMBER]; // ANY_NUMBER = numGlyphs - numOfLongHorMetrics
-};
-
 struct POSTTable
 {
 	fixed		version;
