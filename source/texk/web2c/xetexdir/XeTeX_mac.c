@@ -195,7 +195,7 @@ DoAtsuiLayout(void* p, int justify)
 	CFRelease(typesetter);
 }
 
-void getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
+static void getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
 {
 	CGRect rect;
 
@@ -225,7 +225,7 @@ void GetGlyphBBox_AAT(CFDictionaryRef attributes, UInt16 gid, GlyphBBox* bbox)
 	return getGlyphBBoxFromCTFont(font, gid, bbox);
 }
 
-double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid)
+static double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid)
 {
 	CGSize advances[1] = { CGSizeMake(0, 0) };
 	return PStoTeXPoints(CTFontGetAdvancesForGlyphs(font, 0, &gid, advances, 1));
@@ -275,7 +275,7 @@ double GetGlyphItalCorr_AAT(CFDictionaryRef attributes, UInt16 gid)
 	return 0;
 }
 
-int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
+static int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
 {
 	CGGlyph glyphs[2] = { 0 };
 	UniChar	txt[2];
@@ -302,13 +302,7 @@ int MapCharToGlyph_AAT(CFDictionaryRef attributes, UInt32 ch)
 	return mapCharToGlyphFromCTFont(font, ch);
 }
 
-int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName)
-{
-	CTFontRef font = fontFromAttributes(attributes);
-	return GetGlyphIDFromCTFont(font, glyphName);
-}
-
-int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName)
+static int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName)
 {
 	CFStringRef glyphname = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
 															glyphName,
@@ -317,6 +311,12 @@ int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName)
 	int rval = CTFontGetGlyphWithName(ctFontRef, glyphname);
 	CFRelease(glyphname);
 	return rval;
+}
+
+int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName)
+{
+	CTFontRef font = fontFromAttributes(attributes);
+	return GetGlyphIDFromCTFont(font, glyphName);
 }
 
 char*

@@ -306,7 +306,6 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 	int MapCharToGlyph_AAT(CFDictionaryRef fontAttrs, UInt32 ch);
 	int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName);
 	char* GetGlyphNameFromCTFont(CTFontRef ctFontRef, uint16_t gid, int* len);
-	int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName);
 	CFDictionaryRef findDictionaryInArray(CFArrayRef array, const void* nameKey, const char* name, int nameLength);
 	CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array, const void* identifierKey, int identifier);
 	CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int nameLength);
@@ -315,9 +314,6 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 	int GetFontCharRange_AAT(CFDictionaryRef fontAttrs, int reqFirst);
 	CTFontRef fontFromAttributes(CFDictionaryRef fontAttrs);
 	CTFontRef fontFromInteger(integer font);
-	void getGlyphBBoxFromCTFont(CTFontRef ctFontRef, uint16_t gid, GlyphBBox* bbox);
-	int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch);
-	double getGlyphWidthFromCTFont(CTFontRef font, uint16_t gid);
 #endif
 #ifdef __cplusplus
 };
