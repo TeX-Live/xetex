@@ -87,7 +87,6 @@ authorization from the copyright holders.
 #include <unicode/ucnv.h>
 
 #include <assert.h>
-#include "sfnt.h"
 
 /* tables/values used in UTF-8 interpretation - 
    code is based on ConvertUTF.[ch] sample code

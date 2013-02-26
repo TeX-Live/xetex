@@ -36,8 +36,6 @@ authorization from the copyright holders.
 #include "XeTeXFontMgr_FC.h"
 #endif
 #include "XeTeXFontInst.h"
-#include "XeTeXswap.h"
-#include "sfnt.h"
 
 extern "C" {
 extern Fixed loadedfontdesignsize;
