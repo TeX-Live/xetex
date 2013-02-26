@@ -92,22 +92,3 @@ void XeTeXFontInst_Mac::initialize(int &status)
 		fDescriptor = 0;
 	}
 }
-
-const void *XeTeXFontInst_Mac::readTable(OTTag tag, uint32_t *length) const
-{
-	if (!fFontRef) {
-		*length = 0;
-		return NULL;
-	}
-	CFDataRef tableData = CTFontCopyTable(fFontRef, tag, 0);
-	if (!tableData) {
-		*length = 0;
-		return NULL;
-	}
-	*length = CFDataGetLength(tableData);
-	UInt8* table = (UInt8*) xmalloc(*length * sizeof(UInt8));
-	if (table != NULL)
-		CFDataGetBytes(tableData, CFRangeMake(0, *length), table);
-
-	return table;
-}

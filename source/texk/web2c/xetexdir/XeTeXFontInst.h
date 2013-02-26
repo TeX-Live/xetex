@@ -46,15 +46,14 @@ authorization from the copyright holders.
 #include <stdio.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-#include "FontTableCache.h"
+#include FT_TRUETYPE_TABLES_H
 
 #include "XeTeXFontMgr.h"
 #include "XeTeX_ext.h"
 
 // create specific subclasses for each supported platform
 
-class XeTeXFontInst : protected FontTableCache
+class XeTeXFontInst
 {
 protected:
     float    fPointSize;
@@ -75,12 +74,7 @@ protected:
 
 	char *fFilename; // actually holds [filename:index], as used in xetex
 
-    virtual const void *readTable(OTTag tag, uint32_t *length) const;
-    void deleteTable(const void *table) const;
     void getMetrics();
-
-    const void *readFontTable(OTTag tableTag) const;
-    const void *readFontTable(OTTag tableTag, uint32_t& len) const;
 
 	FT_Face			face;
 
@@ -93,7 +87,7 @@ public:
 	virtual void initialize(const char* pathname, int index, int &status);
 
     virtual const void *getFontTable(OTTag tableTag) const;
-	virtual const void *getFontTable(OTTag tableTag, uint32_t* length) const;
+    virtual const void *getFontTable(FT_Sfnt_Tag tableTag) const;
 
 	virtual const char *getFilename() const
 	{

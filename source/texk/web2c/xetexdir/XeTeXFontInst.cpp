@@ -46,8 +46,6 @@ authorization from the copyright holders.
 #include "XeTeX_ext.h"
 
 #include <string.h>
-#include FT_TRUETYPE_TABLES_H
-#include FT_TYPE1_TABLES_H
 #include FT_GLYPH_H
 
 FT_Library gFreeTypeLibrary = 0;
@@ -132,7 +130,7 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 	fDescent = unitsToPoints(face->descender);
 	fItalicAngle = 0;
 
-	postTable = (TT_Postscript *) FT_Get_Sfnt_Table(face, ft_sfnt_post);
+	postTable = (TT_Postscript *) getFontTable(ft_sfnt_post);
 
 	if (postTable != NULL) {
 		fItalicAngle = Fix2D(postTable->italicAngle);
@@ -146,37 +144,9 @@ void XeTeXFontInst::setLayoutDirVertical(bool vertical)
 	fVertical = vertical;
 }
 
-void XeTeXFontInst::deleteTable(const void *table) const
-{
-    free((void *) table);
-}
-
-const void *XeTeXFontInst::getFontTable(OTTag tableTag) const
-{
-    return FontTableCache::find(tableTag);
-}
-
-const void *XeTeXFontInst::getFontTable(OTTag tableTag, uint32_t *length) const
-{
-    return FontTableCache::find(tableTag, length);
-}
-
-const void *XeTeXFontInst::readFontTable(OTTag tableTag) const
-{
-    uint32_t len;
-
-    return readTable(tableTag, &len);
-}
-
-const void *XeTeXFontInst::readFontTable(OTTag tableTag, uint32_t& len) const
-{
-    return readTable(tableTag, &len);
-}
-
 const void *
-XeTeXFontInst::readTable(OTTag tag, uint32_t *length) const
+XeTeXFontInst::getFontTable(OTTag tag) const
 {
-	*length = 0;
 	FT_ULong tmpLength = 0;
 	FT_Error err = FT_Load_Sfnt_Table(face, tag, 0, NULL, &tmpLength);
 	if (err != 0)
@@ -189,10 +159,15 @@ XeTeXFontInst::readTable(OTTag tag, uint32_t *length) const
 			free((void *) table);
 			return NULL;
 		}
-		*length = tmpLength;
 	}
 
     return table;
+}
+
+const void *
+XeTeXFontInst::getFontTable(FT_Sfnt_Tag tag) const
+{
+	return FT_Get_Sfnt_Table(face, tag);
 }
 
 void

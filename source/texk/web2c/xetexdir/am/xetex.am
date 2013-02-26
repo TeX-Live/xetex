@@ -124,8 +124,6 @@ libxetex_a_OBJCXXFLAGS = # $(WARNING_OBJCXXFLAGS)
 
 libxetex_a_SOURCES = \
 	xetexdir/MathTable.h \
-	xetexdir/FontTableCache.cpp \
-	xetexdir/FontTableCache.h \
 	xetexdir/XeTeXFontInst.cpp \
 	xetexdir/XeTeXFontInst.h \
 	xetexdir/XeTeXFontMgr.cpp \
