@@ -54,25 +54,12 @@ protected:
 	CTFontDescriptorRef fDescriptor;
 	CTFontRef           fFontRef;
 
-	int fFirstCharCode;
-	int fLastCharCode;
-
 public:
     			XeTeXFontInst_Mac(CTFontDescriptorRef descriptor, float pointSize, int &status);
 
     virtual 	~XeTeXFontInst_Mac();
 
 	virtual void initialize(int &status);
-	
-	virtual void	getGlyphBounds(GlyphID gid, GlyphBBox* bbox);
-
-	virtual GlyphID mapCharToGlyph(UChar32 ch) const;
-	virtual GlyphID	mapGlyphToIndex(const char* glyphName) const;
-
-	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
-
-	virtual UChar32 getFirstCharCode();
-	virtual UChar32 getLastCharCode();
 };
 
 #endif
