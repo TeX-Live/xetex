@@ -1607,6 +1607,8 @@ makefontdef(integer f)
 		CGAffineTransform t;
 		CFNumberRef emboldenNumber;
 		CGFloat fSize;
+		char *pathname;
+		int index;
 
 		flags = XDV_FLAG_FONTTYPE_ATSUI;
 		attributes = (CFDictionaryRef) fontlayoutengine[f];
@@ -1617,8 +1619,17 @@ makefontdef(integer f)
 			CFRelease(variation);
 		}
 
-		psName = getFileNameFromCTFont(font);
-		if (psName) {
+		pathname = getFileNameFromCTFont(font, &index);
+		if (pathname) {
+			char buf[20];
+
+			if (index > 0)
+				sprintf(buf, ":%d", index);
+			else
+				buf[0] = '\0';
+
+			psName = xmalloc(strlen((char*) pathname) + 2 + strlen(buf) + 1);
+			sprintf((char*) psName, "[%s%s]", pathname, buf);
 			famName = "";
 			styName = "";
 		} else {

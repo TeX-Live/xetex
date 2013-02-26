@@ -384,7 +384,7 @@ char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 	return 0;
 }
 
-char* getFileNameFromCTFont(CTFontRef ctFontRef)
+char* getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
 {
 	char *ret = NULL;
 	CFURLRef url = NULL;
@@ -406,8 +406,8 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 		if (CFURLGetFileSystemRepresentation(url, true, pathname, PATH_MAX)) {
 			FT_Error error;
 			FT_Face face;
-			int index = 0;
-			char buf[20];
+
+			*index = 0;
 
 			if (!gFreeTypeLibrary) {
 				error = FT_Init_FreeType(&gFreeTypeLibrary);
@@ -430,7 +430,7 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 							const char *ps_name2 = FT_Get_Postscript_Name(face);
 							FT_Done_Face (face);
 							if (strcmp(ps_name1, ps_name2) == 0) {
-								index = i;
+								*index = i;
 								break;
 							}
 						}
@@ -438,13 +438,7 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef)
 				}
 			}
 
-			if (index > 0)
-				sprintf(buf, ":%d", index);
-			else
-				buf[0] = '\0';
-
-			ret = xmalloc(strlen((char*) pathname) + 2 + strlen(buf) + 1);
-			sprintf(ret, "[%s%s]", pathname, buf);
+			ret = strdup(pathname);
 		}
 		CFRelease(url);
 	}

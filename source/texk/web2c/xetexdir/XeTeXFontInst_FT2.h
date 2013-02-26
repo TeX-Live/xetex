@@ -55,11 +55,12 @@ protected:
 	FT_Face			face;
 	
 public:
+					XeTeXFontInst_FT2(float pointSize, int &status);
 					XeTeXFontInst_FT2(const char* filename, int index, float pointSize, int &status);
 
     virtual 		~XeTeXFontInst_FT2();
 
-	virtual void	initialize(int &status);
+	virtual void	initialize(const char* pathname, int index, int &status);
 
 	virtual void	getGlyphBounds(GlyphID gid, GlyphBBox* bbox);
 

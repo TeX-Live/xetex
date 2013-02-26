@@ -44,7 +44,7 @@ authorization from the copyright holders.
 #include "XeTeX_ext.h"
 
 XeTeXFontInst_Mac::XeTeXFontInst_Mac(CTFontDescriptorRef descriptor, float pointSize, int &status)
-    : XeTeXFontInst(pointSize, status)
+    : XeTeXFontInst_FT2(pointSize, status)
     , fDescriptor(descriptor)
     , fFontRef(0)
     , fFirstCharCode(-1)
@@ -142,22 +142,16 @@ void XeTeXFontInst_Mac::initialize(int &status)
 	CFRelease(attributes);
 	fFontRef = CTFontCreateWithFontDescriptor(fDescriptor, fPointSize * 72.0 / 72.27, NULL);
 	if (fFontRef) {
-		fFilename = getFileNameFromCTFont(fFontRef);
+		char *pathname;
+		int index;
+		pathname = getFileNameFromCTFont(fFontRef, &index);
 
-		/* for HarfBuzz */
-		hb_face_t* lFace = hb_face_create_for_tables(_get_font_table, this, 0);
-		hb_face_set_upem (lFace, fUnitsPerEM);
-		hbFont = hb_font_create(lFace);
-		hb_font_set_funcs(hbFont, _get_font_funcs(), (void*) fFontRef, 0);
-		hb_font_set_scale(hbFont, fPointSize, fPointSize);
-		hb_font_set_ppem(hbFont, fPointSize, fPointSize);
+		XeTeXFontInst_FT2::initialize(pathname, index, status);
 	} else {
 		status = 1;
 		CFRelease(fDescriptor);
 		fDescriptor = 0;
 	}
-	
-	XeTeXFontInst::initialize(status);
 }
 
 const void *XeTeXFontInst_Mac::readTable(OTTag tag, uint32_t *length) const

@@ -48,15 +48,34 @@ authorization from the copyright holders.
 
 FT_Library	gFreeTypeLibrary = 0;
 
+XeTeXFontInst_FT2::XeTeXFontInst_FT2(float pointSize, int &status)
+    : XeTeXFontInst(pointSize, status)
+{
+}
+
 XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float pointSize, int &status)
     : XeTeXFontInst(pointSize, status)
     , face(0)
 {
-    if (status != 0) {
-        return;
-    }
+	if (status != 0)
+		return;
 
+	initialize(pathname, index, status);
+}
+
+XeTeXFontInst_FT2::~XeTeXFontInst_FT2()
+{
+	if (face != 0) {
+		FT_Done_Face(face);
+		face = 0;
+	}
+	hb_font_destroy(hbFont);
+}
+
+void XeTeXFontInst_FT2::initialize(const char* pathname, int index, int &status)
+{
 	FT_Error	err;
+
 	if (!gFreeTypeLibrary) {
 		err = FT_Init_FreeType(&gFreeTypeLibrary);
 		if (err != 0) {
@@ -85,12 +104,12 @@ XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float poin
 		delete[] afm;
 	}
 
-	initialize(status);
-
-	if (status != 0)
+	if (face == 0) {
+		status = 1;
 		return;
+	}
 
-	FT_Set_Char_Size(face, pointSize * 64, 0, 0, 0);
+	FT_Set_Char_Size(face, fPointSize * 64, 0, 0, 0);
 	hbFont = hb_ft_font_create(face, NULL);
 	
 	char	buf[20];
@@ -100,24 +119,6 @@ XeTeXFontInst_FT2::XeTeXFontInst_FT2(const char* pathname, int index, float poin
 		buf[0] = 0;
 	fFilename = new char[strlen(pathname) + 2 + strlen(buf) + 1];
 	sprintf(fFilename, "[%s%s]", pathname, buf);
-}
-
-XeTeXFontInst_FT2::~XeTeXFontInst_FT2()
-{
-	if (face != 0) {
-		FT_Done_Face(face);
-		face = 0;
-	}
-	hb_font_destroy(hbFont);
-}
-
-void XeTeXFontInst_FT2::initialize(int &status)
-{
-    if (face == 0) {
-        status = 1;
-        return;
-    }
-
 	XeTeXFontInst::initialize(status);
 
 	if (status != 0) {
