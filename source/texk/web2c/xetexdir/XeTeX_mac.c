@@ -45,8 +45,6 @@ authorization from the copyright holders.
 #include "XeTeX_ext.h"
 #include "XeTeXLayoutInterface.h"
 
-#include "XeTeXswap.h"
-
 static inline double
 TeXtoPSPoints(double pts)
 {

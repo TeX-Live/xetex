@@ -41,7 +41,6 @@ authorization from the copyright holders.
 #include "XeTeXFontInst_Mac.h"
 #endif
 #include "XeTeXFontMgr.h"
-#include "XeTeXswap.h"
 
 struct XeTeXLayoutEngine_rec
 {
