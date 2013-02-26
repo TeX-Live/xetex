@@ -40,7 +40,6 @@ authorization from the copyright holders.
 #ifdef XETEX_MAC
 #include "XeTeXFontInst_Mac.h"
 #endif
-#include "XeTeXFontInst.h"
 #include "XeTeXFontMgr.h"
 #include "XeTeXswap.h"
 

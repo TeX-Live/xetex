@@ -523,28 +523,28 @@ XeTeXFontMgr::getOpSizeRecAndStyleFlags(Font* theFont)
 		}
 	done_size:
 
-		const OS2TableHeader* os2Table = (const OS2TableHeader*)getFontTablePtr(font, kOS_2);
+		const TT_OS2* os2Table = (TT_OS2*)getFontTable(font, ft_sfnt_os2);
 		if (os2Table != NULL) {
-			theFont->weight = SWAP(os2Table->usWeightClass);
-			theFont->width = SWAP(os2Table->usWidthClass);
-			uint16_t sel = SWAP(os2Table->fsSelection);
+			theFont->weight = os2Table->usWeightClass;
+			theFont->width = os2Table->usWidthClass;
+			uint16_t sel = os2Table->fsSelection;
 			theFont->isReg = (sel & (1 << 6)) != 0;
 			theFont->isBold = (sel & (1 << 5)) != 0;
 			theFont->isItalic = (sel & (1 << 0)) != 0;
 		}
 
-		const HEADTable* headTable = (const HEADTable*)getFontTablePtr(font, kHEAD);
+		const TT_Header* headTable = (TT_Header*)getFontTable(font, ft_sfnt_head);
 		if (headTable != NULL) {
-			uint16_t	ms = SWAP(headTable->macStyle);
+			uint16_t ms = headTable->Mac_Style;
 			if ((ms & (1 << 0)) != 0)
 				theFont->isBold = true;
 			if ((ms & (1 << 1)) != 0)
 				theFont->isItalic = true;
 		}
 
-		const POSTTable* postTable = (const POSTTable*)getFontTablePtr(font, kPOST);
+		const TT_Postscript* postTable = (const TT_Postscript*)getFontTable(font, ft_sfnt_post);
 		if (postTable != NULL) {
-			theFont->slant = (int)(1000 * (tan(Fix2D(-SWAP(uint32_t(postTable->italicAngle))) * M_PI / 180.0)));
+			theFont->slant = (int)(1000 * (tan(Fix2D(-postTable->italicAngle) * M_PI / 180.0)));
 		}
 		deleteFont(font);
 	}
