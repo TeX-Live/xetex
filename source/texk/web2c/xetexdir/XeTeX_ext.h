@@ -142,14 +142,6 @@ typedef uint16_t GlyphID;
 #define kGSUB	HB_TAG('G','S','U','B')
 #define kGPOS	HB_TAG('G','P','O','S')
 #define kMATH	HB_TAG('M','A','T','H')
-#define kHEAD	HB_TAG('h','e','a','d')
-#define kHHEA	HB_TAG('h','h','e','a')
-#define kVHEA	HB_TAG('v','h','e','a')
-#define kPOST	HB_TAG('p','o','s','t')
-#define kHMTX	HB_TAG('h','m','t','x')
-#define kVMTX	HB_TAG('v','m','t','x')
-#define kMAXP	HB_TAG('m','a','x','p')
-#define kOS_2	HB_TAG('O','S','/','2')
 
 typedef struct
 {
