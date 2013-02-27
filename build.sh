@@ -71,7 +71,7 @@ until [ -z "$1" ]; do
   case "$1" in
     --make      ) ONLY_MAKE=TRUE     ;;
     --nostrip   ) STRIP_XETEX=FALSE ;;
-    --debug     ) STRIP_XETEX=FALSE; WARNINGS=max ; CFLAGS="-g -O0 $CFLAGS" ;;
+    --debug     ) STRIP_XETEX=FALSE; WARNINGS=max; CFLAGS="-g -O0 $CFLAGS"; CXXFLAGS="-g -O0 $CXXFLAGS"; OBJCXXFLAGS="-g -O0 $OBJCXXFLAGS";;
     --syslibs   ) SYSTEM_LIBS=TRUE   ;;
     --warnings=*) WARNINGS=`echo $1 | sed 's/--warnings=\(.*\)/\1/' `        ;;
     --mingw     ) MINGWCROSS=TRUE    ;;
