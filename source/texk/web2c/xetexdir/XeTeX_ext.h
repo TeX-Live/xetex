@@ -141,7 +141,6 @@ typedef uint16_t GlyphID;
 /* OT-related constants we need */
 #define kGSUB	HB_TAG('G','S','U','B')
 #define kGPOS	HB_TAG('G','P','O','S')
-#define kMATH	HB_TAG('M','A','T','H')
 
 typedef struct
 {

@@ -60,6 +60,7 @@ XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, i
     , fFilename(NULL)
     , face(0)
     , hbFont(NULL)
+    , fMath(NULL)
 {
 	if (pathname != NULL)
 		initialize(pathname, index, status);
@@ -160,6 +161,14 @@ XeTeXFontInst::getFontTable(OTTag tag) const
 	}
 
     return table;
+}
+
+const char *
+XeTeXFontInst::getMathTable()
+{
+	if (fMath == NULL)
+		fMath = (const char*) getFontTable(MATH_TAG);
+	return fMath;
 }
 
 const void *

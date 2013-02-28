@@ -51,6 +51,8 @@ authorization from the copyright holders.
 #include "XeTeXFontMgr.h"
 #include "XeTeX_ext.h"
 
+#define MATH_TAG HB_TAG('M','A','T','H')
+
 // create specific subclasses for each supported platform
 
 class XeTeXFontInst
@@ -77,6 +79,7 @@ protected:
     void getMetrics();
 
 	FT_Face			face;
+	const char *fMath;
 
 public:
     XeTeXFontInst(float pointSize, int &status);
@@ -88,6 +91,7 @@ public:
 
     virtual const void *getFontTable(OTTag tableTag) const;
     virtual const void *getFontTable(FT_Sfnt_Tag tableTag) const;
+    virtual const char *getMathTable();
 
 	virtual const char *getFilename() const
 	{

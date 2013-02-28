@@ -896,7 +896,7 @@ bool usingOpenType(XeTeXLayoutEngine engine)
 
 bool isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
-	if (engine->font->getFontTable(kMATH) != NULL)
+	if (engine->font->getMathTable() != NULL)
 		return true;
 	else
 		return false;
