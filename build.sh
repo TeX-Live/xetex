@@ -29,6 +29,7 @@
 #      --build=    : build system for mingw32 cross-compilation
 #      --arch=     : crosscompile for ARCH on OS X
 #      --debug     : CFLAGS="-g -O0" --warnings=max --nostrip
+#      --profile   : CFLAGS="-pg" --nostrip
 $DEBUG
 
 # try to find bash, in case the standard shell is not capable of
@@ -72,6 +73,7 @@ until [ -z "$1" ]; do
     --make      ) ONLY_MAKE=TRUE     ;;
     --nostrip   ) STRIP_XETEX=FALSE ;;
     --debug     ) STRIP_XETEX=FALSE; WARNINGS=max; CFLAGS="-g -O0 $CFLAGS"; CXXFLAGS="-g -O0 $CXXFLAGS"; OBJCXXFLAGS="-g -O0 $OBJCXXFLAGS";;
+    --profile   ) STRIP_XETEX=FALSE; CFLAGS="-pg $CFLAGS"; CXXFLAGS="-pg $CXXFLAGS"; OBJCXXFLAGS="-pg $OBJCXXFLAGS";;
     --syslibs   ) SYSTEM_LIBS=TRUE   ;;
     --warnings=*) WARNINGS=`echo $1 | sed 's/--warnings=\(.*\)/\1/' `        ;;
     --mingw     ) MINGWCROSS=TRUE    ;;
