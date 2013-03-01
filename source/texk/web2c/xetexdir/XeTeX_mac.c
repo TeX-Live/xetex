@@ -409,6 +409,7 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
 					int num_faces = face->num_faces;
 					char *ps_name1 = getNameFromCTFont(ctFontRef, kCTFontPostScriptNameKey);
 					int i;
+					*index = -1;
 					FT_Done_Face (face);
 					for (i = 0; i < num_faces; i++) {
 						error = FT_New_Face (gFreeTypeLibrary, pathname, i, &face);
@@ -424,7 +425,8 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
 				}
 			}
 
-			ret = strdup(pathname);
+			if (*index != -1)
+				ret = strdup(pathname);
 		}
 		CFRelease(url);
 	}
