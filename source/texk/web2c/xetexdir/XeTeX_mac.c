@@ -74,6 +74,8 @@ CTFontRef fontFromInteger(integer font)
 	return fontFromAttributes(attributes);
 }
 
+static double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid);
+
 void
 DoAtsuiLayout(void* p, int justify)
 {
@@ -131,8 +133,6 @@ DoAtsuiLayout(void* p, int justify)
 	realGlyphIDs = xmalloc(totalGlyphCount * sizeof(UInt16));
 	glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
 	locations = (FixedPoint*)glyph_info;
-	lsUnit = justify ? 0 : fontletterspace[f];
-	lsDelta = 0;
 
 	realGlyphCount = 0;
 	lastGlyphAdvance = 0;
@@ -159,12 +159,11 @@ DoAtsuiLayout(void* p, int justify)
 					realGlyphIDs[realGlyphCount] = 0;
 				else
 					realGlyphIDs[realGlyphCount] = glyphs[j];
-				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x) + lsDelta;
+				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
 				lastGlyphAdvance = advances[j].width;
 				// XXX trasformation matrix changes y positions!
 				//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
 				locations[realGlyphCount].y = 0;
-				lsDelta += lsUnit;
 				realGlyphCount++;
 			}
 		}
@@ -172,8 +171,6 @@ DoAtsuiLayout(void* p, int justify)
 		free(glyphs);
 		free(positions);
 	}
-	if (lsDelta != 0)
-		lsDelta -= lsUnit;
 
 	glyphIDs = (UInt16*)(locations + realGlyphCount);
 	memcpy(glyphIDs, realGlyphIDs, realGlyphCount * sizeof(UInt16));
@@ -185,8 +182,25 @@ DoAtsuiLayout(void* p, int justify)
 	if (!justify) {
 		node_width(node) =
 			(realGlyphCount > 0 ? locations[realGlyphCount - 1].x : 0) +
-			FixedPStoTeXPoints(lastGlyphAdvance) +
-			lsDelta;
+			FixedPStoTeXPoints(lastGlyphAdvance);
+
+		/* this is essentially a copy from similar code in XeTeX_ext.c, easier
+		 * to be done here */
+		if (fontletterspace[f] != 0) {
+			Fixed	lsDelta = 0;
+			Fixed	lsUnit = fontletterspace[f];
+			int i;
+			for (i = 0; i < realGlyphCount; ++i) {
+				if (getGlyphWidthFromCTFont(fontFromAttributes(attributes), glyphIDs[i]) == 0 && lsDelta != 0)
+					lsDelta -= lsUnit;
+				locations[i].x += lsDelta;
+				lsDelta += lsUnit;
+			}
+			if (lsDelta != 0) {
+				lsDelta -= lsUnit;
+				node_width(node) += lsDelta;
+			}
+		}
 	}
 
 	CFRelease(line);
