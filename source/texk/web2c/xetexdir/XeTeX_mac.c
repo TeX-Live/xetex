@@ -139,7 +139,7 @@ DoAtsuiLayout(void* p, int justify)
 	for (i = 0; i < runCount; i++) {
 		CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, i);
 		CFIndex count = CTRunGetGlyphCount(run);
-		CFDictionaryRef runAttr = CTRunGetAttributes(run);
+		CFDictionaryRef runAttributes = CTRunGetAttributes(run);
 		// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
 		CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
 		CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
@@ -154,7 +154,7 @@ DoAtsuiLayout(void* p, int justify)
 				// of the resulting run is not the same font we asked for, use
 				// the glyph at index 0 (usually .notdef) instead or we will be
 				// showing garbage or even invalid glyphs
-				if (fontFromAttributes(attributes) != fontFromAttributes(runAttr))
+				if (fontFromAttributes(attributes) != fontFromAttributes(runAttributes))
 					realGlyphIDs[realGlyphCount] = 0;
 				else
 					realGlyphIDs[realGlyphCount] = glyphs[j];
