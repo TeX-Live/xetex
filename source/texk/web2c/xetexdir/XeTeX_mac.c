@@ -87,7 +87,7 @@ DoAtsuiLayout(void* p, int justify)
 	FixedPoint*	locations;
 	Fixed lsUnit, lsDelta;
 	int	realGlyphCount;
-	CGFloat lastGlyphAdvance;
+	CGFloat width;
 
 	long txtLen;
 	const UniChar* txtPtr;
@@ -135,7 +135,7 @@ DoAtsuiLayout(void* p, int justify)
 	locations = (FixedPoint*)glyph_info;
 
 	realGlyphCount = 0;
-	lastGlyphAdvance = 0;
+	width = 0;
 	for (i = 0; i < runCount; i++) {
 		CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, i);
 		CFIndex count = CTRunGetGlyphCount(run);
@@ -143,10 +143,9 @@ DoAtsuiLayout(void* p, int justify)
 		// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
 		CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
 		CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
-		CGSize*  advances = (CGSize*) xmalloc(count * sizeof(CGSize));
+		CGFloat runWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL);
 		CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
 		CTRunGetPositions(run, CFRangeMake(0, 0), positions);
-		CTRunGetAdvances(run, CFRangeMake(0, 0), advances);
 		for (j = 0; j < count; j++) {
 			if (glyphs[j] < 0xfffe) {
 				// XXX Core Text has that font cascading thing that will do
@@ -160,14 +159,13 @@ DoAtsuiLayout(void* p, int justify)
 				else
 					realGlyphIDs[realGlyphCount] = glyphs[j];
 				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
-				lastGlyphAdvance = advances[j].width;
 				// XXX trasformation matrix changes y positions!
 				//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
 				locations[realGlyphCount].y = 0;
 				realGlyphCount++;
 			}
 		}
-		free(advances);
+		width += FixedPStoTeXPoints(runWidth);
 		free(glyphs);
 		free(positions);
 	}
@@ -180,9 +178,7 @@ DoAtsuiLayout(void* p, int justify)
 	native_glyph_info_ptr(node) = glyph_info;
 
 	if (!justify) {
-		node_width(node) =
-			(realGlyphCount > 0 ? locations[realGlyphCount - 1].x : 0) +
-			FixedPStoTeXPoints(lastGlyphAdvance);
+		node_width(node) = width;
 
 		/* this is essentially a copy from similar code in XeTeX_ext.c, easier
 		 * to be done here */
