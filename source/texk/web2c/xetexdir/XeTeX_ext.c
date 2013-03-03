@@ -1255,7 +1255,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 #endif
 
 			font = createFont(fontRef, scaled_size);
-			if (font != 0) {
+			if (font != NULL) {
 #ifdef XETEX_MAC
 				if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
 					getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
@@ -1267,8 +1267,10 @@ findnativefont(unsigned char* uname, integer scaled_size)
 	
 #ifdef XETEX_MAC
 			if (rval == NULL) {
-			load_aat:
-				rval = loadAATfont(fontRef, scaled_size, featString);
+load_aat:
+				if (font != NULL) {
+					rval = loadAATfont(fontRef, scaled_size, featString);
+				}
 			}
 #endif
 
