@@ -147,23 +147,21 @@ DoAtsuiLayout(void* p, int justify)
 		CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
 		CTRunGetPositions(run, CFRangeMake(0, 0), positions);
 		for (j = 0; j < count; j++) {
-			if (glyphs[j] < 0xfffe) {
-				// XXX Core Text has that font cascading thing that will do
-				// font substitution for missing glyphs, which we do not want
-				// but I can not find a way to disable it yet, so if the font
-				// of the resulting run is not the same font we asked for, use
-				// the glyph at index 0 (usually .notdef) instead or we will be
-				// showing garbage or even invalid glyphs
-				if (fontFromAttributes(attributes) != fontFromAttributes(runAttributes))
-					realGlyphIDs[realGlyphCount] = 0;
-				else
-					realGlyphIDs[realGlyphCount] = glyphs[j];
-				locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
-				// XXX trasformation matrix changes y positions!
-				//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
-				locations[realGlyphCount].y = 0;
-				realGlyphCount++;
-			}
+			// XXX Core Text has that font cascading thing that will do
+			// font substitution for missing glyphs, which we do not want
+			// but I can not find a way to disable it yet, so if the font
+			// of the resulting run is not the same font we asked for, use
+			// the glyph at index 0 (usually .notdef) instead or we will be
+			// showing garbage or even invalid glyphs
+			if (fontFromAttributes(attributes) != fontFromAttributes(runAttributes))
+				realGlyphIDs[realGlyphCount] = 0;
+			else
+				realGlyphIDs[realGlyphCount] = glyphs[j];
+			locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
+			// XXX trasformation matrix changes y positions!
+			//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
+			locations[realGlyphCount].y = 0;
+			realGlyphCount++;
 		}
 		width += FixedPStoTeXPoints(runWidth);
 		free(glyphs);
