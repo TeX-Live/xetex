@@ -88,12 +88,14 @@ cacheGlyphBBox(uint16_t fontID, uint16_t glyphID, const GlyphBBox* bbox)
 }
 /*******************************************************************/
 
-void terminatefontmanager()
+void
+terminatefontmanager()
 {
 	XeTeXFontMgr::Terminate();
 }
 
-XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
+XeTeXFont
+createFont(PlatformFontRef fontRef, Fixed pointSize)
 {
 	int status = 0;
 #ifdef XETEX_MAC
@@ -112,7 +114,8 @@ XeTeXFont createFont(PlatformFontRef fontRef, Fixed pointSize)
 	return (XeTeXFont)font;
 }
 
-XeTeXFont createFontFromFile(const char* filename, int index, Fixed pointSize)
+XeTeXFont
+createFontFromFile(const char* filename, int index, Fixed pointSize)
 {
 	int status = 0;
 	XeTeXFontInst* font = new XeTeXFontInst(filename, index, Fix2D(pointSize), status);
@@ -123,67 +126,80 @@ XeTeXFont createFontFromFile(const char* filename, int index, Fixed pointSize)
 	return (XeTeXFont)font;
 }
 
-void setFontLayoutDir(XeTeXFont font, int vertical)
+void
+setFontLayoutDir(XeTeXFont font, int vertical)
 {
 	((XeTeXFontInst*)font)->setLayoutDirVertical(vertical != 0);
 }
 
-PlatformFontRef findFontByName(const char* name, char* var, double size)
+PlatformFontRef
+findFontByName(const char* name, char* var, double size)
 {
 	return (XeTeXFontMgr::GetFontManager()->findFont(name, var, size));
 }
 
-char getReqEngine()
+char
+getReqEngine()
 {
 	return XeTeXFontMgr::GetFontManager()->getReqEngine();
 }
 
-void setReqEngine(char reqEngine)
+void
+setReqEngine(char reqEngine)
 {
 	XeTeXFontMgr::GetFontManager()->setReqEngine(reqEngine);
 }
 
-const char* getFullName(PlatformFontRef fontRef)
+const char*
+getFullName(PlatformFontRef fontRef)
 {
 	return XeTeXFontMgr::GetFontManager()->getFullName(fontRef);
 }
 
-double getDesignSize(XeTeXFont font)
+double
+getDesignSize(XeTeXFont font)
 {
 	return XeTeXFontMgr::GetFontManager()->getDesignSize(font);
 }
 
-const char* getFontFilename(XeTeXLayoutEngine engine)
+const char*
+getFontFilename(XeTeXLayoutEngine engine)
 {
 	return engine->font->getFilename();
 }
 
-void getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName)
+void
+getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName)
 {
 	XeTeXFontMgr::GetFontManager()->getNames(fontRef, psName, famName, styName);
 }
 
-PlatformFontRef getFontRef(XeTeXLayoutEngine engine)
+PlatformFontRef
+getFontRef(XeTeXLayoutEngine engine)
 {
 	return engine->fontRef;
 }
 
-void deleteFont(XeTeXFont font)
+void
+deleteFont(XeTeXFont font)
 {
 	delete (XeTeXFontInst*)font;
 }
 
-void* getFontTablePtr(XeTeXFont font, uint32_t tableTag)
+void*
+getFontTablePtr(XeTeXFont font, uint32_t tableTag)
 {
 	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
 }
 
-void* getFontTable(XeTeXFont font, FT_Sfnt_Tag tableTag)
+void*
+getFontTable(XeTeXFont font, FT_Sfnt_Tag tableTag)
 {
 	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
 }
 
-Fixed getSlant(XeTeXFont font)
+Fixed
+getSlant(XeTeXFont font)
 {
 	float italAngle = ((XeTeXFontInst*)font)->getItalicAngle();
 	return D2Fix(tan(-italAngle * M_PI / 180.0));
@@ -220,12 +236,14 @@ getLargerScriptListTable(XeTeXFont font, hb_tag_t** scriptList, hb_tag_t* tableT
 	}
 }
 
-uint32_t countScripts(XeTeXFont font)
+uint32_t
+countScripts(XeTeXFont font)
 {
 	return getLargerScriptListTable(font, NULL, NULL);
 }
 
-uint32_t getIndScript(XeTeXFont font, uint32_t index)
+uint32_t
+getIndScript(XeTeXFont font, uint32_t index)
 {
 	hb_tag_t* scriptList;
 
@@ -239,7 +257,8 @@ uint32_t getIndScript(XeTeXFont font, uint32_t index)
 	return 0;
 }
 
-uint32_t countScriptLanguages(XeTeXFont font, uint32_t script)
+uint32_t
+countScriptLanguages(XeTeXFont font, uint32_t script)
 {
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	hb_tag_t* scriptList;
@@ -257,7 +276,8 @@ uint32_t countScriptLanguages(XeTeXFont font, uint32_t script)
 	return 0;
 }
 
-uint32_t getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
+uint32_t
+getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
 {
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	hb_tag_t* scriptList;
@@ -282,7 +302,8 @@ uint32_t getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
 	return 0;
 }
 
-uint32_t countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
+uint32_t
+countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
 {
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	uint32_t total = 0;
@@ -300,7 +321,8 @@ uint32_t countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
 	return total;
 }
 
-uint32_t getIndFeature(XeTeXFont font, uint32_t script, uint32_t language, uint32_t index)
+uint32_t
+getIndFeature(XeTeXFont font, uint32_t script, uint32_t language, uint32_t index)
 {
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 
@@ -324,7 +346,8 @@ uint32_t getIndFeature(XeTeXFont font, uint32_t script, uint32_t language, uint3
 	return 0;
 }
 
-uint32_t countGraphiteFeatures(XeTeXLayoutEngine engine)
+uint32_t
+countGraphiteFeatures(XeTeXLayoutEngine engine)
 {
 	uint32_t rval = 0;
 
@@ -337,7 +360,8 @@ uint32_t countGraphiteFeatures(XeTeXLayoutEngine engine)
 	return rval;
 }
 
-uint32_t getGraphiteFeatureCode(XeTeXLayoutEngine engine, uint32_t index)
+uint32_t
+getGraphiteFeatureCode(XeTeXLayoutEngine engine, uint32_t index)
 {
 	uint32_t rval = 0;
 
@@ -352,7 +376,8 @@ uint32_t getGraphiteFeatureCode(XeTeXLayoutEngine engine, uint32_t index)
 	return rval;
 }
 
-uint32_t countGraphiteFeatureSettings(XeTeXLayoutEngine engine, uint32_t featureID)
+uint32_t
+countGraphiteFeatureSettings(XeTeXLayoutEngine engine, uint32_t featureID)
 {
 	uint32_t rval = 0;
 
@@ -367,7 +392,8 @@ uint32_t countGraphiteFeatureSettings(XeTeXLayoutEngine engine, uint32_t feature
 	return rval;
 }
 
-uint32_t getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, uint32_t featureID, uint32_t index)
+uint32_t
+getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, uint32_t featureID, uint32_t index)
 {
 	uint32_t rval = 0;
 
@@ -474,7 +500,8 @@ findGraphiteFeature(XeTeXLayoutEngine engine, const char* s, const char* e, hb_t
 	return true;
 }
 
-long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int namelength)
+long
+findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int namelength)
 {
 	long		rval = -1;
 
@@ -505,7 +532,8 @@ long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int na
 	return rval;
 }
 
-long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, uint32_t id, const char* name, int namelength)
+long
+findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, uint32_t id, const char* name, int namelength)
 {
 	long		rval = -1;
 
@@ -536,7 +564,8 @@ long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, uint32_t id, cons
 	return rval;
 }
 
-float getGlyphWidth(XeTeXFont font, uint32_t gid)
+float
+getGlyphWidth(XeTeXFont font, uint32_t gid)
 {
 	return ((XeTeXFontInst*)font)->getGlyphWidth(gid);
 }
@@ -547,29 +576,34 @@ countGlyphs(XeTeXFont font)
 	return ((XeTeXFontInst*)font)->getNumGlyphs();
 }
 
-XeTeXFont getFont(XeTeXLayoutEngine engine)
+XeTeXFont
+getFont(XeTeXLayoutEngine engine)
 {
 	return (XeTeXFont)(engine->font);
 }
 
-float getExtendFactor(XeTeXLayoutEngine engine)
+float
+getExtendFactor(XeTeXLayoutEngine engine)
 {
 	return engine->extend;
 }
 
-float getSlantFactor(XeTeXLayoutEngine engine)
+float
+getSlantFactor(XeTeXLayoutEngine engine)
 {
 	return engine->slant;
 }
 
-float getEmboldenFactor(XeTeXLayoutEngine engine)
+float
+getEmboldenFactor(XeTeXLayoutEngine engine)
 {
 	return engine->embolden;
 }
 
-XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, char* script, char* language,
-										hb_feature_t* features, int nFeatures, char **shapers, uint32_t rgbValue,
-										float extend, float slant, float embolden)
+XeTeXLayoutEngine
+createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, char* script, char* language,
+					hb_feature_t* features, int nFeatures, char **shapers, uint32_t rgbValue,
+					float extend, float slant, float embolden)
 {
 	XeTeXLayoutEngine result = new XeTeXLayoutEngine_rec;
 	result->fontRef = fontRef;
@@ -589,13 +623,15 @@ XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, ch
 	return result;
 }
 
-void deleteLayoutEngine(XeTeXLayoutEngine engine)
+void
+deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
 	hb_buffer_destroy(engine->hbBuffer);
 	delete engine->font;
 }
 
-int layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t count, int32_t max,
+int
+layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t count, int32_t max,
 						bool rightToLeft)
 {
 	bool res;
@@ -670,7 +706,8 @@ int layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int3
 	return glyphCount;
 }
 
-void getGlyphs(XeTeXLayoutEngine engine, uint32_t glyphs[])
+void
+getGlyphs(XeTeXLayoutEngine engine, uint32_t glyphs[])
 {
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 	hb_glyph_info_t *hbGlyphs = hb_buffer_get_glyph_infos(engine->hbBuffer, NULL);
@@ -693,7 +730,8 @@ getGlyphAdvances(XeTeXLayoutEngine engine, float advances[])
 	}
 }
 
-void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
+void
+getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 {
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
 	hb_glyph_position_t *hbPositions = hb_buffer_get_glyph_positions(engine->hbBuffer, NULL);
@@ -729,18 +767,21 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 			positions[2*i] = positions[2*i] * engine->extend - positions[2*i+1] * engine->slant;
 }
 
-float getPointSize(XeTeXLayoutEngine engine)
+float
+getPointSize(XeTeXLayoutEngine engine)
 {
 	return engine->font->getPointSize();
 }
 
-void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent)
+void
+getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent)
 {
 	*ascent = engine->font->getAscent();
 	*descent = engine->font->getDescent();
 }
 
-int getDefaultDirection(XeTeXLayoutEngine engine)
+int
+getDefaultDirection(XeTeXLayoutEngine engine)
 {
 	hb_script_t script = hb_buffer_get_script(engine->hbBuffer);
 	if (hb_script_get_horizontal_direction (script) == HB_DIRECTION_RTL)
@@ -749,12 +790,14 @@ int getDefaultDirection(XeTeXLayoutEngine engine)
 		return UBIDI_DEFAULT_LTR;
 }
 
-uint32_t getRgbValue(XeTeXLayoutEngine engine)
+uint32_t
+getRgbValue(XeTeXLayoutEngine engine)
 {
 	return engine->rgbValue;
 }
 
-void getGlyphBounds(XeTeXLayoutEngine engine, uint32_t glyphID, GlyphBBox* bbox)
+void
+getGlyphBounds(XeTeXLayoutEngine engine, uint32_t glyphID, GlyphBBox* bbox)
 {
 	engine->font->getGlyphBounds(glyphID, bbox);
 	if (engine->extend != 0.0) {
@@ -763,17 +806,20 @@ void getGlyphBounds(XeTeXLayoutEngine engine, uint32_t glyphID, GlyphBBox* bbox)
     }
 }
 
-float getGlyphWidthFromEngine(XeTeXLayoutEngine engine, uint32_t glyphID)
+float
+getGlyphWidthFromEngine(XeTeXLayoutEngine engine, uint32_t glyphID)
 {
 	return engine->extend * engine->font->getGlyphWidth(glyphID);
 }
 
-void getGlyphHeightDepth(XeTeXLayoutEngine engine, uint32_t glyphID, float* height, float* depth)
+void
+getGlyphHeightDepth(XeTeXLayoutEngine engine, uint32_t glyphID, float* height, float* depth)
 {
 	engine->font->getGlyphHeightDepth(glyphID, height, depth);
 }
 
-void getGlyphSidebearings(XeTeXLayoutEngine engine, uint32_t glyphID, float* lsb, float* rsb)
+void
+getGlyphSidebearings(XeTeXLayoutEngine engine, uint32_t glyphID, float* lsb, float* rsb)
 {
 	engine->font->getGlyphSidebearings(glyphID, lsb, rsb);
 	if (engine->extend != 0.0) {
@@ -782,12 +828,14 @@ void getGlyphSidebearings(XeTeXLayoutEngine engine, uint32_t glyphID, float* lsb
 	}
 }
 
-float getGlyphItalCorr(XeTeXLayoutEngine engine, uint32_t glyphID)
+float
+getGlyphItalCorr(XeTeXLayoutEngine engine, uint32_t glyphID)
 {
 	return engine->extend * engine->font->getGlyphItalCorr(glyphID);
 }
 
-uint32_t mapCharToGlyph(XeTeXLayoutEngine engine, uint32_t charCode)
+uint32_t
+mapCharToGlyph(XeTeXLayoutEngine engine, uint32_t charCode)
 {
 	return engine->font->mapCharToGlyph(charCode);
 }
@@ -892,7 +940,8 @@ findNextGraphiteBreak(void)
 	}
 }
 
-bool usingGraphite(XeTeXLayoutEngine engine)
+bool
+usingGraphite(XeTeXLayoutEngine engine)
 {
 	if (engine->shaper != NULL && (strcmp("graphite2", engine->shaper) == 0))
 		return true;
@@ -900,7 +949,8 @@ bool usingGraphite(XeTeXLayoutEngine engine)
 		return false;
 }
 
-bool usingOpenType(XeTeXLayoutEngine engine)
+bool
+usingOpenType(XeTeXLayoutEngine engine)
 {
 	if (engine->shaper == NULL || (strcmp("ot", engine->shaper) == 0))
 		return true;
@@ -908,11 +958,11 @@ bool usingOpenType(XeTeXLayoutEngine engine)
 		return false;
 }
 
-bool isOpenTypeMathFont(XeTeXLayoutEngine engine)
+bool
+isOpenTypeMathFont(XeTeXLayoutEngine engine)
 {
 	if (engine->font->getMathTable() != NULL)
 		return true;
 	else
 		return false;
 }
-
