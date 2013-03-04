@@ -75,7 +75,7 @@ CTFontRef fontFromInteger(integer font)
 }
 
 void
-DoAtsuiLayout(void* p, int justify)
+DoAATLayout(void* p, int justify)
 {
 	CFArrayRef glyphRuns;
 	CFIndex i, j, runCount;

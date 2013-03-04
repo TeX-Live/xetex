@@ -1989,7 +1989,7 @@ void
 store_justified_native_glyphs(void* node)
 {
 #ifdef XETEX_MAC /* this is only called for fonts used via ATSUI */
-	(void)DoAtsuiLayout(node, 1);
+	(void)DoAATLayout(node, 1);
 #endif
 }
 
@@ -2005,7 +2005,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 #ifdef XETEX_MAC
 	if (fontarea[f] == AAT_FONT_FLAG) {
 		/* we're using this font in AAT mode, so fontlayoutengine[f] is actually a CFDictionaryRef */
-		DoAtsuiLayout(node, 0);
+		DoAATLayout(node, 0);
 	}
 	else
 #endif

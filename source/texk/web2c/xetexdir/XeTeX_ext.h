@@ -288,7 +288,7 @@ typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compil
 
 /* functions in XeTeX_mac.c */
 	void* loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1);
-	void DoAtsuiLayout(void* node, int justify);
+	void DoAATLayout(void* node, int justify);
 	void GetGlyphBBox_AAT(CFDictionaryRef fontAttrs, uint16_t gid, GlyphBBox* bbox);
 	double GetGlyphWidth_AAT(CFDictionaryRef fontAttrs, uint16_t gid);
 	void GetGlyphHeightDepth_AAT(CFDictionaryRef fontAttrs, uint16_t gid, float* ht, float* dp);
