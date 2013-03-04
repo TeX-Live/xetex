@@ -63,12 +63,14 @@ FixedPStoTeXPoints(double pts)
 	return D2Fix(PStoTeXPoints(pts));
 }
 
-CTFontRef fontFromAttributes(CFDictionaryRef attributes)
+CTFontRef
+fontFromAttributes(CFDictionaryRef attributes)
 {
 	return CFDictionaryGetValue(attributes, kCTFontAttributeName);
 }
 
-CTFontRef fontFromInteger(integer font)
+CTFontRef
+fontFromInteger(integer font)
 {
 	CFDictionaryRef attributes = (CFDictionaryRef) fontlayoutengine[font];
 	return fontFromAttributes(attributes);
@@ -204,7 +206,8 @@ DoAATLayout(void* p, int justify)
 	CFRelease(typesetter);
 }
 
-static void getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
+static void
+getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
 {
 	CGRect rect;
 
@@ -227,27 +230,31 @@ static void getGlyphBBoxFromCTFont(CTFontRef font, UInt16 gid, GlyphBBox* bbox)
 	}
 }
 
-void GetGlyphBBox_AAT(CFDictionaryRef attributes, UInt16 gid, GlyphBBox* bbox)
+void
+GetGlyphBBox_AAT(CFDictionaryRef attributes, UInt16 gid, GlyphBBox* bbox)
 	/* returns glyph bounding box in TeX points */
 {
 	CTFontRef font = fontFromAttributes(attributes);
 	return getGlyphBBoxFromCTFont(font, gid, bbox);
 }
 
-static double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid)
+static double
+getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid)
 {
 	CGSize advances[1] = { CGSizeMake(0, 0) };
 	return PStoTeXPoints(CTFontGetAdvancesForGlyphs(font, 0, &gid, advances, 1));
 }
 
-double GetGlyphWidth_AAT(CFDictionaryRef attributes, UInt16 gid)
+double
+GetGlyphWidth_AAT(CFDictionaryRef attributes, UInt16 gid)
 	/* returns TeX points */
 {
 	CTFontRef font = fontFromAttributes(attributes);
 	return getGlyphWidthFromCTFont(font, gid);
 }
 
-void GetGlyphHeightDepth_AAT(CFDictionaryRef attributes, UInt16 gid, float* ht, float* dp)
+void
+GetGlyphHeightDepth_AAT(CFDictionaryRef attributes, UInt16 gid, float* ht, float* dp)
 	/* returns TeX points */
 {
 	GlyphBBox	bbox;
@@ -258,7 +265,8 @@ void GetGlyphHeightDepth_AAT(CFDictionaryRef attributes, UInt16 gid, float* ht, 
 	*dp = -bbox.yMin;
 }
 
-void GetGlyphSidebearings_AAT(CFDictionaryRef attributes, UInt16 gid, float* lsb, float* rsb)
+void
+GetGlyphSidebearings_AAT(CFDictionaryRef attributes, UInt16 gid, float* lsb, float* rsb)
 	/* returns TeX points */
 {
 	CTFontRef font = fontFromAttributes(attributes);
@@ -270,7 +278,8 @@ void GetGlyphSidebearings_AAT(CFDictionaryRef attributes, UInt16 gid, float* lsb
 	*rsb = PStoTeXPoints(advance) - bbox.xMax;
 }
 
-double GetGlyphItalCorr_AAT(CFDictionaryRef attributes, UInt16 gid)
+double
+GetGlyphItalCorr_AAT(CFDictionaryRef attributes, UInt16 gid)
 {
 	CTFontRef font = fontFromAttributes(attributes);
 	CGSize advances[1] = { CGSizeMake(0, 0) };
@@ -284,7 +293,8 @@ double GetGlyphItalCorr_AAT(CFDictionaryRef attributes, UInt16 gid)
 	return 0;
 }
 
-static int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
+static int
+mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
 {
 	CGGlyph glyphs[2] = { 0 };
 	UniChar	txt[2];
@@ -295,9 +305,9 @@ static int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
 		txt[0] = 0xd800 + ch / 1024;
 		txt[1] = 0xdc00 + ch % 1024;
 		len = 2;
-	}
-	else
+	} else {
 		txt[0] = ch;
+	}
 
 	if (CTFontGetGlyphsForCharacters(font, txt, glyphs, len))
 		return glyphs[0];
@@ -305,13 +315,15 @@ static int mapCharToGlyphFromCTFont(CTFontRef font, UInt32 ch)
 	return 0;
 }
 
-int MapCharToGlyph_AAT(CFDictionaryRef attributes, UInt32 ch)
+int
+MapCharToGlyph_AAT(CFDictionaryRef attributes, UInt32 ch)
 {
 	CTFontRef font = fontFromAttributes(attributes);
 	return mapCharToGlyphFromCTFont(font, ch);
 }
 
-static int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName)
+static int
+GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName)
 {
 	CFStringRef glyphname = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault,
 															glyphName,
@@ -322,7 +334,8 @@ static int GetGlyphIDFromCTFont(CTFontRef ctFontRef, const char* glyphName)
 	return rval;
 }
 
-int MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName)
+int
+MapGlyphToIndex_AAT(CFDictionaryRef attributes, const char* glyphName)
 {
 	CTFontRef font = fontFromAttributes(attributes);
 	return GetGlyphIDFromCTFont(font, glyphName);
@@ -359,8 +372,7 @@ GetFontCharRange_AAT(CFDictionaryRef attributes, int reqFirst)
 		while (MapCharToGlyph_AAT(attributes, ch) == 0 && ch < 0x10ffff)
 			++ch;
 		return ch;
-	}
-	else {
+	} else {
 		int ch = 0x10ffff;
 		while (MapCharToGlyph_AAT(attributes, ch) == 0 && ch > 0)
 			--ch;
@@ -368,7 +380,8 @@ GetFontCharRange_AAT(CFDictionaryRef attributes, int reqFirst)
 	}
 }
 
-char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
+char*
+getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 {
 	char *buf;
 	CFStringRef name = CTFontCopyName(ctFontRef, nameKey);
@@ -381,7 +394,8 @@ char* getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 	return 0;
 }
 
-char* getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
+char*
+getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
 {
 	char *ret = NULL;
 	CFURLRef url = NULL;
@@ -445,9 +459,8 @@ char* getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
 	return ret;
 }
 
-CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array,
-													const void* identifierKey,
-													int identifier)
+CFDictionaryRef
+findDictionaryInArrayWithIdentifier(CFArrayRef array, const void* identifierKey, int identifier)
 {
 	CFDictionaryRef dict = NULL;
 
@@ -469,8 +482,8 @@ CFDictionaryRef findDictionaryInArrayWithIdentifier(CFArrayRef array,
 	return dict;
 }
 
-CFDictionaryRef findDictionaryInArray(CFArrayRef array, const void* nameKey,
-									  const char* name, int nameLength)
+CFDictionaryRef
+findDictionaryInArray(CFArrayRef array, const void* nameKey, const char* name, int nameLength)
 {
 	CFDictionaryRef dict = NULL;
 
@@ -492,7 +505,8 @@ CFDictionaryRef findDictionaryInArray(CFArrayRef array, const void* nameKey,
 	return dict;
 }
 
-CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int nameLength)
+CFNumberRef
+findSelectorByName(CFDictionaryRef feature, const char* name, int nameLength)
 {
 	CFNumberRef selector = NULL;
 	CFArrayRef selectors = CFDictionaryGetValue(feature, kCTFontFeatureTypeSelectorsKey);
@@ -504,8 +518,8 @@ CFNumberRef findSelectorByName(CFDictionaryRef feature, const char* name, int na
 	return selector;
 }
 
-static CFDictionaryRef createFeatureSettingDictionary(CFNumberRef featureTypeIdentifier,
-													  CFNumberRef featureSelectorIdentifier)
+static CFDictionaryRef
+createFeatureSettingDictionary(CFNumberRef featureTypeIdentifier, CFNumberRef featureSelectorIdentifier)
 {
 	const void* settingKeys[] = { kCTFontFeatureTypeIdentifierKey, kCTFontFeatureSelectorIdentifierKey };
 	const void* settingValues[] = { featureTypeIdentifier, featureSelectorIdentifier };
@@ -644,17 +658,16 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 						if (decimal != 1.0) {
 							value += v / decimal;
 							decimal *= 10.0;
-						}
-						else
+						} else {
 							value = value * 10.0 + v;
-					}
-					else if (*cp3 == '.') {
+						}
+					} else if (*cp3 == '.') {
 						if (decimal != 1.0)
 							break;
 						decimal = 10.0;
-					}
-					else
+					} else {
 						break;
+					}
 					++cp3;
 				}
 				if (negate)
@@ -859,8 +872,7 @@ find_pic_file(char** path, realrect* bounds, int pdfBoxType, int page)
 					CGPDFDocumentRelease(document);
 					result = noErr;
 				}
-			}
-			else {
+			} else {
 				CGImageSourceRef picFileSource = CGImageSourceCreateWithURL(picFileURL, NULL);
 				if (picFileSource) {
 					CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(picFileSource, 0, NULL);
