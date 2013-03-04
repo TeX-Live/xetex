@@ -192,7 +192,7 @@ Fixed getSlant(XeTeXFont font)
 static uint32_t
 getLargerScriptListTable(XeTeXFont font, hb_tag_t** scriptList, hb_tag_t* tableTag)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 
 	hb_tag_t* scriptListSub = NULL;
 	hb_tag_t* scriptListPos = NULL;
@@ -241,7 +241,7 @@ uint32_t getIndScript(XeTeXFont font, uint32_t index)
 
 uint32_t countScriptLanguages(XeTeXFont font, uint32_t script)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	hb_tag_t* scriptList;
 	hb_tag_t tableTag;
 
@@ -259,7 +259,7 @@ uint32_t countScriptLanguages(XeTeXFont font, uint32_t script)
 
 uint32_t getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	hb_tag_t* scriptList;
 	hb_tag_t tableTag;
 
@@ -284,7 +284,7 @@ uint32_t getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
 
 uint32_t countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	uint32_t total = 0;
 
 	for (int i = 0; i < 2; ++i) {
@@ -302,7 +302,7 @@ uint32_t countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
 
 uint32_t getIndFeature(XeTeXFont font, uint32_t script, uint32_t language, uint32_t index)
 {
-	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->hbFont);
+	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 
 	for (int i = 0; i < 2; ++i) {
 		uint32_t scriptIndex, langIndex = 0;
@@ -328,7 +328,7 @@ uint32_t countGraphiteFeatures(XeTeXLayoutEngine engine)
 {
 	uint32_t rval = 0;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL)
@@ -341,7 +341,7 @@ uint32_t getGraphiteFeatureCode(XeTeXLayoutEngine engine, uint32_t index)
 {
 	uint32_t rval = 0;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -356,7 +356,7 @@ uint32_t countGraphiteFeatureSettings(XeTeXLayoutEngine engine, uint32_t feature
 {
 	uint32_t rval = 0;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -371,7 +371,7 @@ uint32_t getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, uint32_t featur
 {
 	uint32_t rval = 0;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -387,7 +387,7 @@ getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, uint32_t featureID)
 {
 	uint32_t rval = 0;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -408,7 +408,7 @@ getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, uint32_t featureID)
 char *
 getGraphiteFeatureLabel(XeTeXLayoutEngine engine, uint32_t featureID)
 {
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -425,7 +425,7 @@ getGraphiteFeatureLabel(XeTeXLayoutEngine engine, uint32_t featureID)
 char *
 getGraphiteFeatureSettingLabel(XeTeXLayoutEngine engine, uint32_t featureID, uint32_t settingID)
 {
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -478,7 +478,7 @@ long findGraphiteFeatureNamed(XeTeXLayoutEngine engine, const char* name, int na
 {
 	long		rval = -1;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -509,7 +509,7 @@ long findGraphiteFeatureSettingNamed(XeTeXLayoutEngine engine, uint32_t id, cons
 {
 	long		rval = -1;
 
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
 
 	if (grFace != NULL) {
@@ -604,7 +604,7 @@ int layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int3
 	hb_direction_t direction = HB_DIRECTION_LTR;
 	hb_segment_properties_t segment_props;
 	hb_shape_plan_t *shape_plan;
-	hb_font_t* hbFont = engine->font->hbFont;
+	hb_font_t* hbFont = engine->font->getHbFont();
 	hb_face_t* hbFace = hb_font_get_face(hbFont);
 
 	if (engine->font->getLayoutDirVertical())
@@ -819,9 +819,9 @@ static const gr_slot* grPrevSlot = NULL;
 bool
 initGraphiteBreaking(XeTeXLayoutEngine engine, const uint16_t* txtPtr, int txtLen)
 {
-	hb_face_t* hbFace = hb_font_get_face(engine->font->hbFont);
+	hb_face_t* hbFace = hb_font_get_face(engine->font->getHbFont());
 	gr_face* grFace = hb_graphite2_face_get_gr_face(hbFace);
-	gr_font* grFont = hb_graphite2_font_get_gr_font(engine->font->hbFont);
+	gr_font* grFont = hb_graphite2_font_get_gr_font(engine->font->getHbFont());
 	if (grFace != NULL && grFont != NULL) {
 		if (grSegment != NULL) {
 			gr_seg_destroy(grSegment);

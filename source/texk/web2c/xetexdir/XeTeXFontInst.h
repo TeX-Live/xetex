@@ -79,6 +79,7 @@ protected:
     void getMetrics();
 
 	FT_Face ftFace;
+	hb_font_t* hbFont;
 	const char *fMath;
 
 public:
@@ -96,6 +97,11 @@ public:
 	virtual const char *getFilename() const
 	{
 		return fFilename;
+	}
+
+	virtual hb_font_t *getHbFont() const
+	{
+		return hbFont;
 	}
 
 	virtual void setLayoutDirVertical(bool vertical);
@@ -153,8 +159,6 @@ public:
     {
         return fItalicAngle;
     }
-
-	hb_font_t* hbFont;
 };
 
 #endif

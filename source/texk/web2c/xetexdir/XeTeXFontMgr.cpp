@@ -469,7 +469,7 @@ XeTeXFontMgr::bestMatchFromFamily(const Family* fam, int wt, int wd, int slant) 
 const XeTeXFontMgr::OpSizeRec*
 XeTeXFontMgr::getOpSize(XeTeXFont font)
 {
-	hb_font_t* hbFont = ((XeTeXFontInst*)font)->hbFont;
+	hb_font_t* hbFont = ((XeTeXFontInst*)font)->getHbFont();
 	if (hbFont != NULL) {
 		hb_face_t* face = hb_font_get_face(hbFont);
 		OpSizeRec* pSizeRec = (OpSizeRec*) xmalloc(sizeof(OpSizeRec));
