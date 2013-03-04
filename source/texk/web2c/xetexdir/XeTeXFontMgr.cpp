@@ -615,8 +615,7 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 			family->maxWidth = thisFont->width;
 			family->minSlant = thisFont->slant;
 			family->maxSlant = thisFont->slant;
-		}
-		else {
+		} else {
 			family = iFam->second;
 			if (thisFont->weight < family->minWeight)
 				family->minWeight = thisFont->weight;

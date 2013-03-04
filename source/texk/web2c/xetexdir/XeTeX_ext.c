@@ -238,8 +238,7 @@ setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 					printcstring("'; reading as raw bytes");
 					enddiagnostic(1);
 					f->encodingMode = RAW;
-				}
-				else {
+				} else {
 					f->encodingMode = ICUMAPPING;
 					f->conversionData = cnv;
 				}
@@ -385,8 +384,7 @@ static uint32_t *utf32Buf = NULL;
 				last = first + outLen;
 				break;
 		}
-	}
-	else {
+	} else {
 		/* Recognize either LF or CR as a line terminator; skip initial LF if prev line ended with CR.  */
 		i = get_uni_c(f);
 		if (f->skipNextLF) {
@@ -559,8 +557,7 @@ getencodingmodeandinfo(integer* info)
 		printcstring("'; reading as raw bytes");
 		enddiagnostic(1);
 		return RAW;
-	}
-	else {
+	} else {
 		ucnv_close(cnv);
 		*info = maketexstring(name);
 		return ICUMAPPING;
@@ -627,9 +624,9 @@ load_mapping_file(const char* s, const char* e, char byteMapping)
 			fontmappingwarning(buffer, strlen(buffer), 2); /* not loadable */
 		else if (gettracingfontsstate() > 1)
 			fontmappingwarning(buffer, strlen(buffer), 0); /* tracing */
-	}
-	else
+	} else {
 		fontmappingwarning(buffer, strlen(buffer), 1); /* not found */
+	}
 
 	free(buffer);
 
@@ -694,8 +691,7 @@ read_double(const char** s)
 	if (*cp == '-') {
 		neg = 1;
 		++cp;
-	}
-	else if (*cp == '+') {
+	} else if (*cp == '+') {
 		++cp;
 	}
 
@@ -1076,9 +1072,9 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		// only free these if creation failed, otherwise the engine now owns them
 		free(features);
 		free(shapers);
-	}
-	else
+	} else {
 		nativefonttypeflag = OTGR_FONT_FLAG;
+	}
 
 	return engine;
 }
@@ -1100,8 +1096,7 @@ splitFontName(char* name, char** var, char** feat, char** end, int* index)
 				withinFileName = 0;
 				if (*var == NULL)
 					*var = name;
-			}
-			else if (*name == ':') {
+			} else if (*name == ':') {
 				if (withinFileName && *var == NULL
 #ifdef WIN32
 					&& !((name - start == 1) && isalpha(*start))
@@ -1112,15 +1107,13 @@ splitFontName(char* name, char** var, char** feat, char** end, int* index)
 					while (*name >= '0' && *name <= '9')
 						*index = *index * 10 + *name++ - '0';
 					--name;
-				}
-				else if (!withinFileName && *feat == NULL)
+				} else if (!withinFileName && *feat == NULL)
 					*feat = name;
 			}
 			++name;
 		}
 		*end = name;
-	}
-	else {
+	} else {
 		while (*name) {
 			if (*name == '/' && *var == NULL && *feat == NULL)
 				*var = name;
@@ -1219,8 +1212,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 				}
 			}
 		}
-	}
-	else {
+	} else {
 		fontRef = findFontByName(nameString, varString, Fix2D(scaled_size));
 	
 		if (fontRef != 0) {
@@ -1330,17 +1322,17 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 	if (glyphID != 0) {
 		getGlyphHeightDepth(engine, glyphID, &a, &d);
 		*xheight = D2Fix(a);
-	}
-	else
+	} else {
 		*xheight = *ascent / 2; /* arbitrary figure if there's no 'x' in the font */
+	}
 
 	glyphID = mapCharToGlyph(engine, 'X');
 	if (glyphID != 0) {
 		getGlyphHeightDepth(engine, glyphID, &a, &d);
 		*capheight = D2Fix(a);
-	}
-	else
+	} else {
 		*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
+	}
 }
 
 integer
@@ -1656,8 +1648,7 @@ makefontdef(integer f)
 
 		fSize = CTFontGetSize(font);
 		size = D2Fix(fSize);
-	}
-	else
+	} else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine;
@@ -1682,8 +1673,7 @@ makefontdef(integer f)
 		embolden = getEmboldenFactor(engine);
 
 		size = D2Fix(getPointSize(engine));
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `make_font_def'\n");
 		exit(3);
 	}
@@ -1841,15 +1831,13 @@ getnativecharheightdepth(integer font, integer ch, scaled* height, scaled* depth
 		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[font]);
 		int gid = MapCharToGlyph_AAT(attributes, ch);
 		GetGlyphHeightDepth_AAT(attributes, gid, &ht, &dp);
-	}
-	else
+	} else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		int	gid = mapCharToGlyph(engine, ch);
 		getGlyphHeightDepth(engine, gid, &ht, &dp);
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_height_depth`\n");
 		exit(3);
 	}
@@ -1891,15 +1879,13 @@ getnativecharsidebearings(integer font, integer ch, scaled* lsb, scaled* rsb)
 		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[font]);
 		int gid = MapCharToGlyph_AAT(attributes, ch);
 		GetGlyphSidebearings_AAT(attributes, gid, &l, &r);
-	}
-	else
+	} else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		int	gid = mapCharToGlyph(engine, ch);
 		getGlyphSidebearings(engine, gid, &l, &r);
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_side_bearings'\n");
 		exit(3);
 	}
@@ -1921,8 +1907,7 @@ getglyphbounds(integer font, integer edge, integer gid)
 			GetGlyphSidebearings_AAT(attributes, gid, &a, &b);
 		else
 			GetGlyphHeightDepth_AAT(attributes, gid, &a, &b);
-	}
-	else
+	} else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
@@ -1930,8 +1915,7 @@ getglyphbounds(integer font, integer edge, integer gid)
 			getGlyphSidebearings(engine, gid, &a, &b);
 		else
 			getGlyphHeightDepth(engine, gid, &a, &b);		
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `get_glyph_bounds'\n");
 		exit(3);
 	}
@@ -1958,15 +1942,13 @@ getnativecharwd(integer f, integer c)
 		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[f]);
 		int gid = MapCharToGlyph_AAT(attributes, c);
 		wd = D2Fix(GetGlyphWidth_AAT(attributes, gid));
-	}
-	else
+	} else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		int	gid = mapCharToGlyph(engine, c);
 		wd = D2Fix(getGlyphWidthFromEngine(engine, gid));
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `get_native_char_wd'\n");
 		exit(3);
 	}
@@ -2006,8 +1988,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 	if (fontarea[f] == AAT_FONT_FLAG) {
 		/* we're using this font in AAT mode, so fontlayoutengine[f] is actually a CFDictionaryRef */
 		DoAATLayout(node, 0);
-	}
-	else
+	} else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		/* using this font in OT Layout mode, so fontlayoutengine[f] is actually a XeTeXLayoutEngine */
@@ -2090,8 +2071,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			node_width(node) = D2Fix(wid);
 			native_glyph_count(node) = realGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
-		}
-		else {
+		} else {
 			int i;
 			realGlyphCount = layoutChars(engine, txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
@@ -2142,8 +2122,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				node_width(node) += lsDelta;
 			}
 		}
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_node'\n");
 		exit(3);
 	}
@@ -2154,8 +2133,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			unless use_glyph_metrics is non-zero */
 		node_height(node) = heightbase[f];
 		node_depth(node) = depthbase[f];
-	}
-	else {
+	} else {
 		/* this iterates over the glyph data whether it comes from ATSUI or ICU layout */
 		FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
 		uint16_t*		glyphIDs = (uint16_t*)(locations + native_glyph_count(node));
@@ -2249,8 +2227,7 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 		node_width(node) = D2Fix(GetGlyphWidth_AAT(attributes, gid));
 		if (use_glyph_metrics)
 			GetGlyphHeightDepth_AAT(attributes, gid, &ht, &dp);
-	}
-	else
+	} else
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[f];
@@ -2258,8 +2235,7 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 		node_width(node) = D2Fix(getGlyphWidth(fontInst, gid));
 		if (use_glyph_metrics)
 			getGlyphHeightDepth(engine, gid, &ht, &dp);
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_glyph'\n");
 		exit(3);
 	}
@@ -2267,8 +2243,7 @@ measure_native_glyph(void* pNode, int use_glyph_metrics)
 	if (use_glyph_metrics) {
 		node_height(node) = D2Fix(ht);
 		node_depth(node) = D2Fix(dp);
-	}
-	else {
+	} else {
 		node_height(node) = heightbase[f];
 		node_depth(node) = depthbase[f];
 	}
@@ -2640,14 +2615,12 @@ printglyphname(integer font, integer gid)
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
 		s = GetGlyphNameFromCTFont(fontFromInteger(font), gid, &len);
-	}
-	else
+	} else
 #endif
 	if (fontarea[font] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)fontlayoutengine[font];
 		s = (char*)getGlyphName(getFont(engine), gid, &len);
-	}
-	else {
+	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `print_glyph_name'\n");
 		exit(3);
 	}
@@ -2678,12 +2651,10 @@ u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode
 			else if (B1 == 0 && B2 != 0) {
 				mode = UTF16BE;
 				rewind((*f)->f);
-			}
-			else if (B2 == 0 && B1 != 0) {
+			} else if (B2 == 0 && B1 != 0) {
 				mode = UTF16LE;
 				rewind((*f)->f);
-			}
-			else if (B1 == 0xef && B2 == 0xbb) {
+			} else if (B1 == 0xef && B2 == 0xbb) {
 				int	B3 = getc((*f)->f);
 				if (B3 == 0xbf)
 					mode = UTF8;
@@ -2712,8 +2683,7 @@ open_dvi_output(FILE** fptr)
 {
 	if (nopdfoutput) {
 		return open_output(fptr, FOPEN_WBIN_MODE);
-	}
-	else {
+	} else {
 		const char *p = (const char*)nameoffile+1;
 		char	*cmd, *q;
 		int len = strlen(p);
@@ -2794,9 +2764,9 @@ dviclose(FILE* fptr)
 	if (nopdfoutput) {
 		if (fclose(fptr) != 0)
 			return errno;
-	}
-	else
+	} else {
 		return pclose(fptr);
+	}
 	return 0;
 }
 
@@ -2857,8 +2827,7 @@ get_uni_c(UFILE* f)
 						rval = 0xfffd;
 						f->savedChar = lo;
 					}
-				}
-				else if (rval >= 0xdc00 && rval <= 0xdfff)
+				} else if (rval >= 0xdc00 && rval <= 0xdfff)
 					rval = 0xfffd;
 			}
 			break;
@@ -2876,8 +2845,7 @@ get_uni_c(UFILE* f)
 						rval = 0xfffd;
 						f->savedChar = lo;
 					}
-				}
-				else if (rval >= 0xdc00 && rval <= 0xdfff)
+				} else if (rval >= 0xdc00 && rval <= 0xdfff)
 					rval = 0xfffd;
 			}
 			break;
@@ -2926,9 +2894,9 @@ makeutf16name()
 			rval -= 0x10000;
 			*(t++) = 0xd800 + rval / 0x0400;
 			*(t++) = 0xdc00 + rval % 0x0400;
-		}
-		else
+		} else {
 			*(t++) = rval;
+		}
 	}
 	namelength16 = t - nameoffile16;
 }
