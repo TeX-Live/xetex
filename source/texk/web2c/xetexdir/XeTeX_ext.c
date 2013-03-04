@@ -2007,7 +2007,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		FixedPoint*	locations;
 		uint16_t*		glyphIDs;
 		Fixed*			glyphAdvances;
-		int			realGlyphCount = 0;
+		int			totalGlyphCount = 0;
 
 		/* need to find direction runs within the text, and call layoutChars separately for each */
 
@@ -2035,16 +2035,16 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			int32_t		logicalStart, length;
 			for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 				dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
-				realGlyphCount += layoutChars(engine, txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
+				totalGlyphCount += layoutChars(engine, txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 			}
 			
-			if (realGlyphCount > 0) {
+			if (totalGlyphCount > 0) {
 				double	x, y;
-				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
+				glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
-				glyphIDs = (uint16_t*)(locations + realGlyphCount);
-				glyphAdvances = xmalloc(realGlyphCount * sizeof(Fixed));
-				realGlyphCount = 0;
+				glyphIDs = (uint16_t*)(locations + totalGlyphCount);
+				glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
+				totalGlyphCount = 0;
 				
 				x = y = 0.0;
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
@@ -2062,11 +2062,11 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					getGlyphPositions(engine, positions);
 				
 					for (i = 0; i < nGlyphs; ++i) {
-						glyphIDs[realGlyphCount] = glyphs[i];
-						locations[realGlyphCount].x = D2Fix(positions[2*i] + x);
-						locations[realGlyphCount].y = D2Fix(positions[2*i+1] + y);
-						glyphAdvances[realGlyphCount] = D2Fix(advances[i]);
-						++realGlyphCount;
+						glyphIDs[totalGlyphCount] = glyphs[i];
+						locations[totalGlyphCount].x = D2Fix(positions[2*i] + x);
+						locations[totalGlyphCount].y = D2Fix(positions[2*i+1] + y);
+						glyphAdvances[totalGlyphCount] = D2Fix(advances[i]);
+						++totalGlyphCount;
 					}
 					x += positions[2*i];
 					y += positions[2*i+1];
@@ -2078,26 +2078,26 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			}
 
 			node_width(node) = D2Fix(width);
-			native_glyph_count(node) = realGlyphCount;
+			native_glyph_count(node) = totalGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
 		} else {
 			int i;
-			realGlyphCount = layoutChars(engine, txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
+			totalGlyphCount = layoutChars(engine, txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
-			glyphs = xmalloc(realGlyphCount * sizeof(uint32_t));
-			positions = xmalloc((realGlyphCount * 2 + 2) * sizeof(float));
-			advances = xmalloc(realGlyphCount * sizeof(float));
+			glyphs = xmalloc(totalGlyphCount * sizeof(uint32_t));
+			positions = xmalloc((totalGlyphCount * 2 + 2) * sizeof(float));
+			advances = xmalloc(totalGlyphCount * sizeof(float));
 
 			getGlyphs(engine, glyphs);
 			getGlyphAdvances(engine, advances);
 			getGlyphPositions(engine, positions);
 
-			if (realGlyphCount > 0) {
-				glyph_info = xmalloc(realGlyphCount * native_glyph_info_size);
+			if (totalGlyphCount > 0) {
+				glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
-				glyphIDs = (uint16_t*)(locations + realGlyphCount);
-				glyphAdvances = xmalloc(realGlyphCount * sizeof(Fixed));
-				for (i = 0; i < realGlyphCount; ++i) {
+				glyphIDs = (uint16_t*)(locations + totalGlyphCount);
+				glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
+				for (i = 0; i < totalGlyphCount; ++i) {
 					glyphIDs[i] = glyphs[i];
 					glyphAdvances[i] = D2Fix(advances[i]);
 					locations[i].x = D2Fix(positions[2*i]);
@@ -2106,7 +2106,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			}
 
 			node_width(node) = D2Fix(positions[2*i]);
-			native_glyph_count(node) = realGlyphCount;
+			native_glyph_count(node) = totalGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
 
 			free(glyphs);
@@ -2120,7 +2120,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			Fixed	lsDelta = 0;
 			Fixed	lsUnit = fontletterspace[f];
 			int i;
-			for (i = 0; i < realGlyphCount; ++i) {
+			for (i = 0; i < totalGlyphCount; ++i) {
 				if (glyphAdvances[i] == 0 && lsDelta != 0)
 					lsDelta -= lsUnit;
 				locations[i].x += lsDelta;
