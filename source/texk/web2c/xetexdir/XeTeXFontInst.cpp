@@ -58,7 +58,7 @@ XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, i
     , fNumGlyphsInited(false)
     , fVertical(false)
     , fFilename(NULL)
-    , face(0)
+    , ftFace(0)
     , hbFont(NULL)
     , fMath(NULL)
 {
@@ -68,9 +68,9 @@ XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, i
 
 XeTeXFontInst::~XeTeXFontInst()
 {
-	if (face != 0) {
-		FT_Done_Face(face);
-		face = 0;
+	if (ftFace != 0) {
+		FT_Done_Face(ftFace);
+		ftFace = 0;
 	}
 	hb_font_destroy(hbFont);
 }
@@ -89,7 +89,7 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 		}
 	}
 
-	err = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &face);
+	err = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &ftFace);
 
 	if (err != 0) {
         status = 1;
@@ -97,7 +97,7 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
     }
 
 	/* for non-sfnt-packaged fonts (presumably Type 1), see if there is an AFM file we can attach */
-	if (index == 0 && !FT_IS_SFNT(face)) {
+	if (index == 0 && !FT_IS_SFNT(ftFace)) {
 		char* afm = new char[strlen((const char*)pathname) + 5]; // room to append ".afm"
 		strcpy(afm, (const char*)pathname);
 		char* p = strrchr(afm, '.');
@@ -105,17 +105,17 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 			strcat(afm, ".afm");   // append .afm if the extension didn't seem to be .pf[ab]
 		else
 			strcpy(p, ".afm"); 	   // else replace extension with .afm
-		FT_Attach_File(face, afm); // ignore error code; AFM might not exist
+		FT_Attach_File(ftFace, afm); // ignore error code; AFM might not exist
 		delete[] afm;
 	}
 
-	if (face == 0) {
+	if (ftFace == 0) {
 		status = 1;
 		return;
 	}
 
-	FT_Set_Char_Size(face, fPointSize * 64, 0, 0, 0);
-	hbFont = hb_ft_font_create(face, NULL);
+	FT_Set_Char_Size(ftFace, fPointSize * 64, 0, 0, 0);
+	hbFont = hb_ft_font_create(ftFace, NULL);
 
 	char buf[20];
 	if (index > 0)
@@ -124,9 +124,9 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 		buf[0] = 0;
 	fFilename = new char[strlen(pathname) + 2 + strlen(buf) + 1];
 	sprintf(fFilename, "[%s%s]", pathname, buf);
-	fUnitsPerEM = face->units_per_EM;
-	fAscent = unitsToPoints(face->ascender);
-	fDescent = unitsToPoints(face->descender);
+	fUnitsPerEM = ftFace->units_per_EM;
+	fAscent = unitsToPoints(ftFace->ascender);
+	fDescent = unitsToPoints(ftFace->descender);
 	fItalicAngle = 0;
 
 	postTable = (TT_Postscript *) getFontTable(ft_sfnt_post);
@@ -147,13 +147,13 @@ const void *
 XeTeXFontInst::getFontTable(OTTag tag) const
 {
 	FT_ULong tmpLength = 0;
-	FT_Error err = FT_Load_Sfnt_Table(face, tag, 0, NULL, &tmpLength);
+	FT_Error err = FT_Load_Sfnt_Table(ftFace, tag, 0, NULL, &tmpLength);
 	if (err != 0)
 		return NULL;
 
 	void* table = xmalloc(tmpLength * sizeof(char));
 	if (table != NULL) {
-		err = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, &tmpLength);
+		err = FT_Load_Sfnt_Table(ftFace, tag, 0, (FT_Byte*)table, &tmpLength);
 		if (err != 0) {
 			free((void *) table);
 			return NULL;
@@ -174,7 +174,7 @@ XeTeXFontInst::getMathTable()
 const void *
 XeTeXFontInst::getFontTable(FT_Sfnt_Tag tag) const
 {
-	return FT_Get_Sfnt_Table(face, tag);
+	return FT_Get_Sfnt_Table(ftFace, tag);
 }
 
 void
@@ -182,12 +182,12 @@ XeTeXFontInst::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 {
 	bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0.0;
 
-	FT_Error err = FT_Load_Glyph(face, gid, FT_LOAD_NO_SCALE);
+	FT_Error err = FT_Load_Glyph(ftFace, gid, FT_LOAD_NO_SCALE);
 	if (err != 0)
 		return;
 
     FT_Glyph glyph;
-    err = FT_Get_Glyph(face->glyph, &glyph);
+    err = FT_Get_Glyph(ftFace->glyph, &glyph);
 	if (err == 0) {
 		FT_BBox ft_bbox;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_UNSCALED, &ft_bbox);
@@ -202,25 +202,25 @@ XeTeXFontInst::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 GlyphID
 XeTeXFontInst::mapCharToGlyph(UChar32 ch) const
 {
-	return FT_Get_Char_Index(face, ch);
+	return FT_Get_Char_Index(ftFace, ch);
 }
 
 uint16_t
 XeTeXFontInst::getNumGlyphs() const
 {
-	return face->num_glyphs;
+	return ftFace->num_glyphs;
 }
 
 void
 XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
 {
-	FT_Error err = FT_Load_Glyph(face, glyph, FT_LOAD_NO_SCALE);
+	FT_Error err = FT_Load_Glyph(ftFace, glyph, FT_LOAD_NO_SCALE);
 	if (err != 0) {
 		advance.x = advance.y = 0;
 	}
 	else {
-		advance.x = fVertical ? 0 : unitsToPoints(face->glyph->metrics.horiAdvance);
-		advance.y = fVertical ? unitsToPoints(face->glyph->metrics.vertAdvance) : 0;
+		advance.x = fVertical ? 0 : unitsToPoints(ftFace->glyph->metrics.horiAdvance);
+		advance.y = fVertical ? unitsToPoints(ftFace->glyph->metrics.vertAdvance) : 0;
 	}
 }
 
@@ -279,15 +279,15 @@ XeTeXFontInst::getGlyphItalCorr(GlyphID gid)
 GlyphID
 XeTeXFontInst::mapGlyphToIndex(const char* glyphName) const
 {
-	return FT_Get_Name_Index(face, const_cast<char*>(glyphName));
+	return FT_Get_Name_Index(ftFace, const_cast<char*>(glyphName));
 }
 
 const char*
 XeTeXFontInst::getGlyphName(GlyphID gid, int& nameLen)
 {
-	if (FT_HAS_GLYPH_NAMES(face)) {
+	if (FT_HAS_GLYPH_NAMES(ftFace)) {
 		static char buffer[256];
-		FT_Get_Glyph_Name(face, gid, buffer, 256);
+		FT_Get_Glyph_Name(ftFace, gid, buffer, 256);
 		nameLen = strlen(buffer);
 		return &buffer[0];
 	}
@@ -301,18 +301,18 @@ UChar32
 XeTeXFontInst::getFirstCharCode()
 {
 	FT_UInt  gindex;
-	return FT_Get_First_Char(face, &gindex);
+	return FT_Get_First_Char(ftFace, &gindex);
 }
 
 UChar32
 XeTeXFontInst::getLastCharCode()
 {
 	FT_UInt  gindex;
-	UChar32	ch = FT_Get_First_Char(face, &gindex);
+	UChar32	ch = FT_Get_First_Char(ftFace, &gindex);
 	UChar32	prev = ch;
 	while (gindex != 0) {
 		prev = ch;
-		ch = FT_Get_Next_Char(face, ch, &gindex);
+		ch = FT_Get_Next_Char(ftFace, ch, &gindex);
 	}
 	return prev;
 }

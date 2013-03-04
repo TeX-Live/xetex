@@ -78,7 +78,7 @@ protected:
 
     void getMetrics();
 
-	FT_Face			face;
+	FT_Face ftFace;
 	const char *fMath;
 
 public:
