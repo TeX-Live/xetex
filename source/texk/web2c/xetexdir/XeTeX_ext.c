@@ -926,7 +926,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 
 	char reqEngine = getReqEngine();
 
-	if (reqEngine) {
+	if (reqEngine == 'O' || reqEngine == 'G') {
 		shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
 		if (reqEngine == 'O')
 			shapers[nShapers] = strdup("ot");
