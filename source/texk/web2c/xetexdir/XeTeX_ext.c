@@ -1521,7 +1521,7 @@ makeXDVGlyphArrayData(void* pNode)
 	void*		glyph_info;
 	FixedPoint*	locations;
 	int			opcode;
-	Fixed		wid;
+	Fixed		width;
 	uint16_t		glyphCount = native_glyph_count(p);
 	
 	int	i = glyphCount * native_glyph_info_size + 8; /* to guarantee enough space in the buffer */
@@ -1546,11 +1546,11 @@ makeXDVGlyphArrayData(void* pNode)
 	cp = (unsigned char*)xdvbuffer;
 	*cp++ = opcode;
 	
-	wid = node_width(p);
-	*cp++ = (wid >> 24) & 0xff;
-	*cp++ = (wid >> 16) & 0xff;
-	*cp++ = (wid >> 8) & 0xff;
-	*cp++ = wid & 0xff;
+	width = node_width(p);
+	*cp++ = (width >> 24) & 0xff;
+	*cp++ = (width >> 16) & 0xff;
+	*cp++ = (width >> 8) & 0xff;
+	*cp++ = width & 0xff;
 	
 	*cp++ = (glyphCount >> 8) & 0xff;
 	*cp++ = glyphCount & 0xff;
@@ -2030,7 +2030,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			   bothered to deal with the memory reallocation headache of doing it differently
 			*/
 			int	nRuns = ubidi_countRuns(pBiDi, &errorCode);
-			double		wid = 0;
+			double		width = 0;
 			int 		i, runIndex;
 			int32_t		logicalStart, length;
 			for (runIndex = 0; runIndex < nRuns; ++runIndex) {
@@ -2074,10 +2074,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					free(glyphs);
 					free(positions);
 				}
-				wid = x;
+				width = x;
 			}
 
-			node_width(node) = D2Fix(wid);
+			node_width(node) = D2Fix(width);
 			native_glyph_count(node) = realGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
 		} else {
