@@ -679,6 +679,20 @@ void getGlyphs(XeTeXLayoutEngine engine, uint32_t glyphs[])
 		glyphs[i] = hbGlyphs[i].codepoint;
 }
 
+void
+getGlyphAdvances(XeTeXLayoutEngine engine, float advances[])
+{
+	int glyphCount = hb_buffer_get_length(engine->hbBuffer);
+	hb_glyph_position_t *hbPositions = hb_buffer_get_glyph_positions(engine->hbBuffer, NULL);
+
+	for (int i = 0; i < glyphCount; i++) {
+		if (engine->font->getLayoutDirVertical())
+			advances[i] = hbPositions[i].y_advance / 64.0;
+		else
+			advances[i] = hbPositions[i].x_advance / 64.0;
+	}
+}
+
 void getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 {
 	int glyphCount = hb_buffer_get_length(engine->hbBuffer);

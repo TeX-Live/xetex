@@ -74,8 +74,6 @@ CTFontRef fontFromInteger(integer font)
 	return fontFromAttributes(attributes);
 }
 
-static double getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid);
-
 void
 DoAtsuiLayout(void* p, int justify)
 {
@@ -83,6 +81,7 @@ DoAtsuiLayout(void* p, int justify)
 	CFIndex i, j, runCount;
 	CFIndex totalGlyphCount;
 	UInt16* realGlyphIDs, *glyphIDs;
+	Fixed* glyphAdvances;
 	void*   glyph_info;
 	FixedPoint*	locations;
 	Fixed lsUnit, lsDelta;
@@ -133,6 +132,7 @@ DoAtsuiLayout(void* p, int justify)
 	realGlyphIDs = xmalloc(totalGlyphCount * sizeof(UInt16));
 	glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
 	locations = (FixedPoint*)glyph_info;
+	glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
 
 	realGlyphCount = 0;
 	width = 0;
@@ -143,9 +143,11 @@ DoAtsuiLayout(void* p, int justify)
 		// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
 		CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
 		CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
+		CGSize*  advances = (CGSize*) xmalloc(count * sizeof(CGSize));
 		CGFloat runWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL);
 		CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
 		CTRunGetPositions(run, CFRangeMake(0, 0), positions);
+		CTRunGetAdvances(run, CFRangeMake(0, 0), advances);
 		for (j = 0; j < count; j++) {
 			// XXX Core Text has that font cascading thing that will do
 			// font substitution for missing glyphs, which we do not want
@@ -161,6 +163,7 @@ DoAtsuiLayout(void* p, int justify)
 			// XXX trasformation matrix changes y positions!
 			//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
 			locations[realGlyphCount].y = 0;
+			glyphAdvances[realGlyphCount] = advances[j].width;
 			realGlyphCount++;
 		}
 		width += FixedPStoTeXPoints(runWidth);
@@ -185,7 +188,7 @@ DoAtsuiLayout(void* p, int justify)
 			Fixed	lsUnit = fontletterspace[f];
 			int i;
 			for (i = 0; i < realGlyphCount; ++i) {
-				if (getGlyphWidthFromCTFont(fontFromAttributes(attributes), glyphIDs[i]) == 0 && lsDelta != 0)
+				if (glyphAdvances[i] == 0 && lsDelta != 0)
 					lsDelta -= lsUnit;
 				locations[i].x += lsDelta;
 				lsDelta += lsUnit;
