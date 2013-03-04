@@ -53,6 +53,8 @@ XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, i
     , fUnitsPerEM(0)
     , fAscent(0)
     , fDescent(0)
+    , fCapHeight(0)
+    , fXHeight(0)
     , fItalicAngle(0)
     , fNumGlyphs(0)
     , fNumGlyphsInited(false)
@@ -79,6 +81,7 @@ void
 XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 {
 	TT_Postscript *postTable;
+	TT_OS2* os2Table;
 	FT_Error error;
 
 	if (!gFreeTypeLibrary) {
@@ -133,6 +136,12 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 
 	if (postTable != NULL) {
 		fItalicAngle = Fix2D(postTable->italicAngle);
+	}
+
+	os2Table = (TT_OS2*) getFontTable(ft_sfnt_os2);
+	if (os2Table) {
+		fCapHeight = unitsToPoints(os2Table->sCapHeight);
+		fXHeight = unitsToPoints(os2Table->sxHeight);
 	}
 
     return;

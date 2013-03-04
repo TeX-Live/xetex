@@ -780,6 +780,13 @@ getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent)
 	*descent = engine->font->getDescent();
 }
 
+void
+getCapAndXHeight(XeTeXLayoutEngine engine, float* capheight, float* xheight)
+{
+	*capheight = engine->font->getCapHeight();
+	*xheight = engine->font->getXHeight();
+}
+
 int
 getDefaultDirection(XeTeXLayoutEngine engine)
 {

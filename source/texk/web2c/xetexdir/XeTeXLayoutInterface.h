@@ -125,6 +125,7 @@ void getGlyphPositions(XeTeXLayoutEngine engine, float* positions);
 float getPointSize(XeTeXLayoutEngine engine);
 
 void getAscentAndDescent(XeTeXLayoutEngine engine, float* ascent, float* descent);
+void getCapAndXHeight(XeTeXLayoutEngine engine, float* capheight, float* xheight);
 
 int getDefaultDirection(XeTeXLayoutEngine engine);
 

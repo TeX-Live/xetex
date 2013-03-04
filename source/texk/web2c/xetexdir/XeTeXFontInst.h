@@ -63,6 +63,8 @@ protected:
 	unsigned short fUnitsPerEM;
 	float fAscent;
 	float fDescent;
+	float fCapHeight;
+	float fXHeight;
 
 	float fDeviceScaleX;
 	float fDeviceScaleY;
@@ -120,6 +122,9 @@ public:
 	{
 		return fDescent;
 	}
+
+	virtual float getCapHeight() const { return fCapHeight; }
+	virtual float getXHeight() const { return fXHeight; }
 
 	virtual GlyphID mapCharToGlyph(UChar32 ch) const;
 	virtual GlyphID mapGlyphToIndex(const char* glyphName) const;

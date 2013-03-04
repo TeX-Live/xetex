@@ -1309,7 +1309,6 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 {
 	XeTeXLayoutEngine	engine = (XeTeXLayoutEngine)pEngine;
 	float	a, d;
-	int		glyphID;
 
 	getAscentAndDescent(engine, &a, &d);
 	*ascent = D2Fix(a);
@@ -1318,20 +1317,30 @@ otgetfontmetrics(void* pEngine, scaled* ascent, scaled* descent, scaled* xheight
 	*slant = D2Fix(Fix2D(getSlant(getFont(engine))) * getExtendFactor(engine)
 					+ getSlantFactor(engine));
 
-	glyphID = mapCharToGlyph(engine, 'x');
-	if (glyphID != 0) {
-		getGlyphHeightDepth(engine, glyphID, &a, &d);
-		*xheight = D2Fix(a);
-	} else {
-		*xheight = *ascent / 2; /* arbitrary figure if there's no 'x' in the font */
+	/* get cap and x height from OS/2 table */
+	getCapAndXHeight(engine, &a, &d);
+	*capheight = D2Fix(a);
+	*xheight = D2Fix(d);
+
+	/* fallback in case the font does not have OS/2 table */
+	if (*xheight == 0) {
+		int glyphID = mapCharToGlyph(engine, 'x');
+		if (glyphID != 0) {
+			getGlyphHeightDepth(engine, glyphID, &a, &d);
+			*xheight = D2Fix(a);
+		} else {
+			*xheight = *ascent / 2; /* arbitrary figure if there's no 'x' in the font */
+		}
 	}
 
-	glyphID = mapCharToGlyph(engine, 'X');
-	if (glyphID != 0) {
-		getGlyphHeightDepth(engine, glyphID, &a, &d);
-		*capheight = D2Fix(a);
-	} else {
-		*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
+	if (*capheight == 0) {
+		int glyphID = mapCharToGlyph(engine, 'X');
+		if (glyphID != 0) {
+			getGlyphHeightDepth(engine, glyphID, &a, &d);
+			*capheight = D2Fix(a);
+		} else {
+			*capheight = *ascent; /* arbitrary figure if there's no 'X' in the font */
+		}
 	}
 }
 
