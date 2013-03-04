@@ -130,10 +130,8 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 	fUnitsPerEM = ftFace->units_per_EM;
 	fAscent = unitsToPoints(ftFace->ascender);
 	fDescent = unitsToPoints(ftFace->descender);
-	fItalicAngle = 0;
 
 	postTable = (TT_Postscript *) getFontTable(ft_sfnt_post);
-
 	if (postTable != NULL) {
 		fItalicAngle = Fix2D(postTable->italicAngle);
 	}

@@ -65,10 +65,6 @@ protected:
 	float fDescent;
 	float fCapHeight;
 	float fXHeight;
-
-	float fDeviceScaleX;
-	float fDeviceScaleY;
-
 	float fItalicAngle;
 
 	uint16_t fNumGlyphs;
@@ -90,65 +86,42 @@ public:
 
 	virtual ~XeTeXFontInst();
 
-	virtual void initialize(const char* pathname, int index, int &status);
+	void initialize(const char* pathname, int index, int &status);
 
-	virtual const void *getFontTable(OTTag tableTag) const;
-	virtual const void *getFontTable(FT_Sfnt_Tag tableTag) const;
-	virtual const char *getMathTable();
+	const void *getFontTable(OTTag tableTag) const;
+	const void *getFontTable(FT_Sfnt_Tag tableTag) const;
+	const char *getMathTable();
 
-	virtual const char *getFilename() const
-	{
-		return fFilename;
-	}
+	const char *getFilename() const { return fFilename; }
+	hb_font_t *getHbFont() const { return hbFont; }
+	void setLayoutDirVertical(bool vertical);
+	bool getLayoutDirVertical() const { return fVertical; };
 
-	virtual hb_font_t *getHbFont() const
-	{
-		return hbFont;
-	}
+	float getPointSize() const { return fPointSize; };
+	float getAscent() const { return fAscent; }
+	float getDescent() const { return fDescent; }
+	float getCapHeight() const { return fCapHeight; }
+	float getXHeight() const { return fXHeight; }
+	float getItalicAngle() const { return fItalicAngle; }
 
-	virtual void setLayoutDirVertical(bool vertical);
+	GlyphID mapCharToGlyph(UChar32 ch) const;
+	GlyphID mapGlyphToIndex(const char* glyphName) const;
 
-	virtual bool getLayoutDirVertical() const
-	{
-		return fVertical;
-	};
+	uint16_t getNumGlyphs() const;
 
-	virtual float getAscent() const
-	{
-		return fAscent;
-	}
+	void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
 
-	virtual float getDescent() const
-	{
-		return fDescent;
-	}
-
-	virtual float getCapHeight() const { return fCapHeight; }
-	virtual float getXHeight() const { return fXHeight; }
-
-	virtual GlyphID mapCharToGlyph(UChar32 ch) const;
-	virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
-
-	virtual uint16_t getNumGlyphs() const;
-
-	virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
-
-	virtual void getGlyphBounds(GlyphID glyph, GlyphBBox* bbox);
+	void getGlyphBounds(GlyphID glyph, GlyphBBox* bbox);
 
 	float getGlyphWidth(GlyphID glyph);
 	void getGlyphHeightDepth(GlyphID glyph, float *ht, float* dp);
 	void getGlyphSidebearings(GlyphID glyph, float* lsb, float* rsb);
 	float getGlyphItalCorr(GlyphID glyph);
 
-	virtual const char* getGlyphName(GlyphID gid, int& nameLen);
+	const char* getGlyphName(GlyphID gid, int& nameLen);
 	
-	virtual UChar32 getFirstCharCode();
-	virtual UChar32 getLastCharCode();
-
-	float getPointSize() const
-	{
-		return fPointSize;
-	};
+	UChar32 getFirstCharCode();
+	UChar32 getLastCharCode();
 
 	float unitsToPoints(float units) const
 	{
@@ -158,11 +131,6 @@ public:
 	float pointsToUnits(float points) const
 	{
 		return (points * (float) fUnitsPerEM) / fPointSize;
-	}
-
-	float getItalicAngle() const
-	{
-		return fItalicAngle;
 	}
 };
 
