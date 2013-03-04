@@ -81,13 +81,12 @@ DoAATLayout(void* p, int justify)
 {
 	CFArrayRef glyphRuns;
 	CFIndex i, j, runCount;
-	CFIndex totalGlyphCount;
-	UInt16* realGlyphIDs, *glyphIDs;
+	CFIndex totalGlyphCount = 0;
+	UInt16* glyphIDs;
 	Fixed* glyphAdvances;
 	void*   glyph_info;
 	FixedPoint*	locations;
 	Fixed lsUnit, lsDelta;
-	int	realGlyphCount;
 	CGFloat width;
 
 	long txtLen;
@@ -131,73 +130,74 @@ DoAATLayout(void* p, int justify)
 	glyphRuns = CTLineGetGlyphRuns(line);
 	runCount = CFArrayGetCount(glyphRuns);
 	totalGlyphCount = CTLineGetGlyphCount(line);
-	realGlyphIDs = xmalloc(totalGlyphCount * sizeof(UInt16));
-	glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
-	locations = (FixedPoint*)glyph_info;
-	glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
 
-	realGlyphCount = 0;
-	width = 0;
-	for (i = 0; i < runCount; i++) {
-		CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, i);
-		CFIndex count = CTRunGetGlyphCount(run);
-		CFDictionaryRef runAttributes = CTRunGetAttributes(run);
-		// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
-		CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
-		CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
-		CGSize*  advances = (CGSize*) xmalloc(count * sizeof(CGSize));
-		CGFloat runWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL);
-		CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
-		CTRunGetPositions(run, CFRangeMake(0, 0), positions);
-		CTRunGetAdvances(run, CFRangeMake(0, 0), advances);
-		for (j = 0; j < count; j++) {
-			// XXX Core Text has that font cascading thing that will do
-			// font substitution for missing glyphs, which we do not want
-			// but I can not find a way to disable it yet, so if the font
-			// of the resulting run is not the same font we asked for, use
-			// the glyph at index 0 (usually .notdef) instead or we will be
-			// showing garbage or even invalid glyphs
-			if (fontFromAttributes(attributes) != fontFromAttributes(runAttributes))
-				realGlyphIDs[realGlyphCount] = 0;
-			else
-				realGlyphIDs[realGlyphCount] = glyphs[j];
-			locations[realGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
-			// XXX trasformation matrix changes y positions!
-			//locations[realGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
-			locations[realGlyphCount].y = 0;
-			glyphAdvances[realGlyphCount] = advances[j].width;
-			realGlyphCount++;
+	if (totalGlyphCount > 0) {
+		glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
+		locations = (FixedPoint*)glyph_info;
+		glyphIDs = (UInt16*)(locations + totalGlyphCount);
+		glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
+		totalGlyphCount = 0;
+
+		width = 0;
+		for (i = 0; i < runCount; i++) {
+			CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, i);
+			CFIndex count = CTRunGetGlyphCount(run);
+			CFDictionaryRef runAttributes = CTRunGetAttributes(run);
+			// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
+			CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
+			CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
+			CGSize*  advances = (CGSize*) xmalloc(count * sizeof(CGSize));
+			CGFloat runWidth = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), NULL, NULL, NULL);
+			CTRunGetGlyphs(run, CFRangeMake(0, 0), glyphs);
+			CTRunGetPositions(run, CFRangeMake(0, 0), positions);
+			CTRunGetAdvances(run, CFRangeMake(0, 0), advances);
+			for (j = 0; j < count; j++) {
+				// XXX Core Text has that font cascading thing that will do
+				// font substitution for missing glyphs, which we do not want
+				// but I can not find a way to disable it yet, so if the font
+				// of the resulting run is not the same font we asked for, use
+				// the glyph at index 0 (usually .notdef) instead or we will be
+				// showing garbage or even invalid glyphs
+				if (fontFromAttributes(attributes) != fontFromAttributes(runAttributes))
+					glyphIDs[totalGlyphCount] = 0;
+				else
+					glyphIDs[totalGlyphCount] = glyphs[j];
+				locations[totalGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
+				// XXX trasformation matrix changes y positions!
+				//locations[totalGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
+				locations[totalGlyphCount].y = 0;
+				glyphAdvances[totalGlyphCount] = advances[j].width;
+				totalGlyphCount++;
+			}
+			width += FixedPStoTeXPoints(runWidth);
+			free(glyphs);
+			free(positions);
 		}
-		width += FixedPStoTeXPoints(runWidth);
-		free(glyphs);
-		free(positions);
 	}
 
-	glyphIDs = (UInt16*)(locations + realGlyphCount);
-	memcpy(glyphIDs, realGlyphIDs, realGlyphCount * sizeof(UInt16));
-	free(realGlyphIDs);
-
-	native_glyph_count(node) = realGlyphCount;
+	native_glyph_count(node) = totalGlyphCount;
 	native_glyph_info_ptr(node) = glyph_info;
 
 	if (!justify) {
 		node_width(node) = width;
 
-		/* this is essentially a copy from similar code in XeTeX_ext.c, easier
-		 * to be done here */
-		if (fontletterspace[f] != 0) {
-			Fixed	lsDelta = 0;
-			Fixed	lsUnit = fontletterspace[f];
-			int i;
-			for (i = 0; i < realGlyphCount; ++i) {
-				if (glyphAdvances[i] == 0 && lsDelta != 0)
+		if (totalGlyphCount > 0) {
+			/* this is essentially a copy from similar code in XeTeX_ext.c, easier
+			 * to be done here */
+			if (fontletterspace[f] != 0) {
+				Fixed	lsDelta = 0;
+				Fixed	lsUnit = fontletterspace[f];
+				int i;
+				for (i = 0; i < totalGlyphCount; ++i) {
+					if (glyphAdvances[i] == 0 && lsDelta != 0)
+						lsDelta -= lsUnit;
+					locations[i].x += lsDelta;
+					lsDelta += lsUnit;
+				}
+				if (lsDelta != 0) {
 					lsDelta -= lsUnit;
-				locations[i].x += lsDelta;
-				lsDelta += lsUnit;
-			}
-			if (lsDelta != 0) {
-				lsDelta -= lsUnit;
-				node_width(node) += lsDelta;
+					node_width(node) += lsDelta;
+				}
 			}
 		}
 	}
