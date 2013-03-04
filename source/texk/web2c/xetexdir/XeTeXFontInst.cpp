@@ -138,7 +138,8 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
     return;
 }
 
-void XeTeXFontInst::setLayoutDirVertical(bool vertical)
+void
+XeTeXFontInst::setLayoutDirVertical(bool vertical)
 {
 	fVertical = vertical;
 }

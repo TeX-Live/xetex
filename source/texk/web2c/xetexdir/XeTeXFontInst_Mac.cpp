@@ -59,7 +59,8 @@ XeTeXFontInst_Mac::~XeTeXFontInst_Mac()
 		CFRelease(fFontRef);
 }
 
-void XeTeXFontInst_Mac::initialize(int &status)
+void
+XeTeXFontInst_Mac::initialize(int &status)
 {
     if (fDescriptor == 0) {
         status = 1;

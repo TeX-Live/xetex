@@ -58,41 +58,41 @@ authorization from the copyright holders.
 class XeTeXFontInst
 {
 protected:
-    float    fPointSize;
+	float	fPointSize;
 
-    unsigned short fUnitsPerEM;
-    float fAscent;
-    float fDescent;
+	unsigned short fUnitsPerEM;
+	float fAscent;
+	float fDescent;
 
-    float fDeviceScaleX;
-    float fDeviceScaleY;
+	float fDeviceScaleX;
+	float fDeviceScaleY;
 
 	float fItalicAngle;
 
-    uint16_t fNumGlyphs;
+	uint16_t fNumGlyphs;
 	bool fNumGlyphsInited;
 	
 	bool fVertical; // false = horizontal, true = vertical
 
 	char *fFilename; // actually holds [filename:index], as used in xetex
 
-    void getMetrics();
+	void getMetrics();
 
 	FT_Face ftFace;
 	hb_font_t* hbFont;
 	const char *fMath;
 
 public:
-    XeTeXFontInst(float pointSize, int &status);
+	XeTeXFontInst(float pointSize, int &status);
 	XeTeXFontInst(const char* filename, int index, float pointSize, int &status);
 
-    virtual ~XeTeXFontInst();
+	virtual ~XeTeXFontInst();
 
 	virtual void initialize(const char* pathname, int index, int &status);
 
-    virtual const void *getFontTable(OTTag tableTag) const;
-    virtual const void *getFontTable(FT_Sfnt_Tag tableTag) const;
-    virtual const char *getMathTable();
+	virtual const void *getFontTable(OTTag tableTag) const;
+	virtual const void *getFontTable(FT_Sfnt_Tag tableTag) const;
+	virtual const char *getMathTable();
 
 	virtual const char *getFilename() const
 	{
@@ -111,22 +111,22 @@ public:
 		return fVertical;
 	};
 
-    virtual float getAscent() const
-    {
-        return fAscent;
-    }
+	virtual float getAscent() const
+	{
+		return fAscent;
+	}
 
-    virtual float getDescent() const
-    {
-        return fDescent;
-    }
+	virtual float getDescent() const
+	{
+		return fDescent;
+	}
 
-    virtual GlyphID mapCharToGlyph(UChar32 ch) const;
-    virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
+	virtual GlyphID mapCharToGlyph(UChar32 ch) const;
+	virtual GlyphID mapGlyphToIndex(const char* glyphName) const;
 
 	virtual uint16_t getNumGlyphs() const;
 
-    virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
+	virtual void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
 
 	virtual void getGlyphBounds(GlyphID glyph, GlyphBBox* bbox);
 
@@ -140,10 +140,10 @@ public:
 	virtual UChar32 getFirstCharCode();
 	virtual UChar32 getLastCharCode();
 
-    float getPointSize() const
-    {
-        return fPointSize;
-    };
+	float getPointSize() const
+	{
+		return fPointSize;
+	};
 
 	float unitsToPoints(float units) const
 	{
@@ -155,10 +155,10 @@ public:
 		return (points * (float) fUnitsPerEM) / fPointSize;
 	}
 
-    float getItalicAngle() const
-    {
-        return fItalicAngle;
-    }
+	float getItalicAngle() const
+	{
+		return fItalicAngle;
+	}
 };
 
 #endif
