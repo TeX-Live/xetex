@@ -79,19 +79,19 @@ void
 XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 {
 	TT_Postscript *postTable;
-	FT_Error err;
+	FT_Error error;
 
 	if (!gFreeTypeLibrary) {
-		err = FT_Init_FreeType(&gFreeTypeLibrary);
-		if (err != 0) {
-			fprintf(stderr, "FreeType initialization failed! (%d)\n", err);
+		error = FT_Init_FreeType(&gFreeTypeLibrary);
+		if (error != 0) {
+			fprintf(stderr, "FreeType initialization failed! (%d)\n", error);
 			exit(1);
 		}
 	}
 
-	err = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &ftFace);
+	error = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &ftFace);
 
-	if (err != 0) {
+	if (error != 0) {
         status = 1;
         return;
     }
@@ -147,14 +147,14 @@ const void *
 XeTeXFontInst::getFontTable(OTTag tag) const
 {
 	FT_ULong tmpLength = 0;
-	FT_Error err = FT_Load_Sfnt_Table(ftFace, tag, 0, NULL, &tmpLength);
-	if (err != 0)
+	FT_Error error = FT_Load_Sfnt_Table(ftFace, tag, 0, NULL, &tmpLength);
+	if (error != 0)
 		return NULL;
 
 	void* table = xmalloc(tmpLength * sizeof(char));
 	if (table != NULL) {
-		err = FT_Load_Sfnt_Table(ftFace, tag, 0, (FT_Byte*)table, &tmpLength);
-		if (err != 0) {
+		error = FT_Load_Sfnt_Table(ftFace, tag, 0, (FT_Byte*)table, &tmpLength);
+		if (error != 0) {
 			free((void *) table);
 			return NULL;
 		}
@@ -182,13 +182,13 @@ XeTeXFontInst::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 {
 	bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0.0;
 
-	FT_Error err = FT_Load_Glyph(ftFace, gid, FT_LOAD_NO_SCALE);
-	if (err != 0)
+	FT_Error error = FT_Load_Glyph(ftFace, gid, FT_LOAD_NO_SCALE);
+	if (error != 0)
 		return;
 
     FT_Glyph glyph;
-    err = FT_Get_Glyph(ftFace->glyph, &glyph);
-	if (err == 0) {
+    error = FT_Get_Glyph(ftFace->glyph, &glyph);
+	if (error == 0) {
 		FT_BBox ft_bbox;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_UNSCALED, &ft_bbox);
 		bbox->xMin = unitsToPoints(ft_bbox.xMin);
@@ -214,8 +214,8 @@ XeTeXFontInst::getNumGlyphs() const
 void
 XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
 {
-	FT_Error err = FT_Load_Glyph(ftFace, glyph, FT_LOAD_NO_SCALE);
-	if (err != 0) {
+	FT_Error error = FT_Load_Glyph(ftFace, glyph, FT_LOAD_NO_SCALE);
+	if (error != 0) {
 		advance.x = advance.y = 0;
 	}
 	else {
