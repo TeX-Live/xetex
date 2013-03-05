@@ -921,9 +921,8 @@ findNextGraphiteBreak(void)
 
 	if (grSegment != NULL) {
 		if (grPrevSlot && grPrevSlot != gr_seg_last_slot(grSegment)) {
-			const gr_slot* s;
-			const gr_char_info* ci = NULL;
-			for (s = gr_slot_next_in_segment(grPrevSlot); s != NULL; s = gr_slot_next_in_segment(s)) {
+			for (const gr_slot* s = gr_slot_next_in_segment(grPrevSlot); s != NULL; s = gr_slot_next_in_segment(s)) {
+				const gr_char_info* ci = NULL;
 				int bw;
 
 				ci = gr_seg_cinfo(grSegment, gr_slot_index(s));
