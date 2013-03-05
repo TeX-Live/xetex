@@ -870,6 +870,7 @@ mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName)
 
 static gr_segment* grSegment = NULL;
 static const gr_slot* grPrevSlot = NULL;
+static int grTextLen;
 
 bool
 initGraphiteBreaking(XeTeXLayoutEngine engine, const uint16_t* txtPtr, int txtLen)
@@ -905,6 +906,7 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const uint16_t* txtPtr, int txtLe
 
 		grSegment = gr_make_seg(grFont, grFace, script, grFeatureValues, gr_utf16, txtPtr, txtLen, 0);
 		grPrevSlot = gr_seg_first_slot(grSegment);
+		grTextLen = txtLen;
 
 		return true;
 	}
@@ -942,8 +944,7 @@ findNextGraphiteBreak(void)
 
 			if (ret == -1) {
 				grPrevSlot = gr_seg_last_slot(grSegment);
-				ci = gr_seg_cinfo(grSegment, gr_slot_after(grPrevSlot));
-				ret = gr_cinfo_base(ci) + 1;
+				ret = grTextLen;
 			}
 		}
 	}
