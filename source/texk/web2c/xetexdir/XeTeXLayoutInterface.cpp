@@ -920,8 +920,6 @@ findNextGraphiteBreak(void)
 	int ret = -1;
 
 	if (grSegment != NULL) {
-		// XXX: gr_cinfo_base() returns "code unit" index not char index, so this
-		// is broken outside BMP
 		if (grPrevSlot && grPrevSlot != gr_seg_last_slot(grSegment)) {
 			const gr_slot* s;
 			const gr_char_info* ci = NULL;
