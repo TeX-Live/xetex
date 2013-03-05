@@ -915,36 +915,40 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const uint16_t* txtPtr, int txtLe
 int
 findNextGraphiteBreak(void)
 {
-	if (grSegment == NULL)
-		return -1;
+	int ret = -1;
 
-	// XXX: gr_cinfo_base() returns "code unit" index not char index, so this
-	// is broken outside BMP
-	if (grPrevSlot && grPrevSlot != gr_seg_last_slot(grSegment)) {
-		const gr_slot* s;
-		const gr_char_info* ci = NULL;
-		for (s = gr_slot_next_in_segment(grPrevSlot); s != NULL; s = gr_slot_next_in_segment(s)) {
-			int bw;
+	if (grSegment != NULL) {
+		// XXX: gr_cinfo_base() returns "code unit" index not char index, so this
+		// is broken outside BMP
+		if (grPrevSlot && grPrevSlot != gr_seg_last_slot(grSegment)) {
+			const gr_slot* s;
+			const gr_char_info* ci = NULL;
+			for (s = gr_slot_next_in_segment(grPrevSlot); s != NULL; s = gr_slot_next_in_segment(s)) {
+				int bw;
 
-			ci = gr_seg_cinfo(grSegment, gr_slot_index(s));
-			bw = gr_cinfo_break_weight(ci);
-			if (bw < gr_breakNone && bw >= gr_breakBeforeWord) {
-				grPrevSlot = s;
-				return gr_cinfo_base(ci);
+				ci = gr_seg_cinfo(grSegment, gr_slot_index(s));
+				bw = gr_cinfo_break_weight(ci);
+				if (bw < gr_breakNone && bw >= gr_breakBeforeWord) {
+					grPrevSlot = s;
+					ret = gr_cinfo_base(ci);
+				} else if (bw > gr_breakNone && bw <= gr_breakWord) {
+					grPrevSlot = gr_slot_next_in_segment(s);
+					ret = gr_cinfo_base(ci) + 1;
+				}
+
+				if (ret != -1)
+					break;
 			}
 
-			if (bw > gr_breakNone && bw <= gr_breakWord) {
-				grPrevSlot = gr_slot_next_in_segment(s);
-				return gr_cinfo_base(ci) + 1;
+			if (ret == -1) {
+				grPrevSlot = gr_seg_last_slot(grSegment);
+				ci = gr_seg_cinfo(grSegment, gr_slot_after(grPrevSlot));
+				ret = gr_cinfo_base(ci) + 1;
 			}
 		}
-
-		grPrevSlot = gr_seg_last_slot(grSegment);
-		ci = gr_seg_cinfo(grSegment, gr_slot_after(grPrevSlot));
-		return gr_cinfo_base(ci) + 1;
-	} else {
-		return -1;
 	}
+
+	return ret;
 }
 
 bool
