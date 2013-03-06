@@ -45,8 +45,12 @@ authorization from the copyright holders.
 
 #include <string.h>
 #include FT_GLYPH_H
+#include FT_ADVANCES_H
 
 FT_Library gFreeTypeLibrary = 0;
+// FT_LOAD_NO_BITMAP is needed to work around:
+// http://lists.gnu.org/archive/html/freetype/2013-03/msg00009.html
+static int ftLoadFlags = FT_LOAD_DEFAULT | FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
 
 XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, int &status)
     : fPointSize(pointSize)
@@ -77,12 +81,185 @@ XeTeXFontInst::~XeTeXFontInst()
 	hb_font_destroy(hbFont);
 }
 
+/* HarfBuzz font functions */
+
+static hb_bool_t
+_get_glyph(hb_font_t*, void *font_data, hb_codepoint_t ch, hb_codepoint_t vs, hb_codepoint_t *gid, void*)
+{
+	FT_Face face = (FT_Face) font_data;
+	*gid = 0;
+
+	if (vs)
+		*gid = FT_Face_GetCharVariantIndex (face, ch, vs);
+
+	if (*gid == 0)
+		*gid = FT_Get_Char_Index (face, ch);
+
+	return *gid != 0;
+}
+
+static FT_Fixed
+_get_glyph_advance(FT_Face face, FT_UInt gid, bool vertical)
+{
+	FT_Error error;
+	FT_Fixed advance;
+	int flags = ftLoadFlags;
+
+	if (vertical)
+		flags |= FT_LOAD_VERTICAL_LAYOUT;
+
+	error = FT_Get_Advance(face, gid, ftLoadFlags, &advance);
+	if (error)
+		advance = 0;
+	else
+		advance = advance >> 10;
+
+	return advance;
+}
+
+static hb_position_t
+_get_glyph_h_advance(hb_font_t*, void *font_data, hb_codepoint_t gid, void*)
+{
+	return _get_glyph_advance((FT_Face) font_data, gid, false);
+}
+
+static hb_position_t
+_get_glyph_v_advance(hb_font_t*, void *font_data, hb_codepoint_t gid, void*)
+{
+	return _get_glyph_advance((FT_Face) font_data, gid, true);
+}
+
+static hb_bool_t
+_get_glyph_h_origin(hb_font_t*, void *font_data, hb_codepoint_t gid, hb_position_t *x, hb_position_t *y, void*)
+{
+	return true;
+}
+
+static hb_bool_t
+_get_glyph_v_origin(hb_font_t*, void *font_data, hb_codepoint_t gid, hb_position_t *x, hb_position_t *y, void*)
+{
+	FT_Face face = (FT_Face) font_data;
+	FT_Error error;
+
+	error = FT_Load_Glyph (face, gid, ftLoadFlags);
+	if (!error) {
+		*x = face->glyph->metrics.horiBearingX -   face->glyph->metrics.vertBearingX;
+		*y = face->glyph->metrics.horiBearingY - (-face->glyph->metrics.vertBearingY);
+	}
+
+	return !error;
+}
+
+static hb_position_t
+_get_glyph_h_kerning(hb_font_t*, void *font_data, hb_codepoint_t gid1, hb_codepoint_t gid2, void*)
+{
+	FT_Face face = (FT_Face) font_data;
+	FT_Error error;
+	FT_Vector kerning;
+	hb_position_t ret;
+
+	error = FT_Get_Kerning (face, gid1, gid2, FT_KERNING_UNFITTED, &kerning);
+	if (error)
+		ret = 0;
+	else
+		ret = kerning.x;
+}
+
+static hb_position_t
+_get_glyph_v_kerning(hb_font_t*, void *font_data, hb_codepoint_t gid1, hb_codepoint_t gid2, void*)
+{
+	/* FreeType does not support vertical kerning */
+	return 0;
+}
+
+static hb_bool_t
+_get_glyph_extents(hb_font_t*, void *font_data, hb_codepoint_t gid, hb_glyph_extents_t *extents, void*)
+{
+	FT_Face face = (FT_Face) font_data;
+	FT_Error error;
+
+	error = FT_Load_Glyph (face, gid, ftLoadFlags);
+	if (!error) {
+		extents->x_bearing = face->glyph->metrics.horiBearingX;
+		extents->y_bearing = face->glyph->metrics.horiBearingY;
+		extents->width  =  face->glyph->metrics.width;
+		extents->height = -face->glyph->metrics.height;
+	}
+
+	return !error;
+}
+
+static hb_bool_t
+_get_glyph_contour_point(hb_font_t*, void *font_data, hb_codepoint_t gid, unsigned int point_index, hb_position_t *x, hb_position_t *y, void*)
+{
+	FT_Face face = (FT_Face) font_data;
+	FT_Error error;
+	bool ret = false;
+
+	error = FT_Load_Glyph (face, gid, ftLoadFlags);
+	if (!error) {
+		if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
+			if (point_index < (unsigned int) face->glyph->outline.n_points) {
+				*x = face->glyph->outline.points[point_index].x;
+				*y = face->glyph->outline.points[point_index].y;
+				ret = true;
+			}
+		}
+	}
+
+	return ret;
+}
+
+static hb_font_funcs_t *
+_get_font_funcs(void)
+{
+	static hb_font_funcs_t* funcs = hb_font_funcs_create();
+
+	hb_font_funcs_set_glyph_func				(funcs, _get_glyph, NULL, NULL);
+	hb_font_funcs_set_glyph_h_advance_func		(funcs, _get_glyph_h_advance, NULL, NULL);
+	hb_font_funcs_set_glyph_v_advance_func		(funcs, _get_glyph_v_advance, NULL, NULL);
+	hb_font_funcs_set_glyph_h_origin_func		(funcs, _get_glyph_h_origin, NULL, NULL);
+	hb_font_funcs_set_glyph_v_origin_func		(funcs, _get_glyph_v_origin, NULL, NULL);
+	hb_font_funcs_set_glyph_h_kerning_func		(funcs, _get_glyph_h_kerning, NULL, NULL);
+	hb_font_funcs_set_glyph_v_kerning_func		(funcs, _get_glyph_v_kerning, NULL, NULL);
+	hb_font_funcs_set_glyph_extents_func		(funcs, _get_glyph_extents, NULL, NULL);
+	hb_font_funcs_set_glyph_contour_point_func	(funcs, _get_glyph_contour_point, NULL, NULL);
+
+	return funcs;
+}
+
+static hb_blob_t *
+_get_table(hb_face_t *, hb_tag_t tag, void *user_data)
+{
+	FT_Face face = (FT_Face) user_data;
+	FT_ULong length = 0;
+	FT_Byte *table;
+	FT_Error error;
+	hb_blob_t* blob = NULL;
+
+	error = FT_Load_Sfnt_Table(face, tag, 0, NULL, &length);
+	if (!error) {
+		table = (FT_Byte *) xmalloc(length * sizeof(char));
+		if (table != NULL) {
+			error = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, &length);
+			if (!error) {
+				blob = hb_blob_create((const char*) table, length, HB_MEMORY_MODE_WRITABLE, table, free);
+			} else {
+				free(table);
+			}
+		}
+	}
+
+    return blob;
+}
+
 void
 XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 {
 	TT_Postscript *postTable;
 	TT_OS2* os2Table;
 	FT_Error error;
+	hb_face_t *hbFace;
 
 	if (!gFreeTypeLibrary) {
 		error = FT_Init_FreeType(&gFreeTypeLibrary);
@@ -118,7 +295,6 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 	}
 
 	FT_Set_Char_Size(ftFace, fPointSize * 64, 0, 0, 0);
-	hbFont = hb_ft_font_create(ftFace, NULL);
 
 	char buf[20];
 	if (index > 0)
@@ -141,6 +317,18 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 		fCapHeight = unitsToPoints(os2Table->sCapHeight);
 		fXHeight = unitsToPoints(os2Table->sxHeight);
 	}
+
+	hbFace = hb_face_create_for_tables(_get_table, ftFace, NULL);
+	hb_face_set_index(hbFace, index);
+	hb_face_set_upem(hbFace, fUnitsPerEM);
+	hbFont = hb_font_create(hbFace);
+	hb_face_destroy(hbFace);
+
+	hb_font_set_funcs(hbFont, _get_font_funcs(), ftFace, NULL);
+	hb_font_set_scale(hbFont,
+		((uint64_t) ftFace->size->metrics.x_scale * (uint64_t) fUnitsPerEM) >> 16,
+		((uint64_t) ftFace->size->metrics.y_scale * (uint64_t) fUnitsPerEM) >> 16);
+	//hb_font_set_ppem(hbFont, ftFace->size->metrics.x_ppem, ftFace->size->metrics.y_ppem);
 
     return;
 }
