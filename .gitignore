@@ -94,6 +94,8 @@
 /source/texk/web2c/web2c/configure
 /source/texk/web2c/web2c/Makefile.in
 /source/texk/web2c/window/Makefile.in
+/source/texk/web2c/xetexdir/etex_version.h
+/source/texk/web2c/xetexdir/xetex_version.h
 /source/utils/aclocal.m4
 /source/utils/autom4te.cache/
 /source/utils/configure
