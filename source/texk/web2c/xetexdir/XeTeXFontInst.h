@@ -58,23 +58,17 @@ authorization from the copyright holders.
 class XeTeXFontInst
 {
 protected:
-	float	fPointSize;
-
 	unsigned short fUnitsPerEM;
+	float fPointSize;
 	float fAscent;
 	float fDescent;
 	float fCapHeight;
 	float fXHeight;
 	float fItalicAngle;
 
-	uint16_t fNumGlyphs;
-	bool fNumGlyphsInited;
-	
 	bool fVertical; // false = horizontal, true = vertical
 
 	char *fFilename; // actually holds [filename:index], as used in xetex
-
-	void getMetrics();
 
 	FT_Face ftFace;
 	hb_font_t* hbFont;

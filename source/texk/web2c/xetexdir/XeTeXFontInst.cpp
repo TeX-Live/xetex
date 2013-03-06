@@ -60,8 +60,6 @@ XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, i
     , fCapHeight(0)
     , fXHeight(0)
     , fItalicAngle(0)
-    , fNumGlyphs(0)
-    , fNumGlyphsInited(false)
     , fVertical(false)
     , fFilename(NULL)
     , ftFace(0)
