@@ -109,8 +109,6 @@ public:
 
 	uint16_t getNumGlyphs() const;
 
-	void getGlyphAdvance(GlyphID glyph, realpoint &advance) const;
-
 	void getGlyphBounds(GlyphID glyph, GlyphBBox* bbox);
 
 	float getGlyphWidth(GlyphID glyph);

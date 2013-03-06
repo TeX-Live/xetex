@@ -407,25 +407,10 @@ XeTeXFontInst::getNumGlyphs() const
 	return ftFace->num_glyphs;
 }
 
-void
-XeTeXFontInst::getGlyphAdvance(GlyphID glyph, realpoint &advance) const
-{
-	FT_Error error = FT_Load_Glyph(ftFace, glyph, FT_LOAD_NO_SCALE);
-	if (error != 0) {
-		advance.x = advance.y = 0;
-	}
-	else {
-		advance.x = fVertical ? 0 : unitsToPoints(ftFace->glyph->metrics.horiAdvance);
-		advance.y = fVertical ? unitsToPoints(ftFace->glyph->metrics.vertAdvance) : 0;
-	}
-}
-
 float
 XeTeXFontInst::getGlyphWidth(GlyphID gid)
 {
-	realpoint advance;
-	getGlyphAdvance(gid, advance);
-	return advance.x;
+	return _get_glyph_advance(ftFace, gid, false) / 64.0;
 }
 
 void
@@ -443,8 +428,7 @@ XeTeXFontInst::getGlyphHeightDepth(GlyphID gid, float* ht, float* dp)
 void
 XeTeXFontInst::getGlyphSidebearings(GlyphID gid, float* lsb, float* rsb)
 {
-	realpoint adv;
-	getGlyphAdvance(gid, adv);
+	float width = getGlyphWidth(gid);
 
 	GlyphBBox bbox;
 	getGlyphBounds(gid, &bbox);
@@ -452,7 +436,7 @@ XeTeXFontInst::getGlyphSidebearings(GlyphID gid, float* lsb, float* rsb)
 	if (lsb)
 		*lsb = bbox.xMin;
 	if (rsb)
-		*rsb = adv.x - bbox.xMax;
+		*rsb = width - bbox.xMax;
 }
 
 float
@@ -460,14 +444,13 @@ XeTeXFontInst::getGlyphItalCorr(GlyphID gid)
 {
 	float rval = 0.0;
 
-	realpoint adv;
-	getGlyphAdvance(gid, adv);
+	float width = getGlyphWidth(gid);
 
 	GlyphBBox bbox;
 	getGlyphBounds(gid, &bbox);
 	
-	if (bbox.xMax > adv.x)
-		rval = bbox.xMax - adv.x;
+	if (bbox.xMax > width)
+		rval = bbox.xMax - width;
 	
 	return rval;
 }
