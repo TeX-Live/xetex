@@ -49,7 +49,6 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 
 #include <hb.h>
 #include <hb-ot.h>
-#include <hb-ft.h>
 #include <hb-icu.h>
 
 #include <graphite2/Font.h>
