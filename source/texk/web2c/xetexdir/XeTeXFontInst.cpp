@@ -268,11 +268,15 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 	}
 
 	error = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &ftFace);
-
 	if (error) {
         status = 1;
         return;
     }
+
+	if (!FT_IS_SCALABLE(ftFace)) {
+		status = 1;
+		return;
+	}
 
 	/* for non-sfnt-packaged fonts (presumably Type 1), see if there is an AFM file we can attach */
 	if (index == 0 && !FT_IS_SFNT(ftFace)) {
@@ -285,11 +289,6 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 			strcpy(p, ".afm"); 	   // else replace extension with .afm
 		FT_Attach_File(ftFace, afm); // ignore error code; AFM might not exist
 		delete[] afm;
-	}
-
-	if (ftFace == 0) {
-		status = 1;
-		return;
 	}
 
 	FT_Set_Char_Size(ftFace, fPointSize * 64, 0, 0, 0);
