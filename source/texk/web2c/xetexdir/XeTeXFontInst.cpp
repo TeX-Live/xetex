@@ -263,7 +263,7 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 
 	if (!gFreeTypeLibrary) {
 		error = FT_Init_FreeType(&gFreeTypeLibrary);
-		if (error != 0) {
+		if (error) {
 			fprintf(stderr, "FreeType initialization failed! (%d)\n", error);
 			exit(1);
 		}
@@ -271,7 +271,7 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 
 	error = FT_New_Face(gFreeTypeLibrary, (char*)pathname, index, &ftFace);
 
-	if (error != 0) {
+	if (error) {
         status = 1;
         return;
     }
@@ -344,13 +344,13 @@ XeTeXFontInst::getFontTable(OTTag tag) const
 {
 	FT_ULong tmpLength = 0;
 	FT_Error error = FT_Load_Sfnt_Table(ftFace, tag, 0, NULL, &tmpLength);
-	if (error != 0)
+	if (error)
 		return NULL;
 
 	void* table = xmalloc(tmpLength * sizeof(char));
 	if (table != NULL) {
 		error = FT_Load_Sfnt_Table(ftFace, tag, 0, (FT_Byte*)table, &tmpLength);
-		if (error != 0) {
+		if (error) {
 			free((void *) table);
 			return NULL;
 		}
@@ -379,7 +379,7 @@ XeTeXFontInst::getGlyphBounds(GlyphID gid, GlyphBBox* bbox)
 	bbox->xMin = bbox->yMin = bbox->xMax = bbox->yMax = 0.0;
 
 	FT_Error error = FT_Load_Glyph(ftFace, gid, FT_LOAD_NO_SCALE);
-	if (error != 0)
+	if (error)
 		return;
 
     FT_Glyph glyph;
