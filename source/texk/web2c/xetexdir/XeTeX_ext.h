@@ -55,9 +55,6 @@ typedef struct UFILE* unicodefile;
 #define FONT_FLAGS_COLORED	0x01
 #define FONT_FLAGS_VERTICAL	0x02
 
-#define kXeTeXEmboldenTag	0x10000 /* user-defined ATSUAttributeTag to carry 'embolden' value */
-
-
 /* some typedefs that XeTeX uses - on Mac OS, we get these from Apple headers,
    but otherwise we'll need these substitute definitions */
 
@@ -275,14 +272,14 @@ extern "C" {
 typedef void* CFDictionaryRef; /* dummy declaration just so the stubs can compile */
 #endif
 
-	int atsufontget(int what, CFDictionaryRef attrs);
-	int atsufontget1(int what, CFDictionaryRef attrs, int param);
-	int atsufontget2(int what, CFDictionaryRef attrs, int param1, int param2);
-	int atsufontgetnamed(int what, CFDictionaryRef attrs);
-	int atsufontgetnamed1(int what, CFDictionaryRef attrs, int param);
-	void atsuprintfontname(int what, CFDictionaryRef attrs, int param1, int param2);
+	int aatfontget(int what, CFDictionaryRef attrs);
+	int aatfontget1(int what, CFDictionaryRef attrs, int param);
+	int aatfontget2(int what, CFDictionaryRef attrs, int param1, int param2);
+	int aatfontgetnamed(int what, CFDictionaryRef attrs);
+	int aatfontgetnamed1(int what, CFDictionaryRef attrs, int param);
+	void aatprintfontname(int what, CFDictionaryRef attrs, int param1, int param2);
 	/* the metrics params here are really TeX 'scaled' (or MacOS 'Fixed') values, but that typedef isn't available every place this is included */
-	void atsugetfontmetrics(CFDictionaryRef attrs, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant);
+	void aatgetfontmetrics(CFDictionaryRef attrs, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant);
 
 #ifdef XETEX_MAC
 

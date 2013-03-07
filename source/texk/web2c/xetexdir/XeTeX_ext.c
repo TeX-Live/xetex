@@ -1482,7 +1482,7 @@ grfontgetnamed1(integer what, void* pEngine, integer param)
 	return rval;
 }
 
-#define XDV_FLAG_FONTTYPE_ATSUI	0x0001
+#define XDV_FLAG_FONTTYPE_AAT	0x0001
 #define XDV_FLAG_FONTTYPE_ICU	0x0002
 
 #define XDV_FLAG_VERTICAL		0x0100
@@ -1612,7 +1612,7 @@ makefontdef(integer f)
 		char *pathname;
 		int index;
 
-		flags = XDV_FLAG_FONTTYPE_ATSUI;
+		flags = XDV_FLAG_FONTTYPE_AAT;
 		attributes = (CFDictionaryRef) fontlayoutengine[f];
 		font = CFDictionaryGetValue(attributes, kCTFontAttributeName);
 		variation = CTFontCopyVariation(font);
@@ -1979,7 +1979,7 @@ get_native_glyph(void* pNode, unsigned index)
 void
 store_justified_native_glyphs(void* node)
 {
-#ifdef XETEX_MAC /* this is only called for fonts used via ATSUI */
+#ifdef XETEX_MAC /* this is only called for AAT fonts */
 	(void)DoAATLayout(node, 1);
 #endif
 }
@@ -2143,7 +2143,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		node_height(node) = heightbase[f];
 		node_depth(node) = depthbase[f];
 	} else {
-		/* this iterates over the glyph data whether it comes from ATSUI or ICU layout */
+		/* this iterates over the glyph data whether it comes from AAT or OT layout */
 		FixedPoint*	locations = (FixedPoint*)native_glyph_info_ptr(node);
 		uint16_t*		glyphIDs = (uint16_t*)(locations + native_glyph_count(node));
 		float	yMin = 65536.0;
@@ -2323,7 +2323,7 @@ double Fix2D(Fixed f)
 
 /* these are here, not XeTeX_mac.c, because we need stubs on other platforms */
 void
-atsugetfontmetrics(CFDictionaryRef attributes, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant)
+aatgetfontmetrics(CFDictionaryRef attributes, integer* ascent, integer* descent, integer* xheight, integer* capheight, integer* slant)
 {
 #ifdef XETEX_MAC
 	CTFontRef font = fontFromAttributes(attributes);
@@ -2337,7 +2337,7 @@ atsugetfontmetrics(CFDictionaryRef attributes, integer* ascent, integer* descent
 }
 
 int
-atsufontget(int what, CFDictionaryRef attributes)
+aatfontget(int what, CFDictionaryRef attributes)
 {
 	int	rval = -1;
 
@@ -2365,7 +2365,7 @@ atsufontget(int what, CFDictionaryRef attributes)
 }
 
 int
-atsufontget1(int what, CFDictionaryRef attributes, int param)
+aatfontget1(int what, CFDictionaryRef attributes, int param)
 {
 	int	rval = -1;
 
@@ -2456,7 +2456,7 @@ atsufontget1(int what, CFDictionaryRef attributes, int param)
 }
 
 int
-atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
+aatfontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 {
 	int	rval = -1;
 
@@ -2499,7 +2499,7 @@ atsufontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 }
 
 int
-atsufontgetnamed(int what, CFDictionaryRef attributes)
+aatfontgetnamed(int what, CFDictionaryRef attributes)
 {
 	int	rval = -1;
 
@@ -2544,7 +2544,7 @@ atsufontgetnamed(int what, CFDictionaryRef attributes)
 }
 
 int
-atsufontgetnamed1(int what, CFDictionaryRef attributes, int param)
+aatfontgetnamed1(int what, CFDictionaryRef attributes, int param)
 {
 	int	rval = -1;
 
@@ -2569,7 +2569,7 @@ atsufontgetnamed1(int what, CFDictionaryRef attributes, int param)
 }
 
 void
-atsuprintfontname(int what, CFDictionaryRef attributes, int param1, int param2)
+aatprintfontname(int what, CFDictionaryRef attributes, int param1, int param2)
 {
 #ifdef XETEX_MAC
 	CTFontRef font = fontFromAttributes(attributes);
