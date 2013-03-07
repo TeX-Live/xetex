@@ -73,7 +73,7 @@ typedef uint32_t OTTag;
 typedef uint16_t GlyphID;
 
 
-/* these are also in xetex-new.ch and must correspond! */
+/* these are also in xetex.web and must correspond! */
 
 #define pdfbox_crop	1
 #define pdfbox_media	2
@@ -114,7 +114,7 @@ typedef uint16_t GlyphID;
 #define XeTeX_selector_name	9
 
 
-/* definitions used to access info in a native_word_node; must correspond with defines in xetex-new.ch */
+/* definitions used to access info in a native_word_node; must correspond with defines in xetex.web */
 #define width_offset		1
 #define depth_offset		2
 #define height_offset		3
@@ -316,7 +316,7 @@ extern "C" {
 };
 #endif
 
-// copied from xetex-hz.ch
+// copied from xetex.web
 #define LEFT_SIDE  0    
 #define RIGHT_SIDE 1    
 
