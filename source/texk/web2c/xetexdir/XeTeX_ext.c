@@ -1483,7 +1483,7 @@ grfontgetnamed1(integer what, void* pEngine, integer param)
 }
 
 #define XDV_FLAG_FONTTYPE_AAT	0x0001
-#define XDV_FLAG_FONTTYPE_ICU	0x0002
+#define XDV_FLAG_FONTTYPE_OT	0x0002
 
 #define XDV_FLAG_VERTICAL		0x0100
 #define XDV_FLAG_COLORED		0x0200
@@ -1661,7 +1661,7 @@ makefontdef(integer f)
 #endif
 	if (fontarea[f] == OTGR_FONT_FLAG) {
 		XeTeXLayoutEngine	engine;
-		flags = XDV_FLAG_FONTTYPE_ICU;
+		flags = XDV_FLAG_FONTTYPE_OT;
 
 		engine = (XeTeXLayoutEngine)fontlayoutengine[f];
 		fontRef = getFontRef(engine);
