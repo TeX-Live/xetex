@@ -902,7 +902,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	char*			script = NULL;
 	char*			language = NULL;
 	hb_feature_t*	features = NULL;
-	char**			shapers = NULL;
+	char**			shapers = NULL; /* NULL-terminated array */
 	int				nFeatures = 0;
 	int				nShapers = 0;
 	
@@ -932,10 +932,11 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	}
 
 	if (reqEngine == 'G') {
+		char* tmpShapers[] = {shapers[0]};
 		/* create a default engine so we can query the font for Graphite features;
 		 * because of font caching, it's cheap to discard this and create the real one later */
 		engine = createLayoutEngine(fontRef, font, script, language,
-				features, nFeatures, shapers, rgbValue, extend, slant, embolden);
+				features, nFeatures, tmpShapers, rgbValue, extend, slant, embolden);
 
 		if (engine == NULL)
 			return NULL;
@@ -979,7 +980,8 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 					goto bad_option;
 				++cp3;
 				shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
-				shapers[nShapers++] = strndup(cp3, cp2 - cp3);
+				shapers[nShapers] = strndup(cp3, cp2 - cp3);
+				nShapers++;
 				goto next_option;
 			}
 
@@ -1050,8 +1052,10 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 		}
 	}
 	
-	if (shapers != NULL)
+	if (shapers != NULL) {
+		shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
 		shapers[nShapers] = NULL;
+	}
 
 	if (embolden != 0.0)
 		embolden = embolden * Fix2D(scaled_size) / 100.0;
