@@ -8,8 +8,8 @@
 \def\@dotsep{999}
 
 \usepackage{fontspec,xltxtra,xunicode}
-\setromanfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Pagella}
-\setsansfont[Mapping=tex-text, Scale=MatchLowercase]{TeX Gyre Heros}
+\setmainfont[Scale=MatchLowercase]{TeX Gyre Pagella}
+\setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
 \setmonofont[Scale=MatchLowercase]{Inconsolata.otf}
 
 \usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
@@ -18,7 +18,14 @@
 
 \def\PDF{\textsc{pdf}}
 
-\hypersetup{colorlinks,linkcolor=black,urlcolor=black}
+\hypersetup{
+  colorlinks,
+  linkcolor=black,
+  urlcolor=black,
+  pdfsubject={The XeTeX reference guide},
+  pdfauthor={Will Robertson \& Khaled Hosny},
+  pdfkeywords={xetex, tex, typesetting, unicode, math, opentype, graphite, aat}
+}
 
 \usepackage[it]{titlesec}
 \usepackage{enumitem}
@@ -90,28 +97,27 @@
 \raggedbottom
 
 \begin{document}
-\title{The \texorpdfstring{\XeTeX}{XeTeX} reference guide}
-\author{Will Robertson}
+\title{The \texorpdfstring{\XeTeX}{XeTeX}\ reference guide}
+\author{Will Robertson \and Khaled Hosny}
 \maketitle
 
 \vfill 
 
 \section*{Introduction}
 
-This document serves to summarise \XeTeX's additional features without
-being so much as a `users' guide'. Note that much of the functionality
+This document serves to summarise \XeTeX’s additional features without
+being so much as a ‘users’ guide. Note that much of the functionality
 addressed here is provided in abstracted form in various \LaTeX\
 packages and Con\TeX{}t modules.
 
 The descriptions here should be a fairly exhaustive list of the new
 primitives and features of \XeTeX. Descriptions are still a little
-aenemic, however. I don't have much time to maintain this document, so
-contributions are highly welcomed \verb|:)|
+aenemic, however.
 
 \section*{License}
 
-Copyright 2007--2011 Will Robertson. This work,
-\verb|XeTeX-reference.ltx|, also known as `\verb|xetexref|', is
+Copyright 2007–2011 Will Robertson. This work,
+\verb|XeTeX-reference.ltx|, also known as ‘\verb|xetexref|’, is
 distributed under the terms of the LaTeX Project Public License
 \textup(\,\url{http://www.latex-project.org/lppl.txt}\,\textup), version
 1.3c or later (your choice), and maintained by Will Robertson.
@@ -134,7 +140,7 @@ information.
 
 Traditionally, fonts were selected in \TeX\ like this:
 |\font\1=|\xarg{tfm name} with various options possibly appended
-such as `| at 10pt|' or `| scaled 1.2|', with obvious meaning. This syntax
+such as ‘| at 10pt|’ or ‘| scaled 1.2|’, with obvious meaning. This syntax
 still works, but it has been greatly extended in \XeTeX.
 
 The extended syntax looks schematically like this:
@@ -244,7 +250,7 @@ Uses the specified font mapping for this font. This uses the TECKit
 engine to transform unicode characters in the last-minute processing
 stage of the source. For example, |mapping=tex-text| will enable the
 classical mappings from ugly ascii |``---''| to proper typographical
-glyphs ``---'', and so on.
+glyphs “—”, and so on.
 
 \item[color={\slshape RRGGBB}{[{\slshape TT}]}] 
 Triple pair of hex values to specify the colour in RGB space, with an
@@ -255,7 +261,7 @@ Adds $x/S$ space between letters in words, where $S$ is the font size.
 
 \item[embolden=$x$]
 Increase the envelope of each glyph by the set amount (this makes the
-letters look `more bold'). $x=0$ corresponds to no change; $x=1.5$ is a
+letters look ‘more bold’). $x=0$ corresponds to no change; $x=1.5$ is a
 good default value.
 
 \item[extend=$x$]
@@ -274,7 +280,7 @@ size.
 
 OpenType font features (and font behaviour) can vary by
 \hlink{http://www.microsoft.com/typography/otspec/scripttags.htm}{script}
-(`alphabet') and by
+(‘alphabet’) and by
 \hlink{http://www.microsoft.com/typography/otspec/languagetags.htm}{language}.
 These are selected with four and three letter tags, respectively.
 
@@ -379,14 +385,14 @@ integer glyph index in the current font (only valid for non TFM-based
 fonts).
 
 The left and right measurements are the glyph sidebearings, measured
-`inwards' from the origin and advance respectively, so for a glyph that
-fits completely within its `cell' they will both be positive; for a
-glyph that `overhangs' to the left or right, they will be negative. The
-actual width of the glyph's bounding box, therefore, is the character
+‘inwards’ from the origin and advance respectively, so for a glyph that
+fits completely within its ‘cell’ they will both be positive; for a
+glyph that ‘overhangs’ to the left or right, they will be negative. The
+actual width of the glyph’s bounding box, therefore, is the character
 width (advance) minus both these sidebearings.
 
 The top and bottom measurements are measured from the baseline, like
-\TeX's height and depth; the height of the bounding box is the sum of
+\TeX’s height and depth; the height of the bounding box is the sum of
 these two dimensions.}
 \endcmd
 
@@ -508,7 +514,7 @@ numerically. If the feature does not exist, the integer is
 \begin{example}
 \font\1="Charis SIL/GR" at 10pt
 \def\featname{Uppercase Eng alternates}
-The feature `\featname' has index
+The feature ‘\featname’ has index
 \the\XeTeXfindfeaturebyname\1 "\featname"\relax
 \end{example}
 
@@ -571,7 +577,7 @@ feature/selector exists before attempting to use it.}
 \def\selecname{Large eng on baseline}
 \newcount\seleccount
 \seleccount=\XeTeXfindselectorbyname\1 \featcount "\selecname"\relax
-The feature selector `\selecname' has index \the\seleccount
+The feature selector ‘\selecname’ has index \the\seleccount
 
 \font\2="Charis SIL/GR:\featname=\selecname" at 10pt
 \font\3="Charis SIL/GR:\the\featcount=\the\seleccount" at 10pt
@@ -631,10 +637,10 @@ attempting to use it.}
 
 \subsection{Maths fonts}
 
-The primitives described following are extensions of \TeX's 8-bit primitives.
+The primitives described following are extensions of \TeX’s 8-bit primitives.
 
-In the following commands, \xarg{fam.} is a number (0--255) representing
-font to use in maths. \xarg{math type} is the 0--7 number corresponding
+In the following commands, \xarg{fam.} is a number (0–255) representing
+font to use in maths. \xarg{math type} is the 0–7 number corresponding
 to the type of math symbol; see a \TeX\ reference for details.
 
 Before version 0.9999.0 the following primitives had |\XeTeX| prefix instead of
@@ -647,14 +653,14 @@ Before version 0.9999.0 the following primitives had |\XeTeX| prefix instead of
 \xarg{fam.}
 \xarg{glyph slot}
 \desc{Defines a maths glyph accessible via an input character. Note that
-the input takes \emph{three} arguments unlike \TeX's \cs{mathcode}.}
+the input takes \emph{three} arguments unlike \TeX’s \cs{mathcode}.}
 \endcmd
 
 \cmd|\Umathcodenum|
 \xarg{char slot}
 \opteq
 \xarg{math type/fam./glyph slot}
-\desc{Pure extension of \cs{mathcode} that uses a `bit-packed' single
+\desc{Pure extension of \cs{mathcode} that uses a ‘bit-packed’ single
 number argument. Can also be used to extract the bit-packed mathcode
 number of the \xarg{char slot} if no assignment is given.}
 \endcmd
@@ -669,7 +675,7 @@ specified.}
 
 \cmd|\Umathcharnum|
 \xarg{type/fam./glyph slot}
-\desc{Pure extension of \cs{mathchar} that uses a `bit-packed' single
+\desc{Pure extension of \cs{mathchar} that uses a ‘bit-packed’ single
 number argument. Can also be used to extract the bit-packed mathcode
 number of the \xarg{char slot} if no assignment is given.}
 \endcmd
@@ -688,7 +694,7 @@ number of the \xarg{char slot} if no assignment is given.}
 \opteq
 \xarg{type/fam./glyph slot}
 \desc{Defines a control sequence for accessing a maths glyph using the
-`bit-packed' number output by, e.g., \cs{Umathcodenum}. This would
+‘bit-packed’ number output by, e.g., \cs{Umathcodenum}. This would
 be used to replace legacy code such as
 \cs{mathchardef}\cs{foo}\texttt{=}\cs{mathcode}\texttt{`}\cs{\-}.}
 \endcmd
@@ -705,7 +711,7 @@ be used to replace legacy code such as
 \xarg{char slot}
 \opteq
 \xarg{fam./glyph slot}
-\desc{Pure extension of \cs{delcode} that uses a `bit-packed' single
+\desc{Pure extension of \cs{delcode} that uses a ‘bit-packed’ single
 number argument. Can also be used to extract the bit-packed delcode
 number of the \xarg{char slot} if no assignment is given.}
 \endcmd
@@ -758,12 +764,12 @@ language (in another script) is present in the text.
 \opteq
 \xarg{interchar class}
 \desc{Assigns a class corresponding to \xarg{interchar class} (range
-0--255) to a \xarg{char slot}. Most characters are class 0 by
+0–255) to a \xarg{char slot}. Most characters are class 0 by
 default. Class 1 is for CJK ideographs, classes 2 and 3 are CJK
 punctuation. The boundary of a text string is considered class 255,
-wherever there is a boundary between a `run' of characters and something
-else --- glue, kern, math, box, etc. Special case class 256 is ignored;
-useful for diacritics so I'm told.}
+wherever there is a boundary between a ‘run’ of characters and something
+else — glue, kern, math, box, etc. Special case class 256 is ignored;
+useful for diacritics so I’m told.}
 \endcmd
 
 \cmd|\XeTeXinterchartoks|
@@ -898,7 +904,7 @@ terminated by \cs{relax} if options are given.  \xarg{int} and
 \xarg{dimen} are the usual integer or dimen specifications of regular
 \TeX.
 
-The rotation is specified in degrees (\ie, an input of `|360|' is full
+The rotation is specified in degrees (\ie, an input of ‘|360|’ is full
 circle) and the rotation is counterclockwise. The syntax of
 \xarg{decimal} require some explanation:
 \begin{quote}
@@ -908,7 +914,7 @@ circle) and the rotation is counterclockwise. The syntax of
 \<normal decimal> -> \<normal integer> \| \<decimal constant>
 \end{quote}
 A \xarg{coerced dimen} or \xarg{internal dimen} is interpreted as number
-with unit `|pt|'. For example, for a rotation specified with a dimension
+with unit ‘|pt|’. For example, for a rotation specified with a dimension
 \cs{testdim},
 \begin{itemize}
 \item \verb|\testdim=45pt  | results in a rotation of 45\textdegree,
@@ -919,7 +925,7 @@ In all cases the resulting decimal number for rotation $x$ must be
 within limits $-16384 < x < 16384$.
 
 The \cs{XeTeXpdffile} command takes one more optional argument for
-specifying to which `box' the \PDF{} should be cropped before inserting
+specifying to which ‘box’ the \PDF{} should be cropped before inserting
 it (the second optional argument listed in thes syntax of
 \cs{XeTeXpdffile} above). The \PDF{} standard defines a number of
 (rectangular) bounding boxes that may be specified for various
@@ -934,8 +940,8 @@ summarised below.
 \item [bleed] the box containing the page contents plus whatever extra
 space required for printing purposes.
 \item [trim] the box of the finished page after trimming the printed
-`bleed box'.
-\item [art] the box containing the `meaningful content' of the
+‘bleed box’.
+\item [art] the box containing the ‘meaningful content’ of the
 page. This could be the crop box with boilerplate text/logos trimmed
 off.
 \end{description}
@@ -991,16 +997,16 @@ that it has not been redefined.}
 
 \cmd|\primitive|
 \xarg{control sequence}
-\desc{If the control sequence is a primitive that's been redefined, this
+\desc{If the control sequence is a primitive that’s been redefined, this
 command causes it to expand with its original (i.e., primitive)
 definition.}
 \endcmd
 
 \cmd|\shellescape|
-\desc{Read-only status indicating the level of `shell escape'
+\desc{Read-only status indicating the level of ‘shell escape’
 allowed. That is, whether commands are allowed to be executed through
 \texttt{\char`\\write18\char`\{...\char`\}}. Expands to zero for off;
-one for on (allowed); two is `restricted' (default in TeX Live 2009 and
+one for on (allowed); two is ‘restricted’ (default in TeX Live 2009 and
 greater) in which a subset of commands only are allowed.}
 \endcmd
 
@@ -1018,7 +1024,7 @@ and greater than one if vice versa.}
 \endcmd
 
 \begin{example}
-`a' is less than `z': \strcmp{a}{z}
+‘a’ is less than ‘z’: \strcmp{a}{z}
 
 \def\z{a}
 The tokens expand before being compared: \strcmp{a}{\z}
