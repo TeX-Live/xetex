@@ -10,7 +10,7 @@
 \usepackage{fontspec,xltxtra,xunicode}
 \setmainfont[Scale=MatchLowercase]{TeX Gyre Pagella}
 \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
-\setmonofont[Scale=MatchLowercase]{Inconsolata.otf}
+\setmonofont[Scale=MatchLowercase]{Inconsolata}
 
 \usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
 \usepackage{geometry}
@@ -725,11 +725,19 @@ specified of either \xarg{math type} 4 (opening) or 5 (closing).}
 \endcmd
 
 \cmd|\Umathaccent|
+\oarg{keyword}
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
 \desc{Typesets the math accent character in the \xarg{glyph slot} in the
-family specified.}
+family specified. Starting from version 0.9998, optional keywords are accepted:
+\begin{optdesc}
+\item[fixed] Don’t stretch the accent, the default is to stretch it:
+             $\widehat{x}$ vs $\hat{x}$.
+\item[bottom] Place the accent below its base. Can be followed by the
+             \texttt{fixed} keyword.
+\end{optdesc}
+}
 \endcmd
 
 \cmd|\Uradical|
