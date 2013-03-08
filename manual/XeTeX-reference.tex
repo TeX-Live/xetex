@@ -824,17 +824,14 @@ aAa A a B aBa BB
 \desc{Specify whether \XeTeX\ is to perform normalisation on the input
 text and, if so, what type of normalisation to use. See
 \url{http://unicode.org/reports/tr15/} for a description of Unicode
-normalisation.  \bigskip
-\begin{description}[parsep=1ex]
-\item[\cs{XeTeXinputnormalization}\texttt{=0}] (default) do not perform
-normalisation.
-\item[\cs{XeTeXinputnormalization}\texttt{=1}] normalise to NFC form,
-using precomposed characters where possible instead base characters with
-combining marks.
-\item[\cs{XeTeXinputnormalization}\texttt{=2}] normalise to NFD form,
-using base characters with combining marks instead of precomposed
-characters.
-\end{description}}
+normalisation. The \<Integer> value can be:\medskip
+\begin{optdesc}
+\item[0] (default) do not perform normalisation.
+\item[1] normalise to NFC form, using precomposed characters where possible
+         instead base characters with combining marks.
+\item[2] normalise to NFD form, using base characters with combining marks
+         instead of precomposed characters.
+\end{optdesc}}
 \endcmd
 
 \cmd|\XeTeXinputencoding|
