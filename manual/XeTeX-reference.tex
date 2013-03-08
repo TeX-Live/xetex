@@ -17,8 +17,6 @@
 \usepackage{geometry}
 %\geometry{screen,margin=3cm}
 
-\def\PDF{\textsc{pdf}}
-
 \hypersetup{
   colorlinks,
   linkcolor=black,
@@ -904,11 +902,11 @@ help with the documentation in this section.
   width \xarg{dimen} \|\\\hspace*{2em}~
   height \xarg{dimen} \|
   rotated \xarg{decimal}}
-\desc{Insert (pages of) a \PDF{}. See below for explanation of optional
+\desc{Insert (pages of) a PDF. See below for explanation of optional
 arguments.}
 \endcmd
 
-\noindent In the graphic/\PDF{} commands above, \xarg{filename} is the
+\noindent In the graphic/PDF commands above, \xarg{filename} is the
 usual file name argument of \cs{input}, \cs{openin}, \etc.  It must not
 terminated by \cs{relax} if options are given.  \xarg{int} and
 \xarg{dimen} are the usual integer or dimen specifications of regular
@@ -935,11 +933,11 @@ In all cases the resulting decimal number for rotation $x$ must be
 within the limits $-16384 < x < 16384$.
 
 The \cs{XeTeXpdffile} command takes one more optional argument for
-specifying to which ‘box’ the \PDF{} should be cropped before inserting
+specifying to which ‘box’ the PDF should be cropped before inserting
 it (the second optional argument listed in thes syntax of
-\cs{XeTeXpdffile} above). The \PDF{} standard defines a number of
+\cs{XeTeXpdffile} above). The PDF standard defines a number of
 (rectangular) bounding boxes that may be specified for various
-purposes. These are described in the \PDF{} Standard\footnote{Adobe
+purposes. These are described in the PDF Standard\footnote{Adobe
 Systems Incorporated, 2008:\\
 \url{http://www.adobe.com/devnet/acrobat/pdfs/PDF32000_2008.pdf}} and
 summarised below.
@@ -956,7 +954,7 @@ page. This could be the crop box with boilerplate text/logos trimmed
 off.
 \end{description}
 \end{quote}
-When not specified in the \PDF{} to be inserted, the crop box defaults
+When not specified in the PDF to be inserted, the crop box defaults
 to the media box, and the bleed, trim, and art boxes default to the crop
 box.
 
@@ -969,12 +967,12 @@ box.
 
 \cmd|\pdfpageheight|
 \xarg{dimension}
-\desc{The height of the \PDF{} page.}
+\desc{The height of the PDF page.}
 \endcmd
 
 \cmd|\pdfpagewidth|
 \xarg{dimension}
-\desc{The width of the \PDF{} page.}
+\desc{The width of the PDF page.}
 \endcmd
 
 \cmd|\pdfsavepos|
