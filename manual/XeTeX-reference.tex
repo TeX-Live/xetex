@@ -637,7 +637,10 @@ In the following commands, \xarg{fam.} is a number (0--255) representing
 font to use in maths. \xarg{math type} is the 0--7 number corresponding
 to the type of math symbol; see a \TeX\ reference for details.
 
-\cmd|\XeTeXmathcode|
+Before version 0.9999.0 the following primitives had |\XeTeX| prefix instead of
+|\U|, the old names are deprecated and will be removed in the future.
+
+\cmd|\Umathcode|
 \xarg{char slot}
 \opteq
 \xarg{math type}
@@ -647,7 +650,7 @@ to the type of math symbol; see a \TeX\ reference for details.
 the input takes \emph{three} arguments unlike \TeX's \cs{mathcode}.}
 \endcmd
 
-\cmd|\XeTeXmathcodenum|
+\cmd|\Umathcodenum|
 \xarg{char slot}
 \opteq
 \xarg{math type/fam./glyph slot}
@@ -656,7 +659,7 @@ number argument. Can also be used to extract the bit-packed mathcode
 number of the \xarg{char slot} if no assignment is given.}
 \endcmd
 
-\cmd|\XeTeXmathchar|
+\cmd|\Umathchar|
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
@@ -664,14 +667,14 @@ number of the \xarg{char slot} if no assignment is given.}
 specified.}
 \endcmd
 
-\cmd|\XeTeXmathcharnum|
+\cmd|\Umathcharnum|
 \xarg{type/fam./glyph slot}
 \desc{Pure extension of \cs{mathchar} that uses a `bit-packed' single
 number argument. Can also be used to extract the bit-packed mathcode
 number of the \xarg{char slot} if no assignment is given.}
 \endcmd
 
-\cmd|\XeTeXmathchardef|
+\cmd|\Umathchardef|
 \xarg{control sequence}
 \opteq
 \xarg{math type}
@@ -680,17 +683,17 @@ number of the \xarg{char slot} if no assignment is given.}
 \desc{Defines a maths glyph accessible via a control sequence.}
 \endcmd
 
-\cmd|\XeTeXmathcharnumdef|
+\cmd|\Umathcharnumdef|
 \xarg{control sequence}
 \opteq
 \xarg{type/fam./glyph slot}
 \desc{Defines a control sequence for accessing a maths glyph using the
-`bit-packed' number output by, e.g., \cs{XeTeXmathcodenum}. This would
+`bit-packed' number output by, e.g., \cs{Umathcodenum}. This would
 be used to replace legacy code such as
 \cs{mathchardef}\cs{foo}\texttt{=}\cs{mathcode}\texttt{`}\cs{\-}.}
 \endcmd
 
-\cmd|\XeTeXdelcode|
+\cmd|\Udelcode|
 \xarg{char slot}
 \opteq
 \xarg{fam.}
@@ -698,7 +701,7 @@ be used to replace legacy code such as
 \desc{Defines a delimiter glyph accessible via an input character.}
 \endcmd
 
-\cmd|\XeTeXdelcodenum|
+\cmd|\Udelcodenum|
 \xarg{char slot}
 \opteq
 \xarg{fam./glyph slot}
@@ -707,7 +710,7 @@ number argument. Can also be used to extract the bit-packed delcode
 number of the \xarg{char slot} if no assignment is given.}
 \endcmd
 
-\cmd|\XeTeXdelimiter|
+\cmd|\Udelimiter|
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
@@ -715,7 +718,7 @@ number of the \xarg{char slot} if no assignment is given.}
 specified of either \xarg{math type} 4 (opening) or 5 (closing).}
 \endcmd
 
-\cmd|\XeTeXmathaccent|
+\cmd|\Umathaccent|
 \xarg{math type}
 \xarg{fam.}
 \xarg{glyph slot}
@@ -723,7 +726,7 @@ specified of either \xarg{math type} 4 (opening) or 5 (closing).}
 family specified.}
 \endcmd
 
-\cmd|\XeTeXradical|
+\cmd|\Uradical|
 \xarg{fam.}
 \xarg{glyph slot}
 \desc{Typesets the radical in the \xarg{glyph slot} in the family specified.}
