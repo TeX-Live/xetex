@@ -7,10 +7,11 @@
 \makeatletter
 \def\@dotsep{999}
 
-\usepackage{fontspec,xltxtra,xunicode}
+\usepackage{fontspec,xltxtra,unicode-math}
 \setmainfont[Scale=MatchLowercase]{TeX Gyre Pagella}
 \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
 \setmonofont[Scale=MatchLowercase]{Inconsolata}
+\setmathfont{TeX Gyre Pagella Math}
 
 \usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
 \usepackage{geometry}
@@ -734,7 +735,7 @@ specified of either \xarg{math type} 4 (opening) or 5 (closing).}
 family specified. Starting from version 0.9998, optional keywords are accepted:
 \begin{optdesc}
 \item[fixed] Don’t stretch the accent, the default is to stretch it:
-             $\widehat{x}$ vs $\hat{x}$.
+             $\widehat{M}$ vs $\hat{M}$.
 \item[bottom] Place the accent below its base. Can be followed by the
              \texttt{fixed} keyword.
 \end{optdesc}
