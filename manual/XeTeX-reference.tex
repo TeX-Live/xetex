@@ -106,7 +106,7 @@
 
 \section*{Introduction}
 
-This document serves to summarise \XeTeX’s additional features without
+This document serves to summarise additional features of \XeTeX without
 being so much as a ‘users’ guide. Note that much of the functionality
 addressed here is provided in abstracted form in various \LaTeX\
 packages and Con\TeX{}t modules.
@@ -784,10 +784,10 @@ useful for diacritics so I’m told.}
 
 \cmd|\XeTeXinterchartoks|
 \xarg{interchar class 1}
-\xarg{interchar class\ 2}
+\xarg{interchar class 2}
 \opteq
 |{|\xarg{token list}|}|
-\desc{Defines tokens to be inserted at the interface between
+\desc{Defines tokens to be inserted between
 \xarg{interchar class 1} and \xarg{interchar class 2} (in that order).}
 \endcmd
 
@@ -921,7 +921,7 @@ circle) and the rotation is counterclockwise. The syntax of
 \<decimal> $\to$ \<optional signs>\<unsigned decimal>\\
 \<unsigned decimal> $\to$ \<normal decimal>
   \| \<coerced dimen> \| \<internal dimen>\\
-\<normal decimal> -> \<normal integer> \| \<decimal constant>
+\<normal decimal> $\to$ \<normal integer> \| \<decimal constant>
 \end{quote}
 A \xarg{coerced dimen} or \xarg{internal dimen} is interpreted as number
 with unit ‘|pt|’. For example, for a rotation specified with a dimension
@@ -932,7 +932,7 @@ with unit ‘|pt|’. For example, for a rotation specified with a dimension
 \item \verb|\testdim=100sp| is (100/65536)\textdegree.
 \end{itemize}
 In all cases the resulting decimal number for rotation $x$ must be  
-within limits $-16384 < x < 16384$.
+within the limits $-16384 < x < 16384$.
 
 The \cs{XeTeXpdffile} command takes one more optional argument for
 specifying to which ‘box’ the \PDF{} should be cropped before inserting
