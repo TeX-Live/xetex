@@ -198,10 +198,11 @@ be any concatenation of the following:
 \item[/IB] Same as \texttt{/BI}.
 \item[/S=$x$] Use the version of the selected font corresponding to the
 optical size $x$\,pt.
-\item[/AAT] Explicitly use the ATSUI renderer (Mac~OS~X only).
-\item[/ICU] Explicitly use the ICU OpenType renderer.
-\item[/GR] Explicitly use the Graphite
-font\footnote{\url{http://scripts.sil.org/RenderingGraphite}} renderer.
+\item[/AAT] Explicitly use the AAT renderer (Mac~OS~X only).
+\item[/OT] Explicitly use the OpenType renderer (new in 0.9999).
+\item[/GR] Explicitly use the Graphite renderer.%
+           \footnote{\url{http://scripts.sil.org/cms/scripts/page.php?site_id=projects&item_id=graphite_home}}
+\item[/ICU] Explicitly use the OpenType renderer (deprecated since 0.9999).
 \end{optdesc}
 
 
@@ -320,8 +321,8 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
   \xarg{font}:
   \begin{optdesc}
     \item [0] for \TeX\ (a legacy TFM-based font);
-    \item [1] for ATSUI (usually an AAT font);
-    \item [2] for ICU (an OpenType font);
+    \item [1] for AAT;
+    \item [2] for OpenType;
     \item [3] for Graphite.
   \end{optdesc}
 }
@@ -330,10 +331,10 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 \begin{example}
 \newcommand\whattype[1]{%
   \texttt{\fontname#1} is rendered by
-  \ifcase\XeTeXfonttype#1\TeX\or ATSUI\or ICU\fi.\par}
+  \ifcase\XeTeXfonttype#1\TeX\or AAT\or OpenType\or Graphite\fi.\par}
 \font\1="cmr10"
 \font\2="Charis SIL"
-\font\3="Charis SIL/AAT" 
+\font\3="Charis SIL/OT"
 \whattype\1 \whattype\2 \whattype\3
 \end{example}
 
