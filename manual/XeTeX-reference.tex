@@ -154,14 +154,26 @@ above syntax.  If it is given in square brackets, (e.g.,
 |[lmroman10-regular]|), it is taken as a font file name.
 Without brackets, the name is looked up both as a file name and a system
 font name.
-% the real rules are complicated, see comments in XeTeXFontMgr.h.
-% it will take time to write them down.
 When using a font name, the font is looked up through the operating
 system, using (except on Mac~OS~X) the |fontconfig| library.  Running
 |fc-list| should show you the font names available.  \Eg,
 \begin{quote}\small
 |\font\1="Liberation Serif"| \hfill \emph{look for OS-installed font}
 \end{quote}
+
+Fonts have many internal names, and XeTeX matches them in the following order:
+\vskip1ex
+\begin{itemize}
+  \item Full Name;
+  \item if the name has a hyphen, it is split into Family-Style pair then matched;
+  \item PostScript Name;
+  \item Family Name, if there is more than one match;
+  \begin{itemize}
+    \item look for font with “regular” bit set in OS/2 table, if no match;
+    \item look for font with style “Regular”, “Plain”, “Normal” or “Roman”, in that order.
+  \end{itemize}
+\end{itemize}
+\bigskip
 
 When using a file name, the |xdvipdfmx| driver must be used (this is the
 default). The current directory and the |texmf| trees are searched for
