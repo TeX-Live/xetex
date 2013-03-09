@@ -366,14 +366,14 @@ and the last character is: "\char\XeTeXlastfontchar\1".
 \end{example}
 
 \cmd|\XeTeXglyph|
-\xarg{Glyph slot}
-\desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font
+\xarg{glyph slot}
+\desc{Inserts the glyph in \xarg{glyph slot} of the current font. \strong{Font
 specific}, so will give different output for different fonts and
 possibly even different versions of the same font.}
 \endcmd
 
 \cmd|\XeTeXcountglyphs|
-\xarg{Font}
+\xarg{font}
 \desc{The count of the number of glyphs in the specified \xarg{font}.}
 \endcmd
 
@@ -386,16 +386,16 @@ possibly even different versions of the same font.}
 \endcmd
 
 \cmd|\XeTeXglyphindex|
-|"|\xarg{Glyph name}|"| \xarg{space} \emph{or} \cs{relax}
-\desc{Expands to the \xarg{glyph slot} corresponding to the (possibly
+|"|\xarg{glyph name}|"| \xarg{space} \emph{or} \cs{relax}
+\desc{Expands to the glyph slot corresponding to the (possibly
 font specific) \xarg{glyph name} in the currently selected font. Only
 works for TrueType fonts (or TrueType-based OpenType fonts) at
 present. Use \texttt{fontforge} or similar to discover glyph names.}
 \endcmd
 
 \cmd|\XeTeXcharglyph|
-\xarg{Char code} 
-\desc{Expands to the default glyph number of character \xarg{Char code}
+\xarg{char code} 
+\desc{Expands to the default glyph number of character \xarg{char code}
 in the current font, or 0 if the character is not available in the
 font.}
 \endcmd
@@ -413,10 +413,10 @@ or the unicode character slot:
 \end{example}
 
 \cmd|\XeTeXglyphbounds|
-\xarg{edge} \xarg{glyph number}
+\xarg{edge} \xarg{glyph slot}
 \desc{Expands to a dimension corresponding to one of the bounds of a
 glyph, where \xarg{edge} is an integer from 1 to~4 indicating the
-left/top/right/bottom edge respectively, and \xarg{glyph number} is an
+left/top/right/bottom edge respectively, and \xarg{glyph slot} is an
 integer glyph index in the current font (only valid for non TFM-based
 fonts).
 
@@ -469,42 +469,42 @@ output but is slower. Activated ($\ge\mathtt1$) by default.}
 \subsection{OpenType fonts}
 
 \cmd|\XeTeXOTcountscripts|
-\xarg{Font}
-\desc{Expands to the number of scripts in a font.}
+\xarg{font}
+\desc{Expands to the number of scripts in the \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXOTscripttag|
-\xarg{Font}
-\xarg{Integer, $n$}
-\desc{Expands to the $n$-th script tag of a font.}
+\xarg{font}
+\xarg{integer, $n$}
+\desc{Expands to the $n$-th script tag of \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXOTcountlanguages|
-\xarg{Font}
-\xarg{Script tag}
-\desc{Expands to the number of languages in the script of a font.}
+\xarg{font}
+\xarg{script tag}
+\desc{Expands to the number of languages in the script of \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXOTlanguagetag|
-\xarg{Font}
-\xarg{Script tag}
-\xarg{Integer, $n$}
-\desc{Expands to the $n$-th language tag in the script of a font.}
+\xarg{font}
+\xarg{script tag}
+\xarg{integer, $n$}
+\desc{Expands to the $n$-th language tag in the script of \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXOTcountfeatures|
-\xarg{Font}
-\xarg{Script tag}
-\xarg{Language tag}
-\desc{Expands to the number of features in the language of a script of a font.}
+\xarg{font}
+\xarg{script tag}
+\xarg{language tag}
+\desc{Expands to the number of features in the language of a script of \xarg{font}.}
 \endcmd
 
 \cmd|\XeTeXOTfeaturetag|
-\xarg{Font}
-\xarg{Script tag}
-\xarg{Language tag}
-\xarg{Integer, $n$}
-\desc{Expands to the $n$-th feature tag in the language of a script of a font.}
+\xarg{font}
+\xarg{script tag}
+\xarg{language tag}
+\xarg{integer, $n$}
+\desc{Expands to the $n$-th feature tag in the language of a script of \xarg{font}.}
 \endcmd
 
 
