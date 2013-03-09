@@ -349,6 +349,22 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
 \whattype\1 \whattype\2 \whattype\3
 \end{example}
 
+\cmd|\XeTeXfirstfontchar|
+\xarg{font}
+\desc{Expands to the code of the first character in \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXlastfontchar|
+\xarg{font}
+\desc{Expands to the code of the last character in \xarg{font}.}
+\endcmd
+
+\begin{example}
+\font\1="Charis SIL"\1
+The first character in Charis SIL is: "\char\XeTeXfirstfontchar\1"
+and the last character is: "\char\XeTeXlastfontchar\1".
+\end{example}
+
 \cmd|\XeTeXglyph|
 \xarg{Glyph slot}
 \desc{Inserts the glyph in \xarg{slot} of the current font. \strong{Font
@@ -359,6 +375,14 @@ possibly even different versions of the same font.}
 \cmd|\XeTeXcountglyphs|
 \xarg{Font}
 \desc{The count of the number of glyphs in the specified \xarg{font}.}
+\endcmd
+
+\cmd|\XeTeXglyphname|
+\xarg{font}
+\xarg{glyph slot}
+\desc{Expands to the name of the glyph in \xarg{glyph slot} of \xarg{font}.
+\strong{Font specific}, so will give different output for different fonts and
+possibly even different versions of the same font.}
 \endcmd
 
 \cmd|\XeTeXglyphindex|
