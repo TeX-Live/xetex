@@ -63,6 +63,7 @@ MINGWCROSS=FALSE
 CONFHOST=
 CONFBUILD=
 MACCROSS=FALSE
+XDVIPDFMX=FALSE
 JOBS_IF_PARALLEL=${JOBS_IF_PARALLEL:-3}
 MAX_LOAD_IF_PARALLEL=${MAX_LOAD_IF_PARALLEL:-2}
 
@@ -89,10 +90,11 @@ done
 #
 STRIP=strip
 XETEXEXE=xetex
+XDVIPDFMXEXE=xdvipdfmx
 
 case `uname` in
-  MINGW32*    ) XETEXEXE=xetex.exe ;;
-  CYGWIN*    ) XETEXEXE=xetex.exe ;;
+  MINGW32*    ) XETEXEXE=xetex.exe; XDVIPDFMXEXE=xdvipdfmx.exe ;;
+  CYGWIN*    ) XETEXEXE=xetex.exe; XDVIPDFMXEXE=xdvipdfmx.exe  ;;
 esac
 
 WARNINGFLAGS=--enable-compiler-warnings=$WARNINGS
@@ -134,6 +136,12 @@ then
     export CFLAGS
 fi
 
+# build xdvipdfmx if present
+if [ -d source/texk/xdvipdfmx ]
+then
+  XDVIPDFMX=TRUE
+fi
+
 # ----------
 # clean up, if needed
 if [ -r "$B"/Makefile -a $ONLY_MAKE = "FALSE" ]
@@ -170,6 +178,11 @@ CONF_OPTIONS="\
     --without-system-kpathsea \
     --without-mf-x-toolkit --without-x "
 
+if [ "$XDVIPDFMX" = "TRUE" ]; then
+  CONF_OPTIONS="$CONF_OPTIONS \
+    --enable-xdvipdfmx "
+fi
+
 if [ "$SYSTEM_LIBS" = "TRUE" ] ;
 then
   CONF_OPTIONS="$CONF_OPTIONS \
@@ -203,12 +216,19 @@ fi
 $MAKE
 (cd texk/web2c; $MAKE $XETEXEXE )
 
+if [ "$XDVIPDFMX" = "TRUE" ]; then
+  (cd texk/xdvipdfmx; $MAKE)
+fi
+
 # go back
 cd ..
 
 if [ "$STRIP_XETEX" = "TRUE" ] ;
 then
   $STRIP "$B"/texk/web2c/$XETEXEXE
+  if [ "$XDVIPDFMX" = "TRUE" ]; then
+    $STRIP "$B"/texk/xdvipdfmx/src/$XDVIPDFMXEXE
+  fi
 else
   echo "xetex binary not stripped"
 fi
@@ -220,3 +240,7 @@ fi
 
 # show the results
 ls -l "$B"/texk/web2c/$XETEXEXE
+
+if [ "$XDVIPDFMX" = "TRUE" ]; then
+  ls -l "$B"/texk/xdvipdfmx/src/$XDVIPDFMXEXE
+fi
