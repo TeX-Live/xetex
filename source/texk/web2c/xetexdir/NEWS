@@ -12,7 +12,8 @@ XeTeX 0.9999.0 was released ????????
   - Incorrect kerning in fonts that has both old “kern” table and new GPOS
     “kern” feature.
   - Allow suppressing Latin ligatures with ZWNJ.
-  - Support for variation selectors
+  - Support for variation selectors.
+  - Support for user-specified features with complex scripts.
 
 * Port Graphite layout to from SilGraphite to HarfBuzz and Graphite2. Which
   provides a more robust Graphite support and also fixes a number of Graphite
