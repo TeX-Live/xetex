@@ -1,5 +1,5 @@
 ==============================================================
-XeTeX 0.9999.0 was released ????????
+XeTeX 0.9999.0 was released 20130311
 ==============================================================
 
 * Port OpenType layout from ICU LayoutEngine to HarfBuzz.
