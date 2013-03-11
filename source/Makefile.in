@@ -93,6 +93,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/kpse-cairo-flags.m4 \
 	$(top_srcdir)/version.ac \
 	$(top_srcdir)/texk/web2c/ac/withenable.ac \
 	$(top_srcdir)/texk/web2c/ac/web2c.ac \
+	$(top_srcdir)/texk/xdvipdfmx/ac/withenable.ac \
 	$(top_srcdir)/libs/harfbuzz/ac/withenable.ac \
 	$(top_srcdir)/libs/icu/ac/withenable.ac \
 	$(top_srcdir)/libs/teckit/ac/withenable.ac \

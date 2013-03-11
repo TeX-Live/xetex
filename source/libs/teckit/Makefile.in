@@ -60,7 +60,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	../../build-aux/config.guess ../../build-aux/config.sub \
 	../../build-aux/depcomp ../../build-aux/install-sh \
 	../../build-aux/missing ../../build-aux/texinfo.tex \
-	../../build-aux/ltmain.sh \
+	../../build-aux/ylwrap ../../build-aux/ltmain.sh \
 	$(top_srcdir)/../../build-aux/config.guess \
 	$(top_srcdir)/../../build-aux/config.sub \
 	$(top_srcdir)/../../build-aux/install-sh \
