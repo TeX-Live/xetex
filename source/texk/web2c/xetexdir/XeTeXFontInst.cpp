@@ -227,40 +227,29 @@ _get_font_funcs(void)
 	return funcs;
 }
 
-static char*
-_get_table(FT_Face face, hb_tag_t tag, FT_ULong *length)
+static hb_blob_t *
+_get_table(hb_face_t *, hb_tag_t tag, void *user_data)
 {
-	FT_Byte *table = NULL;
+	FT_Face face = (FT_Face) user_data;
+	FT_ULong length = 0;
+	FT_Byte *table;
 	FT_Error error;
+	hb_blob_t* blob = NULL;
 
-	error = FT_Load_Sfnt_Table(face, tag, 0, NULL, length);
+	error = FT_Load_Sfnt_Table(face, tag, 0, NULL, &length);
 	if (!error) {
-		table = (FT_Byte *) xmalloc(*length);
+		table = (FT_Byte *) xmalloc(length * sizeof(char));
 		if (table != NULL) {
-			error = FT_Load_Sfnt_Table(face, tag, 0, table, length);
-			if (error) {
+			error = FT_Load_Sfnt_Table(face, tag, 0, (FT_Byte*)table, &length);
+			if (!error) {
+				blob = hb_blob_create((const char*) table, length, HB_MEMORY_MODE_WRITABLE, table, free);
+			} else {
 				free(table);
-				table = NULL;
 			}
 		}
 	}
 
-    return (char*) table;
-}
-
-static hb_blob_t *
-_reference_table(hb_face_t *, hb_tag_t tag, void *user_data)
-{
-	FT_Face face = (FT_Face) user_data;
-	FT_ULong length;
-	const char* table;
-	hb_blob_t* blob = NULL;
-
-	table = _get_table(face, tag, &length);
-	if (table != NULL)
-		blob = hb_blob_create(table, length, HB_MEMORY_MODE_WRITABLE, (void*) table, free);
-
-	return blob;
+    return blob;
 }
 
 void
@@ -328,7 +317,7 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
 	}
 
 	// Set up HarfBuzz font
-	hbFace = hb_face_create_for_tables(_reference_table, ftFace, NULL);
+	hbFace = hb_face_create_for_tables(_get_table, ftFace, NULL);
 	hb_face_set_index(hbFace, index);
 	hb_face_set_upem(hbFace, fUnitsPerEM);
 	hbFont = hb_font_create(hbFace);
@@ -353,8 +342,21 @@ XeTeXFontInst::setLayoutDirVertical(bool vertical)
 const void *
 XeTeXFontInst::getFontTable(OTTag tag) const
 {
-	FT_ULong length = 0;
-	return _get_table(ftFace, tag, &length);
+	FT_ULong tmpLength = 0;
+	FT_Error error = FT_Load_Sfnt_Table(ftFace, tag, 0, NULL, &tmpLength);
+	if (error)
+		return NULL;
+
+	void* table = xmalloc(tmpLength * sizeof(char));
+	if (table != NULL) {
+		error = FT_Load_Sfnt_Table(ftFace, tag, 0, (FT_Byte*)table, &tmpLength);
+		if (error) {
+			free((void *) table);
+			return NULL;
+		}
+	}
+
+    return table;
 }
 
 const char *
