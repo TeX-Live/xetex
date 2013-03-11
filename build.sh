@@ -217,7 +217,7 @@ $MAKE
 (cd texk/web2c; $MAKE $XETEXEXE )
 
 if [ "$XDVIPDFMX" = "TRUE" ]; then
-  (cd texk/xdvipdfmx; $MAKE)
+  (cd texk; $MAKE)
 fi
 
 # go back
