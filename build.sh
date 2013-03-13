@@ -215,12 +215,8 @@ TL_MAKE=$MAKE ../source/configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS $CONF_OPT
    || exit 1 
 fi
 
-$MAKE
-(cd texk/web2c; $MAKE $XETEXEXE )
-
-if [ "$XDVIPDFMX" = "TRUE" ]; then
-  (cd texk; $MAKE)
-fi
+$MAKE || exit 1
+$MAKE -C texk/web2c $XETEXEXE || exit 1
 
 # go back
 cd ..
