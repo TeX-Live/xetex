@@ -1247,30 +1247,31 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			}
 
 			font = createFont(fontRef, scaled_size);
-#ifdef XETEX_MAC
-			/* decide whether to use AAT or OpenType rendering with this font */
-			if (getReqEngine() == 'A')
-				goto load_aat;
-#endif
-
 			if (font != NULL) {
 #ifdef XETEX_MAC
-				if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
-					getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
-#endif
-					rval = loadOTfont(fontRef, font, scaled_size, featString);
+				/* decide whether to use AAT or OpenType rendering with this font */
+				if (getReqEngine() == 'A') {
+					rval = loadAATfont(fontRef, scaled_size, featString);
+					if (rval == NULL)
+						deleteFont(font);
+				} else {
+					if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
+							getFontTablePtr(font, kGSUB) != NULL || getFontTablePtr(font, kGPOS) != NULL)
+						rval = loadOTfont(fontRef, font, scaled_size, featString);
+
+					/* loadOTfont failed or the above check was false */
+					if (rval == NULL)
+						rval = loadAATfont(fontRef, scaled_size, featString);
+
+					if (rval == NULL)
+						deleteFont(font);
+				}
+#else
+				rval = loadOTfont(fontRef, font, scaled_size, featString);
 				if (rval == NULL)
 					deleteFont(font);
-			}
-	
-#ifdef XETEX_MAC
-			if (rval == NULL) {
-load_aat:
-				if (font != NULL) {
-					rval = loadAATfont(fontRef, scaled_size, featString);
-				}
-			}
 #endif
+			}
 
 			/* append the style and feature strings, so that \show\fontID will give a full result */
 			if (varString != NULL && *varString != 0) {
