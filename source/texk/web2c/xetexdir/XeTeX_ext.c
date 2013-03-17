@@ -1148,7 +1148,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 	char*	varString = NULL;
 	char*	featString = NULL;
 	PlatformFontRef	fontRef;
-	XeTeXFont	font;
+	XeTeXFont	font = NULL;
 	int		index = 0;
 
 	loadedfontmapping = NULL;
@@ -1246,13 +1246,13 @@ findnativefont(unsigned char* uname, integer scaled_size)
 				}
 			}
 
+			font = createFont(fontRef, scaled_size);
 #ifdef XETEX_MAC
 			/* decide whether to use AAT or OpenType rendering with this font */
 			if (getReqEngine() == 'A')
 				goto load_aat;
 #endif
 
-			font = createFont(fontRef, scaled_size);
 			if (font != NULL) {
 #ifdef XETEX_MAC
 				if (getReqEngine() == 'O' || getReqEngine() == 'G' ||
