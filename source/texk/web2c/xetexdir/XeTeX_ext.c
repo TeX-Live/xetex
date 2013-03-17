@@ -2087,7 +2087,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			native_glyph_count(node) = totalGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
 		} else {
-			int i;
+			double width = 0;
 			totalGlyphCount = layoutChars(engine, txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
 			glyphs = xmalloc(totalGlyphCount * sizeof(uint32_t));
@@ -2099,6 +2099,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 			getGlyphPositions(engine, positions);
 
 			if (totalGlyphCount > 0) {
+				int i;
 				glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
 				locations = (FixedPoint*)glyph_info;
 				glyphIDs = (uint16_t*)(locations + totalGlyphCount);
@@ -2109,9 +2110,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					locations[i].x = D2Fix(positions[2*i]);
 					locations[i].y = D2Fix(positions[2*i+1]);
 				}
+				width = D2Fix(positions[2*i]);
 			}
 
-			node_width(node) = D2Fix(positions[2*i]);
+			node_width(node) = width;
 			native_glyph_count(node) = totalGlyphCount;
 			native_glyph_info_ptr(node) = glyph_info;
 
