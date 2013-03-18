@@ -899,8 +899,8 @@ static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
 	XeTeXLayoutEngine   engine;
-	char*			script = NULL;
-	char*			language = NULL;
+	hb_tag_t script = HB_TAG_NONE;
+	hb_tag_t language = HB_TAG_NONE;
 	hb_feature_t*	features = NULL;
 	char**			shapers = NULL; /* NULL-terminated array */
 	int				nFeatures = 0;
@@ -961,7 +961,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				if (*cp3 != '=')
 					goto bad_option;
 				++cp3;
-				script = strndup(cp3, cp2 - cp3);
+				script = hb_tag_from_string(cp3, cp2 - cp3);
 				goto next_option;
 			}
 			
@@ -970,7 +970,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				if (*cp3 != '=')
 					goto bad_option;
 				++cp3;
-				language = strndup(cp3, cp2 - cp3);
+				language = hb_tag_from_string(cp3, cp2 - cp3);
 				goto next_option;
 			}
 			
