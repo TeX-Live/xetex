@@ -875,26 +875,6 @@ readFeatureNumber(const char* s, const char* e, hb_tag_t* f, int* v)
 	return true;
 }
 
-#if !defined(HAVE_STRNDUP)
-/* Inspired by the GNU C Library 2.3.6
- * Copyright (C) 1996, 1997, 1998, 2001, 2002 Free Software Foundation, Inc.
- */
-static char *strndup (const char *str, size_t n)
-{
-	const char *p = (const char *) memchr(str, 0, n);
-	size_t len = p ? p - str : n;	/* strnlen(str, n) */
-	char *ret = (char *) malloc (len + 1);
-
-	if (ret == NULL)
-		return NULL;
-
-	ret[len] = '\0';
-	return (char *) memcpy (ret, str, len);
-}
-#elif !(defined HAVE_DECL_STRNDUP && HAVE_DECL_STRNDUP)
-char *strndup (const char *str, size_t n);
-#endif
-
 static void*
 loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const char* cp1)
 {
@@ -980,7 +960,9 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 					goto bad_option;
 				++cp3;
 				shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
-				shapers[nShapers] = strndup(cp3, cp2 - cp3);
+				/* some dumb systems have no strndup() */
+				shapers[nShapers] = strdup(cp3);
+				shapers[nShapers][cp2 - cp3] = '\0';
 				nShapers++;
 				goto next_option;
 			}
