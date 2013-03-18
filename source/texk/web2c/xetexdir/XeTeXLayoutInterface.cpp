@@ -649,10 +649,10 @@ layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t 
 		direction = HB_DIRECTION_RTL;
 
 	if (engine->script != NULL)
-		script = hb_script_from_string(engine->script, -1);
+		script = hb_ot_tag_to_script (hb_tag_from_string (engine->script, -1));
 
 	if (engine->language != NULL)
-		language = hb_language_from_string(engine->language, -1);
+		language = hb_ot_tag_to_language (hb_tag_from_string (engine->language, -1));
 
 	hb_buffer_reset(engine->hbBuffer);
 	hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
