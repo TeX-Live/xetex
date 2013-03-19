@@ -75,6 +75,8 @@
  *  Level 2.
  */
 
+#include "numbers.h"
+
 #include "jpegimage.h"
 
 #include <stdlib.h>
@@ -96,30 +98,6 @@ static void     JPEG_info_clear  (struct JPEG_info *j_info);
 #define RELEASE(p)		free(p)
 #define NEW(n, t)		(t*)xmalloc(n * sizeof(t))
 #define RENEW(p, n, t)	((p) ? (t*)xrealloc(p, (n) * sizeof(t)) : NEW(n, t))
-
-static int
-get_unsigned_byte (FILE *file)
-{
-  int ch;
-  if ((ch = fgetc (file)) < 0) {
-    fprintf (stderr, "File ended prematurely\n");
-    exit(-1);
-  }
-  return ch;
-}
-
-static unsigned
-get_unsigned_pair (FILE *file)
-{
-  int i;
-  int byte;
-  unsigned pair = 0;
-  for (i=0; i<2; i++) {
-    byte = get_unsigned_byte(file);
-    pair = pair*0x100u + byte;
-  }
-  return pair;
-}
 
 int
 check_for_jpeg (FILE *fp)
