@@ -157,6 +157,8 @@ libxetex_a_SOURCES += \
 	xetexdir/bmpimage.h \
 	xetexdir/jpegimage.c \
 	xetexdir/jpegimage.h \
+	xetexdir/mfileio.c \
+	xetexdir/mfileio.h \
 	xetexdir/numbers.c \
 	xetexdir/numbers.h \
 	xetexdir/pdfimage.cpp \

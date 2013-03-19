@@ -54,6 +54,8 @@
 #include <w2c/config.h>
 #endif
 
+#include "mfileio.h"
+
 struct bmp_info {
 	int	width;
 	int height;

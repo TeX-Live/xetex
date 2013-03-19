@@ -49,6 +49,8 @@
 #ifndef _JPEGIMAGE_H_
 #define _JPEGIMAGE_H_
 
+#include "mfileio.h"
+
 /* JPEG Markers */
 typedef enum {
   JM_SOF0  = 0xc0,
