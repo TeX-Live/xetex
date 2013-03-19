@@ -122,8 +122,8 @@ JPEG_info_init (struct JPEG_info *j_info)
   j_info->bits_per_component = 0;
   j_info->num_components = 0;
 
-  j_info->xdpi = 0;
-  j_info->ydpi = 0;
+  j_info->xdpi = 72.0;
+  j_info->ydpi = 72.0;
 
   j_info->flags    = 0;
   j_info->num_appn = 0;
