@@ -568,7 +568,7 @@ void
 printutf8str(const unsigned char* str, int len)
 {
 	while (len-- > 0)
-		printvisiblechar(*(str++)); /* bypass utf-8 encoding done in print_char() */
+		printrawchar(*(str++), true); /* bypass utf-8 encoding done in print_char() */
 }
 
 void
