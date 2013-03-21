@@ -742,7 +742,7 @@ system libraries.
 @<Types...@>=
 @!ASCII_code=0..biggest_char; {16-bit numbers}
 @!UTF8_code=0..255; {8-bit numbers}
-@!UnicodeScalar=0..@"10FFFF; {Unicode scalars}
+@!UnicodeScalar=0..biggest_usv; {Unicode scalars}
 
 @ The original \PASCAL\ compiler was designed in the late 60s, when six-bit
 character sets were common, so it did not make provision for lowercase
@@ -1240,7 +1240,7 @@ we access the string pool only via macros that can easily be redefined.
 @<Types...@>=
 @!pool_pointer = 0..pool_size; {for variables that point into |str_pool|}
 @!str_number = 0..max_strings; {for variables that point into |str_start|}
-@!packed_ASCII_code = 0..65535; {elements of |str_pool| array}
+@!packed_ASCII_code = 0..biggest_char; {elements of |str_pool| array}
 
 @ @<Glob...@>=
 @!str_pool:packed array[pool_pointer] of packed_ASCII_code; {the characters}
@@ -9799,7 +9799,7 @@ end;
 @ @<Declare procedures that scan restricted classes of integers@>=
 procedure scan_usv_num;
 begin scan_int;
-if (cur_val<0)or(cur_val>@"10FFFF) then
+if (cur_val<0)or(cur_val>biggest_usv) then
   begin print_err("Bad USV code");
 @.Bad character code@>
   help2("A Unicode Scalar Value must be between 0 and ""10FFFF.")@/
@@ -9830,7 +9830,7 @@ begin scan_int;
       ("I changed this one to ""1FFFFF."); int_error(cur_val);
       cur_val := active_math_char;
     end
-  end else if math_char_field(cur_val) > @"10FFFF then begin
+  end else if math_char_field(cur_val)>biggest_usv then begin
     print_err("Bad XeTeX math character code");
     help2("Since I expected a character number between 0 and ""10FFFF,")@/
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
