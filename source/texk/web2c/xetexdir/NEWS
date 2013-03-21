@@ -1,4 +1,30 @@
 ==============================================================
+XeTeX 0.9999.1 was released 20130322
+==============================================================
+
+XeTeX:
+* Fix loading font files on PPC Mac OS 10.5 (and potentially other versions of
+  Mac).
+
+* Fix handling of ‘script’ and ‘language’ font options to be treated again as
+  OpenType not ISO tags, so that passing version 2 Indic script tags works
+  (though this is generally not needed as HarfBuzz will always use version 2
+  shaping if the font has it, regardless of the tag used).
+
+* Fix loading JPEG images that do not specify a resolution.
+
+* When printing multi-byte characters to log or terminal avoid inserting new
+  lines in the middle of the characters, and count the characters not the bytes
+  when calculating line length.
+
+* Update to HarfBuzz 0.9.14, a couple of Indic and Hangul shaping bugs.
+
+xdvipdfmx:
+* Speed up calculating glyph widths in native font.
+
+* Don’t crash when /tmp is full.
+
+==============================================================
 XeTeX 0.9999.0 was released 20130311
 ==============================================================
 
