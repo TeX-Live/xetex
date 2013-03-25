@@ -205,21 +205,21 @@ getSlant(XeTeXFont font)
 	return D2Fix(tan(-italAngle * M_PI / 180.0));
 }
 
-static uint32_t
+static unsigned int
 getLargerScriptListTable(XeTeXFont font, hb_tag_t** scriptList, hb_tag_t* tableTag)
 {
-	uint32_t rval = 0;
+	unsigned int rval = 0;
 
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 
 	hb_tag_t* scriptListSub = NULL;
 	hb_tag_t* scriptListPos = NULL;
 
-	uint32_t scriptCountSub = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, NULL, NULL);
+	unsigned int scriptCountSub = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, NULL, NULL);
 	scriptListSub = (hb_tag_t*) xmalloc(scriptCountSub * sizeof(hb_tag_t*));
 	hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, &scriptCountSub, scriptListSub);
 
-	uint32_t scriptCountPos = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GPOS, 0, NULL, NULL);
+	unsigned int scriptCountPos = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GPOS, 0, NULL, NULL);
 	scriptListPos = (hb_tag_t*) xmalloc(scriptCountPos * sizeof(hb_tag_t*));
 	hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, &scriptCountPos, scriptListPos);
 
@@ -240,20 +240,20 @@ getLargerScriptListTable(XeTeXFont font, hb_tag_t** scriptList, hb_tag_t* tableT
 	return rval;
 }
 
-uint32_t
+unsigned int
 countScripts(XeTeXFont font)
 {
 	return getLargerScriptListTable(font, NULL, NULL);
 }
 
-uint32_t
-getIndScript(XeTeXFont font, uint32_t index)
+hb_tag_t
+getIndScript(XeTeXFont font, unsigned int index)
 {
-	uint32_t rval = 0;
+	hb_tag_t rval = 0;
 
 	hb_tag_t* scriptList;
 
-	uint32_t scriptCount = getLargerScriptListTable(font, &scriptList, NULL);
+	unsigned int scriptCount = getLargerScriptListTable(font, &scriptList, NULL);
 	if (scriptList != NULL) {
 		if (index < scriptCount)
 			rval = scriptList[index];
@@ -262,16 +262,16 @@ getIndScript(XeTeXFont font, uint32_t index)
 	return rval;
 }
 
-uint32_t
-countScriptLanguages(XeTeXFont font, uint32_t script)
+unsigned int
+countScriptLanguages(XeTeXFont font, hb_tag_t script)
 {
-	uint32_t rval = 0;
+	unsigned int rval = 0;
 
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	hb_tag_t* scriptList;
 	hb_tag_t tableTag;
 
-	uint32_t scriptCount = getLargerScriptListTable(font, &scriptList, &tableTag);
+	unsigned int scriptCount = getLargerScriptListTable(font, &scriptList, &tableTag);
 	if (scriptList != NULL) {
 		for (int i = 0; i < scriptCount; i++) {
 			if (scriptList[i] == script) {
@@ -284,20 +284,20 @@ countScriptLanguages(XeTeXFont font, uint32_t script)
 	return rval;
 }
 
-uint32_t
-getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
+hb_tag_t
+getIndScriptLanguage(XeTeXFont font, hb_tag_t script, unsigned int index)
 {
-	uint32_t rval = 0;
+	hb_tag_t rval = 0;
 
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 	hb_tag_t* scriptList;
 	hb_tag_t tableTag;
 
-	uint32_t scriptCount = getLargerScriptListTable(font, &scriptList, &tableTag);
+	unsigned int scriptCount = getLargerScriptListTable(font, &scriptList, &tableTag);
 	if (scriptList != NULL) {
 		for (int i = 0; i < scriptCount; i++) {
 			if (scriptList[i] == script) {
-				uint32_t langCount = hb_ot_layout_script_get_language_tags(face, tableTag, i, 0, NULL, NULL);
+				unsigned int langCount = hb_ot_layout_script_get_language_tags(face, tableTag, i, 0, NULL, NULL);
 				hb_tag_t* langList = (hb_tag_t*) xmalloc(langCount * sizeof(hb_tag_t*));
 				hb_ot_layout_script_get_language_tags(face, tableTag, i, 0, &langCount, langList);
 
@@ -312,15 +312,15 @@ getIndScriptLanguage(XeTeXFont font, uint32_t script, uint32_t index)
 	return rval;
 }
 
-uint32_t
-countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
+unsigned int
+countFeatures(XeTeXFont font, hb_tag_t script, hb_tag_t language)
 {
-	uint32_t rval = 0;
+	unsigned int rval = 0;
 
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 
 	for (int i = 0; i < 2; ++i) {
-		uint32_t scriptIndex, langIndex = 0;
+		unsigned int scriptIndex, langIndex = 0;
 		hb_tag_t tableTag = i == 0 ? HB_OT_TAG_GSUB : HB_OT_TAG_GPOS;
 		if (hb_ot_layout_table_find_script(face, tableTag, script, &scriptIndex)) {
 			if (hb_ot_layout_script_find_language(face, tableTag, scriptIndex, language, &langIndex) || language == 0) {
@@ -332,19 +332,19 @@ countFeatures(XeTeXFont font, uint32_t script, uint32_t language)
 	return rval;
 }
 
-uint32_t
-getIndFeature(XeTeXFont font, uint32_t script, uint32_t language, uint32_t index)
+hb_tag_t
+getIndFeature(XeTeXFont font, hb_tag_t script, hb_tag_t language, unsigned int index)
 {
-	uint32_t rval = 0;
+	hb_tag_t rval = 0;
 
 	hb_face_t* face = hb_font_get_face(((XeTeXFontInst*)font)->getHbFont());
 
 	for (int i = 0; i < 2; ++i) {
-		uint32_t scriptIndex, langIndex = 0;
+		unsigned int scriptIndex, langIndex = 0;
 		hb_tag_t tableTag = i == 0 ? HB_OT_TAG_GSUB : HB_OT_TAG_GPOS;
 		if (hb_ot_layout_table_find_script(face, tableTag, script, &scriptIndex)) {
 			if (hb_ot_layout_script_find_language(face, tableTag, scriptIndex, language, &langIndex) || language == 0) {
-				uint32_t featCount = hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, NULL, NULL);
+				unsigned int featCount = hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, NULL, NULL);
 				hb_tag_t* featList = (hb_tag_t*) xmalloc(featCount * sizeof(hb_tag_t*));
 				hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, &featCount, featList);
 
@@ -580,7 +580,7 @@ getGlyphWidth(XeTeXFont font, uint32_t gid)
 	return ((XeTeXFontInst*)font)->getGlyphWidth(gid);
 }
 
-uint32_t
+unsigned int
 countGlyphs(XeTeXFont font)
 {
 	return ((XeTeXFontInst*)font)->getNumGlyphs();
