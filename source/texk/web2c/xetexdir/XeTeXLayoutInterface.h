@@ -88,7 +88,6 @@ double getDesignSize(XeTeXFont font);
 void deleteFont(XeTeXFont font);
 
 void* getFontTablePtr(XeTeXFont font, uint32_t tableTag);
-void* getFontTable(XeTeXFont font, FT_Sfnt_Tag tableTag);
 
 Fixed getSlant(XeTeXFont font);
 

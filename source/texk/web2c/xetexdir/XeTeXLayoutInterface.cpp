@@ -192,12 +192,6 @@ getFontTablePtr(XeTeXFont font, uint32_t tableTag)
 	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
 }
 
-void*
-getFontTable(XeTeXFont font, FT_Sfnt_Tag tableTag)
-{
-	return const_cast<void*>(((XeTeXFontInst*)font)->getFontTable(tableTag));
-}
-
 Fixed
 getSlant(XeTeXFont font)
 {
