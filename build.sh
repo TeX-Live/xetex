@@ -48,9 +48,7 @@ then
 elif gmake -v >/dev/null 2>&1
 then
   MAKE=gmake;
-  GNUMAKE=gmake;
   export MAKE;
-  export GNUMAKE;
   echo "You have a GNU-make installed as gmake; I will use that"
 else
   echo "I can't find a GNU-make; I'll try to use make and hope that works." 
