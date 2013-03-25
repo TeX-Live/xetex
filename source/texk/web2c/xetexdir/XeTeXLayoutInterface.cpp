@@ -257,7 +257,7 @@ getIndScript(XeTeXFont font, unsigned int index)
 }
 
 unsigned int
-countScriptLanguages(XeTeXFont font, hb_tag_t script)
+countLanguages(XeTeXFont font, hb_tag_t script)
 {
 	unsigned int rval = 0;
 
@@ -279,7 +279,7 @@ countScriptLanguages(XeTeXFont font, hb_tag_t script)
 }
 
 hb_tag_t
-getIndScriptLanguage(XeTeXFont font, hb_tag_t script, unsigned int index)
+getIndLanguage(XeTeXFont font, hb_tag_t script, unsigned int index)
 {
 	hb_tag_t rval = 0;
 
