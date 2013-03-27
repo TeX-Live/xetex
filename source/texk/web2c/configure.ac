@@ -129,7 +129,12 @@ if test "x$kpse_cv_have_win32" = xno; then
           ["none required"], [],
           [no], [WEB2C_DISABLE([luatex], [no nanosleep()])],
               [lua_socketlibs="$lua_socketlibs $ac_cv_search_nanosleep"])
+else
+  AC_CHECK_LIB([ws2_32], [main],
+               [lua_socketlibs="$socketlibs -lws2_32"],
+               [WEB2C_DISABLE([luatex], [no getaddrinfo()])])
 fi
+AM_CONDITIONAL([USE_DLOPEN], [test "x$ac_cv_header_dlfcn_h" = xyes])
 AC_SUBST([lua_socketlibs])
 AC_SUBST([ipc_socketlibs])
 
@@ -271,7 +276,6 @@ KPSE_LIBPNG_FLAGS
 KPSE_FREETYPE2_FLAGS
 KPSE_PIXMAN_FLAGS
 KPSE_CAIRO_FLAGS
-KPSE_XPDF_FLAGS
 KPSE_POPPLER_FLAGS
 KPSE_XPDF_FLAGS
 KPSE_ZZIPLIB_FLAGS

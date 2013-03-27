@@ -1,3 +1,27 @@
+2013-03-27  Khaled Hosny  <khaledhosny@eglug.org>
+
+	* texmfmp.h [XeTeX]: Temporary fix for building with Clang on Mac.
+
+2013-03-26  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: Drop duplicate KPSE_XPDF_FLAGS.
+
+2013-03-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am: Reorder included Makefile fragments and drop the
+	obsolete luatexdir/am/liblua51.am.
+	* ac/web2c.ac: MetaPost now uses cairo.
+
+2013-03-12  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am: Add luatexdir/am/liblua52.am for LuaTeX 0.75.0.
+	* configure.ac: New conditional USE_DLOPEN.
+
+2013-03-11  Karl Berry  <karl@tug.org>
+
+	* doc/web2c.texi (Initial TeX, Initial Metafont): initex
+	and inimf are present again (as of 2011).  Report from Uwe Lueck.
+
 2013-03-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* triptrap-sh: Drop duplicate header msg.
