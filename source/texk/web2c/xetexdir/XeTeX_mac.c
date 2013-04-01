@@ -158,7 +158,9 @@ DoAATLayout(void* p, int justify)
 				// of the resulting run is not the same font we asked for, use
 				// the glyph at index 0 (usually .notdef) instead or we will be
 				// showing garbage or even invalid glyphs
-				if (fontFromAttributes(attributes) != fontFromAttributes(runAttributes))
+				char *ps_name1 = getNameFromCTFont(fontFromAttributes(attributes), kCTFontPostScriptNameKey);
+				char *ps_name2 = getNameFromCTFont(fontFromAttributes(runAttributes), kCTFontPostScriptNameKey);
+				if (strcmp(ps_name1, ps_name2) != 0)
 					glyphIDs[totalGlyphCount] = 0;
 				else
 					glyphIDs[totalGlyphCount] = glyphs[j];
