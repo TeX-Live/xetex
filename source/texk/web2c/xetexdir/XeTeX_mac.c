@@ -537,6 +537,8 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 	CGFloat ctSize;
 	CFMutableDictionaryRef stringAttributes, attributes;
 	CGAffineTransform matrix;
+	CFMutableArrayRef cascadeList;
+	CTFontDescriptorRef lastResort;
 	double  tracking	= 0.0;
 	float   extend		= 1.0;
 	float   slant		= 0.0;
@@ -771,9 +773,8 @@ loadAATfont(CTFontDescriptorRef descriptor, integer scaled_size, const char* cp1
 
 	// Disable Core Text font fallback (cascading) with only the last resort font
 	// in the cascade list.
-	CFMutableArrayRef cascadeList = CFArrayCreateMutable(NULL, 1, &kCFTypeArrayCallBacks);
 	cascadeList = CFArrayCreateMutable(NULL, 1, &kCFTypeArrayCallBacks);
-	CTFontDescriptorRef lastResort = CTFontDescriptorCreateWithNameAndSize(CFSTR("LastResort"), 0);
+	lastResort = CTFontDescriptorCreateWithNameAndSize(CFSTR("LastResort"), 0);
 	CFArrayAppendValue(cascadeList, lastResort);
 	CFRelease(lastResort);
 	CFDictionaryAddValue(attributes, kCTFontCascadeListAttribute, cascadeList);
