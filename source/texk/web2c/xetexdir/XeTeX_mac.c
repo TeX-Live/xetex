@@ -143,6 +143,7 @@ DoAATLayout(void* p, int justify)
 			CTRunRef run = CFArrayGetValueAtIndex(glyphRuns, i);
 			CFIndex count = CTRunGetGlyphCount(run);
 			CFDictionaryRef runAttributes = CTRunGetAttributes(run);
+			CFBooleanRef vertical = CFDictionaryGetValue(runAttributes, kCTVerticalFormsAttributeName);
 			// TODO(jjgod): Avoid unnecessary allocation with CTRunGetFoosPtr().
 			CGGlyph* glyphs = (CGGlyph*) xmalloc(count * sizeof(CGGlyph));
 			CGPoint* positions = (CGPoint*) xmalloc(count * sizeof(CGPoint));
@@ -164,10 +165,19 @@ DoAATLayout(void* p, int justify)
 					glyphIDs[totalGlyphCount] = 0;
 				else
 					glyphIDs[totalGlyphCount] = glyphs[j];
-				locations[totalGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
-				// XXX trasformation matrix changes y positions!
-				//locations[totalGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
-				locations[totalGlyphCount].y = 0;
+
+				// Swap X and Y when doing vertical layout
+				if (vertical == kCFBooleanTrue) {
+					locations[totalGlyphCount].x = FixedPStoTeXPoints(-positions[j].y);
+					// XXX trasformation matrix changes y positions!
+					//locations[totalGlyphCount].y = FixedPStoTeXPoints(-positions[j].x);
+					locations[totalGlyphCount].y = 0;
+				} else {
+					locations[totalGlyphCount].x = FixedPStoTeXPoints(positions[j].x);
+					// XXX trasformation matrix changes y positions!
+					//locations[totalGlyphCount].y = FixedPStoTeXPoints(positions[j].y);
+					locations[totalGlyphCount].y = 0;
+				}
 				glyphAdvances[totalGlyphCount] = advances[j].width;
 				totalGlyphCount++;
 			}
