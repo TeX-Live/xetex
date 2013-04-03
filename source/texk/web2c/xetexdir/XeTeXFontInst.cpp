@@ -213,6 +213,19 @@ _get_glyph_contour_point(hb_font_t*, void *font_data, hb_codepoint_t gid, unsign
 	return ret;
 }
 
+static hb_bool_t
+_get_glyph_name(hb_font_t *, void *font_data, hb_codepoint_t gid, char *name, unsigned int size, void *)
+{
+	FT_Face face = (FT_Face) font_data;
+	bool ret = false;
+
+	ret = !FT_Get_Glyph_Name (face, gid, name, size);
+	if (ret && (size && !*name))
+		ret = false;
+
+	return ret;
+}
+
 static hb_font_funcs_t *
 _get_font_funcs(void)
 {
@@ -227,6 +240,7 @@ _get_font_funcs(void)
 	hb_font_funcs_set_glyph_v_kerning_func		(funcs, _get_glyph_v_kerning, NULL, NULL);
 	hb_font_funcs_set_glyph_extents_func		(funcs, _get_glyph_extents, NULL, NULL);
 	hb_font_funcs_set_glyph_contour_point_func	(funcs, _get_glyph_contour_point, NULL, NULL);
+	hb_font_funcs_set_glyph_name_func			(funcs, _get_glyph_name, NULL, NULL);
 
 	return funcs;
 }
