@@ -736,9 +736,9 @@ getGlyphAdvances(XeTeXLayoutEngine engine, float advances[])
 
 	for (int i = 0; i < glyphCount; i++) {
 		if (engine->font->getLayoutDirVertical())
-			advances[i] = hbPositions[i].y_advance / 64.0;
+			advances[i] = engine->font->unitsToPoints(hbPositions[i].y_advance);
 		else
-			advances[i] = hbPositions[i].x_advance / 64.0;
+			advances[i] = engine->font->unitsToPoints(hbPositions[i].x_advance);
 	}
 }
 
@@ -754,25 +754,25 @@ getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 	if (engine->font->getLayoutDirVertical()) {
 		/* XXX I'm not sure about the code below, but it seems to math the
 		 * behaviour of old code */
-		x -= hbPositions[0].y_offset / 64.0; /* hack to compensate offset of 1st glyph */
+		x -= hbPositions[0].y_offset; /* hack to compensate offset of 1st glyph */
 		for (i = 0; i < glyphCount; i++) {
-			positions[2*i]   = -(x + hbPositions[i].y_offset / 64.0); /* negative is forwards */
-			positions[2*i+1] =   y + hbPositions[i].x_offset / 64.0;
-			x += hbPositions[i].y_advance / 64.0;
-			y += hbPositions[i].x_advance / 64.0;
+			positions[2*i]   = - engine->font->unitsToPoints(x + hbPositions[i].y_offset); /* negative is forwards */
+			positions[2*i+1] =   engine->font->unitsToPoints(y + hbPositions[i].x_offset);
+			x += hbPositions[i].y_advance;
+			y += hbPositions[i].x_advance;
 		}
-		x += hbPositions[glyphCount-1].y_offset / 64.0;
-		positions[2*i]   = -x;
-		positions[2*i+1] =  y;
+		x += hbPositions[glyphCount-1].y_offset;
+		positions[2*i]   = - engine->font->unitsToPoints(x);
+		positions[2*i+1] =   engine->font->unitsToPoints(y);
 	} else {
 		for (i = 0; i < glyphCount; i++) {
-			positions[2*i]   =   x + hbPositions[i].x_offset / 64.0;
-			positions[2*i+1] = -(y + hbPositions[i].y_offset / 64.0); /* negative is upwards */
-			x += hbPositions[i].x_advance / 64.0;
-			y += hbPositions[i].y_advance / 64.0;
+			positions[2*i]   =   engine->font->unitsToPoints(x + hbPositions[i].x_offset);
+			positions[2*i+1] = - engine->font->unitsToPoints(y + hbPositions[i].y_offset); /* negative is upwards */
+			x += hbPositions[i].x_advance;
+			y += hbPositions[i].y_advance;
 		}
-		positions[2*i]   =  x;
-		positions[2*i+1] = -y;
+		positions[2*i]   =   engine->font->unitsToPoints(x);
+		positions[2*i+1] = - engine->font->unitsToPoints(y);
 	}
 
 	if (engine->extend != 1.0 || engine->slant != 0.0)
