@@ -754,7 +754,7 @@ getGlyphPositions(XeTeXLayoutEngine engine, float positions[])
 	if (engine->font->getLayoutDirVertical()) {
 		for (i = 0; i < glyphCount; i++) {
 			positions[2*i]   = - engine->font->unitsToPoints(x + hbPositions[i].y_offset); /* negative is forwards */
-			positions[2*i+1] =   engine->font->unitsToPoints(y + hbPositions[i].x_offset);
+			positions[2*i+1] =   engine->font->unitsToPoints(y - hbPositions[i].x_offset);
 			x += hbPositions[i].y_advance;
 			y += hbPositions[i].x_advance;
 		}
