@@ -131,12 +131,22 @@ _get_glyph_v_advance(hb_font_t*, void *font_data, hb_codepoint_t gid, void*)
 static hb_bool_t
 _get_glyph_h_origin(hb_font_t*, void *font_data, hb_codepoint_t gid, hb_position_t *x, hb_position_t *y, void*)
 {
+	// horizontal origin is (0, 0)
 	return true;
 }
 
 static hb_bool_t
 _get_glyph_v_origin(hb_font_t*, void *font_data, hb_codepoint_t gid, hb_position_t *x, hb_position_t *y, void*)
 {
+	// vertical origin is (0, 0) for now
+	return true;
+
+	// TODO
+	// Keep the code below for reference, for now we want to keep vertical
+	// origin at (0, 0) for compatibility with pre-0.9999.
+	// Reconsider this (e.g. using BASE table) when we get around overhauling
+	// the text directionality model and implementing real vertical typesetting.
+
 	FT_Face face = (FT_Face) font_data;
 	FT_Error error;
 
