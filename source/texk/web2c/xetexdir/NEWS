@@ -53,10 +53,13 @@ XeTeX 0.9999.0 was released 20130311
 
 * Add a “shaper” font option to specify HarfBuzz shapers (for testing).
 
-* Guessed script from input string if no one is given in the font definition,
+* Guess script from input string if no one is given in the font definition,
   instead of defaulting to Latin.
 
 * Support 4-letter tags for Graphite features.
+
+* Fix applying negative delta glyph advance to the last glyph in the run, fixes
+  issues with “halt” and “vhal” features.
 
 * Use \U prefix for extended math primitives, allowing XeTeX and LuaTeX to use
   the same names for Unicode math primitives supported by both engines. The old
