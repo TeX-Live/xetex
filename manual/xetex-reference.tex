@@ -232,8 +232,10 @@ The \XeTeX\ documentation files \path{aat-info.tex} and
 
 OpenType font features are chosen with
 \hlink{http://www.microsoft.com/typography/otspec/featuretags.htm}{standard
-tags}. They may be either comma- or semicolon-separated, and prepended
-with a |+| to turn them on and a |-| to turn them off.
+tags}. They may be either comma- or semicolon-separated, and prefixed
+with a |+| to turn them on and a |-| to turn them off, optionally followed
+by |=| and a 0-based index for selecting alternates from multiple
+alternates features (ignored for |-| prefixed tags).
 
 \begin{example}
 \font\liber="Linux Libertine O/I=5:+smcp" at 12pt
@@ -243,6 +245,15 @@ with a |+| to turn them on and a |-| to turn them off.
 Varying depending on the language and script in use (see
 \secref[vref]{script}), a small number of OpenType features, if they
 exist, will be activated by default.
+
+\begin{example}
+\font\antt="Antykwa Torunska"         at 12pt \antt 0
+\font\antt="Antykwa Torunska:+aalt=0" at 12pt \antt 0
+\font\antt="Antykwa Torunska:+aalt=1" at 12pt \antt 0
+\font\antt="Antykwa Torunska:+aalt=2" at 12pt \antt 0
+\font\antt="Antykwa Torunska:+aalt=3" at 12pt \antt 0
+\font\antt="Antykwa Torunska:+aalt=4" at 12pt \antt 0
+\end{example}
 
 AAT font features and Graphite font features are specified by strings
 within each font rather than standardised tags. Therefore, even
