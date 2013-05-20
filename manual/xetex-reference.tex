@@ -24,15 +24,22 @@
 \makeatletter
 \def\@dotsep{999}
 
-\usepackage{fontspec,xltxtra,unicode-math}
+\usepackage{fontspec,unicode-math}
 \setmainfont[Scale=MatchLowercase]{TeX Gyre Pagella}
 \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
 \setmonofont[Scale=MatchLowercase, AutoFakeSlant=.2]{Inconsolata}
 \setmathfont{TeX Gyre Pagella Math}
 
-\usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor}
+\usepackage{calc,fancyvrb,hyperref,refstyle,varioref,xcolor,hologo,xspace}
 \usepackage{geometry}
 %\geometry{screen,margin=3cm}
+
+\newcommand\tex    {\hologo{TeX}\xspace}
+\newcommand\xetex  {\hologo{XeTeX}\xspace}
+\newcommand\pdftex {\hologo{pdfTeX}\xspace}
+\newcommand\luatex {\hologo{LuaTeX}\xspace}
+\newcommand\latex  {\hologo{LaTeX}\xspace}
+\newcommand\context{\hologo{ConTeXt}\xspace}
 
 \hypersetup{
   colorlinks,
@@ -96,7 +103,6 @@
   \end{trivlist}}
 
 \let\strong\textbf
-\providecommand\pdfTeX{pdf\/\TeX}
 \newcommand\hlink[2]{\href{#1}{#2}\footnote{\url{#1}}}
 
 \let\latin\textit
@@ -113,7 +119,7 @@
 \raggedbottom
 
 \begin{document}
-\title{The \texorpdfstring{\XeTeX}{XeTeX}\ reference guide}
+\title{The \xetex reference guide}
 \author{Will Robertson \and Khaled Hosny}
 \maketitle
 
@@ -121,13 +127,13 @@
 
 \section*{Introduction}
 
-This document serves to summarise additional features of \XeTeX without
+This document serves to summarise additional features of \xetex without
 being so much as a ‘users’ guide. Note that much of the functionality
-addressed here is provided in abstracted form in various \LaTeX\
-packages and Con\TeX{}t modules.
+addressed here is provided in abstracted form in various \latex
+packages and \context modules.
 
 The descriptions here should be a fairly exhaustive list of the new
-primitives and features of \XeTeX. Descriptions are still a little
+primitives and features of \xetex. Descriptions are still a little
 aenemic, however.
 
 \section*{License}
@@ -150,21 +156,21 @@ information.
 \newpage
 \tableofcontents
 
-\part{\texorpdfstring{\XeTeX}{XeTeX}\ specifics}
+\part{\xetex specifics}
 
 \section{The \cs{font} command}
 
-Traditionally, fonts were selected in \TeX\ like this:
+Traditionally, fonts were selected in \tex like this:
 |\font\1=|\xarg{tfm name} with various options possibly appended
 % harder to read without the extra space
 such as \ ‘| at 10pt|’ \ or \ ‘| scaled 1.2|’, with obvious meaning. This syntax
-still works, but it has been greatly extended in \XeTeX.
+still works, but it has been greatly extended in \xetex.
 
 The extended syntax looks schematically like this:
 
 {\centering
  |\font\1="|\xarg{font identifier}\xarg{font options}|:|\xarg{font features}|"|
- \xarg{\TeX\ font options}\par}
+ \xarg{\tex font options}\par}
 
 \noindent The \xarg{font identifier} is the only mandatory part of the
 above syntax.  If it is given in square brackets, (e.g.,
@@ -242,7 +248,7 @@ features, which will vary by font.  In contrast to font options,
 features work whether the font is selected by file name or through the
 operating system.
 
-The \XeTeX\ documentation files \path{aat-info.tex} and
+The \xetex documentation files \path{aat-info.tex} and
 \path{opentype-info.tex} provide per-font lists of supported features.
 
 \subsubsection{Arbitrary OpenType, Graphite, or AAT features}
@@ -359,7 +365,7 @@ Enables glyph rotation in the output so vertical typesetting can be performed.
   Expands to a number corresponding to which renderer is used for a
   \xarg{font}:
   \begin{optdesc}
-    \item [0] for \TeX\ (a legacy TFM-based font);
+    \item [0] for \tex (a legacy TFM-based font);
     \item [1] for AAT;
     \item [2] for OpenType;
     \item [3] for Graphite.
@@ -456,7 +462,7 @@ actual width of the glyph’s bounding box, therefore, is the character
 width (advance) minus both these sidebearings.
 
 The top and bottom measurements are measured from the baseline, like
-\TeX’s height and depth; the height of the bounding box is the sum of
+\tex’s height and depth; the height of the bounding box is the sum of
 these two dimensions.}
 \endcmd
 
@@ -701,11 +707,11 @@ attempting to use it.}
 
 \subsection{Maths fonts}
 
-The primitives described following are extensions of \TeX’s 8-bit primitives.
+The primitives described following are extensions of \tex’s 8-bit primitives.
 
 In the following commands, \xarg{fam.} is a number (0–255) representing
 font to use in maths. \xarg{math type} is the 0–7 number corresponding
-to the type of math symbol; see a \TeX\ reference for details.
+to the type of math symbol; see a \tex reference for details.
 
 Before version 0.9999.0 the following primitives had |\XeTeX| prefix instead of
 |\U|, the old names are deprecated and will be removed in the future.
@@ -717,7 +723,7 @@ Before version 0.9999.0 the following primitives had |\XeTeX| prefix instead of
 \xarg{fam.}
 \xarg{glyph slot}
 \desc{Defines a maths glyph accessible via an input character. Note that
-the input takes \emph{three} arguments unlike \TeX’s \cs{mathcode}.}
+the input takes \emph{three} arguments unlike \tex’s \cs{mathcode}.}
 \endcmd
 
 \cmd|\Umathcodenum|
@@ -885,7 +891,7 @@ aAa A a B aBa BB
 
 \cmd|\XeTeXinputnormalization|
 \xarg{Integer}
-\desc{Specify whether \XeTeX\ is to perform normalisation on the input
+\desc{Specify whether \xetex is to perform normalisation on the input
 text and, if so, what type of normalisation to use. See
 \url{http://unicode.org/reports/tr15/} for a description of Unicode
 normalisation. The \<Integer> value can be:\medskip
@@ -971,7 +977,7 @@ arguments.}
 usual file name argument of \cs{input}, \cs{openin}, \etc.  It must not
 terminated by \cs{relax} if options are given.  \xarg{int} and
 \xarg{dimen} are the usual integer or dimen specifications of regular
-\TeX.
+\tex.
 
 The rotation is specified in degrees (\ie, an input of ‘|360|’ is full
 circle) and the rotation is counterclockwise. The syntax of
@@ -1024,7 +1030,7 @@ box.
 \desc{Expands to the number of pages in a PDF file.}
 \endcmd
 
-\section{Cross-compatibility with \pdfTeX\ and/or Lua\TeX}
+\section{Cross-compatibility with \pdftex and/or \luatex}
 
 \cmd|\pdfpageheight|
 \xarg{dimension}
@@ -1049,7 +1055,7 @@ box.
 \endcmd
 
 \cmd|\ifincsname...(\else...)\fi|
-\desc{\TeX\ conditional to branch true if the expansion occurs within
+\desc{\tex conditional to branch true if the expansion occurs within
 \texttt{\char`\\csname ... \char`\\endcsname}.}
 \endcmd
 
@@ -1060,7 +1066,7 @@ box.
 \end{example}
 
 \cmd|\ifprimitive| \xarg{control sequence} |...(\else...)\fi|
-\desc{\TeX\ conditional to test if a control sequence is a primitive and
+\desc{\tex conditional to test if a control sequence is a primitive and
 that it has not been redefined.}
 \endcmd
 
@@ -1108,7 +1114,7 @@ Also note that catcodes are ignored: \strcmp{b}{\b}
 \cmd|\suppressfontnotfounderror|
 \xarg{integer}
 \desc{When set to zero (default) if a font is loaded that cannot be
-located by \XeTeX, an error message results and typesetting is
+located by \xetex, an error message results and typesetting is
 halted. When set to one, this error message is
 suppressed and the font control sequence being defined is set to
 \cs{nullfont}.}
@@ -1125,15 +1131,15 @@ suppressed and the font control sequence being defined is set to
 \section{Misc.}
 
 \cmd|\XeTeXversion|
-\desc{Expands to a number corresponding to the \XeTeX\ version.}
+\desc{Expands to a number corresponding to the \xetex version.}
 \endcmd
 
 \cmd|\XeTeXrevision|
-\desc{Expands to a string corresponding to the \XeTeX\ revision number.}
+\desc{Expands to a string corresponding to the \xetex revision number.}
 \endcmd
 
 \begin{example}
-The \XeTeX\ version used to typeset this document is: 
+The \xetex version used to typeset this document is:
 \the\XeTeXversion\XeTeXrevision
 \end{example}
 
