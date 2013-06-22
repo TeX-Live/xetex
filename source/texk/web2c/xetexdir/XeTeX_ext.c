@@ -40,11 +40,8 @@ authorization from the copyright holders.
    from mingw32's <io.h> and web2c/lib/lib.h.  */
 #include <kpathsea/config.h>
 
-#ifdef XETEX_OTHER
 #include "poppler-config.h"
 #include "png.h"
-#endif
-
 #include "zlib.h"
 
 #include <time.h> /* For `struct tm'.  */
@@ -150,12 +147,12 @@ void initversionstring(char **versions)
 		"Compiled with FreeType2 version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with Graphite2 version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with HarfBuzz version %s; using %s\n"
-#ifdef XETEX_MAC
-		"Using Mac OS X Core Text, Cocoa & ImageIO frameworks\n"
-#else
-		"Compiled with fontconfig version %d.%d.%d; using %d.%d.%d\n"
 		"Compiled with libpng version %s; using %s\n"
 		"Compiled with poppler version %s\n"
+#ifdef XETEX_MAC
+		"Using Mac OS X Core Text and Cocoa frameworks\n"
+#else
+		"Compiled with fontconfig version %d.%d.%d; using %d.%d.%d\n"
 #endif
 		;
 
@@ -166,10 +163,10 @@ void initversionstring(char **versions)
 			+ strlen(zlib_version)
 			+ strlen(HB_VERSION_STRING)
 			+ strlen(hb_version_string())
-#ifdef XETEX_OTHER
 			+ strlen(PNG_LIBPNG_VER_STRING)
 			+ strlen(png_libpng_ver)
 			+ strlen(POPPLER_VERSION)
+#ifdef XETEX_OTHER
 			+ 6 * 3 /* for fontconfig version #s (won't really need 3 digits per field!) */
 #endif
 			+ 6 * 3 /* for graphite2 version #s (ditto) */
@@ -197,12 +194,12 @@ void initversionstring(char **versions)
 		ftMajor, ftMinor, ftPatch,
 		GR2_VERSION_MAJOR, GR2_VERSION_MINOR, GR2_VERSION_BUGFIX,
 		grMajor, grMinor, grBugfix,
-		HB_VERSION_STRING, hb_version_string()
+		HB_VERSION_STRING, hb_version_string(),
+		PNG_LIBPNG_VER_STRING, png_libpng_ver, POPPLER_VERSION
 #ifdef XETEX_OTHER
 		,
 		FC_VERSION / 10000, (FC_VERSION % 10000) / 100, FC_VERSION % 100,
-		fc_version / 10000, (fc_version % 10000) / 100, fc_version % 100,
-		PNG_LIBPNG_VER_STRING, png_libpng_ver, POPPLER_VERSION
+		fc_version / 10000, (fc_version % 10000) / 100, fc_version % 100
 #endif
 		);
 }
