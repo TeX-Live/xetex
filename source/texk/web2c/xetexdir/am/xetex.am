@@ -56,7 +56,6 @@ xetex_LDFLAGS = -framework ApplicationServices -framework Cocoa
 
 else !XETEX_MACOSX
 
-xetex_cppflags += -DXETEX_OTHER
 xetex_cppflags += $(FONTCONFIG_INCLUDES)
 xetex_ldadd += $(FONTCONFIG_LIBS)
 

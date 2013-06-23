@@ -133,7 +133,7 @@ const char *outputdriver = "xdvipdfmx -q -E"; /* default to portable xdvipdfmx d
 
 void initversionstring(char **versions)
 {
-#ifdef XETEX_OTHER
+#ifndef XETEX_MAC
 	int	fc_version = FcGetVersion();
 #endif
 	FT_Int	ftMajor, ftMinor, ftPatch;
@@ -166,7 +166,7 @@ void initversionstring(char **versions)
 			+ strlen(PNG_LIBPNG_VER_STRING)
 			+ strlen(png_libpng_ver)
 			+ strlen(POPPLER_VERSION)
-#ifdef XETEX_OTHER
+#ifndef XETEX_MAC
 			+ 6 * 3 /* for fontconfig version #s (won't really need 3 digits per field!) */
 #endif
 			+ 6 * 3 /* for graphite2 version #s (ditto) */
@@ -196,7 +196,7 @@ void initversionstring(char **versions)
 		grMajor, grMinor, grBugfix,
 		HB_VERSION_STRING, hb_version_string(),
 		PNG_LIBPNG_VER_STRING, png_libpng_ver, POPPLER_VERSION
-#ifdef XETEX_OTHER
+#ifndef XETEX_MAC
 		,
 		FC_VERSION / 10000, (FC_VERSION % 10000) / 100, FC_VERSION % 100,
 		fc_version / 10000, (fc_version % 10000) / 100, fc_version % 100
