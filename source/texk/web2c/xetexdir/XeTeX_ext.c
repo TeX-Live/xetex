@@ -223,7 +223,7 @@ setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 		case ICUMAPPING:
 			{
 				char*	name = gettexstring(encodingData);
-				UErrorCode	err = 0;
+				UErrorCode	err = U_ZERO_ERROR;
 				UConverter*	cnv = ucnv_open(name, &err);
 				if (cnv == NULL) {
 					begindiagnostic();
@@ -327,7 +327,7 @@ static uint32_t *utf32Buf = NULL;
 		uint32_t		bytesRead = 0;
 		UConverter*	cnv;
 		int		outLen;
-		UErrorCode	errorCode = 0;
+		UErrorCode	errorCode = U_ZERO_ERROR;
 		
 		if (byteBuffer == NULL)
 			byteBuffer = xmalloc(bufsize + 1);
@@ -457,7 +457,7 @@ static int				brkLocaleStrNum = 0;
 void
 linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLength)
 {
-	UErrorCode	status;
+	UErrorCode	status = U_ZERO_ERROR;
 	char* locale = (char*)gettexstring(localeStrNum);
 
 	if (fontarea[f] == OTGR_FONT_FLAG && strcmp(locale, "G") == 0) {
@@ -466,8 +466,6 @@ linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLe
 			/* user asked for Graphite line breaking and the font supports it */
 			return;
 	}
-
-	status = 0;
 
 	if ((localeStrNum != brkLocaleStrNum) && (brkIter != NULL)) {
 		ubrk_close(brkIter);
@@ -487,7 +485,7 @@ linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLe
 			enddiagnostic(1);
 			if (brkIter != NULL)
 				ubrk_close(brkIter);
-			status = 0;
+			status = U_ZERO_ERROR;
 			brkIter = ubrk_open(UBRK_LINE, "en_us", NULL, 0, &status);
 		}
 		free(locale);
@@ -517,7 +515,7 @@ getencodingmodeandinfo(integer* info)
 	 *   -> name is packed in |nameoffile| as a C string, starting at [1]
 	 * Check if it's a built-in name; if not, try to open an ICU converter by that name
 	 */
-	UErrorCode	err = 0;
+	UErrorCode	err = U_ZERO_ERROR;
 	UConverter*	cnv;
 	char*	name = (char*)nameoffile + 1;
 	*info = 0;
@@ -2007,7 +2005,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
 		UBiDi*	pBiDi = ubidi_open();
 		
-		UErrorCode	errorCode = (UErrorCode)0;
+		UErrorCode	errorCode = U_ZERO_ERROR;
 		ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
 		
 		dir = ubidi_getDirection(pBiDi);
