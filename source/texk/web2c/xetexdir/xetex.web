@@ -1670,49 +1670,49 @@ label exit;
 var l: small_number;
 begin if (selector>pseudo) and (not doing_special) then
   {``printing'' to a new string, encode as UTF-16 rather than UTF-8}
-  begin if s>=@"10000 then begin
-      print_visible_char(@"D800 + (s - @"10000) div @"400);
-      print_visible_char(@"DC00 + (s - @"10000) mod @"400);
-    end else print_visible_char(s);
-    return;
+  begin if s>=@"10000 then
+   begin print_visible_char(@"D800 + (s - @"10000) div @"400);
+   print_visible_char(@"DC00 + (s - @"10000) mod @"400);
+   end else print_visible_char(s);
+   return;
   end;
 if @<Character |s| is the current new-line character@> then
  if selector<pseudo then
   begin print_ln; return;
   end;
-if (s < 32) and (eight_bit_p = 0) and (not doing_special) then {control char: \.{\^\^X}}
-	begin
-	print_visible_char("^"); print_visible_char("^"); print_visible_char(s+64);
-end else if s < 127 then
-	{ printable ASCII }
-	print_visible_char(s)
-else if (s = 127) then begin
-	{ DEL }
-	if (eight_bit_p = 0) and (not doing_special) then begin
-		print_visible_char("^"); print_visible_char("^"); print_visible_char("?")
-	end else
-		print_visible_char(s)
-end else if (s < @"A0) and (eight_bit_p = 0) and (not doing_special) then {C1 controls: \.{\^\^xx}}
-	begin
-	print_visible_char("^"); print_visible_char("^");
-	print_lc_hex((s mod @"100) div @"10); print_lc_hex(s mod @"10);
-end else begin
-	{ |char >= 128|: encode as UTF8 }
-	if s<@"800 then begin
-		print_raw_char(@"C0 + s div @"40, false);
-		print_raw_char(@"80 + s mod @"40, true);
-	end
-	else if s<@"10000 then begin
-		print_raw_char(@"E0 + (s div @"1000), false);
-		print_raw_char(@"80 + (s mod @"1000) div @"40, false);
-		print_raw_char(@"80 + (s mod @"40), true);
-	end else begin
-		print_raw_char(@"F0 + (s div @"40000), false);
-		print_raw_char(@"80 + (s mod @"40000) div @"1000, false);
-		print_raw_char(@"80 + (s mod @"1000) div @"40, false);
-		print_raw_char(@"80 + (s mod @"40), true);
-	end
-end;
+ if (s < 32) and (eight_bit_p = 0) and (not doing_special) then {control char: \.{\^\^X}}
+  begin print_visible_char("^"); print_visible_char("^"); print_visible_char(s+64);
+  end
+ else if s < 127 then { printable ASCII }
+  print_visible_char(s)
+ else if (s = 127) then { DEL }
+  begin if (eight_bit_p = 0) and (not doing_special) then
+   begin print_visible_char("^"); print_visible_char("^"); print_visible_char("?")
+   end else
+    print_visible_char(s)
+  end
+ else if (s < @"A0) and (eight_bit_p = 0) and (not doing_special) then {C1 controls: \.{\^\^xx}}
+  begin print_visible_char("^"); print_visible_char("^");
+  print_lc_hex((s mod @"100) div @"10); print_lc_hex(s mod @"10);
+  end
+ else begin
+  { |char >= 128|: encode as UTF8 }
+  if s<@"800 then begin
+   print_raw_char(@"C0 + s div @"40, false);
+   print_raw_char(@"80 + s mod @"40, true);
+   end
+  else if s<@"10000 then begin
+   print_raw_char(@"E0 + (s div @"1000), false);
+   print_raw_char(@"80 + (s mod @"1000) div @"40, false);
+   print_raw_char(@"80 + (s mod @"40), true);
+   end
+  else begin
+   print_raw_char(@"F0 + (s div @"40000), false);
+   print_raw_char(@"80 + (s mod @"40000) div @"1000, false);
+   print_raw_char(@"80 + (s mod @"1000) div @"40, false);
+   print_raw_char(@"80 + (s mod @"40), true);
+   end
+ end;
 exit:end;
 
 @ @d native_room(#)==while native_text_size <= native_len+# do begin
