@@ -62,7 +62,7 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 extern "C" {
 #endif
 
-extern char	gPrefEngine;
+extern char gPrefEngine;
 
 int getCachedGlyphBBox(uint16_t fontID, uint16_t glyphID, GlyphBBox* bbox);
 void cacheGlyphBBox(uint16_t fontID, uint16_t glyphID, const GlyphBBox* bbox);
@@ -103,8 +103,8 @@ hb_tag_t getIndFeature(XeTeXFont font, hb_tag_t script, hb_tag_t language, unsig
 float getGlyphWidth(XeTeXFont font, uint32_t gid);
 
 XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, hb_tag_t language,
-						hb_feature_t* features, int nFeatures, char **shapers, uint32_t rgbValue,
-						float extend, float slant, float embolden);
+                        hb_feature_t* features, int nFeatures, char **shapers, uint32_t rgbValue,
+                        float extend, float slant, float embolden);
 
 void deleteLayoutEngine(XeTeXLayoutEngine engine);
 
@@ -116,7 +116,7 @@ float getSlantFactor(XeTeXLayoutEngine engine);
 float getEmboldenFactor(XeTeXLayoutEngine engine);
 
 int layoutChars(XeTeXLayoutEngine engine, uint16_t* chars, int32_t offset, int32_t count, int32_t max,
-						bool rightToLeft);
+                        bool rightToLeft);
 
 void getGlyphs(XeTeXLayoutEngine engine, uint32_t* glyphs);
 void getGlyphAdvances(XeTeXLayoutEngine engine, float *advances);
@@ -143,7 +143,7 @@ float getGlyphItalCorr(XeTeXLayoutEngine engine, uint32_t glyphID);
 
 uint32_t mapCharToGlyph(XeTeXLayoutEngine engine, uint32_t charCode);
 
-int	mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName);
+int mapGlyphToIndex(XeTeXLayoutEngine engine, const char* glyphName);
 
 const char* getGlyphName(XeTeXFont font, uint16_t gid, int* len);
 
