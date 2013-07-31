@@ -35,7 +35,7 @@ authorization from the copyright holders.
  *
  *   created on: 2005-10-22
  *   created by: Jonathan Kew
- *	
+ *
  *	originally based on PortableFontInstance.h from ICU
  */
 
@@ -111,7 +111,7 @@ public:
 	float getGlyphItalCorr(GlyphID glyph);
 
 	const char* getGlyphName(GlyphID gid, int& nameLen);
-	
+
 	UChar32 getFirstCharCode();
 	UChar32 getLastCharCode();
 

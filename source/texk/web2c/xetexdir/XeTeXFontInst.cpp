@@ -35,7 +35,7 @@ authorization from the copyright holders.
  *
  *   created on: 2005-10-22
  *   created by: Jonathan Kew
- *	
+ *
  *	originally based on PortableFontInstance.cpp from ICU
  */
 
@@ -469,10 +469,10 @@ XeTeXFontInst::getGlyphItalCorr(GlyphID gid)
 
 	GlyphBBox bbox;
 	getGlyphBounds(gid, &bbox);
-	
+
 	if (bbox.xMax > width)
 		rval = bbox.xMax - width;
-	
+
 	return rval;
 }
 

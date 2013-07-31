@@ -79,7 +79,7 @@ public:
 		//   to match the actual font found
 
 		// SIDE EFFECT: edits /variant/ string in-place removing /B or /I
-		
+
 	const char*						getFullName(PlatformFontRef font) const;
 		// return the full name of the font, suitable for use in XeTeX source
 		// without requiring style qualifiers
@@ -99,12 +99,12 @@ public:
 protected:
 	static XeTeXFontMgr*			sFontManager;
 	static char						sReqEngine;
-	
+
 									XeTeXFontMgr()
 										{ }
 	virtual							~XeTeXFontMgr()
 										{ }
-										
+
 	virtual void					initialize() = 0;
 	virtual void					terminate();
 
@@ -147,7 +147,7 @@ protected:
 			bool			isBold;
 			bool			isItalic;
 	};
-	
+
 	class Family {
 		public:
 											Family()
@@ -178,7 +178,7 @@ protected:
 		std::list<std::string>	fullNames;
 		std::string				psName;
 		std::string				subFamily;
-	};	
+	};
 
 	std::map<std::string,Font*>					nameToFont;						// maps full name (as used in TeX source) to font record
 	std::map<std::string,Family*>				nameToFamily;
@@ -196,7 +196,7 @@ protected:
 
 	virtual void	getOpSizeRecAndStyleFlags(Font* theFont);
 	virtual void	searchForHostPlatformFonts(const std::string& name) = 0;
-	
+
 	virtual NameCollection*		readNames(PlatformFontRef fontRef) = 0;
 
 	void	die(const char*s, int i) const;	/* for fatal internal errors! */

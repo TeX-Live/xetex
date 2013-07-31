@@ -85,14 +85,14 @@ authorization from the copyright holders.
 
 #include <assert.h>
 
-/* tables/values used in UTF-8 interpretation - 
+/* tables/values used in UTF-8 interpretation -
    code is based on ConvertUTF.[ch] sample code
    published by the Unicode consortium */
 const uint32_t
 offsetsFromUTF8[6] =	{
 	0x00000000UL,
 	0x00003080UL,
-	0x000E2080UL, 
+	0x000E2080UL,
 	0x03C82080UL,
 	0xFA082080UL,
 	0x82082080UL
@@ -211,7 +211,7 @@ setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 	if ((f->encodingMode == ICUMAPPING) && (f->conversionData != NULL))
 		ucnv_close((UConverter*)(f->conversionData));
 	f->conversionData = 0;
-	
+
 	switch (mode) {
 		case UTF8:
 		case UTF16BE:
@@ -219,7 +219,7 @@ setinputfileencoding(UFILE* f, integer mode, integer encodingData)
 		case RAW:
 			f->encodingMode = mode;
 			break;
-		
+
 		case ICUMAPPING:
 			{
 				char*	name = gettexstring(encodingData);
@@ -328,10 +328,10 @@ static uint32_t *utf32Buf = NULL;
 		UConverter*	cnv;
 		int		outLen;
 		UErrorCode	errorCode = U_ZERO_ERROR;
-		
+
 		if (byteBuffer == NULL)
 			byteBuffer = xmalloc(bufsize + 1);
-	
+
 		/* Recognize either LF or CR as a line terminator; skip initial LF if prev line ended with CR.  */
 		i = getc(f->f);
 		if (f->skipNextLF) {
@@ -339,19 +339,19 @@ static uint32_t *utf32Buf = NULL;
 			if (i == '\n')
 				i = getc(f->f);
 		}
-	
+
 		if (i != EOF && i != '\n' && i != '\r')
 			byteBuffer[bytesRead++] = i;
 		if (i != EOF && i != '\n' && i != '\r')
 			while (bytesRead < bufsize && (i = getc(f->f)) != EOF && i != '\n' && i != '\r')
 				byteBuffer[bytesRead++] = i;
-		
+
 		if (i == EOF && errno != EINTR && bytesRead == 0)
 			return false;
-	
+
 		if (i != EOF && i != '\n' && i != '\r')
 			buffer_overflow();
-	
+
 		/* now apply the mapping to turn external bytes into Unicode characters in buffer */
 		cnv = (UConverter*)(f->conversionData);
 		switch (norm) {
@@ -368,7 +368,7 @@ static uint32_t *utf32Buf = NULL;
 				}
 				apply_normalization(utf32Buf, tmpLen / sizeof(*utf32Buf), norm); // sets 'last' correctly
 				break;
-	
+
 			default: // none
 				outLen = ucnv_toAlgorithmic(UCNV_UTF32_NativeEndian, cnv,
 											(char*)&buffer[first], sizeof(*buffer) * (bufsize - first),
@@ -389,7 +389,7 @@ static uint32_t *utf32Buf = NULL;
 			if (i == '\n')
 				i = get_uni_c(f);
 		}
-	
+
 		switch (norm) {
 			case 1: // NFC
 			case 2: // NFD
@@ -402,26 +402,26 @@ static uint32_t *utf32Buf = NULL;
 				if (i != EOF && i != '\n' && i != '\r')
 					while (tmpLen < bufsize && (i = get_uni_c(f)) != EOF && i != '\n' && i != '\r')
 						utf32Buf[tmpLen++] = i;
-				
+
 				if (i == EOF && errno != EINTR && tmpLen == 0)
 					return false;
-				
+
 				/* We didn't get the whole line because our buffer was too small.  */
 				if (i != EOF && i != '\n' && i != '\r')
 					buffer_overflow();
 				apply_normalization(utf32Buf, tmpLen, norm);
 				break;
-				
+
 			default: // none
 				if (last < bufsize && i != EOF && i != '\n' && i != '\r')
 					buffer[last++] = i;
 				if (i != EOF && i != '\n' && i != '\r')
 					while (last < bufsize && (i = get_uni_c(f)) != EOF && i != '\n' && i != '\r')
 						buffer[last++] = i;
-				
+
 				if (i == EOF && errno != EINTR && last == first)
 					return false;
-				
+
 				/* We didn't get the whole line because our buffer was too small.  */
 				if (i != EOF && i != '\n' && i != '\r')
 					buffer_overflow();
@@ -432,7 +432,7 @@ static uint32_t *utf32Buf = NULL;
 	/* If line ended with CR, remember to skip following LF. */
 	if (i == '\r')
 		f->skipNextLF = 1;
-	
+
 	buffer[last] = ' ';
 	if (last >= maxbufstack)
 		maxbufstack = last;
@@ -471,7 +471,7 @@ linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLe
 		ubrk_close(brkIter);
 		brkIter = NULL;
 	}
-	
+
 	if (brkIter == NULL) {
 		brkIter = ubrk_open(UBRK_LINE, locale, NULL, 0, &status);
 		if (U_FAILURE(status)) {
@@ -491,7 +491,7 @@ linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLe
 		free(locale);
 		brkLocaleStrNum = localeStrNum;
 	}
-	
+
 	if (brkIter == NULL) {
 		die("! failed to create linebreak iterator, status=%d", (int)status);
 	}
@@ -541,7 +541,7 @@ getencodingmodeandinfo(integer* info)
 	if (strcasecmp(name, "bytes") == 0) {
 		return RAW;
 	}
-	
+
 	/* try for an ICU converter */
 	cnv = ucnv_open(name, &err);
 	if (cnv == NULL) {
@@ -824,7 +824,7 @@ readCommonFeatures(const char* feat, const char* end, float* extend, float* slan
 		*letterspace = read_double(&sep);
 		return 1;
 	}
-	
+
 	if (strncmp(feat, "color", 5) == 0) {
 		const char* s;
 		sep = feat + 5;
@@ -880,7 +880,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	char**			shapers = NULL; /* NULL-terminated array */
 	int				nFeatures = 0;
 	int				nShapers = 0;
-	
+
 	const char*	cp2;
 	const char*	cp3;
 
@@ -892,7 +892,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 	float	slant = 0.0;
 	float	embolden = 0.0;
 	float	letterspace = 0.0;
-	
+
 	int i;
 
 	char reqEngine = getReqEngine();
@@ -926,11 +926,11 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				++cp1;
 			if (*cp1 == 0)	/* break if end of string */
 				break;
-	
+
 			cp2 = cp1;
 			while (*cp2 && (*cp2 != ':') && (*cp2 != ';') && (*cp2 != ','))
 				++cp2;
-			
+
 			if (strncmp(cp1, "script", 6) == 0) {
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
@@ -939,7 +939,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				script = hb_tag_from_string(cp3, cp2 - cp3);
 				goto next_option;
 			}
-			
+
 			if (strncmp(cp1, "language", 8) == 0) {
 				cp3 = cp1 + 8;
 				if (*cp3 != '=')
@@ -948,7 +948,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				language = hb_tag_from_string(cp3, cp2 - cp3);
 				goto next_option;
 			}
-			
+
 			if (strncmp(cp1, "shaper", 6) == 0) {
 				cp3 = cp1 + 6;
 				if (*cp3 != '=')
@@ -981,7 +981,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 					goto next_option;
 				}
 			}
-			
+
 			if (*cp1 == '+') {
 				int param = 0;
 				tag = read_tag_with_param(cp1 + 1, &param);
@@ -997,7 +997,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 				nFeatures++;
 				goto next_option;
 			}
-			
+
 			if (*cp1 == '-') {
 				++cp1;
 				tag = hb_tag_from_string(cp1, cp2 - cp1);
@@ -1023,15 +1023,15 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 					goto next_option;
 				}
 			}
-			
+
 		bad_option:
 			fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
-		
+
 		next_option:
 			cp1 = cp2;
 		}
 	}
-	
+
 	if (shapers != NULL) {
 		shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
 		shapers[nShapers] = NULL;
@@ -1143,13 +1143,13 @@ findnativefont(unsigned char* uname, integer scaled_size)
 		strncpy(varString, var + 1, feat - var - 1);
 		varString[feat - var - 1] = 0;
 	}
-		
+
 	if (end > feat) {
 		featString = xmalloc(end - feat);
 		strncpy(featString, feat + 1, end - feat - 1);
 		featString[end - feat - 1] = 0;
 	}
-	
+
 	// check for "[filename]" form, don't search maps in this case
 	if (nameString[0] == '[') {
 		char* path = kpse_find_file(nameString + 1, kpse_opentype_format, 0);
@@ -1198,7 +1198,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 		}
 	} else {
 		fontRef = findFontByName(nameString, varString, Fix2D(scaled_size));
-	
+
 		if (fontRef != 0) {
 			/* update nameoffile to the full name of the font, for error messages during font loading */
 			const char*	fullName = getFullName(fontRef);
@@ -1263,7 +1263,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 			namelength = strlen((char*)nameoffile + 1);
 		}
 	}
-	
+
 	if (varString != NULL)
 		free(varString);
 
@@ -1271,7 +1271,7 @@ findnativefont(unsigned char* uname, integer scaled_size)
 		free(featString);
 
 	free(nameString);
-	
+
 	return rval;
 }
 
@@ -1338,7 +1338,7 @@ otfontget(integer what, void* pEngine)
 		case XeTeX_count_glyphs:
 			return countGlyphs(fontInst);
 			break;
-		
+
 		case XeTeX_count_features: /* ie Graphite features */
 			return countGraphiteFeatures(engine);
 			break;
@@ -1364,7 +1364,7 @@ otfontget1(integer what, void* pEngine, integer param)
 		case XeTeX_OT_script_code:
 			return getIndScript(fontInst, param);
 			break;
-		
+
 		/* for graphite fonts...*/
 		case XeTeX_feature_code:
 			return getGraphiteFeatureCode(engine, param);
@@ -1402,7 +1402,7 @@ otfontget2(integer what, void* pEngine, integer param1, integer param2)
 			return getGraphiteFeatureDefaultSetting(engine, param1) == param2;
 			break;
 	}
-	
+
 	return 0;
 }
 
@@ -1417,7 +1417,7 @@ otfontget3(integer what, void* pEngine, integer param1, integer param2, integer 
 			return getIndFeature(fontInst, param1, param2, param3);
 			break;
 	}
-	
+
 	return 0;
 }
 
@@ -1508,7 +1508,7 @@ makeXDVGlyphArrayData(void* pNode)
 	int			opcode;
 	Fixed		width;
 	uint16_t		glyphCount = native_glyph_count(p);
-	
+
 	int	i = glyphCount * native_glyph_info_size + 8; /* to guarantee enough space in the buffer */
 	if (i > xdvBufSize) {
 		if (xdvbuffer != NULL)
@@ -1520,26 +1520,26 @@ makeXDVGlyphArrayData(void* pNode)
 	glyph_info = native_glyph_info_ptr(p);
 	locations = (FixedPoint*)glyph_info;
 	glyphIDs = (uint16_t*)(locations + glyphCount);
-	
+
 	opcode = XDV_GLYPH_STRING;
 	for (i = 0; i < glyphCount; ++i)
 		if (locations[i].y != 0) {
 			opcode = XDV_GLYPH_ARRAY;
 			break;
 		}
-	
+
 	cp = (unsigned char*)xdvbuffer;
 	*cp++ = opcode;
-	
+
 	width = node_width(p);
 	*cp++ = (width >> 24) & 0xff;
 	*cp++ = (width >> 16) & 0xff;
 	*cp++ = (width >> 8) & 0xff;
 	*cp++ = width & 0xff;
-	
+
 	*cp++ = (glyphCount >> 8) & 0xff;
 	*cp++ = glyphCount & 0xff;
-	
+
 	for (i = 0; i < glyphCount; ++i) {
 		Fixed	x = locations[i].x;
 		*cp++ = (x >> 24) & 0xff;
@@ -1560,7 +1560,7 @@ makeXDVGlyphArrayData(void* pNode)
 		*cp++ = (g >> 8) & 0xff;
 		*cp++ = g & 0xff;
 	}
-	
+
 	return ((char*)cp - xdvbuffer);
 }
 
@@ -1719,13 +1719,13 @@ makefontdef(integer f)
 		xdvbuffer = (char*)xmalloc(xdvBufSize);
 	}
 	cp = xdvbuffer;
-	
+
 	*(Fixed*)cp = SWAP32(size);
 	cp += 4;
-	
+
 	*(uint16_t*)cp = SWAP16(flags);
 	cp += 2;
-	
+
 	*(uint8_t*)cp = psLen;
 	cp += 1;
 	*(uint8_t*)cp = famLen;
@@ -1743,7 +1743,7 @@ makefontdef(integer f)
 		*(uint32_t*)cp = SWAP32(rgba);
 		cp += 4;
 	}
-	
+
 	if (flags & XDV_FLAG_EXTEND) {
 		Fixed	f = D2Fix(extend);
 		*(uint32_t*)(cp) = SWAP32(f);
@@ -1759,7 +1759,7 @@ makefontdef(integer f)
 		*(uint32_t*)(cp) = SWAP32(f);
 		cp += 4;
 	}
-	
+
 	return fontDefLength;
 }
 
@@ -1778,24 +1778,24 @@ applymapping(void* pCnv, const uint16_t* txtPtr, int txtLen)
 		outLength = txtLen * sizeof(UniChar) + 32;
 		mappedtext = xmalloc(outLength);
 	}
-	
+
 	/* try the mapping */
 retry:
 	status = TECkit_ConvertBuffer(cnv,
 			(Byte*)txtPtr, txtLen * sizeof(UniChar), &inUsed,
 			(Byte*)mappedtext, outLength, &outUsed, true);
-	
+
 	switch (status) {
 		case kStatus_NoError:
 			txtPtr = (const UniChar*)mappedtext;
 			return outUsed / sizeof(UniChar);
-			
+
 		case kStatus_OutputBufferFull:
 			outLength += (txtLen * sizeof(UniChar)) + 32;
 			free(mappedtext);
 			mappedtext = xmalloc(outLength);
 			goto retry;
-			
+
 		default:
 			return 0;
 	}
@@ -1838,7 +1838,7 @@ getnativecharheightdepth(integer font, integer ch, scaled* height, scaled* depth
 
 	*height = D2Fix(ht);
 	*depth = D2Fix(dp);
-	
+
 	/* snap to "known" zones for baseline, x-height, cap-height if within 4% of em-size */
 	fuzz = QUAD(font) / 25;
 	snap_zone(depth, 0, fuzz);
@@ -1893,7 +1893,7 @@ getglyphbounds(integer font, integer edge, integer gid)
 {
 /* edge codes 1,2,3,4 => L T R B */
 	float a, b;
-	
+
 #ifdef XETEX_MAC
 	if (fontarea[font] == AAT_FONT_FLAG) {
 		CFDictionaryRef attributes = (CFDictionaryRef)(fontlayoutengine[font]);
@@ -1908,7 +1908,7 @@ getglyphbounds(integer font, integer edge, integer gid)
 		if (edge & 1)
 			getGlyphSidebearings(engine, gid, &a, &b);
 		else
-			getGlyphHeightDepth(engine, gid, &a, &b);		
+			getGlyphHeightDepth(engine, gid, &a, &b);
 	} else {
 		fprintf(stderr, "\n! Internal error: bad native font flag in `get_glyph_bounds'\n");
 		exit(3);
@@ -2004,10 +2004,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		static	uint32_t*	glyphs = 0;
 
 		UBiDi*	pBiDi = ubidi_open();
-		
+
 		UErrorCode	errorCode = U_ZERO_ERROR;
 		ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
-		
+
 		dir = ubidi_getDirection(pBiDi);
 		if (dir == UBIDI_MIXED) {
 			/* we actually do the layout twice here, once to count glyphs and then again to get them;
@@ -2022,7 +2022,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				dir = ubidi_getVisualRun(pBiDi, runIndex, &logicalStart, &length);
 				totalGlyphCount += layoutChars(engine, txtPtr, logicalStart, length, txtLen, (dir == UBIDI_RTL));
 			}
-			
+
 			if (totalGlyphCount > 0) {
 				double	x, y;
 				glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
@@ -2030,7 +2030,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 				glyphIDs = (uint16_t*)(locations + totalGlyphCount);
 				glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
 				totalGlyphCount = 0;
-				
+
 				x = y = 0.0;
 				for (runIndex = 0; runIndex < nRuns; ++runIndex) {
 					int nGlyphs;
@@ -2041,11 +2041,11 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 					glyphs = xmalloc(nGlyphs * sizeof(uint32_t));
 					positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
 					advances = xmalloc(nGlyphs * sizeof(float));
-	
+
 					getGlyphs(engine, glyphs);
 					getGlyphAdvances(engine, advances);
 					getGlyphPositions(engine, positions);
-				
+
 					for (i = 0; i < nGlyphs; ++i) {
 						glyphIDs[totalGlyphCount] = glyphs[i];
 						locations[totalGlyphCount].x = D2Fix(positions[2*i] + x);
@@ -2101,7 +2101,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		}
 
 		ubidi_close(pBiDi);
-			
+
 
 		if (fontletterspace[f] != 0) {
 			Fixed	lsDelta = 0;
@@ -2122,7 +2122,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 		fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_node'\n");
 		exit(3);
 	}
-	
+
 	if (use_glyph_metrics == 0 || native_glyph_count(node) == 0) {
 		/* for efficiency, height and depth are the font's ascent/descent,
 			not true values based on the actual content of the word,
@@ -2149,7 +2149,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 #endif
 				if (fontarea[f] == OTGR_FONT_FLAG)
 					getGlyphBounds((XeTeXLayoutEngine)(fontlayoutengine[f]), glyphIDs[i], &bbox);
-				
+
 				cacheGlyphBBox(f, glyphIDs[i], &bbox);
 			}
 
@@ -2438,7 +2438,7 @@ aatfontget1(int what, CFDictionaryRef attributes, int param)
 		}
 	}
 #endif
-	
+
 	return rval;
 }
 
@@ -2481,7 +2481,7 @@ aatfontget2(int what, CFDictionaryRef attributes, int param1, int param2)
 		CFRelease(features);
 	}
 #endif
-	
+
 	return rval;
 }
 
@@ -2509,7 +2509,7 @@ aatfontgetnamed(int what, CFDictionaryRef attributes)
 			}
 			break;
 		}
-		
+
 		case XeTeX_find_feature_by_name:
 		{
 			CFArrayRef features = CTFontCopyFeatures(font);
@@ -2526,7 +2526,7 @@ aatfontgetnamed(int what, CFDictionaryRef attributes)
 		}
 	}
 #endif
-	
+
 	return rval;
 }
 
@@ -2551,7 +2551,7 @@ aatfontgetnamed1(int what, CFDictionaryRef attributes, int param)
 		}
 	}
 #endif
-	
+
 	return rval;
 }
 
@@ -2740,7 +2740,7 @@ open_dvi_output(FILE** fptr)
 				*p++ = *pp++;
 			}
 			*p = '\0';
-			fullcmd = concatn("\"\"", bindir, "\\", prgnam, "\"", pp, "\"", NULL); 
+			fullcmd = concatn("\"\"", bindir, "\\", prgnam, "\"", pp, "\"", NULL);
 			*fptr = popen(fullcmd, "w");
 			free(bindir);
 			free(prgnam);

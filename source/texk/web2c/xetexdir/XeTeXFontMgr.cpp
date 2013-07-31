@@ -80,7 +80,7 @@ XeTeXFontMgr::GetFontManager()
 #endif
 		sFontManager->initialize();
 	}
-	
+
 	return sFontManager;
 }
 
@@ -131,7 +131,7 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				}
 			}
 		}
-		
+
 		// try as PostScript name
 		i = psNameToFont.find(nameStr);
 		if (i != psNameToFont.end()) {
@@ -140,10 +140,10 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				dsize = font->opSizeInfo.designSize;
 			break;
 		}
-		
+
 		// try for the name as a family name
 		std::map<std::string,Family*>::iterator	f = nameToFamily.find(nameStr);
-		
+
 		if (f != nameToFamily.end()) {
 			// look for a family member with the "regular" bit set in OS/2
 			int	regFonts = 0;
@@ -177,16 +177,16 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 					}
 				}
 			}
-			
+
 			if (font == NULL) {
 				// look through the family for the (weight, width, slant) nearest to (80, 100, 0)
 				font = bestMatchFromFamily(f->second, 80, 100, 0);
 			}
-			
+
 			if (font != NULL)
 				break;
 		}
-	
+
 		if (pass == 0) {
 			// didn't find it in our caches, so do a platform search (may be relatively expensive);
 			// this will update the caches with any fonts that seem to match the name given,
@@ -194,12 +194,12 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 			searchForHostPlatformFonts(nameStr);
 		}
 	}
-	
+
 	if (font == NULL)
 		return 0;
-	
+
 	Family*	parent = font->parent;
-	
+
 	// if there are variant requests, try to apply them
 	// and delete B, I, and S=... codes from the string, just retain /engine option
 	sReqEngine = 0;
@@ -262,7 +262,7 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				}
 				goto skip_to_slash;
 			}
-			
+
 			/* if the code is "B" or "I", we skip putting it in varString */
 			while (1) {
 				if (*cp == 'B') {
@@ -277,7 +277,7 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				}
 				break;
 			}
-			
+
 		skip_to_slash:
 			while (*cp && *cp != '/')
 				++cp;
@@ -285,7 +285,7 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 				++cp;
 		}
 		strcpy(variant, varString.c_str());
-		
+
 		std::map<std::string,Font*>::iterator i;
 		if (reqItal) {
 			Font*	bestMatch = font;
@@ -389,7 +389,7 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
 			font = bestMatch;
 		}
 	}
-	
+
 	if (font != NULL && font->opSizeInfo.designSize != 0)
 		loadedfontdesignsize = (font->opSizeInfo.designSize << 16L) / 10;
 
@@ -438,11 +438,11 @@ XeTeXFontMgr::weightAndWidthDiff(const Font* a, const Font* b) const
 		else
 			return 10000;
 	}
-	
+
 	int	widDiff = labs(a->width - b->width);
 	if (widDiff < 10)
 		widDiff *= 50;
-	
+
 	return labs(a->weight - b->weight) + widDiff;
 }
 
@@ -452,7 +452,7 @@ XeTeXFontMgr::styleDiff(const Font* a, int wt, int wd, int slant) const
 	int	widDiff = labs(a->width - wd);
 	if (widDiff < 10)
 		widDiff *= 200;
-	
+
 	return labs(labs(a->slant) - labs(slant)) * 2 + labs(a->weight - wt) + widDiff;
 }
 
@@ -634,7 +634,7 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 
 		if (thisFont->parent == NULL)
 			thisFont->parent = family;
-				
+
 		// ensure all style names in the family point to thisFont
 		for (std::list<std::string>::const_iterator j = names->styleNames.begin(); j != names->styleNames.end(); ++j) {
 			std::map<std::string,Font*>::iterator iFont = family->styles->find(*j);
@@ -647,7 +647,7 @@ XeTeXFontMgr::addToMaps(PlatformFontRef platformFont, const NameCollection* name
 */
 		}
 	}
-	
+
 	for (i = names->fullNames.begin(); i != names->fullNames.end(); ++i) {
 		std::map<std::string,Font*>::iterator iFont = nameToFont.find(*i);
 		if (iFont == nameToFont.end())

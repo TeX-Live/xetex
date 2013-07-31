@@ -270,7 +270,7 @@ GetGlyphHeightDepth_AAT(CFDictionaryRef attributes, UInt16 gid, float* ht, float
 	/* returns TeX points */
 {
 	GlyphBBox	bbox;
-	
+
 	GetGlyphBBox_AAT(attributes, gid, &bbox);
 
 	*ht = bbox.yMax;

@@ -320,7 +320,7 @@ extern "C" {
 #endif
 
 // copied from xetex.web
-#define LEFT_SIDE  0    
-#define RIGHT_SIDE 1    
+#define LEFT_SIDE  0
+#define RIGHT_SIDE 1
 
 #endif /* __XETEX_EXT_H */

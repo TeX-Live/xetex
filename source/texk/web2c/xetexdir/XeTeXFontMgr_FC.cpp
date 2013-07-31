@@ -186,7 +186,7 @@ void
 XeTeXFontMgr_FC::getOpSizeRecAndStyleFlags(Font* theFont)
 {
 	XeTeXFontMgr::getOpSizeRecAndStyleFlags(theFont);
-	
+
 	if (theFont->weight == 0 && theFont->width == 0) {
 		// try to get values from FontConfig, as it apparently wasn't an sfnt
 		FcPattern*	pat = theFont->fontRef;
@@ -266,7 +266,7 @@ XeTeXFontMgr_FC::searchForHostPlatformFonts(const std::string& name)
 					goto next_font;
 				}
 			}
-		
+
 			for (i = 0; FcPatternGetString(pat, FC_FAMILY, i, (FcChar8**)&s) == FcResultMatch; ++i) {
 				if (name == s || (hyph && famName == s)) {
 					NameCollection*	names = readNames(pat);
@@ -330,7 +330,7 @@ XeTeXFontMgr_FC::initialize()
 	allFonts = FcFontList(FcConfigGetCurrent(), pat, os);
 	FcObjectSetDestroy(os);
 	FcPatternDestroy(pat);
-	
+
 	cachedAll = false;
 }
 
