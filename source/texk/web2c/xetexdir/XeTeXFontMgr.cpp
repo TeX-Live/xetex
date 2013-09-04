@@ -37,6 +37,8 @@ authorization from the copyright holders.
 #endif
 #include "XeTeXFontInst.h"
 
+#include <hb-ot.h>
+
 extern "C" {
 extern Fixed loadedfontdesignsize;
 }

@@ -35,6 +35,11 @@ authorization from the copyright holders.
 #include <unicode/ubidi.h>
 #include <unicode/utext.h>
 
+#include <graphite2/Font.h>
+#include <graphite2/Segment.h>
+#include <hb-graphite2.h>
+#include <hb-ot.h>
+
 #include "XeTeXLayoutInterface.h"
 #include "XeTeXFontInst.h"
 #ifdef XETEX_MAC

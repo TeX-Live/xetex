@@ -40,9 +40,10 @@ authorization from the copyright holders.
    from mingw32's <io.h> and web2c/lib/lib.h.  */
 #include <kpathsea/config.h>
 
-#include "poppler-config.h"
-#include "png.h"
-#include "zlib.h"
+#include <poppler-config.h>
+#include <png.h>
+#include <zlib.h>
+#include <graphite2/Font.h>
 
 #include <time.h> /* For `struct tm'.  */
 #if defined (HAVE_SYS_TIME_H)

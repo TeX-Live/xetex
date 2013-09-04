@@ -48,12 +48,6 @@ typedef struct XeTeXLayoutEngine_rec* XeTeXLayoutEngine;
 #include FT_TRUETYPE_TABLES_H
 
 #include <hb.h>
-#include <hb-ot.h>
-#include <hb-icu.h>
-
-#include <graphite2/Font.h>
-#include <graphite2/Segment.h>
-#include <hb-graphite2.h>
 
 #include "XeTeX_ext.h"
 #include "XeTeXFontMgr.h"
