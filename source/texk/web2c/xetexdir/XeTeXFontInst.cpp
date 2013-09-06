@@ -46,7 +46,6 @@ authorization from the copyright holders.
 #include <string.h>
 #include FT_GLYPH_H
 #include FT_ADVANCES_H
-#include <hb-icu.h>
 
 FT_Library gFreeTypeLibrary = 0;
 
