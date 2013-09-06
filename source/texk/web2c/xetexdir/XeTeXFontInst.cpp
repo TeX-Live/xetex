@@ -50,6 +50,8 @@ authorization from the copyright holders.
 
 FT_Library gFreeTypeLibrary = 0;
 
+static hb_font_funcs_t* hbFontFuncs = NULL;
+
 XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, int &status)
     : fPointSize(pointSize)
     , fUnitsPerEM(0)
@@ -347,7 +349,10 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
     hbFont = hb_font_create(hbFace);
     hb_face_destroy(hbFace);
 
-    hb_font_set_funcs(hbFont, _get_font_funcs(), ftFace, NULL);
+    if (hbFontFuncs == NULL)
+        hbFontFuncs = _get_font_funcs();
+
+    hb_font_set_funcs(hbFont, hbFontFuncs, ftFace, NULL);
     hb_font_set_scale(hbFont, fUnitsPerEM, fUnitsPerEM);
     // We don’t want device tables adjustments
     hb_font_set_ppem(hbFont, 0, 0);
