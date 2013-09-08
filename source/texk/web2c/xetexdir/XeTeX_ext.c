@@ -173,7 +173,7 @@ void initversionstring(char **versions)
             + 6 * 3 /* for graphite2 version #s (ditto) */
             + 6 * 3; /* for freetype version #s (ditto) */
 
-    *versions = xmalloc(len + 1);
+    *versions = (char *) xmalloc(len + 1);
         /* len will be more than enough, because of the placeholder chars in fmt
             that get replaced by the arguments */
 
@@ -331,7 +331,7 @@ static uint32_t *utf32Buf = NULL;
         UErrorCode errorCode = U_ZERO_ERROR;
 
         if (byteBuffer == NULL)
-            byteBuffer = xmalloc(bufsize + 1);
+            byteBuffer = (char*) xmalloc(bufsize + 1);
 
         /* Recognize either LF or CR as a line terminator; skip initial LF if prev line ended with CR.  */
         i = getc(f->f);
@@ -359,7 +359,7 @@ static uint32_t *utf32Buf = NULL;
             case 1: // NFC
             case 2: // NFD
                 if (utf32Buf == NULL)
-                    utf32Buf = (uint32_t*)xmalloc(bufsize * sizeof(*utf32Buf));
+                    utf32Buf = (uint32_t*) xcalloc(bufsize, sizeof(uint32_t));
                 tmpLen = ucnv_toAlgorithmic(UCNV_UTF32_NativeEndian, cnv,
                                             (char*)utf32Buf, bufsize * sizeof(*utf32Buf),
                                             byteBuffer, bytesRead, &errorCode);
@@ -396,7 +396,7 @@ static uint32_t *utf32Buf = NULL;
             case 2: // NFD
                 // read Unicode chars into utf32Buf as UTF32
                 if (utf32Buf == NULL)
-                    utf32Buf = xmalloc(bufsize * sizeof(*utf32Buf));
+                    utf32Buf = (uint32_t*) xcalloc(bufsize, sizeof(uint32_t));
                 tmpLen = 0;
                 if (i != EOF && i != '\n' && i != '\r')
                     utf32Buf[tmpLen++] = i;
@@ -497,7 +497,7 @@ linebreakstart(int f, integer localeStrNum, const uint16_t* text, integer textLe
         die("! failed to create linebreak iterator, status=%d", (int)status);
     }
 
-    ubrk_setText(brkIter, text, textLength, &status);
+    ubrk_setText(brkIter, (UChar*) text, textLength, &status);
 }
 
 int
@@ -585,7 +585,7 @@ load_mapping_file(const char* s, const char* e, char byteMapping)
 {
     char* mapPath;
     TECkit_Converter cnv = 0;
-    char* buffer = xmalloc(e - s + 5);
+    char* buffer = (char*) xmalloc(e - s + 5);
     strncpy(buffer, s, e - s);
     buffer[e - s] = 0;
     strcat(buffer, ".tec");
@@ -601,7 +601,7 @@ load_mapping_file(const char* s, const char* e, char byteMapping)
             fseek(mapFile, 0, SEEK_END);
             mappingSize = ftell(mapFile);
             fseek(mapFile, 0, SEEK_SET);
-            mapping = xmalloc(mappingSize);
+            mapping = (Byte*) xmalloc(mappingSize);
             fread(mapping, 1, mappingSize, mapFile);
             fclose(mapFile);
             if (byteMapping != 0)
@@ -899,11 +899,11 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
     char reqEngine = getReqEngine();
 
     if (reqEngine == 'O' || reqEngine == 'G') {
-        shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
+        shapers = (char**) xrealloc(shapers, (nShapers + 1) * sizeof(char *));
         if (reqEngine == 'O')
-            shapers[nShapers] = strdup("ot");
+            shapers[nShapers] = "ot";
         else if (reqEngine == 'G')
-            shapers[nShapers] = strdup("graphite2");
+            shapers[nShapers] = "graphite2";
         nShapers++;
     }
 
@@ -955,7 +955,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
                 if (*cp3 != '=')
                     goto bad_option;
                 ++cp3;
-                shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
+                shapers = (char**) xrealloc(shapers, (nShapers + 1) * sizeof(char *));
                 /* some dumb systems have no strndup() */
                 shapers[nShapers] = strdup(cp3);
                 shapers[nShapers][cp2 - cp3] = '\0';
@@ -973,7 +973,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
                 int value = 0;
                 if (readFeatureNumber(cp1, cp2, &tag, &value)
                  || findGraphiteFeature(engine, cp1, cp2, &tag, &value)) {
-                    features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+                    features = (hb_feature_t*) xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
                     features[nFeatures].tag = tag;
                     features[nFeatures].value = value;
                     features[nFeatures].start = 0;
@@ -986,7 +986,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
             if (*cp1 == '+') {
                 int param = 0;
                 tag = read_tag_with_param(cp1 + 1, &param);
-                features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+                features = (hb_feature_t*) xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
                 features[nFeatures].tag = tag;
                 features[nFeatures].start = 0;
                 features[nFeatures].end = (unsigned int) -1;
@@ -1002,7 +1002,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
             if (*cp1 == '-') {
                 ++cp1;
                 tag = hb_tag_from_string(cp1, cp2 - cp1);
-                features = xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
+                features = (hb_feature_t*) xrealloc(features, (nFeatures + 1) * sizeof(hb_feature_t));
                 features[nFeatures].tag = tag;
                 features[nFeatures].start = 0;
                 features[nFeatures].end = (unsigned int) -1;
@@ -1026,7 +1026,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
             }
 
         bad_option:
-            fontfeaturewarning(cp1, cp2 - cp1, 0, 0);
+            fontfeaturewarning((void*) cp1, cp2 - cp1, 0, 0);
 
         next_option:
             cp1 = cp2;
@@ -1034,7 +1034,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
     }
 
     if (shapers != NULL) {
-        shapers = xrealloc(shapers, (nShapers + 1) * sizeof(char *));
+        shapers = (hb_feature_t*) xrealloc(shapers, (nShapers + 1) * sizeof(char *));
         shapers[nShapers] = NULL;
     }
 
@@ -1135,18 +1135,18 @@ findnativefont(unsigned char* uname, integer scaled_size)
     loadedfontletterspace = 0;
 
     splitFontName(name, &var, &feat, &end, &index);
-    nameString = xmalloc(var - name + 1);
+    nameString = (char*) xmalloc(var - name + 1);
     strncpy(nameString, name, var - name);
     nameString[var - name] = 0;
 
     if (feat > var) {
-        varString = xmalloc(feat - var);
+        varString = (char*) xmalloc(feat - var);
         strncpy(varString, var + 1, feat - var - 1);
         varString[feat - var - 1] = 0;
     }
 
     if (end > feat) {
-        featString = xmalloc(end - feat);
+        featString = (char*) xmalloc(end - feat);
         strncpy(featString, feat + 1, end - feat - 1);
         featString[end - feat - 1] = 0;
     }
@@ -1503,7 +1503,7 @@ makeXDVGlyphArrayData(void* pNode)
 {
     unsigned char* cp;
     uint16_t* glyphIDs;
-    memoryword* p = pNode;
+    memoryword* p = (memoryword*) pNode;
     void* glyph_info;
     FixedPoint* locations;
     int opcode;
@@ -1515,7 +1515,7 @@ makeXDVGlyphArrayData(void* pNode)
         if (xdvbuffer != NULL)
             free(xdvbuffer);
         xdvBufSize = ((i / 1024) + 1) * 1024;
-        xdvbuffer = (char*)xmalloc(xdvBufSize);
+        xdvbuffer = (char*) xmalloc(xdvBufSize);
     }
 
     glyph_info = native_glyph_info_ptr(p);
@@ -1717,7 +1717,7 @@ makefontdef(integer f)
         if (xdvbuffer != NULL)
             free(xdvbuffer);
         xdvBufSize = ((fontDefLength / 1024) + 1) * 1024;
-        xdvbuffer = (char*)xmalloc(xdvBufSize);
+        xdvbuffer = (char*) xmalloc(xdvBufSize);
     }
     cp = xdvbuffer;
 
@@ -2007,7 +2007,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
         UBiDi* pBiDi = ubidi_open();
 
         UErrorCode errorCode = U_ZERO_ERROR;
-        ubidi_setPara(pBiDi, txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
+        ubidi_setPara(pBiDi, (const UChar*) txtPtr, txtLen, getDefaultDirection(engine), NULL, &errorCode);
 
         dir = ubidi_getDirection(pBiDi);
         if (dir == UBIDI_MIXED) {
@@ -2026,10 +2026,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
             if (totalGlyphCount > 0) {
                 double x, y;
-                glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
+                glyph_info = xcalloc(totalGlyphCount, native_glyph_info_size);
                 locations = (FixedPoint*)glyph_info;
                 glyphIDs = (uint16_t*)(locations + totalGlyphCount);
-                glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
+                glyphAdvances = (Fixed*) xcalloc(totalGlyphCount, sizeof(Fixed));
                 totalGlyphCount = 0;
 
                 x = y = 0.0;
@@ -2039,9 +2039,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
                     nGlyphs = layoutChars(engine, txtPtr, logicalStart, length, txtLen,
                                             (dir == UBIDI_RTL));
 
-                    glyphs = xmalloc(nGlyphs * sizeof(uint32_t));
-                    positions = xmalloc((nGlyphs * 2 + 2) * sizeof(float));
-                    advances = xmalloc(nGlyphs * sizeof(float));
+                    glyphs = (uint32_t*) xcalloc(nGlyphs, sizeof(uint32_t));
+                    positions = (float*) xcalloc(nGlyphs * 2 + 2, sizeof(float));
+                    advances = (float*) xcalloc(nGlyphs, sizeof(float));
 
                     getGlyphs(engine, glyphs);
                     getGlyphAdvances(engine, advances);
@@ -2070,9 +2070,9 @@ measure_native_node(void* pNode, int use_glyph_metrics)
             double width = 0;
             totalGlyphCount = layoutChars(engine, txtPtr, 0, txtLen, txtLen, (dir == UBIDI_RTL));
 
-            glyphs = xmalloc(totalGlyphCount * sizeof(uint32_t));
-            positions = xmalloc((totalGlyphCount * 2 + 2) * sizeof(float));
-            advances = xmalloc(totalGlyphCount * sizeof(float));
+            glyphs = (uint32_t*) xcalloc(totalGlyphCount, sizeof(uint32_t));
+            positions = (float*) xcalloc(totalGlyphCount * 2 + 2, sizeof(float));
+            advances = (float*) xcalloc(totalGlyphCount, sizeof(float));
 
             getGlyphs(engine, glyphs);
             getGlyphAdvances(engine, advances);
@@ -2080,10 +2080,10 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
             if (totalGlyphCount > 0) {
                 int i;
-                glyph_info = xmalloc(totalGlyphCount * native_glyph_info_size);
+                glyph_info = xcalloc(totalGlyphCount, native_glyph_info_size);
                 locations = (FixedPoint*)glyph_info;
                 glyphIDs = (uint16_t*)(locations + totalGlyphCount);
-                glyphAdvances = xmalloc(totalGlyphCount * sizeof(Fixed));
+                glyphAdvances = (Fixed*) xcalloc(totalGlyphCount, sizeof(Fixed));
                 for (i = 0; i < totalGlyphCount; ++i) {
                     glyphIDs[i] = glyphs[i];
                     glyphAdvances[i] = D2Fix(advances[i]);
@@ -2170,7 +2170,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 Fixed
 get_native_italic_correction(void* pNode)
 {
-    memoryword* node = pNode;
+    memoryword* node = (memoryword*) pNode;
     unsigned f = native_font(node);
     unsigned n = native_glyph_count(node);
     if (n > 0) {
@@ -2194,7 +2194,7 @@ get_native_italic_correction(void* pNode)
 Fixed
 get_native_glyph_italic_correction(void* pNode)
 {
-    memoryword* node = pNode;
+    memoryword* node = (memoryword*) pNode;
     uint16_t gid = native_glyph(node);
     unsigned f = native_font(node);
 
@@ -2211,7 +2211,7 @@ get_native_glyph_italic_correction(void* pNode)
 void
 measure_native_glyph(void* pNode, int use_glyph_metrics)
 {
-    memoryword* node = pNode;
+    memoryword* node = (memoryword*) pNode;
     uint16_t gid = native_glyph(node);
     unsigned f = native_font(node);
 
@@ -2596,7 +2596,7 @@ aatprintfontname(int what, CFDictionaryRef attributes, int param1, int param2)
 
     if (name) {
         CFIndex len = CFStringGetLength(name);
-        UniChar* buf = xmalloc(len * sizeof(UniChar));
+        UniChar* buf = xcalloc(len, sizeof(UniChar));
         CFStringGetCharacters(name, CFRangeMake(0, len), buf);
         printchars(buf, len);
         free(buf);
@@ -2629,7 +2629,7 @@ int
 u_open_in(unicodefile* f, integer filefmt, const_string fopen_mode, integer mode, integer encodingData)
 {
     boolean rval;
-    *f = xmalloc(sizeof(UFILE));
+    *f = (unicodefile) xmalloc(sizeof(UFILE));
     (*f)->encodingMode = 0;
     (*f)->conversionData = 0;
     (*f)->savedChar = -1;
@@ -2721,7 +2721,7 @@ open_dvi_output(FILE** fptr)
             char *fullname = concat3(output_directory, "/", (const char*)nameoffile+1);
             free(nameoffile);
             namelength = strlen(fullname);
-            nameoffile = (unsigned char*)xmalloc(namelength+2);
+            nameoffile = (unsigned char*) xmalloc(namelength + 2);
             strcpy((char*)nameoffile+1, fullname);
             free(fullname);
         }
@@ -2871,7 +2871,7 @@ makeutf16name()
         if (nameoffile16 != 0)
             free(nameoffile16);
         name16len = namelength + 10;
-        nameoffile16 = xmalloc(name16len * sizeof(uint16_t));
+        nameoffile16 = (uint16_t*) xcalloc(name16len, sizeof(uint16_t));
     }
     t = nameoffile16;
     while (s <= nameoffile + namelength) {

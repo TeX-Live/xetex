@@ -216,11 +216,11 @@ getLargerScriptListTable(XeTeXFont font, hb_tag_t** scriptList)
     hb_tag_t* scriptListPos = NULL;
 
     unsigned int scriptCountSub = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, NULL, NULL);
-    scriptListSub = (hb_tag_t*) xmalloc(scriptCountSub * sizeof(hb_tag_t*));
+    scriptListSub = (hb_tag_t*) xcalloc(scriptCountSub, sizeof(hb_tag_t*));
     hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, &scriptCountSub, scriptListSub);
 
     unsigned int scriptCountPos = hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GPOS, 0, NULL, NULL);
-    scriptListPos = (hb_tag_t*) xmalloc(scriptCountPos * sizeof(hb_tag_t*));
+    scriptListPos = (hb_tag_t*) xcalloc(scriptCountPos, sizeof(hb_tag_t*));
     hb_ot_layout_table_get_script_tags(face, HB_OT_TAG_GSUB, 0, &scriptCountPos, scriptListPos);
 
     if (scriptCountSub > scriptCountPos) {
@@ -356,7 +356,7 @@ getIndFeature(XeTeXFont font, hb_tag_t script, hb_tag_t language, unsigned int i
         if (hb_ot_layout_table_find_script(face, tableTag, script, &scriptIndex)) {
             if (hb_ot_layout_script_find_language(face, tableTag, scriptIndex, language, &langIndex) || language == 0) {
                 unsigned int featCount = hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, NULL, NULL);
-                hb_tag_t* featList = (hb_tag_t*) xmalloc(featCount * sizeof(hb_tag_t*));
+                hb_tag_t* featList = (hb_tag_t*) xcalloc(featCount, sizeof(hb_tag_t*));
                 hb_ot_layout_language_get_feature_tags(face, tableTag, scriptIndex, langIndex, 0, &featCount, featList);
 
                 if (index < featCount) {
