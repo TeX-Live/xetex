@@ -704,6 +704,18 @@ layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t 
     hb_buffer_guess_segment_properties(engine->hbBuffer);
     hb_buffer_get_segment_properties(engine->hbBuffer, &segment_props);
 
+    if (engine->ShaperList == NULL) {
+        // HarfBuzz gives graphite2 shaper a priority, so that for hybrid
+        // Graphite/OpenType fonts, Graphite will be used. However, pre-0.9999
+        // XeTeX preferred OpenType over Graphite, so we are doing the same
+        // here for sake of backward compatibility.
+        engine->ShaperList = (char**) xcalloc(4, sizeof(char*));
+        engine->ShaperList[0] = (char*) "ot";
+        engine->ShaperList[1] = (char*) "graphite2";
+        engine->ShaperList[2] = (char*) "fallback";
+        engine->ShaperList[3] = NULL;
+    }
+
     shape_plan = hb_shape_plan_create_cached(hbFace, &segment_props, engine->features, engine->nFeatures, engine->ShaperList);
     res = hb_shape_plan_execute(shape_plan, hbFont, engine->hbBuffer, engine->features, engine->nFeatures);
 
