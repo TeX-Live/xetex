@@ -1034,7 +1034,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
     }
 
     if (shapers != NULL) {
-        shapers = (hb_feature_t*) xrealloc(shapers, (nShapers + 1) * sizeof(char *));
+        shapers = (char**) xrealloc(shapers, (nShapers + 1) * sizeof(char *));
         shapers[nShapers] = NULL;
     }
 
