@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# $Id$
 #
 # Copyright (c) 2005-2011 Martin Schröder <martin@luatex.org>
 # Copyright (c) 2009-2011 Taco Hoekwater <taco@luatex.org>
+# Copyright (c) 2011-2013 Khaled Hosny <khaledhosny@eglug.org>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -72,7 +72,7 @@ CFLAGS="$CFLAGS -Wdeclaration-after-statement"
 until [ -z "$1" ]; do
   case "$1" in
     --make      ) ONLY_MAKE=TRUE     ;;
-    --nostrip   ) STRIP_XETEX=FALSE ;;
+    --nostrip   ) STRIP_XETEX=FALSE  ;;
     --debug     ) STRIP_XETEX=FALSE; WARNINGS=max; CFLAGS="-g -O0 $CFLAGS"; CXXFLAGS="-g -O0 $CXXFLAGS"; OBJCXXFLAGS="-g -O0 $OBJCXXFLAGS";;
     --profile   ) STRIP_XETEX=FALSE; CFLAGS="-pg $CFLAGS"; CXXFLAGS="-pg $CXXFLAGS"; OBJCXXFLAGS="-pg $OBJCXXFLAGS";;
     --syslibs   ) SYSTEM_LIBS=TRUE   ;;
@@ -163,63 +163,61 @@ then
   mkdir "$B"
 fi
 
-cd "$B"
+(
+    cd "$B"
 
-CONF_OPTIONS="\
-    --disable-all-pkgs \
-    --disable-shared    \
-    --disable-largefile \
-    --disable-ptex \
-    --disable-ipc \
-    --enable-silent-rules \
-    --enable-dump-share  \
-    --enable-xetex  \
-    --without-system-ptexenc \
-    --without-system-kpathsea \
-    --without-mf-x-toolkit --without-x "
+    CONF_OPTIONS="\
+        --disable-all-pkgs \
+        --disable-shared    \
+        --disable-largefile \
+        --disable-ptex \
+        --disable-ipc \
+        --enable-silent-rules \
+        --enable-dump-share  \
+        --enable-xetex  \
+        --without-system-ptexenc \
+        --without-system-kpathsea \
+        --without-mf-x-toolkit --without-x "
 
-if [ "$XDVIPDFMX" = "TRUE" ]; then
-  CONF_OPTIONS="$CONF_OPTIONS \
-    --enable-xdvipdfmx "
-fi
+    if [ "$XDVIPDFMX" = "TRUE" ]; then
+      CONF_OPTIONS="$CONF_OPTIONS \
+        --enable-xdvipdfmx "
+    fi
 
-if [ "$SYSTEM_LIBS" = "TRUE" ] ;
-then
-  CONF_OPTIONS="$CONF_OPTIONS \
-    --with-system-poppler \
-    --with-system-freetype2 \
-    --with-system-libpng \
-    --with-system-teckit \
-    --with-system-zlib \
-    --with-system-icu \
-    --with-system-graphite2 \
-    --with-system-harfbuzz "
-else
-  CONF_OPTIONS="$CONF_OPTIONS \
-    --enable-cxx-runtime-hack \
-    --without-system-poppler \
-    --without-system-freetype2 \
-    --without-system-libpng \
-    --without-system-teckit \
-    --without-system-zlib \
-    --without-system-icu \
-    --without-system-graphite2 \
-    --without-system-harfbuzz "
-fi
+    if [ "$SYSTEM_LIBS" = "TRUE" ]
+    then
+      CONF_OPTIONS="$CONF_OPTIONS \
+        --with-system-poppler \
+        --with-system-freetype2 \
+        --with-system-libpng \
+        --with-system-teckit \
+        --with-system-zlib \
+        --with-system-icu \
+        --with-system-graphite2 \
+        --with-system-harfbuzz "
+    else
+      CONF_OPTIONS="$CONF_OPTIONS \
+        --enable-cxx-runtime-hack \
+        --without-system-poppler \
+        --without-system-freetype2 \
+        --without-system-libpng \
+        --without-system-teckit \
+        --without-system-zlib \
+        --without-system-icu \
+        --without-system-graphite2 \
+        --without-system-harfbuzz "
+    fi
 
-if [ "$ONLY_MAKE" = "FALSE" ]
-then
-TL_MAKE=$MAKE ../source/configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS $CONF_OPTIONS\
-   || exit 1 
-fi
+    if [ "$ONLY_MAKE" = "FALSE" ]
+    then
+        TL_MAKE=$MAKE ../source/configure $CONFHOST $CONFBUILD $WARNINGFLAGS $CONF_OPTIONS || exit 1
+    fi
 
-$MAKE || exit 1
-$MAKE -C texk/web2c $XETEXEXE || exit 1
+    $MAKE || exit 1
+    $MAKE -C texk/web2c $XETEXEXE || exit 1
+)
 
-# go back
-cd ..
-
-if [ "$STRIP_XETEX" = "TRUE" ] ;
+if [ "$STRIP_XETEX" = "TRUE" ]
 then
   $STRIP "$B"/texk/web2c/$XETEXEXE
   if [ "$XDVIPDFMX" = "TRUE" ]; then
