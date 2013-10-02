@@ -169,11 +169,9 @@ fi
     CONF_OPTIONS="\
         --disable-all-pkgs \
         --disable-shared    \
-        --disable-largefile \
         --disable-ptex \
-        --disable-ipc \
+        --enable-largefile \
         --enable-silent-rules \
-        --enable-dump-share  \
         --enable-xetex  \
         --without-system-ptexenc \
         --without-system-kpathsea \
@@ -197,7 +195,6 @@ fi
         --with-system-harfbuzz "
     else
       CONF_OPTIONS="$CONF_OPTIONS \
-        --enable-cxx-runtime-hack \
         --without-system-poppler \
         --without-system-freetype2 \
         --without-system-libpng \
