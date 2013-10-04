@@ -13110,11 +13110,11 @@ produced by \XeTeX. p\TeX\ uses 255.
 @ The preamble contains basic information about the file as a whole. As
 stated above, there are six parameters:
 $$\hbox{|@!i[1]| |@!num[4]| |@!den[4]| |@!mag[4]| |@!k[1]| |@!x[k]|.}$$
-The |i| byte identifies \.{DVI} format; currently this byte is always set
-to~2. (The value |i=3| is currently used for an extended format that
-allows a mixture of right-to-left and left-to-right typesetting.
-Some day we will set |i=4|, when \.{DVI} format makes another
-incompatible change---perhaps in the year 2048.)
+The |i| byte identifies \.{DVI} format; in \XeTeX\ this byte is set to~5, as we
+have new \.{DVI} opcodes, while in \TeX82 it is always set to~2. (The value
+|i=3| is used for an extended format that allows a mixture of right-to-left and
+left-to-right typesetting. Prre-1.0 \XeTeX\ releases using Mac~OS~X-specific
+data types used |i=4|.)
 
 The next two parameters, |num| and |den|, are positive integers that define
 the units of measurement; they are the numerator and denominator of a
@@ -13136,11 +13136,6 @@ users to override the |mag|~setting when a \.{DVI} file is being printed.)
 
 Finally, |k| and |x| allow the \.{DVI} writer to include a comment, which is not
 interpreted further. The length of comment |x| is |k|, where |0<=k<256|.
-
-XeTeX changes the DVI version to 5,
-as we have new DVI opcodes like |set_glyph_array| for native font text;
-I used version 3 in an earlier extension of TeX,
-and 4 in pre-1.0 XeTeX releases using Mac OS-specific data types.
 
 @d id_byte=5 {identifies the kind of \.{DVI} files described here}
 
