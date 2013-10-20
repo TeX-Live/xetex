@@ -425,9 +425,9 @@ XeTeXFontMgr::getNames(PlatformFontRef font, const char** psName,
     std::map<PlatformFontRef,Font*>::const_iterator i = platformRefToFont.find(font);
     if (i == platformRefToFont.end())
         die("internal error %d in XeTeXFontMgr", 3);
-    *psName = i->second->psName->c_str();
-    *famName = i->second->familyName->c_str();
-    *styName = i->second->styleName->c_str();
+    *psName = xstrdup(i->second->psName->c_str());
+    *famName = xstrdup(i->second->familyName->c_str());
+    *styName = xstrdup(i->second->styleName->c_str());
 }
 
 int

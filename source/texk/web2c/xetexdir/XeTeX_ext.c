@@ -1618,8 +1618,8 @@ makefontdef(integer f)
 
             psName = xmalloc(strlen((char*) pathname) + 2 + strlen(buf) + 1);
             sprintf((char*) psName, "[%s%s]", pathname, buf);
-            famName = "";
-            styName = "";
+            famName = xstrdup("");
+            styName = xstrdup("");
         } else {
             psName  = getNameFromCTFont(font, kCTFontPostScriptNameKey);
             famName = getNameFromCTFont(font, kCTFontFamilyNameKey);
@@ -1651,10 +1651,10 @@ makefontdef(integer f)
 
         engine = (XeTeXLayoutEngine)fontlayoutengine[f];
         fontRef = getFontRef(engine);
-        psName = getFontFilename(engine);
+        psName = xstrdup(getFontFilename(engine));
         if (psName) {
-            famName = "";
-            styName = "";
+            famName = xstrdup("");
+            styName = xstrdup("");
         } else {
             getNames(getFontRef(engine), &psName, &famName, &styName);
         }
@@ -1760,6 +1760,10 @@ makefontdef(integer f)
         *(uint32_t*)(cp) = SWAP32(f);
         cp += 4;
     }
+
+    free((char*) psName);
+    free((char*) famName);
+    free((char*) styName);
 
     return fontDefLength;
 }
@@ -2059,6 +2063,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
                     free(glyphs);
                     free(positions);
+                    free(advances);
                 }
                 width = x;
             }
@@ -2099,6 +2104,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
 
             free(glyphs);
             free(positions);
+            free(advances);
         }
 
         ubidi_close(pBiDi);
@@ -2119,6 +2125,7 @@ measure_native_node(void* pNode, int use_glyph_metrics)
                 node_width(node) += lsDelta;
             }
         }
+        free(glyphAdvances);
     } else {
         fprintf(stderr, "\n! Internal error: bad native font flag in `measure_native_node'\n");
         exit(3);

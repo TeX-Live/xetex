@@ -115,6 +115,7 @@ DoAATLayout(void* p, int justify)
 	CFRelease(string);
 
 	typesetter = CTTypesetterCreateWithAttributedString(attrString);
+	CFRelease(attrString);
 	line = CTTypesetterCreateLine(typesetter, CFRangeMake(0, txtLen));
 	if (justify) {
 		CGFloat lineWidth = TeXtoPSPoints(Fix2D(node_width(node)));
@@ -165,6 +166,8 @@ DoAATLayout(void* p, int justify)
 					glyphIDs[totalGlyphCount] = 0;
 				else
 					glyphIDs[totalGlyphCount] = glyphs[j];
+				free(ps_name1);
+				free(ps_name2);
 
 				// Swap X and Y when doing vertical layout
 				if (vertical == kCFBooleanTrue) {
@@ -184,6 +187,7 @@ DoAATLayout(void* p, int justify)
 			width += FixedPStoTeXPoints(runWidth);
 			free(glyphs);
 			free(positions);
+			free(advances);
 		}
 	}
 
@@ -214,6 +218,7 @@ DoAATLayout(void* p, int justify)
 		}
 	}
 
+	free(glyphAdvances);
 	CFRelease(line);
 	CFRelease(typesetter);
 }
@@ -403,7 +408,7 @@ getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 	if (CFStringGetCString(name, buf, len, kCFStringEncodingUTF8))
 		return buf;
 	free(buf);
-	return 0;
+	return NULL;
 }
 
 char*
@@ -459,6 +464,7 @@ getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
 							FT_Done_Face (face);
 						}
 					}
+					free(ps_name1);
 				}
 			}
 

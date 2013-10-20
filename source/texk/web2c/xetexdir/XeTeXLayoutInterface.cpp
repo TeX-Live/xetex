@@ -649,6 +649,7 @@ deleteLayoutEngine(XeTeXLayoutEngine engine)
 {
     hb_buffer_destroy(engine->hbBuffer);
     delete engine->font;
+    free(engine->shaper);
 }
 
 static unsigned int
