@@ -160,14 +160,10 @@ DoAATLayout(void* p, int justify)
 				// of the resulting run is not the same font we asked for, use
 				// the glyph at index 0 (usually .notdef) instead or we will be
 				// showing garbage or even invalid glyphs
-				char *ps_name1 = getNameFromCTFont(fontFromAttributes(attributes), kCTFontPostScriptNameKey);
-				char *ps_name2 = getNameFromCTFont(fontFromAttributes(runAttributes), kCTFontPostScriptNameKey);
-				if (strcmp(ps_name1, ps_name2) != 0)
+				if (!CFEqual(fontFromAttributes(attributes), fontFromAttributes(runAttributes)))
 					glyphIDs[totalGlyphCount] = 0;
 				else
 					glyphIDs[totalGlyphCount] = glyphs[j];
-				free(ps_name1);
-				free(ps_name2);
 
 				// Swap X and Y when doing vertical layout
 				if (vertical == kCFBooleanTrue) {
