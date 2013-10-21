@@ -27,7 +27,7 @@ bibtex-x - maintained here, contains
   bibtexu
     http://omega.enstb.org/yannis/bibtexu/
 
-chktex 1.7.1 - checked 27sep12
+chktex 1.7.2 - checked 30may13
   http://mirror.ctan.org/support/chktex/
   http://download.savannah.gnu.org/releases/chktex/
 
@@ -59,8 +59,8 @@ dvipos - ?
 
 dvipsk - maintained here, by us
 
-dvisvgm - checked 11apr13
-  http://downloads.sourceforge.net/dvisvgm/dvisvgm-1.2.1.tar.gz
+dvisvgm - checked 10sep13
+  http://downloads.sourceforge.net/dvisvgm/dvisvgm-1.5.tar.gz
 
 gsftopk - from Paul Vojta's xdvi?
 
@@ -69,12 +69,9 @@ kpathsea - maintained here, by us
 lacheck - checked 25apr11
   http://mirror.ctan.org/support/lacheck/lacheck-1.26.tar.gz
 
-lcdf-typetools 2.98 - checked 11apr13
+lcdf-typetools 2.99 - checked 10sep13
   http://www.lcdf.org/type/
   http://www.lcdf.org/type/lcdf-typetools-2.98.tar.gz
-
-luatex - update texmf-dist/doc/luatex/base from
-  https://foundry.supelec.fr/svn/luatex/trunk/manual
 
 makeindexk - maintained here, by us
 
