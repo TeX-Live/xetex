@@ -229,7 +229,8 @@ extern "C" {
     void store_justified_native_glyphs(void* node);
     void measure_native_node(void* node, int use_glyph_metrics);
     Fixed get_native_italic_correction(void* node);
-    Fixed get_native_glyph_italic_correection(void* node);
+    Fixed get_native_glyph_italic_correction(void* node);
+    integer get_native_word_cp(void* node, int side);
     void measure_native_glyph(void* node, int use_glyph_metrics);
     integer mapchartoglyph(integer font, integer ch);
     integer mapglyphtoindex(integer font);
