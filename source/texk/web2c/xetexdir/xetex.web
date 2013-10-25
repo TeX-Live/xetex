@@ -16928,13 +16928,13 @@ var
   @!q,@!r:pointer;
   @!s,@!g:scaled;
 begin
-  if (math_type(nucleus(p))=math_char) then begin
+  if math_type(nucleus(p))=math_char then begin
     fetch(nucleus(p));
     q:=new_native_character(cur_f, qo(cur_c));
     g:=get_native_glyph(q, 0);
     s:=get_ot_math_accent_pos(cur_f, g);
   end else begin
-    if (math_type(nucleus(p))=sub_mlist) then begin
+    if math_type(nucleus(p))=sub_mlist then begin
       r:=info(nucleus(p));
       if (r<>null) and (type(r)=accent_noad) then
         s:=compute_ot_math_accent_pos(r)
