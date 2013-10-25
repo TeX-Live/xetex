@@ -1683,9 +1683,9 @@ if @<Character |s| is the current new-line character@> then
  if (s < 32) and (eight_bit_p = 0) and (not doing_special) then {control char: \.{\^\^X}}
   begin print_visible_char("^"); print_visible_char("^"); print_visible_char(s+64);
   end
- else if s < 127 then { printable ASCII }
+ else if s<127 then { printable ASCII }
   print_visible_char(s)
- else if (s = 127) then { DEL }
+ else if s=127 then { DEL }
   begin if (eight_bit_p = 0) and (not doing_special) then
    begin print_visible_char("^"); print_visible_char("^"); print_visible_char("?")
    end else
