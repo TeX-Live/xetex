@@ -28920,7 +28920,7 @@ begin
                     pp := link(pp);
                     goto restart;
                 end
-                else if (type(pp) = disc_node) then begin
+                else if type(pp) = disc_node then begin
                     ppp := link(pp);
                     if is_native_word_node(ppp)
                             and (native_font(ppp) = native_font(p)) then begin
