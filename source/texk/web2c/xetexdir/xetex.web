@@ -20584,8 +20584,8 @@ restart:
 for l := 0 to native_length(ha)-1 do begin
   c := get_native_usv(ha, l);
   set_lc_code(c);
-  if (hc[0] = 0) then begin
-    if (hn > 0) then begin
+  if hc[0]=0 then begin
+    if hn>0 then begin
       { we've got some letters, and now found a non-letter, so break off the tail of the |native_word|
         and link it after this node, and goto done3 }
       @<Split the |native_word_node| at |l| and link the second part after |ha|@>;
