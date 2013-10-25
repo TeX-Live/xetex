@@ -12056,14 +12056,14 @@ the font.
 
 @d otgr_font_flag=@"FFFE
 @d aat_font_flag=@"FFFF
-@d is_aat_font(#)==(font_area[#]=aat_font_flag)
-@d is_ot_font(#)==((font_area[#]=otgr_font_flag) and (usingOpenType(font_layout_engine[#])))
-@d is_gr_font(#)==((font_area[#]=otgr_font_flag) and (usingGraphite(font_layout_engine[#])))
-@d is_otgr_font(#)==(font_area[#]=otgr_font_flag)
-@d is_native_font(#)==(is_aat_font(#) or is_otgr_font(#))
+@d is_aat_font(#)==font_area[#]=aat_font_flag
+@d is_otgr_font(#)==font_area[#]=otgr_font_flag
+@d is_ot_font(#)==(is_otgr_font(#)) and (usingOpenType(font_layout_engine[#]))
+@d is_gr_font(#)==(is_otgr_font(#)) and (usingGraphite(font_layout_engine[#]))
+@d is_native_font(#)==(is_aat_font(#)) or (is_otgr_font(#))
     {native fonts have |font_area| = 65534 or 65535,
      which would be a string containing an invalid Unicode character}
-@d is_new_mathfont(#)==((font_area[#]=otgr_font_flag) and (isOpenTypeMathFont(font_layout_engine[#])))
+@d is_new_mathfont(#)==(is_otgr_font(#)) and (isOpenTypeMathFont(font_layout_engine[#]))
 
 @d non_char==qi(too_big_char) {a |halfword| code that can't match a real character}
 @d non_address=0 {a spurious |bchar_label|}
@@ -17450,7 +17450,7 @@ if is_native_font(cur_f) then begin
   set_native_glyph_metrics(p, 1);
   free_node(z, native_size(z));
   delta:=get_ot_math_ital_corr(cur_f, native_glyph(p));
-  if (math_type(nucleus(q))=math_text_char)and(not is_new_mathfont(cur_f)<>0) then
+  if (math_type(nucleus(q))=math_text_char)and(not (is_new_mathfont(cur_f))<>0) then
     delta:=0; {no italic correction in mid-word of text font}
   if (math_type(subscr(q))=empty)and(delta<>0) then
     begin link(p):=new_kern(delta); delta:=0;
@@ -25088,7 +25088,7 @@ end;
 if h<>x then {the accent must be shifted up or down}
   begin p:=hpack(p,natural); shift_amount(p):=x-h;
   end;
-if is_native_font(f) and (a=0) then { special case for non-spacing marks }
+if (is_native_font(f)) and (a=0) then { special case for non-spacing marks }
   delta:=round((w-lsb+rsb)/float_constant(2)+h*t-x*s)
 else delta:=round((w-a)/float_constant(2)+h*t-x*s);
 @^real multiplication@>
@@ -26114,11 +26114,11 @@ end;
 
 @ @<Check that the necessary fonts...@>=
 if ((font_params[fam_fnt(2+text_size)]<total_mathsy_params)
-    and (not is_new_mathfont(fam_fnt(2+text_size)))) or@|
+    and (not (is_new_mathfont(fam_fnt(2+text_size))))) or@|
    ((font_params[fam_fnt(2+script_size)]<total_mathsy_params)
-    and (not is_new_mathfont(fam_fnt(2+script_size)))) or@|
+    and (not (is_new_mathfont(fam_fnt(2+script_size))))) or@|
    ((font_params[fam_fnt(2+script_script_size)]<total_mathsy_params)
-    and (not is_new_mathfont(fam_fnt(2+script_script_size)))) then
+    and (not (is_new_mathfont(fam_fnt(2+script_script_size))))) then
   begin print_err("Math formula deleted: Insufficient symbol fonts");@/
 @.Math formula deleted...@>
   help3("Sorry, but I can't typeset math unless \textfont 2")@/
@@ -26127,11 +26127,11 @@ if ((font_params[fam_fnt(2+text_size)]<total_mathsy_params)
   error; flush_math; danger:=true;
   end
 else if ((font_params[fam_fnt(3+text_size)]<total_mathex_params)
-    and (not is_new_mathfont(fam_fnt(3+text_size)))) or@|
+    and (not (is_new_mathfont(fam_fnt(3+text_size))))) or@|
    ((font_params[fam_fnt(3+script_size)]<total_mathex_params)
-    and (not is_new_mathfont(fam_fnt(3+script_size)))) or@|
+    and (not (is_new_mathfont(fam_fnt(3+script_size))))) or@|
    ((font_params[fam_fnt(3+script_script_size)]<total_mathex_params)
-    and (not is_new_mathfont(fam_fnt(3+script_script_size)))) then
+    and (not (is_new_mathfont(fam_fnt(3+script_script_size))))) then
   begin print_err("Math formula deleted: Insufficient extension fonts");@/
   help3("Sorry, but I can't typeset math unless \textfont 3")@/
     ("and \scriptfont 3 and \scriptscriptfont 3 have all")@/
@@ -27301,7 +27301,7 @@ the new name becomes the font identifier of record. Font names `\.{xyz}' and
 flushable_string:=str_ptr-1;
 for f:=font_base+1 to font_ptr do begin
   if str_eq_str(font_name[f],cur_name) and
-    (((cur_area = "") and is_native_font(f)) or str_eq_str(font_area[f],cur_area)) then
+    (((cur_area = "") and (is_native_font(f))) or str_eq_str(font_area[f],cur_area)) then
     begin if cur_name=flushable_string then
       begin flush_string; cur_name:=font_name[f];
       end;
@@ -30077,7 +30077,7 @@ XeTeX_variation_name_code:
 XeTeX_feature_name_code:
   begin
     scan_font_ident; fnt:=cur_val;
-    if is_aat_font(fnt) or is_gr_font(fnt) then begin
+    if (is_aat_font(fnt)) or (is_gr_font(fnt)) then begin
       scan_int; arg1:=cur_val; arg2:=0;
     end else
       not_aat_gr_font_error(convert, c, fnt);
@@ -30086,7 +30086,7 @@ XeTeX_feature_name_code:
 XeTeX_selector_name_code:
   begin
     scan_font_ident; fnt:=cur_val;
-    if is_aat_font(fnt) or is_gr_font(fnt) then begin
+    if (is_aat_font(fnt)) or (is_gr_font(fnt)) then begin
       scan_int; arg1:=cur_val; scan_int; arg2:=cur_val;
     end else
       not_aat_gr_font_error(convert, c, fnt);
