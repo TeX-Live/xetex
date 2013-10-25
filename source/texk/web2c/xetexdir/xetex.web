@@ -2898,7 +2898,7 @@ of its other fields and its other words.
 when |max_halfword| appears in the |link| field of a nonempty node.)
 
 @d empty_flag == max_halfword {the |link| of an empty variable-size node}
-@d is_empty(#) == (link(#)=empty_flag) {tests for empty node}
+@d is_empty(#) == link(#)=empty_flag {tests for empty node}
 @d node_size == info {the size field in empty variable-size nodes}
 @d llink(#) == info(#+1) {left link in doubly-linked list of empty nodes}
 @d rlink(#) == link(#+1) {right link in doubly-linked list of empty nodes}
