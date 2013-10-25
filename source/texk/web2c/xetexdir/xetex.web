@@ -6075,7 +6075,7 @@ A global boolean variable called |no_new_control_sequence| is set to
 @d prim_base=1
 @d prim_next(#) == prim[#].lh {link for coalesced lists}
 @d prim_text(#) == prim[#].rh {string number for control sequence name}
-@d prim_is_full == (prim_used=prim_base) {test if all positions are occupied}
+@d prim_is_full == prim_used=prim_base {test if all positions are occupied}
 @d prim_eq_level_field(#)==#.hh.b1
 @d prim_eq_type_field(#)==#.hh.b0
 @d prim_equiv_field(#)==#.hh.rh
