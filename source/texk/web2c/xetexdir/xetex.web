@@ -7324,7 +7324,7 @@ put into a variable |@!page|, maintained for enclosing levels in
 by analogy with |line_stack|.
 @^system dependencies@>
 
-@d terminal_input==(name=0) {are we reading from the terminal?}
+@d terminal_input==name=0 {are we reading from the terminal?}
 @d cur_file==input_file[index] {the current |alpha_file| variable}
 
 @<Glob...@>=
@@ -7552,7 +7552,7 @@ begin base_ptr:=input_ptr; input_stack[base_ptr]:=cur_input;
   {store current state}
 nn:=-1; bottom_line:=false;
 loop@+begin cur_input:=input_stack[base_ptr]; {enter into the context}
-  if (state<>token_list) then
+  if state<>token_list then
     if (name>19) or (base_ptr=0) then bottom_line:=true;
   if (base_ptr=input_ptr)or bottom_line or(nn<error_context_lines) then
     @<Display the current context@>
@@ -7876,7 +7876,7 @@ inserted `\.{\\show}' commands, the following routine removes completed
 error-inserted lines from memory.
 
 @p procedure clear_for_error_prompt;
-begin while (state<>token_list)and terminal_input and@|
+begin while (state<>token_list)and(terminal_input)and@|
   (input_ptr>0)and(loc>limit) do end_file_reading;
 print_ln; clear_terminal;
 end;
@@ -8375,7 +8375,7 @@ There is one more branch.
 @<Move to next line of file, or |goto restart|...@>=
 if name>17 then @<Read next line of file into |buffer|, or
   |goto restart| if the file has ended@>
-else  begin if not terminal_input then {\.{\\read} line has ended}
+else  begin if not (terminal_input) then {\.{\\read} line has ended}
     begin cur_cmd:=0; cur_chr:=0; return;
     end;
   if input_ptr>0 then {text was inserted during error recovery}
