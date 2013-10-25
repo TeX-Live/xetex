@@ -1753,7 +1753,7 @@ else if s<biggest_char then
   else begin if selector>pseudo then
       begin print_char(s); return; {internal strings are not expanded}
       end;
-    if (@<Character |s| is the current new-line character@>) then
+    if @<Character |s| is the current new-line character@> then
       if selector<pseudo then
         begin print_ln; return;
         end;
