@@ -20298,7 +20298,7 @@ if XeTeX_protrude_chars > 0 then begin
         k := new_margin_kern(-w, last_rightmost_char, right_side);
         link(k) := link(ptmp);
         link(ptmp) := k;
-        if (ptmp = q) then
+        if ptmp = q then
             q := link(q);
     end;
 end;
