@@ -24898,11 +24898,11 @@ var p:pointer; {|char_node| at the tail of the current list}
 begin if tail<>head then
   begin if is_char_node(tail) then p:=tail
   else if type(tail)=ligature_node then p:=lig_char(tail)
-  else if (type(tail)=whatsit_node) then begin
-    if (subtype(tail)=native_word_node) then begin
+  else if type(tail)=whatsit_node then begin
+    if subtype(tail)=native_word_node then begin
       tail_append(new_kern(get_native_italic_correction(tail))); subtype(tail):=explicit;
     end
-    else if (subtype(tail)=glyph_node) then begin
+    else if subtype(tail)=glyph_node then begin
       tail_append(new_kern(get_native_glyph_italic_correction(tail))); subtype(tail):=explicit;
     end;
     return;
