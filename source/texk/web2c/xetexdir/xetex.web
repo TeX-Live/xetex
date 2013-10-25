@@ -6058,7 +6058,7 @@ A global boolean variable called |no_new_control_sequence| is set to
 
 @d next(#) == hash[#].lh {link for coalesced lists}
 @d text(#) == hash[#].rh {string number for control sequence name}
-@d hash_is_full == (hash_used=hash_base) {test if all positions are occupied}
+@d hash_is_full == hash_used=hash_base {test if all positions are occupied}
 @d font_id_text(#) == text(font_id_base+#) {a frozen font identifier's name}
 
 @<Glob...@>=
