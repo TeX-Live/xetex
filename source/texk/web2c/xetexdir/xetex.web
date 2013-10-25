@@ -15937,7 +15937,7 @@ begin
     font_dsize[font_ptr] := loaded_font_design_size;
     font_size[font_ptr] := actual_size;
 
-    if (native_font_type_flag = aat_font_flag) then begin
+    if native_font_type_flag = aat_font_flag then begin
         aat_get_font_metrics(font_engine, addressof(ascent), addressof(descent),
                                 addressof(x_ht), addressof(cap_ht), addressof(font_slant))
     end else begin
