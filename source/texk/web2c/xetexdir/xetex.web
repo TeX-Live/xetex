@@ -3165,7 +3165,7 @@ an hlist; the |height| and |depth| are never running in a~vlist.
 @d rule_node=2 {|type| of rule nodes}
 @d rule_node_size=4 {number of words to allocate for a rule node}
 @d null_flag==-@'10000000000 {$-2^{30}$, signifies a missing item}
-@d is_running(#) == (#=null_flag) {tests for a running dimension}
+@d is_running(#) == #=null_flag {tests for a running dimension}
 
 @ A new rule node is delivered by the |new_rule| function. It
 makes all the dimensions ``running,'' so you have to change the
