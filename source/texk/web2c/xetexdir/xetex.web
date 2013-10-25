@@ -20596,7 +20596,7 @@ for l := 0 to native_length(ha)-1 do begin
     @<Split the |native_word_node| at |l| and link the second part after |ha|@>;
     ha := link(ha);
     goto restart;
-  end else if (hn = 63) then
+  end else if hn = 63 then
     { reached max hyphenatable length }
     goto done3
   else begin
