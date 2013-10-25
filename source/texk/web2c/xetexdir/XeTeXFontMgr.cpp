@@ -325,20 +325,21 @@ XeTeXFontMgr::findFont(const char* name, char* variant, double ptSize)
             if (bestMatch == font) {
                 // maybe slant values weren't present; try the style bits as a fallback
                 bestMatch = NULL;
-                for (i = parent->styles->begin(); i != parent->styles->end(); ++i)
-                    if (i->second->isItalic == !font->isItalic)
+                for (i = parent->styles->begin(); i != parent->styles->end(); ++i) {
+                    if (i->second->isItalic == !font->isItalic) {
                         if (parent->minWeight != parent->maxWeight) {
                             // weight info was available, so try to match that
                             if (bestMatch == NULL || weightAndWidthDiff(i->second, font) < weightAndWidthDiff(bestMatch, font))
                                 bestMatch = i->second;
-                        }
-                        else {
+                        } else {
                             // no weight info, so try matching style bits
                             if (bestMatch == NULL && i->second->isBold == font->isBold) {
                                 bestMatch = i->second;
                                 break;  // found a match, no need to look further as we can't distinguish!
                             }
                         }
+                    }
+                }
             }
             if (bestMatch != NULL)
                 font = bestMatch;
