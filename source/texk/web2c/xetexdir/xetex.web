@@ -28706,11 +28706,10 @@ p:=scan_toks(false,true); write_tokens(tail):=def_ref;
 end
 
 @ @d call_func(#) == begin if # <> 0 then do_nothing end
-@d flushable(#) == (# = str_ptr - 1)
 
 @p procedure flush_str(s: str_number); {flush a string if possible}
 begin
-    if flushable(s) then
+    if s = str_ptr-1 then
         flush_string;
 end;
 
