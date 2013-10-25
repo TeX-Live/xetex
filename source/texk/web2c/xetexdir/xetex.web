@@ -28939,8 +28939,8 @@ begin
                 { found a chain of at least two pieces starting at p }
                 total_chars := 0;
                 p := link(q); { the first fragment }
-                while (p <> pp) do begin
-                    if (type(p) = whatsit_node) then
+                while p <> pp do begin
+                    if type(p) = whatsit_node then
                         total_chars := total_chars + native_length(p); { accumulate char count }
                     ppp := p; { remember last node seen }
                     p := link(p); { point to next fragment or discretionary or terminator }
@@ -28956,7 +28956,7 @@ begin
                 total_chars := 0;
                 ppp := p;
                 repeat
-                    if (type(ppp) = whatsit_node) then
+                    if type(ppp) = whatsit_node then
                         for k := 0 to native_length(ppp)-1 do begin
                             set_native_char(pp, total_chars, get_native_char(ppp, k));
                             incr(total_chars);
