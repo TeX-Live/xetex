@@ -6704,7 +6704,7 @@ the call, since |eq_save| makes the necessary test.
 @p procedure eq_define(@!p:pointer;@!t:quarterword;@!e:halfword);
   {new data for |eqtb|}
 label exit;
-begin if eTeX_ex and(eq_type(p)=t)and(equiv(p)=e) then
+begin if (eTeX_ex)and(eq_type(p)=t)and(equiv(p)=e) then
   begin assign_trace(p,"reassigning")@;@/
   eq_destroy(eqtb[p]); return;
   end;
@@ -6721,7 +6721,7 @@ exit:end;
 
 @p procedure eq_word_define(@!p:pointer;@!w:integer);
 label exit;
-begin if eTeX_ex and(eqtb[p].int=w) then
+begin if (eTeX_ex)and(eqtb[p].int=w) then
   begin assign_trace(p,"reassigning")@;@/
   return;
   end;
@@ -12706,7 +12706,7 @@ procedure char_warning(@!f:internal_font_number;@!c:integer);
 var old_setting: integer; {saved value of |tracing_online|}
 begin if tracing_lost_chars>0 then
  begin old_setting:=tracing_online;
- if eTeX_ex and(tracing_lost_chars>1) then tracing_online:=1;
+ if (eTeX_ex) and(tracing_lost_chars>1) then tracing_online:=1;
   begin begin_diagnostic;
   print_nl("Missing character: There is no ");
 @.Missing character@>
@@ -30159,7 +30159,7 @@ right_margin_kern_code: begin
     print("pt");
 end;
 
-@ @d eTeX_ex==(eTeX_mode=1) {is this extended mode?}
+@ @d eTeX_ex==eTeX_mode=1 {is this extended mode?}
 
 @<Glob...@>=
 @!eTeX_mode: 0..1; {identifies compatibility and extended mode}
