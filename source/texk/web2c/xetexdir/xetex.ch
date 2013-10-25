@@ -277,7 +277,7 @@ if #<>0 then begin
 if #<>0 then begin
   j:=str_start_macro(#);
   while ((not must_quote) or (quote_char=0)) and (j<str_start_macro(#+1)) do begin
-    if (str_pool[j]=" ") then must_quote:=true
+    if str_pool[j]=" " then must_quote:=true
     else if (str_pool[j]="""") or (str_pool[j]="'") then begin
       must_quote:=true;
       quote_char:="""" + "'" - str_pool[j];
