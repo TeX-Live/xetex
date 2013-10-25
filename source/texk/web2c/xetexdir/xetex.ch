@@ -773,7 +773,7 @@ var i,@!j,@!k:integer; {all-purpose integers}
 @x [53a.1379] l.??? -etex command line switch
   incr(loc); eTeX_mode:=1; {enter extended mode}
 @y
-  if (buffer[loc]="*") then incr(loc);
+  if buffer[loc]="*" then incr(loc);
   eTeX_mode:=1; {enter extended mode}
 @z
 
