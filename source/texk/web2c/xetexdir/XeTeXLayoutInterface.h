@@ -96,7 +96,7 @@ hb_tag_t getIndFeature(XeTeXFont font, hb_tag_t script, hb_tag_t language, unsig
 
 float getGlyphWidth(XeTeXFont font, uint32_t gid);
 
-XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, hb_tag_t language,
+XeTeXLayoutEngine createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, char *language,
                         hb_feature_t* features, int nFeatures, char **shapers, uint32_t rgbValue,
                         float extend, float slant, float embolden);
 

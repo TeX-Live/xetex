@@ -61,7 +61,7 @@ struct XeTeXLayoutEngine_rec
     XeTeXFontInst*  font;
     PlatformFontRef fontRef;
     hb_tag_t        script;
-    hb_tag_t        language;
+    hb_language_t   language;
     hb_feature_t*   features;
     char**          ShaperList; // the requested shapers
     char*           shaper;     // the actually used shaper
@@ -442,6 +442,8 @@ getGraphiteFeatureSettingCode(XeTeXLayoutEngine engine, uint32_t featureID, uint
     return rval;
 }
 
+#define tag_from_lang(x) hb_tag_from_string(hb_language_to_string(x), strlen(hb_language_to_string(x)))
+
 uint32_t
 getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, uint32_t featureID)
 {
@@ -452,7 +454,7 @@ getGraphiteFeatureDefaultSetting(XeTeXLayoutEngine engine, uint32_t featureID)
 
     if (grFace != NULL) {
         const gr_feature_ref* feature = gr_face_find_fref(grFace, featureID);
-        gr_feature_val *featureValues = gr_face_featureval_for_lang (grFace, engine->language);
+        gr_feature_val *featureValues = gr_face_featureval_for_lang (grFace, tag_from_lang(engine->language));
 
         rval = gr_fref_feature_value(feature, featureValues);
     }
@@ -630,7 +632,7 @@ getEmboldenFactor(XeTeXLayoutEngine engine)
 }
 
 XeTeXLayoutEngine
-createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, hb_tag_t language,
+createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, char *language,
                     hb_feature_t* features, int nFeatures, char **shapers, uint32_t rgbValue,
                     float extend, float slant, float embolden)
 {
@@ -638,7 +640,6 @@ createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, hb_
     result->fontRef = fontRef;
     result->font = (XeTeXFontInst*)font;
     result->script = script;
-    result->language = language;
     result->features = features;
     result->ShaperList = shapers;
     result->shaper = NULL;
@@ -648,6 +649,16 @@ createLayoutEngine(PlatformFontRef fontRef, XeTeXFont font, hb_tag_t script, hb_
     result->slant = slant;
     result->embolden = embolden;
     result->hbBuffer = hb_buffer_create();
+
+    // For Graphite fonts treat the language as BCP 47 tag, for OpenType we
+    // treat it as a OT language tag for backward compatibility with pre-0.9999
+    // XeTeX.
+    if (getReqEngine() == 'G')
+        result->language = hb_language_from_string(language, -1);
+    else
+        result->language = hb_ot_tag_to_language(hb_tag_from_string(language, -1));
+
+    free(language);
 
     return result;
 }
@@ -685,7 +696,6 @@ layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t 
 {
     bool res;
     hb_script_t script = HB_SCRIPT_INVALID;
-    hb_language_t language = HB_LANGUAGE_INVALID;
     hb_direction_t direction = HB_DIRECTION_LTR;
     hb_segment_properties_t segment_props;
     hb_shape_plan_t *shape_plan;
@@ -698,7 +708,6 @@ layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t 
         direction = HB_DIRECTION_RTL;
 
     script = hb_ot_tag_to_script (engine->script);
-    language = hb_ot_tag_to_language (engine->language);
 
     if (hbUnicodeFuncs == NULL)
         hbUnicodeFuncs = _get_unicode_funcs();
@@ -708,7 +717,7 @@ layoutChars(XeTeXLayoutEngine engine, uint16_t chars[], int32_t offset, int32_t 
     hb_buffer_add_utf16(engine->hbBuffer, chars, max, offset, count);
     hb_buffer_set_direction(engine->hbBuffer, direction);
     hb_buffer_set_script(engine->hbBuffer, script);
-    hb_buffer_set_language(engine->hbBuffer, language);
+    hb_buffer_set_language(engine->hbBuffer, engine->language);
 
     hb_buffer_guess_segment_properties(engine->hbBuffer);
     hb_buffer_get_segment_properties(engine->hbBuffer, &segment_props);
@@ -944,7 +953,7 @@ initGraphiteBreaking(XeTeXLayoutEngine engine, const uint16_t* txtPtr, int txtLe
             grPrevSlot = NULL;
         }
 
-        gr_feature_val *grFeatureValues = gr_face_featureval_for_lang (grFace, engine->language);
+        gr_feature_val *grFeatureValues = gr_face_featureval_for_lang (grFace, tag_from_lang(engine->language));
 
         int nFeatures = engine->nFeatures;
         hb_feature_t *features =  engine->features;

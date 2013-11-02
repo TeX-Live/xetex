@@ -878,7 +878,7 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
 {
     XeTeXLayoutEngine engine;
     hb_tag_t script = HB_TAG_NONE;
-    hb_tag_t language = HB_TAG_NONE;
+    char * language = NULL;
     hb_feature_t* features = NULL;
     char** shapers = NULL; /* NULL-terminated array */
     int nFeatures = 0;
@@ -948,7 +948,9 @@ loadOTfont(PlatformFontRef fontRef, XeTeXFont font, Fixed scaled_size, const cha
                 if (*cp3 != '=')
                     goto bad_option;
                 ++cp3;
-                language = hb_tag_from_string(cp3, cp2 - cp3);
+                language = (char*)xmalloc(cp2 - cp3 + 1);
+                language[cp2 - cp3] = '\0';
+                memcpy(language, cp3, cp2 - cp3);
                 goto next_option;
             }
 
