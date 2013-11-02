@@ -82,6 +82,7 @@ convertToUtf8(UConverter* conv, const unsigned char* name, int len)
     len = ucnv_fromUChars(utf8Conv, buffer2, bufSize, (UChar*)buffer1, len, &status);
     buffer2[len] = 0;
 
+    delete[] buffer1;
     return buffer2;
 }
 
@@ -155,6 +156,7 @@ XeTeXFontMgr_FC::readNames(FcPattern* pat)
                                 prependToList(nameList, utf8name);
                             else
                                 appendToList(nameList, utf8name);
+                            delete[] utf8name;
                         }
                     }
                     break;

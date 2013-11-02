@@ -84,6 +84,8 @@ XeTeXFontInst::~XeTeXFontInst()
         ftFace = 0;
     }
     hb_font_destroy(hbFont);
+    delete[] fFilename;
+    free((void*) fMath);
 }
 
 /* HarfBuzz font functions */
