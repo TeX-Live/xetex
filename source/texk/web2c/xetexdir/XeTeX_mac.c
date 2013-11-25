@@ -254,8 +254,7 @@ GetGlyphBBox_AAT(CFDictionaryRef attributes, UInt16 gid, GlyphBBox* bbox)
 static double
 getGlyphWidthFromCTFont(CTFontRef font, UInt16 gid)
 {
-    CGSize advances[1] = { CGSizeMake(0, 0) };
-    return PStoTeXPoints(CTFontGetAdvancesForGlyphs(font, 0, &gid, advances, 1));
+    return PStoTeXPoints(CTFontGetAdvancesForGlyphs(font, kCTFontHorizontalOrientation, &gid, NULL, 1));
 }
 
 double
