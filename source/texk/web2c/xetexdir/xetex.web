@@ -12058,12 +12058,12 @@ the font.
 @d aat_font_flag=@"FFFF
 @d is_aat_font(#)==font_area[#]=aat_font_flag
 @d is_otgr_font(#)==font_area[#]=otgr_font_flag
-@d is_ot_font(#)==(is_otgr_font(#)) and (usingOpenType(font_layout_engine[#]))
-@d is_gr_font(#)==(is_otgr_font(#)) and (usingGraphite(font_layout_engine[#]))
+@d is_ot_font(#)==usingOpenType(#)
+@d is_gr_font(#)==usingGraphite(#)
 @d is_native_font(#)==(is_aat_font(#)) or (is_otgr_font(#))
     {native fonts have |font_area| = 65534 or 65535,
      which would be a string containing an invalid Unicode character}
-@d is_new_mathfont(#)==(is_otgr_font(#)) and (isOpenTypeMathFont(font_layout_engine[#]))
+@d is_new_mathfont(#)==isOpenTypeMathFont(#)
 
 @d non_char==qi(too_big_char) {a |halfword| code that can't match a real character}
 @d non_address=0 {a spurious |bchar_label|}
@@ -15913,11 +15913,6 @@ begin
             goto done;
         end;
 
-    if (native_font_type_flag = otgr_font_flag) and isOpenTypeMathFont(font_engine) then
-        num_font_dimens := first_math_fontdimen + lastMathConstant
-    else
-        num_font_dimens := 8;
-
     if (font_ptr = font_max) or (fmem_ptr + num_font_dimens > font_mem_size) then begin
         @<Apologize for not loading the font, |goto done|@>;
     end;
@@ -15948,6 +15943,12 @@ begin
     height_base[font_ptr] := ascent;
     depth_base[font_ptr] := -descent;
 
+    font_layout_engine[font_ptr] := font_engine;
+    if isOpenTypeMathFont(font_ptr) then
+        num_font_dimens := first_math_fontdimen + lastMathConstant
+    else
+        num_font_dimens := 8;
+
     font_params[font_ptr] := num_font_dimens; {we add an extra \.{\\fontdimen8} |:= cap_height|; then OT math fonts have a bunch more}
     font_bc[font_ptr] := 0;
     font_ec[font_ptr] := 65535;
@@ -15956,7 +15957,6 @@ begin
     skew_char[font_ptr] := default_skew_char;
     param_base[font_ptr] := fmem_ptr-1;
 
-    font_layout_engine[font_ptr] := font_engine;
     font_mapping[font_ptr] := 0; {don't use the mapping, if any, when measuring space here}
     font_letter_space[font_ptr] := loaded_font_letter_space;
 
