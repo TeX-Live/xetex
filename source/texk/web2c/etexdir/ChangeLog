@@ -1,3 +1,23 @@
+2014-01-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etrip/etrip.{diffs,fot,log,tex,typ}, etrip/etripin.log:
+	Updated for e-TeX 3.14159265.
+
+2014-01-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etexextra.h: Adapt to TeX Version 3.14159265.
+
+2014-01-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	TeX tuneup of 2014.
+	* etex.ch, tex.ch0, tex.ech: Adapt to TeX Version 3.14159265.
+
+2014-01-17  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* etrip.test (removed): Renamed ...
+	* etriptest (new): ... into this.
+	* am/etex.am: Adapted.
+
 2013-11-21  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* etex.ch: Enable hyphenation of text between \beginL and \endL or

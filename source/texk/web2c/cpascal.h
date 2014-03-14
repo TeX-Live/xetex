@@ -124,6 +124,7 @@ typedef FILE *text;
 /* To work around casting problems.  */
 #define ucharcast(x) ((unsigned char) (x))
 #define intcast(x) ((integer) (x))
+#define int64cast(x) ((integer64) (x))
 #define stringcast(x) ((string) (x))
 #define conststringcast(x) ((const_string) (x))
 #define ustringcast(x) ((unsigned char *) (x))
@@ -242,6 +243,7 @@ typedef const unsigned char *const_w2custring;
    are defined in C with _'s.  */
 #define extendfilename	extend_filename
 #define findsuffix	find_suffix
+#define makesuffix	make_suffix
 #define FOPENRBINMODE	FOPEN_RBIN_MODE
 #define FOPENRMODE	FOPEN_R_MODE
 #define getoptlongonly	getopt_long_only

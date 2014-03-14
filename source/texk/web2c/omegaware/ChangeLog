@@ -1,3 +1,82 @@
+2014-01-23  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2opl.web, ovf2ovp.web: Drop duplicate semicolon.
+
+2014-01-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2opl.web: Adapted to TFtoPL Version 3.3.
+	* opl2ofm.web: Adapted to PLtoTF Version 3.6.
+	* ovf2ovp.web: Adapted to VFtpVP Version 1.4.
+	* ovp2ovf.web: Adapted to VPtoVF Version 1.6.
+
+2014-01-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* {ofm2opl,opl2ofm,ovf2ovp,ovp2ovf}.{ch,web}: Fix glitches in
+	online printing of progress report.
+
+2014-01-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* opl2ofm.up, ovp2ovf.up: Update module numbers.
+
+2014-01-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Version 1.13 (January 2014) of OFM2OPL & Co.
+
+	* {ofm2opl,opl2ofm,ovf2ovp,ovp2ovf}.{ch,up,web}: Bug fixes.
+	With character codes up to 0x10ffff the ligature hash keys no
+	longer fit into 32-bit integers, thus we use type integer64.
+
+	* vrepeat.test, vrepeat0.{ofm,opl}, vrepeat1.{ofm,opl,ovf,ovp}:
+	Shell script and data for a new test,
+	* am/omegaware.am: Adapted.
+
+2014-01-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2opl.{ch,web}: Adapt formatting to ../tftopl.web.
+	* opl2ofm.{ch,up,web}: Adapt formatting to ../pltotf.web.
+	* ovf2ovp.{ch,web}: Adapt formatting to ../vftovp.web.
+	* ovp2ovf.{ch,up,web}: Adapt formatting to ../vptovf.web.
+
+2014-01-04  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/omegaware.am: Add rules to build wofm2opl wopl2ofm wovf2ovp.
+
+2013-12-30  TANAKA Takuji  <KXD02663@nifty.ne.jp>
+
+	* ovp2ovf.web: OFM files are never seven bit safe.
+
+2013-12-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2ovf.web, ovf2ofm.web: Replace 65535 etc by numeric Web
+	macros (can be up to 2^{30} for otangle).
+	* ofm2opl.ch: Split one changset to enable  upTeX version.
+	* ofm2ovf.up, ovf2ofm.up (new): Changes for upTeX versions.
+	* ovp2ovf.up: Character codes are 0..0x10ffff.
+	* overbmp.test: More extensive tests.
+	* tests/inbmp0.opl (removed): Moved ...
+	* tests/inbmp.opl (new): ... to here.
+	* tests/overbmp.opl (new): Additional test data.
+	* tests/overbmp.ovp: Adapt to modified file names.
+	* am/omegaware.am: Adapted.
+
+2013-12-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ovp2ovf.up: Ensure char_repeats[c]<=0xffff.
+	* overbmp.test, tests/inbmp0.opl, tests/overbmp.ovp (new):
+	Shell script and data for a new test,
+	inspired by TANAKA Takuji <KXD02663@nifty.ne.jp>.
+
+2013-12-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* opl2ofm.{ch,web}: Drop ASCII_04, ASCII_10, ASCII_14, MBL_string,
+	RI_string, RCE_string (all unused).
+	* {opl2ofm,ovp2ovf}.web: Drop unused procedure out_digs().
+	* {ofm2opl,opl2ofm,ovf2ovp,ovp2ovf}.{ch,web}: HEX has 16 bytes.
+
+	* ovp2ovf.ch: Use make_suffix() for implied ofm_name.
+	* selectfont.test: Add test for 'ovp2ovf foo.ovp bar.ovf'.
+	* am/omegaware.am (DISTCLEANFILES): Additional files.
+
 2013-01-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* otangle.test: Avoid spurious failure of parallel-tests.

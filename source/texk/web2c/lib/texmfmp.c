@@ -486,7 +486,12 @@ shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
    1 if shell escapes are not restricted, hence any command is allowed.
    2 if shell escapes are restricted and CMD is allowed (possibly after
       quoting).  */
-   
+
+#ifdef WIN32
+#undef system
+#define system fsyscp_system
+#endif
+
 int
 runsystem (const char *cmd)
 {
@@ -577,9 +582,6 @@ int argc;
 /* If the user overrides argv[0] with -progname.  */
 static const_string user_progname;
 
-/* The C version of what might wind up in DUMP_VAR.  */
-static const_string dump_name;
-
 /* The C version of the jobname, if given. */
 static const_string c_job_name;
 
@@ -662,36 +664,7 @@ maininit (int ac, string *av)
 #endif
 #if (IS_upTeX || defined(XeTeX)) && defined(WIN32)
   enc = kpse_var_value("command_line_encoding");
-  if (enc) {
-#ifdef DEBUG
-    fprintf(stderr, "command_line_encoding (%s)\n", enc);
-#endif /* DEBUG */
-    if (!(strncmp(enc,"utf8",5) && strncmp(enc,"utf-8",6))) {
-      DWORD ret;
-      LPWSTR *argvw;
-      INT argcw, i;
-      string s;
-#ifdef DEBUG
-      HANDLE hStderr;
-      hStderr = GetStdHandle( STD_ERROR_HANDLE );
-#endif /* DEBUG */
-      file_system_codepage = CP_UTF8;
-      is_cp932_system = 0;
-      argvw = CommandLineToArgvW(GetCommandLineW(), &argcw);
-      argc = argcw;
-      argv = xmalloc(sizeof(char *)*(argcw+1));
-      for (i=0; i<argcw; i++) {
-        s = get_utf8_from_wstring(argvw[i], s=NULL);
-        argv[i] = s;
-#ifdef DEBUG
-        fprintf(stderr, "Commandline arguments %d:(%s) [", i, argv[i]);
-        WriteConsoleW( hStderr, argvw[i], wcslen(argvw[i]), &ret, NULL);
-        fprintf(stderr, "]\n");
-#endif /* DEBUG */
-      }
-      argv[argcw] = NULL;
-    }
-  }
+  get_command_line_args_utf8(enc, &argc, &argv);
 #endif
 
   /* If the user says --help or --version, we need to notice early.  And
