@@ -67,7 +67,7 @@ XDVIPDFMX=FALSE
 JOBS_IF_PARALLEL=${JOBS_IF_PARALLEL:-3}
 MAX_LOAD_IF_PARALLEL=${MAX_LOAD_IF_PARALLEL:-2}
 
-CFLAGS="$CFLAGS -Wdeclaration-after-statement"
+CFLAGS="$CFLAGS -Wdeclaration-after-statement -Wno-parentheses-equality"
 
 until [ -z "$1" ]; do
   case "$1" in
@@ -131,10 +131,7 @@ then
   export CFLAGS CXXFLAGS OBJCXXFLAGS LDFLAGS
 fi
 
-if [ "$STRIP_XETEX" = "FALSE" ]
-then
-    export CFLAGS
-fi
+export CFLAGS
 
 # build xdvipdfmx if present
 if [ -d source/texk/xdvipdfmx ]
