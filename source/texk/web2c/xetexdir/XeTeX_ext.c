@@ -1644,7 +1644,7 @@ makefontdef(integer f)
 
         t = CTFontGetMatrix(font);
         extend = t.a;
-        slant = t.b;
+        slant = t.c;
 
         emboldenNumber = CFDictionaryGetValue(attributes, kXeTeXEmboldenAttributeName);
         if (emboldenNumber)
