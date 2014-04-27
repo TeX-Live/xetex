@@ -1027,6 +1027,38 @@ box.
 \desc{Expands to the number of pages in a PDF file.}
 \endcmd
 
+
+\section{Character protrusion}
+
+\cmd|\XeTeXprotrudechars|
+\xarg{integer}
+\desc{Equivalent to \cs{pdfprotrudechars} in pdf\TeX{} for controlling
+character protrusion or `margin kerning'. When set to zero (default), character
+protrusion is turned off. When set to one, it is activated but will not affect
+line-breaking. When set to two, line-breaking decisions will change as a result
+of the character protrusion.}
+\begin{example}
+\XeTeXprotrudechars=2
+\font\rm="[texgyrepagella-regular.otf]"\relax
+\rm
+\rpcode\font\XeTeXcharglyph\hyphenchar\font=250
+\hsize=20mm
+a a a a a a a a a abbabbabb aabbabbabb abbabb
+\end{example}
+See the pdf\TeX{} documentation for further details.
+\endcmd
+
+\cmd|\rpcode| \xarg{font} \xarg{char slot} (integer, $n$)
+\desc{Sets the right-side character protrusion value of the \xarg{char slot} in
+the specified \xarg{font} to $n/1000$\,em. $n$ is clipped to $\pm1000$.}
+\endcmd
+
+\cmd|\lpcode| \xarg{font} \xarg{char slot} (integer, $n$)
+\desc{Sets the left-side character protrusion value of the \xarg{char slot} in
+the specified \xarg{font} to $n/1000$\,em. $n$ is clipped to $\pm1000$.}
+\endcmd
+
+
 \section{Cross-compatibility with \pdftex and/or \luatex}
 
 \cmd|\pdfpageheight|
@@ -1124,37 +1156,6 @@ suppressed and the font control sequence being defined is set to
 \x This would be ‘ImpossibleFont’, if it existed.
 \end{example}
 \endcmd
-
-\subsection{Character protrusion}
-
-\cmd|\XeTeXprotrudechars|
-\xarg{integer}
-\desc{Equivalent to \cs{pdfprotrudechars} in pdf\TeX{} for controlling
-character protrusion or `margin kerning'. When set to zero (default), character
-protrusion is turned off. When set to one, it is activated but will not affect
-line-breaking. When set to two, line-breaking decisions will change as a result
-of the character protrusion.}
-\begin{example}
-\XeTeXprotrudechars=2
-\font\rm="[texgyrepagella-regular.otf]"\relax
-\rm
-\rpcode\font\XeTeXcharglyph\hyphenchar\font=250
-\hsize=20mm
-a a a a a a a a a abbabbabb aabbabbabb abbabb
-\end{example}
-See the pdf\TeX{} documentation for further details.
-\endcmd
-
-\cmd|\rpcode| \xarg{font} \xarg{char slot} (integer, $n$)
-\desc{Sets the right-side character protrusion value of the \xarg{char slot} in
-the specified \xarg{font} to $n/1000$\,em. $n$ is clipped to $\pm1000$.}
-\endcmd
-
-\cmd|\lpcode| \xarg{font} \xarg{char slot} (integer, $n$)
-\desc{Sets the left-side character protrusion value of the \xarg{char slot} in
-the specified \xarg{font} to $n/1000$\,em. $n$ is clipped to $\pm1000$.}
-\endcmd
-
 
 
 \section{Misc.}
