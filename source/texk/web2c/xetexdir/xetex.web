@@ -12772,6 +12772,9 @@ notation. For example, a two-byte-long distance parameter has a value between
 $-2^{15}$ and $2^{15}-1$. As in \.{TFM} files, numbers that occupy
 more than one byte position appear in BigEndian order.
 
+\XeTeX\ extends the format of \.{DVI} with its own commands, and thus produced
+``extended device independent'' (\.{XDV}) files.
+
 A \.{DVI} file consists of a ``preamble,'' followed by a sequence of one
 or more ``pages,'' followed by a ``postamble.'' The preamble is simply a
 |pre| command, with its parameters that define the dimensions used in the
@@ -12825,7 +12828,7 @@ measurement is variable, as explained below; \TeX\ sets things up so that
 its \.{DVI} output is in sp units, i.e., scaled points, in agreement with
 all the |scaled| dimensions in \TeX's data structures.
 
-@ Here is a list of all the commands that may appear in a \.{DVI} file. Each
+@ Here is a list of all the commands that may appear in a \.{XDV} file. Each
 command is specified by its symbolic name (e.g., |bop|), its opcode byte
 (e.g., 139), and its parameters (if any). The parameters are followed
 by a bracketed number telling how many bytes they occupy; for example,
@@ -13060,6 +13063,9 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 
 \yskip\hang|post_post| 249. Ending of the postamble, see below.
 
+\yskip\noindent Commands 250--255 are undefined in normal \.{DVI} files, but
+the following commands are used in \.{XDV} files.
+
 \yskip\hang|pic_file| 251 |flags[1]| |t[4][6]| |p[2]| |len[2]| |path[l]|.
     |flags=0| for raster image, and |1| for \.{PDF}.
     |t| is transform matrix.
@@ -13070,17 +13076,17 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 \yskip\hang\vbox{\halign{#&#\hfil\cr
 |define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |lenps[1]| |lenfam[1]| |lensty[1]| |ps[lenps]| |fam[lenfam]| |sty[lensty]|\cr
 & |if (flags and COLORED) then| |rgba[4]|\cr
+& |if (flags and EXTEND) then| |extend[4]|\cr
+& |if (flags and SLANT) then| |slant[4]|\cr
+& |if (flags and EMBOLDEN) then| |embolden[4]|\cr
 & |if (flags and VARIATIONS) then| |numvars[2]| |axes[4nv]| |values[4nv]|\cr
-& |if (flags and MATRIX) then| |ta[4]| |tb[4]| |tc[4]| |td[4]| |tx[4]| |ty[4]|\cr
 }}
 
 \yskip\hang|set_glyph_array| 253 |w[4]| |k[2]| |xy[8k]| |g[2k]|.
 
 \yskip\hang|set_glyph_string| 254 |w[4]| |k[2]| |x[4k]| |g[2k]|.
 
-\yskip\noindent Commands 250--255 are undefined in normal \.{DVI} files,
-but 251--254 are permitted in the extended `\.{XDV}' files
-produced by \XeTeX. p\TeX\ uses 255.
+\yskip\noindent Commands 250 and 255 are undefined in normal \.{XDV} files.
 
 @ @d set_char_0=0 {typeset character 0 and move right}
 @d set1=128 {typeset a character and move right}
