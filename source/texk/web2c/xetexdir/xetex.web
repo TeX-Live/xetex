@@ -7497,11 +7497,13 @@ corresponding token types must precede |write_text|.
 @d every_job_text=13 {|token_type| code for \.{\\everyjob}}
 @d every_cr_text=14 {|token_type| code for \.{\\everycr}}
 @d mark_text=15 {|token_type| code for \.{\\topmark}, etc.}
-@d inter_char_text=16 {text from \\XeTeXinterchartoks}
 @#
-@d eTeX_text_offset=output_routine_loc-output_text-1 {1 more to make space for the |inter_char_text|}
+@d eTeX_text_offset=output_routine_loc-output_text
 @d every_eof_text=every_eof_loc-eTeX_text_offset
   {|token_type| code for \.{\\everyeof}}
+@#
+@d inter_char_text=XeTeX_inter_char_loc-eTeX_text_offset
+  {|token_type| code for \.{\\XeTeXinterchartoks}}
 @#
 @d write_text=toks_base-eTeX_text_offset {|token_type| code for \.{\\write}}
 
@@ -7769,7 +7771,7 @@ if t>=macro then {the token list starts with a reference count}
       case t of
       mark_text:print_esc("mark");
       write_text:print_esc("write");
-      othercases print_cmd_chr(assign_toks,t-output_text+output_routine_loc+1)
+      othercases print_cmd_chr(assign_toks,t-output_text+output_routine_loc)
       endcases;@/
       print("->"); token_show(p); end_diagnostic(false);
       end;
