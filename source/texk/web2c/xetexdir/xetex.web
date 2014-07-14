@@ -7616,7 +7616,7 @@ print_char(" ")
 case token_type of
 parameter: print_nl("<argument> ");
 u_template,v_template: print_nl("<template> ");
-backed_up_char,backed_up: if loc=null then print_nl("<recently read> ")
+backed_up,backed_up_char: if loc=null then print_nl("<recently read> ")
   else print_nl("<to be read again> ");
 inserted: print_nl("<inserted text> ");
 macro: begin print_ln; print_cs(name);
@@ -7630,8 +7630,8 @@ every_vbox_text: print_nl("<everyvbox> ");
 every_job_text: print_nl("<everyjob> ");
 every_cr_text: print_nl("<everycr> ");
 mark_text: print_nl("<mark> ");
-inter_char_text: print_nl("<XeTeXinterchartoks> ");
 every_eof_text: print_nl("<everyeof> ");
+inter_char_text: print_nl("<XeTeXinterchartoks> ");
 write_text: print_nl("<write> ");
 othercases print_nl("?") {this should never happen}
 endcases
