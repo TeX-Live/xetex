@@ -94,7 +94,7 @@ while (<Unidata>) {
 		shift @u;
 
 		for my $codepoint ($start .. $end) {
-			parse_unidata(sprintf("%04x", $codepoint), @u);
+			parse_unidata(sprintf("%04X", $codepoint), @u);
 		}
 	}
 }
