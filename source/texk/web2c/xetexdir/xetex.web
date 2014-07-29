@@ -155,8 +155,11 @@
 \font\ninerm=cmr9
 \let\mc=\ninerm % medium caps for names like SAIL
 
-\input graphicx % \relectbox for XeTeX logo
-\def\XeTeX{X\kern-.125em\lower.5ex\hbox{\reflectbox{E}}\kern-.1667em\TeX}
+\def\mirror#1{%
+  \phantom{#1}%
+  \rlap{\special{pdf:btrans xscale -1}#1\special{pdf:etrans}}%
+}
+\def\XeTeX{X\kern-.125em\lower.5ex\hbox{\mirror{E}}\kern-.1667em\TeX}
 
 \def\eTeX{$\varepsilon$-\TeX}
 \font\revrm=xbmc10 % for right-to-left text
@@ -169,19 +172,7 @@
 %       "reflectedabout((.5[l,r],0),(.5[l,r],1));";
 %     input cmbx10
 %+++++++++++++++++++++++++++++++++++++++++++++++++
-\ifx\beginL\undefined % this is TeX
-  \def\XeT{X\kern-.125em\lower.5ex\hbox{E}\kern-.1667emT}
-  \def\TeXeT{\TeX-\hbox{\revrm \XeT}}   % for TeX-XeT
-  \def\TeXXeT{\TeX-\hbox{\revrm -\XeT}} % for TeX--XeT
-\else
-  \ifx\eTeXversion\undefined % this is \TeXeT
-    \def\TeXeT{\TeX-{\revrm\beginR\TeX\endR}}   % for TeX-XeT
-    \def\TeXXeT{\TeX-{\revrm\beginR\TeX-\endR}} % for TeX--XeT
-  \else % this is \eTeX
-    \def\TeXeT{\TeX-{\TeXXeTstate=1\revrm\beginR\TeX\endR}}   % for TeX-XeT
-    \def\TeXXeT{\TeX-{\TeXXeTstate=1\revrm\beginR\TeX-\endR}} % for TeX--XeT
-  \fi
-\fi
+\def\TeXeT{\TeX-{\revrm\beginR\TeX\endR}} % for TeX-XeT
 \def\PASCAL{Pascal}
 \def\ph{\hbox{Pascal-H}}
 \def\pct!{{\char`\%}} % percent sign in ordinary text
