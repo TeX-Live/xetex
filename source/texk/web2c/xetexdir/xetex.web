@@ -13060,11 +13060,10 @@ recursive) reflected segment.
 @ The preamble contains basic information about the file as a whole. As
 stated above, there are six parameters:
 $$\hbox{|@!i[1]| |@!num[4]| |@!den[4]| |@!mag[4]| |@!k[1]| |@!x[k]|.}$$
-The |i| byte identifies \.{DVI} format; in \XeTeX\ this byte is set to~5, as we
+The |i| byte identifies \.{DVI} format; in \XeTeX\ this byte is set to~6, as we
 have new \.{DVI} opcodes, while in \TeX82 it is always set to~2. (The value
 |i=3| is used for an extended format that allows a mixture of right-to-left and
-left-to-right typesetting. Prre-1.0 \XeTeX\ releases using Mac~OS~X-specific
-data types used |i=4|.)
+left-to-right typesetting. Older versions of \XeTeX\ used |i=4| and |i=5|.)
 
 The next two parameters, |num| and |den|, are positive integers that define
 the units of measurement; they are the numerator and denominator of a
@@ -13087,7 +13086,7 @@ users to override the |mag|~setting when a \.{DVI} file is being printed.)
 Finally, |k| and |x| allow the \.{DVI} writer to include a comment, which is not
 interpreted further. The length of comment |x| is |k|, where |0<=k<256|.
 
-@d id_byte=5 {identifies the kind of \.{DVI} files described here}
+@d id_byte=6 {identifies the kind of \.{DVI} files described here}
 
 @ Font definitions for a given font number |k| contain further parameters
 $$\hbox{|c[4]| |s[4]| |d[4]| |a[1]| |l[1]| |n[a+l]|.}$$
