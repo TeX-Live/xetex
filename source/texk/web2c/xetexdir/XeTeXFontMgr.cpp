@@ -410,18 +410,6 @@ XeTeXFontMgr::getFullName(PlatformFontRef font) const
         return i->second->psName->c_str();
 }
 
-void
-XeTeXFontMgr::getNames(PlatformFontRef font, const char** psName,
-    const char** famName, const char** styName) const
-{
-    std::map<PlatformFontRef,Font*>::const_iterator i = platformRefToFont.find(font);
-    if (i == platformRefToFont.end())
-        die("internal error %d in XeTeXFontMgr", 3);
-    *psName = xstrdup(i->second->psName->c_str());
-    *famName = xstrdup(i->second->familyName->c_str());
-    *styName = xstrdup(i->second->styleName->c_str());
-}
-
 int
 XeTeXFontMgr::weightAndWidthDiff(const Font* a, const Font* b) const
 {

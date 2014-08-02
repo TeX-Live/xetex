@@ -84,10 +84,6 @@ public:
         // return the full name of the font, suitable for use in XeTeX source
         // without requiring style qualifiers
 
-    void                            getNames(PlatformFontRef font, const char** psName,
-                                            const char** famName, const char** styName) const;
-        // return Postscript, family, and style names, for use in .xdv
-
     double                          getDesignSize(XeTeXFont font);
 
     char                            getReqEngine() const { return sReqEngine; };

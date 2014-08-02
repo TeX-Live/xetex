@@ -76,7 +76,6 @@ const char* getFullName(PlatformFontRef fontRef);
 
 const char* getFontFilename(XeTeXLayoutEngine engine);
 
-void getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName);
 double getDesignSize(XeTeXFont font);
 
 void deleteFont(XeTeXFont font);

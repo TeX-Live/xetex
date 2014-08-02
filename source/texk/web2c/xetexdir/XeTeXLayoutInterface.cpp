@@ -178,12 +178,6 @@ getFontFilename(XeTeXLayoutEngine engine)
     return engine->font->getFilename();
 }
 
-void
-getNames(PlatformFontRef fontRef, const char** psName, const char** famName, const char** styName)
-{
-    XeTeXFontMgr::GetFontManager()->getNames(fontRef, psName, famName, styName);
-}
-
 PlatformFontRef
 getFontRef(XeTeXLayoutEngine engine)
 {

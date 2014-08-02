@@ -13013,7 +13013,7 @@ the following commands are used in \.{XDV} files.
 recursive) reflected segment.
 
 \yskip\hang\vbox{\halign{#&#\hfil\cr
-|define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |lenps[1]| |lenfam[1]| |lensty[1]| |ps[lenps]| |fam[lenfam]| |sty[lensty]|\cr
+|define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |l[1]| |n[l]|\cr
 & |if (flags and COLORED) then| |rgba[4]|\cr
 & |if (flags and EXTEND) then| |extend[4]|\cr
 & |if (flags and SLANT) then| |slant[4]|\cr

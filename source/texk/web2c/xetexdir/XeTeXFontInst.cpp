@@ -328,8 +328,8 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
         sprintf(buf, ":%d", index);
     else
         buf[0] = 0;
-    fFilename = new char[strlen(pathname) + 2 + strlen(buf) + 1];
-    sprintf(fFilename, "[%s%s]", pathname, buf);
+    fFilename = new char[strlen(pathname) + strlen(buf) + 1];
+    sprintf(fFilename, "%s%s", pathname, buf);
     fUnitsPerEM = ftFace->units_per_EM;
     fAscent = unitsToPoints(ftFace->ascender);
     fDescent = unitsToPoints(ftFace->descender);

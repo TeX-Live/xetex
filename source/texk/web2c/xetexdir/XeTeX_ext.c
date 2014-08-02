@@ -1574,12 +1574,8 @@ makefontdef(integer f)
     uint32_t variationCount = 0;
     uint32_t rgba;
     Fixed size;
-    const char* psName;
-    const char* famName;
-    const char* styName;
-    uint8_t psLen;
-    uint8_t famLen;
-    uint8_t styLen;
+    const char* filename;
+    uint8_t filenameLen;
     int fontDefLength;
     char* cp;
     PlatformFontRef fontRef = 0;
@@ -1599,6 +1595,7 @@ makefontdef(integer f)
         CGFloat fSize;
         char *pathname;
         int index;
+        char buf[20];
 
         flags = XDV_FLAG_FONTTYPE_AAT;
         attributes = (CFDictionaryRef) fontlayoutengine[f];
@@ -1610,23 +1607,15 @@ makefontdef(integer f)
         }
 
         pathname = getFileNameFromCTFont(font, &index);
-        if (pathname) {
-            char buf[20];
+        assert(pathname);
 
-            if (index > 0)
-                sprintf(buf, ":%d", index);
-            else
-                buf[0] = '\0';
+        if (index > 0)
+            sprintf(buf, ":%d", index);
+        else
+            buf[0] = '\0';
 
-            psName = xmalloc(strlen((char*) pathname) + 2 + strlen(buf) + 1);
-            sprintf((char*) psName, "[%s%s]", pathname, buf);
-            famName = xstrdup("");
-            styName = xstrdup("");
-        } else {
-            psName  = getNameFromCTFont(font, kCTFontPostScriptNameKey);
-            famName = getNameFromCTFont(font, kCTFontFamilyNameKey);
-            styName = getNameFromCTFont(font, kCTFontStyleNameKey);
-        }
+        filename = xmalloc(strlen((char*) pathname) + strlen(buf) + 1);
+        sprintf((char*) filename, "%s%s", pathname, buf);
 
         if (CFDictionaryGetValue(attributes, kCTVerticalFormsAttributeName))
             flags |= XDV_FLAG_VERTICAL;
@@ -1653,13 +1642,8 @@ makefontdef(integer f)
 
         engine = (XeTeXLayoutEngine)fontlayoutengine[f];
         fontRef = getFontRef(engine);
-        psName = xstrdup(getFontFilename(engine));
-        if (psName) {
-            famName = xstrdup("");
-            styName = xstrdup("");
-        } else {
-            getNames(getFontRef(engine), &psName, &famName, &styName);
-        }
+        filename = xstrdup(getFontFilename(engine));
+        assert(filename);
 
         rgba = getRgbValue(engine);
         if ((fontflags[f] & FONT_FLAGS_VERTICAL) != 0)
@@ -1675,14 +1659,12 @@ makefontdef(integer f)
         exit(3);
     }
 
-    psLen = strlen(psName);
-    famLen = strlen(famName);
-    styLen = strlen(styName);
+    filenameLen = strlen(filename);
 
     /* parameters after internal font ID:
     //  size[4]
     //  flags[2]
-    //  lp[1] lf[1] ls[1] ps[lp] fam[lf] sty[ls]
+    //  l[1] n[l]
     //  if flags & COLORED:
     //      c[4]
     //  if flags & VARIATIONS:
@@ -1694,8 +1676,8 @@ makefontdef(integer f)
     fontDefLength
         = 4 /* size */
         + 2 /* flags */
-        + 3 /* name length */
-        + psLen + famLen + styLen;
+        + 1 /* name length */
+        + filenameLen;
 
     if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
         fontDefLength += 4; /* 32-bit RGBA value */
@@ -1729,18 +1711,10 @@ makefontdef(integer f)
     *(uint16_t*)cp = SWAP16(flags);
     cp += 2;
 
-    *(uint8_t*)cp = psLen;
+    *(uint8_t*)cp = filenameLen;
     cp += 1;
-    *(uint8_t*)cp = famLen;
-    cp += 1;
-    *(uint8_t*)cp = styLen;
-    cp += 1;
-    memcpy(cp, psName, psLen);
-    cp += psLen;
-    memcpy(cp, famName, famLen);
-    cp += famLen;
-    memcpy(cp, styName, styLen);
-    cp += styLen;
+    memcpy(cp, filename, filenameLen);
+    cp += filenameLen;
 
     if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
         *(uint32_t*)cp = SWAP32(rgba);
@@ -1763,9 +1737,7 @@ makefontdef(integer f)
         cp += 4;
     }
 
-    free((char*) psName);
-    free((char*) famName);
-    free((char*) styName);
+    free((char*) filename);
 
     return fontDefLength;
 }
