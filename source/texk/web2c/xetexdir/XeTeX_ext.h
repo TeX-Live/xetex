@@ -128,9 +128,6 @@ typedef struct {
 
 #define native_glyph(p)     native_length(p)    /* glyph ID field in a glyph_node */
 
-#define XDV_GLYPH_STRING    254
-#define XDV_GLYPH_ARRAY     253
-
 /* OT-related constants we need */
 #define kGSUB   HB_TAG('G','S','U','B')
 #define kGPOS   HB_TAG('G','P','O','S')

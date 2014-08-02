@@ -1519,7 +1519,6 @@ makeXDVGlyphArrayData(void* pNode)
     memoryword* p = (memoryword*) pNode;
     void* glyph_info;
     FixedPoint* locations;
-    int opcode;
     Fixed width;
     uint16_t glyphCount = native_glyph_count(p);
 
@@ -1535,15 +1534,7 @@ makeXDVGlyphArrayData(void* pNode)
     locations = (FixedPoint*)glyph_info;
     glyphIDs = (uint16_t*)(locations + glyphCount);
 
-    opcode = XDV_GLYPH_STRING;
-    for (i = 0; i < glyphCount; ++i)
-        if (locations[i].y != 0) {
-            opcode = XDV_GLYPH_ARRAY;
-            break;
-        }
-
     cp = (unsigned char*)xdvbuffer;
-    *cp++ = opcode;
 
     width = node_width(p);
     *cp++ = (width >> 24) & 0xff;
@@ -1556,17 +1547,15 @@ makeXDVGlyphArrayData(void* pNode)
 
     for (i = 0; i < glyphCount; ++i) {
         Fixed x = locations[i].x;
+        Fixed y = locations[i].y;
         *cp++ = (x >> 24) & 0xff;
         *cp++ = (x >> 16) & 0xff;
         *cp++ = (x >> 8) & 0xff;
         *cp++ = x & 0xff;
-        if (opcode == XDV_GLYPH_ARRAY) {
-            Fixed y = locations[i].y;
-            *cp++ = (y >> 24) & 0xff;
-            *cp++ = (y >> 16) & 0xff;
-            *cp++ = (y >> 8) & 0xff;
-            *cp++ = y & 0xff;
-        }
+        *cp++ = (y >> 24) & 0xff;
+        *cp++ = (y >> 16) & 0xff;
+        *cp++ = (y >> 8) & 0xff;
+        *cp++ = y & 0xff;
     }
 
     for (i = 0; i < glyphCount; ++i) {

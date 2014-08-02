@@ -13023,8 +13023,6 @@ recursive) reflected segment.
 
 \yskip\hang|set_glyph_array| 253 |w[4]| |k[2]| |xy[8k]| |g[2k]|.
 
-\yskip\hang|set_glyph_string| 254 |w[4]| |k[2]| |x[4k]| |g[2k]|.
-
 \yskip\noindent Command 255 is undefined in normal \.{XDV} files.
 
 @ @d set_char_0=0 {typeset character 0 and move right}
@@ -13058,7 +13056,6 @@ recursive) reflected segment.
 @d reflect=250 {begin or end a reflected segment}
 @d define_native_font=252 {define native font}
 @d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
-@d set_glyph_string=254 {sequence of glyphs, all at the current y-position}
 
 @ The preamble contains basic information about the file as a whole. As
 stated above, there are six parameters:
@@ -28945,10 +28942,11 @@ begin
     synch_h; synch_v; {Sync DVI state to TeX state}
     f:=native_font(p);
     if f<>dvi_f then @<Change font |dvi_f| to |f|@>;
-    dvi_out(set_glyph_string);
+    dvi_out(set_glyph_array);
     dvi_four(0); { width }
     dvi_two(1); { glyph count }
     dvi_four(0); { x-offset as fixed point }
+    dvi_four(0); { y-offset as fixed point }
     dvi_two(native_glyph(p));
     cur_v:=cur_v+depth(p);
     cur_h:=left_edge;
@@ -28998,14 +28996,16 @@ begin
     f:=native_font(p);
     if f<>dvi_f then @<Change font |dvi_f| to |f|@>;
     if subtype(p) = glyph_node then begin
-      dvi_out(set_glyph_string);
+      dvi_out(set_glyph_array);
       dvi_four(width(p));
       dvi_two(1); { glyph count }
       dvi_four(0); { x-offset as fixed point }
+      dvi_four(0); { y-offset as fixed point }
       dvi_two(native_glyph(p));
       cur_h:=cur_h + width(p);
     end else begin
       if native_glyph_info_ptr(p) <> null_ptr then begin
+        dvi_out(set_glyph_array);
         len:=make_xdv_glyph_array_data(p);
         for k:=0 to len-1 do
           dvi_out(xdv_buffer_byte(k));
