@@ -3370,16 +3370,9 @@ A |pdf_node| is just like |pic_node|, but generate a different \.{XDV} file code
 @d pic_node=42 {|subtype| in whatsits that hold picture file references}
 @d pdf_node=43 {|subtype| in whatsits that hold PDF page references}
 @#
-@d pdfbox_crop=1 {|pic_box_type| values in PDF nodes}
-@d pdfbox_media=2
-@d pdfbox_bleed=3
-@d pdfbox_trim=4
-@d pdfbox_art=5
-@#
 @d pic_node_size=8 {must sync with \.{xetex.h}}
 @d pic_path_length(#)==mem[#+4].hh.b0
 @d pic_page(#)==mem[#+4].hh.b1
-@d pic_box_type(#)==mem[#+4].hh.rh {for PDF, unused in picfile}
 @d pic_transform1(#)==mem[#+5].hh.lh
 @d pic_transform2(#)==mem[#+5].hh.rh
 @d pic_transform3(#)==mem[#+6].hh.lh
@@ -13019,13 +13012,6 @@ the following commands are used in \.{XDV} files.
 \yskip\hang|reflect| 250 |b[1]|. Begin (|b=0|) or end (|b=1|) a (possibly
 recursive) reflected segment.
 
-\yskip\hang|pic_file| 251 |flags[1]| |t[4][6]| |p[2]| |len[2]| |path[l]|.
-    |flags=0| for raster image, and |1| for \.{PDF}.
-    |t| is transform matrix.
-    |p| is page number from the graphic file (0-based).
-    |len| is length of pathname.
-    |path| is pathname of graphic file.
-
 \yskip\hang\vbox{\halign{#&#\hfil\cr
 |define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |lenps[1]| |lenfam[1]| |lensty[1]| |ps[lenps]| |fam[lenfam]| |sty[lensty]|\cr
 & |if (flags and COLORED) then| |rgba[4]|\cr
@@ -13070,7 +13056,6 @@ recursive) reflected segment.
 @d post_post=249 {postamble ending}
 
 @d reflect=250 {begin or end a reflected segment}
-@d pic_file=251 {embed picture or PDF}
 @d define_native_font=252 {define native font}
 @d set_glyph_array=253 {sequence of glyphs with individual x-y coordinates}
 @d set_glyph_string=254 {sequence of glyphs, all at the current y-position}
@@ -23129,6 +23114,12 @@ consideration of the other cases until later.
 @d main_loop_lookahead=100 {go here to bring in another character, if any}
 @d main_lig_loop=110 {go here to check for ligatures or kerning}
 @d append_normal_space=120 {go here to append a normal space between words}
+@#
+@d pdfbox_crop=1 {|pdf_box_type| passed to |find_pic_file|}
+@d pdfbox_media=2
+@d pdfbox_bleed=3
+@d pdfbox_trim=4
+@d pdfbox_art=5
 
 @p @t\4@>@<Declare action procedures for use by |main_control|@>@;
 @t\4@>@<Declare the procedure called |handle_right_brace|@>@;
@@ -28965,7 +28956,7 @@ begin
   pic_node, pdf_node: begin
     save_h:=dvi_h; save_v:=dvi_v;
     cur_v:=cur_v+height(p);
-    pic_out(p, subtype(p) = pdf_node);
+    pic_out(p);
     dvi_h:=save_h; dvi_v:=save_v;
     cur_v:=save_v+depth(p); cur_h:=left_edge;
     end;
@@ -29027,7 +29018,7 @@ begin
     save_h:=dvi_h; save_v:=dvi_v;
     cur_v:=base_line;
     edge:=cur_h+width(p);
-    pic_out(p, subtype(p) = pdf_node);
+    pic_out(p);
     dvi_h:=save_h; dvi_v:=save_v;
     cur_h:=edge; cur_v:=base_line;
   end;
@@ -29131,26 +29122,34 @@ end
 |vlist_out| and |hlist_out|\kern-.3pt.
 
 @<Declare procedures needed in |hlist_out|, |vlist_out|@>=
-procedure pic_out(@!p:pointer; @!is_pdf:boolean);
-var
+procedure pic_out(@!p:pointer);
+var old_setting:0..max_selector; {holds print |selector|}
   i:integer;
+  k:pool_pointer; {index into |str_pool|}
 begin
 synch_h; synch_v;
-dvi_out(pic_file);
-if is_pdf then
-  dvi_out(pic_box_type(p))
-else
-  dvi_out(0);
-dvi_four(pic_transform1(p));
-dvi_four(pic_transform2(p));
-dvi_four(pic_transform3(p));
-dvi_four(pic_transform4(p));
-dvi_four(pic_transform5(p));
-dvi_four(pic_transform6(p));
-dvi_two(pic_page(p));
-dvi_two(pic_path_length(p));
+old_setting:=selector; selector:=new_string;
+print("pdf:image ");
+print("matrix ");
+print_scaled(pic_transform1(p)); print(" ");
+print_scaled(pic_transform2(p)); print(" ");
+print_scaled(pic_transform3(p)); print(" ");
+print_scaled(pic_transform4(p)); print(" ");
+print_scaled(pic_transform5(p)); print(" ");
+print_scaled(pic_transform6(p)); print(" ");
+print("page "); print_int(pic_page(p)); print(" ");
+print("(");
 for i:=0 to pic_path_length(p)-1 do
-  dvi_out(pic_path_byte(p, i));
+  print_visible_char(pic_path_byte(p, i));
+print(")");
+selector:=old_setting;
+if cur_length<256 then
+  begin dvi_out(xxx1); dvi_out(cur_length);
+  end
+else  begin dvi_out(xxx4); dvi_four(cur_length);
+  end;
+for k:=str_start_macro(str_ptr) to pool_ptr-1 do dvi_out(so(str_pool[k]));
+pool_ptr:=str_start_macro(str_ptr); {erase the string}
 end;
 
 procedure out_what(@!p:pointer);
@@ -29423,7 +29422,6 @@ begin
     new_whatsit(pic_node, pic_node_size + (strlen(pic_path) + sizeof(memory_word) - 1) div sizeof(memory_word));
     if is_pdf then begin
       subtype(tail):=pdf_node;
-      pic_box_type(tail):=pdf_box_type;
     end;
     pic_path_length(tail):=strlen(pic_path);
     pic_page(tail):=page;
