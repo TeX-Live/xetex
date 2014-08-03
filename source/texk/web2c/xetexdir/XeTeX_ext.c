@@ -1481,13 +1481,8 @@ grfontgetnamed1(integer what, void* pEngine, integer param)
     return rval;
 }
 
-#define XDV_FLAG_FONTTYPE_AAT   0x0001
-#define XDV_FLAG_FONTTYPE_OT    0x0002
-
 #define XDV_FLAG_VERTICAL       0x0100
 #define XDV_FLAG_COLORED        0x0200
-#define XDV_FLAG_FEATURES       0x0400
-#define XDV_FLAG_VARIATIONS     0x0800
 #define XDV_FLAG_EXTEND         0x1000
 #define XDV_FLAG_SLANT          0x2000
 #define XDV_FLAG_EMBOLDEN       0x4000
@@ -1597,7 +1592,6 @@ makefontdef(integer f)
         int index;
         char buf[20];
 
-        flags = XDV_FLAG_FONTTYPE_AAT;
         attributes = (CFDictionaryRef) fontlayoutengine[f];
         font = CFDictionaryGetValue(attributes, kCTFontAttributeName);
         variation = CTFontCopyVariation(font);
@@ -1638,7 +1632,6 @@ makefontdef(integer f)
 #endif
     if (fontarea[f] == OTGR_FONT_FLAG) {
         XeTeXLayoutEngine engine;
-        flags = XDV_FLAG_FONTTYPE_OT;
 
         engine = (XeTeXLayoutEngine)fontlayoutengine[f];
         fontRef = getFontRef(engine);

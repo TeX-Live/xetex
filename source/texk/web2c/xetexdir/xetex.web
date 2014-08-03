@@ -13019,7 +13019,6 @@ the following commands are used in \.{XDV} files.
 & |if (flags and EXTEND) then| |extend[4]|\cr
 & |if (flags and SLANT) then| |slant[4]|\cr
 & |if (flags and EMBOLDEN) then| |embolden[4]|\cr
-& |if (flags and VARIATIONS) then| |numvars[2]| |axes[4nv]| |values[4nv]|\cr
 }}
 
 \yskip\hang|set_glyphs| 253 |w[4]| |k[2]| |xy[8k]| |g[2k]|.
