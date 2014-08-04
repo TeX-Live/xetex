@@ -1566,7 +1566,6 @@ int
 makefontdef(integer f)
 {
     uint16_t flags = 0;
-    uint32_t variationCount = 0;
     uint32_t rgba;
     Fixed size;
     const char* filename;
@@ -1580,7 +1579,6 @@ makefontdef(integer f)
 
 #ifdef XETEX_MAC
     CFDictionaryRef attributes = NULL;
-    CFDictionaryRef variation = NULL;
 
     if (fontarea[f] == AAT_FONT_FLAG) {
         CTFontRef font;
@@ -1594,11 +1592,6 @@ makefontdef(integer f)
 
         attributes = (CFDictionaryRef) fontlayoutengine[f];
         font = CFDictionaryGetValue(attributes, kCTFontAttributeName);
-        variation = CTFontCopyVariation(font);
-        if (variation) {
-            variationCount = CFDictionaryGetCount(variation);
-            CFRelease(variation);
-        }
 
         pathname = getFileNameFromCTFont(font, &index);
         assert(pathname);
@@ -1660,10 +1653,6 @@ makefontdef(integer f)
     //  l[1] n[l]
     //  if flags & COLORED:
     //      c[4]
-    //  if flags & VARIATIONS:
-    //      nv[2]
-    //      a[4nv]
-    //      v[4nv]
     */
 
     fontDefLength
@@ -2304,17 +2293,14 @@ aatfontget(int what, CFDictionaryRef attributes)
 
 #ifdef XETEX_MAC
     CTFontRef font = fontFromAttributes(attributes);
-    CFArrayRef list;
 
     switch (what) {
         case XeTeX_count_glyphs:
             rval = CTFontGetGlyphCount(font);
             break;
 
-        case XeTeX_count_variations:
         case XeTeX_count_features:
-            list = (what == XeTeX_count_variations ? CTFontCopyVariationAxes(font)
-                                                   : CTFontCopyFeatures(font));
+            CFArrayRef list = CTFontCopyFeatures(font);
             if (list) {
                 rval = CFArrayGetCount(list);
                 CFRelease(list);
@@ -2334,39 +2320,6 @@ aatfontget1(int what, CFDictionaryRef attributes, int param)
     CTFontRef font = fontFromAttributes(attributes);
 
     switch (what) {
-        case XeTeX_variation:
-        {
-            CFArrayRef axes = CTFontCopyVariationAxes(font);
-            if (axes) {
-                if (CFArrayGetCount(axes) > param) {
-                    CFDictionaryRef variation = CFArrayGetValueAtIndex(axes, param);
-                    CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
-                    if (identifier)
-                        CFNumberGetValue(identifier, kCFNumberIntType, &rval);
-                }
-                CFRelease(axes);
-            }
-            break;
-        }
-
-        case XeTeX_variation_min:
-        case XeTeX_variation_max:
-        case XeTeX_variation_default:
-        {
-            CFArrayRef axes = CTFontCopyVariationAxes(font);
-            if (axes) {
-                CFDictionaryRef variation = findDictionaryInArrayWithIdentifier(axes, kCTFontVariationAxisIdentifierKey, param);
-                CFStringRef key = (what == XeTeX_variation_min ? kCTFontVariationAxisMinimumValueKey :
-                                   (what == XeTeX_variation_max ? kCTFontVariationAxisMaximumValueKey :
-                                    kCTFontVariationAxisDefaultValueKey));
-                CFNumberRef value = CFDictionaryGetValue(variation, key);
-                if (value)
-                    CFNumberGetValue(value, kCFNumberIntType, &rval);
-                CFRelease(axes);
-            }
-            break;
-        }
-
         case XeTeX_feature_code:
         {
             CFArrayRef features = CTFontCopyFeatures(font);
@@ -2465,27 +2418,9 @@ aatfontgetnamed(int what, CFDictionaryRef attributes)
     int rval = -1;
 
 #ifdef XETEX_MAC
-    CTFontRef font = fontFromAttributes(attributes);
-
-    switch (what) {
-        case XeTeX_find_variation_by_name:
+    if (what == XeTeX_find_feature_by_name)
         {
-            CFArrayRef axes = CTFontCopyVariationAxes(font);
-            if (axes) {
-                CFDictionaryRef variation = findDictionaryInArray(axes, kCTFontVariationAxisNameKey,
-                                                                  (const char*)nameoffile + 1, namelength);
-                if (variation) {
-                    CFNumberRef identifier = CFDictionaryGetValue(variation, kCTFontVariationAxisIdentifierKey);
-                    if (identifier)
-                        CFNumberGetValue(identifier, kCFNumberIntType, &rval);
-                }
-                CFRelease(axes);
-            }
-            break;
-        }
-
-        case XeTeX_find_feature_by_name:
-        {
+            CTFontRef font = fontFromAttributes(attributes);
             CFArrayRef features = CTFontCopyFeatures(font);
             if (features) {
                 CFDictionaryRef feature = findDictionaryInArray(features, kCTFontFeatureTypeNameKey,
@@ -2533,19 +2468,9 @@ void
 aatprintfontname(int what, CFDictionaryRef attributes, int param1, int param2)
 {
 #ifdef XETEX_MAC
-    CTFontRef font = fontFromAttributes(attributes);
     CFStringRef name = NULL;
-    if (what == XeTeX_variation_name) {
-        CFArrayRef axes = CTFontCopyVariationAxes(font);
-        if (axes) {
-            CFDictionaryRef variation = findDictionaryInArrayWithIdentifier(axes,
-                                                                            kCTFontVariationAxisIdentifierKey,
-                                                                            param1);
-            if (variation)
-                name = CFDictionaryGetValue(variation, kCTFontVariationAxisNameKey);
-            CFRelease(axes);
-        }
-    } else if (what == XeTeX_feature_name || what == XeTeX_selector_name) {
+    if (what == XeTeX_feature_name || what == XeTeX_selector_name) {
+        CTFontRef font = fontFromAttributes(attributes);
         CFArrayRef features = CTFontCopyFeatures(font);
         if (features) {
             CFDictionaryRef feature = findDictionaryInArrayWithIdentifier(features,

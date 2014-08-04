@@ -9419,12 +9419,12 @@ the codes for its extensions: |eTeX_version_code|, \dots\ .
 
 @d XeTeX_count_glyphs_code=XeTeX_int+1
 
-@d XeTeX_count_variations_code=XeTeX_int+2
-@d XeTeX_variation_code=XeTeX_int+3
-@d XeTeX_find_variation_by_name_code=XeTeX_int+4
-@d XeTeX_variation_min_code=XeTeX_int+5
-@d XeTeX_variation_max_code=XeTeX_int+6
-@d XeTeX_variation_default_code=XeTeX_int+7
+@d XeTeX_count_variations_code=XeTeX_int+2 {Deprecated}
+@d XeTeX_variation_code=XeTeX_int+3 {Deprecated}
+@d XeTeX_find_variation_by_name_code=XeTeX_int+4 {Deprecated}
+@d XeTeX_variation_min_code=XeTeX_int+5 {Deprecated}
+@d XeTeX_variation_max_code=XeTeX_int+6 {Deprecated}
+@d XeTeX_variation_default_code=XeTeX_int+7 {Deprecated}
 
 @d XeTeX_count_features_code=XeTeX_int+8
 @d XeTeX_feature_code_code=XeTeX_int+9
@@ -29654,15 +29654,6 @@ XeTeX_count_glyphs_code:
       cur_val:=0;
   end;
 
-XeTeX_count_variations_code:
-  begin
-    scan_font_ident; n:=cur_val;
-    if is_aat_font(n) then
-      cur_val:=aat_font_get(m - XeTeX_int, font_layout_engine[n])
-    else begin
-      cur_val:=0;
-    end;
-  end;
 XeTeX_count_features_code:
   begin
     scan_font_ident; n:=cur_val;
@@ -29677,16 +29668,9 @@ XeTeX_count_features_code:
 XeTeX_variation_code,
 XeTeX_variation_min_code,
 XeTeX_variation_max_code,
-XeTeX_variation_default_code:
-  begin
-    scan_font_ident; n:=cur_val;
-    if is_aat_font(n) then begin
-      scan_int; k:=cur_val;
-      cur_val:=aat_font_get_1(m - XeTeX_int, font_layout_engine[n], k);
-    end else begin
-      not_aat_font_error(last_item, m, n); cur_val:=-1;
-    end;
-  end;
+XeTeX_variation_default_code,
+XeTeX_count_variations_code:
+  cur_val:=0; {Deprecated}
 
 XeTeX_feature_code_code,
 XeTeX_is_exclusive_feature_code,

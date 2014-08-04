@@ -80,13 +80,6 @@ typedef struct {
 
 #define XeTeX_count_glyphs  1
 
-#define XeTeX_count_variations  2
-#define XeTeX_variation 3
-#define XeTeX_find_variation_by_name    4
-#define XeTeX_variation_min 5
-#define XeTeX_variation_max 6
-#define XeTeX_variation_default 7
-
 #define XeTeX_count_features    8
 #define XeTeX_feature_code  9
 #define XeTeX_find_feature_by_name  10
@@ -105,7 +98,6 @@ typedef struct {
 
 #define XeTeX_map_char_to_glyph_code    22
 
-#define XeTeX_variation_name    7   /* must match xetex.web */
 #define XeTeX_feature_name  8
 #define XeTeX_selector_name 9
 
