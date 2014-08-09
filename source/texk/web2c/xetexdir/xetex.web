@@ -13014,7 +13014,7 @@ the following commands are used in \.{XDV} files.
 \yskip\hang|end_reflect| 251. End a (possibly recursive) reflected segment.
 
 \yskip\hang\vbox{\halign{#&#\hfil\cr
-|define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |l[1]| |n[l]|\cr
+|define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |l[1]| |n[l]| |i[4]|\cr
 & |if (flags and COLORED) then| |rgba[4]|\cr
 & |if (flags and EXTEND) then| |extend[4]|\cr
 & |if (flags and SLANT) then| |slant[4]|\cr

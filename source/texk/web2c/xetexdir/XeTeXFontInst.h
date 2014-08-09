@@ -67,7 +67,8 @@ protected:
 
     bool fVertical; // false = horizontal, true = vertical
 
-    char *fFilename; // actually holds [filename:index], as used in xetex
+    char *fFilename; // font filename
+    uint32_t fIndex; // face index
 
     FT_Face ftFace;
     hb_font_t* hbFont;
@@ -85,7 +86,11 @@ public:
     const void *getFontTable(FT_Sfnt_Tag tableTag) const;
     const char *getMathTable();
 
-    const char *getFilename() const { return fFilename; }
+    const char *getFilename(uint32_t* index) const
+    {
+        *index = fIndex;
+        return fFilename;
+    }
     hb_font_t *getHbFont() const { return hbFont; }
     void setLayoutDirVertical(bool vertical);
     bool getLayoutDirVertical() const { return fVertical; };

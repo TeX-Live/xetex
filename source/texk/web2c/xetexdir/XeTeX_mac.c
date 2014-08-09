@@ -403,7 +403,7 @@ getNameFromCTFont(CTFontRef ctFontRef, CFStringRef nameKey)
 }
 
 char*
-getFileNameFromCTFont(CTFontRef ctFontRef, int *index)
+getFileNameFromCTFont(CTFontRef ctFontRef, uint32_t *index)
 {
     char *ret = NULL;
     CFURLRef url = NULL;

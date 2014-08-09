@@ -84,7 +84,7 @@ XeTeXFontInst_Mac::initialize(int &status)
     fFontRef = CTFontCreateWithFontDescriptor(fDescriptor, fPointSize * 72.0 / 72.27, NULL);
     if (fFontRef) {
         char *pathname;
-        int index;
+        uint32_t index;
         pathname = getFileNameFromCTFont(fFontRef, &index);
 
         XeTeXFontInst::initialize(pathname, index, status);

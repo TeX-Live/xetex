@@ -1569,6 +1569,7 @@ makefontdef(integer f)
     uint32_t rgba;
     Fixed size;
     const char* filename;
+    uint32_t index;
     uint8_t filenameLen;
     int fontDefLength;
     char* cp;
@@ -1586,23 +1587,12 @@ makefontdef(integer f)
         CGAffineTransform t;
         CFNumberRef emboldenNumber;
         CGFloat fSize;
-        char *pathname;
-        int index;
-        char buf[20];
 
         attributes = (CFDictionaryRef) fontlayoutengine[f];
         font = CFDictionaryGetValue(attributes, kCTFontAttributeName);
 
-        pathname = getFileNameFromCTFont(font, &index);
-        assert(pathname);
-
-        if (index > 0)
-            sprintf(buf, ":%d", index);
-        else
-            buf[0] = '\0';
-
-        filename = xmalloc(strlen((char*) pathname) + strlen(buf) + 1);
-        sprintf((char*) filename, "%s%s", pathname, buf);
+        filename = getFileNameFromCTFont(font, &index);
+        assert(filename);
 
         if (CFDictionaryGetValue(attributes, kCTVerticalFormsAttributeName))
             flags |= XDV_FLAG_VERTICAL;
@@ -1628,7 +1618,7 @@ makefontdef(integer f)
 
         engine = (XeTeXLayoutEngine)fontlayoutengine[f];
         fontRef = getFontRef(engine);
-        filename = xstrdup(getFontFilename(engine));
+        filename = getFontFilename(engine, &index);
         assert(filename);
 
         rgba = getRgbValue(engine);
@@ -1659,7 +1649,8 @@ makefontdef(integer f)
         = 4 /* size */
         + 2 /* flags */
         + 1 /* name length */
-        + filenameLen;
+        + filenameLen
+        + 4 /* face index */;
 
     if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
         fontDefLength += 4; /* 32-bit RGBA value */
@@ -1697,6 +1688,9 @@ makefontdef(integer f)
     cp += 1;
     memcpy(cp, filename, filenameLen);
     cp += filenameLen;
+
+    *(uint32_t*)cp = SWAP32(index);
+    cp += 4;
 
     if ((fontflags[f] & FONT_FLAGS_COLORED) != 0) {
         *(uint32_t*)cp = SWAP32(rgba);

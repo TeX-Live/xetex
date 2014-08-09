@@ -63,6 +63,7 @@ XeTeXFontInst::XeTeXFontInst(const char* pathname, int index, float pointSize, i
     , fItalicAngle(0)
     , fVertical(false)
     , fFilename(NULL)
+    , fIndex(0)
     , ftFace(0)
     , hbFont(NULL)
     , fMath(NULL)
@@ -323,13 +324,8 @@ XeTeXFontInst::initialize(const char* pathname, int index, int &status)
         delete[] afm;
     }
 
-    char buf[20];
-    if (index > 0)
-        sprintf(buf, ":%d", index);
-    else
-        buf[0] = 0;
-    fFilename = new char[strlen(pathname) + strlen(buf) + 1];
-    sprintf(fFilename, "%s%s", pathname, buf);
+    fFilename = xstrdup(pathname);
+    fIndex = index;
     fUnitsPerEM = ftFace->units_per_EM;
     fAscent = unitsToPoints(ftFace->ascender);
     fDescent = unitsToPoints(ftFace->descender);

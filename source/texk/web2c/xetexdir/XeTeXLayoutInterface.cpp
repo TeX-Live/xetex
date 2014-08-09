@@ -173,9 +173,9 @@ getDesignSize(XeTeXFont font)
 }
 
 const char*
-getFontFilename(XeTeXLayoutEngine engine)
+getFontFilename(XeTeXLayoutEngine engine, uint32_t* index)
 {
-    return engine->font->getFilename();
+    return xstrdup(engine->font->getFilename(index));
 }
 
 PlatformFontRef
