@@ -145,7 +145,7 @@ setFontLayoutDir(XeTeXFont font, int vertical)
 PlatformFontRef
 findFontByName(const char* name, char* var, double size)
 {
-    return (XeTeXFontMgr::GetFontManager()->findFont(name, var, size));
+    return XeTeXFontMgr::GetFontManager()->findFont(name, var, size);
 }
 
 char
