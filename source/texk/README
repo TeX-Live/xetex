@@ -49,7 +49,9 @@ dvidvi - ?
 
 dviljk - maintained here, by Joachim Schrod
 
-dvipdfmx - maintained here, by Khaled Hosny, Jonathan Kew
+dvipdfm-x - maintained here, by Khaled Hosny, Jonathan Kew, contains
+  dvipdfmx
+  xdvipdfmx
 
 dvipng 1.14 - checked 10may12
   http://mirror.ctan.org/dviware/dvipng/ (but maybe stale)
@@ -59,8 +61,8 @@ dvipos - ?
 
 dvipsk - maintained here, by us
 
-dvisvgm - checked 10sep13
-  http://downloads.sourceforge.net/dvisvgm/dvisvgm-1.5.tar.gz
+dvisvgm 1.8 - checked 31jul14
+  http://downloads.sourceforge.net/dvisvgm/
 
 gsftopk - from Paul Vojta's xdvi?
 
@@ -69,9 +71,8 @@ kpathsea - maintained here, by us
 lacheck - checked 25apr11
   http://mirror.ctan.org/support/lacheck/lacheck-1.26.tar.gz
 
-lcdf-typetools 2.99 - checked 10sep13
+lcdf-typetools 2.104 - checked 8jul14
   http://www.lcdf.org/type/
-  http://www.lcdf.org/type/lcdf-typetools-2.98.tar.gz
 
 makeindexk - maintained here, by us
 
@@ -81,7 +82,10 @@ mendexk - maintained here, by us (akira et al.)
 
 ps2pkm - ?
 
-ptexenc - ?
+psutils 1.23 - checked 16jan14
+  https://github.com/rrthomas/psutils/archive/v1.23.tar.gz
+
+ptexenc - maintained here, by us (akira et al.)
 
 seetexk - ?
 
@@ -100,9 +104,5 @@ web2c - maintained here, by us - core web2c, plain tex, etc.
         The TeX variant dirs (pdftexdir, xetexdir, etc.)
         updated here by their respective maintainers.
 
-xdv2pdf - maintained here, by Khaled Hosny, Jonathan Kew
-
-xdvik 22.86 - checked 7apr13
+xdvik 22.87 - checked 14apr14
   http://sourceforge.net/projects/xdvi/files/xdvik/
-
-xdvipdfmx - maintained here, by Khaled Hosny, Jonathan Kew

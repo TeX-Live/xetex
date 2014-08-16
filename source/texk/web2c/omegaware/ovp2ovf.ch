@@ -84,20 +84,6 @@ correspond to one-character constants like \.{"A"} in \.{WEB} language.
 @d first_ord=0 {ordinal number of the smallest element of |char|}
 @z
 
-@x [34] (fill_buffer) end-of-line counts as a delimiter. Possibly a bug.
-else  begin while (limit<buf_size-1)and(not eoln(vpl_file)) do
-    begin incr(limit); read(vpl_file,buffer[limit]);
-    end;
-  buffer[limit+1]:=' '; right_ln:=eoln(vpl_file);
-@y
-else  begin while (limit<buf_size-1)and(not eoln(vpl_file)) do
-    begin incr(limit); read(vpl_file,buffer[limit]);
-    end;
-  buffer[limit+1]:=' '; right_ln:=eoln(vpl_file);
-  if right_ln then begin incr(limit); buffer[limit+1]:=' ';
-    end;
-@z
-
 @x [37] (get_keyword_char) Unnecessary due to previous change.
 begin while (loc=limit)and(not right_ln) do fill_buffer;
 if loc=limit then cur_char:=" " {end-of-line counts as a delimiter}
@@ -162,12 +148,12 @@ HEX:=' 0123456789ABCDEF';@/
 @z
 
 @x [152] Fix up the mutually recursive procedures a la pltotf.
-@p function f(@!h:integer64;@!x,@!y:indx):indx; forward;@t\2@>
+@p function f(@!h,@!x,@!y:indx):indx; forward;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 @y
 @p
 ifdef('notdef')
-function f(@!h:integer64;@!x,@!y:indx):indx; begin end;@t\2@>
+function f(@!h,@!x,@!y:indx):indx; begin end;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 endif('notdef')
 @z
@@ -175,7 +161,7 @@ endif('notdef')
 @x [153] Finish fixing up f.
 @p function f;
 @y
-@p function f(@!h:integer64;@!x,@!y:indx):indx;
+@p function f(@!h,@!x,@!y:indx):indx;
 @z
 
 @x [156] Change TFM-byte output to fix ranges.

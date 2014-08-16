@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl   Copyright (C) 2009-2013 Peter Breitenlohner <tex-live@tug.org>
+dnl   Copyright (C) 2009-2014 Peter Breitenlohner <tex-live@tug.org>
 dnl
 dnl   This file is free software; the copyright holder
 dnl   gives unlimited permission to copy and/or distribute it,
@@ -60,10 +60,6 @@ fi
 fi
 
 KPSE_COND_MINGW32
-AS_CASE([$host_os],
-        [cygwin* | mingw*], [kpse_have_cygwin_or_mingw=yes])
-AM_CONDITIONAL([CYGWIN_OR_MINGW],
-               [test "x$kpse_have_cygwin_or_mingw" = xyes])
 
 AC_SUBST([LT_OBJDIR], ["$lt_cv_objdir"])
 
@@ -145,6 +141,6 @@ AH_TOP([/* c-auto.h: defines for kpathsea, as determined by configure.
 #define KPSEVERSION "kpathsea version] kpse_version["])
 AH_BOTTOM([#endif /* !KPATHSEA_C_AUTO_H */])
 
-AC_CONFIG_FILES([Makefile doc/Makefile man/Makefile win32/Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile man/Makefile win32/Makefile kpathsea.pc])
 
 AC_OUTPUT

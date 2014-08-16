@@ -826,10 +826,12 @@ if left_ln then
 if eof(vpl_file) then
   begin limit:=1; buffer[1]:=')'; right_ln:=false; input_has_ended:=true;
   end
-else  begin while (limit<buf_size-1)and(not eoln(vpl_file)) do
+else  begin while (limit<buf_size-2)and(not eoln(vpl_file)) do
     begin incr(limit); read(vpl_file,buffer[limit]);
     end;
   buffer[limit+1]:=' '; right_ln:=eoln(vpl_file);
+  if right_ln then begin incr(limit); buffer[limit+1]:=' ';
+    end;
   if left_ln then @<Set |loc| to the number of leading blanks in
     the buffer, and check the indentation@>;
   end;
@@ -3306,7 +3308,7 @@ else begin case t of
 
 @ (More good stuff from \.{TFtoPL}.)
 
-@p function f(@!h:integer64;@!x,@!y:indx):indx; forward;@t\2@>
+@p function f(@!h,@!x,@!y:indx):indx; forward;@t\2@>
   {compute $f$ for arguments known to be in |hash[h]|}
 function eval(@!x,@!y:indx):indx; {compute $f(x,y)$ with hashtable lookup}
 var @!key:integer64; {value sought in hash table}
@@ -3318,7 +3320,7 @@ else eval:=f(h,x,y);
 end;
 
 @ Pascal's beastly convention for |forward| declarations prevents us from
-saying |function f(h:integer64;x,y:indx):indx| here.
+saying |function f(h,x,y:indx):indx| here.
 
 @p function f;
 begin case class[h] of
@@ -3472,7 +3474,7 @@ case ofm_level of
     end;
   0: begin
     lf:=14+lh+2*(ec-bc+1)+memory[width]+memory[height]+memory[depth]+
-    memory[italic]+2*nl+lk_offset+nk+2*ne+np;
+    memory[italic]+2*(nl+lk_offset)+nk+2*ne+np;
     end;
   1: begin
     @<Compute the character info size@>;
@@ -3710,9 +3712,15 @@ if bchar<xmax_char then
 else begin extra_loc_needed:=false; lk_offset:=0;
   end;
 @<Find the minimum |lk_offset| and adjust all remainders@>;
-if bchar_label<xmax_label then
-  begin lig_kern[nl-1].b2:=(bchar_label+lk_offset)div 65536;
-  lig_kern[nl-1].b3:=(bchar_label+lk_offset)mod 65536;
+if bchar_label<xmax_label then begin
+  if ofm_level=-1 then begin
+    lig_kern[nl-1].b2:=(bchar_label+lk_offset)div 256;
+    lig_kern[nl-1].b3:=(bchar_label+lk_offset)mod 256;
+    end
+  else begin
+    lig_kern[nl-1].b2:=(bchar_label+lk_offset)div 65536;
+    lig_kern[nl-1].b3:=(bchar_label+lk_offset)mod 65536;
+    end
   end
 
 @ @<Insert all labels...@>=

@@ -1,6 +1,6 @@
 ## Makefile.am for the TeX Live subdirectory texk/web2c/omegafonts/
 ##
-## Copyright (C) 2009-2013 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2009-2014 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 ##
 AM_CPPFLAGS =  -I$(top_builddir)/.. -I$(top_srcdir) $(KPATHSEA_INCLUDES) -DNOT_WEB2C
@@ -18,12 +18,10 @@ $(proglib): ${top_srcdir}/lib/*.c
 
 bin_PROGRAMS =
 if OTANGLE
-if OMFONTS
 bin_PROGRAMS += omfonts
 if WIN32
 noinst_PROGRAMS = call_omfonts
 endif WIN32
-endif OMFONTS
 endif OTANGLE
 EXTRA_PROGRAMS = omfonts
 
@@ -82,7 +80,6 @@ bin_links = \
 include $(top_srcdir)/../../am/bin_links.am
 
 if OTANGLE
-if OMFONTS
 install-exec-hook: install-bin-links
 if WIN32
 	for f in $(linked_programs); do \
@@ -95,17 +92,15 @@ if WIN32
 	  rm -f $(DESTDIR)$(bindir)/$$f$(EXEEXT); \
 	done
 endif WIN32
-endif OMFONTS
 endif OTANGLE
 
 ## Tests
 ##
-OMFONTS_tests = charwd.test level1.test omfonts.test realnum.test \
-	repeat.test selectfont.test specialhex.test
+OMFONTS_tests = charwd.test level1.test ligkern.test ofonts.test omfonts.test \
+	overbmp.test realnum.test repeat.test selectfont.test shorten.test \
+	specialhex.test yannis.test
 if OTANGLE
-if OMFONTS
 TESTS = $(OMFONTS_tests)
-endif OMFONTS
 endif OTANGLE
 
 EXTRA_DIST = $(OMFONTS_tests)
@@ -115,12 +110,30 @@ EXTRA_DIST += tests/charwd-r.pl tests/charwd-v.vpl
 DISTCLEANFILES += tests/charwdr.* tests/charwdv.*
 ## level1.test
 EXTRA_DIST += tests/level1.opl
-DISTCLEANFILES += tests/xlevel1.ofm tests/xlevel1.opl
+DISTCLEANFILES += tests/xlevel1.*
+## ligkern.test
+EXTRA_DIST += \
+	tests/ligall.opl tests/ligbch.opl tests/ligbdy.opl \
+	tests/ligblb.opl tests/ligblv.opl tests/ligblv.ovp \
+	tests/ligloop1.ofm tests/ligloop1.opl tests/ligloop2.opl
+DISTCLEANFILES += tests/xlig*.*
+## ofonts.test
+EXTRA_DIST += tests/ofontr0.pl \
+	tests/ofontr1.pl tests/ofontr1.vpl \
+	tests/ofontr2.opl tests/ofontr2.ovp \
+	tests/ofontr3.opl tests/ofontr3.ovp \
+	tests/ofontv4.pl tests/ofontv4.vpl \
+	tests/ofontv5.opl tests/ofontv5.ovp \
+	tests/ofontv6.opl tests/ofontv6.ovp
+DISTCLEANFILES += tests/xofont*
 ## omfonts.test
 EXTRA_DIST += tests/Cherokee.pl tests/OCherokee.ovp
 DISTCLEANFILES += tests/Cherokee.tfm tests/OCherokee.ofm \
 	tests/OCherokee.opl tests/OCherokee.ovf \
 	tests/xCherokee.* tests/xOCherokee.*
+## overbmp.test
+EXTRA_DIST += tests/inbmp.opl tests/overbmp.opl tests/overbmp.ovp
+DISTCLEANFILES += tests/xinbmp* tests/xoverbmp*
 ## realnum.test
 EXTRA_DIST += tests/realnum.opl tests/realnum.out
 DISTCLEANFILES += tests/realnum.*
@@ -130,8 +143,14 @@ DISTCLEANFILES += tests/xrepeated.*
 ## selectfont.test
 EXTRA_DIST += tests/sample.out tests/sample.ovp tests/sample0-h.opl
 DISTCLEANFILES += tests/sample*.ofm tests/sample*.ovf tests/sample1-h.opl tests/xsample*.out
+## shorten.test
+EXTRA_DIST += tests/shorten.opl
+DISTCLEANFILES += tests/shortend.*
 ## specialhex.test
 EXTRA_DIST += tests/specialhex.ovp
 DISTCLEANFILES += tests/specialhex.ofm tests/specialhex.opl \
 	tests/specialhex.ovf tests/xspecialhex.*
+## yannis.test
+EXTRA_DIST += tests/arabicr.pl tests/arabic.ovp
+DISTCLEANFILES += tests/*yarabic*
 

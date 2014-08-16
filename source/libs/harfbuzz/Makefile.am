@@ -6,8 +6,6 @@
 ##   gives unlimited permission to copy and/or distribute it,
 ##   with or without modifications, as long as this notice is preserved.
 ##
-ACLOCAL_AMFLAGS = -I ../../m4
-
 ## We want to re-distribute the whole original harfbuzz source tree.
 ##
 EXTRA_DIST = $(HARFBUZZ_TREE)
@@ -65,7 +63,6 @@ libharfbuzz_a_SOURCES =  \
 	@HARFBUZZ_TREE@/src/hb-shaper-impl-private.hh \
 	@HARFBUZZ_TREE@/src/hb-shaper-private.hh \
 	@HARFBUZZ_TREE@/src/hb-shaper.cc \
-	@HARFBUZZ_TREE@/src/hb-tt-font.cc \
 	@HARFBUZZ_TREE@/src/hb-unicode-private.hh \
 	@HARFBUZZ_TREE@/src/hb-unicode.cc \
 	@HARFBUZZ_TREE@/src/hb-utf-private.hh \
@@ -73,6 +70,8 @@ libharfbuzz_a_SOURCES =  \
 
 ## native OpenType Layout backend
 libharfbuzz_a_SOURCES += \
+	@HARFBUZZ_TREE@/src/hb-ot-font.cc \
+	@HARFBUZZ_TREE@/src/hb-ot-font.h \
 	@HARFBUZZ_TREE@/src/hb-ot-layout.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-layout-common-private.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-layout-gdef-table.hh \
