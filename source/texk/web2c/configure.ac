@@ -195,8 +195,6 @@ m4_foreach([Kpse_Win], [kpse_mf_win],
            [m4_ifset([Kpse_Win],
                      [KPSE_MFWIN_DEFINE(Kpse_Win)])])[]dnl
 
-AM_CONDITIONAL([MP], [test "x$enable_mp" != xno])
-
 AM_CONDITIONAL([WEB], [test "x$enable_web_progs" != xno])
 
 AS_IF([test "x$enable_ptex:$enable_eptex" = xno:no],
@@ -208,32 +206,6 @@ AS_IF([test "x$enable_uptex:$enable_euptex" = xno:no],
       [enable_upweb_progs=no],
       [enable_upweb_progs=$enable_web_progs])
 AM_CONDITIONAL([UPWEB], [test "x$enable_upweb_progs" != xno])
-
-dnl Although quite unusual, it is possible to build Web2C (TeX & Co)
-dnl using installed (system) kpathsea headers and library.
-dnl In that case we need the location of <kpathsea/paths.h>.
-if test "x$with_system_kpathsea" = xyes; then
-  if test "x$with_kpathsea_includes" = x; then
-    list="/usr/include /usr/local/include"
-  else
-    list=$with_kpathsea_includes
-  fi
-  found=no
-  for KPATHSEA_PATHS_H in $list; do
-    if test -r "$KPATHSEA_PATHS_H/kpathsea/paths.h"; then
-      found=yes
-      break
-    fi
-  done
-  if test "x$found" = xno; then
-    AC_MSG_NOTICE([You requested to build `web2c' using an installed `kpathsea' version,])
-    AC_MSG_NOTICE([    which requires to locate the <kpathsea/paths.h> header file.])
-    AC_MSG_ERROR([Sorry, not found under any of: $list *****])
-  fi
-else
-  KPATHSEA_PATHS_H='${top_builddir}/..'
-fi
-AC_SUBST([KPATHSEA_PATHS_H])
 
 AC_PROG_YACC
 KPSE_PROG_LEX
@@ -254,6 +226,8 @@ AC_SEARCH_LIBS([pow], [m])
 AC_CHECK_FUNCS([access atoi fmax ftime gettimeofday mkdtemp setlocale strerror strlcat strlcpy strndup])
 AC_CHECK_DECLS([strndup])
 AC_CHECK_HEADERS([errno.h langinfo.h locale.h sys/time.h sys/timeb.h sys/wait.h time.h])
+AC_CHECK_SIZEOF([void *])
+AC_TYPE_UINTPTR_T
 AC_TYPE_LONG_DOUBLE
 AC_HEADER_STDBOOL
 
@@ -286,6 +260,28 @@ KPSE_GRAPHITE2_FLAGS
 KPSE_ADD_FLAGS([kpathsea])
 AC_CHECK_SIZEOF([off_t], , AC_INCLUDES_DEFAULT
 [#include <kpathsea/config.h>])
+
+if test "x$with_system_kpathsea" = xyes; then
+dnl Although quite unusual, it is possible to build Web2C (TeX & Co)
+dnl using installed (system) kpathsea headers and library.
+dnl In that case we need the location of <kpathsea/paths.h>.
+  list="/usr/include /usr/local/include `echo $KPATHSEA_INCLUDES | sed 's/-I//g'`"
+  found=no
+  for KPATHSEA_PATHS_H in $list; do
+    if test -r "$KPATHSEA_PATHS_H/kpathsea/paths.h"; then
+      found=yes
+      break
+    fi
+  done
+  if test "x$found" = xno; then
+    AC_MSG_NOTICE([You requested to build `web2c' using an installed `kpathsea' version,])
+    AC_MSG_NOTICE([    which requires to locate the <kpathsea/paths.h> header file.])
+    AC_MSG_ERROR([Sorry, not found under any of: $list *****])
+  fi
+else
+  KPATHSEA_PATHS_H='${top_builddir}/..'
+fi
+AC_SUBST([KPATHSEA_PATHS_H])
 
 # Check of poppler 0.25 or better
 AS_CASE([$with_system_poppler],

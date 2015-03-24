@@ -1,6 +1,6 @@
 ## Makefile.am for the TeX Live subdirectory texk/kpathsea/
 ##
-## Copyright (C) 2009-2014 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2009-2015 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 ##
 SUBDIRS = . doc man
@@ -106,19 +106,20 @@ endif !WIN32
 $(libkpathsea_la_OBJECTS): paths.h kpathsea.h
 
 EXTRA_DIST += \
-	putenv.c \
-	strcasecmp.c \
-	strtol.c \
-	strstr.c
+	putenv.c
 
 kpseincludedir = ${includedir}/kpathsea
 
 nodist_kpseinclude_HEADERS = \
-	c-auto.h \
 	kpathsea.h \
 	paths.h
 
 kpseinclude_HEADERS = config.h $(direct_headers) $(indirect_headers)
+
+kpselibdir = ${libdir}/kpathsea
+
+nodist_kpselib_HEADERS = \
+	c-auto.h
 
 # Headers included directly into kpathsea.h
 #
@@ -220,15 +221,13 @@ stamp-kpathsea: Makefile paths.h
 	  echo '/* collecting all public kpathsea headers. */'; \
 	  for f in config.h paths.h $(direct_headers); do \
 	    echo "#include <kpathsea/$$f>"; \
-	  done ) >kpathsea.tmp
-	@if cmp -s kpathsea.h kpathsea.tmp 2>/dev/null; then \
+	  done ) >kpathsea.tmp && \
+	if cmp -s kpathsea.h kpathsea.tmp 2>/dev/null; then \
 	  echo "kpathsea.h is unchanged"; \
 	else \
-	  echo "cp kpathsea.tmp kpathsea.h"; \
+	  echo "generated kpathsea.h"; \
 	  cp kpathsea.tmp kpathsea.h; \
-	fi
-	rm -f kpathsea.tmp
-	date >$@
+	fi && rm -f kpathsea.tmp && date >$@
 
 EXTRA_DIST += bsnl.awk cnf-to-paths.awk
 

@@ -24,6 +24,15 @@
 @d banner=='This is OVF2OVP, Version 1.13' {printed when the program starts}
 @z
 
+@x [2] All terminal output goes to stderr, so we can dump the vpl on stdout.
+@d print(#)==write(#)
+@d print_ln(#)==write_ln(#)
+@y
+@d print(#)==write(stderr,#)
+@d print_ln(#)==write_ln(stderr,#)
+@d print_real(#)==fprint_real(stderr,#)
+@z
+
 % [2] We need to tell web2c about one special variable.
 % Perhaps it would be better to allow @define's
 % anywhere in a source file, but that seemed just as painful as this.
@@ -49,7 +58,7 @@ procedure initialize; {this procedure gets things started properly}
     kpse_init_prog ('VFTOVP', 0, nil, nil);
     {We |xrealloc| when we know how big the file is.  The 1000 comes
      from the negative lower bound.}
-    tfm_file_array := cast_to_byte_pointer (xmalloc (1009));
+    tfm_file_array := xmalloc_array (byte, 1008);
     parse_arguments;
 @z
 
@@ -134,7 +143,7 @@ end;
 {Kludge here to define |tfm| as a macro which takes care of the negative
  lower bound.  We've defined |tfm| for the benefit of web2c above.}
 @=#define tfm (tfmfilearray + 1001);@>@\
-@!tfm_file_array: pointer_to_byte; {the input data all goes here}
+@!tfm_file_array: ^byte; {the input data all goes here}
 @z
 
 % [25] abort() should cause a bad exit code.
@@ -154,8 +163,7 @@ end;
 if 4*lf-1>tfm_size then abort('The file is bigger than I can handle!');
 @.The file is bigger...@>
 @y
-tfm_file_array
-  := cast_to_byte_pointer (xrealloc (tfm_file_array, 4 * lf - 1 + 1002));
+tfm_file_array := xrealloc_array (tfm_file_array, byte, 4 * lf + 1000);
 @z
 
 % [31] Ditto for vf_abort.
@@ -335,12 +343,6 @@ end;
   put_byte(MBL_string[1+(b mod 3)], vpl_file);
   put_byte(RI_string[1+s], vpl_file);
   put_byte(RCE_string[1+(b div 3)], vpl_file);
-@z
-
-@x [62] Force 32-bit constant arithmetic for 16-bit machines.
-f:=((tfm[k+1] mod 16)*@'400+tfm[k+2])*@'400+tfm[k+3];
-@y
-f:=((tfm[k+1] mod 16)*intcast(@'400)+tfm[k+2])*@'400+tfm[k+3];
 @z
 
 % [101] No progress reports unless verbose.
@@ -547,7 +549,7 @@ begin
       else if strcmp (optarg, 'hex') = 0 then
         charcode_format := charcode_hex
       else
-        write_ln (stderr, 'Bad character code format', optarg, '.');
+        write_ln (stderr, 'Bad character code format ', stringcast(optarg), '.');
 
     end; {Else it was a flag; |getopt| has already done the assignment.}
   until getopt_return_val = -1;

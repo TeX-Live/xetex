@@ -107,7 +107,7 @@ typedef FILE *text;
 #if defined (__DJGPP__) || defined (WIN32)
 #include <io.h>
 /* Don't set console device to binary.  */
-#define makebinaryfile(arg) ((!isatty(fileno(arg)) && setmode(fileno(arg), O_BINARY)), arg)
+#define makebinaryfile(arg) ((void)(!isatty(fileno(arg)) && setmode(fileno(arg), O_BINARY)), arg)
 #else
 #define makebinaryfile(arg) (arg)
 #endif
@@ -123,7 +123,6 @@ typedef FILE *text;
 
 /* To work around casting problems.  */
 #define ucharcast(x) ((unsigned char) (x))
-#define intcast(x) ((integer) (x))
 #define int64cast(x) ((integer64) (x))
 #define stringcast(x) ((string) (x))
 #define conststringcast(x) ((const_string) (x))
@@ -141,10 +140,6 @@ typedef FILE *text;
 #define aopenin(f,p) open_input (&(f), p, FOPEN_RBIN_MODE)
 #define aopenout(f)  open_output (&(f), FOPEN_W_MODE)
 #define aclose close_file
-
-/* For faking arrays in tftopl.  */
-typedef unsigned char *pointertobyte;
-#define casttobytepointer(e) ((pointertobyte) e)
 
 /* How to output to the GF or DVI file.  */
 #define WRITE_OUT(a, b)							\

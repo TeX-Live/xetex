@@ -9,13 +9,13 @@ bypassing or using the original one.
 
 See also comments in ../texk/README.
 
-cairo 1.12.16 - checked 10sep13
+cairo 1.14.2 - checked 11mar15
   http://cairographics.org/releases/
 
-freetype2 2.5.3 - checked 8mar14
+freetype2 2.5.5 - checked 7jan15
   http://savannah.nongnu.org/download/freetype/
 
-gd 2.1.0 - checked 26jun13
+gd 2.1.1 - checked 14jan15
   https://bitbucket.org/libgd/gd-libgd/downloads/
 
 gmp 6.0.0 - checked 25mar14
@@ -24,20 +24,20 @@ gmp 6.0.0 - checked 25mar14
 graphite2 1.2.4 - checked 2dec13
   http://sourceforge.net/projects/silgraphite/files/graphite2/
 
-harfbuzz 0.9.35 - checked 14aug14
+harfbuzz 0.9.40 - checked 21mar15
   http://www.freedesktop.org/software/harfbuzz/release/
 
-icu 53.1 (release) - checked 3apr14
+icu 55.1 (rc) - checked 19mar15
   http://download.icu-project.org/files/icu4c/
 
 libpaper 1.1.24+nmu2 - checked 24oct13
   ftp://ftp.de.debian.org/debian/pool/main/libp/libpaper/
 
-libpng 1.6.12 - checked 17jun14
+libpng 1.6.16 - checked 22dec14
   http://www.libpng.org/ - used by many
   http://www.libpng.org/pub/png/pngcode.html
 
-lua 5.2.3 - checked 7dec13
+lua 5.2.3 - checked 11mar15
   http://www.lua.org/ftp/
 
 luajit 2.0.3 - checked 14mar14
@@ -49,7 +49,7 @@ mpfr 3.1.2 - checked 13mar13
 pixman 0.32.6 - checked 7jul14
   http://cairographics.org/releases/
 
-poppler 0.26.3 - checked 21jul14
+poppler 0.32.0 - checked 8mar15
   http://poppler.freedesktop.org/ - used by luatex and xetex
 
 potrace 1.11 - checked 12apr13

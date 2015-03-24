@@ -99,12 +99,14 @@ DISTCLEANFILES += ovp2ovf.web
 ##
 OTANGLE_tests = omegaware/odvicopy.test omegaware/odvitype.test \
 	omegaware/otangle.test
-OMFONTS_tests = omegaware/charwd.test omegaware/level1.test \
-	omegaware/ligkern.test omegaware/ofonts.test \
-	omegaware/omfonts.test omegaware/overbmp.test \
-	omegaware/realnum.test omegaware/repeat.test \
-	omegaware/selectfont.test omegaware/shorten.test \
-	omegaware/specialhex.test omegaware/vrepeat.test \
+OMFONTS_tests = omegaware/bad.test omegaware/charwd.test \
+	omegaware/check.test omegaware/help.test \
+	omegaware/level1.test omegaware/ligkern.test \
+	omegaware/ofonts.test omegaware/omfonts.test \
+	omegaware/overbmp.test omegaware/realnum.test \
+	omegaware/repeat.test omegaware/selectfont.test \
+	omegaware/shorten.test omegaware/specialhex.test \
+	omegaware/version.test omegaware/vrepeat.test \
 	omegaware/yannis.test
 EXTRA_DIST += $(OTANGLE_tests) $(OMFONTS_tests)
 
@@ -112,9 +114,18 @@ if OTANGLE
 TESTS += $(OTANGLE_tests) $(OMFONTS_tests)
 endif OTANGLE
 
+## omegaware/bad.test
+EXTRA_DIST += \
+	omegaware/tests/badofm.ofm omegaware/tests/badopl.opl \
+	omegaware/tests/badovf.ofm omegaware/tests/badovf.ovf omegaware/tests/badovp.ovp
+DISTCLEANFILES += omegaware/bad*.*
 ## omegaware/charwd.test
 EXTRA_DIST += omegaware/tests/charwd-r.pl omegaware/tests/charwd-v.vpl
 DISTCLEANFILES += omegaware/tests/charwdr.* omegaware/tests/charwdv.*
+## omegaware/check.test
+EXTRA_DIST += \
+	omegaware/tests/check.ofm omegaware/tests/check.opl omegaware/tests/checked.opl
+DISTCLEANFILES += omegaware/tests/xcheck*
 ## omegaware/level1.test
 EXTRA_DIST += omegaware/tests/level1.opl
 DISTCLEANFILES += omegaware/tests/xlevel1.*
@@ -122,7 +133,8 @@ DISTCLEANFILES += omegaware/tests/xlevel1.*
 EXTRA_DIST += \
 	omegaware/tests/ligall.opl omegaware/tests/ligbch.opl omegaware/tests/ligbdy.opl \
 	omegaware/tests/ligblb.opl omegaware/tests/ligblv.opl omegaware/tests/ligblv.ovp \
-	omegaware/tests/ligloop1.ofm omegaware/tests/ligloop1.opl omegaware/tests/ligloop2.opl
+	omegaware/tests/ligloop1.ofm omegaware/tests/ligloop1.opl omegaware/tests/ligloop2.opl \
+	omegaware/tests/liguse.opl omegaware/tests/liguse1.opl omegaware/tests/liguse2.opl
 DISTCLEANFILES += omegaware/tests/xlig*.*
 ## omegaware/odvicopy.test (and ofonts.test)
 EXTRA_DIST += \
@@ -132,7 +144,7 @@ EXTRA_DIST += \
 	omegaware/tests/ofontr1.vf omegaware/tests/ofontr2.ovf \
 	omegaware/tests/ofontr3.ovf omegaware/tests/ofontv4.vf \
 	omegaware/tests/ofontv5.ovf omegaware/tests/ofontv6.ovf
-DISTCLEANFILES += ofont*vf
+DISTCLEANFILES += ofont*vf omegaware/tests/xpagenum.*
 ## omegaware/odvitype.test (and odvicopy.test, ofonts.test)
 EXTRA_DIST += omegaware/tests/ofontd0.dtl omegaware/tests/ofontd0.dvi \
 	omegaware/tests/ofontd0.typ omegaware/tests/ofontr0.tfm \
@@ -153,12 +165,12 @@ EXTRA_DIST += omegaware/tests/Cherokee.pl omegaware/tests/OCherokee.ovp
 DISTCLEANFILES += omegaware/tests/Cherokee.tfm omegaware/tests/OCherokee.ofm \
 	omegaware/tests/OCherokee.opl omegaware/tests/OCherokee.ovf \
 	omegaware/tests/xCherokee.* omegaware/tests/xOCherokee.*
+## omegaware/otangle.test
+DISTCLEANFILES += ocftest.*
 ## omegaware/overbmp.test
 EXTRA_DIST += omegaware/tests/inbmp.opl omegaware/tests/overbmp.opl \
 	omegaware/tests/overbmp.ovp
 DISTCLEANFILES += omegaware/tests/xinbmp* omegaware/tests/xoverbmp*
-## omegaware/otangle.test
-DISTCLEANFILES += ocftest.*
 ## omegaware/realnum.test
 EXTRA_DIST += omegaware/tests/realnum.opl omegaware/tests/realnum.out
 DISTCLEANFILES += omegaware/tests/xrealnum.*

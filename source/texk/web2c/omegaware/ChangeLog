@@ -1,3 +1,68 @@
+2015-01-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* odvicopy.ch: Drop intcast().
+	* odvitype.ch: Drop intcast().
+	* ofm2opl.ch: Drop intcast().
+	* opl2ofm.ch: Drop intcast().
+	* ovf2ovp.ch: Drop intcast().
+	* ovp2ovf.ch: Drop intcast().
+
+2015-01-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* odvicopy.web: Avoid useless differences with ../dvicopy.web.
+	* odvicopy.ch: Bug fix: Respect -page-start and -max-pages.
+	* odvicopy.test: Additional test cases.
+	* am/omegaware.am (DISTCLEANFILES): Additional output files.
+
+2015-01-15  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* odvitype.web: Avoid useless differences with ../dvitype.web.
+	* odvitype.ch: Allow output level 0 and use intcast() as
+	in ../dvitype.ch.
+
+2015-01-12  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2opl.ch, ovf2ovp.ch: Use ^byte and x*alloc_array().
+
+2015-01-11  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ovf2ovp.ch: Send diagnostic messages to stderr.
+	* ofm2opl.ch, opl2ofm.ch, ovp2ovf.ch:
+	Send diagnostic messages to stderr.
+	Non-zero return code in case of problems.
+	* check.test: Also test writung OPL file to stdout.
+	* selectfont.test: Also test writung OVP file to stdout.
+	* bad.test, version.test: Shell scripts for new tests.
+	* tests/badofm.ofm, tests/badopl.opl, tests/badovf.{ofm,ovf},
+	tests/badovp.ovp: New test input files.
+	* am/omegaware.am: Add new test shell scripts and input files.
+
+2014-11-07  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2opl.ch, ovf2ovp.ch: Add missing space to message.
+	* help.test: New shell script to test help messages and options.
+
+2014-11-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofm2opl.ch, ovf2ovp.ch: Add stringcast to avoid printing
+	strings as numbers.
+
+2014-08-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* check.test, check.{ofm,opl}, checked.opl:
+	Shell script and data for a new test.
+	* am/omegaware.am: Add the new test.
+
+2014-08-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ofonts.test: Fix parallel tests.
+
+2014-08-17  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tests/arabic.ovp: Use more than 64k ligkern steps.
+	* tests/liguse{,1,2}.opl (new): Additional test data.
+	* ligkern.test, am/omegaware.am: Add the new test data.
+
 2014-08-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* ovp2ovf.web: Correctly handle bchar_label (as in opl2ofm.web).

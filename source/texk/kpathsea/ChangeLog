@@ -1,3 +1,69 @@
+2015-03-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am, kpathsea.pc.in: Install <kpathsea/c-auto.h> under
+	${libdir}.
+
+2015-03-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: Drop checks for strcasecmp, strtol, and strstr.
+	* lib.h: Drop the strstr() prototype.
+	* Makefile.am: No need to distribute the replacement functions.
+
+2014-12-13  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* texmf.cnf: Sync with master which is changed by Norbert.
+
+2014-12-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am [kpathsea.h]: Improved output for silent rules.
+
+2014-12-05  Karl Berry  <karl@tug.org>
+
+	* kpsewhich.c (help_formats): new fn for new option --help-formats.
+	(help_message): split off code from here.
+	(USAGE): document it.
+	(read_command_line): recognize it.
+	Suggestion from Julian Gilbey, tex-k 4 Dec 2014 13:34:23.
+
+2014-10-20  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* db.c (db_names): Use initialized non-const strings to avoid warning.
+
+2014-10-19  Karl Berry  <karl@tug.org>
+
+	* db.c (db_names): list DB_NAME_LC first, and list both always,
+	dropping WIN32 conditional.
+	(init_db): check at runtime if ls-R and ls-R are same_file_p,
+	and only read one on any system, not just hardwiring Windows.
+	Output debugging lines.  Basic patch from Adam Maxwell
+	(since MacOSX now uses a case-preserving filesystem).
+	
+	* db.c (DB_HASH_SIZE): increase per current texmf-dist/ls-R.
+	
+2014-10-17  Karl Berry  <karl@tug.org>
+
+	* line.c (getc, FLOCKFILE, FUNLOCKFILE): #define to getc_unlocked, etc.
+	(get_line): call them, so we lock once per call instead of
+	once per character read.  Change from Adam Maxwell <amaxwell@mac.com>.
+	https://email.esm.psu.edu/pipermail/macosx-tex/2014-October/053026.html
+
+2014-09-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmf.cnf (TEX.upmpost): Added.
+
+2014-08-23  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* knj.c (win32_fputs): Drop unused variables.
+
+2014-08-22  Akira Kakuto  <kakuto@fuk.kindai.ac.jp>
+
+	* knj.c: Update fsyscp_popen().
+
+2014-08-22  TANAKA Takuji  <KXD02663@nifty.ne.jp>
+
+	* knj.[ch], c-std.h, config.h: Add a new function win32_vfprintf()
+	(Windows only)
+
 2014-07-22  Karl Berry  <karl@tug.org>
 
 	* tex-file.h,

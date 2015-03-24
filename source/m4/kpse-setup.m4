@@ -1,5 +1,5 @@
 # Private macros for the TeX Live (TL) tree.
-# Copyright (C) 2009-2014 Peter Breitenlohner <tex-live@tug.org>
+# Copyright (C) 2009-2015 Peter Breitenlohner <tex-live@tug.org>
 #
 # This file is free software; the copyright holder
 # gives unlimited permission to copy and/or distribute it,
@@ -84,7 +84,7 @@ AS_CASE([$with_x:$kpse_cv_have_win32],
 AS_CASE([$enable_luajittex],
         [yes | no], [:],
           [AS_CASE([$host],
-                   [alpha* | sparc* | x86_64-*-cygwin],
+                   [alpha* | sparc* | x86_64-*-cygwin | powerpc-*-darwin* ],
                      [AC_MSG_NOTICE([$host -> `--disable-luajittex'])
                       ac_configure_args="$ac_configure_args '--disable-luajittex'"])])        
 KPSE_FOR_PKGS([utils], [m4_sinclude(kpse_TL[utils/]Kpse_Pkg[/ac/withenable.ac])])
@@ -259,7 +259,7 @@ m4_popdef([Kpse_add])[]dnl
 
 # _KPSE_RECURSE(LIST, TEXT, COND, [PREFIX])
 # -----------------------------------------
-# Internal subroutine.  Determine which of the libraies or programs in
+# Internal subroutine.  Determine which of the libraries or programs in
 # kpse_LIST_pkgs to build, and set output variables MAKE_SUBDIRS and
 # CONF_SUBDIRS.  Cause 'make dist', 'configure -hr', and 'autoreconf'
 # to recurse into all existing ones.

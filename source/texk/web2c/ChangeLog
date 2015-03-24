@@ -1,3 +1,120 @@
+2015-03-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: Correctly locate installed <kpathsea/paths.h>.
+
+2015-03-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* w2c/config.h: Drop the strtol() prototype.
+
+2015-03-08  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am: Initialize {EXTRA,lib}_{,LT}LIBRARIES.
+
+2015-02-17  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* ac/web2c.ac: Update some help texts.
+
+2015-02-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am: Use the fragment ../../am/dist_hook.am.
+
+2015-01-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* cpascal.h: Remove intcast.
+
+2015-01-18  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* dvicopy.ch: Drop intcast().
+	* dvitype.ch: Drop intcast().
+	* gftodvi.ch: Drop intcast().
+	* mf.ch: Drop intcast().
+	* pltotf.ch: Drop intcast().
+	* tangle.ch: Drop intcast().
+	* tex.ch: Drop intcast().
+	* tftopl.ch: Drop intcast().
+	* vftovp.ch: Drop intcast().
+	* vptovf.ch: Drop intcast().
+
+2015-01-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* mf.ch: Revert the previous change (^Z is again invalid).
+
+	* dvitype.ch: Cosmetic changes.
+
+2015-01-13  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* mf.ch: Ignore ^Z in input files (as tab and form_feed).
+
+2015-01-12  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tftopl.ch, vftovp.ch: Use ^byte and x*alloc_array().
+	* cpascal.h: Remove casttobytepointer and pointertobyte.
+
+2015-01-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tftopl.ch: Non-zero return code in case of problems.
+	* tftopl.test, vftovp.test: Add more tests.
+	* tests/badtfm.tfm, tests/badvf.{tfm,vf}: New test input files.
+	* am/web.am: Adjust for additional test input and output files.
+
+2015-01-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* pltotf.ch, vptovf.ch: Send diagnostic messages to stderr.
+	Non-zero return code in case of problems.
+	* pltotf.test, vptovf.test: Add more tests.
+	* tests/badpl.pl, tests/badvpl.vpl: New test input files.
+	* am/web.am: Adjust for additional test input and output files.
+
+2014-12-11  Karl Berry  <karl@tug.org>
+
+	* triptest,
+	* mftraptest: complain early if trip.fmt/trap.base are not created.
+	Original report from vvv, tlbuild 14 Jun 2011 10:25:47.
+
+2014-11-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* cpascal.h (makebinaryfile): Avoid gcc -Wunused-value warning.
+
+2014-11-07  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tftopl.ch, vftovp.ch: Add missing space to message.
+	* tftopl.test, vftovp.test: Display help and warning message.
+
+	* help.h: Correct help messages for ofm2opl & Co.
+
+2014-11-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* mf.ch, tftopl.ch, vftovp.ch: Add stringcast to avoid printing
+	strings as numbers.
+
+	* configure.ac: AC_CHECK_SIZEOF([void *]) and AC_TYPE_UINTPTR_T.
+	* w2c/config.h: If necessary define uintptr_t.
+	* texmfmp.h: Cast pointers to uintptr_t and use PRIdPTR, PRIxPTR
+	to print them.
+
+2014-10-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.h: Define here whether or not to build tex*.dll.
+
+2014-10-28  Karl Berry  <karl@tug.org>
+
+	* enctex.ch: patch for \^^ab control sequences from Petr Olsak.
+
+2014-09-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* w2c/config.h: Bug fix: integer64 must always be a 64bit type,
+	even when long and off_t are not (detected by Norbert Preinig).
+
+2014-09-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* Makefile.am: Include fragments libmputil.am and pmpost.am.
+	* ac/web2c.ac: Add pMetaPost and upMetaPost.
+	* pmpostdir/ (new): Code for pMetaPost and upMetaPost.
+
+2014-08-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* configure.ac: Drop redundant AM_CONDITIONAL MP.
+	
 2014-07-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* configure.ac: Check for <StructTreeRoot.h> (poppler 0.25 or

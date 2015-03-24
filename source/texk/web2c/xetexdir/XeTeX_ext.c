@@ -2579,10 +2579,12 @@ open_dvi_output(FILE** fptr)
             if (*p++ == '\"')
                 ++len;
         len += strlen(outputdriver);
+#ifndef WIN32
         if (!kpse_absolute_p(outputdriver, true))
             bindir = kpse_var_value("SELFAUTOLOC");
         if (bindir)
             len += strlen(bindir) + 1;
+#endif
         if (output_directory)
             len += strlen(output_directory);
         len += 10; /* space for -o flag, quotes, NUL */
@@ -2590,6 +2592,9 @@ open_dvi_output(FILE** fptr)
             if (*p == '\"')
                 ++len;  /* allow extra space to escape quotes in filename */
         cmd = xmalloc(len);
+#ifdef WIN32
+        strcpy(cmd, outputdriver);
+#else
         if (bindir) {
             strcpy(cmd, bindir);
             strcat(cmd, "/");
@@ -2597,6 +2602,7 @@ open_dvi_output(FILE** fptr)
         } else {
             strcpy(cmd, outputdriver);
         }
+#endif
         strcat(cmd, " -o \"");
         if (output_directory) {
             len = strlen(output_directory);
@@ -2629,7 +2635,7 @@ open_dvi_output(FILE** fptr)
 #if defined(WIN32)
         {
             wchar_t *tmp1w;
-            char *p, *pp, *bindir, *fullcmd, *prgnam;
+            char *p, *pp, *fullcmd, *prgnam;
             bindir = kpse_var_value("SELFAUTOLOC");
             for(pp = bindir; *pp; pp++) {
                 if(*pp == '/') *pp = '\\';

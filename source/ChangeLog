@@ -1,3 +1,52 @@
+2015-03-07  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tardate.ac: Switch to 2015-03-07.
+
+2015-02-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/dist_hook.am (new): Makefile fragment for dist-hook target.
+	* Makefile.am: Use the fragment am/dist_hook.am.
+
+2014-11-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tardate.ac: Switch to 2014-11-24.
+
+2014-11-17  Karl Berry  <karl@tug.org>
+
+	* am/script_links.am: Use w32_wrapper or w64_wrapper.
+
+2014-10-21  Karl Berry  <karl@tug.org>
+
+	* configure.ac: report CC/CXX values, with --version output
+	if available.
+	* Build: no need for objc any more.
+
+2014-08-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tardate.ac: Switch to 2014-08-22.
+
+2014-06-16  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* version.ac: Switch 2014 => 2015/dev'
+	* tardate.ac: Switch to 2014-06-16.
+
+2014-04-28  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	Makefile.am: New names for README.* files.
+
+2014-04-17  Karl Berry  <karl@tug.org>
+
+	* version.ac (tex_live_version): starting pretest, no more /dev.
+
+2014-04-04  Karl Berry  <karl@tug.org>
+
+	* Build (TL_MAKE,MAKE): set both in all cases.
+	(buildenv.log): include pwd, and use .log instead of .txt.
+
+2014-04-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* tardate.ac: Switch to 2014-04-01.
+
 2014-01-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* tardate.ac: Switch to 2014-01-01.
@@ -5,10 +54,6 @@
 2013-12-26  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* Makefile.am (ACLOCAL): Ensure aclocal.m4 is up to date.
-
-2013-12-14  Peter Breitenlohner  <peb@mppmu.mpg.de>
-
-	* doc/build.texi: Fixed some typos.
 
 2013-10-08  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
@@ -56,7 +101,7 @@
 
 	* Makefile.am, configure.ac: Use am/recurse.am.
 
-2013-03-01  Peter Breitenlohner  <peb@mppmu.mpg.de>
+2013-06-24  Peter Breitenlohner  <peb@mppmu.mpg.de>
 
 	* configure.ac: Added Automake options 'tar-pax' for paths
 	longer than 100 chars and 'no-dist-gzip'.

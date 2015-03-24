@@ -490,7 +490,11 @@ shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
 #ifdef WIN32
 #undef system
 #define system fsyscp_system
-#endif
+#if ENABLE_PIPES
+#undef popen
+#define popen fsyscp_popen
+#endif /* ENABLE_PIPES */
+#endif /* WIN32 */
 
 int
 runsystem (const char *cmd)
@@ -916,7 +920,7 @@ maininit (int ac, string *av)
    happen in `topenin', then call the main body.  */
 
 int
-#if defined(WIN32) && !defined(__MINGW32__) && defined(DLLPROC)
+#if defined(DLLPROC)
 DLLPROC (int ac, string *av)
 #else
 main (int ac, string *av)
@@ -928,11 +932,31 @@ main (int ac, string *av)
 #endif
 
 #ifdef WIN32
+  av[0] = kpse_program_basename (av[0]);
   _setmaxstdio(2048);
   setmode(fileno(stdin), _O_BINARY);
 #endif
 
   maininit (ac, av);
+
+#ifdef WIN32
+  if (ac > 1) {
+    char *pp;
+    if ((strlen(av[ac-1]) > 2) &&
+        isalpha(av[ac-1][0]) &&
+        (av[ac-1][1] == ':') &&
+        (av[ac-1][2] == '\\')) {
+      for (pp=av[ac-1]+2; *pp; pp++) {
+        if (IS_KANJI(pp)) {
+          pp++;
+          continue;
+        }
+        if (*pp == '\\')
+          *pp = '/';
+      }
+    }
+  }
+#endif
 
   /* Call the real main program.  */
   mainbody ();
@@ -1103,10 +1127,7 @@ ipc_make_name (void)
   return ipc_addr_len;
 }
 
-#ifndef INVALID_SOCKET
-# define INVALID_SOCKET (-1)
-#endif
-static int sock = INVALID_SOCKET;
+static int sock = -1;
 
 #ifdef WIN32
 # define CLOSE_SOCKET(s) closesocket (s); WSACleanup ()
@@ -1117,7 +1138,7 @@ static int sock = INVALID_SOCKET;
 static int
 ipc_is_open (void)
 {
-   return sock != INVALID_SOCKET;
+   return sock != -1;
 }
 
 static void
@@ -1130,7 +1151,7 @@ ipc_open_out (void) {
 #ifdef IPC_DEBUG
   fputs ("tex: Opening socket for IPC output ...\n", stderr);
 #endif
-  if (sock != INVALID_SOCKET) {
+  if (sock != -1) {
     return;
   }
 
@@ -1146,13 +1167,13 @@ ipc_open_out (void) {
 
   sock = socket (IPC_AF, SOCK_STREAM, 0);
 #ifdef IPC_DEBUG
-  if(sock != INVALID_SOCKET)
+  if(sock != -1)
     fprintf(stderr, "tex: Socket handle is %d\n", sock);
   else
     fprintf(stderr, "tex: Socket is invalid.\n");
 #endif
 
-  if (sock != INVALID_SOCKET) {
+  if (sock != -1) {
     if (connect (sock, ipc_addr, ipc_addr_len) != 0 ||
 #ifdef WIN32
         ioctlsocket (sock, FIONBIO, &mode) < 0
@@ -1161,7 +1182,7 @@ ipc_open_out (void) {
 #endif
         ) {
       CLOSE_SOCKET (sock);
-      sock = INVALID_SOCKET;
+      sock = -1;
 #ifdef IPC_DEBUG
       fputs ("tex: IPC socket cannot be connected.\n", stderr);
       fputs ("tex: Socket is closed.\n", stderr);
@@ -1182,7 +1203,7 @@ ipc_close_out (void)
 #endif
   if (ipc_is_open ()) {
     CLOSE_SOCKET (sock);
-    sock = INVALID_SOCKET;
+    sock = -1;
   }
 }
 

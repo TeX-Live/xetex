@@ -1,7 +1,40 @@
+2015-03-16  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* printversion.c: 2014 ---> 2015.
+
+2014-11-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: Avoid MinGW64 warnings (INVALID_SOCKET => -1).
+
+2014-11-03  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* texmfmp.c: Indentation.
+
+2014-10-30  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: Use the decision about tex*.dll from ../texmfmp.h.
+
+2014-10-09  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: Apply some code from W32TeX.
+
+2014-08-22  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* texmfmp.c: Symplify support of multibyte characters, by
+	updating fsyscp_popen in kpathsea (Windows only).
+
+2014-08-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* texmfmp.c: Avoid several compiler warnings (Windows only).
+
+2014-08-22  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* texmfmp.c: Support multibyte characters in pipe (Windows only).
+
 2014-07-23  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
 
 	* texmfmp.c: Short-file-name convention is incompatible with
-	--src-specials (w32 only).
+	--src-specials (Windows only).
 
 2014-07-21  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
 

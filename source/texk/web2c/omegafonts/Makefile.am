@@ -1,6 +1,6 @@
 ## Makefile.am for the TeX Live subdirectory texk/web2c/omegafonts/
 ##
-## Copyright (C) 2009-2014 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2009-2015 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 ##
 AM_CPPFLAGS =  -I$(top_builddir)/.. -I$(top_srcdir) $(KPATHSEA_INCLUDES) -DNOT_WEB2C
@@ -96,18 +96,26 @@ endif OTANGLE
 
 ## Tests
 ##
-OMFONTS_tests = charwd.test level1.test ligkern.test ofonts.test omfonts.test \
-	overbmp.test realnum.test repeat.test selectfont.test shorten.test \
-	specialhex.test yannis.test
+OMFONTS_tests = bad.test charwd.test check.test help.test level1.test ligkern.test \
+	ofonts.test omfonts.test overbmp.test realnum.test repeat.test \
+	selectfont.test shorten.test specialhex.test version.test yannis.test
 if OTANGLE
 TESTS = $(OMFONTS_tests)
 endif OTANGLE
 
 EXTRA_DIST = $(OMFONTS_tests)
 
+## bad.test
+EXTRA_DIST += \
+	tests/badofm.ofm tests/badopl.opl \
+	tests/badovf.ofm tests/badovf.ovf tests/badovp.ovp
+DISTCLEANFILES += bad*.*
 ## charwd.test
 EXTRA_DIST += tests/charwd-r.pl tests/charwd-v.vpl
 DISTCLEANFILES += tests/charwdr.* tests/charwdv.*
+## check.test
+EXTRA_DIST += tests/check.ofm tests/check.opl tests/checked.opl
+DISTCLEANFILES += tests/xcheck*
 ## level1.test
 EXTRA_DIST += tests/level1.opl
 DISTCLEANFILES += tests/xlevel1.*
@@ -115,7 +123,8 @@ DISTCLEANFILES += tests/xlevel1.*
 EXTRA_DIST += \
 	tests/ligall.opl tests/ligbch.opl tests/ligbdy.opl \
 	tests/ligblb.opl tests/ligblv.opl tests/ligblv.ovp \
-	tests/ligloop1.ofm tests/ligloop1.opl tests/ligloop2.opl
+	tests/ligloop1.ofm tests/ligloop1.opl tests/ligloop2.opl \
+	tests/liguse.opl tests/liguse1.opl tests/liguse2.opl
 DISTCLEANFILES += tests/xlig*.*
 ## ofonts.test
 EXTRA_DIST += tests/ofontr0.pl \
