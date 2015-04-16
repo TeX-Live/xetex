@@ -13009,9 +13009,8 @@ file. Parameters |i|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 \yskip\noindent Commands 250--255 are undefined in normal \.{DVI} files, but
 the following commands are used in \.{XDV} files.
 
-\yskip\hang|begin_reflect| 250. Begin a (possibly recursive) reflected segment.
-
-\yskip\hang|end_reflect| 251. End a (possibly recursive) reflected segment.
+\yskip\hang|reflect| 250 |b[1]|. Begin (|b=0|) or end (|b=1|) a (possibly
+recursive) reflected segment.
 
 \yskip\hang\vbox{\halign{#&#\hfil\cr
 |define_native_font| 252 & |k[4]| |s[4]| |flags[2]| |l[1]| |n[l]| |i[4]|\cr
@@ -13023,7 +13022,7 @@ the following commands are used in \.{XDV} files.
 
 \yskip\hang|set_glyphs| 253 |w[4]| |k[2]| |xy[8k]| |g[2k]|.
 
-\yskip\noindent Commands 254--255 is undefined in normal \.{XDV} files.
+\yskip\noindent Command 255 is undefined in normal \.{XDV} files.
 
 @ @d set_char_0=0 {typeset character 0 and move right}
 @d set1=128 {typeset a character and move right}
@@ -13052,8 +13051,8 @@ the following commands are used in \.{XDV} files.
 @d pre=247 {preamble}
 @d post=248 {postamble beginning}
 @d post_post=249 {postamble ending}
-@d begin_reflect=250 {begin a reflected segment (not normally allowed)}
-@d end_reflect=251 {end a reflected segment (not normally allowed)}
+
+@d reflect=250 {begin or end a reflected segment}
 @d define_native_font=252 {define native font}
 @d set_glyphs=253 {sequence of glyphs with individual x-y coordinates}
 
@@ -32543,17 +32542,20 @@ if LR_problems>0 then
   LR_problems:=0; goto common_ending;
   end
 
-@ @<Output a reflection instruction if the direction has changed@>=
+@ @d begin_reflect=0 {begin a reflcted segment value of |reflect| \.{XDV} command}
+@d end_reflect=1 {end a reflcted segment value of |reflect| \.{XDV} command}
+
+@<Output a reflection instruction if the direction has changed@>=
 if begin_LR(p) then
   begin if safe_info(LR_ptr)<>LR_type(p) then
-    begin synch_h; synch_v; dvi_out(begin_reflect);
+    begin synch_h; synch_v; dvi_out(reflect); dvi_out(begin_reflect);
     end;
   push_LR(p);
   end
 else if safe_info(LR_ptr)=begin_LR_type(p) then
   begin pop_LR;
   if info(LR_ptr)+end_L_code<>LR_type(p) then
-    begin synch_h; synch_v; dvi_out(end_reflect);
+    begin synch_h; synch_v; dvi_out(reflect); dvi_out(end_reflect);
     end;
   end
 else confusion("LR")
