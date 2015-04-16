@@ -32446,8 +32446,9 @@ end
 @ Now we do the main work required for mixed-direction texts.
 
 @<Cases of |main_control| that build...@>=
-hmode+LR,mmode+LR: begin new_whatsit(LR_node,small_node_size); LR_type(tail):=cur_chr;
+hmode+LR: begin new_whatsit(LR_node,small_node_size); LR_type(tail):=cur_chr;
   end;
+mmode+LR: report_illegal_case;
 
 @ A number of routines are based on a stack of one-word nodes whose |info|
 fields contain either |begin_L_code| or |begin_R_code|. The top of the
