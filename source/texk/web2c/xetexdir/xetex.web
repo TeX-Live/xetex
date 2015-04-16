@@ -30577,7 +30577,7 @@ primitive("middle",left_right,middle_noad);
 @ @<Cases of |left_right| for |print_cmd_chr|@>=
 else if chr_code=middle_noad then print_esc("middle")
 
-@ 
+@ @d TeXXeT_state==eTeX_state(TeXXeT_code)
 @d XeTeX_upwards_state==eTeX_state(XeTeX_upwards_code)
 @d XeTeX_upwards==(XeTeX_upwards_state>0)
 
