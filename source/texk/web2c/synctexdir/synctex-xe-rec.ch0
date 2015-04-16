@@ -59,7 +59,8 @@ othercases print("[unknown integer parameter!]")
 @z
 
 @x etex.ch l.1568
-kern_node,math_node:cur_h:=cur_h+width(p);
+math_node: @<Output math node |p|@>;
+kern_node:cur_h:=cur_h+width(p);
 @y
 kern_node: begin
   @<Record |kern_node| {\sl Sync\TeX} information@>;
@@ -67,7 +68,7 @@ kern_node: begin
 end;
 math_node: begin
   @<Record |math_node| {\sl Sync\TeX} information@>;
-  cur_h:=cur_h+width(p);
+  @<Output math node |p|@>;
 end;
 @z
 

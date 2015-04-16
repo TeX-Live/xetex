@@ -13922,7 +13922,8 @@ glue_node: @<Move right or output leaders@>;
 margin_kern_node: begin
   cur_h:=cur_h+width(p);
 end;
-kern_node,math_node:cur_h:=cur_h+width(p);
+math_node: @<Output math node |p|@>;
+kern_node:cur_h:=cur_h+width(p);
 ligature_node: @<Make node |p| look like a |char_node| and |goto reswitch|@>;
 othercases do_nothing
 endcases;@/
@@ -26017,11 +26018,9 @@ space above that display.
 
 @<Finish math in text@>=
 begin tail_append(new_math(math_surround,before));
-@<Append a |begin_L| to the tail of the current list@>;
 cur_mlist:=p; cur_style:=text_style; mlist_penalties:=(mode>0); mlist_to_hlist;
 link(tail):=link(temp_head);
 while link(tail)<>null do tail:=link(tail);
-@<Append an |end_L| to the tail of the current list@>;
 tail_append(new_math(math_surround,after));
 space_factor:=1000; unsave;
 end
@@ -29030,6 +29029,21 @@ begin
   othercases out_what(p)
   endcases
 end
+
+@ We want to always typeset math in LR mode, so we use the fact that
+|math_node|'s sorround text math to insert |begin_reflect| and
+|end_reflect| opcodes if required.
+
+@<Output math node |p|@>=
+if safe_info(LR_ptr)<>begin_L_code then
+  begin synch_h; synch_v;
+  if subtype(p)=before then
+    begin cur_h:=cur_h+width(p); dvi_out(begin_reflect);
+    end
+  else begin dvi_out(end_reflect); cur_h:=cur_h+width(p);
+    end
+  end
+else cur_h:=cur_h+width(p)
 
 @ After all this preliminary shuffling, we come finally to the routines
 that actually send out the requested data. Let's do \.{\\special} first
@@ -32473,12 +32487,6 @@ end;
 function safe_info(@!p:pointer): integer;
 begin if p=null then safe_info:=-1@+else safe_info:=info(p);
 end;
-
-@ @<Append a |begin_L| to the tail of the current list@>=
-tail_append(new_LR(begin_L_code))
-
-@ @<Append an |end_L| to the tail of the current list@>=
-tail_append(new_LR(end_L_code))
 
 @ When the stack-manipulation macros of this section are used below, variables
 |LR_ptr| and |LR_tmp| might be the global variables declared above, or they
