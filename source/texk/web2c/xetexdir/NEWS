@@ -12,8 +12,7 @@ XeTeX:
   text (colors and hyper links mainly).
 * \TeXXeTstate have been deprecated and does not do anything now, the TeX-XeT
   support is always enabled.
-* XeTeX still reads/updates the \predisplaydirection but the value is otherwise
-  ignored. The old functionality can be emulated by macro code, and it might be
+* \predisplaydirection is currently ignored, but the functionality might be
   resuscitated in the future.
 * It is now possible to use direction switching primitives inside math mode.
 * The XDV opcodes have been simplified slightly, and support for DVI-IVD opcodes
