@@ -1668,8 +1668,10 @@ var l: small_number;
 begin if (selector>pseudo) and (not doing_special) then
   {``printing'' to a new string, encode as UTF-16 rather than UTF-8}
   begin if s>=@"10000 then
-   begin print_visible_char(@"D800 + (s - @"10000) div @"400);
-   print_visible_char(@"DC00 + (s - @"10000) mod @"400);
+   begin { print_visible_char(@"D800 + (s - @"10000) div @"400); }
+   { print_visible_char(@"DC00 + (s - @"10000) mod @"400); }
+   { print_visible_char(240); print_visible_char(157); print_visible_char(149); print_visible_char(162); }
+   print_visible_char(120162);
    end else print_visible_char(s);
    return;
   end;
@@ -31425,7 +31427,7 @@ else  begin width(r):=d; link(r):=p; link(u):=r;
   end
 
 @ The |scan_tokens| feature of \eTeX\ defines the \.{\\scantokens}
-primitive.
+primiti+.
 
 @<Generate all \eTeX...@>=
 primitive("scantokens",input,2);
