@@ -1,0 +1,13 @@
+\ifx\fmtname\undefined
+  \input basic
+  \def\fmtname{basic}
+\fi
+\def\hi{^^^^d835}
+\def\lo{^^^^dd62}
+\message{***\hi\lo***}
+
+\scantokens{\def\HI{^^^^d835}}
+\scantokens{\def\LO{^^^^dd62}}
+\message{***\HI\LO***}
+
+\bye

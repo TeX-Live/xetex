@@ -31438,7 +31438,7 @@ else  begin width(r):=d; link(r):=p; link(u):=r;
   end
 
 @ The |scan_tokens| feature of \eTeX\ defines the \.{\\scantokens}
-primitive.
+primiti+.
 
 @<Generate all \eTeX...@>=
 primitive("scantokens",input,2);
