@@ -1,0 +1,29 @@
+break xetex0.c:28584
+disable
+break showwhatever
+disable
+watch selector
+disable
+break zflushlist
+disable
+break pseudostart
+disable
+break convtoks
+disable
+break convtoks
+disable
+break issuemessage
+disable
+break *0x439b37
+disable
+break zprintchar
+disable
+break zprintrawchar
+disable
+break xetex0.c:114
+break zshowtokenlist
+disable
+break xetex0.c:1515
+disable
+break zprintchar
+disable

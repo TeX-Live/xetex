@@ -1,0 +1,42 @@
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  29 APR 2015 13:31
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**source/texk/web2c/xetexdir/tests/bug80.tex
+(./source/texk/web2c/xetexdir/tests/bug80.tex
+(/home/arthur/perso/xetex/xetex-code/source/texk/web2c/tests/basic.tex
+Preloading the plain format: codes, registers,
+\maxdimen=\dimen10
+\hideskip=\skip10
+\centering=\skip11
+\p@=\dimen11
+\z@=\dimen12
+\z@skip=\skip12
+\voidb@x=\box10
+ parameters,
+\smallskipamount=\skip13
+\medskipamount=\skip14
+\bigskipamount=\skip15
+\normalbaselineskip=\skip16
+\normallineskip=\skip17
+\normallineskiplimit=\dimen13
+\jot=\dimen14
+\interdisplaylinepenalty=\count23
+\interfootnotelinepenalty=\count24
+ macros,
+\strutbox=\box11
+\mscount=\count25
+\tabs=\box12
+\tabsyet=\box13
+\tabsdone=\box14
+
+math definitions,
+\rootbox=\box15
+\p@renwd=\dimen15
+ output routines,
+\headline=\toks10
+\footline=\toks11
+\footins=\insert254
+\topins=\insert253
+ hyphenation) ****82,32**** )
+No pages of output.

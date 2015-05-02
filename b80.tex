@@ -1,0 +1,15 @@
+\ifx\fmtname\undefined
+  \input basic
+  \def\fmtname{basic}
+\fi
+\font\lmmath="Latin Modern Math"
+\def\test#1#2.{\message{****\number`#1,\number`#2 ****}}
+\font\tenrm=cmr10
+\showhyphens{supercalifragilisticexpialidocious}
+\def\foo{foo}
+% \show\foo
+\scantokens{\test 𝕢.}
+\lmmath 𝕢
+\scantokens{\test q.}
+\scantokens{\test 覺.}
+\end
