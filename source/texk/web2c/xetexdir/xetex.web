@@ -1668,10 +1668,10 @@ var l: small_number;
 begin if (selector>pseudo) and (not doing_special) then
   {``printing'' to a new string, encode as UTF-16 rather than UTF-8}
   begin if s>=@"10000 then
-   begin { print_visible_char(@"D800 + (s - @"10000) div @"400); }
-   { print_visible_char(@"DC00 + (s - @"10000) mod @"400); }
+   begin print_visible_char(@"D800 + (s - @"10000) div @"400);
+   print_visible_char(@"DC00 + (s - @"10000) mod @"400);
    { print_visible_char(240); print_visible_char(157); print_visible_char(149); print_visible_char(162); }
-   print_visible_char(120162);
+   { print_visible_char(120162); }
    end else print_visible_char(s);
    return;
   end;
@@ -8037,6 +8037,7 @@ var k:0..buf_size; {an index into |buffer|}
 @!t:halfword; {a token}
 @!cat:0..max_char_code; {|cat_code(cur_chr)|, usually}
 @!c:UnicodeScalar; {constituent of a possible expanded code}
+@!lower:UTF16_code; {lower surrogate of a possible UTF-16 compound}
 @!d:small_number; {number of excess characters in an expanded code}
 @!sup_count:small_number; {number of identical |sup_mark| characters}
 begin restart: cur_cs:=0;
@@ -8061,6 +8062,12 @@ if cur_cmd<=car_ret then if cur_cmd>=tab_mark then if align_state=0 then
 @^inner loop@>
 begin switch: if loc<=limit then {current line not yet finished}
   begin cur_chr:=buffer[loc]; incr(loc);
+  if (cur_chr >= @"D800) and (cur_chr < @"DC00) then
+    begin
+      lower := buffer[loc] - @"DC00;
+      incr(loc);
+      cur_chr := @"10000 + (cur_chr - @"D800) * 1024 + lower;
+    end;
   reswitch: cur_cmd:=cat_code(cur_chr);
   @<Change state if necessary, and |goto switch| if the
     current character should be ignored,
