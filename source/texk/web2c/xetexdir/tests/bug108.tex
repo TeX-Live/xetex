@@ -1,0 +1,17 @@
+\ifx\fmtname\undefined
+  \input basic
+  \def\fmtname{basic}
+\fi
+
+\def\s#1{\immediate\write20{#1}}
+\newcount\counta
+\newcount\countb
+
+\def\test#1#2#3\relax{%
+  \counta`#1\relax
+  \countb`#2\relax
+  \s{\the\counta,\the\countb}
+}
+
+{\expandafter\test\string^^^^^10001!!!!\relax}
+\end
