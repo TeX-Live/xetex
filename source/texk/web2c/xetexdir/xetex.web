@@ -1740,7 +1740,7 @@ assumes that it is always safe to print a visible ASCII character.)
 
 @<Basic print...@>=
 procedure print(@!s:integer); {prints string |s|}
-label continue, exit;
+label exit;
 var j:pool_pointer; {current character code position}
 @!nl:integer; {new-line character to restore}
 begin if s>=str_ptr then s:="???" {this can't happen}
@@ -1762,16 +1762,14 @@ else if s<biggest_char then
     end;
 j:=str_start_macro(s);
 while j<str_start_macro(s+1) do begin
-continue:
-  if (so(str_pool[j])>=@"D800) and (so(str_pool[j])<=@"DFFF) then
-  begin if (so(str_pool[j])<=@"DBFF) and (j+1<str_start_macro(s+1))
+  if (so(str_pool[j])>=@"D800) and (so(str_pool[j])<=@"DBFF)
+    and (j+1<str_start_macro(s+1))
     and (so(str_pool[j+1])>=@"DC00) and (so(str_pool[j+1])<=@"DFFF) then
     begin print_char(@"10000 + (so(str_pool[j])-@"D800) * @"400
                      + so(str_pool[j+1])-@"DC00); j:=j+2;
-      goto continue;
     end
+  else begin print_char(so(str_pool[j])); incr(j);
   end;
-  print_char(so(str_pool[j])); incr(j);
 end;
 exit:end;
 
