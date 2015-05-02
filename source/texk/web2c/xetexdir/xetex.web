@@ -8038,6 +8038,7 @@ var k:0..buf_size; {an index into |buffer|}
 @!t:halfword; {a token}
 @!cat:0..max_char_code; {|cat_code(cur_chr)|, usually}
 @!c:UnicodeScalar; {constituent of a possible expanded code}
+@!lower:UTF16_code; {lower surrogate of a possible UTF-16 compound}
 @!d:small_number; {number of excess characters in an expanded code}
 @!sup_count:small_number; {number of identical |sup_mark| characters}
 begin restart: cur_cs:=0;
@@ -8062,6 +8063,13 @@ if cur_cmd<=car_ret then if cur_cmd>=tab_mark then if align_state=0 then
 @^inner loop@>
 begin switch: if loc<=limit then {current line not yet finished}
   begin cur_chr:=buffer[loc]; incr(loc);
+  if (cur_chr >= @"D800) and (cur_chr < @"DC00)
+  and (loc <= limit) and (buffer[loc] >= @"DC00) and (buffer[loc] < @"E000) then
+    begin
+      lower := buffer[loc] - @"DC00;
+      incr(loc);
+      cur_chr := @"10000 + (cur_chr - @"D800) * 1024 + lower;
+    end;
   reswitch: cur_cmd:=cat_code(cur_chr);
   @<Change state if necessary, and |goto switch| if the
     current character should be ignored,
