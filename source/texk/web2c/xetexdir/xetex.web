@@ -10410,6 +10410,10 @@ p:=temp_head; link(p):=null; k:=b;
 while k<pool_ptr do
   begin t:=so(str_pool[k]);
   if t=" " then t:=space_token
+  else if (t >= @"D800) and (t <= @"DBFF) and (k+1 < pool_ptr)
+    and (so(str_pool[k+1]) >= @"DC00) and (so(str_pool[k+1]) <= @"DFFF) then begin incr(k);
+      t := other_token + @"10000 + (t - @"D800) * @"400 + (so(str_pool[k]) - @"DC00);
+    end
   else t:=other_token+t;
   fast_store_new_token(t);
   incr(k);
