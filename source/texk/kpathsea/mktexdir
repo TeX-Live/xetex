@@ -6,7 +6,7 @@
 # Modified for sticky directory creation, --help, --version, more,
 # by Thomas Esser, Karl Berry, Olaf Weber, et al.
 
-version='$Id$'
+version='$Id: mktexdir 34656 2014-07-18 23:38:50Z karl $'
 progname=`echo $0 | sed 's%.*/%%'`
 
 # preferentially use subprograms from our own directory.
