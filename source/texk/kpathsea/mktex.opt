@@ -3,7 +3,7 @@
 # and optionally mt_min_args and/or mt_max_args.
 # 
 # Originally written by Thomas Esser.  Public domain.
-# $Id$
+# $Id: mktex.opt 34656 2014-07-18 23:38:50Z karl $
  
 if test "x$1" = x--help || test "x$1" = x-help; then
   echo "$usage"

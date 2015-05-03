@@ -3,7 +3,7 @@
 # 
 # Originally written by Thomas Esser.
 # Public domain.
-# $Id$
+# $Id: mktexdir.opt 16497 2009-12-24 18:38:47Z karl $
 
 # Set append-only bit on created directories.
 case "$MT_FEATURES" in
