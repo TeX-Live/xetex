@@ -10501,7 +10501,9 @@ end;
 @d left_margin_kern_code=11
 @d right_margin_kern_code=12
 
-@d etex_convert_codes=right_margin_kern_code+1 {end of \eTeX's command codes}
+@d XeTeX_Uchar_code = 13
+
+@d etex_convert_codes=XeTeX_Uchar_code+1 {end of \eTeX's command codes}
 @d job_name_code=etex_convert_codes {command code for \.{\\jobname}}
 
 @<Put each...@>=
@@ -10521,6 +10523,9 @@ primitive("leftmarginkern",convert,left_margin_kern_code);@/
 @!@:left_margin_kern_}{\.{\\leftmarginkern} primitive@>
 primitive("rightmarginkern",convert,right_margin_kern_code);@/
 @!@:right_margin_kern_}{\.{\\rightmarginkern} primitive@>
+
+primitive("Uchar",convert,XeTeX_Uchar_code);@/
+@!@:XeTeX_Uchar_}{\.{\\Uchar} primitive@>
 
 @ @<Cases of |print_cmd_chr|...@>=
 convert: case chr_code of
@@ -10572,6 +10577,7 @@ string_code, meaning_code: begin save_scanner_status:=scanner_status;
   scanner_status:=normal; get_token; scanner_status:=save_scanner_status;
   end;
 font_name_code: scan_font_ident;
+XeTeX_Uchar_code: scan_usv_num;
 @/@<Cases of `Scan the argument for command |c|'@>@/
 job_name_code: if job_name=0 then open_log_file;
 end {there are no other cases}
@@ -10599,6 +10605,7 @@ font_name_code: begin
     print("pt");
     end;
   end;
+  XeTeX_Uchar_code: print_char(cur_val);
 @/@<Cases of `Print the result of command |c|'@>@/
 job_name_code: print_file_name(job_name, 0, 0);
 end {there are no other cases}
@@ -30025,6 +30032,8 @@ XeTeX_variation_name_code: print_esc("XeTeXvariationname");
 XeTeX_feature_name_code: print_esc("XeTeXfeaturename");
 XeTeX_selector_name_code: print_esc("XeTeXselectorname");
 XeTeX_glyph_name_code: print_esc("XeTeXglyphname");
+
+XeTeX_Uchar_code: print_esc("Uchar");
 
 @ @<Cases of `Scan the argument for command |c|'@>=
 eTeX_revision_code: do_nothing;
