@@ -1,0 +1,9 @@
+\ifx\fmtname\undefined
+  \input basic
+  \def\fmtname{basic}
+\fi
+
+\show ^^^^^10400 % 𐐀
+\showtokens\expandafter{\csname ^^^^^10400\endcsname}
+
+\end
