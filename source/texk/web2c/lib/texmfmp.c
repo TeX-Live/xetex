@@ -2703,6 +2703,28 @@ gettexstring (strnumber s)
   unsigned bytesToWrite = 0;
   poolpointer len, i, j;
   string name;
+
+  /* Handle single-character strings that are not actually stored in the pool */
+  if (s < 65536L) {
+    unsigned c = s;
+    if (c < 0x80) {
+      bytesToWrite = 1;
+    } else if (c < 0x800) {
+      bytesToWrite = 2;
+    } else  {
+      bytesToWrite = 3;
+    }
+    name = xmalloc(bytesToWrite + 1);
+    name[bytesToWrite] = 0;
+    j = bytesToWrite;
+    switch (bytesToWrite) { /* note: everything falls through. */
+      case 3: name[--j] = ((c | 0x80) & 0xBF); c >>= 6;
+      case 2: name[--j] = ((c | 0x80) & 0xBF); c >>= 6;
+      case 1: name[--j] =  (c | firstByteMark[bytesToWrite]);
+    }
+    return name;
+  }
+
   len = strstart[s + 1 - 65536L] - strstart[s - 65536L];
   name = xmalloc(len * 3 + 1); /* max UTF16->UTF8 expansion
                                   (code units, not bytes) */
