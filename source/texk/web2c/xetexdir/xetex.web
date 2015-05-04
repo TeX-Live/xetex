@@ -8213,8 +8213,6 @@ begin if cur_chr=buffer[loc] then if loc<limit then
     begin cur_chr:=buffer[loc];
     goto not_exp;
     end;
-  {surrogate codepoint values are replaced by U+FFFD}
-  if (cur_chr>=@"D800) and (cur_chr<@"E000) then cur_chr:=@"FFFD;
   loc:=loc+2*sup_count-1;
   goto reswitch;
   end;
@@ -9816,12 +9814,10 @@ end;
 @ @<Declare procedures that scan restricted classes of integers@>=
 procedure scan_usv_num;
 begin scan_int;
-if (cur_val<0)or(cur_val>biggest_usv)
-or((cur_val>=@"D800)and(cur_val<=@"DFFF)) then
+if (cur_val<0)or(cur_val>biggest_usv) then
   begin print_err("Bad character code");
 @.Bad character code@>
-  help3("A Unicode Scalar Value must be between 0 and ""10FFFF,")@/
-    ("and surrogate codepoints ""D800 to ""DFFF are not permitted.")@/
+  help2("A Unicode Scalar Value must be between 0 and ""10FFFF.")@/
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
 end;
