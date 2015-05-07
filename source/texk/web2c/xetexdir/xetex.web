@@ -9817,7 +9817,7 @@ begin scan_int;
 if (cur_val<0)or(cur_val>biggest_usv) then
   begin print_err("Bad character code");
 @.Bad character code@>
-  help2("A Unicode Scalar Value must be between 0 and ""10FFFF.")@/
+  help2("A Unicode scalar value must be between 0 and ""10FFFF.")@/
     ("I changed this one to zero."); int_error(cur_val); cur_val:=0;
   end;
 end;
