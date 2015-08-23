@@ -5,19 +5,6 @@
 \font\testa="Latin Modern Math:script=math;language=DFLT;"
 \font\testb="Latin Modern Math:script=math;language=DFLT;" at 5pt
 
-$\hbox{}$%initialize math
-{\bf Standard Fonts}
-
-$\Umathchar "0 "2 "61 $
-
-.$\mskip20mu$.
-
-\leavevmode\hbox{$\scriptscriptstyle  \Umathchar "0 "2 "61 $}
-
-.$\mskip20mu$.  % OK
-
-\medskip
-{\bf Open Type Fonts}
 \textfont2=\testa
 \scriptscriptfont 2= \testb
 
@@ -28,9 +15,5 @@ $\Umathchar "0 "2 "61$
 \leavevmode\hbox{$\scriptscriptstyle \Umathchar "0 "2 "61 $} %math which uses fam2
 
 .$\mskip20mu$.  \qquad {\bf Too small!}
-
-$A$ %some arbitrary math
-
-.$\mskip20mu$.  % now ok again
 
 \bye

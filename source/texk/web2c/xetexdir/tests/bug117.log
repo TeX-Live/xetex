@@ -1,9 +1,8 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  23 AUG 2015 18:48
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  23 AUG 2015 18:56
  restricted \write18 enabled.
  %&-line parsing enabled.
-**source/texk/web2c/xetexdir/tests/bug117
-(./source/texk/web2c/xetexdir/tests/bug117.tex
-(/usr/local/texlive/2015/texmf-dist/tex/plain/base/plain.tex
+**bug117
+(./bug117.tex (/usr/local/texlive/2015/texmf-dist/tex/plain/base/plain.tex
 Preloading the plain format: codes, registers,
 \maxdimen=\dimen10
 \hideskip=\skip10
