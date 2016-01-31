@@ -45,14 +45,14 @@ $(srcdir)/etexdir/etex_version.h: @MAINTAINER_MODE_TRUE@ etexdir/etex.ch
 
 # Generate etex.web
 etex.web: tie$(EXEEXT) $(etex_web_srcs)
-	$(tie) -m etex.web $(etex_web_srcs)
+	$(tie_m) $(etex_web_srcs)
 etex_web_srcs = \
 	tex.web \
 	etexdir/etex.ch
 
 # Generate etex.ch
 etex.ch: tie$(EXEEXT) etex.web $(etex_ch_srcs)
-	$(tie) -c etex.ch etex.web $(etex_ch_srcs)
+	$(tie_c) etex.web $(etex_ch_srcs)
 etex_ch_srcs = \
 	etexdir/tex.ch0 \
 	tex.ch \
@@ -73,13 +73,14 @@ EXTRA_DIST += \
 
 # e-TeX Tests
 #
-etex_tests = etexdir/wprob.test etexdir/etriptest
+etex_tests = etexdir/wprob.test etexdir/etriptest.test
+etexdir/wprob.log: etex$(EXEEXT)
+etexdir/etriptest.log: etex$(EXEEXT) dvitype$(EXEEXT) pltotf$(EXEEXT) tftopl$(EXEEXT)
 
 EXTRA_DIST += $(etex_tests)
 
 if ETEX
 TESTS += $(etex_tests)
-check_PROGRAMS += dvitype pltotf tftopl
 TRIPTRAP += etrip.diffs
 TRIPTRAP_CLEAN += etrip-clean
 endif ETEX
@@ -89,7 +90,7 @@ DISTCLEANFILES += etrip.diffs
 EXTRA_DIST += tests/wprob.tex
 DISTCLEANFILES += ewprob.log ewprob.tex
 ## etriptest
-etrip.diffs: etex$(EXEEXT)
+etrip.diffs: etex$(EXEEXT) dvitype$(EXEEXT) pltotf$(EXEEXT) tftopl$(EXEEXT)
 	$(triptrap_diffs) $@
 .PHONY: etrip-clean
 etrip-clean:

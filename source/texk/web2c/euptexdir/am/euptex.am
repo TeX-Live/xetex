@@ -1,6 +1,6 @@
 ## texk/web2c/euptexdir/am/euptex.am: Makefile fragment for e-upTeX.
 ##
-## Copyright (C) 2011-2014 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2011-2015 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 
 ## e-upTeX
@@ -10,17 +10,11 @@ bin_PROGRAMS += euptex
 endif EUPTEX
 EXTRA_PROGRAMS += euptex
 
-# e-upTeX Tests
-#
-euptex_tests = euptexdir/euptriptest
-
-EXTRA_DIST += $(euptex_tests)
-
-euptex_CPPFLAGS = $(PTEXENC_INCLUDES) $(AM_CPPFLAGS)
+euptex_CPPFLAGS = $(PTEXENC_INCLUDES) $(AM_CPPFLAGS) -I$(srcdir)/libmd5
 
 # With --enable-ipc, e-upTeX may need to link with -lsocket.
-euptex_LDADD = libukanji.a $(pproglib) $(PTEXENC_LIBS) $(LDADD) $(ipc_socketlibs)
-euptex_DEPENDENCIES = libukanji.a $(pproglib) $(PTEXENC_DEPEND) $(default_dependencies)
+euptex_LDADD = libukanji.a $(pproglib) $(PTEXENC_LIBS) $(LDADD) $(ipc_socketlibs) libmd5.a
+euptex_DEPENDENCIES = libukanji.a $(pproglib) $(PTEXENC_DEPEND) $(default_dependencies) libmd5.a
 
 # e-upTeX C sources
 euptex_c_h = euptexini.c euptex0.c euptexcoerce.h euptexd.h
@@ -48,7 +42,7 @@ euptex-tangle: tangle$(EXEEXT) euptex.web euptex.ch tangle-sh
 
 # Generate euptex.web
 euptex.web: tie$(EXEEXT) $(euptex_web_srcs)
-	$(tie) -m euptex.web $(euptex_web_srcs)
+	$(tie_m) $(euptex_web_srcs)
 euptex_web_srcs = \
 	tex.web \
 	etexdir/etex.ch \
@@ -58,7 +52,7 @@ euptex_web_srcs = \
 
 # Generate euptex.ch
 euptex.ch: tie$(EXEEXT) euptex.web $(euptex_ch_srcs)
-	$(tie) -c euptex.ch euptex.web $(euptex_ch_srcs)
+	$(tie_c) euptex.web $(euptex_ch_srcs)
 euptex_ch_srcs = \
 	eptexdir/etex.ch0 \
 	ptexdir/ptex-base.ch \
@@ -86,26 +80,38 @@ EXTRA_DIST += \
 	euptexdir/ChangeLog \
 	euptexdir/EUPTEX.txt
 
+# e-upTeX Tests
+#
+euptex_tests = euptexdir/euptriptest.test euptexdir/pdfprimitive.test
+euptexdir/euptriptest.log: euptex$(EXEEXT) dvitype$(EXEEXT) pltotf$(EXEEXT) tftopl$(EXEEXT)
+euptexdir/pdfprimitive.log: euptex$(EXEEXT)
+
+EXTRA_DIST += $(euptex_tests)
+
 if EUPTEX
 TESTS += $(euptex_tests)
-check_PROGRAMS += dvitype pltotf tftopl
 TRIPTRAP += euptrip.diffs
 TRIPTRAP_CLEAN += euptrip-clean
 endif EUPTEX
 
 ## Test data and results
 ##
-## eptexdir/eptriptest
+## euptexdir/euptriptest.test
 EXTRA_DIST += \
 	eptexdir/eptrip/eptrip.log \
 	eptexdir/eptrip/eptrip.tex \
 	euptexdir/euptrip/euptrip.diffs \
 	euptexdir/euptrip/texmf.cnf
-euptrip.diffs: euptex$(EXEEXT)
+euptrip.diffs: euptex$(EXEEXT) dvitype$(EXEEXT) pltotf$(EXEEXT) tftopl$(EXEEXT)
 	$(triptrap_diffs) $@
 .PHONY: euptrip-clean
 euptrip-clean:
 	rm -rf euptripdir
-
 DISTCLEANFILES += euptrip.diffs
+## euptexdir/pdfprimitive.test
+EXTRA_DIST += \
+	euptexdir/pdfprimitive.test \
+	eptexdir/tests/pdfprimitive-test.tex \
+	euptexdir/tests/pdfprimitive-euptex.log
+DISTCLEANFILES += pdfprimitive-euptex.*
 

@@ -1,4 +1,4 @@
-/* texmf.h: Main include file for TeX and Metafont in C. This file is
+/* texmfmp.h: Main include file for TeX and MF in C. This file is
    included by {tex,mf}d.h, which is the first include in the C files
    output by web2c.  */
 
@@ -89,8 +89,16 @@ typedef void* voidpointer;
 #define OUT_BUF dvibuf
 #endif /* TeX */
 #ifdef MF
+#if defined(MFLua)
+#define TEXMFPOOLNAME "mflua.pool"
+#define TEXMFENGINENAME "mflua"
+#elif defined(MFLuaJIT)
+#define TEXMFPOOLNAME "mfluajit.pool"
+#define TEXMFENGINENAME "mfluajit"
+#else
 #define TEXMFPOOLNAME "mf.pool"
 #define TEXMFENGINENAME "metafont"
+#endif
 #define DUMP_FILE basefile
 #define DUMP_FORMAT kpse_base_format
 #define writegf WRITE_OUT
@@ -111,10 +119,13 @@ typedef void* voidpointer;
 /* Hacks for TeX that are better not to #ifdef, see lib/openclose.c.  */
 extern int tfmtemp, texinputtype;
 
-/* pdfTeX routines also used for e-pTeX and e-upTeX */
-#if defined (pdfTeX) || defined (epTeX) || defined (eupTeX)
-extern char start_time_str[];
+/* pdfTeX routines also used for e-pTeX, e-upTeX, and XeTeX */
+#if defined (pdfTeX) || defined (epTeX) || defined (eupTeX) || defined(XeTeX)
+#if !defined (pdfTeX)
 extern void pdftex_fail(const char *fmt, ...);
+#endif
+#if !defined(XeTeX)
+extern char start_time_str[];
 extern void initstarttime(void);
 extern char *makecstring(integer s);
 extern char *makecfilename(integer s);
@@ -122,6 +133,9 @@ extern void getcreationdate(void);
 extern void getfilemoddate(integer s);
 extern void getfilesize(integer s);
 extern void getfiledump(integer s, int offset, int length);
+#endif
+extern void convertStringToHexString(const char *in, char *out, int lin);
+extern void getmd5sum(integer s, int file);
 #endif
 
 /* pdftex etc. except for tex use these for pipe support */
@@ -333,7 +347,7 @@ extern void paintrow (/*screenrow, pixelcolor, transspec, screencol*/);
     }									\
   } while (0)
 
-/* We define the routines to do the actual work in texmf.c.  */
+/* We define the routines to do the actual work in texmfmp.c.  */
 #ifdef XeTeX
 #include <zlib.h>
 extern void do_dump (char *, int, int, gzFile);

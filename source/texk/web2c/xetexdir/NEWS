@@ -1,4 +1,14 @@
 ==============================================================
+XeTeX 0.99993 was not really "released", but in July 2015 the
+version number was bumped in the TeXLive source when a new
+primitive was added.
+==============================================================
+
+XeTeX:
+* Added \mdfivesum primitive
+* Removed -q from the default xdvipdfmx output-driver command line.
+
+==============================================================
 XeTeX 0.99992 was released 20150507
 ==============================================================
 

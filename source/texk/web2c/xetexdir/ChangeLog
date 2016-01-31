@@ -1,3 +1,58 @@
+2015-11-06  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* XeTeX_ext.c: Change const char *outputdriver = "xdvipdfmx -q -E";
+	as const char *outputdriver = "xdvipdfmx -E"; by removing the quiet
+	option, in order to show useful messages for users.
+
+2015-08-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* image/bmpimage.c, image/pngimage.c: Drop set but unused vars.
+	* image/mfileio.c: ANSI C function definition.
+
+2015-08-25  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am (libxetex_a_CFLAGS): Enable gcc warnings.
+
+	* XeTeX_ext.[ch], XeTeXFontInst{cpp,h}, XeTeXFontMgr.cpp,
+	XeTeXLayoutInterface.{cpp,h}, XeTeX_pic.c:
+	ANSI C prototypes, unconstify, drop (set but) unused variable,
+	remove useless or misleading casts.
+
+2015-08-25  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* XeTeXFontInst.cpp: Support pair kerning for native type1 fonts.
+	Thanks Werner Lemberg and Jiang Jiang.
+
+2015-08-19  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am (xetex_CFLAGS): Enable compiler warnings.
+	* xetex.web: Drop unused label 'done'.
+
+2015-07-24  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* xetex.web, xetex.h: Support pagebox=artbox etc. as in pdfTeX
+	in PDF inclusion. It works with a new xetex.def and xdvipdfmx.
+	Nothing changes if the present xetex.def is used.
+
+2015-07-11  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* xetex.web: Change \pdfmdfivesum to \mdfivesum, to be consistent
+	with \strcmp and \shellescape.
+
+2015-07-10  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Dependencies for 'make check'.
+
+2015-07-09  Akira Kakuto  <kakuto@fuk.kinidai.ac.jp>
+
+	* xetex.web: Added \pdfmdfivesum, version 0.99993.
+	* xetex.defines: Added getmd5sum().
+	* am/xetex.am: Added libmd5.
+
+2015-06-22  Peter Breitenlohner  <peb@mppmu.mpg.de>
+
+	* am/xetex.am: Use $(tie_c).
+
 2015-05-07  Jonathan Kew  <jfkthame@gmail.com>
 
 	* xetex.web: Merged UTF-16 surrogate-handling fixes from github.

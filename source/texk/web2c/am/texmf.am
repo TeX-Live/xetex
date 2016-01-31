@@ -1,6 +1,6 @@
 ## texk/web2c/am/texmf.am: Makefile fragment for TeX and MF.
 ##
-## Copyright (C) 2009-2014 Peter Breitenlohner <tex-live@tug.org>
+## Copyright (C) 2009-2015 Peter Breitenlohner <tex-live@tug.org>
 ## You may freely use, modify and/or distribute this file.
 
 ## Common for MF and TeX
@@ -58,7 +58,7 @@ tex-tangle: tangle$(EXEEXT) tex.web tex-final.ch tangle-sh
 
 # Generate tex-final.ch
 tex-final.ch: tie$(EXEEXT) $(tex_ch_srcs)
-	$(tie) -c $@ $(tex_ch_srcs)
+	$(tie_c) $(tex_ch_srcs)
 tex_ch_srcs = \
 	tex.web \
 	tex.ch \
@@ -73,12 +73,13 @@ DISTCLEANFILES += $(nodist_tex_SOURCES) tex-final.ch tex-web2c \
 
 # TeX tests
 #
-tex_tests = triptest tests/write18-quote-test.pl
+tex_tests = triptest.test tests/write18-quote-test.pl
+triptest.log: tex$(EXEEXT) dvitype$(EXEEXT) pltotf$(EXEEXT) tftopl$(EXEEXT)
+tests/write18-quote-test.log: tex$(EXEEXT)
 EXTRA_DIST += $(tex_tests)
 EXTRA_DIST += tests/write18-quote.tex
 if TEX
 TESTS += $(tex_tests)
-check_PROGRAMS += dvitype pltotf tftopl
 TRIPTRAP += trip.diffs
 TRIPTRAP_CLEAN += trip-clean
 endif TEX
@@ -88,7 +89,7 @@ DISTCLEANFILES += trip.diffs
 DISTCLEANFILES += write18-quote.log
 
 ## triptest
-trip.diffs: tex$(EXEEXT)
+trip.diffs: tex$(EXEEXT) dvitype$(EXEEXT) pltotf$(EXEEXT) tftopl$(EXEEXT)
 	$(triptrap_diffs) $@
 .PHONY: trip-clean
 trip-clean:
@@ -102,17 +103,36 @@ if MFN
 bin_PROGRAMS += mf-nowin
 endif MFN
 if WIN32
-bin_PROGRAMS += inimf
+noinst_PROGRAMS += call_mf
+install_exe_links += install-mf-links
+uninstall_exe_links += uninstall-mf-links
 else !WIN32
+if !MFN
+bin_links += mf$(EXEEXT):mf-nowin
+endif !MFN
 bin_links += mf$(EXEEXT):inimf
 endif !WIN32
 endif MF
 EXTRA_PROGRAMS += mf mf-nowin
 DISTCLEANFILES += mftrap.diffs
 
-inimf_CPPFLAGS = -DEXEPROG=\"mf.exe\"
-nodist_inimf_SOURCES = callexe.c
-inimf_LDADD =
+call_mf_CPPFLAGS = -DEXEPROG=\"mf.exe\"
+nodist_call_mf_SOURCES = callexe.c
+call_mf_LDADD =
+
+.PHONY: install-mf-links uninstall-mf-links
+if WIN32
+install-mf-links: call_mf$(EXEEXT)
+if !MFN
+	$(INSTALL_PROGRAM) call_mf$(EXEEXT) $(DESTDIR)$(bindir)/mf-nowin$(EXEEXT)
+endif !MFN
+	$(INSTALL_PROGRAM) call_mf$(EXEEXT) $(DESTDIR)$(bindir)/inimf$(EXEEXT)
+uninstall-mf-links:
+if !MFN
+	rm -f $(DESTDIR)$(bindir)/mf-nowin$(EXEEXT)
+endif !MFN
+	rm -f $(DESTDIR)$(bindir)/inimf$(EXEEXT)
+endif WIN32
 
 dist_mf_SOURCES = mfextra.c
 mf_CPPFLAGS = $(AM_CPPFLAGS) $(X_CFLAGS)
@@ -168,30 +188,30 @@ mf-tangle: tangle$(EXEEXT) mf.web mf-final.ch tangle-sh
 
 # Generate mf-final.ch
 mf-final.ch: tie$(EXEEXT) $(mf_ch_src)
-	$(tie) -c $@ $(mf_ch_src)
+	$(tie_c) $(mf_ch_src)
 mf_ch_src = \
 	mf.web \
 	mf.ch \
 	mf-binpool.ch
 ##
-EXTRA_DIST += $(mf_ch_src) mftalk.h
+EXTRA_DIST += $(mf_ch_src)
 
 DISTCLEANFILES += $(nodist_libmf_a_SOURCES) mf-final.ch mf-web2c \
 	mf.p mf.pool mf-tangle
 
 # Metafont tests
 #
-mf_tests = mftraptest
+mf_tests = mftraptest.test
+mftraptest.log: mf$(EXEEXT) gftype$(EXEEXT) tftopl$(EXEEXT)
 EXTRA_DIST += $(mf_tests)
 if MF
 TESTS += $(mf_tests)
-check_PROGRAMS += gftype tftopl
 TRIPTRAP += mftrap.diffs
 TRIPTRAP_CLEAN += trap-clean
 endif MF
 
 ## mftraptest
-mftrap.diffs: mf$(EXEEXT)
+mftrap.diffs: mf$(EXEEXT) gftype$(EXEEXT) tftopl$(EXEEXT)
 	$(triptrap_diffs) $@
 .PHONY: trap-clean
 trap-clean:

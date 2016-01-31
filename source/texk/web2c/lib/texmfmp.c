@@ -89,6 +89,11 @@
 #define edit_var "TEXEDIT"
 #endif /* TeX */
 #ifdef MF
+#if defined(MFLua)
+#include <mfluadir/mfluaextra.h>
+#elif defined(MFLuaJIT)
+#include <mfluajitdir/mfluajitextra.h>
+#else
 #define BANNER "This is Metafont, Version 2.7182818"
 #define COPYRIGHT_HOLDER "D.E. Knuth"
 #define AUTHOR NULL
@@ -105,6 +110,7 @@
 #define INPUT_FORMAT kpse_mf_format
 #define INI_PROGRAM "inimf"
 #define VIR_PROGRAM "virmf"
+#endif
 #define edit_var "MFEDIT"
 #endif /* MF */
 
@@ -173,8 +179,7 @@ Isspace (char c)
 
      Internally, all arguments are quoted by ' (Unix) or " (Windows)
      before calling the system() function in order to forbid execution
-     of any embedded command.  In addition, on Windows, special
-     characters of cmd.exe are escaped by using (^).
+     of any embedded command.
 
    If the --shell-escape option is given, we set
      shellenabledp = 1 and restrictedshell = 0, i.e., any command is allowed.
@@ -273,6 +278,7 @@ init_shell_escape (void)
 #define QUOTE '\''
 #endif
 
+#if 0
 #ifdef WIN32
 static int
 char_needs_quote (int c)
@@ -283,6 +289,7 @@ char_needs_quote (int c)
           c == '>' || c == ';' || c == ',' || c == '(' ||
           c == ')');
 }
+#endif
 #endif
 
 /* return values:
@@ -375,11 +382,20 @@ shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
            example:
            --format="other text files" becomes
            '--format=''other text files' (Unix)
-           "--format=""other text files" (Windows) */
+           "--format"="other text files" (Windows) */
 
-        if (pre == 0)
+        if (pre == 0) {
+#ifdef WIN32
+          if (*(s-1) == '=') {
+            *(d-1) = QUOTE;
+            *d++ = '=';
+          } else {
+            *d++ = QUOTE;
+          }
+#else
           *d++ = QUOTE;
-
+#endif
+        }
         pre = 0;
         /* output the quotation mark for the quoted argument */
         *d++ = QUOTE;
@@ -389,9 +405,15 @@ shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
           /* Illegal use of ', or closing quotation mark is missing */
           if (*s == '\'' || *s == '\0')
             return -1;
+#if 0
+/*
+  The following in WIN32 may not be necessary, because
+  all arguments are quoted.
+*/
 #ifdef WIN32
           if (char_needs_quote (*s))
             *d++ = '^';
+#endif
 #endif
           *d++ = *s++;
         }
@@ -409,9 +431,15 @@ shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
       } else if (pre == 1 && !Isspace (*s)) {
         pre = 0;
         *d++ = QUOTE;
+#if 0
+/*
+  The following in WIN32 may not be necessary, because
+  all arguments are quoted.
+*/
 #ifdef WIN32
         if (char_needs_quote (*s))
           *d++ = '^';
+#endif
 #endif
         *d++ = *s++;
         /* Ending of a usual argument */
@@ -423,9 +451,15 @@ shell_cmd_is_allowed (const char *cmd, char **safecmd, char **cmdname)
         *d++ = *s++;
       } else {
         /* Copy a character from cmd to *safecmd. */
+#if 0
+/*
+  The following in WIN32 may not be necessary, because
+  all arguments are quoted.
+*/
 #ifdef WIN32
         if (char_needs_quote (*s))
           *d++ = '^';
+#endif
 #endif
         *d++ = *s++;
       }
@@ -502,6 +536,7 @@ runsystem (const char *cmd)
   int allow = 0;
   char *safecmd = NULL;
   char *cmdname = NULL;
+  int status = 0;
 
   if (shellenabledp <= 0) {
     return 0;
@@ -514,9 +549,13 @@ runsystem (const char *cmd)
     allow = shell_cmd_is_allowed (cmd, &safecmd, &cmdname);
 
   if (allow == 1)
-    (void) system (cmd);
+    status = system (cmd);
   else if (allow == 2)
-    (void) system (safecmd);
+    status =  system (safecmd);
+
+  /* Not really meaningful, but we have to manage the return value of system. */
+  if (status != 0)
+    fprintf(stderr,"system returned with code %d\n", status); 
 
   if (safecmd)
     free (safecmd);
@@ -724,9 +763,21 @@ maininit (int ac, string *av)
   kpse_set_program_name (argv[0], user_progname);
 #endif
 
+#if defined(MF)
+#if defined(MFLua)
+  /* If the program name is "mflua-nowin", then reset the name as "mflua". */
+  if (strncasecmp (kpse_invocation_name, "mflua-nowin", 11) == 0)
+    kpse_reset_program_name ("mflua");
+#elif defined(MFLuaJIT)
+  /* If the program name is "mfluajit-nowin", then reset the name as "mfluajit". */
+  if (strncasecmp (kpse_invocation_name, "mfluajit-nowin", 14) == 0)
+    kpse_reset_program_name ("mfluajit");
+#else
   /* If the program name is "mf-nowin", then reset the name as "mf". */
   if (strncasecmp (kpse_invocation_name, "mf-nowin", 8) == 0)
     kpse_reset_program_name ("mf");
+#endif
+#endif
 
   /* FIXME: gather engine names in a single spot. */
   xputenv ("engine", TEXMFENGINENAME);
@@ -2237,12 +2288,13 @@ input_line (FILE *f)
     long position = ftell (f);
 
     if (position == 0L) {  /* Detect and skip Byte order marks.  */
-      int k1 = getc (f);
+      int k1, k2, k3, k4;
+      k1 = getc (f);
 
       if (k1 != 0xff && k1 != 0xfe && k1 != 0xef)
         rewind (f);
       else {
-        int k2 = getc (f);
+        k2 = getc (f);
 
         if (k2 != 0xff && k2 != 0xfe && k2 != 0xbb)
           rewind (f);
@@ -2250,10 +2302,11 @@ input_line (FILE *f)
                  (k1 == 0xfe && k2 == 0xff))   /* UTF-16(BE) */
           ;
         else {
-          int k3 = getc (f);
-
-          if (k1 == 0xef && k2 == 0xbb && k3 == 0xbf) /* UTF-8 */
-            ;
+          k3 = getc (f);
+          k4 = getc (f);
+          if (k1 == 0xef && k2 == 0xbb && k3 == 0xbf &&
+              k4 >= 0 && k4 <= 0x7e) /* UTF-8 */
+            ungetc (k4, f);
           else
             rewind (f);
         }
@@ -2703,28 +2756,6 @@ gettexstring (strnumber s)
   unsigned bytesToWrite = 0;
   poolpointer len, i, j;
   string name;
-
-  /* Handle single-character strings that are not actually stored in the pool */
-  if (s < 65536L) {
-    unsigned c = s;
-    if (c < 0x80) {
-      bytesToWrite = 1;
-    } else if (c < 0x800) {
-      bytesToWrite = 2;
-    } else  {
-      bytesToWrite = 3;
-    }
-    name = xmalloc(bytesToWrite + 1);
-    name[bytesToWrite] = 0;
-    j = bytesToWrite;
-    switch (bytesToWrite) { /* note: everything falls through. */
-      case 3: name[--j] = ((c | 0x80) & 0xBF); c >>= 6;
-      case 2: name[--j] = ((c | 0x80) & 0xBF); c >>= 6;
-      case 1: name[--j] =  (c | firstByteMark[bytesToWrite]);
-    }
-    return name;
-  }
-
   len = strstart[s + 1 - 65536L] - strstart[s - 65536L];
   name = xmalloc(len * 3 + 1); /* max UTF16->UTF8 expansion
                                   (code units, not bytes) */
@@ -2836,10 +2867,11 @@ makesrcspecial (strnumber srcfilename, int lineno)
   return (oldpoolptr);
 }
 
-/* pdfTeX routines also used for e-pTeX and e-upTeX */
-#if defined (pdfTeX) || defined (epTeX) || defined (eupTeX)
+/* pdfTeX routines also used for e-pTeX, e-upTeX, and XeTeX */
+#if defined (pdfTeX) || defined (epTeX) || defined (eupTeX) || defined(XeTeX)
 
 #include <kpathsea/c-stat.h>
+#include "md5.h"
 
 #define check_nprintf(size_get, size_want) \
     if ((unsigned)(size_get) >= (unsigned)(size_want)) \
@@ -2891,13 +2923,15 @@ void pdftex_fail(const char *fmt, ...)
 }
 #endif /* not pdfTeX */
 
+#if !defined(XeTeX)
+static boolean start_time_set = false;
 static time_t start_time = 0;
 #define TIME_STR_SIZE 30
 char start_time_str[TIME_STR_SIZE];
 static char time_str[TIME_STR_SIZE];
     /* minimum size for time_str is 24: "D:YYYYmmddHHMMSS+HH'MM'" */
 
-static void makepdftime(time_t t, char *time_str)
+static void makepdftime(time_t t, char *time_str, boolean utc)
 {
 
     struct tm lt, gmt;
@@ -2905,7 +2939,12 @@ static void makepdftime(time_t t, char *time_str)
     int i, off, off_hours, off_mins;
 
     /* get the time */
-    lt = *localtime(&t);
+    if (utc) {
+        lt = *gmtime(&t);
+    }
+    else {
+        lt = *localtime(&t);
+    }
     size = strftime(time_str, TIME_STR_SIZE, "D:%Y%m%d%H%M%S", &lt);
     /* expected format: "YYYYmmddHHMMSS" */
     if (size == 0) {
@@ -2945,11 +2984,32 @@ static void makepdftime(time_t t, char *time_str)
     }
 }
 
+#if defined(_MSC_VER)
+#define strtoll _strtoi64
+#endif
+
 void initstarttime(void)
 {
-    if (start_time == 0) {
-        start_time = time((time_t *) NULL);
-        makepdftime(start_time, start_time_str);
+    char *source_date_epoch;
+    int64_t epoch;
+    char *endptr;
+    if (!start_time_set) {
+        start_time_set = true;
+        source_date_epoch = getenv("SOURCE_DATE_EPOCH");
+        if (source_date_epoch) {
+            errno = 0;
+            epoch = strtoll(source_date_epoch, &endptr, 10);
+            if (epoch < 0 || *endptr != '\0' || errno != 0) {
+                fprintf(stderr, "Environment variable $SOURCE_DATE_EPOCH: invalid value: %s\n", source_date_epoch);
+                uexit(EXIT_FAILURE);
+            }
+            start_time = epoch;
+            makepdftime(start_time, start_time_str, /* utc= */true);
+        }
+        else {
+            start_time = time((time_t *) NULL);
+            makepdftime(start_time, start_time_str, /* utc= */false);
+        }
     }
 }
 
@@ -3036,7 +3096,7 @@ void getfilemoddate(integer s)
     if (stat(file_name, &file_data) == 0) {
         size_t len;
 
-        makepdftime(file_data.st_mtime, time_str);
+        makepdftime(file_data.st_mtime, time_str, /* utc= */false);
         len = strlen(time_str);
         if ((unsigned) (poolptr + len) >= (unsigned) (poolsize)) {
             poolptr = poolsize;
@@ -3139,7 +3199,106 @@ void getfiledump(integer s, int offset, int length)
     }
     xfree(file_name);
 }
-#endif /* e-pTeX or e-upTeX */
+#endif /* not XeTeX */
+
+/* Converts any given string in into an allowed PDF string which is
+ * hexadecimal encoded;
+ * sizeof(out) should be at least lin*2+1.
+ */
+void convertStringToHexString(const char *in, char *out, int lin)
+{
+    int i, j, k;
+    char buf[3];
+    j = 0;
+    for (i = 0; i < lin; i++) {
+        k = snprintf(buf, sizeof(buf),
+                     "%02X", (unsigned int) (unsigned char) in[i]);
+        check_nprintf(k, sizeof(buf));
+        out[j++] = buf[0];
+        out[j++] = buf[1];
+    }
+    out[j] = '\0';
+}
+
+#define DIGEST_SIZE 16
+#define FILE_BUF_SIZE 1024
+
+void getmd5sum(strnumber s, boolean file)
+{
+    md5_state_t state;
+    md5_byte_t digest[DIGEST_SIZE];
+    char outbuf[2 * DIGEST_SIZE + 1];
+    int len = 2 * DIGEST_SIZE;
+#if defined(XeTeX)
+    char *xname;
+    int i;
+#endif
+
+    if (file) {
+        char file_buf[FILE_BUF_SIZE];
+        int read = 0;
+        FILE *f;
+        char *file_name;
+
+#if defined(XeTeX)
+        xname = gettexstring (s);
+        file_name = kpse_find_tex (xname);
+        xfree (xname);
+#else
+        file_name = kpse_find_tex(makecfilename(s));
+#endif
+        if (file_name == NULL) {
+            return;             /* empty string */
+        }
+        /* in case of error the empty string is returned,
+           no need for xfopen that aborts on error.
+         */
+        f = fopen(file_name, FOPEN_RBIN_MODE);
+        if (f == NULL) {
+            xfree(file_name);
+            return;
+        }
+        recorder_record_input(file_name);
+        md5_init(&state);
+        while ((read = fread(&file_buf, sizeof(char), FILE_BUF_SIZE, f)) > 0) {
+            md5_append(&state, (const md5_byte_t *) file_buf, read);
+        }
+        md5_finish(&state, digest);
+        fclose(f);
+
+        xfree(file_name);
+    } else {
+        /* s contains the data */
+        md5_init(&state);
+#if defined(XeTeX)
+        xname = gettexstring (s);
+        md5_append(&state,
+                   (md5_byte_t *) xname,
+                   strlen (xname));
+        xfree (xname);
+#else
+        md5_append(&state,
+                   (md5_byte_t *) &strpool[strstart[s]],
+                   strstart[s + 1] - strstart[s]);
+#endif
+        md5_finish(&state, digest);
+    }
+
+    if (poolptr + len >= poolsize) {
+        /* error by str_toks that calls str_room(1) */
+        return;
+    }
+    convertStringToHexString((char *) digest, outbuf, DIGEST_SIZE);
+#if defined(XeTeX)
+    for (i = 0; i < 2 * DIGEST_SIZE; i++)
+        strpool[poolptr++] = (uint16_t)outbuf[i];
+#else
+    memcpy(&strpool[poolptr], outbuf, len);
+    poolptr += len;
+#endif
+}
+
+#endif /* pdfTeX or e-pTeX or e-upTeX or XeTeX */
 #endif /* TeX */
 
 /* Metafont/MetaPost fraction routines. Replaced either by assembler or C.
