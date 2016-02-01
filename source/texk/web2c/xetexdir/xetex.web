@@ -23397,7 +23397,7 @@ are inside the individual sections.
   cur_ptr:=null;
   space_class:=sf_code(cur_chr) div @"10000;
 
-  if XeTeX_inter_char_tokens_en and space_class <> char_class_ignored then begin {class 32768 = ignored (for combining marks etc)}
+  if XeTeX_inter_char_tokens_en and space_class <> char_class_ignored then begin {class 16384 = ignored (for combining marks etc)}
     if prev_class = char_class_boundary then begin {boundary}
       if (state<>token_list) or (token_type<>backed_up_char) then begin
         find_sa_element(inter_char_val, char_class_boundary*@"100 + space_class, false);
