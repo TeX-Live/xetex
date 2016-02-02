@@ -51,6 +51,7 @@ libharfbuzz_a_SOURCES =  \
 	@HARFBUZZ_TREE@/src/hb-ot-hmtx-table.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-maxp-table.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-name-table.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-os2-table.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-tag.cc \
 	@HARFBUZZ_TREE@/src/hb-private.hh \
 	@HARFBUZZ_TREE@/src/hb-set-private.hh \
@@ -85,6 +86,7 @@ libharfbuzz_a_SOURCES += \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-arabic.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-arabic-fallback.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-arabic-table.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-arabic-private.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-default.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-hangul.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-hebrew.cc \
@@ -94,15 +96,17 @@ libharfbuzz_a_SOURCES += \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-indic-table.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-myanmar.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-myanmar-machine.hh \
-	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-sea.cc \
-	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-sea-machine.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-private.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-thai.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-tibetan.cc \
-	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-private.hh \
-	@HARFBUZZ_TREE@/src/hb-ot-shape-normalize-private.hh \
-	@HARFBUZZ_TREE@/src/hb-ot-shape-normalize.cc \
-	@HARFBUZZ_TREE@/src/hb-ot-shape-fallback-private.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-use.cc \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-use-machine.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-use-private.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-complex-use-table.cc \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-fallback.cc \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-fallback-private.hh \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-normalize.cc \
+	@HARFBUZZ_TREE@/src/hb-ot-shape-normalize-private.hh \
 	@HARFBUZZ_TREE@/src/hb-ot-shape-private.hh
 
 ## ICU library
@@ -122,6 +126,7 @@ check_PROGRAMS = hbtest
 dist_check_SCRIPTS = harfbuzz.test
 TESTS = harfbuzz.test
 endif build
+harfbuzz.log: hbtest$(EXEEXT)
 
 hbtest_SOURCES = hbtest.c
 
