@@ -1,12 +1,29 @@
 \ifx\fmtname\undefined
-  \input plain
-  \def\fmtname{plain}
+  \input basic
+  \def\fmtname{basic}
 \fi
-\font\testa="Latin Modern Math:script=math;language=DFLT;"
-\font\testb="Latin Modern Math:script=math;language=DFLT;" at 5pt
+\font\testa="[latinmodern-math]:script=math:language=DFLT;"
+\font\testb="[latinmodern-math]:script=math;language=DFLT;" at 5pt
 
 \textfont2=\testa
 \scriptscriptfont 2= \testb
+\newcount\fd
+\loop\ifnum\fd<8
+  a\the\fd b
+  % \expandafter\the\fontdimen\fd\testa
+  % \the\fontdimen7\testb
+  \advance\fd by 1
+  \repeat
+
+\font\testc="[latinmodern-math]:script=math;language=DFLT;" at 7pt
+\scriptfont 2=\testc
+\font\cmex=cmex10
+\textfont3=\cmex
+\scriptfont3=\cmex
+\scriptscriptfont3=\cmex
+
+% \font\bf=cmbx10 at 10pt
+\font\text="[lmroman10-regular]" at 10pt\text
 
 $\Umathchar "0 "2 "61$
 
@@ -14,6 +31,7 @@ $\Umathchar "0 "2 "61$
 
 \leavevmode\hbox{$\scriptscriptstyle \Umathchar "0 "2 "61 $} %math which uses fam2
 
-.$\mskip20mu$.  \qquad {\bf Too small!}
+.$\mskip20mu$.  \qquad % {\bf Too small!}
+Too small!
 
 \bye

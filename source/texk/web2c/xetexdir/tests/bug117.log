@@ -1,8 +1,11 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  23 AUG 2015 18:56
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  3 FEB 2016 19:55
+entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **bug117
-(./bug117.tex (/usr/local/texlive/2015/texmf-dist/tex/plain/base/plain.tex
+
+(/home/arthur/perso/xetex/xetex-code/source/texk/web2c/xetexdir/tests/bug117.te
+x (/home/arthur/perso/xetex/xetex-code/source/texk/web2c/tests/basic.tex
 Preloading the plain format: codes, registers,
 \maxdimen=\dimen10
 \hideskip=\skip10
@@ -21,19 +24,14 @@ Preloading the plain format: codes, registers,
 \jot=\dimen14
 \interdisplaylinepenalty=\count23
 \interfootnotelinepenalty=\count24
- fonts, more fonts,
-\itfam=\fam4
-\slfam=\fam5
-\bffam=\fam6
-\ttfam=\fam7
-
-macros,
+ macros,
 \strutbox=\box11
 \mscount=\count25
 \tabs=\box12
 \tabsyet=\box13
 \tabsdone=\box14
- math definitions,
+
+math definitions,
 \rootbox=\box15
 \p@renwd=\dimen15
  output routines,
@@ -41,6 +39,31 @@ macros,
 \footline=\toks11
 \footins=\insert254
 \topins=\insert253
- hyphenation
-(/usr/local/texlive/2015/texmf-dist/tex/generic/hyphen/hyphen.tex)) [1] )
-Output written on bug117.pdf (1 page).
+ hyphenation)
+\fd=\count26
+Missing character: There is no a in font nullfont!
+Missing character: There is no 0 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 1 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 2 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 3 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 4 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 5 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 6 in font nullfont!
+Missing character: There is no b in font nullfont!
+Missing character: There is no a in font nullfont!
+Missing character: There is no 7 in font nullfont!
+Missing character: There is no b in font nullfont!
+ [1] )
+Output written on bug117.xdv (1 page, 1100 bytes).
