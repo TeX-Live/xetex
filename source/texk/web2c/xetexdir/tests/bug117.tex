@@ -1,28 +1,21 @@
 \ifx\fmtname\undefined
-  \input basic
-  \def\fmtname{basic}
+  \input mybasic
+  \def\fmtname{mybasic}
 \fi
-\font\testa="[latinmodern-math]:script=math:language=DFLT;"
-\font\testb="[latinmodern-math]:script=math;language=DFLT;" at 5pt
+\font\mathtext="[latinmodern-math]:script=math:language=DFLT;"
+\font\mathscript="[latinmodern-math]:script=math;language=DFLT;" at 7pt
+\font\mathscriptscript="[latinmodern-math]:script=math;language=DFLT;" at 5pt
 
-\textfont2=\testa
-\scriptscriptfont 2= \testb
-\newcount\fd
-\loop\ifnum\fd<8
-  a\the\fd b
-  % \expandafter\the\fontdimen\fd\testa
-  % \the\fontdimen7\testb
-  \advance\fd by 1
-  \repeat
+\textfont2=\mathtext
+\scriptfont2=\mathscript
+\scriptscriptfont2=\mathscriptscript
 
-\font\testc="[latinmodern-math]:script=math;language=DFLT;" at 7pt
-\scriptfont 2=\testc
 \font\cmex=cmex10
 \textfont3=\cmex
 \scriptfont3=\cmex
 \scriptscriptfont3=\cmex
 
-% \font\bf=cmbx10 at 10pt
+\font\bf="[lmroman10-bold]" at 10pt
 \font\text="[lmroman10-regular]" at 10pt\text
 
 $\Umathchar "0 "2 "61$
@@ -31,7 +24,6 @@ $\Umathchar "0 "2 "61$
 
 \leavevmode\hbox{$\scriptscriptstyle \Umathchar "0 "2 "61 $} %math which uses fam2
 
-.$\mskip20mu$.  \qquad % {\bf Too small!}
-Too small!
+.$\mskip20mu$.  \qquad {\bf Too small!}
 
 \bye
