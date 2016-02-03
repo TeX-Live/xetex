@@ -16,8 +16,6 @@ puts "export TEXMFCNF=#{ENV['TEXMFCNF']}"
 puts "export TEXINPUTS=#{ENV['TEXINPUTS']}"
 puts "export OSFONTDIR=#{ENV['OSFONTDIR']}"
 puts "export TFMFONTS=#{ENV['TFMFONTS']}"
-puts `kpsewhich latinmodern-math.otf`
-puts 'cmex10:' + `kpsewhich cmex10.tfm`
 xetexbin = File.expand_path("../../../../../../build/texk/web2c/xe#{la}tex", __FILE__)
 puts "Running: #{xetexbin} -etex -ini -no-pdf #{filename}"
 system("#{xetexbin} -etex -ini -no-pdf #{filename}")
