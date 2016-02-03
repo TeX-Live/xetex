@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  3 FEB 2016 20:06
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/dev) (INITEX)  3 FEB 2016 20:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -7,38 +7,5 @@ entering extended mode
 (/home/arthur/perso/xetex/xetex-code/source/texk/web2c/xetexdir/tests/bug117.te
 x
 (/home/arthur/perso/xetex/xetex-code/source/texk/web2c/xetexdir/tests/mybasic.t
-ex Preloading the plain format: codes, registers,
-\maxdimen=\dimen10
-\hideskip=\skip10
-\centering=\skip11
-\p@=\dimen11
-\z@=\dimen12
-\z@skip=\skip12
-\voidb@x=\box10
- parameters,
-\smallskipamount=\skip13
-\medskipamount=\skip14
-\bigskipamount=\skip15
-\normalbaselineskip=\skip16
-\normallineskip=\skip17
-\normallineskiplimit=\dimen13
-\jot=\dimen14
-\interdisplaylinepenalty=\count23
-\interfootnotelinepenalty=\count24
- macros,
-\strutbox=\box11
-\mscount=\count25
-\tabs=\box12
-\tabsyet=\box13
-\tabsdone=\box14
-
-math definitions,
-\rootbox=\box15
-\p@renwd=\dimen15
- output routines,
-\headline=\toks10
-\footline=\toks11
-\footins=\insert254
-\topins=\insert253
- hyphenation) [1] )
-Output written on bug117.xdv (1 page, 1320 bytes).
+ex) [0] )
+Output written on bug117.xdv (1 page, 1340 bytes).
