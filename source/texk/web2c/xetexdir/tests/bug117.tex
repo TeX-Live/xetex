@@ -1,7 +1,15 @@
 \ifx\fmtname\undefined
-  \input mybasic
-  \def\fmtname{mybasic}
+  % Absolutely minimal set up for iniTeX
+  \catcode`\{=1 % left brace is begin-group character
+  \catcode`\}=2 % right brace is end-group character
+  \catcode`\$=3 % dollar sign is math shift
+
+  \hsize=6.5in
+  \vsize=8.9in
+
+  \parfillskip=0pt plus 1fil
 \fi
+
 \font\mathtext="[latinmodern-math]:script=math:language=DFLT;"
 \font\mathscript="[latinmodern-math]:script=math;language=DFLT;" at 7pt
 \font\mathscriptscript="[latinmodern-math]:script=math;language=DFLT;" at 5pt
@@ -22,8 +30,8 @@
 
 .$\mskip20mu$.
 
-.\hbox{$\scriptscriptstyle \Umathchar "0 "2 "61 $} %math which uses fam2
+.\hbox{$\scriptscriptstyle \Umathchar "0 "2 "61$} %math which uses fam2
 
-.$\mskip20mu$.  \qquad {\bf Too small!}
+.$\mskip20mu$.  \hskip2em {\bf Too small!}
 
-\bye
+\end
