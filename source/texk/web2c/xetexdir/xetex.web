@@ -346,7 +346,8 @@ known as `\eTeX'.
 @d XeTeX_default_input_encoding_code=7 {|str_number| of encoding name if |mode =| ICU}
 @#
 @d XeTeX_tracing_fonts_code=8 {non-zero to log native fonts used}
-@d eTeX_states=9 {number of \eTeX\ state variables in |eqtb|}
+@d XeTeX_contextual_spaces_code=9 {non-zero to measure space chars in context when using native fonts}
+@d eTeX_states=10 {number of \eTeX\ state variables in |eqtb|}
 
 @ Different \PASCAL s have slightly different conventions, and the present
 @!@:PASCAL H}{\ph@>
@@ -6062,8 +6063,8 @@ A global boolean variable called |no_new_control_sequence| is set to
 
 @ Primitive support needs a few extra variables and definitions
 
-@d prim_size=481 {maximum number of primitives }
-@d prim_prime=409 {about 85\pct! of |primitive_size|}
+@d prim_size=500 {maximum number of primitives }
+@d prim_prime=431 {about 85\pct! of |primitive_size|}
 @d prim_base=1
 @d prim_next(#) == prim[#].lh {link for coalesced lists}
 @d prim_text(#) == prim[#].rh {string number for control sequence name}
@@ -23636,6 +23637,77 @@ collected:
     end
   end;
 
+  if XeTeX_contextual_spaces_en then begin
+    { |tail| is a word we have just appended. If it is preceded by another word
+      with a normal inter-word space between (all in the same font), then we will
+      measure that space in context and replace it with an adjusted glue value
+      if it differs from the font's normal space. }
+
+    { First we look for the most recent native_word in the list and set main_pp to it.
+      This is potentially expensive, in the case of very long paragraphs,
+      but in practice it's negligible compared to the cost of shaping and measurement. }
+    main_p := head;
+    main_pp := null;
+    while main_p <> tail do begin
+      if is_native_word_node(main_p) then main_pp := main_p;
+      main_p := link(main_p);
+    end;
+
+    if (main_pp <> null) then begin
+      { check if the font matches; if so, check the intervening nodes }
+      if (native_font(main_pp) = main_f) then begin
+        main_p := link(main_pp);
+        { skip \penalty nodes, so that e.g. |\nobreak\ | doesn't prevent contextual measurement }
+        while (not is_char_node(main_p) and (type(main_p) = penalty_node)) do
+          main_p := link(main_p);
+
+        { Now main_p is the inter-word space, if that's what was present between these words.
+          We'll do a contextual space measurement if and only if there is a single glue node
+          that points to the current font's font_glue;
+          if there's anything else in between the words, we don't attempt this. }
+        if not is_char_node(main_p) and
+            (type(main_p) = glue_node) and
+            (glue_ptr(main_p) = font_glue[main_f]) and
+            (link(main_p) = tail) then begin
+          { We found a candidate inter-word space! Collect the characters of both words,
+            separated by a single space, into a native_word node and measure its overall width. }
+          main_k := native_length(main_pp) + 1 + native_length(tail);
+          temp_ptr := new_native_word_node(main_f, main_k);
+          main_k := 0;
+          for t:=0 to native_length(main_pp)-1 do begin
+            set_native_char(temp_ptr, main_k, get_native_char(main_pp, t));
+            incr(main_k);
+          end;
+          set_native_char(temp_ptr, main_k, " ");
+          incr(main_k);
+          for t:=0 to native_length(tail)-1 do begin
+            set_native_char(temp_ptr, main_k, get_native_char(tail, t));
+            incr(main_k);
+          end;
+          set_native_metrics(temp_ptr, XeTeX_use_glyph_metrics);
+
+          { The desired space width is the difference between this width and
+            the sum of the two words measured separately. }
+          t := width(temp_ptr) - width(main_pp) - width(tail);
+          free_node(temp_ptr, native_size(temp_ptr));
+
+          { If |t| doesn't match the natural width of the current font_glue,
+            we'll replace the glue node with one whose width is adjusted,
+            while keeping the same stretch and shrink }
+          if t <> width(font_glue[main_f]) then begin
+            link(main_p) := null;
+            flush_node_list(main_p);
+            temp_ptr := new_spec(font_glue[main_f]);
+            width(temp_ptr) := t;
+            main_p := new_glue(temp_ptr);
+            link(main_pp) := main_p;
+            link(main_p) := tail;
+          end
+        end
+      end
+    end
+  end;
+
   if cur_ptr<>null then goto big_switch
   else goto reswitch;
 end;
@@ -30888,6 +30960,9 @@ and is never inhibited for words originating from horizontal mode.
 @d XeTeX_input_normalization_state == eTeX_state(XeTeX_input_normalization_code)
 @d XeTeX_tracing_fonts_state == eTeX_state(XeTeX_tracing_fonts_code)
 
+@d XeTeX_contextual_spaces_state==eTeX_state(XeTeX_contextual_spaces_code)
+@d XeTeX_contextual_spaces_en==(XeTeX_contextual_spaces_state>0)
+
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
 
@@ -30900,6 +30975,7 @@ eTeX_state_code+XeTeX_inter_char_tokens_code:print_esc("XeTeXinterchartokenstate
 eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 eTeX_state_code+XeTeX_input_normalization_code:print_esc("XeTeXinputnormalization");
 eTeX_state_code+XeTeX_tracing_fonts_code:print_esc("XeTeXtracingfonts");
+eTeX_state_code+XeTeX_contextual_spaces_code:print_esc("XeTeXcontextualspaces");
 
 @ @<Generate all \eTeX...@>=
 primitive("suppressfontnotfounderror",assign_int,int_base+suppress_fontnotfound_error_code);@/
@@ -30919,6 +30995,9 @@ primitive("XeTeXinputnormalization",assign_int,eTeX_state_base+XeTeX_input_norma
 @!@:XeTeX_input_normalization_}{\.{\\XeTeXinputnormalization} primitive@>
 
 primitive("XeTeXtracingfonts",assign_int,eTeX_state_base+XeTeX_tracing_fonts_code);
+
+primitive("XeTeXcontextualspaces",assign_int,eTeX_state_base+XeTeX_contextual_spaces_code);
+@!@:XeTeX_contextual_spaces_}{\.{\\XeTeXcontextualspaces} primitive@>
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
