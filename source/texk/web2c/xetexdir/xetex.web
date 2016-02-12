@@ -23444,6 +23444,16 @@ are inside the individual sections.
     end;
   end
 
+@d node_is_invisible_to_interword_space(#)==
+  not is_char_node(#) and
+  ((type(#) = penalty_node) or
+   (type(#) = ins_node) or
+   (type(#) = mark_node) or
+   (type(#) = adjust_node) or
+   ((type(#) = whatsit_node) and (subtype(#) <= 4)))
+     { This checks for |subtype|s in the range open/write/close/special/language,
+       but the definitions haven't appeared yet in the .web file so we cheat. }
+
 @<Append character |cur_chr|...@>=
 
 prev_class:=char_class_boundary; {boundary}
@@ -23643,7 +23653,7 @@ collected:
       measure that space in context and replace it with an adjusted glue value
       if it differs from the font's normal space. }
 
-    { First we look for the most recent native_word in the list and set main_pp to it.
+    { First we look for the most recent native_word in the list and set |main_pp| to it.
       This is potentially expensive, in the case of very long paragraphs,
       but in practice it's negligible compared to the cost of shaping and measurement. }
     main_p := head;
@@ -23657,51 +23667,53 @@ collected:
       { check if the font matches; if so, check the intervening nodes }
       if (native_font(main_pp) = main_f) then begin
         main_p := link(main_pp);
-        { skip \penalty nodes, so that e.g. |\nobreak\ | doesn't prevent contextual measurement }
-        while (not is_char_node(main_p) and (type(main_p) = penalty_node)) do
+
+        { Skip nodes that should be invisible to inter-word spacing,
+          so that e.g. |\nobreak\ | doesn't prevent contextual measurement.
+          This loop is guaranteed to end safely because it'll eventually hit
+          |tail|, which is a native_word node, if nothing else intervenes. }
+        while node_is_invisible_to_interword_space(main_p) do
           main_p := link(main_p);
 
-        { Now main_p is the inter-word space, if that's what was present between these words.
-          We'll do a contextual space measurement if and only if there is a single glue node
-          that points to the current font's font_glue;
-          if there's anything else in between the words, we don't attempt this. }
-        if not is_char_node(main_p) and
-            (type(main_p) = glue_node) and
-            (glue_ptr(main_p) = font_glue[main_f]) and
-            (link(main_p) = tail) then begin
-          { We found a candidate inter-word space! Collect the characters of both words,
-            separated by a single space, into a native_word node and measure its overall width. }
-          main_k := native_length(main_pp) + 1 + native_length(tail);
-          temp_ptr := new_native_word_node(main_f, main_k);
-          main_k := 0;
-          for t:=0 to native_length(main_pp)-1 do begin
-            set_native_char(temp_ptr, main_k, get_native_char(main_pp, t));
-            incr(main_k);
-          end;
-          set_native_char(temp_ptr, main_k, " ");
-          incr(main_k);
-          for t:=0 to native_length(tail)-1 do begin
-            set_native_char(temp_ptr, main_k, get_native_char(tail, t));
-            incr(main_k);
-          end;
-          set_native_metrics(temp_ptr, XeTeX_use_glyph_metrics);
+        if not is_char_node(main_p) and (type(main_p) = glue_node) then begin
+          { We found a glue node: we might have an inter-word space to deal with.
+            Again, skip nodes that should be invisible to inter-word spacing.
+            We leave |main_p| pointing to the glue node; |main_pp| is the preceding word. }
+          main_ppp := link(main_p);
+          while node_is_invisible_to_interword_space(main_ppp) do
+            main_ppp := link(main_ppp);
 
-          { The desired space width is the difference between this width and
-            the sum of the two words measured separately. }
-          t := width(temp_ptr) - width(main_pp) - width(tail);
-          free_node(temp_ptr, native_size(temp_ptr));
+          if main_ppp = tail then begin
+            { We found a candidate inter-word space! Collect the characters of both words,
+              separated by a single space, into a native_word node and measure its overall width. }
+            temp_ptr := new_native_word_node(main_f, native_length(main_pp) + 1 + native_length(tail));
+            main_k := 0;
+            for t := 0 to native_length(main_pp)-1 do begin
+              set_native_char(temp_ptr, main_k, get_native_char(main_pp, t));
+              incr(main_k);
+            end;
+            set_native_char(temp_ptr, main_k, " ");
+            incr(main_k);
+            for t := 0 to native_length(tail)-1 do begin
+              set_native_char(temp_ptr, main_k, get_native_char(tail, t));
+              incr(main_k);
+            end;
+            set_native_metrics(temp_ptr, XeTeX_use_glyph_metrics);
 
-          { If |t| doesn't match the natural width of the current font_glue,
-            we'll replace the glue node with one whose width is adjusted,
-            while keeping the same stretch and shrink }
-          if t <> width(font_glue[main_f]) then begin
-            link(main_p) := null;
-            flush_node_list(main_p);
-            temp_ptr := new_spec(font_glue[main_f]);
-            width(temp_ptr) := t;
-            main_p := new_glue(temp_ptr);
-            link(main_pp) := main_p;
-            link(main_p) := tail;
+            { The contextual space width is the difference between this width and
+              the sum of the two words measured separately. }
+            t := width(temp_ptr) - width(main_pp) - width(tail);
+            free_node(temp_ptr, native_size(temp_ptr));
+
+            { If the desired width differs from the font's default word space,
+              we will insert a suitable kern after the existing glue.
+              Because kerns are discardable, this will behave OK during line breaking,
+              and it's easier than actually modifying/replacing the glue node. }
+            if t <> width(font_glue[main_f]) then begin
+              temp_ptr := new_kern(t - width(font_glue[main_f]));
+              link(temp_ptr) := link(main_p);
+              link(main_p) := temp_ptr;
+            end
           end
         end
       end
