@@ -3550,6 +3550,7 @@ inserted from \.{\\mkern} specifications in math formulas).
 @d kern_node=11 {|type| of a kern node}
 @d explicit=1 {|subtype| of kern nodes from \.{\\kern} and \.{\\/}}
 @d acc_kern=2 {|subtype| of kern nodes from accents}
+@d space_adjustment=3 {|subtype| of kern nodes from \.{\\XeTeXinterwordspaceshaping} adjustment}
 
 @# {memory structure for marginal kerns}
 @d margin_kern_node = 40
@@ -4239,8 +4240,9 @@ if subtype(p)<>mu_glue then
   begin print_esc("kern");
   if subtype(p)<>normal then print_char(" ");
   print_scaled(width(p));
-  if subtype(p)=acc_kern then print(" (for accent)");
+  if subtype(p)=acc_kern then print(" (for accent)")
 @.for accent@>
+  else if subtype(p)=space_adjustment then print(" (space adjustment)");
   end
 else  begin print_esc("mkern"); print_scaled(width(p)); print("mu");
   end
@@ -23711,6 +23713,7 @@ collected:
               and it's easier than actually modifying/replacing the glue node. }
             if t <> width(font_glue[main_f]) then begin
               temp_ptr := new_kern(t - width(font_glue[main_f]));
+              subtype(temp_ptr) := space_adjustment;
               link(temp_ptr) := link(main_p);
               link(main_p) := temp_ptr;
             end
