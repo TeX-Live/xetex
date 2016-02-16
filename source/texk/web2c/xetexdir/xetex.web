@@ -346,7 +346,9 @@ known as `\eTeX'.
 @d XeTeX_default_input_encoding_code=7 {|str_number| of encoding name if |mode =| ICU}
 @#
 @d XeTeX_tracing_fonts_code=8 {non-zero to log native fonts used}
-@d XeTeX_contextual_spaces_code=9 {non-zero to measure space chars in context when using native fonts}
+@d XeTeX_interword_space_shaping_code=9 { controls shaping of space chars in context when using native fonts;
+                                          set to 1 for contextual adjustment of space width only,
+                                          and 2 for full cross-space shaping (e.g. multi-word ligatures) }
 @d eTeX_states=10 {number of \eTeX\ state variables in |eqtb|}
 
 @ Different \PASCAL s have slightly different conventions, and the present
@@ -23649,7 +23651,7 @@ collected:
     end
   end;
 
-  if XeTeX_contextual_spaces_en then begin
+  if XeTeX_interword_space_shaping_state > 0 then begin
     { |tail| is a word we have just appended. If it is preceded by another word
       with a normal inter-word space between (all in the same font), then we will
       measure that space in context and replace it with an adjusted glue value
@@ -30975,8 +30977,7 @@ and is never inhibited for words originating from horizontal mode.
 @d XeTeX_input_normalization_state == eTeX_state(XeTeX_input_normalization_code)
 @d XeTeX_tracing_fonts_state == eTeX_state(XeTeX_tracing_fonts_code)
 
-@d XeTeX_contextual_spaces_state==eTeX_state(XeTeX_contextual_spaces_code)
-@d XeTeX_contextual_spaces_en==(XeTeX_contextual_spaces_state>0)
+@d XeTeX_interword_space_shaping_state==eTeX_state(XeTeX_interword_space_shaping_code)
 
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
@@ -30990,7 +30991,7 @@ eTeX_state_code+XeTeX_inter_char_tokens_code:print_esc("XeTeXinterchartokenstate
 eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 eTeX_state_code+XeTeX_input_normalization_code:print_esc("XeTeXinputnormalization");
 eTeX_state_code+XeTeX_tracing_fonts_code:print_esc("XeTeXtracingfonts");
-eTeX_state_code+XeTeX_contextual_spaces_code:print_esc("XeTeXcontextualspaces");
+eTeX_state_code+XeTeX_interword_space_shaping_code:print_esc("XeTeXinterwordspaceshaping");
 
 @ @<Generate all \eTeX...@>=
 primitive("suppressfontnotfounderror",assign_int,int_base+suppress_fontnotfound_error_code);@/
@@ -31011,8 +31012,8 @@ primitive("XeTeXinputnormalization",assign_int,eTeX_state_base+XeTeX_input_norma
 
 primitive("XeTeXtracingfonts",assign_int,eTeX_state_base+XeTeX_tracing_fonts_code);
 
-primitive("XeTeXcontextualspaces",assign_int,eTeX_state_base+XeTeX_contextual_spaces_code);
-@!@:XeTeX_contextual_spaces_}{\.{\\XeTeXcontextualspaces} primitive@>
+primitive("XeTeXinterwordspaceshaping",assign_int,eTeX_state_base+XeTeX_interword_space_shaping_code);
+@!@:XeTeX_interword_space_shaping_}{\.{\\XeTeXinterwordspaceshaping} primitive@>
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
