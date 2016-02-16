@@ -19461,7 +19461,8 @@ width of this glue is subtracted from the background; and we also look
 ahead to eliminate all subsequent glue and penalty and kern and math
 nodes, subtracting their widths as well.
 
-Kern nodes do not disappear at a line break unless they are |explicit|.
+Kern nodes do not disappear at a line break unless they are |explicit|
+or |space_adjustment|.
 
 @d set_break_width_to_background(#)==break_width[#]:=background[#]
 
@@ -20325,7 +20326,7 @@ loop@+  begin q:=link(r);
   {now |q| cannot be |null|}
   if is_char_node(q) then goto done1;
   if non_discardable(q) then goto done1;
-  if type(q)=kern_node then if subtype(q)<>explicit then goto done1;
+  if type(q)=kern_node then if (subtype(q)<>explicit) and (subtype(q)<>space_adjustment) then goto done1;
   r:=q; {now |type(q)=glue_node|, |kern_node|, |math_node| or |penalty_node|}
   if type(q)=math_node then if TeXXeT_en then
     @<Adjust \(t)the LR stack for the |post_line_break| routine@>;
