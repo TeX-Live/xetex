@@ -315,8 +315,8 @@ known as `\eTeX'.
 @d eTeX_version_string=='-2.6' {current \eTeX\ version}
 @#
 @d XeTeX_version=0 { \.{\\XeTeXversion} }
-@d XeTeX_revision==".99994" { \.{\\XeTeXrevision} }
-@d XeTeX_version_string=='-0.99994' {current \XeTeX\ version}
+@d XeTeX_revision==".99995" { \.{\\XeTeXrevision} }
+@d XeTeX_version_string=='-0.99995' {current \XeTeX\ version}
 @#
 @d XeTeX_banner=='This is XeTeX, Version 3.14159265',eTeX_version_string,XeTeX_version_string
   {printed when \XeTeX\ starts}
@@ -349,7 +349,8 @@ known as `\eTeX'.
 @d XeTeX_interword_space_shaping_code=9 { controls shaping of space chars in context when using native fonts;
                                           set to 1 for contextual adjustment of space width only,
                                           and 2 for full cross-space shaping (e.g. multi-word ligatures) }
-@d eTeX_states=10 {number of \eTeX\ state variables in |eqtb|}
+@d XeTeX_generate_actual_text_code=10 { controls output of /ActualText for native-word nodes }
+@d eTeX_states=11 {number of \eTeX\ state variables in |eqtb|}
 
 @ Different \PASCAL s have slightly different conventions, and the present
 @!@:PASCAL H}{\ph@>
@@ -13145,6 +13146,8 @@ the following commands are used in \.{XDV} files.
 
 \yskip\hang|set_glyphs| 253 |w[4]| |k[2]| |xy[8k]| |g[2k]|.
 
+\yskip\hang|set_text_and_glyphs| 254 |l[2]| |t[2l]| |w[4]| |k[2]| |xy[8k]| |g[2k]|.
+
 \yskip\noindent Commands 250 and 255 are undefined in normal \.{XDV} files.
 
 @ @d set_char_0=0 {typeset character 0 and move right}
@@ -13177,14 +13180,15 @@ the following commands are used in \.{XDV} files.
 
 @d define_native_font=252 {define native font}
 @d set_glyphs=253 {sequence of glyphs with individual x-y coordinates}
+@d set_text_and_glyphs=254 {run of Unicode (UTF16) text followed by positioned glyphs}
 
 @ The preamble contains basic information about the file as a whole. As
 stated above, there are six parameters:
 $$\hbox{|@!i[1]| |@!num[4]| |@!den[4]| |@!mag[4]| |@!k[1]| |@!x[k]|.}$$
-The |i| byte identifies \.{DVI} format; in \XeTeX\ this byte is set to~6, as we
+The |i| byte identifies \.{DVI} format; in \XeTeX\ this byte is set to~7, as we
 have new \.{DVI} opcodes, while in \TeX82 it is always set to~2. (The value
 |i=3| is used for an extended format that allows a mixture of right-to-left and
-left-to-right typesetting. Older versions of \XeTeX\ used |i=4| and |i=5|.)
+left-to-right typesetting. Older versions of \XeTeX\ used |i=4|, |i=5| and |i=6|.)
 
 The next two parameters, |num| and |den|, are positive integers that define
 the units of measurement; they are the numerator and denominator of a
@@ -13207,7 +13211,7 @@ users to override the |mag|~setting when a \.{DVI} file is being printed.)
 Finally, |k| and |x| allow the \.{DVI} writer to include a comment, which is not
 interpreted further. The length of comment |x| is |k|, where |0<=k<256|.
 
-@d id_byte=6 {identifies the kind of \.{DVI} files described here}
+@d id_byte=7 {identifies the kind of \.{DVI} files described here}
 
 @ Font definitions for a given font number |k| contain further parameters
 $$\hbox{|c[4]| |s[4]| |d[4]| |a[1]| |l[1]| |n[a+l]|.}$$
@@ -29310,11 +29314,25 @@ begin
       dvi_two(native_glyph(p));
       cur_h:=cur_h + width(p);
     end else begin
-      if native_glyph_info_ptr(p) <> null_ptr then begin
-        dvi_out(set_glyphs);
-        len:=make_xdv_glyph_array_data(p);
-        for k:=0 to len-1 do
-          dvi_out(xdv_buffer_byte(k));
+      if XeTeX_generate_actual_text_en then begin
+        if (native_length(p) > 0) or (native_glyph_info_ptr(p) <> null_ptr) then begin
+          dvi_out(set_text_and_glyphs);
+          len:=native_length(p);
+          dvi_two(len);
+          for k:=0 to len-1 do begin
+            dvi_two(get_native_char(p, k));
+          end;
+          len:=make_xdv_glyph_array_data(p);
+          for k:=0 to len-1 do
+            dvi_out(xdv_buffer_byte(k));
+        end
+      end else begin
+        if native_glyph_info_ptr(p) <> null_ptr then begin
+          dvi_out(set_glyphs);
+          len:=make_xdv_glyph_array_data(p);
+          for k:=0 to len-1 do
+            dvi_out(xdv_buffer_byte(k));
+        end
       end;
       cur_h:=cur_h + width(p);
     end;
@@ -31028,6 +31046,9 @@ and is never inhibited for words originating from horizontal mode.
 
 @d XeTeX_interword_space_shaping_state==eTeX_state(XeTeX_interword_space_shaping_code)
 
+@d XeTeX_generate_actual_text_state == eTeX_state(XeTeX_generate_actual_text_code)
+@d XeTeX_generate_actual_text_en == (XeTeX_generate_actual_text_state>0)
+
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
 
@@ -31041,6 +31062,7 @@ eTeX_state_code+XeTeX_dash_break_code:print_esc("XeTeXdashbreakstate");
 eTeX_state_code+XeTeX_input_normalization_code:print_esc("XeTeXinputnormalization");
 eTeX_state_code+XeTeX_tracing_fonts_code:print_esc("XeTeXtracingfonts");
 eTeX_state_code+XeTeX_interword_space_shaping_code:print_esc("XeTeXinterwordspaceshaping");
+eTeX_state_code+XeTeX_generate_actual_text_code:print_esc("XeTeXgenerateactualtext");
 
 @ @<Generate all \eTeX...@>=
 primitive("suppressfontnotfounderror",assign_int,int_base+suppress_fontnotfound_error_code);@/
@@ -31063,6 +31085,9 @@ primitive("XeTeXtracingfonts",assign_int,eTeX_state_base+XeTeX_tracing_fonts_cod
 
 primitive("XeTeXinterwordspaceshaping",assign_int,eTeX_state_base+XeTeX_interword_space_shaping_code);
 @!@:XeTeX_interword_space_shaping_}{\.{\\XeTeXinterwordspaceshaping} primitive@>
+
+primitive("XeTeXgenerateactualtext",assign_int,eTeX_state_base+XeTeX_generate_actual_text_code);
+@!@:XeTeX_generate_actual_text_}{\.{\\XeTeXgenerateactualtext} primitive@>
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
