@@ -315,8 +315,8 @@ known as `\eTeX'.
 @d eTeX_version_string=='-2.6' {current \eTeX\ version}
 @#
 @d XeTeX_version=0 { \.{\\XeTeXversion} }
-@d XeTeX_revision==".99995" { \.{\\XeTeXrevision} }
-@d XeTeX_version_string=='-0.99995' {current \XeTeX\ version}
+@d XeTeX_revision==".99996" { \.{\\XeTeXrevision} }
+@d XeTeX_version_string=='-0.99996' {current \XeTeX\ version}
 @#
 @d XeTeX_banner=='This is XeTeX, Version 3.14159265',eTeX_version_string,XeTeX_version_string
   {printed when \XeTeX\ starts}
@@ -350,7 +350,8 @@ known as `\eTeX'.
                                           set to 1 for contextual adjustment of space width only,
                                           and 2 for full cross-space shaping (e.g. multi-word ligatures) }
 @d XeTeX_generate_actual_text_code=10 { controls output of /ActualText for native-word nodes }
-@d eTeX_states=11 {number of \eTeX\ state variables in |eqtb|}
+@d XeTeX_hyphenatable_length_code=11 { sets maximum hyphenatable word length }
+@d eTeX_states=12 {number of \eTeX\ state variables in |eqtb|}
 
 @ Different \PASCAL s have slightly different conventions, and the present
 @!@:PASCAL H}{\ph@>
@@ -632,8 +633,8 @@ emphasize this distinction.
 @d script_script_size=number_math_families+number_math_families {size code for the smallest size in a family}
 @d biggest_lang=255 {the largest hyphenation language}
 @d too_big_lang=256 {|biggest_lang+1|}
+@d hyphenatable_length_limit=4095 {hard limit for hyphenatable length; runtime value is |max_hyphenatable_length|}
 @^system dependencies@>
-@d max_hyphenatable_length=4095
 
 @ In case somebody has inadvertently made bad settings of the ``constants,''
 \TeX\ checks them using a global variable called |bad|.
@@ -2398,7 +2399,7 @@ positions from the right end of a binary computer word.
 @<Types...@>=
 @!scaled = integer; {this type is used for scaled integers}
 @!nonnegative_integer=0..@'17777777777; {$0\L x<2^{31}$}
-@!small_number=0..max_hyphenatable_length; {this type is self-explanatory}
+@!small_number=0..hyphenatable_length_limit; {this type is self-explanatory}
 
 @ The following function is used to create a scaled integer from a given decimal
 fraction $(.d_0d_1\ldots d_{k-1})$, where |0<=k<=17|. The digit $d_i$ is
@@ -20637,13 +20638,13 @@ nodes $p_{a-1}$ and~$p_b$ in the description above are placed into variables
 |ha| and |hb|; and the font number is placed into |hf|.
 
 @<Glob...@>=
-@!hc:array[0..max_hyphenatable_length+3] of 0..number_usvs; {word to be hyphenated}
+@!hc:array[0..hyphenatable_length_limit+3] of 0..number_usvs; {word to be hyphenated}
 { note that element 0 needs to be a full UnicodeScalar, even though we
   basically work in UTF16 }
 @!hn:small_number; {the number of positions occupied in |hc|}
 @!ha,@!hb:pointer; {nodes |ha..hb| should be replaced by the hyphenated result}
 @!hf:internal_font_number; {font number of the letters in |hc|}
-@!hu:array[0..max_hyphenatable_length+1] of 0..too_big_char;
+@!hu:array[0..hyphenatable_length_limit+1] of 0..too_big_char;
      {like |hc|, before conversion to lowercase}
 @!hyf_char:integer; {hyphen character of the relevant font}
 @!cur_lang,@!init_cur_lang:0..biggest_lang;
@@ -20692,6 +20693,14 @@ begin @<Find hyphen locations for the word in |hc|, or |return|@>;
 @<Replace nodes |ha..hb| by a sequence of nodes that includes
   the discretionary hyphens@>;
 exit:end;
+
+function max_hyphenatable_length: integer;
+begin
+  if XeTeX_hyphenatable_length>hyphenatable_length_limit then
+    max_hyphenatable_length:=hyphenatable_length_limit
+  else
+    max_hyphenatable_length:=XeTeX_hyphenatable_length;
+end;
 
 @ @<Check that nodes after |native_word| permit hyphenation; if not, |goto done1|@>=
 s:=link(ha);
@@ -20875,13 +20884,13 @@ it finds, since it is better to work on this part of the program before
 forgetting what |ha| and |hb|, etc., are all about.
 
 @<Glob...@>=
-@!hyf:array [0..max_hyphenatable_length+1] of 0..9; {odd values indicate discretionary hyphens}
+@!hyf:array [0..hyphenatable_length_limit+1] of 0..9; {odd values indicate discretionary hyphens}
 @!init_list:pointer; {list of punctuation characters preceding the word}
 @!init_lig:boolean; {does |init_list| represent a ligature?}
 @!init_lft:boolean; {if so, did the ligature involve a left boundary?}
 
 @ @<Local variables for hyphenation@>=
-@!i,@!j,@!l:0..max_hyphenatable_length+2; {indices into |hc| or |hu|}
+@!i,@!j,@!l:0..hyphenatable_length_limit+2; {indices into |hc| or |hu|}
 @!q,@!r,@!s:pointer; {temporary registers for list manipulation}
 @!bchar:halfword; {right boundary character of hyphenated word, or |non_char|}
 
@@ -21233,7 +21242,7 @@ we need a few new local variables:
 @!major_tail,@!minor_tail:pointer; {the end of lists in the main and
   discretionary branches being reconstructed}
 @!c:UnicodeScalar; {character temporarily replaced by a hyphen}
-@!c_loc:0..max_hyphenatable_length; {where that character came from}
+@!c_loc:0..hyphenatable_length_limit; {where that character came from}
 @!r_count:integer; {replacement count for discretionary}
 @!hyf_node:pointer; {the hyphen, if it exists}
 
@@ -21537,8 +21546,8 @@ When \TeX\ has scanned `\.{\\hyphenation}', it calls on a procedure named
 
 @p procedure new_hyph_exceptions; {enters new exceptions}
 label reswitch, exit, found, not_found, not_found1;
-var n:0..max_hyphenatable_length+1; {length of current word; not always a |small_number|}
-@!j:0..max_hyphenatable_length+1; {an index into |hc|}
+var n:0..hyphenatable_length_limit+1; {length of current word; not always a |small_number|}
+@!j:0..hyphenatable_length_limit+1; {an index into |hc|}
 @!h:hyph_pointer; {an index into |hyph_word| and |hyph_list|}
 @!k:str_number; {an index into |str_start|}
 @!p:pointer; {head of a list of hyphen positions}
@@ -22015,7 +22024,7 @@ sequence, it calls on |new_patterns| to do the right thing.
 @<Declare procedures for preprocessing hyph...@>=
 procedure new_patterns; {initializes the hyphenation pattern data}
 label done, done1;
-var k,@!l:0..max_hyphenatable_length+1; {indices into |hc| and |hyf|;
+var k,@!l:0..hyphenatable_length_limit+1; {indices into |hc| and |hyf|;
                   not always in |small_number| range}
 @!digit_sensed:boolean; {should the next digit be treated as a letter?}
 @!v:quarterword; {trie op code}
@@ -31066,6 +31075,8 @@ and is never inhibited for words originating from horizontal mode.
 @d XeTeX_default_input_mode == eTeX_state(XeTeX_default_input_mode_code)
 @d XeTeX_default_input_encoding == eTeX_state(XeTeX_default_input_encoding_code)
 
+@d XeTeX_hyphenatable_length == eTeX_state(XeTeX_hyphenatable_length_code)
+
 @<Cases for |print_param|@>=
 suppress_fontnotfound_error_code:print_esc("suppressfontnotfounderror");
 eTeX_state_code+TeXXeT_code:print_esc("TeXXeTstate");
@@ -31077,6 +31088,7 @@ eTeX_state_code+XeTeX_input_normalization_code:print_esc("XeTeXinputnormalizatio
 eTeX_state_code+XeTeX_tracing_fonts_code:print_esc("XeTeXtracingfonts");
 eTeX_state_code+XeTeX_interword_space_shaping_code:print_esc("XeTeXinterwordspaceshaping");
 eTeX_state_code+XeTeX_generate_actual_text_code:print_esc("XeTeXgenerateactualtext");
+eTeX_state_code+XeTeX_hyphenatable_length_code:print_esc("XeTeXhyphenatablelength");
 
 @ @<Generate all \eTeX...@>=
 primitive("suppressfontnotfounderror",assign_int,int_base+suppress_fontnotfound_error_code);@/
@@ -31102,6 +31114,9 @@ primitive("XeTeXinterwordspaceshaping",assign_int,eTeX_state_base+XeTeX_interwor
 
 primitive("XeTeXgenerateactualtext",assign_int,eTeX_state_base+XeTeX_generate_actual_text_code);
 @!@:XeTeX_generate_actual_text_}{\.{\\XeTeXgenerateactualtext} primitive@>
+
+primitive("XeTeXhyphenatablelength",assign_int,eTeX_state_base+XeTeX_hyphenatable_length_code);
+@!@:XeTeX_hyphenatable_length_}{\.{\\XeTeXhyphenatablelength} primitive@>
 
 primitive("XeTeXinputencoding",extension,XeTeX_input_encoding_extension_code);
 primitive("XeTeXdefaultencoding",extension,XeTeX_default_encoding_extension_code);
@@ -33425,6 +33440,7 @@ existing code.
 @d hyph_root==trie_r[0] {root of the linked trie for |hyph_codes|}
 
 @<Initialize table entries...@>=
+XeTeX_hyphenatable_length:=63; {for backward compatibility with standard TeX by default}
 
 @ @<Store hyphenation codes for current language@>=
 begin c:=cur_lang; first_child:=false; p:=0;
