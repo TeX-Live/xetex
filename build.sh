@@ -204,6 +204,7 @@ fi
 
     if [ "$ONLY_MAKE" = "FALSE" ]
     then
+        echo Running TL_MAKE=$MAKE ../source/configure $CONFHOST $CONFBUILD $WARNINGFLAGS $CONF_OPTIONS && exit 1
         TL_MAKE=$MAKE ../source/configure $CONFHOST $CONFBUILD $WARNINGFLAGS $CONF_OPTIONS || exit 1
     fi
 
