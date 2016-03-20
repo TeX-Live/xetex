@@ -209,7 +209,7 @@ fi
 
     $MAKE || exit 1
     $MAKE -C texk/web2c $XETEXEXE || exit 1
-)
+) || exit $?
 
 if [ "$STRIP_XETEX" = "TRUE" ]
 then
