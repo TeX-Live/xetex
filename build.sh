@@ -63,7 +63,6 @@ MINGWCROSS=FALSE
 CONFHOST=
 CONFBUILD=
 MACCROSS=FALSE
-XDVIPDFMX=FALSE
 JOBS_IF_PARALLEL=${JOBS_IF_PARALLEL:-3}
 MAX_LOAD_IF_PARALLEL=${MAX_LOAD_IF_PARALLEL:-2}
 
@@ -90,12 +89,6 @@ done
 #
 STRIP=strip
 XETEXEXE=xetex
-XDVIPDFMXEXE=xdvipdfmx
-
-case `uname` in
-  MINGW32*    ) XETEXEXE=xetex.exe; XDVIPDFMXEXE=xdvipdfmx.exe ;;
-  CYGWIN*    ) XETEXEXE=xetex.exe; XDVIPDFMXEXE=xdvipdfmx.exe  ;;
-esac
 
 WARNINGFLAGS=--enable-compiler-warnings=$WARNINGS
 
@@ -133,11 +126,8 @@ fi
 
 export CFLAGS
 
-# build xdvipdfmx if present
-if [ -d source/texk/xdvipdfmx ]
-then
-  XDVIPDFMX=TRUE
-fi
+# xdvipdfmx has been merged into dvipdfmx and is now maintained
+# in the TeX Live sources
 
 # ----------
 # clean up, if needed
@@ -174,11 +164,6 @@ fi
         --without-system-kpathsea \
         --without-mf-x-toolkit --without-x "
 
-    if [ "$XDVIPDFMX" = "TRUE" ]; then
-      CONF_OPTIONS="$CONF_OPTIONS \
-        --enable-xdvipdfmx "
-    fi
-
     if [ "$SYSTEM_LIBS" = "TRUE" ]
     then
       CONF_OPTIONS="$CONF_OPTIONS \
@@ -214,9 +199,6 @@ fi
 if [ "$STRIP_XETEX" = "TRUE" ]
 then
   $STRIP "$B"/texk/web2c/$XETEXEXE
-  if [ "$XDVIPDFMX" = "TRUE" ]; then
-    $STRIP "$B"/texk/xdvipdfmx/src/$XDVIPDFMXEXE
-  fi
 else
   echo "xetex binary not stripped"
 fi
@@ -228,7 +210,3 @@ fi
 
 # show the results
 ls -l "$B"/texk/web2c/$XETEXEXE
-
-if [ "$XDVIPDFMX" = "TRUE" ]; then
-  ls -l "$B"/texk/xdvipdfmx/src/$XDVIPDFMXEXE
-fi
