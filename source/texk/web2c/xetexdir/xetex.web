@@ -16456,9 +16456,7 @@ if (z<>0)or(x<>min_quarterword) then
 
 @ @<Look at the list of characters starting with |x|...@>=
 if is_ot_font(g) then begin
-  b:=new_native_character(g, x);
-  x:=get_native_glyph(b, 0);
-  free_node(b, native_size(b));
+  x:=map_char_to_glyph(g, x);
   f:=g; c:=x; w:=0; n:=0;
   repeat
     y:=get_ot_math_variant(g, x, n, addressof(u), 0);
