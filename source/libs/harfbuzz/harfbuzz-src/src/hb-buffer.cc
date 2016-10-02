@@ -52,7 +52,7 @@
  *
  * Checks the equality of two #hb_segment_properties_t's.
  *
- * Return value: (transfer full):
+ * Return value:
  * %true if all properties of @a equal those of @b, false otherwise.
  *
  * Since: 0.9.7
@@ -183,6 +183,12 @@ hb_buffer_t::shift_forward (unsigned int count)
   if (unlikely (!ensure (len + count))) return false;
 
   memmove (info + idx + count, info + idx, (len - idx) * sizeof (info[0]));
+  if (idx + count > len)
+  {
+    /* Under memory failure we might expose this area.  At least
+     * clean it up.  Oh well... */
+    memset (info + len, 0, (idx + count - len) * sizeof (info[0]));
+  }
   len += count;
   idx += count;
 
@@ -242,11 +248,11 @@ hb_buffer_t::clear (void)
   out_info = info;
 
   serial = 0;
-  memset (allocated_var_bytes, 0, sizeof allocated_var_bytes);
-  memset (allocated_var_owner, 0, sizeof allocated_var_owner);
 
   memset (context, 0, sizeof context);
   memset (context_len, 0, sizeof context_len);
+
+  deallocate_var_all ();
 }
 
 void
@@ -407,6 +413,8 @@ hb_buffer_t::move_to (unsigned int i)
     idx = i;
     return true;
   }
+  if (unlikely (in_error))
+    return false;
 
   assert (i <= out_len + (len - idx));
 
@@ -424,6 +432,8 @@ hb_buffer_t::move_to (unsigned int i)
     /* Tricky part: rewinding... */
     unsigned int count = out_len - i;
 
+    /* This will blow in our face if memory allocation fails later
+     * in this same lookup... */
     if (unlikely (idx < count && !shift_forward (count + 32))) return false;
 
     assert (idx >= count);
@@ -658,74 +668,6 @@ hb_buffer_t::guess_segment_properties (void)
   }
 }
 
-
-static inline void
-dump_var_allocation (const hb_buffer_t *buffer)
-{
-  char buf[80];
-  for (unsigned int i = 0; i < 8; i++)
-    buf[i] = '0' + buffer->allocated_var_bytes[7 - i];
-  buf[8] = '\0';
-  DEBUG_MSG (BUFFER, buffer,
-	     "Current var allocation: %s",
-	     buf);
-}
-
-void hb_buffer_t::allocate_var (unsigned int byte_i, unsigned int count, const char *owner)
-{
-  assert (byte_i < 8 && byte_i + count <= 8);
-
-  if (DEBUG_ENABLED (BUFFER))
-    dump_var_allocation (this);
-  DEBUG_MSG (BUFFER, this,
-	     "Allocating var bytes %d..%d for %s",
-	     byte_i, byte_i + count - 1, owner);
-
-  for (unsigned int i = byte_i; i < byte_i + count; i++) {
-    assert (!allocated_var_bytes[i]);
-    allocated_var_bytes[i]++;
-    allocated_var_owner[i] = owner;
-  }
-}
-
-void hb_buffer_t::deallocate_var (unsigned int byte_i, unsigned int count, const char *owner)
-{
-  if (DEBUG_ENABLED (BUFFER))
-    dump_var_allocation (this);
-
-  DEBUG_MSG (BUFFER, this,
-	     "Deallocating var bytes %d..%d for %s",
-	     byte_i, byte_i + count - 1, owner);
-
-  assert (byte_i < 8 && byte_i + count <= 8);
-  for (unsigned int i = byte_i; i < byte_i + count; i++) {
-    assert (allocated_var_bytes[i]);
-    assert (0 == strcmp (allocated_var_owner[i], owner));
-    allocated_var_bytes[i]--;
-  }
-}
-
-void hb_buffer_t::assert_var (unsigned int byte_i, unsigned int count, const char *owner)
-{
-  if (DEBUG_ENABLED (BUFFER))
-    dump_var_allocation (this);
-
-  DEBUG_MSG (BUFFER, this,
-	     "Asserting var bytes %d..%d for %s",
-	     byte_i, byte_i + count - 1, owner);
-
-  assert (byte_i < 8 && byte_i + count <= 8);
-  for (unsigned int i = byte_i; i < byte_i + count; i++) {
-    assert (allocated_var_bytes[i]);
-    assert (0 == strcmp (allocated_var_owner[i], owner));
-  }
-}
-
-void hb_buffer_t::deallocate_var_all (void)
-{
-  memset (allocated_var_bytes, 0, sizeof (allocated_var_bytes));
-  memset (allocated_var_owner, 0, sizeof (allocated_var_owner));
-}
 
 /* Public API */
 

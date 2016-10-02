@@ -4,7 +4,7 @@ NULL =
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src util test docs
+SUBDIRS = src util test docs win32
 
 EXTRA_DIST = \
 	autogen.sh \
@@ -21,6 +21,7 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/INSTALL \
 	$(srcdir)/ChangeLog \
 	$(srcdir)/gtk-doc.make \
+	$(srcdir)/m4/gtk-doc.m4 \
 	$(NULL)
 
 
