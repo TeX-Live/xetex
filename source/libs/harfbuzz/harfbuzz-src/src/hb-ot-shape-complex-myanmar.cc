@@ -249,6 +249,11 @@ set_myanmar_properties (hb_glyph_info_t &info)
     case 0x104Au: case 0x104Bu:
       cat = (indic_category_t) OT_P;
       break;
+
+    case 0xAA74u: case 0xAA75u: case 0xAA76u:
+      /* https://github.com/roozbehp/unicode-data/issues/3 */
+      cat = (indic_category_t) OT_C;
+      break;
   }
 
   if (cat == OT_M)
@@ -439,7 +444,7 @@ insert_dotted_circles (const hb_ot_shape_plan_t *plan HB_UNUSED,
 
 
   hb_codepoint_t dottedcircle_glyph;
-  if (!font->get_glyph (0x25CCu, 0, &dottedcircle_glyph))
+  if (!font->get_nominal_glyph (0x25CCu, &dottedcircle_glyph))
     return;
 
   hb_glyph_info_t dottedcircle = {0};
@@ -451,7 +456,7 @@ insert_dotted_circles (const hb_ot_shape_plan_t *plan HB_UNUSED,
 
   buffer->idx = 0;
   unsigned int last_syllable = 0;
-  while (buffer->idx < buffer->len)
+  while (buffer->idx < buffer->len && !buffer->in_error)
   {
     unsigned int syllable = buffer->cur().syllable();
     syllable_type_t syllable_type = (syllable_type_t) (syllable & 0x0F);

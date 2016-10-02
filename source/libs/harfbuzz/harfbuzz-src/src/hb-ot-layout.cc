@@ -35,6 +35,7 @@
 #include "hb-ot-layout-gsub-table.hh"
 #include "hb-ot-layout-gpos-table.hh"
 #include "hb-ot-layout-jstf-table.hh"
+#include "hb-ot-layout-math-table.hh"
 
 #include "hb-ot-map-private.hh"
 
@@ -59,6 +60,92 @@ _hb_ot_layout_create (hb_face_t *face)
 
   layout->gpos_blob = OT::Sanitizer<OT::GPOS>::sanitize (face->reference_table (HB_OT_TAG_GPOS));
   layout->gpos = OT::Sanitizer<OT::GPOS>::lock_instance (layout->gpos_blob);
+
+  /* The MATH table is rarely used, so only try and load it in _get_math. */
+  layout->math_blob = NULL;
+  layout->math = NULL;
+
+  {
+    /*
+     * The ugly business of blacklisting individual fonts' tables happen here!
+     * See this thread for why we finally had to bend in and do this:
+     * https://lists.freedesktop.org/archives/harfbuzz/2016-February/005489.html
+     */
+    unsigned int gdef_len = hb_blob_get_length (layout->gdef_blob);
+    unsigned int gsub_len = hb_blob_get_length (layout->gsub_blob);
+    unsigned int gpos_len = hb_blob_get_length (layout->gpos_blob);
+    if (0
+      /* sha1sum:c5ee92f0bca4bfb7d06c4d03e8cf9f9cf75d2e8a Windows 7? timesi.ttf */
+      || (442 == gdef_len && 42038 == gpos_len && 2874 == gsub_len)
+      /* sha1sum:37fc8c16a0894ab7b749e35579856c73c840867b Windows 7? timesbi.ttf */
+      || (430 == gdef_len && 40662 == gpos_len && 2874 == gsub_len)
+      /* sha1sum:19fc45110ea6cd3cdd0a5faca256a3797a069a80 Windows 7 timesi.ttf */
+      || (442 == gdef_len && 39116 == gpos_len && 2874 == gsub_len)
+      /* sha1sum:6d2d3c9ed5b7de87bc84eae0df95ee5232ecde26 Windows 7 timesbi.ttf */
+      || (430 == gdef_len && 39374 == gpos_len && 2874 == gsub_len)
+      /* sha1sum:8583225a8b49667c077b3525333f84af08c6bcd8 OS X 10.11.3 Times New Roman Italic.ttf */
+      || (490 == gdef_len && 41638 == gpos_len && 3046 == gsub_len)
+      /* sha1sum:ec0f5a8751845355b7c3271d11f9918a966cb8c9 OS X 10.11.3 Times New Roman Bold Italic.ttf */
+      || (478 == gdef_len && 41902 == gpos_len && 3046 == gsub_len)
+    )
+    {
+      /* In certain versions of Times New Roman Italic and Bold Italic,
+       * ASCII double quotation mark U+0022, mapped to glyph 5, has wrong
+       * glyph class 3 (mark) in GDEF.  Nuke the GDEF to avoid zero-width
+       * double-quote.  See:
+       * https://lists.freedesktop.org/archives/harfbuzz/2016-February/005489.html
+       */
+     if (3 == layout->gdef->get_glyph_class (5))
+       layout->gdef = &OT::Null(OT::GDEF);
+    }
+    else if (0
+      /* sha1sum:96eda93f7d33e79962451c6c39a6b51ee893ce8c  tahoma.ttf from Windows 8 */
+      || (898 == gdef_len && 46470 == gpos_len && 12554 == gsub_len)
+      /* sha1sum:20928dc06014e0cd120b6fc942d0c3b1a46ac2bc  tahomabd.ttf from Windows 8 */
+      || (910 == gdef_len && 47732 == gpos_len && 12566 == gsub_len)
+      /* sha1sum:4f95b7e4878f60fa3a39ca269618dfde9721a79e  tahoma.ttf from Windows 8.1 */
+      || (928 == gdef_len && 59332 == gpos_len && 23298 == gsub_len)
+      /* sha1sum:6d400781948517c3c0441ba42acb309584b73033  tahomabd.ttf from Windows 8.1 */
+      || (940 == gdef_len && 60732 == gpos_len && 23310 == gsub_len)
+      /* sha1sum:e55fa2dfe957a9f7ec26be516a0e30b0c925f846  tahoma.ttf from Windows 10 */
+      || (994 == gdef_len && 60336 == gpos_len && 24474 == gsub_len)
+      /* sha1sum:7199385abb4c2cc81c83a151a7599b6368e92343  tahomabd.ttf from Windows 10 */
+      || (1006 == gdef_len && 61740 == gpos_len && 24470 == gsub_len)
+      /* sha1sum:b0d36cf5a2fbe746a3dd277bffc6756a820807a7  Tahoma.ttf from Mac OS X 10.9 */
+      || (832 == gdef_len && 47162 == gpos_len && 7324 == gsub_len)
+      /* sha1sum:12fc4538e84d461771b30c18b5eb6bd434e30fba  Tahoma Bold.ttf from Mac OS X 10.9 */
+      || (844 == gdef_len && 45474 == gpos_len && 7302 == gsub_len)
+      /* sha1sum:73da7f025b238a3f737aa1fde22577a6370f77b0  himalaya.ttf from Windows 8 */
+      || (192 == gdef_len && 7254 == gpos_len && 12638 == gsub_len)
+      /* sha1sum:6e80fd1c0b059bbee49272401583160dc1e6a427  himalaya.ttf from Windows 8.1 */
+      || (192 == gdef_len && 7254 == gpos_len && 12690 == gsub_len)
+      /* 8d9267aea9cd2c852ecfb9f12a6e834bfaeafe44  cantarell-fonts-0.0.21/otf/Cantarell-Regular.otf */
+      /* 983988ff7b47439ab79aeaf9a45bd4a2c5b9d371  cantarell-fonts-0.0.21/otf/Cantarell-Oblique.otf */
+      || (188 == gdef_len && 3852 == gpos_len && 248 == gsub_len)
+      /* 2c0c90c6f6087ffbfea76589c93113a9cbb0e75f  cantarell-fonts-0.0.21/otf/Cantarell-Bold.otf */
+      /* 55461f5b853c6da88069ffcdf7f4dd3f8d7e3e6b  cantarell-fonts-0.0.21/otf/Cantarell-Bold-Oblique.otf */
+      || (188 == gdef_len && 3426 == gpos_len && 264 == gsub_len)
+      /* 6c93b63b64e8b2c93f5e824e78caca555dc887c7 padauk-2.80/Padauk-book.ttf */
+      || (1046 == gdef_len && 17112 == gpos_len && 71788 == gsub_len)
+      /* d89b1664058359b8ec82e35d3531931125991fb9 padauk-2.80/Padauk-bookbold.ttf */
+      || (1058 == gdef_len && 17514 == gpos_len && 71794 == gsub_len)
+      /* 824cfd193aaf6234b2b4dc0cf3c6ef576c0d00ef padauk-3.0/Padauk-book.ttf */
+      || (1330 == gdef_len && 57938 == gpos_len && 109904 == gsub_len)
+      /* 91fcc10cf15e012d27571e075b3b4dfe31754a8a padauk-3.0/Padauk-bookbold.ttf */
+      || (1330 == gdef_len && 58972 == gpos_len && 109904 == gsub_len)
+    )
+    {
+      /* Many versions of Tahoma have bad GDEF tables that incorrectly classify some spacing marks
+       * such as certain IPA symbols as glyph class 3. So do older versions of Microsoft Himalaya,
+       * and the version of Cantarell shipped by Ubuntu 16.04.
+       * Nuke the GDEF tables of these fonts to avoid unwanted width-zeroing.
+       * See https://bugzilla.mozilla.org/show_bug.cgi?id=1279925
+       *     https://bugzilla.mozilla.org/show_bug.cgi?id=1279693
+       *     https://bugzilla.mozilla.org/show_bug.cgi?id=1279875
+       */
+      layout->gdef = &OT::Null(OT::GDEF);
+    }
+  }
 
   layout->gsub_lookup_count = layout->gsub->get_lookup_count ();
   layout->gpos_lookup_count = layout->gpos->get_lookup_count ();
@@ -95,6 +182,7 @@ _hb_ot_layout_destroy (hb_ot_layout_t *layout)
   hb_blob_destroy (layout->gdef_blob);
   hb_blob_destroy (layout->gsub_blob);
   hb_blob_destroy (layout->gpos_blob);
+  hb_blob_destroy (layout->math_blob);
 
   free (layout);
 }
@@ -116,6 +204,30 @@ _get_gpos (hb_face_t *face)
 {
   if (unlikely (!hb_ot_shaper_face_data_ensure (face))) return OT::Null(OT::GPOS);
   return *hb_ot_layout_from_face (face)->gpos;
+}
+static inline const OT::MATH&
+_get_math (hb_face_t *face)
+{
+  if (unlikely (!hb_ot_shaper_face_data_ensure (face))) return OT::Null(OT::MATH);
+
+  hb_ot_layout_t * layout = hb_ot_layout_from_face (face);
+
+retry:
+  const OT::MATH *math = (const OT::MATH *) hb_atomic_ptr_get (&layout->math);
+
+  if (unlikely (!math))
+  {
+    hb_blob_t *blob = OT::Sanitizer<OT::MATH>::sanitize (face->reference_table (HB_OT_TAG_MATH));
+    math = OT::Sanitizer<OT::MATH>::lock_instance (blob);
+    if (!hb_atomic_ptr_cmpexch (&layout->math, NULL, math))
+    {
+      hb_blob_destroy (blob);
+      goto retry;
+    }
+    layout->math_blob = blob;
+  }
+
+  return *math;
 }
 
 
@@ -771,12 +883,6 @@ hb_ot_layout_substitute_start (hb_font_t *font, hb_buffer_t *buffer)
   OT::GSUB::substitute_start (font, buffer);
 }
 
-void
-hb_ot_layout_substitute_finish (hb_font_t *font, hb_buffer_t *buffer)
-{
-  OT::GSUB::substitute_finish (font, buffer);
-}
-
 /**
  * hb_ot_layout_lookup_substitute_closure:
  *
@@ -811,9 +917,15 @@ hb_ot_layout_position_start (hb_font_t *font, hb_buffer_t *buffer)
 }
 
 void
-hb_ot_layout_position_finish (hb_font_t *font, hb_buffer_t *buffer)
+hb_ot_layout_position_finish_advances (hb_font_t *font, hb_buffer_t *buffer)
 {
-  OT::GPOS::position_finish (font, buffer);
+  OT::GPOS::position_finish_advances (font, buffer);
+}
+
+void
+hb_ot_layout_position_finish_offsets (hb_font_t *font, hb_buffer_t *buffer)
+{
+  OT::GPOS::position_finish_offsets (font, buffer);
 }
 
 /**
@@ -902,20 +1014,79 @@ struct GPOSProxy
 };
 
 
-template <typename Obj>
+struct hb_get_subtables_context_t :
+       OT::hb_dispatch_context_t<hb_get_subtables_context_t, hb_void_t, HB_DEBUG_APPLY>
+{
+  template <typename Type>
+  static inline bool apply_to (const void *obj, OT::hb_apply_context_t *c)
+  {
+    const Type *typed_obj = (const Type *) obj;
+    return typed_obj->apply (c);
+  }
+
+  typedef bool (*hb_apply_func_t) (const void *obj, OT::hb_apply_context_t *c);
+
+  struct hb_applicable_t
+  {
+    inline void init (const void *obj_, hb_apply_func_t apply_func_)
+    {
+      obj = obj_;
+      apply_func = apply_func_;
+    }
+
+    inline bool apply (OT::hb_apply_context_t *c) const { return apply_func (obj, c); }
+
+    private:
+    const void *obj;
+    hb_apply_func_t apply_func;
+  };
+
+  typedef hb_auto_array_t<hb_applicable_t> array_t;
+
+  /* Dispatch interface. */
+  inline const char *get_name (void) { return "GET_SUBTABLES"; }
+  template <typename T>
+  inline return_t dispatch (const T &obj)
+  {
+    hb_applicable_t *entry = array.push();
+    if (likely (entry))
+      entry->init (&obj, apply_to<T>);
+    return HB_VOID;
+  }
+  static return_t default_return_value (void) { return HB_VOID; }
+  bool stop_sublookup_iteration (return_t r HB_UNUSED) const { return false; }
+
+  hb_get_subtables_context_t (array_t &array_) :
+			      array (array_),
+			      debug_depth (0) {}
+
+  array_t &array;
+  unsigned int debug_depth;
+};
+
 static inline bool
 apply_forward (OT::hb_apply_context_t *c,
-	       const Obj &obj,
-	       const hb_ot_layout_lookup_accelerator_t &accel)
+	       const hb_ot_layout_lookup_accelerator_t &accel,
+	       const hb_get_subtables_context_t::array_t &subtables)
 {
   bool ret = false;
   hb_buffer_t *buffer = c->buffer;
   while (buffer->idx < buffer->len && !buffer->in_error)
   {
+    bool applied = false;
     if (accel.may_have (buffer->cur().codepoint) &&
 	(buffer->cur().mask & c->lookup_mask) &&
-	c->check_glyph_property (&buffer->cur(), c->lookup_props) &&
-	obj.apply (c))
+	c->check_glyph_property (&buffer->cur(), c->lookup_props))
+     {
+       for (unsigned int i = 0; i < subtables.len; i++)
+         if (subtables[i].apply (c))
+	 {
+	   applied = true;
+	   break;
+	 }
+     }
+
+    if (applied)
       ret = true;
     else
       buffer->next_glyph ();
@@ -923,11 +1094,10 @@ apply_forward (OT::hb_apply_context_t *c,
   return ret;
 }
 
-template <typename Obj>
 static inline bool
 apply_backward (OT::hb_apply_context_t *c,
-		const Obj &obj,
-		const hb_ot_layout_lookup_accelerator_t &accel)
+	       const hb_ot_layout_lookup_accelerator_t &accel,
+	       const hb_get_subtables_context_t::array_t &subtables)
 {
   bool ret = false;
   hb_buffer_t *buffer = c->buffer;
@@ -935,9 +1105,15 @@ apply_backward (OT::hb_apply_context_t *c,
   {
     if (accel.may_have (buffer->cur().codepoint) &&
 	(buffer->cur().mask & c->lookup_mask) &&
-	c->check_glyph_property (&buffer->cur(), c->lookup_props) &&
-	obj.apply (c))
-      ret = true;
+	c->check_glyph_property (&buffer->cur(), c->lookup_props))
+    {
+     for (unsigned int i = 0; i < subtables.len; i++)
+       if (subtables[i].apply (c))
+       {
+	 ret = true;
+	 break;
+       }
+    }
     /* The reverse lookup doesn't "advance" cursor (for good reason). */
     buffer->idx--;
 
@@ -945,26 +1121,6 @@ apply_backward (OT::hb_apply_context_t *c,
   while ((int) buffer->idx >= 0);
   return ret;
 }
-
-struct hb_apply_forward_context_t :
-       OT::hb_dispatch_context_t<hb_apply_forward_context_t, bool, HB_DEBUG_APPLY>
-{
-  inline const char *get_name (void) { return "APPLY_FWD"; }
-  template <typename T>
-  inline return_t dispatch (const T &obj) { return apply_forward (c, obj, accel); }
-  static return_t default_return_value (void) { return false; }
-  bool stop_sublookup_iteration (return_t r HB_UNUSED) const { return true; }
-
-  hb_apply_forward_context_t (OT::hb_apply_context_t *c_,
-			      const hb_ot_layout_lookup_accelerator_t &accel_) :
-				c (c_),
-				accel (accel_),
-				debug_depth (0) {}
-
-  OT::hb_apply_context_t *c;
-  const hb_ot_layout_lookup_accelerator_t &accel;
-  unsigned int debug_depth;
-};
 
 template <typename Proxy>
 static inline void
@@ -979,6 +1135,10 @@ apply_string (OT::hb_apply_context_t *c,
 
   c->set_lookup_props (lookup.get_props ());
 
+  hb_get_subtables_context_t::array_t subtables;
+  hb_get_subtables_context_t c_get_subtables (subtables);
+  lookup.dispatch (&c_get_subtables);
+
   if (likely (!lookup.is_reverse ()))
   {
     /* in/out forward substitution/positioning */
@@ -987,13 +1147,7 @@ apply_string (OT::hb_apply_context_t *c,
     buffer->idx = 0;
 
     bool ret;
-    if (lookup.get_subtable_count () == 1)
-    {
-      hb_apply_forward_context_t c_forward (c, accel);
-      ret = lookup.dispatch (&c_forward);
-    }
-    else
-      ret = apply_forward (c, lookup, accel);
+    ret = apply_forward (c, accel, subtables);
     if (ret)
     {
       if (!Proxy::inplace)
@@ -1009,7 +1163,7 @@ apply_string (OT::hb_apply_context_t *c,
       buffer->remove_output ();
     buffer->idx = buffer->len - 1;
 
-    apply_backward (c, lookup, accel);
+    apply_backward (c, accel, subtables);
   }
 }
 
@@ -1065,4 +1219,231 @@ hb_ot_layout_substitute_lookup (OT::hb_apply_context_t *c,
 				const hb_ot_layout_lookup_accelerator_t &accel)
 {
   apply_string<GSUBProxy> (c, lookup, accel);
+}
+
+
+/*
+ * MATH
+ */
+/* TODO Move this to hb-ot-math.cc and separate it from hb_ot_layout_t. */
+
+/**
+ * hb_ot_math_has_data:
+ *
+ * @face: #hb_face_t to test
+ *
+ * This function allows to verify the presence of an OpenType MATH table on the
+ * face. If so, such a table will be loaded into memory and sanitized. You can
+ * then safely call other functions for math layout and shaping.
+ *
+ * Return value: #TRUE if face has a MATH table and #FALSE otherwise
+ *
+ * Since: 1.4.0
+ **/
+hb_bool_t
+hb_ot_math_has_data (hb_face_t *face)
+{
+  return &_get_math (face) != &OT::Null(OT::MATH);
+}
+
+/**
+ * hb_ot_math_get_constant:
+ *
+ * @font: #hb_font_t from which to retrieve the value
+ * @constant: #hb_ot_math_constant_t the constant to retrieve
+ *
+ * This function returns the requested math constants as a #hb_position_t.
+ * If the request constant is HB_OT_MATH_CONSTANT_SCRIPT_PERCENT_SCALE_DOWN,
+ * HB_OT_MATH_CONSTANT_SCRIPT_SCRIPT_PERCENT_SCALE_DOWN or
+ * HB_OT_MATH_CONSTANT_SCRIPT_PERCENT_SCALE_DOWN then the return value is
+ * actually an integer between 0 and 100 representing that percentage.
+ *
+ * Return value: the requested constant or 0
+ *
+ * Since: 1.4.0
+ **/
+hb_position_t
+hb_ot_math_get_constant (hb_font_t *font,
+			 hb_ot_math_constant_t constant)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_constant(constant, font);
+}
+
+/**
+ * hb_ot_math_get_glyph_italics_correction:
+ *
+ * @font: #hb_font_t from which to retrieve the value
+ * @glyph: glyph index from which to retrieve the value
+ *
+ * Return value: the italics correction of the glyph or 0
+ *
+ * Since: 1.4.0
+ **/
+hb_position_t
+hb_ot_math_get_glyph_italics_correction (hb_font_t *font,
+					 hb_codepoint_t glyph)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_math_glyph_info().get_italics_correction (glyph, font);
+}
+
+/**
+ * hb_ot_math_get_glyph_top_accent_attachment:
+ *
+ * @font: #hb_font_t from which to retrieve the value
+ * @glyph: glyph index from which to retrieve the value
+ *
+ * Return value: the top accent attachment of the glyph or 0
+ *
+ * Since: 1.4.0
+ **/
+hb_position_t
+hb_ot_math_get_glyph_top_accent_attachment (hb_font_t *font,
+					    hb_codepoint_t glyph)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_math_glyph_info().get_top_accent_attachment (glyph, font);
+}
+
+/**
+ * hb_ot_math_is_glyph_extended_shape:
+ *
+ * @font: a #hb_font_t to test
+ * @glyph: a glyph index to test
+ *
+ * Return value: #TRUE if the glyph is an extended shape and #FALSE otherwise
+ *
+ * Since: 1.4.0
+ **/
+hb_bool_t
+hb_ot_math_is_glyph_extended_shape (hb_face_t *face,
+				    hb_codepoint_t glyph)
+{
+  const OT::MATH &math = _get_math (face);
+  return math.get_math_glyph_info().is_extended_shape (glyph);
+}
+
+/**
+ * hb_ot_math_get_glyph_kerning:
+ *
+ * @font: #hb_font_t from which to retrieve the value
+ * @glyph: glyph index from which to retrieve the value
+ * @kern: the #hb_ot_math_kern_t from which to retrieve the value
+ * @correction_height: the correction height to use to determine the kerning.
+ *
+ * This function tries to retrieve the MathKern table for the specified font,
+ * glyph and #hb_ot_math_kern_t. Then it browses the list of heights from the
+ * MathKern table to find one value that is greater or equal to specified
+ * correction_height. If one is found the corresponding value from the list of
+ * kerns is returned and otherwise the last kern value is returned.
+ *
+ * Return value: requested kerning or 0
+ *
+ * Since: 1.4.0
+ **/
+hb_position_t
+hb_ot_math_get_glyph_kerning (hb_font_t *font,
+			      hb_codepoint_t glyph,
+			      hb_ot_math_kern_t kern,
+			      hb_position_t correction_height)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_math_glyph_info().get_kerning (glyph, kern, correction_height, font);
+}
+
+/**
+ * hb_ot_math_get_glyph_variants:
+ *
+ * @font: #hb_font_t from which to retrieve the values
+ * @glyph: index of the glyph to stretch
+ * @direction: direction of the stretching
+ * @start_offset: offset of the first variant to retrieve
+ * @variants_count: maximum number of variants to retrieve after start_offset
+ * (IN) and actual number of variants retrieved (OUT)
+ * @variants: array of size at least @variants_count to store the result
+ *
+ * This function tries to retrieve the MathGlyphConstruction for the specified
+ * font, glyph and direction. Note that only the value of
+ * #HB_DIRECTION_IS_HORIZONTAL is considered. It provides the corresponding list
+ * of size variants as an array of hb_ot_math_glyph_variant_t structs.
+ *
+ * Return value: the total number of size variants available or 0
+ *
+ * Since: 1.4.0
+ **/
+unsigned int
+hb_ot_math_get_glyph_variants (hb_font_t *font,
+			       hb_codepoint_t glyph,
+			       hb_direction_t direction,
+			       unsigned int start_offset,
+			       unsigned int *variants_count, /* IN/OUT */
+			       hb_ot_math_glyph_variant_t *variants /* OUT */)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_math_variants().get_glyph_variants (glyph, direction, font,
+						      start_offset,
+						      variants_count,
+						      variants);
+}
+
+/**
+ * hb_ot_math_get_min_connector_overlap:
+ *
+ * @font: #hb_font_t from which to retrieve the value
+ * @direction: direction of the stretching
+ *
+ * This function tries to retrieve the MathVariants table for the specified
+ * font and returns the minimum overlap of connecting glyphs to draw a glyph
+ * assembly in the specified direction. Note that only the value of
+ * #HB_DIRECTION_IS_HORIZONTAL is considered.
+ *
+ * Return value: requested min connector overlap or 0
+ *
+ * Since: 1.4.0
+ **/
+hb_position_t
+hb_ot_math_get_min_connector_overlap (hb_font_t *font,
+				      hb_direction_t direction)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_math_variants().get_min_connector_overlap (direction, font);
+}
+
+/**
+ * hb_ot_math_get_glyph_assembly:
+ *
+ * @font: #hb_font_t from which to retrieve the values
+ * @glyph: index of the glyph to stretch
+ * @direction: direction of the stretching
+ * @start_offset: offset of the first glyph part to retrieve
+ * @parts_count: maximum number of glyph parts to retrieve after start_offset
+ * (IN) and actual number of parts retrieved (OUT)
+ * @parts: array of size at least @parts_count to store the result
+ * @italics_correction: italic correction of the glyph assembly
+ *
+ * This function tries to retrieve the GlyphAssembly for the specified font,
+ * glyph and direction. Note that only the value of #HB_DIRECTION_IS_HORIZONTAL
+ * is considered. It provides the information necessary to draw the glyph
+ * assembly as an array of #hb_ot_math_glyph_part_t.
+ *
+ * Return value: the total number of parts in the glyph assembly
+ *
+ * Since: 1.4.0
+ **/
+unsigned int
+hb_ot_math_get_glyph_assembly (hb_font_t *font,
+			       hb_codepoint_t glyph,
+			       hb_direction_t direction,
+			       unsigned int start_offset,
+			       unsigned int *parts_count, /* IN/OUT */
+			       hb_ot_math_glyph_part_t *parts, /* OUT */
+			       hb_position_t *italics_correction /* OUT */)
+{
+  const OT::MATH &math = _get_math (font->face);
+  return math.get_math_variants().get_glyph_parts (glyph, direction, font,
+						   start_offset,
+						   parts_count,
+						   parts,
+						   italics_correction);
 }
