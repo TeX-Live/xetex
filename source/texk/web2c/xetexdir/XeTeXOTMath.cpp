@@ -224,6 +224,15 @@ get_ot_assembly_ptr(int f, int g, int horiz)
     return rval;
 }
 
+void
+free_ot_assembly(GlyphAssembly* a)
+{
+    if (!a)
+        return;
+    free (a->parts);
+    free (a);
+}
+
 int
 get_ot_math_ital_corr(int f, int g)
 {
