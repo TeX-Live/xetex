@@ -34,7 +34,11 @@ authorization from the copyright holders.
 #define __XETEX_OT_MATH__
 
 #include "XeTeX_ext.h"
-#include "MathTable.h"
+
+typedef struct {
+      unsigned int             count;
+      hb_ot_math_glyph_part_t* parts;
+} GlyphAssembly;
 
 /* public "C" APIs for calling from Web(-to-C) code */
 #ifdef __cplusplus
