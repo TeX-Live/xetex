@@ -9188,6 +9188,7 @@ label exit;
 var p:pointer; {tail of the backup list}
 @!q:pointer; {new node being added to the token list via |store_new_token|}
 @!k:pool_pointer; {index into |str_pool|}
+@!save_cur_cs:pointer; {to save |cur_cs|}
 begin p:=backup_head; link(p):=null;
 if s<too_big_char then begin
   while true do
@@ -9206,6 +9207,7 @@ if s<too_big_char then begin
     end;
   end;
 k:=str_start_macro(s);
+save_cur_cs:=cur_cs;
 while k<str_start_macro(s+1) do
   begin get_x_token; {recursion is possible here}
 @^recursion@>
@@ -9216,6 +9218,7 @@ while k<str_start_macro(s+1) do
   else if (cur_cmd<>spacer)or(p<>backup_head) then
     begin back_input;
     if p<>backup_head then back_list(link(backup_head));
+    cur_cs:=save_cur_cs;
     scan_keyword:=false; return;
     end;
   end;
@@ -28958,11 +28961,12 @@ procedure compare_strings; {to implement \.{\\strcmp}}
 label done;
 var s1, s2: str_number;
   i1, i2, j1, j2: pool_pointer;
+  save_cur_cs: pointer;
 begin
-  call_func(scan_toks(false, true));
+  save_cur_cs:=cur_cs; call_func(scan_toks(false, true));
   s1:=tokens_to_string(def_ref);
   delete_token_ref(def_ref);
-  call_func(scan_toks(false, true));
+  cur_cs:=save_cur_cs; call_func(scan_toks(false, true));
   s2:=tokens_to_string(def_ref);
   delete_token_ref(def_ref);
   i1:=str_start_macro(s1);
