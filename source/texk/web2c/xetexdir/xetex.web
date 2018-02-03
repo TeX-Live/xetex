@@ -1697,6 +1697,9 @@ if @<Character |s| is the current new-line character@> then
   begin print_visible_char("^"); print_visible_char("^");
   print_lc_hex((s mod @"100) div @"10); print_lc_hex(s mod @"10);
   end
+ else if selector=pseudo then
+  print_visible_char(s) { Don't UTF8-encode text in |trick_buf|,
+                          we'll handle that when printing error context. }
  else begin
   { |char >= 128|: encode as UTF8 }
   if s<@"800 then begin
@@ -7697,11 +7700,11 @@ if l+first_count<=half_error_line then
 else  begin print("..."); p:=l+first_count-half_error_line+3;
   n:=half_error_line;
   end;
-for q:=p to first_count-1 do print_visible_char(trick_buf[q mod error_line]);
+for q:=p to first_count-1 do print_char(trick_buf[q mod error_line]);
 print_ln;
 for q:=1 to n do print_visible_char(" "); {print |n| spaces to begin line~2}
 if m+n<=error_line then p:=first_count+m else p:=first_count+(error_line-n-3);
-for q:=first_count to p-1 do print_visible_char(trick_buf[q mod error_line]);
+for q:=first_count to p-1 do print_char(trick_buf[q mod error_line]);
 if m+n>error_line then print("...")
 
 @ But the trick is distracting us from our current goal, which is to
