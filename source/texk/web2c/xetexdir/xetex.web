@@ -9602,8 +9602,10 @@ last_item: case chr_code of
   dimen_val: print_esc("lastkern");
   glue_val: print_esc("lastskip");
   input_line_no_code: print_esc("inputlineno");
-  pdf_shell_escape_code: print_esc("shellescape");
   @/@<Cases of |last_item| for |print_cmd_chr|@>@/
+  pdf_last_x_pos_code:  print_esc("pdflastxpos");
+  pdf_last_y_pos_code:  print_esc("pdflastypos");
+  pdf_shell_escape_code: print_esc("shellescape");
   othercases print_esc("badness")
   endcases;
 
@@ -30041,9 +30043,6 @@ XeTeX_font_type_code: print_esc("XeTeXfonttype");
 
 XeTeX_first_char_code: print_esc("XeTeXfirstfontchar");
 XeTeX_last_char_code: print_esc("XeTeXlastfontchar");
-
-  pdf_last_x_pos_code:  print_esc("pdflastxpos");
-  pdf_last_y_pos_code:  print_esc("pdflastypos");
 
 XeTeX_pdf_page_count_code: print_esc("XeTeXpdfpagecount");
 
