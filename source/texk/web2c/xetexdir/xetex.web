@@ -28900,20 +28900,19 @@ procedure do_extension;
 var i,@!j,@!k:integer; {all-purpose integers}
 @!p,@!q,@!r:pointer; {all-purpose pointers}
 begin case cur_chr of
-open_node:@<Implement \.{\\openout}@>;
-write_node:@<Implement \.{\\write}@>;
-close_node:@<Implement \.{\\closeout}@>;
-special_node:@<Implement \.{\\special}@>;
-immediate_code:@<Implement \.{\\immediate}@>;
-set_language_code:@<Implement \.{\\setlanguage}@>;
-pic_file_code:@<Implement \.{\\XeTeXpicfile}@>;
-pdf_file_code:@<Implement \.{\\XeTeXpdffile}@>;
-glyph_code:@<Implement \.{\\XeTeXglyph}@>;
-XeTeX_input_encoding_extension_code:@<Implement \.{\\XeTeXinputencoding}@>;
-XeTeX_default_encoding_extension_code:@<Implement \.{\\XeTeXdefaultencoding}@>;
-XeTeX_linebreak_locale_extension_code:@<Implement \.{\\XeTeXlinebreaklocale}@>;
-
-pdf_save_pos_node: @<Implement \.{\\pdfsavepos}@>;
+  open_node:@<Implement \.{\\openout}@>;
+  write_node:@<Implement \.{\\write}@>;
+  close_node:@<Implement \.{\\closeout}@>;
+  special_node:@<Implement \.{\\special}@>;
+  immediate_code:@<Implement \.{\\immediate}@>;
+  set_language_code:@<Implement \.{\\setlanguage}@>;
+  pdf_save_pos_node: @<Implement \.{\\pdfsavepos}@>;
+  pic_file_code:@<Implement \.{\\XeTeXpicfile}@>;
+  pdf_file_code:@<Implement \.{\\XeTeXpdffile}@>;
+  glyph_code:@<Implement \.{\\XeTeXglyph}@>;
+  XeTeX_input_encoding_extension_code:@<Implement \.{\\XeTeXinputencoding}@>;
+  XeTeX_default_encoding_extension_code:@<Implement \.{\\XeTeXdefaultencoding}@>;
+  XeTeX_linebreak_locale_extension_code:@<Implement \.{\\XeTeXlinebreaklocale}@>;
 othercases confusion("ext1")
 @:this can't happen ext1}{\quad ext1@>
 endcases;
