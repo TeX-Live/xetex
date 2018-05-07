@@ -9509,60 +9509,49 @@ the codes for its extensions: |eTeX_version_code|, \dots\ .
 @d input_line_no_code=glue_val+2 {code for \.{\\inputlineno}}
 @d badness_code=input_line_no_code+1 {code for \.{\\badness}}
 @#
-@d eTeX_int=badness_code+1 {first of \eTeX\ codes for integers}
+@d pdftex_first_rint_code = badness_code + 1 {base for \pdfTeX's command codes}
+@d pdf_last_x_pos_code    = pdftex_first_rint_code + 6 {code for \.{\\pdflastxpos}}
+@d pdf_last_y_pos_code    = pdftex_first_rint_code + 7 {code for \.{\\pdflastypos}}
+@d pdf_shell_escape_code  = pdftex_first_rint_code + 11 {code for \.{\\shellescape}}
+@d pdftex_last_item_codes = pdftex_first_rint_code + 13 {end of \pdfTeX's command codes}
 @#
-@d XeTeX_int=eTeX_int+8 {first of \XeTeX\ codes for integers}
+@d XeTeX_int                         = pdftex_last_item_codes + 1 {base for \XeTeX's command codes}
+@d XeTeX_version_code                = XeTeX_int + 0 {code for \.{\\XeTeXversion}}
+@d XeTeX_count_glyphs_code           = XeTeX_int + 1 {code for \.{\\XeTeXcountglyphs}}
+@d XeTeX_count_variations_code       = XeTeX_int + 2 {Deprecated}
+@d XeTeX_variation_code              = XeTeX_int + 3 {Deprecated}
+@d XeTeX_find_variation_by_name_code = XeTeX_int + 4 {Deprecated}
+@d XeTeX_variation_min_code          = XeTeX_int + 5 {Deprecated}
+@d XeTeX_variation_max_code          = XeTeX_int + 6 {Deprecated}
+@d XeTeX_variation_default_code      = XeTeX_int + 7 {Deprecated}
+@d XeTeX_count_features_code         = XeTeX_int + 8 {code for \.{\\XeTeXcountfeatures}}
+@d XeTeX_feature_code_code           = XeTeX_int + 9 {code for \.{\\XeTeXfeaturecode}}
+@d XeTeX_find_feature_by_name_code   = XeTeX_int + 10 {code for \.{\\XeTeXfindfeaturebyname}}
+@d XeTeX_is_exclusive_feature_code   = XeTeX_int + 11 {code for \.{\\XeTeXisexclusivefeature}}
+@d XeTeX_count_selectors_code        = XeTeX_int + 12 {code for \.{\\XeTeXcountselectors}}
+@d XeTeX_selector_code_code          = XeTeX_int + 13 {code for \.{\\XeTeXselectorcode}}
+@d XeTeX_find_selector_by_name_code  = XeTeX_int + 14 {code for \.{\\XeTeXfindselectorbyname}}
+@d XeTeX_is_default_selector_code    = XeTeX_int + 15 {code for \.{\\XeTeXisdefaultselector}}
+@d XeTeX_OT_count_scripts_code       = XeTeX_int + 16 {code for \.{\\XeTeXOTcountscripts}}
+@d XeTeX_OT_count_languages_code     = XeTeX_int + 17 {code for \.{\\XeTeXOTcountlanguages}}
+@d XeTeX_OT_count_features_code      = XeTeX_int + 18 {code for \.{\\XeTeXOTcountfeatures}}
+@d XeTeX_OT_script_code              = XeTeX_int + 19 {code for \.{\\XeTeXOTscripttag}}
+@d XeTeX_OT_language_code            = XeTeX_int + 20 {code for \.{\\XeTeXOTlanguagetag}}
+@d XeTeX_OT_feature_code             = XeTeX_int + 21 {code for \.{\\XeTeXOTfeaturetag}}
+@d XeTeX_map_char_to_glyph_code      = XeTeX_int + 22 {code for \.{\\XeTeXcharglyph}}
+@d XeTeX_glyph_index_code            = XeTeX_int + 23 {code for \.{\\XeTeXglyphindex}}
+@d XeTeX_font_type_code              = XeTeX_int + 24 {code for \.{\\XeTeXfonttype}}
+@d XeTeX_first_char_code             = XeTeX_int + 25 {code for \.{\\XeTeXfirstfontchar}}
+@d XeTeX_last_char_code              = XeTeX_int + 26 {code for \.{\\XeTeXlastfontchar}}
+@d XeTeX_pdf_page_count_code         = XeTeX_int + 27 {code for \.{\\XeTeXpdfpagecount}}
+@d XeTeX_last_item_codes             = XeTeX_int + 27 {end of \XeTeX's command codes}
 @#
-@d XeTeX_version_code=XeTeX_int {code for \.{\\XeTeXversion}}
-
-@d XeTeX_count_glyphs_code=XeTeX_int+1
-
-@d XeTeX_count_variations_code=XeTeX_int+2 {Deprecated}
-@d XeTeX_variation_code=XeTeX_int+3 {Deprecated}
-@d XeTeX_find_variation_by_name_code=XeTeX_int+4 {Deprecated}
-@d XeTeX_variation_min_code=XeTeX_int+5 {Deprecated}
-@d XeTeX_variation_max_code=XeTeX_int+6 {Deprecated}
-@d XeTeX_variation_default_code=XeTeX_int+7 {Deprecated}
-
-@d XeTeX_count_features_code=XeTeX_int+8
-@d XeTeX_feature_code_code=XeTeX_int+9
-@d XeTeX_find_feature_by_name_code=XeTeX_int+10
-@d XeTeX_is_exclusive_feature_code=XeTeX_int+11
-@d XeTeX_count_selectors_code=XeTeX_int+12
-@d XeTeX_selector_code_code=XeTeX_int+13
-@d XeTeX_find_selector_by_name_code=XeTeX_int+14
-@d XeTeX_is_default_selector_code=XeTeX_int+15
-
-@d XeTeX_OT_count_scripts_code=XeTeX_int+16
-@d XeTeX_OT_count_languages_code=XeTeX_int+17
-@d XeTeX_OT_count_features_code=XeTeX_int+18
-@d XeTeX_OT_script_code=XeTeX_int+19
-@d XeTeX_OT_language_code=XeTeX_int+20
-@d XeTeX_OT_feature_code=XeTeX_int+21
-
-@d XeTeX_map_char_to_glyph_code=XeTeX_int+22
-@d XeTeX_glyph_index_code=XeTeX_int+23
-@d XeTeX_font_type_code=XeTeX_int+24
-
-@d XeTeX_first_char_code=XeTeX_int+25
-@d XeTeX_last_char_code=XeTeX_int+26
-
-@d pdf_last_x_pos_code        = XeTeX_int+27
-@d pdf_last_y_pos_code        = XeTeX_int+28
-@d pdf_strcmp_code            = XeTeX_int+29
-@d pdf_mdfive_sum_code        = XeTeX_int+30
-@d pdf_shell_escape_code      = XeTeX_int+31
-
-@d XeTeX_pdf_page_count_code  = XeTeX_int+32
-
+@d XeTeX_dim               = XeTeX_last_item_codes + 1 {first of \XeTeX\ codes for dimensions}
+@d XeTeX_glyph_bounds_code = XeTeX_dim + 0 {code for \.{\\XeTeXglyphbounds}}
+@d XeTeX_last_dim_codes    = XeTeX_dim + 0 {end of \XeTeX's command codes}
 @#
-@d XeTeX_dim=XeTeX_int+33 {first of \XeTeX\ codes for dimensions}
-
-@d XeTeX_glyph_bounds_code = XeTeX_dim
-
-@#
-@d eTeX_dim=XeTeX_dim+1 {first of \eTeX\ codes for dimensions}
- {changed for \XeTeX\ to make room for \XeTeX\ integers and dimens}
+@d eTeX_int=XeTeX_last_dim_codes+1 {first of \eTeX\ codes for integers}
+@d eTeX_dim=eTeX_int+8 {first of \eTeX\ codes for dimensions}
 @d eTeX_glue=eTeX_dim+9 {first of \eTeX\ codes for glue}
 @d eTeX_mu=eTeX_glue+1 {first of \eTeX\ codes for muglue}
 @d eTeX_expr=eTeX_mu+1 {first of \eTeX\ codes for expressions}
@@ -10570,21 +10559,23 @@ end;
 @d font_name_code=4 {command code for \.{\\fontname}}
 @d etex_convert_base=5 {base for \eTeX's command codes}
 @d eTeX_revision_code=etex_convert_base {command code for \.{\\eTeXrevision}}
-
-@d XeTeX_revision_code=6
-@d XeTeX_variation_name_code=7
-@d XeTeX_feature_name_code=8
-@d XeTeX_selector_name_code=9
-@d XeTeX_glyph_name_code=10
-
-@d left_margin_kern_code=11
-@d right_margin_kern_code=12
-
-@d XeTeX_Uchar_code = 13
-@d XeTeX_Ucharcat_code = 14
-
-@d etex_convert_codes=XeTeX_Ucharcat_code+1 {end of \eTeX's command codes}
-@d job_name_code=etex_convert_codes {command code for \.{\\jobname}}
+@d etex_convert_codes=etex_convert_base+1 {end of \eTeX's command codes}
+@d pdftex_first_expand_code = etex_convert_codes {base for \pdfTeX's command codes}
+@d left_margin_kern_code    = pdftex_first_expand_code + 9 {command code for \.{\\leftmarginkern}}
+@d right_margin_kern_code   = pdftex_first_expand_code + 10 {command code for \.{\\rightmarginkern}}
+@d pdf_strcmp_code          = pdftex_first_expand_code + 11 {command code for \.{\\strcmp}}
+@d pdf_mdfive_sum_code      = pdftex_first_expand_code + 18 {command code for \.{\\mdfivesum}}
+@d pdftex_convert_codes     = pdftex_first_expand_code + 26 {end of \pdfTeX's command codes}
+@d XeTeX_first_expand_code   = pdftex_convert_codes {base for \XeTeX's command codes}
+@d XeTeX_revision_code       = XeTeX_first_expand_code + 0 {command code for \.{\\XeTeXrevision}}
+@d XeTeX_variation_name_code = XeTeX_first_expand_code + 1 {command code for \.{\\XeTeXvariationname}}
+@d XeTeX_feature_name_code   = XeTeX_first_expand_code + 2 {command code for \.{\\XeTeXfeaturename}}
+@d XeTeX_selector_name_code  = XeTeX_first_expand_code + 3 {command code for \.{\\XeTeXselectornamename}}
+@d XeTeX_glyph_name_code     = XeTeX_first_expand_code + 4 {command code for \.{\\XeTeXglyphname}}
+@d XeTeX_Uchar_code          = XeTeX_first_expand_code + 5 {command code for \.{\\Uchar}}
+@d XeTeX_Ucharcat_code       = XeTeX_first_expand_code + 6 {command code for \.{\\Ucharcat}}
+@d XeTeX_convert_codes       = XeTeX_first_expand_code + 7 {end of \XeTeX's command codes}
+@d job_name_code=XeTeX_convert_codes {command code for \.{\\jobname}}
 
 @<Put each...@>=
 primitive("number",convert,number_code);@/
