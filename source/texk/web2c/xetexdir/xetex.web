@@ -9581,6 +9581,12 @@ primitive("inputlineno",last_item,input_line_no_code);
 @!@:input_line_no_}{\.{\\inputlineno} primitive@>
 primitive("badness",last_item,badness_code);
 @!@:badness_}{\.{\\badness} primitive@>
+primitive("pdflastxpos",last_item,pdf_last_x_pos_code);@/
+@!@:pdf_last_x_pos_}{\.{\\pdflastxpos} primitive@>
+primitive("pdflastypos",last_item,pdf_last_y_pos_code);@/
+@!@:pdf_last_y_pos_}{\.{\\pdflastypos} primitive@>
+primitive("shellescape",last_item,pdf_shell_escape_code);
+@!@:pdf_shell_escape_}{\.{\\shellescape} primitive@>
 
 @ @<Cases of |print_cmd_chr|...@>=
 set_aux: if chr_code=vmode then print_esc("prevdepth")
@@ -10588,12 +10594,18 @@ primitive("meaning",convert,meaning_code);@/
 @!@:meaning_}{\.{\\meaning} primitive@>
 primitive("fontname",convert,font_name_code);@/
 @!@:font_name_}{\.{\\fontname} primitive@>
-primitive("jobname",convert,job_name_code);@/
-@!@:job_name_}{\.{\\jobname} primitive@>
+@#
 primitive("leftmarginkern",convert,left_margin_kern_code);@/
 @!@:left_margin_kern_}{\.{\\leftmarginkern} primitive@>
 primitive("rightmarginkern",convert,right_margin_kern_code);@/
 @!@:right_margin_kern_}{\.{\\rightmarginkern} primitive@>
+primitive("mdfivesum",convert,pdf_mdfive_sum_code);@/
+@!@:pdf_mdfive_sum_}{\.{\\mdfivesum} primitive@>
+primitive("strcmp",convert,pdf_strcmp_code);@/
+@!@:pdf_strcmp_}{\.{\\strcmp} primitive@>
+@#
+primitive("jobname",convert,job_name_code);@/
+@!@:job_name_}{\.{\\jobname} primitive@>
 
 primitive("Uchar",convert,XeTeX_Uchar_code);@/
 @!@:XeTeX_Uchar_}{\.{\\Uchar} primitive@>
@@ -29988,12 +30000,6 @@ primitive("XeTeXfonttype", last_item, XeTeX_font_type_code);
 
 primitive("XeTeXfirstfontchar", last_item, XeTeX_first_char_code);
 primitive("XeTeXlastfontchar", last_item, XeTeX_last_char_code);
-
-primitive("pdflastxpos",last_item,pdf_last_x_pos_code);
-primitive("pdflastypos",last_item,pdf_last_y_pos_code);
-primitive("strcmp",convert,pdf_strcmp_code);
-primitive("mdfivesum",convert,pdf_mdfive_sum_code);
-primitive("shellescape",last_item,pdf_shell_escape_code);
 
 primitive("XeTeXpdfpagecount",last_item,XeTeX_pdf_page_count_code);
 
