@@ -29087,6 +29087,7 @@ language_node:begin print_esc("setlanguage");
   print_int(what_lhm(p)); print_char(",");
   print_int(what_rhm(p)); print_char(")");
   end;
+pdf_save_pos_node: print_esc("pdfsavepos");
 native_word_node, native_word_node_AT:begin print_esc(font_id_text(native_font(p)));
   print_char(" ");
   print_native_word(p);
@@ -29103,7 +29104,6 @@ pic_node,pdf_node: begin
     print_visible_char(pic_path_byte(p, i));
   print("""");
   end;
-pdf_save_pos_node: print_esc("pdfsavepos");
 othercases print("whatsit?")
 endcases
 
