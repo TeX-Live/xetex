@@ -10607,10 +10607,11 @@ convert: case chr_code of
   string_code: print_esc("string");
   meaning_code: print_esc("meaning");
   font_name_code:  print_esc("fontname");
-  pdf_strcmp_code: print_esc("strcmp");
-  pdf_mdfive_sum_code: print_esc("mdfivesum");
+  eTeX_revision_code: print_esc("eTeXrevision");
   left_margin_kern_code:    print_esc("leftmarginkern");
   right_margin_kern_code:   print_esc("rightmarginkern");
+  pdf_mdfive_sum_code:    print_esc("mdfivesum");
+  pdf_strcmp_code:        print_esc("strcmp");
   @/@<Cases of |convert| for |print_cmd_chr|@>@/
   othercases print_esc("jobname")
   endcases;
@@ -30304,7 +30305,6 @@ XeTeX_glyph_bounds_code:
   end;
 
 @ @<Cases of |convert| for |print_cmd_chr|@>=
-eTeX_revision_code: print_esc("eTeXrevision");
 XeTeX_revision_code: print_esc("XeTeXrevision");
 
 XeTeX_variation_name_code: print_esc("XeTeXvariationname");
