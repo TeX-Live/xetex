@@ -28916,7 +28916,7 @@ stays the same.
 @d set_language_code=5 {command modifier for \.{\\setlanguage}}
 
 @d pdftex_first_extension_code = 6
-@d pdf_save_pos_node           == pdftex_first_extension_code + 0
+@d pdf_save_pos_node           == pdftex_first_extension_code + 15
 
 @d pic_file_code=41 { command modifier for \.{\\XeTeXpicfile}, skipping codes pdfTeX might use }
 @d pdf_file_code=42 { command modifier for \.{\\XeTeXpdffile} }
