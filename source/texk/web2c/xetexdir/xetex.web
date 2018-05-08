@@ -10716,6 +10716,35 @@ font_name_code: begin
     print("pt");
     end;
   end;
+eTeX_revision_code: print(eTeX_revision);
+left_margin_kern_code: begin
+  p:=list_ptr(p);
+  while (p <> null) and
+        (cp_skipable(p) or
+         ((not is_char_node(p)) and (type(p) = glue_node) and (subtype(p) = left_skip_code + 1)))
+  do
+    p:=link(p);
+  if (p <> null) and (not is_char_node(p)) and (type(p) = margin_kern_node) and (subtype(p) = left_side) then
+    print_scaled(width(p))
+  else
+    print("0");
+  print("pt");
+end;
+right_margin_kern_code: begin
+  q:=list_ptr(p);
+  p:=prev_rightmost(q, null);
+  while (p <> null) and
+        (cp_skipable(p) or
+         ((not is_char_node(p)) and (type(p) = glue_node) and (subtype(p) = right_skip_code + 1)))
+  do
+    p:=prev_rightmost(q, p);
+  if (p <> null) and (not is_char_node(p)) and (type(p) = margin_kern_node) and (subtype(p) = right_side) then
+    print_scaled(width(p))
+  else
+    print("0");
+  print("pt");
+end;
+pdf_strcmp_code: print_int(cur_val);
 XeTeX_Uchar_code,
 XeTeX_Ucharcat_code: print_char(cur_val);
 @/@<Cases of `Print the result of command |c|'@>@/
@@ -30412,8 +30441,6 @@ left_margin_kern_code, right_margin_kern_code: begin
 end;
 
 @ @<Cases of `Print the result of command |c|'@>=
-eTeX_revision_code: print(eTeX_revision);
-pdf_strcmp_code: print_int(cur_val);
 XeTeX_revision_code: print(XeTeX_revision);
 
 XeTeX_variation_name_code:
@@ -30429,35 +30456,6 @@ XeTeX_selector_name_code:
 
 XeTeX_glyph_name_code:
   if is_native_font(fnt) then print_glyph_name(fnt, arg1);
-
-left_margin_kern_code: begin
-  p:=list_ptr(p);
-  while (p <> null) and
-        (cp_skipable(p) or
-         ((not is_char_node(p)) and (type(p) = glue_node) and (subtype(p) = left_skip_code + 1)))
-  do
-    p:=link(p);
-  if (p <> null) and (not is_char_node(p)) and (type(p) = margin_kern_node) and (subtype(p) = left_side) then
-    print_scaled(width(p))
-  else
-    print("0");
-  print("pt");
-end;
-
-right_margin_kern_code: begin
-  q:=list_ptr(p);
-  p:=prev_rightmost(q, null);
-  while (p <> null) and
-        (cp_skipable(p) or
-         ((not is_char_node(p)) and (type(p) = glue_node) and (subtype(p) = right_skip_code + 1)))
-  do
-    p:=prev_rightmost(q, p);
-  if (p <> null) and (not is_char_node(p)) and (type(p) = margin_kern_node) and (subtype(p) = right_side) then
-    print_scaled(width(p))
-  else
-    print("0");
-  print("pt");
-end;
 
 @ @d eTeX_ex==(eTeX_mode=1) {is this extended mode?}
 
