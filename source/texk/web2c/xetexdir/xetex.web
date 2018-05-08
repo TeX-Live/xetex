@@ -10673,6 +10673,56 @@ string_code, meaning_code: begin save_scanner_status:=scanner_status;
   scanner_status:=normal; get_token; scanner_status:=save_scanner_status;
   end;
 font_name_code: scan_font_ident;
+eTeX_revision_code: do_nothing;
+left_margin_kern_code, right_margin_kern_code: begin
+    scan_register_num;
+    fetch_box(p);
+    if (p = null) or (type(p) <> hlist_node) then
+        pdf_error("marginkern", "a non-empty hbox expected")
+end;
+pdf_mdfive_sum_code:
+  begin
+    save_scanner_status := scanner_status;
+    save_warning_index := warning_index;
+    save_def_ref := def_ref;
+    save_cur_string;
+    boolvar := scan_keyword("file");
+    scan_pdf_ext_toks;
+
+    if selector = new_string then
+      pdf_error("tokens", "tokens_to_string() called while selector = new_string");
+    old_setting:=selector; selector:=new_string;
+    show_token_list(link(def_ref),null,pool_size-pool_ptr);
+    selector:=old_setting;
+    s:=make_string;
+
+    delete_token_ref(def_ref);
+    def_ref := save_def_ref;
+    warning_index := save_warning_index;
+    scanner_status := save_scanner_status;
+    b := pool_ptr;
+    getmd5sum(s, boolvar);
+    link(garbage) := str_toks(b);
+
+    if flushable(s) then
+        flush_string;
+
+    ins_list(link(temp_head));
+    restore_cur_string;
+    return;
+  end;
+pdf_strcmp_code:
+  begin
+    save_scanner_status:=scanner_status;
+    save_warning_index:=warning_index;
+    save_def_ref:=def_ref;
+    save_cur_string;
+    compare_strings;
+    def_ref:=save_def_ref;
+    warning_index:=save_warning_index;
+    scanner_status:=save_scanner_status;
+    restore_cur_string;
+  end;
 XeTeX_Uchar_code: scan_usv_num;
 XeTeX_Ucharcat_code:
   begin
@@ -30349,52 +30399,6 @@ XeTeX_Uchar_code: print_esc("Uchar");
 XeTeX_Ucharcat_code: print_esc("Ucharcat");
 
 @ @<Cases of `Scan the argument for command |c|'@>=
-eTeX_revision_code: do_nothing;
-pdf_strcmp_code:
-  begin
-    save_scanner_status:=scanner_status;
-    save_warning_index:=warning_index;
-    save_def_ref:=def_ref;
-    save_cur_string;
-    compare_strings;
-    def_ref:=save_def_ref;
-    warning_index:=save_warning_index;
-    scanner_status:=save_scanner_status;
-    restore_cur_string;
-  end;
-
-pdf_mdfive_sum_code:
-  begin
-    save_scanner_status := scanner_status;
-    save_warning_index := warning_index;
-    save_def_ref := def_ref;
-    save_cur_string;
-    boolvar := scan_keyword("file");
-    scan_pdf_ext_toks;
-
-    if selector = new_string then
-      pdf_error("tokens", "tokens_to_string() called while selector = new_string");
-    old_setting:=selector; selector:=new_string;
-    show_token_list(link(def_ref),null,pool_size-pool_ptr);
-    selector:=old_setting;
-    s:=make_string;
-
-    delete_token_ref(def_ref);
-    def_ref := save_def_ref;
-    warning_index := save_warning_index;
-    scanner_status := save_scanner_status;
-    b := pool_ptr;
-    getmd5sum(s, boolvar);
-    link(garbage) := str_toks(b);
-
-    if flushable(s) then
-        flush_string;
-
-    ins_list(link(temp_head));
-    restore_cur_string;
-    return;
-  end;
-
 XeTeX_revision_code: do_nothing;
 
 XeTeX_variation_name_code:
@@ -30432,13 +30436,6 @@ XeTeX_glyph_name_code:
     end else
       not_native_font_error(convert, c, fnt);
   end;
-
-left_margin_kern_code, right_margin_kern_code: begin
-    scan_register_num;
-    fetch_box(p);
-    if (p = null) or (type(p) <> hlist_node) then
-        pdf_error("marginkern", "a non-empty hbox expected")
-end;
 
 @ @<Cases of `Print the result of command |c|'@>=
 XeTeX_revision_code: print(XeTeX_revision);
