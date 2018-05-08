@@ -28971,13 +28971,13 @@ extension: case chr_code of
   special_node:print_esc("special");
   immediate_code:print_esc("immediate");
   set_language_code:print_esc("setlanguage");
+  pdf_save_pos_node: print_esc("pdfsavepos");
   pic_file_code:print_esc("XeTeXpicfile");
   pdf_file_code:print_esc("XeTeXpdffile");
   glyph_code:print_esc("XeTeXglyph");
   XeTeX_linebreak_locale_extension_code:print_esc("XeTeXlinebreaklocale");
   XeTeX_input_encoding_extension_code:print_esc("XeTeXinputencoding");
   XeTeX_default_encoding_extension_code:print_esc("XeTeXdefaultencoding");
-  pdf_save_pos_node: print_esc("pdfsavepos");
   othercases print("[unknown extension!]")
   endcases;
 
