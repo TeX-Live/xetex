@@ -10950,6 +10950,7 @@ end;
 @d pdf_file_mod_date_code   = pdftex_first_expand_code + 16 {command code for \.{\\filemoddate}}
 @d pdf_file_size_code       = pdftex_first_expand_code + 17 {command code for \.{\\filesize}}
 @d pdf_mdfive_sum_code      = pdftex_first_expand_code + 18 {command code for \.{\\mdfivesum}}
+@d pdf_file_dump_code       = pdftex_first_expand_code + 19 {command code for \.{\\filedump}}
 @d uniform_deviate_code     = pdftex_first_expand_code + 22 {command code for \.{\\uniformdeviate}}
 @d normal_deviate_code      = pdftex_first_expand_code + 23 {command code for \.{\\normaldeviate}}
 @d pdftex_convert_codes     = pdftex_first_expand_code + 26 {end of \pdfTeX's command codes}
@@ -10988,6 +10989,8 @@ primitive("filesize",convert,pdf_file_size_code);@/
 @!@:pdf_file_size_}{\.{\\filesize} primitive@>
 primitive("mdfivesum",convert,pdf_mdfive_sum_code);@/
 @!@:pdf_mdfive_sum_}{\.{\\mdfivesum} primitive@>
+primitive("filedump",convert,pdf_file_dump_code);@/
+@!@:pdf_file_dump_}{\.{\\filedump} primitive@>
 primitive("strcmp",convert,pdf_strcmp_code);@/
 @!@:pdf_strcmp_}{\.{\\strcmp} primitive@>
 primitive("uniformdeviate",convert,uniform_deviate_code);@/
@@ -11018,6 +11021,7 @@ convert: case chr_code of
   pdf_file_mod_date_code: print_esc("filemoddate");
   pdf_file_size_code:     print_esc("filesize");
   pdf_mdfive_sum_code:    print_esc("mdfivesum");
+  pdf_file_dump_code:     print_esc("filedump");
   pdf_strcmp_code:        print_esc("strcmp");
   uniform_deviate_code:   print_esc("uniformdeviate");
   normal_deviate_code:    print_esc("normaldeviate");
@@ -11042,6 +11046,7 @@ var old_setting:0..max_selector; {holds |selector| setting}
 @!boolvar: boolean; {temp boolean}
 @!s: str_number;
 @!u: str_number;
+@!j: integer;
 @!c:small_number; {desired type of conversion}
 @!save_scanner_status:small_number; {|scanner_status| upon entry}
 @!b:pool_pointer; {base of temporary string}
@@ -11165,6 +11170,65 @@ pdf_mdfive_sum_code:
     scanner_status := save_scanner_status;
     b := pool_ptr;
     getmd5sum(s, boolvar);
+    link(garbage) := str_toks(b);
+
+    if flushable(s) then
+        flush_string;
+
+    ins_list(link(temp_head));
+    restore_cur_string;
+    return;
+  end;
+pdf_file_dump_code:
+  begin
+    save_scanner_status := scanner_status;
+    save_warning_index := warning_index;
+    save_def_ref := def_ref;
+    save_cur_string;
+    {scan offset}
+    cur_val := 0;
+    if (scan_keyword("offset")) then begin
+      scan_int;
+      if (cur_val < 0) then begin
+        print_err("Bad file offset");
+@.Bad file offset@>
+        help2("A file offset must be between 0 and 2^{31}-1,")@/
+          ("I changed this one to zero.");
+        int_error(cur_val);
+        cur_val := 0;
+      end;
+    end;
+    i := cur_val;
+    {scan length}
+    cur_val := 0;
+    if (scan_keyword("length")) then begin
+      scan_int;
+      if (cur_val < 0) then begin
+        print_err("Bad dump length");
+@.Bad dump length@>
+        help2("A dump length must be between 0 and 2^{31}-1,")@/
+          ("I changed this one to zero.");
+        int_error(cur_val);
+        cur_val := 0;
+      end;
+    end;
+    j := cur_val;
+    {scan file name}
+    scan_pdf_ext_toks;
+
+    if selector = new_string then
+      pdf_error("tokens", "tokens_to_string() called while selector = new_string");
+    old_setting:=selector; selector:=new_string;
+    show_token_list(link(def_ref),null,pool_size-pool_ptr);
+    selector:=old_setting;
+    s:=make_string;
+
+    delete_token_ref(def_ref);
+    def_ref := save_def_ref;
+    warning_index := save_warning_index;
+    scanner_status := save_scanner_status;
+    b := pool_ptr;
+    getfiledump(s, i, j);
     link(garbage) := str_toks(b);
 
     if flushable(s) then
