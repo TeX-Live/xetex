@@ -4280,6 +4280,8 @@ else
     round_xn_over_d:=-u;
 end;
 
+@<Declare procedures that need to be declared forward for \pdfTeX@>@;
+
 @* \[12] Displaying boxes.
 We can reinforce our knowledge of the data structures just introduced
 by considering two procedures that display a list in symbolic form.
@@ -9873,6 +9875,7 @@ the codes for its extensions: |eTeX_version_code|, \dots\ .
 @d pdftex_first_rint_code = badness_code + 1 {base for \pdfTeX's command codes}
 @d pdf_last_x_pos_code    = pdftex_first_rint_code + 6 {code for \.{\\pdflastxpos}}
 @d pdf_last_y_pos_code    = pdftex_first_rint_code + 7 {code for \.{\\pdflastypos}}
+@d elapsed_time_code      = pdftex_first_rint_code + 10 {code for \.{\\elapsedtime}}
 @d pdf_shell_escape_code  = pdftex_first_rint_code + 11 {code for \.{\\shellescape}}
 @d random_seed_code       = pdftex_first_rint_code + 12 {code for \.{\\randomseed}}
 @d pdftex_last_item_codes = pdftex_first_rint_code + 13 {end of \pdfTeX's command codes}
@@ -9947,6 +9950,8 @@ primitive("pdflastxpos",last_item,pdf_last_x_pos_code);@/
 @!@:pdf_last_x_pos_}{\.{\\pdflastxpos} primitive@>
 primitive("pdflastypos",last_item,pdf_last_y_pos_code);@/
 @!@:pdf_last_y_pos_}{\.{\\pdflastypos} primitive@>
+primitive("elapsedtime",last_item,elapsed_time_code);
+@!@:elapsed_time_}{\.{\\elapsedtime} primitive@>
 primitive("shellescape",last_item,pdf_shell_escape_code);
 @!@:pdf_shell_escape_}{\.{\\shellescape} primitive@>
 primitive("randomseed",last_item,random_seed_code);
@@ -9970,6 +9975,7 @@ last_item: case chr_code of
   @/@<Cases of |last_item| for |print_cmd_chr|@>@/
   pdf_last_x_pos_code:  print_esc("pdflastxpos");
   pdf_last_y_pos_code:  print_esc("pdflastypos");
+  elapsed_time_code: print_esc("elapsedtime");
   pdf_shell_escape_code: print_esc("shellescape");
   random_seed_code:     print_esc("randomseed");
   othercases print_esc("badness")
@@ -10064,6 +10070,7 @@ if m>=input_line_no_code then
  else begin case m of
   input_line_no_code: cur_val:=line;
   badness_code: cur_val:=last_badness;
+  elapsed_time_code: cur_val := get_microinterval;
   random_seed_code:  cur_val := random_seed;
   pdf_shell_escape_code:
     begin
@@ -29305,6 +29312,7 @@ stays the same.
 
 @d pdftex_first_extension_code = 6
 @d pdf_save_pos_node           == pdftex_first_extension_code + 15
+@d reset_timer_code            == pdftex_first_extension_code + 25
 @d set_random_seed_code        == pdftex_first_extension_code + 27
 
 @d pic_file_code=41 { command modifier for \.{\\XeTeXpicfile}, skipping codes pdfTeX might use }
@@ -29328,6 +29336,8 @@ primitive("immediate",extension,immediate_code);@/
 @!@:immediate_}{\.{\\immediate} primitive@>
 primitive("setlanguage",extension,set_language_code);@/
 @!@:set_language_}{\.{\\setlanguage} primitive@>
+primitive("resettimer",extension,reset_timer_code);@/
+@!@:reset_timer_}{\.{\\resettimer} primitive@>
 primitive("setrandomseed",extension,set_random_seed_code);@/
 @!@:set_random_seed_code}{\.{\\setrandomseed} primitive@>
 
@@ -29363,6 +29373,7 @@ extension: case chr_code of
   immediate_code:print_esc("immediate");
   set_language_code:print_esc("setlanguage");
   pdf_save_pos_node: print_esc("pdfsavepos");
+  reset_timer_code: print_esc("resettimer");
   set_random_seed_code: print_esc("setrandomseed");
   pic_file_code:print_esc("XeTeXpicfile");
   pdf_file_code:print_esc("XeTeXpdffile");
@@ -29392,6 +29403,7 @@ begin case cur_chr of
   immediate_code:@<Implement \.{\\immediate}@>;
   set_language_code:@<Implement \.{\\setlanguage}@>;
   pdf_save_pos_node: @<Implement \.{\\pdfsavepos}@>;
+  reset_timer_code: @<Implement \.{\\resettimer}@>;
   set_random_seed_code: @<Implement \.{\\setrandomseed}@>;
   pic_file_code:@<Implement \.{\\XeTeXpicfile}@>;
   pdf_file_code:@<Implement \.{\\XeTeXpdffile}@>;
@@ -29458,6 +29470,7 @@ end
 
 @ @d call_func(#) == begin if # <> 0 then do_nothing end
 @d flushable(#) == (# = str_ptr - 1)
+@d max_integer == @"7FFFFFFF {$2^{31}-1$}
 
 @p procedure flush_str(s: str_number); {flush a string if possible}
 begin
@@ -29521,6 +29534,23 @@ done:
   cur_val_level:=int_val;
 end;
 
+@ @<Declare procedures that need to be declared forward for \pdfTeX@>=
+function get_microinterval:integer;
+var s,@!m:integer; {seconds and microseconds}
+begin
+   seconds_and_micros(s,m);
+   if (s-epochseconds)>32767 then
+     get_microinterval := max_integer
+   else if (microseconds>m)  then
+     get_microinterval := ((s-1-epochseconds)*65536)+ (((m+1000000-microseconds)/100)*65536)/10000
+   else
+     get_microinterval := ((s-epochseconds)*65536)  + (((m-microseconds)/100)*65536)/10000;
+end;
+
+@ @<Set initial values of key variables@>=
+  seconds_and_micros(epochseconds,microseconds);
+  init_start_time;
+
 @ Negative random seed values are silently converted to positive ones
 
 @<Implement \.{\\setrandomseed}@>=
@@ -29529,6 +29559,11 @@ begin
   if cur_val<0 then negate(cur_val);
   random_seed := cur_val;
   init_randoms(random_seed);
+end
+
+@ @<Implement \.{\\resettimer}@>=
+begin
+  seconds_and_micros(epochseconds,microseconds);
 end
 
 @ Each new type of node that appears in our data structure must be capable

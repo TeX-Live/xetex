@@ -2273,7 +2273,7 @@ get_date_and_time (integer *minutes,  integer *day,
   }
 }
 
-#if defined(pdfTeX)
+#if defined(pdfTeX) || defined(XeTeX)
 /*
  Getting a high resolution time.
  */
@@ -2956,7 +2956,6 @@ void pdftex_fail(const char *fmt, ...)
 }
 #endif /* not pdfTeX */
 
-#if !defined(XeTeX)
 static boolean start_time_set = false;
 static time_t start_time = 0;
 #define TIME_STR_SIZE 30
@@ -3045,6 +3044,8 @@ void initstarttime(void)
         }
     }
 }
+
+#if !defined(XeTeX)
 
 char *makecstring(integer s)
 {
