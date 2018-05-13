@@ -10946,6 +10946,9 @@ end;
 @d left_margin_kern_code    = pdftex_first_expand_code + 9 {command code for \.{\\leftmarginkern}}
 @d right_margin_kern_code   = pdftex_first_expand_code + 10 {command code for \.{\\rightmarginkern}}
 @d pdf_strcmp_code          = pdftex_first_expand_code + 11 {command code for \.{\\strcmp}}
+@d pdf_creation_date_code   = pdftex_first_expand_code + 15 {command code for \.{\\creationdate}}
+@d pdf_file_mod_date_code   = pdftex_first_expand_code + 16 {command code for \.{\\filemoddate}}
+@d pdf_file_size_code       = pdftex_first_expand_code + 17 {command code for \.{\\filesize}}
 @d pdf_mdfive_sum_code      = pdftex_first_expand_code + 18 {command code for \.{\\mdfivesum}}
 @d uniform_deviate_code     = pdftex_first_expand_code + 22 {command code for \.{\\uniformdeviate}}
 @d normal_deviate_code      = pdftex_first_expand_code + 23 {command code for \.{\\normaldeviate}}
@@ -10977,6 +10980,12 @@ primitive("leftmarginkern",convert,left_margin_kern_code);@/
 @!@:left_margin_kern_}{\.{\\leftmarginkern} primitive@>
 primitive("rightmarginkern",convert,right_margin_kern_code);@/
 @!@:right_margin_kern_}{\.{\\rightmarginkern} primitive@>
+primitive("creationdate",convert,pdf_creation_date_code);@/
+@!@:pdf_creation_date_}{\.{\\creationdate} primitive@>
+primitive("filemoddate",convert,pdf_file_mod_date_code);@/
+@!@:pdf_file_mod_date_}{\.{\\filemoddate} primitive@>
+primitive("filesize",convert,pdf_file_size_code);@/
+@!@:pdf_file_size_}{\.{\\filesize} primitive@>
 primitive("mdfivesum",convert,pdf_mdfive_sum_code);@/
 @!@:pdf_mdfive_sum_}{\.{\\mdfivesum} primitive@>
 primitive("strcmp",convert,pdf_strcmp_code);@/
@@ -11005,6 +11014,9 @@ convert: case chr_code of
   eTeX_revision_code: print_esc("eTeXrevision");
   left_margin_kern_code:    print_esc("leftmarginkern");
   right_margin_kern_code:   print_esc("rightmarginkern");
+  pdf_creation_date_code: print_esc("creationdate");
+  pdf_file_mod_date_code: print_esc("filemoddate");
+  pdf_file_size_code:     print_esc("filesize");
   pdf_mdfive_sum_code:    print_esc("mdfivesum");
   pdf_strcmp_code:        print_esc("strcmp");
   uniform_deviate_code:   print_esc("uniformdeviate");
@@ -11063,6 +11075,74 @@ left_margin_kern_code, right_margin_kern_code: begin
     if (p = null) or (type(p) <> hlist_node) then
         pdf_error("marginkern", "a non-empty hbox expected")
 end;
+pdf_creation_date_code:
+  begin
+    b := pool_ptr;
+    getcreationdate;
+    link(garbage) := str_toks(b);
+    ins_list(link(temp_head));
+    return;
+  end;
+pdf_file_mod_date_code:
+  begin
+    save_scanner_status := scanner_status;
+    save_warning_index := warning_index;
+    save_def_ref := def_ref;
+    save_cur_string;
+    scan_pdf_ext_toks;
+
+    if selector = new_string then
+      pdf_error("tokens", "tokens_to_string() called while selector = new_string");
+    old_setting:=selector; selector:=new_string;
+    show_token_list(link(def_ref),null,pool_size-pool_ptr);
+    selector:=old_setting;
+    s:=make_string;
+
+    delete_token_ref(def_ref);
+    def_ref := save_def_ref;
+    warning_index := save_warning_index;
+    scanner_status := save_scanner_status;
+    b := pool_ptr;
+    getfilemoddate(s);
+    link(garbage) := str_toks(b);
+
+    if flushable(s) then
+        flush_string;
+
+    ins_list(link(temp_head));
+    restore_cur_string;
+    return;
+  end;
+pdf_file_size_code:
+  begin
+    save_scanner_status := scanner_status;
+    save_warning_index := warning_index;
+    save_def_ref := def_ref;
+    save_cur_string;
+    scan_pdf_ext_toks;
+
+    if selector = new_string then
+      pdf_error("tokens", "tokens_to_string() called while selector = new_string");
+    old_setting:=selector; selector:=new_string;
+    show_token_list(link(def_ref),null,pool_size-pool_ptr);
+    selector:=old_setting;
+    s:=make_string;
+
+    delete_token_ref(def_ref);
+    def_ref := save_def_ref;
+    warning_index := save_warning_index;
+    scanner_status := save_scanner_status;
+    b := pool_ptr;
+    getfilesize(s);
+    link(garbage) := str_toks(b);
+
+    if flushable(s) then
+        flush_string;
+
+    ins_list(link(temp_head));
+    restore_cur_string;
+    return;
+  end;
 pdf_mdfive_sum_code:
   begin
     save_scanner_status := scanner_status;
