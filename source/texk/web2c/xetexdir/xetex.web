@@ -10942,7 +10942,8 @@ end;
 @d etex_convert_base=5 {base for \eTeX's command codes}
 @d eTeX_revision_code=etex_convert_base {command code for \.{\\eTeXrevision}}
 @d etex_convert_codes=etex_convert_base+1 {end of \eTeX's command codes}
-@d pdftex_first_expand_code = etex_convert_codes {base for \pdfTeX's command codes}
+@d expanded_code=etex_convert_codes {command code for \.{\\expanded}}
+@d pdftex_first_expand_code = expanded_code + 1 {base for \pdfTeX's command codes}
 @d left_margin_kern_code    = pdftex_first_expand_code + 9 {command code for \.{\\leftmarginkern}}
 @d right_margin_kern_code   = pdftex_first_expand_code + 10 {command code for \.{\\rightmarginkern}}
 @d pdf_strcmp_code          = pdftex_first_expand_code + 11 {command code for \.{\\strcmp}}
@@ -10976,6 +10977,10 @@ primitive("meaning",convert,meaning_code);@/
 @!@:meaning_}{\.{\\meaning} primitive@>
 primitive("fontname",convert,font_name_code);@/
 @!@:font_name_}{\.{\\fontname} primitive@>
+@#
+@#
+primitive("expanded",convert,expanded_code);@/
+@!@:expanded_}{\.{\\expanded} primitive@>
 @#
 primitive("leftmarginkern",convert,left_margin_kern_code);@/
 @!@:left_margin_kern_}{\.{\\leftmarginkern} primitive@>
@@ -11015,6 +11020,7 @@ convert: case chr_code of
   meaning_code: print_esc("meaning");
   font_name_code:  print_esc("fontname");
   eTeX_revision_code: print_esc("eTeXrevision");
+  expanded_code:        print_esc("expanded");
   left_margin_kern_code:    print_esc("leftmarginkern");
   right_margin_kern_code:   print_esc("rightmarginkern");
   pdf_creation_date_code: print_esc("creationdate");
@@ -11074,6 +11080,20 @@ string_code, meaning_code: begin save_scanner_status:=scanner_status;
   end;
 font_name_code: scan_font_ident;
 eTeX_revision_code: do_nothing;
+expanded_code:
+  begin
+    save_scanner_status := scanner_status;
+    save_warning_index := warning_index;
+    save_def_ref := def_ref;
+    save_cur_string;
+    scan_pdf_ext_toks;
+    warning_index := save_warning_index;
+    scanner_status := save_scanner_status;
+    ins_list(link(def_ref));
+    def_ref := save_def_ref;
+    restore_cur_string;
+    return;
+  end;
 left_margin_kern_code, right_margin_kern_code: begin
     scan_register_num;
     fetch_box(p);
