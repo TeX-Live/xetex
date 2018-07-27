@@ -13,6 +13,7 @@ AC_PREREQ([2.65])
 AC_CONFIG_SRCDIR([m4/kpse-pkgs.m4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
+AC_REQUIRE_AUX_FILE([depcomp])
 
 dnl Prevent to configure the source tree by mistake.
 if test "x$srcdir" = x. && test "x$enable_build_in_source_tree" != xyes; then
