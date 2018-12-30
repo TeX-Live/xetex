@@ -10870,6 +10870,7 @@ while k<pool_ptr do
       t := @"10000 + (t - @"D800) * @"400 + (so(str_pool[k]) - @"DC00);
     end;
     if cat=0 then t := other_token + t
+    else if cat=active_char then t := cs_token_flag + active_base + t
     else t := max_char_val * cat + t;
   end;
   fast_store_new_token(t);
@@ -11070,7 +11071,7 @@ selector:=old_setting; link(garbage):=str_toks_cat(b,cat); ins_list(link(temp_he
 end;
 
 @ Not all catcode values are allowed by \.{\\Ucharcat}:
-@d illegal_Ucharcat_catcode(#)==(#<left_brace)or(#>other_char)or(#=out_param)or(#=ignore)
+@d illegal_Ucharcat_catcode(#)==(#<left_brace)or(#>active_char)or(#=out_param)or(#=ignore)
 
 @<Scan the argument for command |c|@>=
 case c of
@@ -11279,7 +11280,7 @@ XeTeX_Ucharcat_code:
     if illegal_Ucharcat_catcode(cur_val) then
       begin print_err("Invalid code ("); print_int(cur_val);
 @.Invalid code@>
-      print("), should be in the ranges 1..4, 6..8, 10..12");
+      print("), should be in the ranges 1..4, 6..8, 10..13");
       help1("I'm going to use 12 instead of that illegal code value.");@/
       error; cat:=12;
     end else
