@@ -126,8 +126,10 @@ extern void pdftex_fail(const char *fmt, ...);
 #endif
 extern char start_time_str[];
 extern void initstarttime(void);
+#if !defined(XeTeX)
 extern char *makecstring(integer s);
 extern char *makecfilename(integer s);
+#endif /* !XeTeX */
 extern void getcreationdate(void);
 extern void getfilemoddate(integer s);
 extern void getfilesize(integer s);
@@ -218,7 +220,7 @@ extern boolean input_line (FILE *);
 #define	dateandtime(i,j,k,l) get_date_and_time (&(i), &(j), &(k), &(l))
 extern void get_date_and_time (integer *, integer *, integer *, integer *);
 
-#if defined(pdfTeX) || defined(XeTeX)
+#if defined(pdfTeX) || defined(epTeX) || defined(eupTeX) || defined(XeTeX)
 /* Get high-res time info. */
 #define secondsandmicros(i,j) get_seconds_and_micros (&(i), &(j))
 extern void get_seconds_and_micros (integer *, integer *);
